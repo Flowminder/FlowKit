@@ -1,0 +1,50 @@
+#
+# Flomachine stackfile
+#
+
+version: '3.7'
+secrets:
+  REDIS_PASSWORD: # Redis password
+    external: true
+networks:
+  flowdb:
+  redis:
+  zero:
+volumes:
+  data_volume_redis:
+services:
+    flowdb:
+      networks:
+        - flowdb
+    flowmachine:
+        image: "flowminder/flowmachine:${CONTAINER_TAG:-latest}"
+        environment:
+            FLOWDB_PORT: 5432
+            FLOWDB_HOST: flowdb
+            FLOWMACHINE_LOG_LEVEL: ${FLOWMACHINE_LOG_LEVEL:-error}
+            FLOWMACHINE_SERVER_DEBUG_MODE: ${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
+            FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING: ${FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING:-False}
+            REDIS_HOST: flowmachine_query_locker
+        secrets:
+          - FLOWMACHINE_FLOWDB_USER
+          - FLOWMACHINE_FLOWDB_PASSWORD
+          - REDIS_PASSWORD
+        networks:
+          - flowdb
+          - redis
+          - zero
+    flowmachine_query_locker:
+        image: bitnami/redis:latest
+        environment:
+          REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
+        ports:
+          - ${REDIS_HOST_PORT:?}:6379
+        secrets:
+          - REDIS_PASSWORD
+        volumes:
+          - data_volume_redis:/bitnami/redis/data
+        networks:
+          redis:
+            aliases:
+              - redis
+

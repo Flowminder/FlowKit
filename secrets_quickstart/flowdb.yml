@@ -1,0 +1,49 @@
+#
+# Stack file for FlowDB
+#
+
+version: '3.7'
+secrets:
+  FLOWAPI_FLOWDB_USER: # Database user used by FlowAPI
+    external: true
+  FLOWAPI_FLOWDB_PASSWORD: # Password for the FlowAPI database user
+    external: true
+  FLOWMACHINE_FLOWDB_USER: # Database user for FlowMachine
+    external: true
+  FLOWMACHINE_FLOWDB_PASSWORD: # Password for FlowDB
+    external: true
+  FLOWDB_POSTGRES_PASSWORD: # Postgres superuser password for flowdb
+    external: true
+services:
+    flowdb:
+        image: "flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}"
+        environment:
+          - POSTGRES_PASSWORD_FILE=/run/secrets/FLOWDB_POSTGRES_PASSWORD
+          #- CACHE_SIZE # Defaults to 1 tenth of available space in data dir
+          #- CACHE_PROTECTED_PERIOD # Defaults to 24 hours
+          #- CACHE_HALF_LIFE # Defaults to 1000
+          #- MAX_CPUS # Defaults to the greater of 1 or 1 less than all
+          #- SHARED_BUFFERS_SIZE # Defaults to 16GB
+          #- MAX_WORKERS # Defaults to half max_cpus
+          #- MAX_WORKERS_PER_GATHER # Defaults to half max_cpus
+          #- EFFECTIVE_CACHE_SIZE # Defaults to 25% of total RAM
+          #- FLOWDB_ENABLE_POSTGRES_DEBUG_MODE # False by default
+        ports:
+          - ${FLOWDB_HOST_PORT:?}:5432
+        user: ${FLOWDB_HOST_USER_ID:?}:${FLOWDB_HOST_GROUP_ID:?}
+        secrets:
+          - FLOWDB_POSTGRES_PASSWORD
+          - FLOWAPI_FLOWDB_USER
+          - FLOWAPI_FLOWDB_PASSWORD
+          - FLOWMACHINE_FLOWDB_USER
+          - FLOWMACHINE_FLOWDB_PASSWORD
+        tty: true
+        volumes:
+          - type: tmpfs
+            target: /dev/shm
+            tmpfs:
+              size: 1000000000
+          - ${FLOWDB_DATA_DIR:?}:/var/lib/postgresql/data:rw
+          - ${FLOWDB_ETL_DIR:?}:/etl:ro
+        stdin_open: true
+

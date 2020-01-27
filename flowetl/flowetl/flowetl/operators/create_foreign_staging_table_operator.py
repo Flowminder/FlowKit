@@ -23,6 +23,34 @@ class CreateForeignStagingTableOperator(TableNameMacrosMixin, PostgresOperator):
         encoding: Optional[str] = None,
         **kwargs,
     ) -> None:
+        """
+        Operator which uses file_fdw to create a table which can be used to read a flat file.
+
+        Creates the table named using the staging_table macro.
+
+        Parameters
+        ----------
+        filename : str
+            Jinja templated absolute path to the file
+        fields : dict
+            Dictionary mapping the names of fields to their expected postgres types
+        program : str, default None
+            If applicable a command to call on the file, e.g. zcat
+        header : bool, default True
+            Set to False if the input file does not have a header
+        delimiter : str, default ","
+            Character used as a delimiter
+        quote : str, default '"'
+            Character used as a quote
+        escape : str, default '"'
+            Character used to escape quotes
+        null : str, default ""
+            Character used as the null value
+        encoding : str or None, default None
+            String giving encoding type. Uses system locale by default.
+        kwargs : dict
+            Passed to airflow.operators.postgres_operator.PostgresOperator
+        """
         # Using an f-string here because filename needs to be templated, which is won't be if it is a param
         sql = f"""
             DROP FOREIGN TABLE IF EXISTS {{{{ staging_table }}}};

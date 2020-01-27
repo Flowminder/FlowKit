@@ -6,7 +6,18 @@ from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
 
 class AnalyzeOperator(TableNameMacrosMixin, PostgresOperator):
-    def __init__(self, *, target, **kwargs) -> None:
+    """
+    The analyze operator triggers the postgres analyze command on a table.
+
+    Parameters
+    ----------
+    target : str
+        jinja templated schema qualified table name.
+    kwargs : dict
+        Passed to airflow.operators.postgres_operator.PostgresOperator
+    """
+
+    def __init__(self, *, target: str, **kwargs) -> None:
         super().__init__(
             sql=f"ANALYZE {target};", **kwargs
         )  # Need an f-string to let us use templating with the target

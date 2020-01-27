@@ -130,3 +130,5 @@ docs/source/_static/openapi-redoc.json
 
 # Approvaltests: output of test runs
 *.received.txt
+
+secrets_quickstart/flowdb_pgdata

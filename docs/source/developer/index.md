@@ -18,23 +18,16 @@ FlowETL details are found [here](#flowetl).
 
 ### Now
 
--   More secure method for linking FlowAuth and FlowMachine
 -   Additional home location aggregate
 -   Work locations aggregate
--   Benchmarking
--   Cache management
--   Audit logs
 -   Support for downloading geographies via API
+-   Easier linkage between FlowAPI and FlowAuth
 
 ### Next
 
 -   Additional FlowMachine aggregates exposed via API
--   FlowMachine library release
 -   Additional language targets for FlowClient
--   Expanded worked examples
--   Two-factor authentication support for FlowAuth
 -   Alternative login provider support for FlowAuth
--   Interactive API specification
 -   Custom geography support
 
 ### Later
@@ -44,7 +37,6 @@ FlowETL details are found [here](#flowetl).
 -   Non-spatial aggregations
 -   Enhanced temporal aggregations
 -   Individual level API
--   Data source input/output connectors
 
 <a name="contrib"></a>
 <p>
@@ -55,14 +47,7 @@ FlowETL details are found [here](#flowetl).
 We are creating FlowKit at [Flowminder](http://flowminder.org).
 
 #### Get involved
-You are welcome to contribute to the FlowKit library. To get started:
-
-1. Check [Issues](https://github.com/Flowminder/FlowKit/issues) to see what we are working on right now.
-2. Express your interest in a particular [issue](https://github.com/Flowminder/FlowKit/issues) by submitting a comment, or submit your own [issue](https://github.com/Flowminder/FlowKit/issues).
-3. We will get back to you about working together.
-
-#### Code contributions
-If you plan to make a major contribution, please create a [pull request](https://github.com/Flowminder/FlowKit/pulls) with the feature or bug fix.
+You are welcome to contribute to the FlowKit library. To get started, please check out our [contributor guidelines](https://github.com/Flowminder/FlowKit/blob/master/.github/CONTRIBUTING.md), and when you're ready to get started, follow the [developer install guide](dev_environment_setup.md).
 
 
 <a name="flowapi"></a>
@@ -183,71 +168,6 @@ Mass relocation scenarios are also supported - a designated admin 2 region can b
 - `P_RELOCATE`: probability that each subscriber relocates each day, defaults to 0.01
 - `INTERACTIONS_MULTIPLIER`: multiplier for interaction pairs, defaults to 5.
 
-### Caveats
-
-#### Shared Memory
-
-You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.
-
-#### Bind Mounts and User Permissions
-
-By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.
-
-However, you will often wish to set up bind mounts to hold the data and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.
-
-Adding a bind mount using `docker-compose` is simple:
-
-```yaml
-services:
-    flowdb:
-    ...
-        user: HOST_USER_ID:HOST_GROUP_ID
-        volumes:
-          - /path/to/store/data/on/host:/var/lib/postgresql/data
-          - /path/to/consume/data/from/host:/etl:ro
-```
-
-This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.
-
-!!! warning
-    If the bind mounted directories do not exist, docker will create them and you will need to `chown` them to the correct user.
-
-And similarly when using `docker run`:
-
-```bash
-docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
- --publish 9000:5432 \
- --user HOST_USER_ID:HOST_GROUP_ID \
- -v /path/to/store/data/on/host:/var/lib/postgresql/data \
- -v /path/to/consume/data/from/host:/etl:ro \
- --detach flowminder/flowdb-testdata:latest
-```
-
-!!! tip
-    To run as the current user, you can simply replace `HOST_USER_ID:HOST_GROUP_ID` with `$(id -u):$(id -g)`.
-
-
-!!! warning
-    Using the `--user` flag without a bind mount specified will not work, and you will see an error
-    like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
-
-    When using docker volumes, docker will manage the permissions for you.
-
-
-## FlowETL
-
-### DAG information flow
-
-This section describes the information available in the DAG code inside FlowETL.
-
-Some information is only known at runtime, in code executed by a running DAG, this cannot be passed to the python callables or accessed when creating the DAGs because it's not static and changes for each run:
-`execution_date`, `run_id`, the dag itself, `ds`/`ts` and the [default variables allowed in airflow](https://airflow.apache.org/macros.html#default-variables), the task and task_instance.
-
-The data that is passed when the DAG is triggered, is also available at runtime in the callables under `dag_run['conf']` :
-`cdr_type` (a DAG is initialised for a specific `cdr_type` *but* this is not static because the callables are reused), `cdr_date` (which currently is the same as the `execution_date`), `file_name` & `template_path` or `source_table`.
-
-Some information can be accessed when creating the DAG / not at runtime - these can be passed to the python callables because they are static and do not change:
-the SQL and config paths (because they remain fixed), the configuration that remains constant for any DAG (`config.yml` in `/mounts/config`)
 
 ## FlowAuth
 
