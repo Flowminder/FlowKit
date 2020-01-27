@@ -211,6 +211,52 @@ You will also need to specify the names and [types](https://www.postgresql.org/d
 
 ## Loading Infrastructure data
 
+At this time, FlowETL does not provide helper functions loading infrastructure data. You can however still create a custom DAG for regular infrastructure data import using either the `CreateForeignStagingTableOperator` and `ExtractFromForeignTableOperator` operators, the `CreateStagingViewOperator` and `ExtractFromViewOperator`, or by using Airflow's existing [collection of operators](https://airflow.apache.org/docs/stable/_api/index.html#operators-packages).
+
+Cell data should be loaded to the `infrastructure.cells` table, and contain fields as follows:
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| id  | TEXT | ID of the cell as referenced in the CDR | 
+| version  | INTEGER | Add a new row and increment if details of the cell change | 
+| site_id  | TEXT | ID of the cell tower this cell is on | 
+| name  | TEXT | Any name attached to this cell | 
+| type  | TEXT | Type of the cell | 
+| msc  | TEXT | Mobile switching centre | 
+| bsc_rnc  | TEXT | | 
+| antenna_type  | TEXT | | 
+| status  | TEXT | | 
+| lac  | TEXT | | 
+| height  | NUMERIC | | 
+| azimuth  | NUMERIC | | 
+| transmitter  | TEXT | | 
+| max_range  | NUMERIC | (m) | 
+| min_range  | NUMERIC |  (m) | 
+| electrical_tilt  | NUMERIC | | 
+| mechanical_downtilt  | NUMERIC | | 
+| date_of_first_service  | DATE | Date this cell became operational | 
+| date_of_last_service  | DATE | Date this cell ceased operation | 
+| geom_point | POINT | ESPG 4326 point location of the cell |
+| geom_polygon | MULTIPOLYGON | ESPG 4326 coverage polygon of the cell | 
+
+This should generally be used in concert with the `infrastructure.sites` table:
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| id  | TEXT | ID of the site as referenced in the cells table | 
+| version  | INTEGER | Add a new row and increment if details of the site change | 
+| name  | TEXT | Any name attached to this cell | 
+| type  | TEXT | Type of the cell | 
+| status  | TEXT | | 
+| structure_type  | TEXT | | 
+| is_cow  | BOOLEAN | True indicates that this is a mobile tower |
+| date_of_first_service  | DATE | Date this site became operational | 
+| date_of_last_service  | DATE | Date this site ceased operation | 
+| geom_point | POINT | ESPG 4326 point location of the site |
+| geom_polygon | MULTIPOLYGON | ESPG 4326 coverage polygon of the site | 
+
+Where site information is not available, we advise that you populate the sites table as a function of the cells table.
+
 ## Loading GIS data
 
 ## Data QA checks
