@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [1.0.0]
+
+### Added
 - FlowMachine now periodically prunes the cache to below the permitted cache size. [#1307](https://github.com/Flowminder/FlowKit/issues/1307)
   The frequency of this pruning is configurable using the `FLOWMACHINE_CACHE_PRUNING_FREQUENCY` environment variable to Flowmachine, and queries are excluded from being removed by the automatic shrinker based on the `cache_protected_period` config key within FlowDB.
 - FlowDB now includes Paul Ramsey's [OGR foreign data wrapper](https://github.com/pramsey/pgsql-ogr-fdw), for easy loading of GIS data. [#1512](https://github.com/Flowminder/FlowKit/issues/1512)
@@ -553,7 +564,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.9.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.0.0...master
+[1.0.0]: https://github.com/Flowminder/FlowKit/compare/0.9.1...1.0.0
 [0.9.1]: https://github.com/Flowminder/FlowKit/compare/0.9.0...0.9.1
 [0.9.0]: https://github.com/Flowminder/FlowKit/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/Flowminder/FlowKit/compare/0.7.0...0.8.0
