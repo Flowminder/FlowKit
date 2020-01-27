@@ -7,6 +7,25 @@ from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
 
 class FileFluxSensor(TableNameMacrosMixin, SqlSensor):
+    """
+    The file flux sensor monitors a file for a short time to check if it is still
+    being modified.
+
+    Parameters
+    ----------
+    conn_id : str
+        Connection to use
+    flux_check_interval : int
+        Number of seconds to wait between checks that a file is stable
+    filename : str
+        jinja templated string providing the path to the file to check
+    kwargs : dict
+        Passed to airflow.operators.sensors.SqlSensor
+    See Also
+    --------
+    airflow.operators.sensors.SqlSensor
+    """
+
     @apply_defaults
     def __init__(
         self, *, conn_id: str, flux_check_interval: int, filename: str, **kwargs
