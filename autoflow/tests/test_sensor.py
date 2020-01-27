@@ -69,9 +69,15 @@ def test_get_available_dates(monkeypatch, test_logger):
 
 
 def test_get_available_dates_ssl_certificate(monkeypatch, test_logger):
+    flowclient_available_dates = {
+        "cdr_type_1": ["2016-01-01", "2016-01-03"],
+        "cdr_type_2": ["2016-01-01", "2016-01-02"],
+    }
     connect_mock = Mock()
     monkeypatch.setattr("flowclient.connect", connect_mock)
-    monkeypatch.setattr("flowclient.get_available_dates", Mock(return_value=dict()))
+    monkeypatch.setattr(
+        "flowclient.get_available_dates", lambda connection: flowclient_available_dates
+    )
     monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
     monkeypatch.setenv("SSL_CERTIFICATE_FILE", "DUMMY_SSL_CERT")
     with set_temporary_config({"flowapi_url": "DUMMY_URL"}), prefect.context(
