@@ -24,7 +24,7 @@ services:
     environment:
       AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:-ERROR}
       AUTOFLOW_DB_URI: postgresql://autoflow:{}@autoflow_postgres:5432/autoflow
-      FLOWAPI_URL: https://flowapi:${FLOWAPI_HOST_PORT:?}
+      FLOWAPI_URL: https://flowapi:9090
       SSL_CERTIFICATE_FILE: /run/secrets/cert-flowkit.pem
     secrets:
       - AUTOFLOW_DB_PASSWORD

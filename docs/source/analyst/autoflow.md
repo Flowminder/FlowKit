@@ -19,7 +19,9 @@ When running the container, the following environment variables should be set:
 - `FLOWAPI_URL`: FlowAPI URL.  
 - `FLOWAPI_TOKEN`: FlowAPI access token. This should allow access to `available_dates`, along with any query kinds used in the notebooks to be executed.  
 
-Alternatively, `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` can be set as docker secrets instead of environment variables. If connecting to FlowAPI over a secured connection (i.e. if `FLOWAPI_URL` starts with 'https://'), then the `SSL_CERTIFICATE_FILE` environment variable should be set as the path (within the container) to the SSL certificate for FlowAPI. For example, if the SSL certificate file is set as the Docker secret `cert.pem`, then `SSL_CERTIFICATE_FILE` should be set as `"/run/secrets/cert.pem"`.
+Alternatively, `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` can be set as docker secrets instead of environment variables. If connecting to FlowAPI over a secure connection (i.e. if `FLOWAPI_URL` starts with 'https://'), then the `SSL_CERTIFICATE_FILE` environment variable should be set as the path (within the container) to the SSL certificate for FlowAPI. For example, if the SSL certificate file is set as the Docker secret `cert.pem`, then `SSL_CERTIFICATE_FILE` should be set as `"/run/secrets/cert.pem"`.
+
+A sample Docker stack file for deploying AutoFlow along with a Postgres databaase can be found [here](https://github.com/Flowminder/FlowKit/blob/master/autoflow/docker-stack.yml). See the [deployment documentation](../administrator/deployment.md#autoflow-production-deployment) for details on using this file.
 
 When the container runs, it will parse `workflows.yml` and construct all of the workflows defined, and run a sensor that runs the workflows with the provided parameters each time new data is found in FlowDB. All executed notebooks will be available in `<bind-mounted_outputs_directory>/notebooks/`, and PDF reports will be in `<bind-mounted_outputs_directory>/reports/`.
 
