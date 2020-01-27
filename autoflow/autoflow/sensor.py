@@ -11,7 +11,7 @@ from typing import Any, Dict, List, NamedTuple, NoReturn, Optional, Sequence, Tu
 
 import pendulum
 import prefect
-from get_secret_or_env_var import environ
+from get_secret_or_env_var import environ, getenv
 from prefect import Flow, Parameter, task, unmapped
 from prefect.engine import signals
 from prefect.schedules import CronSchedule
@@ -72,7 +72,9 @@ def get_available_dates(
         f"Getting available dates from FlowAPI at '{prefect.config.flowapi_url}'."
     )
     conn = flowclient.connect(
-        url=prefect.config.flowapi_url, token=environ["FLOWAPI_TOKEN"]
+        url=prefect.config.flowapi_url,
+        token=environ["FLOWAPI_TOKEN"],
+        ssl_certificate=getenv("SSL_CERTIFICATE_FILE", None),
     )
     dates = flowclient.get_available_dates(connection=conn)
     prefect.context.logger.debug(f"Available dates: {dates}")
