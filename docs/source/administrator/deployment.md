@@ -234,6 +234,7 @@ FlowAPI requires additional secrets:
 | Secret name | Purpose | Notes |
 | ----------- | ------- | ----- |
 | cert-flowkit.pem | SSL Certificate used to serve FlowAPI over https | Optional, but _strongly_ recommended. If you are using a self-signed certificate, you will need to make the file available to FlowClient users. |
+| key-flowkit.pem | Private key for the SSL Certificate | Optional, but _strongly_ recommended. This part of the certificate does _not_ need to be made available to FlowClient users. |
 | PUBLIC_JWT_SIGNING_KEY | Public key to verify api tokens | The public key corresponding to the `PRIVATE_JWT_SIGNING_KEY` used by FlowAuth
 | FLOWAPI_IDENTIFIER | Secret used in combination with secret key for decoding JWTs | Should be unique per FlowAPI server |
 

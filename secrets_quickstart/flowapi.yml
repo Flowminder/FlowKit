@@ -6,6 +6,8 @@ version: '3.7'
 secrets:
   cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
     external: true
+  key-flowkit.pem: # Private key for the SSL Certificate
+    external: true
   PUBLIC_JWT_SIGNING_KEY: # Public key to verify api tokens
     external: true
   FLOWAPI_IDENTIFIER: # Secret used in combination with secret key for decoding JWTs, should be unique per FlowAPI server
@@ -24,6 +26,7 @@ services:
             - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
         secrets:
           - cert-flowkit.pem
+          - key-flowkit.pem
           - PUBLIC_JWT_SIGNING_KEY
           - FLOWAPI_FLOWDB_USER
           - FLOWAPI_FLOWDB_PASSWORD

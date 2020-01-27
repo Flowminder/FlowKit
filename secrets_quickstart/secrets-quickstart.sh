@@ -47,6 +47,7 @@ docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
 docker secret rm FLOWAPI_FLOWDB_USER || true
 docker secret rm FLOWDB_POSTGRES_PASSWORD || true
 docker secret rm cert-flowkit.pem || true
+docker secret rm key-flowkit.pem || true
 docker secret rm REDIS_PASSWORD || true
 docker secret rm FLOWAPI_IDENTIFIER || true
 docker secret rm FLOWAUTH_ADMIN_USERNAME || true
@@ -108,14 +109,14 @@ openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
               || ( [[ -e /etc/ssl/openssl.cnf ]] && echo "/etc/ssl/openssl.cnf" ) \
               || ( [[ -e /etc/pki/tls/openssl.cnf ]] && echo "/etc/pki/tls/openssl.cnf" ) ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
-    -keyout cert.key -out cert.pem
-if ! ( [ -e cert.key ] && [ -e cert.pem ] ); then
+    -keyout key-flowkit.pem -out cert-flowkit.pem
+if ! ( [ -e key-flowkit.pem ] && [ -e cert-flowkit.pem ] ); then
     echo "Generation of the SSL certificate failed."
     echo "Please the check the command (in particular the path to the openssl.cnf file) and try again."
     exit
 fi
-cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
+docker secret create key-flowkit.pem key-flowkit.pem
 
 # FlowETL
 AIRFLOW__CORE__FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")

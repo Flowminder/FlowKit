@@ -31,8 +31,8 @@ services:
       - FLOWAPI_TOKEN
       - cert-flowkit.pem
     volumes:
-      - ${AUTOFLOW_INPUTS_DIR:?Must set AUTOFLOW_INPUTS_DIR env var}:/mounts/inputs:ro
-      - ${AUTOFLOW_OUTPUTS_DIR:?Must set AUTOFLOW_OUTPUTS_DIR env var}:/mounts/outputs:rw
+      - ${AUTOFLOW_INPUTS_DIR:?}:/mounts/inputs:ro
+      - ${AUTOFLOW_OUTPUTS_DIR:?}:/mounts/outputs:rw
     networks:
       - autoflow_db
       - api
