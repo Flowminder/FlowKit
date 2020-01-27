@@ -1121,7 +1121,7 @@ workflows:
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowetl_wheel
-          project_name: flowetl/flowetl
+          project_name: flowetl
           requires:
             - retag_tagged_build
           <<: *tag_only_org_context
