@@ -244,7 +244,7 @@ FlowAPI also makes use of the `FLOWAPI_FLOWDB_USER` and `FLOWAPI_FLOWDB_PASSWORD
 
 ###### FlowMachine
 
-A sample stack file suitable for use with the FlowDB and FlowETL stacks can be found [here](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml). This adds an additional two services: FlowMachine, and a redis instance used to coordinate the running state of queries. If you are supporting additional users with FlowMachine as a library, they should also use this redis instance. 
+A sample stack file suitable for use with the FlowDB and FlowETL stacks can be found [here](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml). This adds an additional two services: FlowMachine, and a redis instance used to coordinate the running state of queries. If you are supporting additional users with FlowMachine as a library, they should also use this redis instance. This stack file requires one additional environment variable: `REDIS_HOST_PORT`, the localhost port where Redis will be accessible.
 
 ###### FlowAPI
 

@@ -37,6 +37,8 @@ services:
         image: bitnami/redis:latest
         environment:
           REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
+        ports:
+          - ${REDIS_HOST_PORT:?}:6379
         secrets:
           - REDIS_PASSWORD
         volumes:
