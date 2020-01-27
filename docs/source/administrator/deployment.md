@@ -135,11 +135,14 @@ You can find a sample FlowETL stack file [here](https://github.com/Flowminder/Fl
 
 ### FlowDB, FlowETL and FlowMachine
 
-For cases where your users require individual level data access, you can support the use of FlowMachine as a library. In this mode, users connect directly to FlowDB via the FlowMachine Python module. Many of the benefits of a complete FlowKit deployment are available in this scenario, including query caching.
+For cases where your users require individual level data access, you can support the use of FlowMachine as a library. In this mode, users connect directly to FlowDB via the [FlowMachine Python module](https://pypi.org/project/flowmachine/). Many of the benefits of a complete FlowKit deployment are available in this scenario, including query caching.
 
 You will need to host a redis service, to allow the FlowMachine users to coordinate processing. See the [FlowMachine stack file](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml) for an example of deploying redis using docker.
 
-You will need to [create database users](management/users.md) for each user who needs access, and provide them with the password to the redis instance. Users should install FlowMachine individually, using pip (`pip install flowmachine`). 
+You will need to [create database users](management/users.md) for each user who needs access, and provide them with the password to the redis instance. Users should install FlowMachine individually, using pip (`pip install flowmachine`).
+
+!!!note
+    A FlowMachine Docker service is not required for using FlowMachine as a library - users can install the FlowMachine module individually. A redis service is required, and all users should connect to the same redis instance.
 
 ### FlowKit
 
