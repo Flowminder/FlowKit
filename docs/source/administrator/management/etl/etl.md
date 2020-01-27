@@ -155,7 +155,7 @@ You will also need to be to to connect to the remote database from inside FlowDB
 The [`postgres_fdw` extension](https://www.postgresql.org/docs/current/postgres-fdw.html) allows FlowDB to communicate with other databases built on PostgreSQL. This makes data extraction from remote PostgreSQL-compatible databases (e.g. [TimescaleDB](https://www.timescale.com)) simple. You will need to create a foreign server, map a user for it, and then specify the table and schema on the remote database you would like to make available within FlowDB:
 
 ```sql
-CREATE SERVER IF NOT EXISTS ingestion_db_server
+CREATE SERVER IF NOT EXISTS postgres_server
     FOREIGN DATA WRAPPER postgres_fdw
     OPTIONS (
         host '<foreign_host>',
@@ -164,7 +164,7 @@ CREATE SERVER IF NOT EXISTS ingestion_db_server
     );
 
 CREATE USER MAPPING IF NOT EXISTS FOR flowdb
-    SERVER foreign_db
+    SERVER postgres_server
     OPTIONS (
         user '<postgres_db_user>',
         password '<postgres_db_password>'
@@ -190,18 +190,40 @@ Once you have built the image, you can use it in place of standard FlowDB.
 To connect to Oracle, you will need to access FlowDB as the `flowdb` user and run:
 
 ```sql
-CREATE SERVER oradb FOREIGN DATA WRAPPER oracle_fdw
+CREATE SERVER oracle_server FOREIGN DATA WRAPPER oracle_fdw
           OPTIONS (dbserver '//<oracle_server>:<oracle_port>/<oracle_db>');
-CREATE USER MAPPING FOR flowdb SERVER oradb
+
+CREATE USER MAPPING FOR flowdb SERVER oracle_server
           OPTIONS (user '<oracle_user>', password '<oracle_password>');
+
 CREATE FOREIGN TABLE oracle_source_table (
           <fields>
-       ) SERVER oradb OPTIONS (schema '<ORAUSER>', table '<ORATAB>');
+       ) SERVER oracle_server OPTIONS (schema '<schema>', table '<table_name>');
 ```
 
 Further instructions on use of the wrapper are available from the projects [Github repo](https://github.com/laurenz/oracle_fdw).
 
 #### MSSQL database
+
+FlowDB includes [tds_fdw](https://github.com/tds-fdw/tds_fdw), which supports data extraction from Microsoft SQL server. Usage is very similar to the other remote database connections:
+
+```sql
+CREATE SERVER mssql_server
+	FOREIGN DATA WRAPPER tds_fdw
+	OPTIONS (servername '<remote_database_host>', port '<remote_database_port>', database '<remote_database_name>', tds_version '<tds_version>');
+
+CREATE USER MAPPING FOR flowdb
+	SERVER mssql_server 
+	OPTIONS (username '<remote_user>', password '<remote_password>');
+
+CREATE FOREIGN TABLE mssql_table (
+    <fields>
+	)
+	SERVER mssql_server
+	OPTIONS (table_name '<schema_qualified_table_name>', row_estimate_method 'showplan_all');
+```
+
+You should choose the tds version based on the software version of the remote database - additional information on the correct version for different MSSQL server versions is available [here](http://www.freetds.org/userguide/choosingtdsprotocol.htm).
 
 ### CSV Files
 
