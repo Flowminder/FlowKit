@@ -4,6 +4,8 @@ Title: ETL
 
 FlowETL manages the loading of CDR data into FlowDB. It is built on [Apache Airflow](https://airflow.apache.org), and a basic understanding of how to use Airflow will be very helpful in making the best use of FlowETL. We recommend you familiarise yourself with the Airflow [tutorial](https://airflow.apache.org/docs/stable/tutorial.html), and [key concepts](https://airflow.apache.org/docs/stable/concepts.html) before continuing. You should also have some familiarity with SQL.
 
+To work with FlowETL, it may be helpful to install the [flowetl](https://pypi.org/project/flowetl/) module into your local Python environment. This is not a prerequisite, but can be helpful when writing pipelines.
+
 ### Macros
 
 To help you write the SQL you'll need to create your data pipeline, FlowETL supplies several macros, in additional to those [provided by Airflow](https://airflow.apache.org/docs/stable/macros.html). These macros are filled in when a task is run.
@@ -338,3 +340,7 @@ Here's an example of a valid QA check; one of the defaults which records the num
 ```sql
 SELECT COUNT(*) FROM {{ final_table }}
 ```
+
+## Worked example
+
+A complete worked example covering deploying and using FlowETL to load data from both a remote PostgreSQL database and CSV files can be found in the main [FlowKit repository](https://github.com/Flowminder/FlowKit/tree/master/flowetl/deployment_example). 
