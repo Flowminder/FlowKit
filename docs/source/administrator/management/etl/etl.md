@@ -2,6 +2,8 @@ Title: ETL
 
 ## Working with FlowETL
 
+FlowETL manages the loading of CDR data into FlowDB. It is built on [Apache Airflow](https://airflow.apache.org), and a basic understanding of how to use Airflow will be very helpful in making the best use of FlowETL. We recommend you familiarise yourself with the Airflow [tutorial](https://airflow.apache.org/docs/stable/tutorial.html), and [key concepts](https://airflow.apache.org/docs/stable/concepts.html) before continuing.
+
 ### Creating ETL pipelines
 
 ### Customising ETL pipelines
