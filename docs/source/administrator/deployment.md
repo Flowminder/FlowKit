@@ -54,7 +54,7 @@ Adding a bind mount using `docker-compose` is simple:
 services:
     flowdb:
     ...
-        user: HOST_USER_ID:HOST_GROUP_ID
+        user: <HOST_USER_ID>:<HOST_GROUP_ID>
         volumes:
           - /path/to/store/data/on/host:/var/lib/postgresql/data
           - /path/to/consume/data/from/host:/etl:ro

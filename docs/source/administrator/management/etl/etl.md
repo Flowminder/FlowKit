@@ -38,7 +38,7 @@ Because data comes in many forms, you must specify in SQL a transformation from 
 !!!warning
 
     When specifing a transform, you may not have (or need) all the fields specified in the schema. Any fields which are not included _still need to be specified in the transform_.
-    Field which are not being extracted from your source data should be specified as `NULL::<field_type>`, and fields _must_ be specified in your select statement in the other they are given in the tables below. 
+    Fields which are not being extracted from your source data should be specified as `NULL::<field_type>`, and fields _must_ be specified in your select statement in the order they are given in the tables below. 
     
     For example, a valid SQL extract statement for calls data with _only_ the mandatory fields available:
     
@@ -152,7 +152,7 @@ WHERE event_time >= '{{ ds_nodash }}' AND event_time < '{{ tomorrow_ds_nodash }}
 
 Note the use of the `{{ source_table }}`, which you should provide as an argument to either `create_dag`, or `CreateStagingViewOperator`, and the datetime constraint using the `{{ ds_nodash }}` and  `{{ tomorrow_ds_nodash }}` [Airflow macros](https://airflow.apache.org/docs/stable/macros.html). Remote database extraction in FlowETL works by selecting a time delimited segment of your source table. If your source table is complex, or you will need to use multiple tables to contruct a suitable query, we recommend creating a view in your source database and connecting to the view.
 
-You will also need to be to to connect to the remote database from inside FlowDB's docker container. If the remote database is also running as a container, you can achieve this by creating an overlay network and attaching both containers to it. 
+You will also need to be able to connect to the remote database from inside FlowDB's docker container. If the remote database is also running as a container, you can achieve this by creating an overlay network and attaching both containers to it. 
 
 #### PostgreSQL database
 
