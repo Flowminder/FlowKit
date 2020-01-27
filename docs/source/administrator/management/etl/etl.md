@@ -319,6 +319,8 @@ FlowETL includes a small number of built in QA checks. These checks are not desi
 
 ## Customising ETL pipelines
 
+In addition to the [`create_dag`](../../../../flowetl/flowetl/util/#create_dag) function, FlowETL allows you to compose DAGs in exactly the same way as you would with AirFlow. You can mix and match FlowETL operators with AirFlow's built in ones, or extend FlowETL to add your own. Because the `create_dag` functions returns a DAG, you can also use the returned DAG as a basis for a pipeline and extend it further in the same DAG file. 
+
 ### Adding new QA checks
 
 Adding additional QA checks is as simple as writing an SQL select statement. To add your own custom checks, create a `qa_checks` subfolder in the directory where you are keeping your dags. You can then create your check as a `<check name.sql>` file, and it will automatically get picked up for the next run of the dag.
