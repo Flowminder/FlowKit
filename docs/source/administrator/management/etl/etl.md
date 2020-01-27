@@ -2,11 +2,119 @@ Title: ETL
 
 ## Working with FlowETL
 
-FlowETL manages the loading of CDR data into FlowDB. It is built on [Apache Airflow](https://airflow.apache.org), and a basic understanding of how to use Airflow will be very helpful in making the best use of FlowETL. We recommend you familiarise yourself with the Airflow [tutorial](https://airflow.apache.org/docs/stable/tutorial.html), and [key concepts](https://airflow.apache.org/docs/stable/concepts.html) before continuing.
+FlowETL manages the loading of CDR data into FlowDB. It is built on [Apache Airflow](https://airflow.apache.org), and a basic understanding of how to use Airflow will be very helpful in making the best use of FlowETL. We recommend you familiarise yourself with the Airflow [tutorial](https://airflow.apache.org/docs/stable/tutorial.html), and [key concepts](https://airflow.apache.org/docs/stable/concepts.html) before continuing. You should also have some familiarity with SQL.
 
 ### Creating ETL pipelines
 
-### Customising ETL pipelines
+As with any Airflow-based system, you will need to create dag files to define your ETL pipelines. FlowETL provides a convenient helper function, [`create_dag`](../../../../flowetl/flowetl/util/#create_dag), which automates this for most common usage scenarios. To create a pipeline, you will need to create a new file in the directory which you have bind mounted to the FlowETL container's DAG directory. This file will specify one data pipeline - we recommend creating a separate data pipeline for each CDR variant you expect to encounter.
+
+You can find some example pipelines in the FlowETL section of our [GitHub repository](https://github.com/Flowminder/FlowKit/tree/master/flowetl/mounts/dags).
+
+Because data comes in many forms, you must specify in SQL a transformation from your source data to the correct FlowDB schema for the CDR data type.
+
+!!!warning
+
+    When specifing a transform, you may not have (or need) all the fields specified in the schema. Any fields which are not included _still need to be specified in the transform_.
+    Field which are not being extracted from your source data should be specified as `NULL::<field_type>`, and fields _must_ be specified in your select statement in the other they are given in the tables below. 
+    
+    For example, a valid SQL extract statement for calls data with _only_ the mandatory fields available:
+    
+    ```sql
+    SELECT uuid_generate_v4()::TEXT as id, TRUE as outgoing, event_time::TIMESTAMPTZ as datetime, NULL::NUMERIC as duration,
+    NULL::TEXT as network, msisdn::TEXT as msisdn, NULL::TEXT as msisdn_counterpart, NULL::TEXT as location_id, NULL::TEXT as imsi,
+    NULL::TEXT as imei, NULL::NUMERIC(8) as tac, NULL::NUMERIC as operator_code, NULL::NUMERIC as country_code
+
+    FROM {{ staging_table }}
+    ``` 
+
+#### Calls data
+
+FlowDB uses a two-line format for calls data, similar to double entry bookkeeping. One row records information about the msisdn, location etc. of the _calling_ party, and a second records the equivalent information for the receiver.
+If your data is supplied in _one_-line format, you will need to transform it to two-lines as part of the extract step.
+
+The result of your extract SQL must conform to this schema:
+
+| Field | Type | Optional | Notes |
+| ----- | ---- | -------- | ----- |
+| id | TEXT | ✓ | ID which matches this call to the counterparty record if available |
+| outgoing | BOOLEAN | ✓ | True if this is the initiating record for the call |
+| datetime | TIMESTAMPTZ | ✗ | The time the call began (we recommend storing this in UTC) |
+| duration | NUMERIC | ✓ | The length of time in fractional minutes that call lasted |
+| network | TEXT | ✓ | The network this party was on |
+| msisdn | TEXT | ✗ | The (deidentified) MSISDN of this party's phone |
+| msisdn_counterpart | TEXT | ✓ | The (deidentified) MSISDN of the other party's phone |
+| location_id | TEXT | ✓ | The ID of the location, which should refer to a cell in `infrastructure.cells` |
+| imsi | TEXT | ✓ | The (deidentified) IMSI of this party's phone |
+| imei | TEXT | ✓ | The (deidentified) IMEI of this party's phone |
+| tac | NUMERIC(8) | ✓ | The TAC code of this party's handset |
+| operator_code | NUMERIC | ✓ | The numeric code of this party's operator |
+| country_code | NUMERIC | ✓ | The numeric code of this party's country |
+
+#### SMS data
+
+As with calls, FlowDB uses a two-line format for sms data. One row records information about the msisdn, location etc. of the _sender_ , and a second records the equivalent information for any receivers.
+
+The result of your extract SQL must conform to this schema:
+
+| Field | Type | Optional | Notes |
+| ----- | ---- | -------- | ----- |
+| id | TEXT | ✓ | ID which matches this sms to the counterparty record if available |
+| outgoing | BOOLEAN | ✓ | True if this is the initiating record for the sms |
+| datetime | TIMESTAMPTZ | ✗ | The time the sms was sent (we recommend storing this in UTC) |
+| network | TEXT | ✓ | The network this party was on |
+| msisdn | TEXT | ✗ | The (deidentified) MSISDN of this party's phone |
+| msisdn_counterpart | TEXT | ✓ | The (deidentified) MSISDN of the other party's phone |
+| location_id | TEXT | ✓ | The ID of the cell which handled this sms, which should refer to a cell in `infrastructure.cells` |
+| imsi | TEXT | ✓ | The (deidentified) IMSI of this party's phone |
+| imei | TEXT | ✓ | The (deidentified) IMEI of this party's phone |
+| tac | NUMERIC(8) | ✓ | The TAC code of this party's handset |
+| operator_code | NUMERIC | ✓ | The numeric code of this party's operator |
+| country_code | NUMERIC | ✓ | The numeric code of this party's country |
+
+#### Mobile data session (MDS) data
+
+Because there is no counterparty for MDS data, FlowDB uses a one-line format for this data type, with the following schema:
+
+| Field | Type | Optional | Notes |
+| ----- | ---- | -------- | ----- |
+| id | TEXT | ✓ | ID which matches this call to the counterparty record if available |
+| datetime | TIMESTAMPTZ | ✗ | The time the data session began (we recommend storing this in UTC) |
+| duration | NUMERIC | ✓ | The length of time in fractional minutes that data session lasted |
+| volume_total | NUMERIC | ✓ | Data volume transferred in MB |
+| volume_upload | NUMERIC | ✓ | Data volume sent in MB |
+| volume_download | NUMERIC | ✓ | Data volume downloaded in MB |
+| network | TEXT | ✓ | The network this party was on |
+| msisdn | TEXT | ✗ | The (deidentified) MSISDN of this party's phone |
+| location_id | TEXT | ✓ | The ID of the cell which connected this session, which should refer to a cell in `infrastructure.cells` |
+| imsi | TEXT | ✓ | The (deidentified) IMSI of the phone |
+| imei | TEXT | ✓ | The (deidentified) IMEI of the phone |
+| tac | NUMERIC(8) | ✓ | The TAC code of the handset |
+| operator_code | NUMERIC | ✓ | The numeric code of the operator |
+| country_code | NUMERIC | ✓ | The numeric code of the country |
+
+#### Topup data
+
+As with MDS data, FlowDB uses a one-line format for topups, with the following schema:
+
+| Field | Type | Optional | Notes |
+| ----- | ---- | -------- | ----- |
+| id | TEXT | ✓ | ID which matches this call to the counterparty record if available |
+| datetime | TIMESTAMPTZ | ✗ | The time the data session began (we recommend storing this in UTC) |
+| type | TEXT | ✓ | Kind of topup | 
+| recharge_amount | NUMERIC | ✓ | Cost of topup | 
+| airtime_fee | NUMERIC | ✓ |  | 
+| tax_and_fee | NUMERIC | ✓ |   | 
+| pre_event_balance | NUMERIC | ✓ |  Balance before topup applied | 
+| post_event_balance | NUMERIC | ✓ | Balance after topup applied | 
+| msisdn | TEXT | ✗ | The (deidentified) MSISDN of this party's phone |
+| location_id | TEXT | ✓ | The ID of the cell which connected this session, which should refer to a cell in `infrastructure.cells` |
+| imsi | TEXT | ✓ | The (deidentified) IMSI of the phone |
+| imei | TEXT | ✓ | The (deidentified) IMEI of the phone |
+| tac | NUMERIC(8) | ✓ | The TAC code of the handset |
+| operator_code | NUMERIC | ✓ | The numeric code of the operator |
+| country_code | NUMERIC | ✓ | The numeric code of the country |
+
+FlowETL supports a variety of data sources, which are covered in more detail below.
 
 ## Connecting to different CDR data sources
 
@@ -25,6 +133,10 @@ You will also need to specify the names and [types](https://www.postgresql.org/d
 ## Loading GIS data
 
 ## Data QA checks
+
+FlowETL includes a small number of built in QA checks. These checks are not designed to pass or fail newly arriving data, but to provide you and your analysts with important caveats and metadata about the data you are working with. QA checks will run automatically if you are using the [`create_dag`](../../../../flowetl/flowetl/util/#create_dag) function, and their results will be available inside FlowDB in the `etl.post_etl_queries` table to both superusers, and the `flowmachine` role. If you are manually composing a DAG, you can use the [`get_qa_checks`](../../../../flowetl/flowetl/util/#get_qa_checks) function to return a list of QA check tasks, which can be scheduled in relation to the other tasks in the dag.
+
+## Customising ETL pipelines
 
 ### Adding new QA checks
 
