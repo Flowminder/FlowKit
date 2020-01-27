@@ -6,6 +6,8 @@ FlowETL manages the loading of CDR data into FlowDB. It is built on [Apache Airf
 
 To work with FlowETL, it may be helpful to install the [flowetl](https://pypi.org/project/flowetl/) module into your local Python environment. This is not a prerequisite, but can be helpful when writing pipelines.
 
+Once your FlowETL deployment is running, you can monitor the progress of your ETL tasks using the web interface, and newly added or changed pipeline definitions will be automatically picked up. 
+
 ### Macros
 
 To help you write the SQL you'll need to create your data pipeline, FlowETL supplies several macros, in additional to those [provided by Airflow](https://airflow.apache.org/docs/stable/macros.html). These macros are filled in when a task is run.

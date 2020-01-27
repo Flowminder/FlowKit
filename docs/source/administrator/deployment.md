@@ -122,6 +122,8 @@ You can find a sample FlowDB stack file [here](https://github.com/Flowminder/Flo
 | FLOWDB_DATA_DIR | Path on the host to a directory owned by FLOWDB_HOST_USER_ID where FlowDB will store data and write logs |
 | FLOWDB_ETL_DIR | Path on the host to a directory readable by FLOWDB_HOST_USER_ID from which data may be loaded, mounted inside the container at /etl |
 
+Once the FlowDB service has started, you will be able to access it using `psql` as with any standard PostgreSQL database.
+
 ###### FlowETL
 
 You can find a sample FlowETL stack file [here](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowetl.yml) which should be used with the [FlowDB stack file](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowdb.yml). To use it, you should first create the required secrets, and additionally set the following environment variables:
@@ -131,7 +133,9 @@ You can find a sample FlowETL stack file [here](https://github.com/Flowminder/Fl
 | FLOWETL_HOST_PORT | Localhost port on which the FlowETL airflow web interface will be available | 
 | FLOWETL_HOST_USER_ID | uid of the host user for FlowETL |
 | FLOWETL_HOST_GROUP_ID | gid of the host user for FlowETL |
-| FLOWETL_HOST_DAG_DIR | Path on the host to a directory where dag files will be stored | 
+| FLOWETL_HOST_DAG_DIR | Path on the host to a directory where dag files will be stored |
+
+Once your stack has come up, you will be able to access FlowETL's web user interface which allows you to monitor the progress of ETL tasks. 
 
 ### FlowDB, FlowETL and FlowMachine
 
