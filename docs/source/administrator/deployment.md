@@ -302,7 +302,7 @@ and optionally set the `AUTOFLOW_LOG_LEVEL` environment variable (default 'ERROR
 #### Demonstrating successful deployment
 
 Once FlowKit installation is complete, you can verify that the system has been successfully set up by visiting `http<s>://<flowapi_url>:<flowapi_port>/api/0/spec/redoc`. Once all the services have come up, you will be able to view the interactive API specification.
-We also recommend running the provided [worked examples](analyst/worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
+We also recommend running the provided [worked examples](../../analyst/worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
 
 ## Additional support
 
