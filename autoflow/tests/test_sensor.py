@@ -58,7 +58,9 @@ def test_get_available_dates(monkeypatch, test_logger):
         logger=test_logger
     ):
         dates = get_available_dates.run()
-    connect_mock.assert_called_once_with(url="DUMMY_URL", token="DUMMY_TOKEN")
+    connect_mock.assert_called_once_with(
+        ssl_certificate=None, url="DUMMY_URL", token="DUMMY_TOKEN"
+    )
     assert dates == [
         pendulum.date(2016, 1, 1),
         pendulum.date(2016, 1, 2),
