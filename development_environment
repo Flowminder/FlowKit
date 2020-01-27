@@ -168,3 +168,5 @@ AUTOFLOW_DB_URI=sqlite:////tmp/test.db
 #AUTOFLOW_DB_PASSWORD
 # FlowAPI token
 #FLOWAPI_TOKEN
+# Path to SSL certificate for FlowAPI
+#SSL_CERTIFICATE_FILE
