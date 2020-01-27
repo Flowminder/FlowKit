@@ -29,7 +29,7 @@ As with any Airflow-based system, you will need to create dag files to define yo
 
 You can find some example pipelines in the FlowETL section of our [GitHub repository](https://github.com/Flowminder/FlowKit/tree/master/flowetl/mounts/dags).
 
-Because data comes in many forms, you must specify in SQL a transformation from your source data to the correct FlowDB schema for the CDR data type.
+Because data comes in many forms, you must specify in SQL a transformation from your source data to the correct FlowDB schema for the CDR data type. You will need to write this transformation in the form of a `SELECT` statement, using the `{{ staging_table }}` macro as the source table.
 
 !!!warning
 
@@ -137,17 +137,55 @@ FlowETL supports a variety of data sources, which are covered in more detail bel
 
 ## Connecting to different CDR data sources
 
-### Remote PostgreSQL database
+### Remote databases
 
-### Remote Oracle database
+Extracting data from a remote database has significant benefits, because the source database provides guarantees about the integrity of the data in terms of data types, nullable values and so on. FlowDB uses PostgreSQL's foreign data wrapper mechanism to connect to external databases. In general, to use a remote database table as a source you should create a persistent foreign table that will contain the data (instructions of how to do this for the databases supported by FlowETL are given below), then you will need to provide an SQL snippet to use for extraction. For example, to extract three fields:
 
-### Remote MSSQL database
+```sql
+SELECT event_time, msisdn, cell_id FROM {{ source_table }}
+WHERE event_time >= '{{ ds_nodash }}' AND event_time < '{{ tomorrow_ds_nodash }}';
+```
+
+Note the use of the `{{ source_table }}`, which you should provide as an argument to either `create_dag`, or `CreateStagingViewOperator`, and the datetime constraint using the `{{ ds_nodash }}` and  `{{ tomorrow_ds_nodash }}` [Airflow macros](https://airflow.apache.org/docs/stable/macros.html). Remote database extraction in FlowETL works by selecting a time delimited segment of your source table. If your source table is complex, or you will need to use multiple tables to contruct a suitable query, we recommend creating a view in your source database and connecting to the view. 
+
+#### PostgreSQL database
+
+
+
+#### Oracle database
+
+FlowDB supports the [oracle_fdw](https://github.com/laurenz/oracle_fdw) connector, but we do not distribute a container which includes it to conform with Oracle's licensing. You will need to supply Oracle client binaries, and build the container by downloading the [Dockerfile and script](https://github.com/Flowminder/FlowKit/tree/master/flowdb/oracle_fdw) and running:
+
+```bash
+docker build --build-arg ORACLE_BINARY_SOURCE=<oracle_binary_url> \
+              --build-arg CODE_VERSION=latest -t flowdb_with_oracle
+```
+
+Once you have built the image, you can use it in place of standard FlowDB.
+
+To connect to Oracle, you will need to access FlowDB as the `flowdb` user and run:
+
+```sql
+CREATE SERVER oradb FOREIGN DATA WRAPPER oracle_fdw
+          OPTIONS (dbserver '//<oracle_server>:<oracle_port>/<oracle_db>');
+CREATE USER MAPPING FOR flowdb SERVER oradb
+          OPTIONS (user '<oracle_user>', password '<oracle_password>');
+CREATE FOREIGN TABLE oracle_source_table (
+          <fields>
+       ) SERVER oradb OPTIONS (schema '<ORAUSER>', table '<ORATAB>');
+```
+
+Further instructions on use of the wrapper are available from the projects [Github repo](https://github.com/laurenz/oracle_fdw).
+
+#### MSSQL database
 
 ### CSV Files
 
 FlowETL can also be used to load data from files - useful if you're receiving data as a daily file dump. To load from a file, you'll need to ensure that the files have a predictable date based name, for example `calls_data_2019_05_01.csv.gz`, which you can capture using a ([templated](https://airflow.apache.org/docs/stable/concepts.html#id1)) string. The filename pattern should include the absolute path to the files from _inside_ your FlowDB container, for example a complete pattern to capture files with names like `calls_data_2019-05-01.csv.gz` in the `/etl/calls` data root might be `/etl/{{ params.cdr_type }}/{{ params.cdr_type }}_data_{{ ds }}`. This uses a combination of Airflow's [built-in macros](https://airflow.apache.org/docs/stable/macros.html#default-variables), and the `{{ params.cdr_type }}` macro supplied by FlowETL.
 
 You will also need to specify the names and [types](https://www.postgresql.org/docs/current/datatype.html) of the fields your CSV will contain as a dict. These will be used to create a [foreign data wrapper](https://www.postgresql.org/docs/current/file-fdw.html) which allows FlowDB to treat your data file like a table, and helps ensure data integrity. You may optionally specify a program to be run to read your data file, for example `zcat` if your source data is compressed. You can either pass these arguments to the [`create_dag`](../../../../flowetl/flowetl/util/#create_dag) function, or use [`CreateForeignStagingTableOperator`](../../../../flowetl/flowetl/operators/create_foreign_staging_table_operator) directly if composing your DAG manually. If you are composing the DAG manually, you will need to use the `ExtractFromForeignTableOperator` to ensure that FlowETL correctly handles cleanup of intermediary ETL steps.
+
+## Loading Infrastructure data
 
 ## Loading GIS data
 
