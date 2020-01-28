@@ -220,7 +220,6 @@ import pytest
             {
                 "locations": {
                     "query_kind": "modal_location",
-                    "aggregation_unit": "admin3",
                     "locations": [
                         {
                             "query_kind": "daily_location",
@@ -253,7 +252,6 @@ import pytest
                     "aggregation_unit": "admin3",
                     "method": "last",
                 },
-                "aggregation_unit": "admin3",
             },
         ),
         (
@@ -261,7 +259,6 @@ import pytest
             {
                 "from_location": {
                     "query_kind": "modal_location",
-                    "aggregation_unit": "admin3",
                     "locations": [
                         {
                             "query_kind": "daily_location",
@@ -283,7 +280,6 @@ import pytest
                     "aggregation_unit": "admin3",
                     "method": "last",
                 },
-                "aggregation_unit": "admin3",
             },
         ),
         (
