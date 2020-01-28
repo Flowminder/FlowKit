@@ -204,7 +204,7 @@ def expand_scopes(*, scopes: List[str]) -> str:
     for scope in scopes:
         parts = scope.split("&")
         ps = (x.split(",") for x in parts)
-        yield from ("&".join(x) for x in product(*ps))
+        yield from (set(x) for x in product(*ps))
 
 
 @functools.singledispatch
