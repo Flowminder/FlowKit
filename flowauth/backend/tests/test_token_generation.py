@@ -26,7 +26,7 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
     )
     assert 401 == response.status_code
     assert (
-        b"You do not have access to run:DUMMY_ROUTE_A on DUMMY_SERVER_A"
+        b"You do not have access to run&DUMMY_ROUTE_A on DUMMY_SERVER_A"
         in response.get_data()
     )
 
