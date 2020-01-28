@@ -5,8 +5,8 @@
 from datetime import timedelta
 
 import jwt
-import pytest
 
+import pytest
 from flowkit_jwt_generator.jwt import generate_token, squashed_scopes
 
 
@@ -14,24 +14,26 @@ from flowkit_jwt_generator.jwt import generate_token, squashed_scopes
     "scopes, expected",
     [
         (["SCOPE"], ["SCOPE"]),
-        (["get_result:SCOPE", "run:SCOPE"], ["get_result,run:SCOPE"]),
-        (["get_result:SCOPE:foo", "run:SCOPE"], ["get_result:SCOPE:foo", "run:SCOPE"]),
+        (["get_result&SCOPE", "run&SCOPE"], ["get_result,run&SCOPE"]),
+        (["get_result&SCOPE.foo", "run&SCOPE"], ["get_result&SCOPE.foo", "run&SCOPE"]),
         (
             [
-                "get_result:SCOPE:aggregation_unit:foo",
-                "get_result:SCOPE:aggregation_unit:bar",
-                "run:SCOPE:aggregation_unit:bar",
-                "run:SCOPE:aggregation_unit:foo",
+                "get_result&SCOPE.aggregation_unit.foo",
+                "get_result&SCOPE.aggregation_unit.bar",
+                "run&SCOPE.aggregation_unit.bar",
+                "run&SCOPE.aggregation_unit.foo",
             ],
-            ["get_result,run:SCOPE:aggregation_unit:bar,foo"],
+            ["get_result,run&SCOPE.aggregation_unit.bar,SCOPE.aggregation_unit.foo"],
         ),
         (
             [
-                "run:SCOPE:aggregation_unit:bar",
-                "run:SCOPE:aggregation_unit:foo",
-                "run:SCOPE:aggregation_unit:baz",
+                "run&SCOPE.aggregation_unit.bar",
+                "run&SCOPE.aggregation_unit.foo",
+                "run&SCOPE.aggregation_unit.baz",
             ],
-            ["run:SCOPE:aggregation_unit:bar,baz,foo"],
+            [
+                "run&SCOPE.aggregation_unit.bar,SCOPE.aggregation_unit.baz,SCOPE.aggregation_unit.foo"
+            ],
         ),
     ],
 )

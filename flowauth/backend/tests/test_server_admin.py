@@ -1,10 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# file, You can obtain one at http.//mozilla.org/MPL/2.0/.
 import datetime
 
-import pytest
 from werkzeug.http import http_date
+
+import pytest
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -207,8 +208,8 @@ def test_edit_server_capabilities(client, auth):
         "/admin/servers/1/capabilities",
         headers={"X-CSRF-Token": csrf_cookie},
         json={
-            "run:DUMMY_ROUTE_B:aggregation_unit:admin3": True,
-            "run:DUMMY_ROUTE_B:aggregation_unit:admin2": False,
+            "run&DUMMY_ROUTE_B.aggregation_unit.admin3": True,
+            "run&DUMMY_ROUTE_B.aggregation_unit.admin2": False,
         },
     )
     assert 200 == response.status_code
@@ -217,8 +218,8 @@ def test_edit_server_capabilities(client, auth):
     )
     assert 200 == response.status_code
     new_routes = response.get_json()
-    assert new_routes["run:DUMMY_ROUTE_B:aggregation_unit:admin3"]
-    assert not new_routes["run:DUMMY_ROUTE_B:aggregation_unit:admin2"]
+    assert new_routes["run&DUMMY_ROUTE_B.aggregation_unit.admin3"]
+    assert not new_routes["run&DUMMY_ROUTE_B.aggregation_unit.admin2"]
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -266,22 +267,22 @@ def test_group_server_rights(client, auth, test_admin, test_group):
     assert 200 == response.status_code
     json = response.get_json()
     assert [
-        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin0",
-        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin1",
-        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin2",
-        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin3",
-        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin0",
-        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin1",
-        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin2",
-        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin3",
-        "run:DUMMY_ROUTE_A:aggregation_unit:admin0",
-        "run:DUMMY_ROUTE_A:aggregation_unit:admin1",
-        "run:DUMMY_ROUTE_A:aggregation_unit:admin2",
-        "run:DUMMY_ROUTE_A:aggregation_unit:admin3",
-        "run:DUMMY_ROUTE_B:aggregation_unit:admin0",
-        "run:DUMMY_ROUTE_B:aggregation_unit:admin1",
-        "run:DUMMY_ROUTE_B:aggregation_unit:admin2",
-        "run:DUMMY_ROUTE_B:aggregation_unit:admin3",
+        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin0",
+        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin1",
+        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin2",
+        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin3",
+        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin0",
+        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin1",
+        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin2",
+        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin3",
+        "run&DUMMY_ROUTE_A.aggregation_unit.admin0",
+        "run&DUMMY_ROUTE_A.aggregation_unit.admin1",
+        "run&DUMMY_ROUTE_A.aggregation_unit.admin2",
+        "run&DUMMY_ROUTE_A.aggregation_unit.admin3",
+        "run&DUMMY_ROUTE_B.aggregation_unit.admin0",
+        "run&DUMMY_ROUTE_B.aggregation_unit.admin1",
+        "run&DUMMY_ROUTE_B.aggregation_unit.admin2",
+        "run&DUMMY_ROUTE_B.aggregation_unit.admin3",
     ] == json
 
 
@@ -298,7 +299,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
                     "id": 1,
                     "max_life": 1,
                     "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"],
+                    "rights": ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"],
                 }
             ]
         },
@@ -312,7 +313,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
 
     assert 200 == response.status_code
     json = response.get_json()
-    assert ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"] == json
+    assert ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"] == json
 
     response = client.get(
         f"/admin/groups/{test_group.id}/servers/1/time_limits",
@@ -335,7 +336,7 @@ def test_edit_group_server_rights_rejected_for_max_life(client, auth):
                     "id": 1,
                     "max_life": 99,
                     "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"],
+                    "rights": ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"],
                 }
             ]
         },
@@ -360,7 +361,7 @@ def test_edit_group_server_rights_rejected_for_expiry(client, auth):
                     "id": 1,
                     "max_life": 1,
                     "latest_expiry": "2040-01-01T00:00:00.0Z",
-                    "rights": ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"],
+                    "rights": ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"],
                 }
             ]
         },
@@ -388,7 +389,7 @@ def test_edit_group_server_rights_rejected_for_rights(
                     "id": 1,
                     "max_life": 1,
                     "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": ["poll:DUMMY_ROUTE_A:aggregation_unit:admin0"],
+                    "rights": ["poll.DUMMY_ROUTE_A.aggregation_unit.admin0"],
                 }
             ]
         },
@@ -396,5 +397,5 @@ def test_edit_group_server_rights_rejected_for_rights(
     assert 400 == response.status_code
     assert {
         "code": 400,
-        "message": "poll:DUMMY_ROUTE_A:aggregation_unit:admin0 not enabled for this server.",
+        "message": "poll.DUMMY_ROUTE_A.aggregation_unit.admin0 not enabled for this server.",
     } == response.get_json()

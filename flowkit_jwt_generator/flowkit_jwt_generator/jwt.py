@@ -2,20 +2,21 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import base64
-import datetime
-
-import uuid
 import binascii
+import datetime
+import uuid
 from itertools import takewhile
 from json import JSONEncoder
-from typing import List, Union, Tuple, Optional, Iterable
+from typing import Iterable, List, Optional, Tuple, Union
+
 import click
-import jwt
 import requests
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+
+import jwt
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because
@@ -105,16 +106,16 @@ def squash(xs, ix=0):
     """
     Squashes a list of scope strings by combining them where possible.
 
-    Given two strings of the form <action>:<query_kind>:<arg_name>:<arg_val> that differ only
-    in <action>, will yield <action_a>,<action_b>:<query_kind>:<arg_name>:<arg_val>.
+    Given two strings of the form <action>&<query_kind>.<arg_name>.<arg_val> that differ only
+    in <action>, will yield <action_a>,<action_b>&<query_kind>.<arg_name>.<arg_val>.
 
-    Repeatedly squashes, then if ix < the greatest number of : separated elements in the result, squashes again
-    using the next : separated element.
+    Repeatedly squashes, then if ix < the greatest number of & separated elements in the result, squashes again
+    using the next & separated element.
 
     Parameters
     ----------
     xs : list of str
-        List of scope strings of the form <action>:<query_kind>:<arg_name>:<arg_val>
+        List of scope strings of the form <action>&<query_kind>.<arg_name>.<arg_val>
     ix : int, default 0
 
 
@@ -127,12 +128,12 @@ def squash(xs, ix=0):
     sq = {}
     can_squash = False
     for x in xs:
-        s = x.split(":")[ix + 1 :]
-        hs = x.split(":")[:ix]
-        dd = sq.setdefault((":".join(hs), ":".join(s)), dict())
+        s = x.split("&")[ix + 1 :]
+        hs = x.split("&")[:ix]
+        dd = sq.setdefault(("&".join(hs), "&".join(s)), dict())
         ll = dd.setdefault("h", set())
         try:
-            h = x.split(":")[ix]
+            h = x.split("&")[ix]
             ll.add(h)
             can_squash = True
         except IndexError:
@@ -147,7 +148,7 @@ def squash(xs, ix=0):
             parts.append(",".join(sorted(v["h"])))
         if len(k[1]) > 0:
             parts.append(k[1])
-        ll.add(":".join(parts))
+        ll.add("&".join(parts))
     res = list(sorted(ll))
     if can_squash:
         return squash(res, ix + 1)
@@ -172,7 +173,7 @@ def squashed_scopes(scopes: List[str]) -> Iterable[str]:
         Merged scope string
 
     """
-    yield from scopes  # squash(scopes)
+    yield from squash(scopes)
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because

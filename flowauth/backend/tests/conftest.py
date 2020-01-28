@@ -1,29 +1,28 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from collections import namedtuple
 from time import sleep
 
 from functools import partial
 
 import datetime
+from collections import namedtuple
 from itertools import product
 
 import pyotp
 import pytest
-
 from flowauth import (
-    create_app,
-    db,
-    User,
     Group,
-    Server,
-    ServerCapability,
     GroupServerPermission,
     GroupServerTokenLimits,
+    Server,
+    ServerCapability,
     Token,
     TwoFactorAuth,
     TwoFactorBackup,
+    User,
+    create_app,
+    db,
 )
 from flowauth.user_settings import generate_backup_codes
 
@@ -182,14 +181,14 @@ def test_data(app, test_admin, test_user, test_group):
             (f"admin{x}" for x in range(4)),
         ):
             sc_a = ServerCapability(
-                capability=f"{action}:{cap}:aggregation_unit:{admin_unit}",
+                capability=f"{action}&{cap}.aggregation_unit.{admin_unit}",
                 server=dummy_server_a,
                 enabled=True,
             )
             scs.append(sc_a)
             db.session.add(sc_a)
             sc_b = ServerCapability(
-                capability=f"{action}:{cap}:aggregation_unit:{admin_unit}",
+                capability=f"{action}&{cap}.aggregation_unit.{admin_unit}",
                 server=dummy_server_b,
                 enabled=True,
             )

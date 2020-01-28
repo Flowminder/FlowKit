@@ -1,15 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 from os import environ
 
-import datetime
+import jwt
 
 import pytest
-import jwt
 from flowauth.token_management import generate_token as flowauth_generate_token
 from flowkit_jwt_generator import generate_token as jwt_generator_generate_token
-
 from pytest import approx
 
 
@@ -42,8 +41,8 @@ def test_token_generation(client, auth, app, test_user, public_key):
         "name": "DUMMY_TOKEN",
         "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "claims": [
-            "run:DUMMY_ROUTE_A:aggregation_unit:admin0",
-            "get_result:DUMMY_ROUTE_A:aggregation_unit:admin0",
+            "run&DUMMY_ROUTE_A.aggregation_unit.admin0",
+            "get_result&DUMMY_ROUTE_A.aggregation_unit.admin0",
         ],
     }
     response = client.post(
@@ -57,7 +56,7 @@ def test_token_generation(client, auth, app, test_user, public_key):
         algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
-    assert ["get_result,run:DUMMY_ROUTE_A:aggregation_unit:admin0"] == decoded_token[
+    assert ["get_result,run&DUMMY_ROUTE_A.aggregation_unit.admin0"] == decoded_token[
         "user_claims"
     ]
     assert "TEST_USER" == decoded_token["identity"]
@@ -74,7 +73,7 @@ def test_token_rejected_for_expiry(client, auth, app, test_user):
     token_eq = {
         "name": "DUMMY_TOKEN",
         "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-        "claims": ["run:DUMMY_ROUTE_A:aggregation_unit:admin0"],
+        "claims": ["run&DUMMY_ROUTE_A.aggregation_unit.admin0"],
     }
     response = client.post(
         "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
@@ -89,18 +88,18 @@ def test_token_rejected_for_expiry(client, auth, app, test_user):
 
 def test_against_general_generator(app, public_key):
     """Test that the token generator in FlowAuth and the one in flowkit-jwt-generator produce same results."""
+
+    claims = [
+        "run&daily_location.aggregation_unit.admin3",
+        "run&daily_location.aggregation_unit.admin2",
+    ]
     flowauth_token = jwt.decode(
         flowauth_generate_token(
             username="TEST_USER",
             private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
             lifetime=datetime.timedelta(5),
             flowapi_identifier="TEST_SERVER",
-            claims={
-                "daily_location": {
-                    "permissions": {"run": True},
-                    "spatial_aggregation": ["admin3"],
-                }
-            },
+            claims=claims,
         ),
         key=public_key,
         audience="TEST_SERVER",
@@ -111,12 +110,7 @@ def test_against_general_generator(app, public_key):
             private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
             lifetime=datetime.timedelta(5),
             flowapi_identifier="TEST_SERVER",
-            claims={
-                "daily_location": {
-                    "permissions": {"run": True},
-                    "spatial_aggregation": ["admin3"],
-                }
-            },
+            claims=claims,
         ),
         key=public_key,
         audience="TEST_SERVER",
