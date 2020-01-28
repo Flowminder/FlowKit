@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7d78fdaa1ac1cca66f1720215da150d549964ca6a5c94193be77db8c9d5e645e"
+            "sha256": "d8806dcab3d0ccc835410a8ebf2da40890e5203cf480696b3cc2ce9bd808738b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -346,12 +346,27 @@
             ],
             "version": "==1.4.3"
         },
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
+        },
         "approvaltests": {
             "hashes": [
                 "sha256:77bcfa60f975a48a378c96f61749d7943ecc27d486394896aa8536d93105d556"
             ],
             "index": "pypi",
             "version": "==0.2.6"
+        },
+        "argh": {
+            "hashes": [
+                "sha256:a9b3aaa1904eeb78e32394cd46c6f37ac0fb4af6dc488daa58971bdc7d7fcaf3",
+                "sha256:e9535b8c84dc9571a48999094fda7f33e63c3f1b74f3e5f3ac0105a58405bb65"
+            ],
+            "version": "==0.26.2"
         },
         "aspy.yaml": {
             "hashes": [
@@ -1062,10 +1077,10 @@
         },
         "watchdog": {
             "hashes": [
-                "sha256:8e800496cdfb921cfdc62b58a11966d0d2203a35dc005b4b5b8e1ab3097b2eb5"
+                "sha256:965f658d0732de3188211932aeb0bb457587f04f63ab4c1e33eab878e9de961d"
             ],
             "index": "pypi",
-            "version": "==0.10.0"
+            "version": "==0.9.0"
         },
         "wcwidth": {
             "hashes": [
