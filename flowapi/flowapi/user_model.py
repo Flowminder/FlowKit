@@ -36,7 +36,7 @@ class UserObject:
 
         try:
             scopes = set(query_to_scope_list(query_json))
-        except:
+        except Exception as exc:
             raise BadQueryError
         if "query_kind" not in query_json:
             raise MissingQueryKindError

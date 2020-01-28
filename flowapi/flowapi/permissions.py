@@ -209,6 +209,11 @@ def expand_scopes(*, scopes: List[str]) -> str:
 
 @functools.singledispatch
 def query_to_scope_list(tree, paths=None, keep=["aggregation_unit"]):
+    yield from ()
+
+
+@query_to_scope_list.register
+def _(tree: list, paths=None, keep=["aggregation_unit"]):
     if paths is None:
         paths = tuple()
     for v in tree:
@@ -233,7 +238,8 @@ def _(tree: dict, paths=None, keep=["aggregation_unit"]):
             yield ".".join((*paths, k, v))
             yielded_any = True
         elif isinstance(v, (dict, list)):
-            yield from query_to_scope_list(v, (*paths, k), keep=keep)
-            yielded_any = True
+            for t in query_to_scope_list(v, (*paths, k), keep=keep):
+                yield t
+                yielded_any = True
     if not yielded_any and "query_kind" in tree:
         yield ".".join(paths)
