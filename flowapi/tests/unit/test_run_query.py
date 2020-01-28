@@ -37,10 +37,7 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
 
 @pytest.mark.parametrize(
     "query, expected_msg",
-    [
-        ({"date": "2016-01-01"}, "Query kind must be specified when running a query."),
-        (["DUMMY_QUERY"], "Could not parse query spec."),
-    ],
+    [({"date": "2016-01-01"}, "Query kind must be specified when running a query."),],
 )
 @pytest.mark.asyncio
 async def test_post_query_error(

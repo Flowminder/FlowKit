@@ -40,6 +40,7 @@ class UserObject:
             raise BadQueryError
         if "query_kind" not in query_json:
             raise MissingQueryKindError
+
         for action in actions:
             if {*scopes, action} in self.scopes:
                 return True
