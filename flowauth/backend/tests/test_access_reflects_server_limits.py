@@ -1,4 +1,13 @@
-from flowauth import Group, GroupServerPermission, GroupServerTokenLimits, Server, ServerCapability, User, datetime, db
+from flowauth import (
+    Group,
+    GroupServerPermission,
+    GroupServerTokenLimits,
+    Server,
+    ServerCapability,
+    User,
+    datetime,
+    db,
+)
 
 
 def test_disallow_right_on_server_disallows_for_group(app):
