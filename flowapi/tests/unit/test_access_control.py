@@ -150,10 +150,10 @@ async def test_granular_json_access(
 @pytest.mark.parametrize(
     "claims",
     [
-        "get_result:{query_kind}",
-        "{query_kind}:aggregation_unit:DUMMY_AGGREGATION",
-        "get_result:{query_kind}:aggregation_unit:A_DIFFERENT_AGGREGATION",
-        "run:{query_kind}:aggregation_unit:DUMMY_AGGREGATION",
+        "get_result&{query_kind}",
+        "{query_kind}:aggregation_unit.DUMMY_AGGREGATION",
+        "get_result&{query_kind}:aggregation_unit.A_DIFFERENT_AGGREGATION",
+        "run&{query_kind}:aggregation_unit.DUMMY_AGGREGATION",
     ],
 )
 async def test_no_result_access_without_both_claims(

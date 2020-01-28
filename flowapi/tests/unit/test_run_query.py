@@ -50,7 +50,7 @@ async def test_post_query_error(
     Test that correct status of 400 is returned for a broken query.
     """
 
-    token = access_token_builder([f"run:spatial_aggregate"])
+    token = access_token_builder([f"run&spatial_aggregate"])
     dummy_zmq_server.return_value = ZMQReply(status="error", msg="Broken query")
     response = await app.client.post(
         f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=query

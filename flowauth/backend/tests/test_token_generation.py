@@ -20,7 +20,7 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
     expiry = (datetime.datetime.now() + datetime.timedelta(minutes=2)).strftime(
         "%Y-%m-%dT%H:%M:%S.%fZ"
     )
-    token_eq = {"name": "TEST_TOKEN", "expiry": expiry, "claims": ["run:DUMMY_ROUTE_A"]}
+    token_eq = {"name": "TEST_TOKEN", "expiry": expiry, "claims": ["run&DUMMY_ROUTE_A"]}
     response = client.post(
         "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )

@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import pytest
+import flowclient
 from flowclient.client import get_result
 
-import flowclient
+import pytest
 
 
 @pytest.mark.parametrize(
@@ -655,7 +655,7 @@ def test_get_geography(access_token_builder, flowapi_url):
     """
     con = flowclient.Connection(
         url=flowapi_url,
-        token=access_token_builder(["get_result:geography:aggregation_unit:admin3"]),
+        token=access_token_builder(["get_result&geography.aggregation_unit.admin3"]),
     )
     result_geojson = flowclient.get_geography(connection=con, aggregation_unit="admin3")
     assert "FeatureCollection" == result_geojson["type"]
@@ -735,7 +735,7 @@ def test_get_available_dates(
     Test that queries can be run, and return the expected JSON result.
     """
     con = flowclient.Connection(
-        url=flowapi_url, token=access_token_builder(["get_result:available_dates"]),
+        url=flowapi_url, token=access_token_builder(["get_result&available_dates"]),
     )
     result = flowclient.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result

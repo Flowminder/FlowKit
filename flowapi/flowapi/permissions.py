@@ -159,7 +159,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     Constructs and yields query scopes of the form:
     <action>:<query_kind>:<arg_name>:<arg_val>
     where arg_val may be a query kind, or the name of an aggregation unit if applicable, and <action> is run or get_result.
-    Additionally yields the "get_result:available_dates" scope.
+    Additionally yields the "get_result&available_dates" scope.
 
     One scope is yielded for each viable query structure, so for queries which contain two child queries
     five scopes are yielded. If that query has 3 possible aggregation units, then 13 scopes are yielded altogether.
@@ -177,7 +177,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     Examples
     --------
     >>>list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
-    ["get_result:dummy", "run:dummy", "get_result:available_dates"],
+    ["get_result&dummy", "run&dummy", "get_result&available_dates"],
     """
     yield from per_query_scopes(
         queries=ResolvingParser(spec_string=dumps(schema)).specification["components"][

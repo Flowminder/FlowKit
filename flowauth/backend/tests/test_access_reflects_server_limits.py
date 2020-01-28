@@ -1,13 +1,4 @@
-from flowauth import (
-    User,
-    Group,
-    Server,
-    datetime,
-    ServerCapability,
-    GroupServerPermission,
-    GroupServerTokenLimits,
-    db,
-)
+from flowauth import Group, GroupServerPermission, GroupServerTokenLimits, Server, ServerCapability, User, datetime, db
 
 
 def test_disallow_right_on_server_disallows_for_group(app):
@@ -28,7 +19,7 @@ def test_disallow_right_on_server_disallows_for_group(app):
         )
         session.add(server)
         server_capability = ServerCapability(
-            server=server, capability="get_result:DUMMY_ROUTE", enabled=True
+            server=server, capability="get_result&DUMMY_ROUTE", enabled=True
         )
         session.add(server_capability)
         gsp = GroupServerPermission(
@@ -44,7 +35,7 @@ def test_disallow_right_on_server_disallows_for_group(app):
         session.add(token_limits)
         session.commit()
         claims = user.allowed_claims(server)
-        assert "get_result:DUMMY_ROUTE" in claims
+        assert "get_result&DUMMY_ROUTE" in claims
         session.delete(gsp)
         session.commit()
         claims = user.allowed_claims(server)

@@ -15,7 +15,7 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
     """
 
     token = token = access_token_builder(
-        [f"run:modal_location:aggregation_unit:DUMMY_AGGREGATION"]
+        [f"run&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
     )
 
     dummy_zmq_server.side_effect = return_once(
