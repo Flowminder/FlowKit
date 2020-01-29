@@ -25,7 +25,7 @@ class TokenPermission extends React.Component {
   };
 
   async componentDidMount() {
-    const { rights, unblock } = this.props;
+    const { rights, unblock, parentUpdate } = this.props;
     if (rights.length > 0) {
       const scopesObj = rights.reduce(
         (obj, cur) => ({ ...obj, [cur]: {} }),
@@ -40,6 +40,7 @@ class TokenPermission extends React.Component {
         Object.keys(scopesObj).filter(k => scopesObj[k]),
         enabledKeys
       );
+      parentUpdate(Object.keys(scopesObj));
 
       this.setState({
         rights: scopes,
