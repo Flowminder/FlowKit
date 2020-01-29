@@ -40,7 +40,7 @@ pytest-testmon = "*"
 asynctest = "*"
 cachey = "*"
 approvaltests = "*"
-watchdog = "==0.9.0" # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
+watchdog = "==0.10.0" # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
 ipdb = "*"
 
 [requires]
