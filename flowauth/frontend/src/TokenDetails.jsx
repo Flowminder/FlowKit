@@ -39,7 +39,6 @@ class TokenDetails extends React.Component {
     expiry: new Date(),
     latest_expiry: new Date(),
     name_helper_text: "",
-    uiReady: new Promise(() => {}),
     pageError: false,
     errors: { message: "" },
     uiBlock: true
