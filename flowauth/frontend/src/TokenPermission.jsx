@@ -26,24 +26,30 @@ class TokenPermission extends React.Component {
 
   async componentDidMount() {
     const { rights, unblock } = this.props;
-    const scopesObj = rights.reduce((obj, cur) => ({ ...obj, [cur]: {} }), {});
+    if (rights.length > 0) {
+      const scopesObj = rights.reduce(
+        (obj, cur) => ({ ...obj, [cur]: {} }),
+        {}
+      );
 
-    const scopeGraph = scopesGraph(scopesObj);
-    const enabledKeys = [];
-    const scopes = jsonify(
-      scopeGraph,
-      [],
-      Object.keys(scopesObj).filter(k => scopesObj[k]),
-      enabledKeys
-    );
+      const scopeGraph = scopesGraph(scopesObj);
+      const enabledKeys = [];
+      const scopes = jsonify(
+        scopeGraph,
+        [],
+        Object.keys(scopesObj).filter(k => scopesObj[k]),
+        enabledKeys
+      );
 
-    this.setState({
-      rights: scopes,
-      fullRights: Object.keys(scopesObj),
-      enabledRights: enabledKeys
-    });
-    if (unblock) {
-      unblock();
+      this.setState({
+        rights: scopes,
+        fullRights: Object.keys(scopesObj),
+        enabledRights: enabledKeys
+      });
+      if (unblock) {
+        console.log(rights);
+        unblock();
+      }
     }
   }
 

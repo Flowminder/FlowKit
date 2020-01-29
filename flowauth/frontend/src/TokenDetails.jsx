@@ -112,9 +112,6 @@ class TokenDetails extends React.Component {
 
   async componentDidMount() {
     const rights = getMyRightsForServer(this.props.serverID);
-    this.setState({
-      uiReady: rights
-    });
     try {
       this.setState({
         rights: (await rights).allowed_claims,
