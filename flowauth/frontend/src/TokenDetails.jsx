@@ -41,7 +41,8 @@ class TokenDetails extends React.Component {
     name_helper_text: "",
     uiReady: new Promise(() => {}),
     pageError: false,
-    errors: { message: "" }
+    errors: { message: "" },
+    uiBlock: true
   };
   completeToken = async () => {
     const { name, expiry, rights } = this.state;
@@ -51,7 +52,7 @@ class TokenDetails extends React.Component {
   };
   handleSubmit = async () => {
     const { name, name_helper_text, uiReady, rights } = this.state;
-    await uiReady;
+    await this.uiReady();
     const checkedCheckboxes = rights.length > 0;
     if (name && name_helper_text === "" && checkedCheckboxes) {
       this.completeToken();
@@ -72,6 +73,14 @@ class TokenDetails extends React.Component {
   };
 
   handleRightsChange = rights => this.setState({ rights: rights });
+
+  unblockUI = () => this.setState({ uiBlock: false });
+  uiReady = async () => {
+    while (this.state.uiBlock) {
+      await new Promise(r => setTimeout(r, 2000));
+    }
+    return true;
+  };
 
   handleDateChange = date => {
     this.setState({ expiry: date });
@@ -175,6 +184,7 @@ class TokenDetails extends React.Component {
           enabledRights={rights}
           rights={permitted}
           parentUpdate={this.handleRightsChange}
+          unblock={this.unblockUI}
         />
         <WarningDialog
           open={this.state.pageError}
