@@ -1,6 +1,6 @@
 Title: Developer install
 
-# Running the tests
+# Developer install
 
 ## Installation requirements
 
@@ -13,7 +13,7 @@ During development, you will typically also want to run FlowMachine, FlowAPI, Fl
 - FlowAuth: `npm` (we recommend installing it via [nvm](https://github.com/nvm-sh/nvm)); [Cypress](https://www.cypress.io/) for testing
 - AutoFlow: [pandoc](https://pandoc.org/installing.html), `Ruby` (we recommend installing Ruby via [RVM](https://rvm.io/)), and [Bundler](https://bundler.io/) (to manage Ruby package dependencies).
 
-### Setting up FlowKit for development
+## Setting up FlowKit for development
 
 After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `set -a && . development_environment && set +a` (this will set the required environment variables) followed by `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the FlowKit docker containers using the `docker-compose.yml` file. The docker containers to start can be selected by running `make up DOCKER_SERVICES="<service 1> <service 2> ..."`, where the services can be any of `flowmachine`, `flowmachine_query_locker`, `flowapi`, `flowauth`, `flowdb`, `worked_examples`, `flowdb_testdata`, `flowdb_synthetic_data`, `flowetl`, `flowetl_db` or `autoflow` (at most one of the `flowdb` containers). The default is to start `flowdb`, `flowapi`, `flowmachine`, `flowauth`, `flowmachine_query_locker`, `flowetl`, `flowetl_db` and `worked_examples`. Alternatively, containers can be built, started or stopped individually by running `make <service>-build`, `make <service>-up` or `make <service>-down`, respectively.
 
@@ -45,11 +45,12 @@ pipenv install --dev
 pipenv run pytest
 ```
 
-# Getting set up to contribute
 
-## Prerequisites
+## Getting set up to contribute
 
-### Pre-commit hook (for Python code formatting with black)
+### Prerequisites
+
+#### Pre-commit hook (for Python code formatting with black)
 
 FlowKit's Python code is formatted with [black](https://black.readthedocs.io/en/stable/) (which is included in the
 FlowKit pipenv environments). There is also a [pre-commit](https://pre-commit.com/) hook which runs black on all Python
@@ -98,7 +99,7 @@ black...................................................Passed
  1 file changed, 2 insertions(+), 1 deletion(-)
 ```
 
-### Diff tool (for verifying changes in `ApprovalTests`-based tests)
+#### Diff tool (for verifying changes in `ApprovalTests`-based tests)
 
 Some of the tests use [ApprovalTests](https://github.com/approvals/ApprovalTests.Python) to verify large output against
 a known "approved" version (stored in files called `*approved.txt`). For example, the API specification is
@@ -112,7 +113,7 @@ To use a specific diff reporter, you should create files named `reporters.json` 
 !!! warning
     The project root contains an env file (`development_environment`), in which are default values for _all_ of the environment variables used to control and configure the FlowDB, FlowAPI, FlowMachine and FlowAuth. You will need to source this file (`set -a && . ./development_environment && set +a`), or otherwise set the environment variables before running _any other command_.
 
-## Option 1: Starting up all FlowKit components inside a dockerised development environment
+### Option 1: Starting up all FlowKit components inside a dockerised development environment
 
 For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
 components by running:
@@ -147,7 +148,7 @@ and if necessary running `make flowmachine-down` followed by `make flowmachine-u
 To make changes to the containers, you should run `make down && make up`.
 
 
-## Option 2: Starting Flowmachine and FlowAPI manually, outside the dockerised setup
+### Option 2: Starting Flowmachine and FlowAPI manually, outside the dockerised setup
 
 While the fully dockerised setup described above is convenient, it has the disadvantage that interactive debugging is
 difficult or impossible if Flowmachine and FlowAPI are running inside a docker container. If you want to set breakpoints
@@ -161,19 +162,19 @@ $ make flowmachine_testdata-up flowauth-up
 
 Next, run one or more of the following commands (in separate terminals) to start up the remaining components.
 
-### Flowmachine
+#### Flowmachine
 ```bash
 $ cd flowmachine/
 $ pipenv run watchmedo auto-restart --recursive --patterns="*.py" --directory="." pipenv run flowmachine
 ```
 
-### FlowAPI
+#### FlowAPI
 ```bash
 $ cd flowapi/
 $ pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "app.main:create_app()"
 ```
 
-### FlowAuth
+#### FlowAuth
 
 ```bash
 $ cd flowauth/
@@ -184,12 +185,12 @@ $ pipenv run start-all
     If you have started FlowMachine and FlowAPI directly, you will need to set the `FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=TRUE` before running the integration tests.
     Without this setting, both will be started automatically to allow test coverage to be collected.
 
-# Verifying the setup
+## Verifying the setup
 
 This section provides example commands which you can run to verify that `flowdb`, `flowmachine` and `flowapi` started up
 successfully and are wired up correctly so that they can talk to each other.
 
-## Running the integration tests
+### Running the integration tests
 
 You can run the integration tests as follows. If these pass, this is a good indication that everything is set up correctly.
 ```bash
@@ -198,7 +199,7 @@ $ pipenv install  # only needed once to install dependencies
 $ pipenv run pytest
 ```
 
-## FlowDB
+### FlowDB
 
 ```
 $ psql "postgresql://flowdb:flowflow@localhost:9000/flowdb" -c "SELECT flowdb_version()"
@@ -211,7 +212,7 @@ The output should be similar to this:
 (1 row)
 ```
 
-## Flowmachine
+### Flowmachine
 
 From within the `flowmachine/` folder, run the following command to send an example message to the Flowmachine server via ZeroMQ.
 ```
@@ -223,7 +224,7 @@ Sending message: {'action': 'run_query', 'query_kind': 'daily_location', 'reques
 {'status': 'accepted', 'id': 'ddc61a04f608dee16fff0655f91c2057'}
 ```
 
-## FlowAPI
+### FlowAPI
 
 First navigate to `http://localhost:8080/` (where Flowauth should be running), create a valid token (TODO: add
 instructions how to do this or link to the appropriate section in the docs) and store it in the environment
