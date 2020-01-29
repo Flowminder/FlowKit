@@ -9,11 +9,11 @@ def request_context_processor(logger, method_name, event_dict) -> dict:
 
      """
     if has_request_context():
-        if hasattr(g, "user"):
+        try:
             user = dict(
                 username=g.user.username, id=g.user.id, is_admin=g.user.is_admin,
             )
-        else:
+        except AttributeError as exc:
             user = None
         event_dict = dict(
             **event_dict,
