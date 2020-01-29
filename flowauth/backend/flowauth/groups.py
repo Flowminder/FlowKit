@@ -1,13 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask import jsonify, Blueprint, request
+from flask import Blueprint, jsonify, request
+
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 
-
-from .models import *
 from .invalid_usage import InvalidUsage
+from .models import *
 
 blueprint = Blueprint(__name__, __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -184,8 +184,9 @@ def edit_group_servers(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
     current_app.logger.debug(servers)
     existing_limits = group.server_token_limits
-    revised_limits = []
+
     db.session.add(group)
+    revised_limits = []
 
     for server in servers:
         server_obj = Server.query.filter(Server.id == server["id"]).first_or_404()
@@ -223,7 +224,8 @@ def edit_group_servers(group_id):
             for gsp in GroupServerPermission.query.filter(
                 GroupServerPermission.group_id == group.id
             )
-            if gsp.server_capability.capability not in server["rights"]
+            if gsp.server_capability.server_id == server_obj.id
+            and gsp.server_capability.capability not in server["rights"]
         ]
         for right in server["rights"]:
             cap = ServerCapability.query.filter(
@@ -240,17 +242,25 @@ def edit_group_servers(group_id):
             if existing is None:
 
                 gsp = GroupServerPermission(
-                    group_id=group.id, server_capability_id=cap.id,
+                    group_id=group.id, server_capability_id=cap.id
                 )
-                current_app.logger.debug(f"Added {gsp}")
+                current_app.logger.debug(
+                    f"Added {gsp.server_capability_id} for group {group.id}"
+                )
                 db.session.add(gsp)
 
         # clean up
-        for limit in existing_limits:
-            if limit not in revised_limits:
-                db.session.delete(limit)
         for gsp in to_remove:
+            current_app.logger.debug(
+                f"Removed {gsp.server_capability.capability} for group {gsp.group.id} on server {gsp.server_capability.server.id}"
+            )
             db.session.delete(gsp)
+    for limit in existing_limits:
+        if limit not in revised_limits:
+            current_app.logger.debug(
+                f"Removed limit for group {limit.group.id} on server {limit.server.id}"
+            )
+            db.session.delete(limit)
     db.session.commit()
     return jsonify({"id": group.id, "name": group.name})
 
