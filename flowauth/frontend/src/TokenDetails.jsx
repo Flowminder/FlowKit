@@ -51,8 +51,10 @@ class TokenDetails extends React.Component {
     cancel();
   };
   handleSubmit = async () => {
-    const { name, name_helper_text, uiReady, rights } = this.state;
+    const { uiReady } = this.state;
     await this.uiReady();
+    const { name, name_helper_text, rights } = this.state;
+
     const checkedCheckboxes = rights.length > 0;
     if (name && name_helper_text === "" && checkedCheckboxes) {
       this.completeToken();
