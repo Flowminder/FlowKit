@@ -1,13 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask import jsonify, Blueprint, request
+from flask import Blueprint, jsonify, request
+
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 from sqlalchemy.orm.exc import NoResultFound
 
-from .models import *
 from .invalid_usage import InvalidUsage
+from .models import *
 
 blueprint = Blueprint(__name__, __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -71,7 +72,7 @@ def edit_server_capabilities(server_id):
 
     to_remove = (x for x in server_obj.capabilities if x.capability not in json)
     current_app.logger.debug(
-        f"Editing capabilities for server {server_obj}. New capabilities: {json}"
+        "Editing capabilities for server", server_id=server_obj, new_permissions=json
     )
     for cap, enabled in json.items():
         try:

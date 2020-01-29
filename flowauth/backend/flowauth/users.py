@@ -1,13 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask import jsonify, Blueprint, request
+from flask import Blueprint, jsonify, request
+
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 from zxcvbn import zxcvbn
 
-from .models import *
 from .invalid_usage import InvalidUsage
+from .models import *
 
 blueprint = Blueprint(__name__, __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -250,7 +251,7 @@ def set_user_groups(user_id):
     user = User.query.filter(User.id == user_id).first_or_404()
     user_group = [g for g in user.groups if g.user_group][0]
     groups = request.get_json()["groups"]
-    current_app.logger.debug(groups)
+    current_app.logger.debug("Set user groups", groups=groups)
     groups = [
         Group.query.filter(Group.id == group["id"]).first_or_404() for group in groups
     ]

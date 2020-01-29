@@ -2,24 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import random
-
 import string
-
 from typing import List
 
-import pyotp
-from flask import jsonify, Blueprint, request
-from flask_login import login_required, current_user
-from itsdangerous import (
-    TimestampSigner,
-    BadSignature,
-    SignatureExpired,
-    TimedSerializer,
-)
+from flask import Blueprint, jsonify, request
+from itsdangerous import BadSignature, SignatureExpired, TimedSerializer, TimestampSigner
 
-from .models import *
-from .invalid_usage import InvalidUsage
+import pyotp
+from flask_login import current_user, login_required
 from zxcvbn import zxcvbn
+
+from .invalid_usage import InvalidUsage
+from .models import *
 
 blueprint = Blueprint(__name__, __name__)
 
@@ -37,7 +31,7 @@ def set_password():
     the new password is strong.
     """
     edits = request.get_json()
-    current_app.logger.debug(f"User {current_user.username} tried to change password.")
+    current_app.logger.debug("User tried to change password.")
     try:
         old_pass = edits["password"]
     except KeyError:
@@ -57,7 +51,7 @@ def set_password():
         current_user.password = new_pass
         db.session.add(current_user)
         db.session.commit()
-        current_app.logger.debug(f"User {current_user.username} password changed.")
+        current_app.logger.debug("User password changed.")
         return jsonify({}), 200
     else:
 

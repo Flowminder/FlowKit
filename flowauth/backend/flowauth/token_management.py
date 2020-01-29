@@ -149,7 +149,7 @@ def add_token(server):
     server = Server.query.filter(Server.id == server).first_or_404()
     json = request.get_json()
 
-    current_app.logger.debug(json)
+    current_app.logger.debug("New token request", request=json)
 
     if "name" not in json:
         raise InvalidUsage("No name.", payload={"bad_field": "name"})
@@ -160,7 +160,7 @@ def add_token(server):
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
     allowed_claims = current_user.allowed_claims(server)
 
-    current_app.logger.debug(allowed_claims)
+    current_app.logger.debug("New token request", allowed_claims=allowed_claims)
     for claim in json["claims"]:
         if claim not in allowed_claims:
             raise Unauthorized(f"You do not have access to {claim} on {server.name}")

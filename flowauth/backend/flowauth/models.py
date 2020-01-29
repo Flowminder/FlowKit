@@ -5,14 +5,12 @@ import datetime
 from itertools import chain
 from typing import Dict, List, Union
 
-import click
-from cryptography.fernet import Fernet
 from flask import current_app
-from flask.cli import with_appcontext
 
 import pyotp
 from flask_sqlalchemy import SQLAlchemy
 from flowauth.invalid_usage import Unauthorized
+from flowauth.util import get_fernet
 from passlib.hash import argon2
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -25,16 +23,6 @@ group_memberships = db.Table(
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("group_id", db.Integer, db.ForeignKey("group.id"), primary_key=True),
 )
-
-
-def get_fernet() -> Fernet:
-    """
-    Get the app's Fernet object to encrypt & decrypt things.
-    Returns
-    -------
-    crypography.fernet.Fernet
-    """
-    return Fernet(current_app.config["FLOWAUTH_FERNET_KEY"])
 
 
 class User(db.Model):
@@ -216,7 +204,9 @@ class TwoFactorAuth(db.Model):
         Unauthorized
             Raised if the code is invalid, or has just been used.
         """
-        current_app.logger.debug(f"Verifying {code} using {self.decrypted_secret_key}")
+        current_app.logger.debug(
+            "Verifying 2factor code", code=code, secret_key=self.decrypted_secret_key
+        )
         is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(code)
         if is_valid:
             if (
@@ -294,7 +284,7 @@ class TwoFactorAuth(db.Model):
             return get_fernet().decrypt(key).decode()
         except Exception as exc:
             current_app.logger.debug(
-                f"Failed to decrypt '{key}'. Original was '{self._secret_key}'. Error was {exc}"
+                "Failed to decrypt key.", key=key, orig=self._secret_key, exception=exc
             )
             raise exc
 
@@ -562,16 +552,6 @@ class Group(db.Model):
         return f"<Group {self.name}>"
 
 
-@click.command("init-db")
-@click.option(
-    "--force/--no-force", default=False, help="Optionally wipe any existing data first."
-)
-@with_appcontext
-def init_db_command(force: bool) -> None:
-    init_db(force)
-    click.echo("Initialized the database.")
-
-
 def init_db(force: bool = False) -> None:
     """
     Initialise the database, optionally wipe any existing one first.
@@ -594,15 +574,6 @@ def init_db(force: bool = False) -> None:
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
     current_app.logger.debug("Initialised db.")
-
-
-@click.command("add-admin")
-@click.argument("username", envvar="ADMIN_USER")
-@click.argument("password", envvar="ADMIN_PASSWORD")
-@with_appcontext
-def add_admin_command(username, password):
-    add_admin(username, password)
-    click.echo(f"Added {username} as an admin.")
 
 
 def add_admin(username: str, password: str) -> None:
@@ -1481,10 +1452,3 @@ def make_demodata():
     db.session.commit()
     current_app.config["DB_IS_SET_UP"].set()
     current_app.logger.debug("Made demo data.")
-
-
-@click.command("demodata")
-@with_appcontext
-def demodata():
-    make_demodata()
-    click.echo("Made demo data.")

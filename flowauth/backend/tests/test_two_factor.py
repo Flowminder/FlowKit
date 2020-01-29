@@ -1,10 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from itsdangerous import TimestampSigner
 from tests.conftest import get_two_factor_code
 import pytest
-from flowauth import User, Unauthorized, db
-from itsdangerous import TimestampSigner
+from flowauth.invalid_usage import Unauthorized
+from flowauth.models import User, db
 
 
 def test_two_factor_enabled_but_not_confirmed(client, auth, test_user):

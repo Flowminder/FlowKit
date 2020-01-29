@@ -11,19 +11,10 @@ from itertools import product
 
 import pyotp
 import pytest
-from flowauth import (
-    Group,
-    GroupServerPermission,
-    GroupServerTokenLimits,
-    Server,
-    ServerCapability,
-    Token,
-    TwoFactorAuth,
-    TwoFactorBackup,
-    User,
-    create_app,
-    db,
-)
+from flowauth.main import create_app
+from flowauth.models import (
+    Group, GroupServerPermission, GroupServerTokenLimits, Server, ServerCapability, Token, TwoFactorAuth,
+    TwoFactorBackup, User, db)
 from flowauth.user_settings import generate_backup_codes
 
 TestUser = namedtuple("TestUser", ["id", "username", "password"])
