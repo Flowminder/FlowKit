@@ -70,7 +70,7 @@ def test_init_db_force(app):
         assert len(User.query.all()) == 0
 
 
-def test_demo_data_only_sets_up_once(app):
+def test_demo_data_only_sets_up_once(app, caplog):
     """
     Demo data should only be created once.
     """
@@ -81,8 +81,7 @@ def test_demo_data_only_sets_up_once(app):
         result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
         assert len(Group.query.all()) == 3
-    assert False
-    # assert "Database already set up by another worker, skipping." in caplog.text
+    assert "Database already set up by another worker, skipping." in caplog.text
 
 
 def test_db_init_only_runs_once(app, caplog):

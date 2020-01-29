@@ -1,19 +1,18 @@
 import datetime
 import logging
-import sys
 import uuid
 from functools import partial
 
 import flask
-import structlog as structlog
-from flask import Flask, current_app, has_request_context, request
+import structlog
+from flask import Flask, current_app, request
 
-import flask_login
 import simplejson
 from flask_login import LoginManager, current_user
 from flask_principal import Principal, RoleNeed, UserNeed, identity_loaded
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 from flowauth.invalid_usage import InvalidUsage
+from flowauth.util import request_context_processor
 
 try:
     from uwsgidecorators import lock
@@ -23,11 +22,15 @@ except ImportError:
         return func
 
 
+logger = logging.getLogger("flowauth")
+logger.setLevel(logging.DEBUG)
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
+        request_context_processor,
         structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
@@ -41,49 +44,14 @@ structlog.configure(
 )
 
 
-def request_context_processor(logger, method_name, event_dict):
-    if has_request_context():
-        if hasattr(flask.g, "user"):
-            user = dict(
-                username=flask.g.user.username,
-                id=flask.g.user.id,
-                is_admin=flask.g.user.is_admin,
-            )
-        else:
-            user = None
-        event_dict = dict(
-            **event_dict,
-            user=user,
-            session=flask.session,
-            session_id=flask.session.get("_id", None),
-            request_id=request.id if hasattr(request, "id") else None
-        )
-    return event_dict
+def connect_logger():
+    log_level = current_app.config["LOG_LEVEL"]
+    ch = logging.StreamHandler()
+    ch.setLevel(log_level)
+    logger.addHandler(ch)
 
-
-def connect_logger(app):
-    logging.basicConfig(
-        format="%(message)s", stream=sys.stderr, level=app.config["LOG_LEVEL"]
-    )
-    structlog.configure(
-        processors=[
-            structlog.stdlib.filter_by_level,
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            request_context_processor,
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.JSONRenderer(serializer=simplejson.dumps),
-        ],
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        wrapper_class=structlog.stdlib.BoundLogger,
-        context_class=structlog.threadlocal.wrap_dict(dict),
-        cache_logger_on_first_use=True,
-    )
-    app.logger = structlog.get_logger("flowauth")
-    app.logger.info("Started")
+    current_app.logger = structlog.wrap_logger(logger)
+    current_app.logger.info("Started")
 
 
 def set_xsrf_cookie(response):
@@ -115,7 +83,7 @@ def before_request():
     flask.session.permanent = True
     current_app.permanent_session_lifetime = datetime.timedelta(minutes=20)
     flask.session.modified = True
-    flask.g.user = flask_login.current_user
+    flask.g.user = current_user
     request.id = str(uuid.uuid4())
 
 
@@ -165,7 +133,7 @@ def create_app(test_config=None):
     app.config.from_mapping(get_config())
 
     # Connect the logger
-    connect_logger(app)
+    app.before_first_request(connect_logger)
 
     if test_config is not None:
         # load the test config if passed in
