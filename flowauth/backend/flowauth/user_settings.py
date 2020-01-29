@@ -6,7 +6,12 @@ import string
 from typing import List
 
 from flask import Blueprint, jsonify, request
-from itsdangerous import BadSignature, SignatureExpired, TimedSerializer, TimestampSigner
+from itsdangerous import (
+    BadSignature,
+    SignatureExpired,
+    TimedSerializer,
+    TimestampSigner,
+)
 
 import pyotp
 from flask_login import current_user, login_required
