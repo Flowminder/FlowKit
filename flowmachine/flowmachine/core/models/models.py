@@ -85,11 +85,108 @@ class Events(Base):
         "location_id", BigInteger, ForeignKey("interactions.locations.location_id")
     )
     time_dim_id = Column("time_dim_id", BigInteger, ForeignKey("d_time.time_dim_id"))
-    date_dim_id = Column("date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"))
+    date_dim_id = Column(
+        "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
+    )
     event_type_id = Column(
         "event_type_id", Integer, ForeignKey("interactions.d_event_type.event_type_id")
     )
     event_timestamp = Column("event_timestamp", TIMESTAMP(timezone=True))
+
+
+class TopupsFacts(Base):
+    __tablename__ = "topups"
+    __table_args__ = dict(schema="interactions")
+    event_id = Column(
+        "event_id",
+        BigInteger,
+        ForeignKey("interactions.event_supertable.event_id"),
+        primary_key=True,
+    )
+    date_dim_id = Column(
+        "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
+    )
+    type = Column("type", Integer)
+    recharge_amount = Column("recharge_amount", Numeric)
+    airtime_fee = Column("airtime_fee", Numeric)
+    tax_and_fee = Column("tax_and_fee", Numeric)
+    pre_event_balance = Column("pre_event_balance", Numeric)
+    post_event_balance = Column("post_event_balance", Numeric)
+    event = relationship("Events", backref="extra")
+
+
+class MdsFacts(Base):
+    __tablename__ = "mds"
+    __table_args__ = dict(schema="interactions")
+    event_id = Column(
+        "event_id",
+        BigInteger,
+        ForeignKey("interactions.event_supertable.event_id"),
+        primary_key=True,
+    )
+    date_dim_id = Column(
+        "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
+    )
+    data_volume_total = Column("data_volume_total", Numeric)
+    data_volume_up = Column("data_volume_up", Numeric)
+    data_volume_down = Column("data_volume_down", Numeric)
+    duration = Column("duration", Numeric)
+    event = relationship("Events", backref="extra")
+
+
+class SmsFacts(Base):
+    __tablename__ = "calls"
+    __table_args__ = dict(schema="interactions")
+    event_id = Column(
+        "event_id",
+        BigInteger,
+        ForeignKey("interactions.event_supertable.event_id"),
+        primary_key=True,
+    )
+    date_dim_id = Column(
+        "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
+    )
+    called_subscriber_id = Column(
+        "called_subscriber_id",
+        BigInteger,
+        ForeignKey("interactions.subscriber.subscriber_id"),
+    )
+    called_party_location_id = Column(
+        "called_party_location_id",
+        BigInteger,
+        ForeignKey("interactions.locations.location_id"),
+    )
+    calling_party_msisdn = Column("calling_party_msisdn", Text)
+    called_party_msisdn = Column("called_party_msisdn", Text)
+    event = relationship("Events", backref="extra")
+
+
+class CallFacts(Base):
+    __tablename__ = "calls"
+    __table_args__ = dict(schema="interactions")
+    event_id = Column(
+        "event_id",
+        BigInteger,
+        ForeignKey("interactions.event_supertable.event_id"),
+        primary_key=True,
+    )
+    date_dim_id = Column(
+        "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
+    )
+    called_subscriber_id = Column(
+        "called_subscriber_id",
+        BigInteger,
+        ForeignKey("interactions.subscriber.subscriber_id"),
+    )
+    called_party_location_id = Column(
+        "called_party_location_id",
+        BigInteger,
+        ForeignKey("interactions.locations.location_id"),
+    )
+    calling_party_msisdn = Column("calling_party_msisdn", Text)
+    called_party_msisdn = Column("called_party_msisdn", Text)
+    duration = Column("duration", Numeric)
+    event = relationship("Events", backref="extra")
 
 
 class DEventType(Base):
