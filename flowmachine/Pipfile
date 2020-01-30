@@ -42,6 +42,7 @@ asynctest = "*"
 cachey = "*"
 approvaltests = "*"
 watchdog = "==0.10.0"
+pyobjc-core = {version = "*", sys_platform = "== 'darwin'"}
 pyobjc-framework-cocoa = {version = "*", sys_platform = "== 'darwin'"} # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
 pyobjc-framework-fsevents = {version = "*", sys_platform = "== 'darwin'"} # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
 
