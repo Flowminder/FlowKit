@@ -61,6 +61,7 @@ class Subscriber(Base):
     tac_id = Column(
         "tac", Numeric(precision=8, scale=0), ForeignKey("infrastructure.tacs.id")
     )
+    events = relationship("Events", backref="subscriber")
 
 
 class Locations(Base):
@@ -70,6 +71,25 @@ class Locations(Base):
     site_id = Column("site_id", BigInteger, ForeignKey("infrastructure.sites.site_id"))
     cell_id = Column("cell_id", BigInteger, ForeignKey("infrastructure.cells.cell_id"))
     position = Column("position", Geometry("POINT", srid=4326))
+    events = relationship("Events", backref="location")
+
+
+class Events(Base):
+    __tablename__ = "events_supertable"
+    __table_args__ = dict(schema="interactions")
+    event_id = Column("event_id", BigInteger, primary_key=True)
+    subscriber_id = Column(
+        "subscriber_id", BigInteger, ForeignKey("interactions.subscriber.subscriber_id")
+    )
+    location_id = Column(
+        "location_id", BigInteger, ForeignKey("interactions.locations.location_id")
+    )
+    time_dim_id = Column("time_dim_id", BigInteger, ForeignKey("d_time.time_dim_id"))
+    date_dim_id = Column("date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"))
+    event_type_id = Column(
+        "event_type_id", Integer, ForeignKey("interactions.d_event_type.event_type_id")
+    )
+    event_timestamp = Column("event_timestamp", TIMESTAMP(timezone=True))
 
 
 class DEventType(Base):
@@ -77,6 +97,7 @@ class DEventType(Base):
     __table_args__ = dict(schema="interactions")
     event_type_id = Column("event_type_id", Integer, primary_key=True)
     name = Column("name", VARCHAR)
+    events = relationship("Events", backref="event_type")
 
 
 class DTime(Base):
@@ -85,6 +106,7 @@ class DTime(Base):
     time_of_day = Column("time_of_day", TIME)
     hour_of_day = Column("hour_of_day", Integer)
     meridian_indicator = Column("meridian_indicator", CHAR(2))
+    events = relationship("Events", backref="time")
 
 
 class DDate(Base):
@@ -118,6 +140,7 @@ class DDate(Base):
     mmyyyy = Column("mmyyyy", CHAR(6))
     mmddyyyy = Column("mmddyyyy", CHAR(8))
     is_std_weekend = Column("is_std_weekend", Boolean)
+    events = relationship("Events", backref="date")
 
 
 class GeoKinds(Base):
