@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9501d6c25a82bd419c8b86fb3963942f498de87ed20a259de6da819d1da70194"
+            "sha256": "60db93e2f53ecbb5b0b7bbdec2cbebeb6f779b3105b9d808ccd3ea05e49943ca"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -361,7 +361,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "sys_platform == 'darwin'",
+            "markers": "platform_system == 'Darwin'",
             "version": "==0.1.0"
         },
         "approvaltests": {
@@ -838,6 +838,8 @@
                 "sha256:32ba4d0ce811e2088bf0fc360c9545c06586934e895f7133655b8f2182e7019a",
                 "sha256:c4077d2e6f96e4f3fd9780d66778cf51d27f414822498b24410e9df7a6a4d531"
             ],
+            "index": "pypi",
+            "markers": "sys_platform == 'darwin'",
             "version": "==6.1"
         },
         "pyobjc-framework-fsevents": {
@@ -847,6 +849,8 @@
                 "sha256:94c6953774b6d69e59d9781951f05ef57e352b3c530d4c236f463444852c3a88",
                 "sha256:d2ae8748d1791dc9e3d19b41d3873283ac34ed17ff8fca70f1a199336a0477b5"
             ],
+            "index": "pypi",
+            "markers": "sys_platform == 'darwin'",
             "version": "==6.1"
         },
         "pyparsing": {
