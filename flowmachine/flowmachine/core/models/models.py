@@ -15,9 +15,13 @@ from sqlalchemy import (
     INTEGER,
     LargeBinary,
     DATE,
+    JSON,
+    ForeignKey,
+    Float,
 )
 from geoalchemy2 import Geometry
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -43,6 +47,61 @@ def admin_geography(*, admin_level: int):
         )
         admin_geo_tables[class_name] = cls
         return cls
+
+
+class GeoKinds(Base):
+    __tablename__ = "geo_kinds"
+    __table_args__ = dict(schema="geography")
+    geo_kind_id = Column("geo_kind_id", Integer, primary_key=True)
+    name = Column("name", Text)
+    geoms = relationship("Geoms", backref="kind")
+
+
+class GeoLinkageMethods(Base):
+    __tablename__ = "linkage_methods"
+    __table_args__ = dict(schema="geography")
+    linkage_method_id = Column("linkage_method_id", Integer, primary_key=True)
+    name = Column("name", Text)
+    meta = Column("meta", JSON)
+    bridge_entries = relationship("GeoBridge", backref="linkage_method")
+
+
+class GeoBridge(Base):
+    __tablename__ = "geo_bridge"
+    __table_args__ = dict(schema="geography")
+    location_id = Column(
+        "location_id",
+        Integer,
+        ForeignKey("interactions.locations.location_id"),
+        primary_key=True,
+    )
+
+    gid = Column("gid", Integer, ForeignKey("geography.geoms.gid"), primary_key=True)
+    geom = relationship("Geoms", uselist=False)
+    valid_from = Column("valid_from", DATE)
+    valid_to = Column("valid_to", DATE)
+    weight = Column("weight", Float)
+    linkage_method_id = Column(
+        "linkage_method_id",
+        Integer,
+        ForeignKey("geography.linkage_methods.linkage_method_id"),
+        primary_key=True,
+    )
+
+
+class Geoms(Base):
+    __tablename__ = "geoms"
+    __table_args__ = dict(schema="geography")
+    gid = Column("gid", Integer, primary_key=True)
+    added_date = Column("added_date", TIMESTAMP(timezone=True))
+    short_name = Column("short_name", VARCHAR())
+    long_name = Column("long_name", Text())
+    geo_kind_id = Column(
+        "geo_kind_id", Integer, ForeignKey("geography.geo_kinds.geo_kind_id")
+    )
+    spatial_resolution = Column("spatial_resolution", Integer)
+    additional_metadata = Column("additional_metadata", JSON())
+    geom = Column("geom", Geometry("MULTIPOLYGON", srid=4326))
 
 
 class Topups(Base):
