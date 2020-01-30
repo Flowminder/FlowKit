@@ -11,13 +11,15 @@ from sqlalchemy import (
     Boolean,
     VARCHAR,
     TIMESTAMP,
-    String,
     INTEGER,
     LargeBinary,
     DATE,
     JSON,
     ForeignKey,
     Float,
+    BigInteger,
+    TIME,
+    CHAR,
 )
 from geoalchemy2 import Geometry
 from sqlalchemy.ext.declarative import declarative_base
@@ -47,6 +49,47 @@ def admin_geography(*, admin_level: int):
         )
         admin_geo_tables[class_name] = cls
         return cls
+
+
+class DTime(Base):
+    __tablename__ = "d_time"
+    time_dim_id = Column("time_dim_id", Integer, primary_key=True)
+    time_of_day = Column("time_of_day", TIME)
+    hour_of_day = Column("hour_of_day", Integer)
+    meridian_indicator = Column("meridian_indicator", CHAR(2))
+
+
+class DDate(Base):
+    __tablename__ = "d_date"
+    date_dim_id = Column("date_dim_id", Integer, primary_key=True)
+    date_actual = Column("date_actual", Date)
+    day_epoch = Column("day_epoch", BigInteger)
+    day_suffix = Column("day_suffix", VARCHAR(4))
+    day_name = Column("day_name", VARCHAR(9))
+    day_of_week = Column("day_of_week", Integer)
+    day_of_month = Column("day_of_month", Integer)
+    day_of_quarter = Column("day_of_quarter", Integer)
+    day_of_year = Column("day_of_year", Integer)
+    week_of_month = Column("week_of_month", Integer)
+    week_of_year = Column("week_of_year", Integer)
+    week_of_year_iso = Column("week_of_year_iso", CHAR(10))
+    month_actual = Column("month_actual", Integer)
+    month_name = Column("month_name", VARCHAR(9))
+    month_name_abbreviated = Column("month_name_abbreviated", CHAR(3))
+    quarter_actual = Column("quarter_actual", Integer)
+    quarter_name = Column("quarter_name", VARCHAR(9))
+    year_actual = Column("year_actual", Integer)
+    first_day_of_week = Column("first_day_of_week", Date)
+    last_day_of_week = Column("last_day_of_week", Date)
+    first_day_of_month = Column("first_day_of_month", Date)
+    last_day_of_month = Column("last_day_of_month", Date)
+    first_day_of_quarter = Column("first_day_of_quarter", Date)
+    last_day_of_quarter = Column("last_day_of_quarter", Date)
+    first_day_of_year = Column("first_day_of_year", Date)
+    last_day_of_year = Column("last_day_of_year", Date)
+    mmyyyy = Column("mmyyyy", CHAR(6))
+    mmddyyyy = Column("mmddyyyy", CHAR(8))
+    is_std_weekend = Column("is_std_weekend", Boolean)
 
 
 class GeoKinds(Base):
@@ -239,14 +282,14 @@ class CacheConfig(Base):
 class CacheDependencies(Base):
     __tablename__ = "dependencies"
     __table_args__ = dict(schema="cache")
-    query_id = Column("query_id", String(32), primary_key=True)
-    depends_on = Column("depends_on", String(32), primary_key=True)
+    query_id = Column("query_id", CHAR(32), primary_key=True)
+    depends_on = Column("depends_on", CHAR(32), primary_key=True)
 
 
 class Cached(Base):
     __tablename__ = "cached"
     __table_args__ = dict(schema="cache")
-    query_id = Column("query_id", String(32), primary_key=True)
+    query_id = Column("query_id", CHAR(32), primary_key=True)
     version = Column("version", VARCHAR())
     query = Column("query", Text())
     created = Column("created", TIMESTAMP(timezone=True))
