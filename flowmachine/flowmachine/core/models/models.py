@@ -63,6 +63,14 @@ class Subscriber(Base):
     )
 
 
+class Locations(Base):
+    __tablename__ = "locations"
+    __table_args__ = dict(schema="interactions")
+    location_id = Column("location_id", BigInteger, primary_key=True)
+    site_id = Column("site_id", BigInteger, ForeignKey("infrastructure.sites.site_id"))
+    cell_id = Column("cell_id", BigInteger, ForeignKey("infrastructure.cells.cell_id"))
+
+
 class DEventType(Base):
     __tablename__ = "d_event_type"
     __table_args__ = dict(schema="interactions")
@@ -363,6 +371,7 @@ class Sites(Base):
     date_of_last_service = Column("date_of_last_service", Date())
     geom_polygon = Column("geom_polygon", Geometry("MULTIPOLYGON", srid=4326))
     geom_point = Column("geom_point", Geometry("POINT", srid=4326))
+    locations = relationship("Locations", backref="site")
 
 
 class Cells(Base):
@@ -390,3 +399,4 @@ class Cells(Base):
     date_of_last_service = Column("date_of_last_service", Date())
     geom_polygon = Column("geom_polygon", Geometry("MULTIPOLYGON", srid=4326))
     geom_point = Column("geom_point", Geometry("POINT", srid=4326))
+    locations = relationship("Locations", backref="cell")
