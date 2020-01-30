@@ -113,11 +113,9 @@ class SubscriberSightings(Base):
     date_dim_id = Column(
         "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
     )
-    event_type_id = Column(
-        "event_type_id", Integer, ForeignKey("interactions.d_event_type.event_type_id")
-    )
     sighting_timestamp = Column("sighting_timestamp", TIMESTAMP(timezone=True))
     subscriber = relationship("Subscriber", backref="sightings")
+    event = relationship("Events", backref="sightings")
 
 
 class TopupsFacts(Base):
