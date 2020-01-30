@@ -92,7 +92,7 @@ psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWA
 #
 #  Adding permissions.
 #
-declare -a schema_list_permissive=("cache" "results" "features" "geography" "population" "elevation")
+declare -a schema_list_permissive=("cache" "results" "features" "geography" "population" "elevation" "public")
 for schema in "${schema_list_permissive[@]}"
 do
     echo "Granting permissions to $FLOWMACHINE_FLOWDB_USER on $schema."
