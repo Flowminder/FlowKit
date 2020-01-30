@@ -23,7 +23,7 @@ from sqlalchemy import (
 )
 from geoalchemy2 import Geometry
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 Base = declarative_base()
 
@@ -72,6 +72,7 @@ class Locations(Base):
     cell_id = Column("cell_id", BigInteger, ForeignKey("infrastructure.cells.cell_id"))
     position = Column("position", Geometry("POINT", srid=4326))
     events = relationship("Events", backref="location")
+    sightings = relationship("SubscriberSightings", backref="location")
 
 
 class Events(Base):
@@ -94,6 +95,31 @@ class Events(Base):
     event_timestamp = Column("event_timestamp", TIMESTAMP(timezone=True))
 
 
+class SubscriberSightings(Base):
+    __tablename__ = "subscriber_sightings"
+    __table_args__ = dict(schema="interactions")
+
+    sighting_id = Column("sighting_id", BigInteger, primary_key=True)
+    event_id = Column(
+        "event_id", BigInteger, ForeignKey("interactions.event_supertable.event_id")
+    )
+    subscriber_id = Column(
+        "subscriber_id", BigInteger, ForeignKey("interactions.subscriber.subscriber_id")
+    )
+    location_id = Column(
+        "location_id", BigInteger, ForeignKey("interactions.locations.location_id")
+    )
+    time_dim_id = Column("time_dim_id", BigInteger, ForeignKey("d_time.time_dim_id"))
+    date_dim_id = Column(
+        "date_dim_id", BigInteger, ForeignKey("d_date.date_dim_id"), primary_key=True
+    )
+    event_type_id = Column(
+        "event_type_id", Integer, ForeignKey("interactions.d_event_type.event_type_id")
+    )
+    sighting_timestamp = Column("sighting_timestamp", TIMESTAMP(timezone=True))
+    subscriber = relationship("Subscriber", backref="sightings")
+
+
 class TopupsFacts(Base):
     __tablename__ = "topups"
     __table_args__ = dict(schema="interactions")
@@ -112,7 +138,7 @@ class TopupsFacts(Base):
     tax_and_fee = Column("tax_and_fee", Numeric)
     pre_event_balance = Column("pre_event_balance", Numeric)
     post_event_balance = Column("post_event_balance", Numeric)
-    event = relationship("Events", backref="extra")
+    event = relationship("Events", backref=backref("topup", uselist=False))
 
 
 class MdsFacts(Base):
@@ -131,11 +157,11 @@ class MdsFacts(Base):
     data_volume_up = Column("data_volume_up", Numeric)
     data_volume_down = Column("data_volume_down", Numeric)
     duration = Column("duration", Numeric)
-    event = relationship("Events", backref="extra")
+    event = relationship("Events", backref=backref("mds", uselist=False))
 
 
 class SmsFacts(Base):
-    __tablename__ = "calls"
+    __tablename__ = "sms"
     __table_args__ = dict(schema="interactions")
     event_id = Column(
         "event_id",
@@ -158,7 +184,9 @@ class SmsFacts(Base):
     )
     calling_party_msisdn = Column("calling_party_msisdn", Text)
     called_party_msisdn = Column("called_party_msisdn", Text)
-    event = relationship("Events", backref="extra")
+    event = relationship("Events", backref=backref("sms", uselist=False))
+    called_subscriber = relationship("Subscriber", backref="sms_received")
+    called_subscriber_location = relationship("Locations")
 
 
 class CallFacts(Base):
@@ -186,7 +214,9 @@ class CallFacts(Base):
     calling_party_msisdn = Column("calling_party_msisdn", Text)
     called_party_msisdn = Column("called_party_msisdn", Text)
     duration = Column("duration", Numeric)
-    event = relationship("Events", backref="extra")
+    event = relationship("Events", backref=backref("call", uselist=False))
+    called_subscriber = relationship("Subscriber", backref="calls_received")
+    called_subscriber_location = relationship("Locations")
 
 
 class DEventType(Base):
