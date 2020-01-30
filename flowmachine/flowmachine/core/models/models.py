@@ -75,7 +75,7 @@ class Locations(Base):
 
 
 class Events(Base):
-    __tablename__ = "events_supertable"
+    __tablename__ = "event_supertable"
     __table_args__ = dict(schema="interactions")
     event_id = Column("event_id", BigInteger, primary_key=True)
     subscriber_id = Column(
