@@ -5,26 +5,24 @@
 import pytest
 from operator import ge as greater_or_equal, lt as less_than
 
-from flowmachine.core.sqlalchemy_table_definitions import EventsCallsTable
+from flowmachine.core.models.models import Calls
 from flowmachine.core.sqlalchemy_utils import get_string_representation
 from flowmachine.core.hour_slice import HourAndMinutesTimestamp, HourInterval, HourSlice
 
 
 def test_filter_by_hour_of_day():
     hd = HourAndMinutesTimestamp(hour_str="09:00")
-    expr = hd.filter_timestamp_column(
-        EventsCallsTable.datetime, cmp_op=greater_or_equal
-    )
+    expr = hd.filter_timestamp_column(Calls.datetime, cmp_op=greater_or_equal)
     expected = "to_char(events.calls.datetime, 'HH24:MI') >= '09:00'"
     assert expected == get_string_representation(expr)
 
     hd = HourAndMinutesTimestamp(hour_str="12:40")
-    expr = hd.filter_timestamp_column(EventsCallsTable.datetime, cmp_op=less_than)
+    expr = hd.filter_timestamp_column(Calls.datetime, cmp_op=less_than)
     expected = "to_char(events.calls.datetime, 'HH24:MI') < '12:40'"
     assert expected == get_string_representation(expr)
 
     hd = HourAndMinutesTimestamp(hour_str=None)
-    expr = hd.filter_timestamp_column(EventsCallsTable.datetime, cmp_op=less_than)
+    expr = hd.filter_timestamp_column(Calls.datetime, cmp_op=less_than)
     expected = "true"
     assert expected == get_string_representation(expr)
 
@@ -61,7 +59,7 @@ def test_daily_hour_slice():
     assert hs.stop_hour == "06:30"
     assert hs.period.freq == "day"
 
-    expr = hs.filter_timestamp_column(EventsCallsTable.datetime)
+    expr = hs.filter_timestamp_column(Calls.datetime)
     expected = "to_char(events.calls.datetime, 'HH24:MI') >= '00:00' AND to_char(events.calls.datetime, 'HH24:MI') < '06:30'"
     assert expected == get_string_representation(expr)
 
@@ -72,7 +70,7 @@ def test_daily_hour_slice_without_start_hour():
     assert hs.stop_hour == "17:50"
     assert hs.period.freq == "day"
 
-    expr = hs.filter_timestamp_column(EventsCallsTable.datetime)
+    expr = hs.filter_timestamp_column(Calls.datetime)
     expected = "to_char(events.calls.datetime, 'HH24:MI') < '17:50'"
     assert expected == get_string_representation(expr)
 
@@ -83,7 +81,7 @@ def test_daily_hour_slice_without_stop_hour():
     assert hs.stop_hour.is_missing
     assert hs.period.freq == "day"
 
-    expr = hs.filter_timestamp_column(EventsCallsTable.datetime)
+    expr = hs.filter_timestamp_column(Calls.datetime)
     expected = "to_char(events.calls.datetime, 'HH24:MI') >= '07:20'"
     assert expected == get_string_representation(expr)
 
@@ -97,7 +95,7 @@ def test_weekly_hour_slice():
     assert hs.period.freq == "week"
     assert hs.period.weekday == "Tuesday"
 
-    ts_col = EventsCallsTable.datetime
+    ts_col = Calls.datetime
     expr = hs.filter_timestamp_column(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') >= '04:00' AND "
@@ -116,7 +114,7 @@ def test_weekly_hour_slice_without_start_value():
     assert hs.period.freq == "week"
     assert hs.period.weekday == "Wednesday"
 
-    ts_col = EventsCallsTable.datetime
+    ts_col = Calls.datetime
     expr = hs.filter_timestamp_column(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') < '16:38' AND "
@@ -134,7 +132,7 @@ def test_weekly_hour_slice_without_stop_value():
     assert hs.period.freq == "week"
     assert hs.period.weekday == "Saturday"
 
-    ts_col = EventsCallsTable.datetime
+    ts_col = Calls.datetime
     expr = hs.filter_timestamp_column(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') >= '10:00' AND "
@@ -175,7 +173,7 @@ def test_multiple_our_slices():
     )
     mhs = HourSlice(hour_intervals=[hs1, hs2])
 
-    ts_col = EventsCallsTable.datetime
+    ts_col = Calls.datetime
     expr = mhs.get_subsetting_condition(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') >= '08:00' AND "

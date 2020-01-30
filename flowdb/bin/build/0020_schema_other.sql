@@ -79,7 +79,7 @@ CREATE TABLE etl.etl_records (
 );
 
 CREATE TABLE etl.post_etl_queries (
-    id SERIAL NOT NULL,
+    id SERIAL NOT NULL PRIMARY KEY,
     cdr_date DATE,
     cdr_type TEXT,
     type_of_query_or_check TEXT,
