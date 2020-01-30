@@ -51,6 +51,25 @@ def admin_geography(*, admin_level: int):
         return cls
 
 
+class Subscriber(Base):
+    __tablename__ = "subscriber"
+    __table_args__ = dict(schema="interactions")
+    subscriber_id = Column("subscriber_id", BigInteger, primary_key=True)
+    msisdn = Column("msisdn", Text)
+    imei = Column("imei", Text)
+    imsi = Column("imsi", Text)
+    tac_id = Column(
+        "tac", Numeric(precision=8, scale=0), ForeignKey("infrastructure.tacs.id")
+    )
+
+
+class DEventType(Base):
+    __tablename__ = "d_event_type"
+    __table_args__ = dict(schema="interactions")
+    event_type_id = Column("event_type_id", Integer, primary_key=True)
+    name = Column("name", VARCHAR)
+
+
 class DTime(Base):
     __tablename__ = "d_time"
     time_dim_id = Column("time_dim_id", Integer, primary_key=True)
@@ -326,6 +345,7 @@ class Tacs(Base):
     mechanical_downtilt = Column("mechanical_downtilt", Numeric())
     date_of_first_service = Column("date_of_first_service", Date())
     date_of_last_service = Column("date_of_last_service", Date())
+    subscribers = relationship("Subscriber", backref="tac")
 
 
 class Sites(Base):
