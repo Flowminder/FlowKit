@@ -69,6 +69,7 @@ class Locations(Base):
     location_id = Column("location_id", BigInteger, primary_key=True)
     site_id = Column("site_id", BigInteger, ForeignKey("infrastructure.sites.site_id"))
     cell_id = Column("cell_id", BigInteger, ForeignKey("infrastructure.cells.cell_id"))
+    position = Column("position", Geometry("POINT", srid=4326))
 
 
 class DEventType(Base):
