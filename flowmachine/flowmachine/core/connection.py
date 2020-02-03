@@ -8,7 +8,6 @@ Class(es) representing our connection to the database, along with utilities
 regarding the database.
 """
 import os
-import re
 import datetime
 import warnings
 
@@ -113,7 +112,6 @@ class Connection:
             connect_args=connect_args,
         )
 
-        self.inspector = sqlalchemy.inspect(self.engine)
         self.max_connections = pool_size + overflow
         if self.max_connections > os.cpu_count():
             warnings.warn(
@@ -160,24 +158,6 @@ class Connection:
                 curs.execute(query)
                 rs = curs.fetchall()
         return rs
-
-    def tables(self, regex=None):
-        """
-        Parameters
-        ----------
-        regex : str
-            Optional regular expression
-
-        Returns
-        -------
-        list
-            A list of table names that follow the given regular
-            expression or if no argument is passed returns all table names
-        """
-        tables = self.inspector.get_table_names()
-        if regex is None:
-            return tables
-        return [t for t in tables if re.search(regex, t)]
 
     def has_table(self, name, schema=None):
         """
@@ -394,30 +374,6 @@ class Connection:
             ]
 
         return available
-
-    def columns(self, tables):
-        """
-        Parameters
-        ----------
-        tables : str or list of str
-            Tables to get column names for
-
-        Returns
-        -------
-        dict
-            A dictionary of column names for each table name passed
-        """
-        if isinstance(tables, str):
-            tables = [tables]
-
-        columns = {}
-        for table in self.tables():
-            if (tables is None) or (table in tables):
-                columns[table] = []
-                for column in self.inspector.get_columns(table):
-                    columns[table].append(column["name"])
-
-        return columns
 
     def min_date(self, table="calls", strictness=0, schema="events"):
         """

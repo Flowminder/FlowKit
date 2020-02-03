@@ -51,42 +51,6 @@ def test_fetches_query_from_database(test_tables):
     assert isinstance(r, list)
 
 
-def test_tables_returns_list_of_tables(test_tables):
-    """
-    Connection().tables() returns correct table list.
-    """
-    #
-    #  List of tables returned is
-    #  accurate.
-    #
-    r = test_tables.tables()
-    assert isinstance(r, list)
-
-    #
-    #  Regex function
-    #  is working as expected.
-    #
-    r = test_tables.tables(regex="_a$")
-
-    assert "test_table_a" in r
-    assert "test_table_b" not in r
-
-
-def test_columns_returns_column_list(test_tables):
-    """
-    Connection().columns() returns column list.
-    """
-    r = test_tables.columns(tables="test_table_a")
-
-    assert isinstance(r, dict)
-    assert "field" in r["test_table_a"]
-
-    r = test_tables.columns(tables=["test_table_a", "test_table_b"])
-    assert isinstance(r, dict)
-    assert "field" in r["test_table_a"]
-    assert "numeric_field" in r["test_table_b"]
-
-
 def test_has_date(flowmachine_connect):
     """
     Test that the connection knows which dates it has.
