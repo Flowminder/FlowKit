@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 pyzmq = "*"
 quart = "*"
-hypercorn = "*"
+hypercorn = {version="*", extras=["uvloop"]}
 asyncpg = "*"
 quart-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
 cryptography = "*" # This _should_ get installed given the flask-jwt-extended extra, but is getting put in the develop section of the lockfile

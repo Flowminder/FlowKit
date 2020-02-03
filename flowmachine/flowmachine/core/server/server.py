@@ -272,6 +272,14 @@ def main():
     if config.debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
 
+    try:
+        import uvloop
+
+        uvloop.install()
+        logger.debug("uvloop available, using instead of default asyncio loop.")
+    except ImportError:
+        logger.debug("uvloop not available, using default asyncio loop.")
+
     # Run receive loop which receives zmq messages and sends back replies
     asyncio.run(
         recv(config=config), debug=config.debug_mode,
