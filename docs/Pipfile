@@ -28,6 +28,10 @@ mknotebooks = "*"
 flask-jwt-extended = "*"
 mapboxgl = "*"
 markdown = "==3.1.1" # Working around version conflict caused by airflow's aggressive pinning
+pyobjc-core = {version = "*", sys_platform = "== 'darwin'"}
+pyobjc-framework-cocoa = {version = "*", sys_platform = "== 'darwin'"} # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
+pyobjc-framework-fsevents = {version = "*", sys_platform = "== 'darwin'"} # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
+
 
 [dev-packages]
 jupyterlab = "*"

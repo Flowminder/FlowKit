@@ -14,6 +14,10 @@ approvaltests = "*"
 pytest-cov = "*"
 tavern = {extras = ["pytest"],version = "*"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
+pyobjc-core = {version = "*", sys_platform = "== 'darwin'"}
+pyobjc-framework-cocoa = {version = "*", sys_platform = "== 'darwin'"} # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
+pyobjc-framework-fsevents = {version = "*", sys_platform = "== 'darwin'"} # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
+
 
 [requires]
 python_version = "3.7"
