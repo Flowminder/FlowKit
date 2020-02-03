@@ -109,6 +109,21 @@ RUN apt-get update && \
     apt purge -y --auto-remove  &&\
     rm -rf /var/lib/apt/lists/*
 
+# MobilityDB
+
+RUN apt-get update && \
+    apt install -y --no-install-recommends \
+     build-essential cmake postgresql-server-dev-$PG_MAJOR liblwgeom-dev libproj-dev libjson-c-dev git && \
+     git clone https://github.com/ULB-CoDE-WIT/MobilityDB && \
+     mkdir MobilityDB/build && \
+     cd MobilityDB/build && \
+     cmake .. && \
+     make && \
+     sudo make install && \
+     apt-get remove -y build-essential cmake postgresql-server-dev-$PG_MAJOR liblwgeom-dev libproj-dev libjson-c-dev git && \
+    apt purge -y --auto-remove  &&\
+    rm -rf /var/lib/apt/lists/*
+
 
 
 #

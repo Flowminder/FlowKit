@@ -23,6 +23,7 @@ import pytest
         "pg_median_utils",
         "ogr_fdw",
         "tds_fdw",
+        "MobilityDB",
     ],
 )
 def test_extension_available(pg_available_extensions, extension):
