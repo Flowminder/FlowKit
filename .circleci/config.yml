@@ -1124,20 +1124,17 @@ workflows:
       - push_wheel:
           name: push_flowclient_wheel
           project_name: flowclient
-          requires:
-            - retag_tagged_build
+          requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - push_wheel:
           name: push_flowetl_wheel
           project_name: flowetl
-          requires:
-            - retag_tagged_build
+          requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
-          requires:
-            - retag_tagged_build
+          requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - build_docs:
           name: Deploy docs
