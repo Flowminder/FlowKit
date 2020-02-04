@@ -24,7 +24,7 @@ from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
 from flowmachine.core import Query, GeoTable
-from flowmachine.core.cache import get_query_object_by_id
+from flowmachine.core.cache import get_query_object_by_id, touch_cache
 from flowmachine.core.query_info_lookup import (
     QueryInfoLookup,
     UnkownQueryIdError,
@@ -126,6 +126,22 @@ def action_handler__run_query(
     q_info_lookup = QueryInfoLookup(Query.redis)
     try:
         query_id = q_info_lookup.get_query_id(action_params)
+        q_state_machine = QueryStateMachine(Query.redis, query_id)
+        if q_state_machine.is_known or q_state_machine.is_resetting:
+            try:
+                # Set the query running (it's safe to call this even if the query was set running before)
+                query_id = query_obj.store_async(
+                    store_dependencies=config.store_dependencies
+                )
+            except Exception as e:
+                return ZMQReply(
+                    status="error",
+                    msg="Unable to set query running.",
+                    payload={"exception": str(e)},
+                )
+        elif q_state_machine.is_completed:
+            # Update cache score
+            touch_cache(Query.connection, query_id)
     except QueryInfoLookupError:
         try:
             # Set the query running (it's safe to call this even if the query was set running before)
@@ -135,7 +151,7 @@ def action_handler__run_query(
         except Exception as e:
             return ZMQReply(
                 status="error",
-                msg="Unable to create query object.",
+                msg="Unable to set query running.",
                 payload={"exception": str(e)},
             )
 
