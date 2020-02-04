@@ -818,66 +818,74 @@ class Query(metaclass=ABCMeta):
         q_state_machine = QueryStateMachine(self.redis, self.query_id)
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
-            con = self.connection.engine
             try:
-                table_reference_to_this_query = self.get_table()
-                if table_reference_to_this_query is not self:
-                    table_reference_to_this_query.invalidate_db_cache(
-                        cascade=cascade, drop=drop
-                    )  # Remove any Table pointing as this query
-            except (ValueError, NotImplementedError) as e:
-                pass  # This cache record isn't actually stored
-            try:
-                deps = self.connection.fetch(
-                    """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
-                    ON cache.cached.query_id=cache.dependencies.query_id
-                    WHERE depends_on='{}'""".format(
-                        self.query_id
-                    )
-                )
-                with con.begin():
-                    con.execute(
-                        "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
-                    )
-                    logger.debug(
-                        "Deleted cache record for {}.".format(
-                            self.fully_qualified_table_name
+                con = self.connection.engine
+                try:
+                    table_reference_to_this_query = self.get_table()
+                    if table_reference_to_this_query is not self:
+                        table_reference_to_this_query.invalidate_db_cache(
+                            cascade=cascade, drop=drop
+                        )  # Remove any Table pointing as this query
+                except (ValueError, NotImplementedError) as e:
+                    pass  # This cache record isn't actually stored
+                try:
+                    deps = self.connection.fetch(
+                        """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
+                        ON cache.cached.query_id=cache.dependencies.query_id
+                        WHERE depends_on='{}'""".format(
+                            self.query_id
                         )
                     )
-                    if drop:
+                    with con.begin():
                         con.execute(
-                            "DROP TABLE IF EXISTS {}".format(
-                                self.fully_qualified_table_name
-                            )
+                            "DELETE FROM cache.cached WHERE query_id=%s",
+                            (self.query_id,),
                         )
                         logger.debug(
-                            "Dropped cache for for {}.".format(
+                            "Deleted cache record for {}.".format(
                                 self.fully_qualified_table_name
                             )
                         )
+                        if drop:
+                            con.execute(
+                                "DROP TABLE IF EXISTS {}".format(
+                                    self.fully_qualified_table_name
+                                )
+                            )
+                            logger.debug(
+                                "Dropped cache for for {}.".format(
+                                    self.fully_qualified_table_name
+                                )
+                            )
 
-                if cascade:
-                    for rec in deps:
-                        dep = pickle.loads(rec[0])
-                        logger.debug(
-                            "Cascading to {} from cache record for {}.".format(
-                                dep.fully_qualified_table_name,
-                                self.fully_qualified_table_name,
+                    if cascade:
+                        for rec in deps:
+                            dep = pickle.loads(rec[0])
+                            logger.debug(
+                                "Cascading to {} from cache record for {}.".format(
+                                    dep.fully_qualified_table_name,
+                                    self.fully_qualified_table_name,
+                                )
                             )
-                        )
-                        dep.invalidate_db_cache()
+                            dep.invalidate_db_cache()
+                    else:
+                        logger.debug("Not cascading to dependents.")
+                except NotImplementedError:
+                    logger.info("Table has no standard name.")
+                if schema is not None:
+                    full_name = "{}.{}".format(schema, name)
                 else:
-                    logger.debug("Not cascading to dependents.")
-            except NotImplementedError:
-                logger.info("Table has no standard name.")
-            if schema is not None:
-                full_name = "{}.{}".format(schema, name)
-            else:
-                full_name = name
-            logger.debug("Dropping {}".format(full_name))
-            with con.begin():
-                con.execute("DROP TABLE IF EXISTS {}".format(full_name))
-            q_state_machine.finish_resetting()
+                    full_name = name
+                logger.debug("Dropping {}".format(full_name))
+                with con.begin():
+                    con.execute("DROP TABLE IF EXISTS {}".format(full_name))
+                q_state_machine.finish_resetting()
+            except Exception as exc:
+                q_state_machine.raise_error()
+                logger.error(
+                    f"Error resetting query '{self.query_id}'. Error was {exc}"
+                )
+                raise exc
         elif q_state_machine.is_resetting:
             logger.debug(
                 f"Query '{self.query_id}' is being reset from elsewhere, waiting for reset to finish."
