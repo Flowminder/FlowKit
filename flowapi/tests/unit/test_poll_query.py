@@ -43,8 +43,11 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
         ("executing", 202),
         ("awol", 404),
         ("queued", 202),
+        ("resetting", 202),
+        ("known", 202),
         ("errored", 500),
         ("cancelled", 500),
+        ("reset_failed", 500),
     ],
 )
 @pytest.mark.asyncio
@@ -109,10 +112,7 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
         ),
-        then=ZMQReply(
-            status="error",
-            payload={"query_id": "DUMMY_QUERY_ID", "query_state": "error"},
-        ),
+        then=ZMQReply(status="error", msg="DUMMY_ERROR_MESSAGE",),
     )
     response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
