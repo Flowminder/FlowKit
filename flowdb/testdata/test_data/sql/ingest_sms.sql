@@ -133,3 +133,12 @@ INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_co
     ON conflict (table_name)
     DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;
 COMMIT;
+
+INSERT INTO etl.etl_records (cdr_type, cdr_date, state, timestamp) VALUES
+    ('sms', '2016-01-01'::DATE, 'ingested', NOW()),
+    ('sms', '2016-01-02'::DATE, 'ingested', NOW()),
+    ('sms', '2016-01-03'::DATE, 'ingested', NOW()),
+    ('sms', '2016-01-04'::DATE, 'ingested', NOW()),
+    ('sms', '2016-01-05'::DATE, 'ingested', NOW()),
+    ('sms', '2016-01-06'::DATE, 'ingested', NOW()),
+    ('sms', '2016-01-07'::DATE, 'ingested', NOW());
