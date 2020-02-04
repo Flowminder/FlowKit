@@ -1129,7 +1129,7 @@ workflows:
           <<: *tag_and_master_only_org_context
       - push_wheel:
           name: push_flowetl_wheel
-          project_name: flowetl
+          project_name: flowetl/flowetl
           requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - push_wheel:
