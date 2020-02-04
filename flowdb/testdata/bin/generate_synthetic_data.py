@@ -405,3 +405,10 @@ if __name__ == "__main__":
             DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;""",
             )
         )
+        for date in pd.date_range(start="2016-01-01", periods=args.n_days):
+            do_exec(
+                "Marking day as ingested.",
+                f"""
+    INSERT INTO etl.etl_records (cdr_type, cdr_date, state, timestamp) VALUES
+    ('calls', '{date}'::DATE, 'ingested', NOW());""",
+            )
