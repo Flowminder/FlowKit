@@ -61,11 +61,7 @@ async def update_available_dates(
 
     """
     check_func = partial(
-        flowdb_connection.available_dates.__wrapped__,
-        flowdb_connection,
-        table="all",
-        strictness=1,
-        schema="events",
+        flowdb_connection._available_dates.__wrapped__, flowdb_connection,
     )
     while True:
         logger.debug("Checking available dates.")
