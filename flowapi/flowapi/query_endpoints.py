@@ -117,6 +117,8 @@ async def poll_query(query_id):
                     enum:
                       - executing
                       - queued
+                      - resetting
+                      - known
                     type: string
                 type: object
           description: Request accepted.
@@ -166,7 +168,7 @@ async def poll_query(query_id):
                 303,
                 {"Location": url_for(f"query.get_query_result", query_id=query_id)},
             )
-        elif query_state in ("executing", "queued"):
+        elif query_state in ("executing", "queued", "resetting", "known"):
             return jsonify({"status": query_state, "msg": reply["msg"]}), 202
         elif query_state in ("errored", "cancelled", "reset_failed"):
             return jsonify({"status": query_state, "msg": reply["msg"]}), 500
