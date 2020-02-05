@@ -6,7 +6,7 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     afm (0.2.2)
     asciidoctor (2.0.10)
-    asciidoctor-pdf (1.5.0.rc.2)
+    asciidoctor-pdf (1.5.0.rc.3)
       asciidoctor (>= 1.5.3, < 3.0.0)
       concurrent-ruby (~> 1.1.0)
       prawn (~> 2.2.0)
@@ -16,7 +16,7 @@ GEM
       prawn-templates (~> 0.1.0)
       safe_yaml (~> 1.0.0)
       thread_safe (~> 0.3.0)
-      treetop (~> 1.5.0)
+      treetop (~> 1.6.0)
       ttfunk (~> 1.5.0, >= 1.5.1)
     concurrent-ruby (1.1.5)
     css_parser (1.7.1)
@@ -47,7 +47,7 @@ GEM
     ruby-rc4 (0.1.5)
     safe_yaml (1.0.5)
     thread_safe (0.3.6)
-    treetop (1.5.3)
+    treetop (1.6.10)
       polyglot (~> 0.3)
     ttfunk (1.5.1)
 
@@ -56,7 +56,7 @@ PLATFORMS
 
 DEPENDENCIES
   asciidoctor
-  asciidoctor-pdf (~> 1.5.0.rc.2)
+  asciidoctor-pdf (~> 1.5.0.rc.3)
 
 RUBY VERSION
    ruby 2.7.0p0
