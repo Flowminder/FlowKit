@@ -33,8 +33,9 @@ class Connection:
 
     Parameters
     -----------
-    port, user, password, host, database : str
+    port, user, password, host, database, conn_str: str
         Connection info for the database, as used by sqlalchemy.
+        Provide either port, user, password, host and database or conn_str.
     pool_size : int, optional
         Number of connections to the db to use
     overflow : int, optional
@@ -61,34 +62,19 @@ class Connection:
         conn_str: Optional[str] = None,
     ) -> None:
         if conn_str is None:
-            if (
-                (port is None)
-                or (user is None)
-                or (password is None)
-                or (host is None)
-                or (database is None)
-            ):
+            if any(arg is None for arg in (port, user, password, host, database)):
                 raise ValueError(
                     "If conn_str is not given then all of the arguments port, user, password, host, database must be provided."
                 )
+            else:
+                conn_str = (
+                    f"postgresql://{user}:{urlquote(password)}@{host}:{port}/{database}"
+                )
         else:
-            if (
-                (port is not None)
-                or (user is not None)
-                or (password is not None)
-                or (host is not None)
-                or (database is not None)
-            ):
+            if any(arg is not None for arg in (port, user, password, host, database)):
                 raise ValueError(
                     "If conn_str is given, none of the arguments port, user, password, host, database are allowed."
                 )
-
-        if conn_str is None:
-            conn_str = (
-                f"postgresql://{user}:{urlquote(password)}@{host}:{port}/{database}"
-            )
-        else:
-            pass
 
         self.app_name = "flowmachine"
         try:
