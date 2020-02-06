@@ -54,8 +54,7 @@ async def test_run_query_nonblocking(zmq_port, zmq_host, fm_conn, redis):
         break
 
 
-@pytest.mark.asyncio
-async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
+def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     """
     Run daily_location query and check the resulting table contains the expected rows.
     """
@@ -135,8 +134,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     assert first_few_rows_expected == first_few_rows
 
 
-@pytest.mark.asyncio
-async def test_cache_content(
+def test_cache_content(
     start_flowmachine_server_with_or_without_dependency_caching, fm_conn, redis
 ):
     """
@@ -264,8 +262,7 @@ async def test_cache_content(
         ),
     ],
 )
-@pytest.mark.asyncio
-async def test_run_query_with_wrong_parameters(
+def test_run_query_with_wrong_parameters(
     params, expected_error_messages, zmq_port, zmq_host
 ):
     """
@@ -282,8 +279,7 @@ async def test_run_query_with_wrong_parameters(
     assert expected_error_messages == reply["payload"]["validation_error_messages"]
 
 
-@pytest.mark.asyncio
-async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
+def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     """
     """
     msg = {
