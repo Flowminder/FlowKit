@@ -76,8 +76,10 @@ def get_server_config() -> FlowmachineServerConfig:
     )
     cache_pruning_timeout = int(os.getenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", 600))
     thread_pool_size = os.getenv("FLOWMACHINE_SERVER_THREADPOOL_SIZE", None)
-    if thread_pool_size is not None:
+    try:
         thread_pool_size = int(thread_pool_size)
+    except (TypeError, ValueError):
+        pass  # Not an int
 
     return FlowmachineServerConfig(
         port=port,
