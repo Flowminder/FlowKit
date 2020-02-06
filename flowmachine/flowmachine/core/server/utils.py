@@ -51,8 +51,9 @@ async def send_zmq_message_and_await_reply(msg, port=5555, host="localhost"):
     socket.connect(f"tcp://{host}:{port}")
     print(f"Sending message: {msg}")
     await socket.send_json(msg)
-    reply = socket.recv_json()
-    return await reply
+    reply = await socket.recv_json()
+    context.destroy()
+    return reply
 
 
 def send_zmq_message_and_receive_reply(msg, port=5555, host="localhost"):
@@ -95,6 +96,7 @@ def send_zmq_message_and_receive_reply(msg, port=5555, host="localhost"):
     print(f"Sending message: {msg}")
     socket.send_json(msg)
     reply = socket.recv_json()
+    context.destroy()
     return reply
 
 
