@@ -235,6 +235,21 @@
       },
       "DummyQuery": {
         "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0",
+              "admin1",
+              "admin2",
+              "admin3",
+              "lon-lat"
+            ],
+            "type": "string"
+          },
+          "dummy_delay": {
+            "default": 0,
+            "format": "int32",
+            "type": "integer"
+          },
           "dummy_param": {
             "type": "string"
           },
@@ -246,6 +261,7 @@
           }
         },
         "required": [
+          "aggregation_unit",
           "dummy_param",
           "query_kind"
         ],
