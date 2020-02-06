@@ -126,8 +126,8 @@ def action_handler__run_query(
     q_info_lookup = QueryInfoLookup(Query.redis)
     try:
         query_id = q_info_lookup.get_query_id(action_params)
-        q_state_machine = QueryStateMachine(Query.redis, query_id)
-        if q_state_machine.is_known or q_state_machine.is_resetting:
+        query_state = QueryStateMachine(Query.redis, query_id).current_query_state
+        if query_state == QueryState.KNOWN:
             try:
                 # Set the query running (it's safe to call this even if the query was set running before)
                 query_id = query_obj.store_async(
@@ -136,12 +136,26 @@ def action_handler__run_query(
             except Exception as e:
                 return ZMQReply(
                     status="error",
-                    msg="Unable to set query running.",
-                    payload={"exception": str(e)},
+                    msg="Unable to create query object.",
+                    payload={"exception": str(e), "query_id": query_id},
                 )
-        elif q_state_machine.is_completed:
+        elif query_state == QueryState.COMPLETED:
             # Update cache score
             touch_cache(Query.connection, query_id)
+        elif query_state in {
+            QueryState.ERRORED,
+            QueryState.CANCELLED,
+            QueryState.RESETTING,
+            QueryState.RESET_FAILED,
+        }:
+            return ZMQReply(
+                status="error",
+                msg=f"Unable to set query running; query {query_state.description}.",
+                payload={"query_id": query_id, "query_state": query_state},
+            )
+        else:
+            # If query state is 'queued' or 'executing', no need to do anything
+            pass
     except QueryInfoLookupError:
         try:
             # Set the query running (it's safe to call this even if the query was set running before)
@@ -151,7 +165,7 @@ def action_handler__run_query(
         except Exception as e:
             return ZMQReply(
                 status="error",
-                msg="Unable to set query running.",
+                msg="Unable to create query object.",
                 payload={"exception": str(e)},
             )
 

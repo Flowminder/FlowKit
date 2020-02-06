@@ -98,12 +98,6 @@ def write_query_to_cache(
     """
     q_state_machine = QueryStateMachine(redis, query.query_id)
 
-    # If query state is 'resetting' or 'known', enqueue it.
-    if q_state_machine.is_resetting:
-        logger.debug(f"Waiting for '{query.query_id}' to finish resetting.")
-        q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
-    q_state_machine.enqueue()
-
     logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
