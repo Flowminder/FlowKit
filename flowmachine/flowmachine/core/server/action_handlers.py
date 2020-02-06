@@ -14,13 +14,11 @@
 # action handler and also gracefully handles any potential errors.
 #
 import asyncio
-from functools import partial, lru_cache
+from functools import partial
 import json
 import textwrap
 from typing import Callable, Union
 
-from apispec import APISpec
-from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
 from flowmachine.core import Query
@@ -34,6 +32,7 @@ from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema, GeographySchema
+from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
@@ -60,7 +59,6 @@ async def action_handler__get_available_queries(
     return ZMQReply(status="success", payload={"available_queries": available_queries})
 
 
-@lru_cache(maxsize=1)
 async def action_handler__get_query_schemas(
     config: "FlowmachineServerConfig",
 ) -> ZMQReply:
@@ -70,15 +68,8 @@ async def action_handler__get_query_schemas(
     Returns a dict with all supported flowmachine queries as keys
     and the associated schema for the query parameters as values.
     """
-    spec = APISpec(
-        title="FlowAPI",
-        version="1.0.0",
-        openapi_version="3.0.2",
-        plugins=[MarshmallowPlugin()],
-    )
-    spec.components.schema("FlowmachineQuerySchema", schema=FlowmachineQuerySchema)
-    schemas_spec = spec.to_dict()["components"]["schemas"]
-    return ZMQReply(status="success", payload={"query_schemas": schemas_spec})
+
+    return ZMQReply(status="success", payload={"query_schemas": get_query_schema()})
 
 
 async def action_handler__run_query(
