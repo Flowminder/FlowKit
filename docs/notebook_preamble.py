@@ -35,9 +35,9 @@ def to_md(df):
     Wrapper around `DataFrame.to_markdown`, to display MultiIndex headers on multiple lines.
     """
     if df.columns.nlevels == 1:
-        col_headers = df.columns.tolist()
+        col_headers = map(str, df.columns.tolist())
     else:
-        col_headers = map("<br>".join, df.columns.tolist())
+        col_headers = ("<br>".join(map(str, col)) for col in df.columns.tolist())
     headers = ["<br>".join((name or "" for name in df.columns.names)) + "<br><br>"] + [
         h + "<br><br>" for h in col_headers
     ]
