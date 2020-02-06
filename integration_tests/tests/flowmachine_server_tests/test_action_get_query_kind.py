@@ -32,8 +32,7 @@ from .helpers import poll_until_done
         },
     ],
 )
-@pytest.mark.asyncio
-async def test_get_query_kind(params, zmq_port, zmq_host):
+def test_get_query_kind(params, zmq_port, zmq_host):
     """
     Running 'get_query_kind' against an existing query_id returns the expected query kind.
     """
@@ -67,8 +66,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     assert "spatial_aggregate" == reply["payload"]["query_kind"]
 
 
-@pytest.mark.asyncio
-async def test_get_query_kind_for_nonexistent_query_id(zmq_port, zmq_host):
+def test_get_query_kind_for_nonexistent_query_id(zmq_port, zmq_host):
     """
     Running 'get_query_kind' on a non-existent query id returns an error.
     """

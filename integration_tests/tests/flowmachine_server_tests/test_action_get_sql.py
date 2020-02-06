@@ -13,8 +13,7 @@ from .helpers import poll_until_done
 # TODO: add test for code path that raises QueryProxyError with the 'get_sql' action
 
 
-@pytest.mark.asyncio
-async def test_get_sql(zmq_port, zmq_host):
+def test_get_sql(zmq_port, zmq_host):
     """
     Running 'get_sql' on finished query returns the expected result.
     """
@@ -70,8 +69,7 @@ async def test_get_sql(zmq_port, zmq_host):
     assert f"SELECT * FROM cache.x{expected_query_id}" == reply["payload"]["sql"]
 
 
-@pytest.mark.asyncio
-async def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
+def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
     """
     Polling a query with non-existent query id returns expected error.
     """

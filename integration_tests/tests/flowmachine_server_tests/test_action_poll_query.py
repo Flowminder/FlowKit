@@ -4,8 +4,7 @@ from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from .helpers import poll_until_done
 
 
-@pytest.mark.asyncio
-async def test_poll_existing_query(zmq_port, zmq_host):
+def test_poll_existing_query(zmq_port, zmq_host):
     """
     Polling an existing query id returns expected reply.
     """
@@ -48,8 +47,7 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     assert expected_reply == reply
 
 
-@pytest.mark.asyncio
-async def test_poll_query_with_nonexistent_query_id_fails(zmq_port, zmq_host):
+def test_poll_query_with_nonexistent_query_id_fails(zmq_port, zmq_host):
     """
     Polling a query with non-existent query id returns expected error.
     """
