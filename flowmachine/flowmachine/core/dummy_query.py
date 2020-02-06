@@ -24,10 +24,7 @@ class DummyQuery(Query):
 
     @property
     def query_id(self):
-        # Prefix the usual query_id hash with 'dummy_query' to make it obvious
-        # that this is not a regular query.
-        md5_hash = super().query_id
-        return f"dummy_query_{md5_hash}"
+        return f"dummy_query_{self.dummy_param}"
 
     def _make_query(self):
         return "SQL_of_dummy_query"

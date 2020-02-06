@@ -1,9 +1,13 @@
+import asyncio
 import logging
 import pytest
 import os
 
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine.core.server.utils import (
+    send_zmq_message_and_receive_reply,
+    send_zmq_message_and_await_reply,
+)
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.dependency_graph import unstored_dependencies_graph
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
@@ -14,6 +18,40 @@ from flowmachine.features import daily_location
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
+
+
+@pytest.mark.asyncio
+async def test_run_query_nonblocking(zmq_port, zmq_host, fm_conn, redis):
+    """
+    Run two dummy queries to check that that are executed concurrently.
+    """
+    slow_dummy = {
+        "action": "run_query",
+        "params": {
+            "query_kind": "dummy_query",
+            "aggregation_unit": "admin3",
+            "dummy_param": "slow_dummy",
+            "dummy_delay": 10,
+        },
+        "request_id": "SLOW_DUMMY_ID",
+    }
+    fast_dummy = {
+        "action": "run_query",
+        "params": {
+            "query_kind": "dummy_query",
+            "aggregation_unit": "admin3",
+            "dummy_param": "fast_dummy",
+        },
+        "request_id": "FAST_DUMMY_ID",
+    }
+
+    replies = [
+        send_zmq_message_and_await_reply(dummy, port=zmq_port, host=zmq_host)
+        for dummy in (slow_dummy, fast_dummy)
+    ]
+    for reply in asyncio.as_completed(replies):
+        assert (await reply)["payload"]["query_id"] == "dummy_query_fast_dummy"
+        break
 
 
 @pytest.mark.asyncio

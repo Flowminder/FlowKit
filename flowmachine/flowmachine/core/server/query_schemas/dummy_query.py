@@ -22,7 +22,7 @@ class DummyQuerySchema(Schema):
     query_kind = fields.String(validate=OneOf(["dummy_query"]))
     dummy_param = fields.String(required=True)
     aggregation_unit = AggregationUnit()
-    dummy_delay = fields.Integer(default=0, required=False)
+    dummy_delay = fields.Integer(missing=0, required=False)
 
     @post_load
     def make_query_object(self, params, **kwargs):
