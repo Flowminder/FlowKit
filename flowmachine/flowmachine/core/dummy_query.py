@@ -20,6 +20,7 @@ class DummyQuery(Query):
 
     def __init__(self, dummy_param):
         self.dummy_param = dummy_param
+        super().__init__()
 
     @property
     def query_id(self):
