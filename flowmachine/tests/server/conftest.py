@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+from concurrent.futures.thread import ThreadPoolExecutor
 from json import JSONDecodeError
 
 from _pytest.capture import CaptureResult
@@ -62,4 +63,5 @@ def server_config():
         store_dependencies=True,
         cache_pruning_frequency=86400,
         cache_pruning_timeout=600,
+        server_thread_pool=ThreadPoolExecutor(),
     )

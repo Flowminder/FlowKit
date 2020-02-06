@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+from concurrent.futures.thread import ThreadPoolExecutor
+
 from typing import NamedTuple
 
 
@@ -43,6 +45,8 @@ class FlowmachineServerConfig(NamedTuple):
         Number of seconds to wait between cache shrinks (if negative, no shrinks will ever be done).
     cache_pruning_timeout : int
         Maximum number of seconds to wait for a cache pruning operation to complete.
+    server_thread_pool : ThreadPoolExecutor
+        Server's threadpool for managing blocking tasks
     """
 
     port: int
@@ -50,6 +54,7 @@ class FlowmachineServerConfig(NamedTuple):
     store_dependencies: bool
     cache_pruning_frequency: int
     cache_pruning_timeout: int
+    server_thread_pool: ThreadPoolExecutor
 
 
 def get_server_config() -> FlowmachineServerConfig:
@@ -70,6 +75,9 @@ def get_server_config() -> FlowmachineServerConfig:
         os.getenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", 86400)
     )
     cache_pruning_timeout = int(os.getenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", 600))
+    thread_pool_size = os.getenv("FLOWMACHINE_SERVER_THREADPOOL_SIZE", None)
+    if thread_pool_size is not None:
+        thread_pool_size = int(thread_pool_size)
 
     return FlowmachineServerConfig(
         port=port,
@@ -77,4 +85,5 @@ def get_server_config() -> FlowmachineServerConfig:
         store_dependencies=store_dependencies,
         cache_pruning_frequency=cache_pruning_frequency,
         cache_pruning_timeout=cache_pruning_timeout,
+        server_thread_pool=ThreadPoolExecutor(max_workers=thread_pool_size),
     )
