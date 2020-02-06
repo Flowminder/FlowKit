@@ -14,9 +14,9 @@ __all__ = [
 
 async def send_zmq_message_and_await_reply(msg, port=5555, host="localhost"):
     """
-    Helper function to send JSON messages to the flowmachine server (via zmq) and receive a reply.
+    Helper function to send JSON messages to the flowmachine server (via zmq) and await a reply.
 
-    This is mainly useful for interactive testing and debugging.
+    This is mainly useful for interactive testing and debugging asyncio behaviour.
 
     Parameters
     ----------
@@ -39,10 +39,10 @@ async def send_zmq_message_and_await_reply(msg, port=5555, host="localhost"):
     ...      "params": {"query_kind": "daily_location", "date": "2016-01-01", "method": "last", "aggregation_unit": "admin3", "subscriber_subset": None}
     ... }
 
-    >>> send_zmq_message_and_receive_reply(msg)
+    >>> await send_zmq_message_and_await_reply(msg)
     {'status': 'accepted', 'msg': '', 'data': {'query_id': 'e39b0d45bc6b46b7700c67cd52f00455'}}
 
-    >>> send_zmq_message_and_receive_reply({"action": "get_sql_for_query_result", "request_id": "DUMMY_ID", "params": {"query_id": "e39b0d45bc6b46b7700c67cd52f00455"}})
+    >>> await send_zmq_message_and_await_reply({"action": "get_sql_for_query_result", "request_id": "DUMMY_ID", "params": {"query_id": "e39b0d45bc6b46b7700c67cd52f00455"}})
     {'status': 'done', 'msg': '', 'data': {'query_id': 'e39b0d45bc6b46b7700c67cd52f00455', 'sql': 'SELECT * FROM cache.xe39b0d45bc6b46b7700c67cd52f00455'}}
 
     """

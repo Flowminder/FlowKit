@@ -23,7 +23,7 @@ logger = logging.getLogger("flowmachine").getChild(__name__)
 @pytest.mark.asyncio
 async def test_run_query_nonblocking(zmq_port, zmq_host, fm_conn, redis):
     """
-    Run daily_location query and check the resulting table contains the expected rows.
+    Run two dummy queries to check that that are executed concurrently.
     """
     slow_dummy = {
         "action": "run_query",
