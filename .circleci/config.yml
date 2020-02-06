@@ -42,6 +42,14 @@ defaults:
       tags:
         only: /.*/
 
+  - &tag_and_master_only_org_context
+    context: org-global
+    filters:
+      branches:
+        only: master
+      tags:
+        only: /.*/
+
 executors:
   python_with_flowdb: # Synthetic data generation execution environment
     parameters:
@@ -1104,6 +1112,7 @@ workflows:
             - synth_data_sql_generator_tests
             - build_flowmachine_wheel
             - build_flowclient_wheel
+            - build_flowetl_wheel
             - run_flowmachine_tests
             - run_autoflow_tests
             - build_autoflow
@@ -1116,21 +1125,18 @@ workflows:
       - push_wheel:
           name: push_flowclient_wheel
           project_name: flowclient
-          requires:
-            - retag_tagged_build
-          <<: *tag_only_org_context
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
       - push_wheel:
           name: push_flowetl_wheel
-          project_name: flowetl
-          requires:
-            - retag_tagged_build
-          <<: *tag_only_org_context
+          project_name: flowetl/flowetl
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
-          requires:
-            - retag_tagged_build
-          <<: *tag_only_org_context
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
       - build_docs:
           name: Deploy docs
           deploy: true

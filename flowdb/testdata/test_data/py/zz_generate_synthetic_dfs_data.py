@@ -116,7 +116,7 @@ select_stmt = select(
 df_cells = pd.read_sql(select_stmt, engine)
 
 # Pick only the latest version for each cell
-df_cells = df_cells.loc[df_cells.groupby("cell_id")["version"].idxmax("max")]
+df_cells = df_cells.loc[df_cells.groupby("cell_id")["version"].idxmax()]
 df_cells = df_cells.reset_index(drop=True)
 
 cells = list(df_cells.itertuples(index=False, name="Cell"))
