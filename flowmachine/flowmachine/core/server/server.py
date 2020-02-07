@@ -78,7 +78,7 @@ async def update_available_dates(
     return avail
 
 
-def get_reply_for_message(
+async def get_reply_for_message(
     *, msg_str: str, config: "FlowmachineServerConfig"
 ) -> ZMQReply:
     """
@@ -121,7 +121,7 @@ def get_reply_for_message(
             params=action_request.params,
         )
 
-        reply = perform_action(
+        reply = await perform_action(
             action_request.action, action_request.params, config=config
         )
 
@@ -232,7 +232,7 @@ async def calculate_and_send_reply_for_message(
         Server config options
     """
     try:
-        reply_json = get_reply_for_message(msg_str=msg_contents, config=config)
+        reply_json = await get_reply_for_message(msg_str=msg_contents, config=config)
     except Exception as exc:
         # Catch and log any unhandled errors, and send a generic error response to the API
         # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
@@ -241,7 +241,10 @@ async def calculate_and_send_reply_for_message(
             traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
         )
         reply_json = ZMQReply(status="error", msg="Could not get reply for message")
-    socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
+    await socket.send_multipart(
+        [return_address, b"", rapidjson.dumps(reply_json).encode()]
+    )
+    logger.debug("Sent reply", reply=reply_json, msg=msg_contents)
 
 
 def shutdown(socket: "zmq.asyncio.Socket") -> None:

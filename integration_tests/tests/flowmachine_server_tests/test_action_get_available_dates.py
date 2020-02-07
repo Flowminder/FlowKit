@@ -10,8 +10,7 @@ from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 # TODO: add test for code path that raises QueryProxyError with the 'get_params' action
 
 
-@pytest.mark.asyncio
-async def test_get_available_dates(zmq_port, zmq_host):
+def test_get_available_dates(zmq_port, zmq_host):
     """
     action 'get_available_dates' against an existing query_id returns the expected parameters with which the query was run.
     """
