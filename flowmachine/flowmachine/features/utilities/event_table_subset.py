@@ -198,11 +198,7 @@ class EventTableSubset(Query):
         try:
             db_dates = [
                 d.strftime("%Y-%m-%d")
-                for d in self.connection.available_dates(
-                    table=self.table_ORIG.name,
-                    strictness=1,
-                    schema=self.table_ORIG.schema,
-                )[self.table_ORIG.name]
+                for d in self.connection.available_dates[self.table_ORIG.name]
             ]
         except KeyError:  # No dates at all for this table
             raise MissingDateError

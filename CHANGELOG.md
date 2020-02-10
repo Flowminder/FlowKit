@@ -9,11 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- `Connection.available_dates` is now a property and returns results based on the `etl.etl_records` table. [#1873](https://github.com/Flowminder/FlowKit/issues/1873)
 
 ### Fixed
 - Fixed the run action blocking the FlowMachine server in some scenarios. [#1256](https://github.com/Flowminder/FlowKit/issues/1256)
 
 ### Removed
+- Removed `tables` and `columns` methods from the `Connection` class in FlowMachine
+- Removed the `inspector` attribute from the `Connection` class in FlowMachine
 
 
 ## [1.0.0]

@@ -692,7 +692,6 @@ def test_get_geography(access_token_builder, flowapi_url):
                     "2016-01-06",
                     "2016-01-07",
                 ],
-                "forwards": [],
             },
         ),
         (
@@ -707,7 +706,6 @@ def test_get_geography(access_token_builder, flowapi_url):
                     "2016-01-06",
                     "2016-01-07",
                 ],
-                "forwards": [],
                 "mds": [
                     "2016-01-01",
                     "2016-01-02",
