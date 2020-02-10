@@ -27,7 +27,7 @@ mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 mapboxgl = "*"
-markdown = "==3.1.1" # Working around version conflict caused by airflow's aggressive pinning
+markdown = "==3.2" # Working around version conflict caused by airflow's aggressive pinning
 
 [dev-packages]
 jupyterlab = "*"
