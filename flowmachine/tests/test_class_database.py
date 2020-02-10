@@ -73,12 +73,9 @@ def test_max_date(flowmachine_connect):
     )
 
 
-@pytest.mark.parametrize(
-    "tables", [("calls",), ("calls", "sms"), ("calls", "sms", "mds", "topups")]
-)
-def test_multitable_availability(tables, flowmachine_connect):
-    """Dict returned by available_dates should have keys for all requested tables."""
-    for table in tables:
+def test_multitable_availability(flowmachine_connect):
+    """Dict returned by available_dates should return a list for all keys."""
+    for table in ("calls", "sms", "mds", "topups"):
         assert isinstance(flowmachine_connect.available_dates[table], list)
 
 
