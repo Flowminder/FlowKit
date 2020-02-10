@@ -40,8 +40,12 @@ pytest-testmon = "*"
 asynctest = "*"
 cachey = "*"
 approvaltests = "*"
-watchdog = "==0.10.0" # Pinning to deal with https://github.com/gorakhargosh/watchdog/issues/617
+watchdog = "*"
 ipdb = "*"
+pyobjc-core = {version = "*", sys_platform = "== 'darwin'"} # Watchdog depends on these on macos, but they don't declare themselves mac only
+pyobjc-framework-cocoa = {version = "*", sys_platform = "== 'darwin'"} # Watchdog depends on these on macos, but they don't declare themselves mac only
+pyobjc-framework-fsevents = {version = "*", sys_platform = "== 'darwin'"}  # Watchdog depends on these on macos, but they don't declare themselves mac only
+
 
 [requires]
 python_version = "3.7"
