@@ -744,8 +744,7 @@ def make_demodata():
     db.create_all()
     agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
     agg_units += [
-        SpatialAggregationUnit(name="cell"),
-        SpatialAggregationUnit(name="site"),
+        SpatialAggregationUnit(name="lon-lat"),
     ]
     db.session.add_all(agg_units)
     users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
@@ -768,21 +767,29 @@ def make_demodata():
     caps = []
     for c in (
         "available_dates",
-        "daily_location",
         "flows",
-        "modal_location",
-        "location_event_counts",
         "meaningful_locations_aggregate",
         "meaningful_locations_between_label_od_matrix",
         "meaningful_locations_between_dates_od_matrix",
         "geography",
+        "location_event_counts",
         "unique_subscriber_counts",
         "location_introversion",
         "total_network_objects",
         "aggregate_network_objects",
+        "dfs_metric_total_amount",
+        "daily_location",
+        "modal_location",
         "radius_of_gyration",
         "unique_location_counts",
+        "topup_balance",
         "subscriber_degree",
+        "topup_amount",
+        "event_count",
+        "handset",
+        "pareto_interactions",
+        "nocturnal_events",
+        "displacement",
     ):
         c = Capability(name=c)
         db.session.add(c)
