@@ -29,7 +29,7 @@ def test_stores_table(flowmachine_connect):
     """
     query = EventTableSubset(start="2016-01-01", stop="2016-01-01 01:00:00")
     query.to_sql(name="test_table", schema="tests").result()
-    assert "test_table" in flowmachine_connect.inspector.get_table_names(schema="tests")
+    assert flowmachine_connect.has_table(name="test_table", schema="tests")
 
 
 def test_can_force_rewrite(flowmachine_connect, get_length):

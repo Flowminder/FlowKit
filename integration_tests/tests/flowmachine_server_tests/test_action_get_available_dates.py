@@ -59,7 +59,6 @@ def test_get_available_dates(zmq_port, zmq_host):
                 "2016-01-06",
                 "2016-01-07",
             ],
-            "forwards": [],
         },
     }
     assert expected_reply == reply
