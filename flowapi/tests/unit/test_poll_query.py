@@ -106,10 +106,6 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
     # TODO: Fix the logic that makes this necessary
     dummy_zmq_server.side_effect = return_once(
         ZMQReply(
-            status="success",
-            payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
-        ),
-        then=ZMQReply(
             status="error",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "error"},
         ),
@@ -117,4 +113,4 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
     response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
-    assert response.status_code == 500
+    assert response.status_code == 404

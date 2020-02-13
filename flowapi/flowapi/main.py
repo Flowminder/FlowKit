@@ -6,7 +6,6 @@ import rapidjson
 import uuid
 import sys
 
-import quart.flask_patch
 from quart import Quart, request, current_app
 import asyncpg
 import logging
@@ -18,7 +17,7 @@ from flowapi.jwt_auth_callbacks import register_logging_callbacks
 from flowapi.query_endpoints import blueprint as query_endpoints_blueprint
 from flowapi.geography import blueprint as geography_blueprint
 from flowapi.api_spec import blueprint as spec_blueprint
-from flask_jwt_extended import JWTManager
+from quart_jwt_extended import JWTManager
 
 import structlog
 
