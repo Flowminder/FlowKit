@@ -9,6 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+
+### Fixed
+
+### Removed
+
+## [1.1.0]
+
+### Changed
 - `Connection.available_dates` is now a property and returns results based on the `etl.etl_records` table. [#1873](https://github.com/Flowminder/FlowKit/issues/1873)
 
 ### Fixed
@@ -568,7 +576,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.0.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.1.0...master
+[1.1.0]: https://github.com/Flowminder/FlowKit/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/Flowminder/FlowKit/compare/0.9.1...1.0.0
 [0.9.1]: https://github.com/Flowminder/FlowKit/compare/0.9.0...0.9.1
 [0.9.0]: https://github.com/Flowminder/FlowKit/compare/0.8.0...0.9.0
