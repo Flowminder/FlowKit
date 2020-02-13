@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+black = "==19.10b0" # required by papermill
 descartes = "*"
 flowclient = {editable = true,path = "./../flowclient"}
 geopandas = "*"
@@ -23,7 +24,6 @@ sh = "*"
 sqlalchemy = "*"
 
 [dev-packages]
-black = "==19.10b0"
 ipywidgets = "*"
 jupyterlab = "*"
 prefect = {extras = ["viz"]}
