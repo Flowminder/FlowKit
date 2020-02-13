@@ -22,6 +22,8 @@ psycopg2-binary = "*"
 pyyaml = "*"
 sh = "*"
 sqlalchemy = "*"
+nbconvert = "*"
+nbformat = "*"
 
 [dev-packages]
 ipywidgets = "*"
