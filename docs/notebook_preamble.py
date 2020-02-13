@@ -6,7 +6,6 @@
 # It is set as the 'preamble' option to the 'mknotebooks' plugin in mkdocs.yml
 
 import pandas as pd
-import tabulate as tabulate
 import pprint
 import warnings
 import logging
@@ -31,8 +30,21 @@ logging.getLogger().setLevel(logging.ERROR)
 # Format pandas tables nicely
 
 
-def to_md(self):
-    return tabulate.tabulate(self.head(), self.columns, tablefmt="pipe")
+def to_md(df):
+    """
+    Wrapper around `DataFrame.to_markdown`, to display MultiIndex headers on multiple lines.
+    """
+    if df.columns.nlevels == 1:
+        col_headers = map(str, df.columns.tolist())
+    else:
+        col_headers = ("<br>".join(map(str, col)) for col in df.columns.tolist())
+    headers = ["<br>".join((name or "" for name in df.columns.names)) + "<br><br>"] + [
+        h + "<br><br>" for h in col_headers
+    ]
+    if any(df.index.names):
+        headers[0] += ", ".join(map(str, df.index.names))
+        headers[1:] = [h + "&nbsp;" for h in headers[1:]]
+    return df.to_markdown(headers=headers)
 
 
 def format_dict(x):
