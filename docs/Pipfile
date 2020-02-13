@@ -27,11 +27,11 @@ mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 mapboxgl = "*"
-markdown = "==3.2" # Working around version conflict caused by airflow's aggressive pinning
+flowetl = {editable = true,path = "./../flowetl/flowetl"}
 
 [dev-packages]
 jupyterlab = "*"
-flowetl = {editable = true,path = "./../flowetl/flowetl"} # Working around version conflict caused by airflow's aggressive pinning
+
 
 [requires]
 python_version = "3.7"
