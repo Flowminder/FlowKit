@@ -1586,6 +1586,26 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#send_zmq_message_and_await_reply" class="md-nav__link">
+    send_zmq_message_and_await_reply
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#send_zmq_message_and_receive_reply" class="md-nav__link">
     send_zmq_message_and_receive_reply
   </a>
@@ -1594,7 +1614,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
+  <a href="#parameters_1" class="md-nav__link">
     Parameters
   </a>
   
@@ -3774,6 +3794,26 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#send_zmq_message_and_await_reply" class="md-nav__link">
+    send_zmq_message_and_await_reply
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#send_zmq_message_and_receive_reply" class="md-nav__link">
     send_zmq_message_and_receive_reply
   </a>
@@ -3782,7 +3822,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
+  <a href="#parameters_1" class="md-nav__link">
     Parameters
   </a>
   
@@ -3811,13 +3851,34 @@
                 
                 
                 <h1 id="flowmachinecoreserverutils">flowmachine.core.server.utils<a class="headerlink" href="#flowmachinecoreserverutils" title="Permanent link">&para;</a></h1>
+<h2 id="send_zmq_message_and_await_reply">send_zmq_message_and_await_reply<a class="headerlink" href="#send_zmq_message_and_await_reply" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">send_zmq_message_and_await_reply</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/utils.py#L15">flowmachine/core/server/utils.py</a></p>
+<p>Helper function to send JSON messages to the flowmachine server (via zmq) and await a reply.
+This is mainly useful for interactive testing and debugging asyncio behaviour.</p>
+<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><code>msg</code>: <code>dict</code></p>
+<p>Dictionary representing a valid zmq message.</p>
+</li>
+<li>
+<p><code>port</code>: <code>str</code>, <code>int</code></p>
+<p>Port on which the flowmachine server is running (default: 5555)</p>
+</li>
+<li>
+<p><code>host</code>: <code>str</code></p>
+<p>The host on which the flowmachine server is running (default: 'localhost')</p>
+</li>
+</ul>
 <h2 id="send_zmq_message_and_receive_reply">send_zmq_message_and_receive_reply<a class="headerlink" href="#send_zmq_message_and_receive_reply" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">send_zmq_message_and_receive_reply</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/utils.py#L10">flowmachine/core/server/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/utils.py#L59">flowmachine/core/server/utils.py</a></p>
 <p>Helper function to send JSON messages to the flowmachine server (via zmq) and receive a reply.
 This is mainly useful for interactive testing and debugging.</p>
-<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
+<h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p><code>msg</code>: <code>dict</code></p>

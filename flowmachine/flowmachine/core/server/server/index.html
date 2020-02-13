@@ -1669,33 +1669,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#update_available_dates" class="md-nav__link">
-    update_available_dates
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_4" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns_2" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
       
       
       
@@ -3996,33 +3969,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#update_available_dates" class="md-nav__link">
-    update_available_dates
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_4" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns_2" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
       
       
       
@@ -4044,7 +3990,7 @@
 <h2 id="calculate_and_send_reply_for_message">calculate_and_send_reply_for_message<a class="headerlink" href="#calculate_and_send_reply_for_message" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">calculate_and_send_reply_for_message</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">,</span> <span class="n">return_address</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">msg_contents</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L211">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L166">flowmachine/core/server/server.py</a></p>
 <p>Calculate the reply to a zmq message and return the result to the sender. This function is a small wrapper around <code>get_reply_for_message</code> which can be executed as an asyncio background task.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4068,7 +4014,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_reply_for_message">get_reply_for_message<a class="headerlink" href="#get_reply_for_message" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_reply_for_message</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">msg_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L81">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L36">flowmachine/core/server/server.py</a></p>
 <p>Parse the zmq message string, perform the desired action and return the result in JSON format.</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4091,11 +4037,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="main">main<a class="headerlink" href="#main" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">main</span><span class="p">()</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L314">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L267">flowmachine/core/server/server.py</a></p>
 <h2 id="receive_next_zmq_message_and_send_back_reply">receive_next_zmq_message_and_send_back_reply<a class="headerlink" href="#receive_next_zmq_message_and_send_back_reply" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">receive_next_zmq_message_and_send_back_reply</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L152">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L107">flowmachine/core/server/server.py</a></p>
 <p>Listen on the given zmq socket for the next multipart message, .
 Note that the only responsibility of this function is to ensure that the incoming zmq message has the expected structure (three parts of the form <code>return_address, empty_delimiter, msg</code>) and to send back the reply. The responsibility for actually processing the message and calculating the reply lies with other functions.</p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
@@ -4112,7 +4058,7 @@ Note that the only responsibility of this function is to ensure that the incomin
 <h2 id="recv">recv<a class="headerlink" href="#recv" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">recv</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="n">flowdb_connection</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L263">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L221">flowmachine/core/server/server.py</a></p>
 <p>Main receive-and-reply loop. Listens to zmq messages on the given port, processes them and sends back a reply with the result or an error message.</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4132,36 +4078,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="shutdown">shutdown<a class="headerlink" href="#shutdown" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L247">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L205">flowmachine/core/server/server.py</a></p>
 <p>Handler for SIGTERM to allow test coverage data to be written during integration tests.</p>
-<h2 id="update_available_dates">update_available_dates<a class="headerlink" href="#update_available_dates" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">update_available_dates</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">flowdb_connection</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span><span class="p">,</span> <span class="n">sleep_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1800</span><span class="p">,</span> <span class="n">loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L36">flowmachine/core/server/server.py</a></p>
-<p>Background task to periodically refresh the cache entries for available dates based on the content of the database.</p>
-<h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
-<ul>
-<li>
-<p><code>flowdb_connection</code>: <code>flowmachine.core.connection.Connection</code></p>
-<p>Flowdb connection to check dates on</p>
-</li>
-<li>
-<p><code>pool</code>: <code>concurrent.futures._base.Executor</code></p>
-<p>Executor to run the date check with</p>
-</li>
-<li>
-<p><code>sleep_time</code>: <code>int</code>, default <code>1800</code></p>
-<p>Number of seconds to sleep for between checks</p>
-</li>
-<li>
-<p><code>loop</code>: <code>bool</code>, default <code>True</code></p>
-<p>Set to false to return after the first check</p>
-</li>
-</ul>
-<h3 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>:</code>None``</li>
-</ul>
                 
                   
                 

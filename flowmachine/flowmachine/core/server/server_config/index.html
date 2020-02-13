@@ -1617,6 +1617,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#server_thread_pool" class="md-nav__link">
+    server_thread_pool
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#store_dependencies" class="md-nav__link">
     store_dependencies
   </a>
@@ -3899,6 +3906,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#server_thread_pool" class="md-nav__link">
+    server_thread_pool
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#store_dependencies" class="md-nav__link">
     store_dependencies
   </a>
@@ -3976,9 +3990,9 @@
                 
                 <h1 id="flowmachinecoreserverserver_config">flowmachine.core.server.server_config<a class="headerlink" href="#flowmachinecoreserverserver_config" title="Permanent link">&para;</a></h1>
 <h2 id="class-flowmachineserverconfig">Class <strong>FlowmachineServerConfig</strong><a class="headerlink" href="#class-flowmachineserverconfig" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">FlowmachineServerConfig</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">debug_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">store_dependencies</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cache_pruning_frequency</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cache_pruning_timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">FlowmachineServerConfig</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">debug_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">store_dependencies</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cache_pruning_frequency</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cache_pruning_timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">server_thread_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L30">flowmachine/core/server/server_config.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L32">flowmachine/core/server/server_config.py</a></p>
 <p>A namedtuple for passing server config options within the Flowmachine server.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="cache_pruning_frequency">cache_pruning_frequency<a class="headerlink" href="#cache_pruning_frequency" title="Permanent link">&para;</a></h4>
@@ -3997,6 +4011,10 @@ Alias for field number 1</p>
 <p><div class="codehilite"><pre><span></span><span class="n">port</span>
 </pre></div>
 Alias for field number 0</p>
+<h4 id="server_thread_pool">server_thread_pool<a class="headerlink" href="#server_thread_pool" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">server_thread_pool</span>
+</pre></div>
+Alias for field number 5</p>
 <h4 id="store_dependencies">store_dependencies<a class="headerlink" href="#store_dependencies" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">store_dependencies</span>
 </pre></div>
@@ -4004,7 +4022,7 @@ Alias for field number 2</p>
 <h2 id="get_env_as_bool">get_env_as_bool<a class="headerlink" href="#get_env_as_bool" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_env_as_bool</span><span class="p">(</span><span class="n">env_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L9">flowmachine/core/server/server_config.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L11">flowmachine/core/server/server_config.py</a></p>
 <p>Return a boolean true if the named env var is set to 'true' with any casing, and return False if it is set to anything else or not set at all.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4020,7 +4038,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_server_config">get_server_config<a class="headerlink" href="#get_server_config" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_server_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_config</span><span class="o">.</span><span class="n">FlowmachineServerConfig</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L55">flowmachine/core/server/server_config.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L60">flowmachine/core/server/server_config.py</a></p>
 <p>Read config options from environment variables.</p>
 <h3 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h3>
 <ul>

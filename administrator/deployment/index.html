@@ -4650,6 +4650,21 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <td>Verbosity of logging (critical, error, info, or debug)</td>
 <td>error</td>
 </tr>
+<tr>
+<td>FLOWMACHINE_SERVER_THREADPOOL_SIZE</td>
+<td>Number of threads the server will use to manage running queries</td>
+<td>5*n_cpus</td>
+</tr>
+<tr>
+<td>DB_CONNECTION_POOL_SIZE</td>
+<td>Number of connections keep open to FlowDB - the server can actively run this many queries at once. You may wish to increase this if the FlowDB instance is running on a powerful server with multiple CPUs</td>
+<td>5</td>
+</tr>
+<tr>
+<td>DB_CONNECTION_POOL_OVERFLOW</td>
+<td>Number of connections in addition to <code>DB_CONNECTION_POOL_SIZE</code> to open if needed</td>
+<td>1</td>
+</tr>
 </tbody>
 </table>
 <h4 id="flowapi">FlowAPI<a class="headerlink" href="#flowapi" title="Permanent link">&para;</a></h4>
