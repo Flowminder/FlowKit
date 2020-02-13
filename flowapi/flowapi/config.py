@@ -4,8 +4,7 @@
 import base64
 import binascii
 import logging
-import os
-from pathlib import Path
+
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.backends.openssl.rsa import _RSAPublicKey

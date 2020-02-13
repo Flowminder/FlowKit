@@ -20,7 +20,7 @@ import flowmachine
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
 import flowmachine.core.server.server
-import quart.flask_patch
+
 
 here = os.path.dirname(os.path.abspath(__file__))
 flowkit_toplevel_dir = os.path.join(here, "..", "..")

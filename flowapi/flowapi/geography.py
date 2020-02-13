@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask_jwt_extended import jwt_required, current_user
+from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
 
@@ -58,7 +58,7 @@ async def get_geography(aggregation_unit):
             msg = reply["msg"]
         except KeyError:
             msg = "Internal server error"
-        return jsonify({"status": "Error", "msg": msg}), 500
+        return {"status": "Error", "msg": msg}, 500
 
     try:
         query_state = reply["payload"]["query_state"]
@@ -86,9 +86,9 @@ async def get_geography(aggregation_unit):
         # TODO: Reinstate correct status codes for geographies
         #
         # elif query_state == "error":
-        #     return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+        #     return {"status": "Error", "msg": reply["msg"]}, 403
         # elif query_state == "awol":
-        #     return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+        #     return ({"status": "Error", "msg": reply["msg"]}, 404)
     except KeyError:
         # TODO: This should never happen!
-        return (jsonify({"status": "Error", "msg": f"No query state."}), 500)
+        return ({"status": "Error", "msg": f"No query state."}, 500)
