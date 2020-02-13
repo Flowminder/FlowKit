@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "quart",
+        "quart==0.10.0",
         "pyzmq",
         "hypercorn",
         "python-rapidjson",

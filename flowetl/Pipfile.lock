@@ -224,17 +224,18 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:c1d4656b03a0cc8a4e8a6cfadc3096dd672d9b7be54e07875e67cb8b1d1663ab",
-                "sha256:dbdb9037ffcff2ed18897b3f48aaf8cc607edda95bbf3c055634cfb219dc4cd6"
+                "sha256:4d80d05b4219bd7dceaa89bb0b8e3ad5960a5eb8a0874e5cdb3a9475a066724c",
+                "sha256:58c755e0a4b32c72ed7a2020d1e139057d2b55aa4492ec9cbd1d90b5332ba068"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.2.2"
+            "version": "==2.2.3"
         },
         "flask-babel": {
             "hashes": [
-                "sha256:316ad183e42003f3922957fa643d0a1e8e34a0f0301a88c3a8f605bc37ba5c86"
+                "sha256:247f4ec34cf605d03781f480bccb1a5acb719df1d1a2a743c091ab3db5d5fde2",
+                "sha256:d6a70468f9a8919d59fba2a291a003da3a05ff884275dddbd965f3b98b09ab3e"
             ],
-            "version": "==0.12.2"
+            "version": "==1.0.0"
         },
         "flask-caching": {
             "hashes": [
@@ -995,17 +996,18 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:c1d4656b03a0cc8a4e8a6cfadc3096dd672d9b7be54e07875e67cb8b1d1663ab",
-                "sha256:dbdb9037ffcff2ed18897b3f48aaf8cc607edda95bbf3c055634cfb219dc4cd6"
+                "sha256:4d80d05b4219bd7dceaa89bb0b8e3ad5960a5eb8a0874e5cdb3a9475a066724c",
+                "sha256:58c755e0a4b32c72ed7a2020d1e139057d2b55aa4492ec9cbd1d90b5332ba068"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.2.2"
+            "version": "==2.2.3"
         },
         "flask-babel": {
             "hashes": [
-                "sha256:316ad183e42003f3922957fa643d0a1e8e34a0f0301a88c3a8f605bc37ba5c86"
+                "sha256:247f4ec34cf605d03781f480bccb1a5acb719df1d1a2a743c091ab3db5d5fde2",
+                "sha256:d6a70468f9a8919d59fba2a291a003da3a05ff884275dddbd965f3b98b09ab3e"
             ],
-            "version": "==0.12.2"
+            "version": "==1.0.0"
         },
         "flask-caching": {
             "hashes": [
