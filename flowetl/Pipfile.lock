@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f8d7fc4af77ce87c25dad634d7a7f338a446ca3476b1b425bf85a0c3e4708a32"
+            "sha256": "751fccf36ba9759176fa31a24e91e71b335428778166f7ded9238474fc688243"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -28,11 +28,10 @@
                 "postgres"
             ],
             "hashes": [
-                "sha256:6205f7e8bcafb80eb75b8a5d18404467653d5b7901bc9b940557506bad7a5e83",
-                "sha256:c062dfd3396649661c57000675f7671ed564308fd5d7bf85f7a2850887803b46"
+                "sha256:ef54ea91b5a1c1c79e26212779fa6bb855988e252185797066d30453a9b76c41"
             ],
             "index": "pypi",
-            "version": "==1.10.8"
+            "version": "==1.10.9"
         },
         "apispec": {
             "extras": [
@@ -775,10 +774,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096",
-                "sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16"
+                "sha256:1e0dedc2acb1f46827daa2e399c1485c8fa17c0d8e70b6b875b4e7f54bf408d2",
+                "sha256:b353856d37dec59d6511359f97f6a4b2468442e454bd1c98298ddce53cac1f04"
             ],
-            "version": "==1.0.0"
+            "version": "==0.16.1"
         },
         "wtforms": {
             "hashes": [
@@ -815,11 +814,10 @@
                 "postgres"
             ],
             "hashes": [
-                "sha256:6205f7e8bcafb80eb75b8a5d18404467653d5b7901bc9b940557506bad7a5e83",
-                "sha256:c062dfd3396649661c57000675f7671ed564308fd5d7bf85f7a2850887803b46"
+                "sha256:ef54ea91b5a1c1c79e26212779fa6bb855988e252185797066d30453a9b76c41"
             ],
             "index": "pypi",
-            "version": "==1.10.8"
+            "version": "==1.10.9"
         },
         "apispec": {
             "extras": [
@@ -1626,10 +1624,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096",
-                "sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16"
+                "sha256:1e0dedc2acb1f46827daa2e399c1485c8fa17c0d8e70b6b875b4e7f54bf408d2",
+                "sha256:b353856d37dec59d6511359f97f6a4b2468442e454bd1c98298ddce53cac1f04"
             ],
-            "version": "==1.0.0"
+            "version": "==0.16.1"
         },
         "wtforms": {
             "hashes": [
