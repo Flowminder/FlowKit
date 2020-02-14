@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pyzmq = "*"
-quart = "*"
+quart = "==0.10.0"
 hypercorn = "*"
 asyncpg = "*"
 flask-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
