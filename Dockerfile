@@ -21,8 +21,9 @@ RUN cd /${SOURCE_TREE}/flowclient && python setup.py bdist_wheel && \
     cd /${SOURCE_TREE}/flowmachine && python setup.py bdist_wheel && \
     fix-permissions /${SOURCE_TREE}
 USER $NB_UID
-RUN pip install geopandas mapboxgl /${SOURCE_TREE}/flowclient/dist/*.whl \
-     /${SOURCE_TREE}/flowmachine/dist/*.whl && \
+RUN pip install geopandas mapboxgl descartes \
+    /${SOURCE_TREE}/flowclient/dist/*.whl \
+    /${SOURCE_TREE}/flowmachine/dist/*.whl && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
     cd /home/$NB_USER/ && jupyter trust -y *
