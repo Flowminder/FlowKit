@@ -32,6 +32,8 @@ setup(
         "marshmallow >= 3.0.0",
         "networkx",
         "nteract-scrapbook",
+        "nbconvert",
+        "nbformat",
         "papermill >= 1.2.1",
         "pendulum",
         "prefect",

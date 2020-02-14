@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM puckel/docker-airflow@sha256:371cf69df9b7809619274a4fc65ef5552669a8961d90e81d67f4e5b168fbf4f7
+FROM puckel/docker-airflow@sha256:30e7cb9744ad367c54ae30a379fa46c9df4ea582bf2fcb96604adfc2760be79a
 
 ARG AIRFLOW_HOME=/usr/local/airflow
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags

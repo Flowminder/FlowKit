@@ -33,7 +33,7 @@ ADD $ORACLE_BINARY_SOURCE/instantclient-sqlplus-linux.x64-$INSTANT_CLIENT_VERSIO
 #  Download and install oracle binaries, and the oracle_fdw
 #
 RUN apt-get update \
-            && apt-get install --yes --no-install-recommends build-essential postgresql-server-dev-$PG_MAJOR \
+            && apt-get install --yes --no-install-recommends build-essential postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
             && apt-get clean --yes \
             && apt-get autoclean --yes \
             && apt-get autoremove --yes \
