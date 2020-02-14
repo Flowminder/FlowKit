@@ -12,7 +12,8 @@
 #  on the official Debian Stretch (9) image.
 #
 
-FROM postgres@sha256:97d592897557685c7a41524fc53b8ebb96e56741725616c283b8841a421f1ebe
+FROM postgres@sha256:40ebbae0ce4d29eacb5a0ad3ae450f31f089124acdc2cc68b177872f716d0454
+
 
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
