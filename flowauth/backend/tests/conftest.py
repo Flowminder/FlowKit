@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from collections import namedtuple
+from time import sleep
+
+from functools import partial
 
 import datetime
 import pyotp
@@ -96,6 +99,14 @@ def test_user(app):
         return TestUser(user.id, user.username, "TEST_USER_PASSWORD")
 
 
+def get_two_factor_code(secret):
+    totp = pyotp.totp.TOTP(secret)
+    time_remaining = totp.interval - datetime.datetime.now().timestamp() % totp.interval
+    if time_remaining < 1:
+        sleep(2)
+    return totp.now()
+
+
 @pytest.fixture
 def test_two_factor_auth_user(app):
     with app.app_context():
@@ -104,7 +115,7 @@ def test_two_factor_auth_user(app):
         secret = pyotp.random_base32()
         auth = TwoFactorAuth(user=user, enabled=True)
         auth.secret_key = secret
-        otp_generator = pyotp.totp.TOTP(secret)
+        otp_generator = partial(get_two_factor_code, secret)
         db.session.add(user)
         db.session.add(auth)
         db.session.add(ug)
