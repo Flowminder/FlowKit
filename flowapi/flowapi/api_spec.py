@@ -2,9 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import yaml
 from apispec import APISpec, yaml_utils
-from quart import Blueprint, request, jsonify, render_template, current_app
+from quart import Blueprint, request, render_template, current_app
 from zmq.asyncio import Socket
 from flowapi import __version__
 
@@ -58,18 +57,14 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     # Loop over all the registered views and try to parse a yaml
     # openapi spec from their docstrings
     for rule in current_app.url_map.iter_rules():
-
         try:
-            func = current_app.view_functions[rule.rule]
+            func = current_app.view_functions[rule.endpoint]
             operations = yaml_utils.load_operations_from_docstring(func.__doc__)
             if len(operations) > 0:
                 for method, op in operations.items():
-                    op["operationId"] = f"{rule.rule}.{method}"
+                    op["operationId"] = f"{rule.endpoint}.{method}"
                 spec.path(
-                    path=rule[
-                        0
-                    ].rule,  # In theory, could have multiple rules that match but will only be a single one here
-                    operations=operations,
+                    path=rule.rule, operations=operations,
                 )
         except Exception as e:
             pass  # Don't include in API
