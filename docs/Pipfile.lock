@@ -35,10 +35,10 @@
                 "yaml"
             ],
             "hashes": [
-                "sha256:c1625ae910f699c9adb21928693a3245b9faab6843f1b1c94ab2d505549cd78a",
-                "sha256:f2ecb3a6534cfb42cf69b5c1222d2c0e695aab5ec3d7edde31b7354670948f05"
+                "sha256:419d0564b899e182c2af50483ea074db8cb05fee60838be58bb4542095d5c08d",
+                "sha256:9bf4e51d56c9067c60668b78210ae213894f060f85593dc2ad8805eb7d875a2a"
             ],
-            "version": "==3.2.0"
+            "version": "==3.3.0"
         },
         "apispec-oneofschema": {
             "hashes": [
@@ -354,11 +354,11 @@
         },
         "geopandas": {
             "hashes": [
-                "sha256:549eb60665ca49bd2ffd385e68672dce6242e4055b1a00e47fafe17e325324c6",
-                "sha256:af24c2c298e26b0e7bca438838894219e466aeeec5cb8fab7cbad8444cddee32"
+                "sha256:19074b090ab928527193c50b383d31a259a9b84b18553562631295fa67f640bc",
+                "sha256:dd478cfb979c7aca529a61c05f26a4606852547a0d7e22ae9babe0c70f7d73f8"
             ],
             "index": "pypi",
-            "version": "==0.6.3"
+            "version": "==0.7.0"
         },
         "get-secret-or-env-var": {
             "hashes": [
@@ -386,12 +386,6 @@
                 "sha256:8eec9c1f4bfae3408a3f30500261f7e6a65912dc138526ea054f9ad98892e9d2"
             ],
             "version": "==3.0.0"
-        },
-        "htmlmin": {
-            "hashes": [
-                "sha256:50c1ef4630374a5d723900096a961cff426dff46b48f34d194a81bbe14eca178"
-            ],
-            "version": "==0.1.12"
         },
         "hypercorn": {
             "hashes": [
@@ -471,12 +465,6 @@
                 "sha256:c922560ac46888d47384de1dbdc3daaa2ea993af4b26a436dec31fa2c19ec668"
             ],
             "version": "==3.0.0a1"
-        },
-        "jsmin": {
-            "hashes": [
-                "sha256:b6df99b2cd1c75d9d342e4335b535789b8da9107ec748212706ef7bbe5c2553b"
-            ],
-            "version": "==2.2.2"
         },
         "jsonschema": {
             "hashes": [
@@ -660,18 +648,11 @@
         },
         "mkdocs-material": {
             "hashes": [
-                "sha256:294275c4d3f3e5711b27645b013a0afe8b22a8ace8db81099cb1403ad47b4af5",
-                "sha256:4f32bfc8f8da74abc0bc65116d7f9e3d6b2e3e2dc43b61cfaab72e151c9c0431"
+                "sha256:1d486635b03f5a2ec87325842f7b10c7ae7daa0eef76b185572eece6a6ea212c",
+                "sha256:7f3afa0a09c07d0b89a6a9755fdb00513aee8f0cec3538bb903325c80f66f444"
             ],
             "index": "pypi",
-            "version": "==4.6.2"
-        },
-        "mkdocs-minify-plugin": {
-            "hashes": [
-                "sha256:12fc10173f1e13470e8ac66564dd43a33326b911c9d5c4bf92be62fe06ff19f4",
-                "sha256:14cdee6dd71b149a47e8d8dc3630e8c1c3bc8ada3ba159bea9990bf382651e2c"
-            ],
-            "version": "==0.2.3"
+            "version": "==4.6.3"
         },
         "mknotebooks": {
             "hashes": [
@@ -964,11 +945,11 @@
         },
         "pymdown-extensions": {
             "hashes": [
-                "sha256:66fae2683c7a1dac53184f7de57f51f8dad73f9ead2f453e94e85096cb811335",
-                "sha256:cb879686a586b22292899771f5e5bc3382808e92aa938f71b550ecdea709419f"
+                "sha256:22bd7697111d6cbff87d0a25ef74c8a03eba2ddc443d40d742b7213fd31a3cda",
+                "sha256:2c3c510d06afb33f771e2e4cc55a200c1b61d0106f855bc5a75c9e9bcaf9654d"
             ],
             "index": "pypi",
-            "version": "==6.3"
+            "version": "==7.0b1"
         },
         "pyparsing": {
             "hashes": [
@@ -1419,10 +1400,10 @@
                 "yaml"
             ],
             "hashes": [
-                "sha256:c1625ae910f699c9adb21928693a3245b9faab6843f1b1c94ab2d505549cd78a",
-                "sha256:f2ecb3a6534cfb42cf69b5c1222d2c0e695aab5ec3d7edde31b7354670948f05"
+                "sha256:419d0564b899e182c2af50483ea074db8cb05fee60838be58bb4542095d5c08d",
+                "sha256:9bf4e51d56c9067c60668b78210ae213894f060f85593dc2ad8805eb7d875a2a"
             ],
-            "version": "==3.2.0"
+            "version": "==3.3.0"
         },
         "appnope": {
             "hashes": [
