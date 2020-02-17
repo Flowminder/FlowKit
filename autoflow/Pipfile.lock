@@ -213,11 +213,11 @@
         },
         "geopandas": {
             "hashes": [
-                "sha256:549eb60665ca49bd2ffd385e68672dce6242e4055b1a00e47fafe17e325324c6",
-                "sha256:af24c2c298e26b0e7bca438838894219e466aeeec5cb8fab7cbad8444cddee32"
+                "sha256:19074b090ab928527193c50b383d31a259a9b84b18553562631295fa67f640bc",
+                "sha256:dd478cfb979c7aca529a61c05f26a4606852547a0d7e22ae9babe0c70f7d73f8"
             ],
             "index": "pypi",
-            "version": "==0.6.3"
+            "version": "==0.7.0"
         },
         "get-secret-or-env-var": {
             "hashes": [
@@ -622,11 +622,10 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:a1f0b2e4cdf22f35646f1afdc78146e82d5016c3a72bd6ad0c21d2981afe5ca4",
-                "sha256:e08f4e7a70ac4a475d31e4469e2183f823c4d92462553ec9644f748c7107f06f"
+                "sha256:17836acc0ec4ed16b19c67b8776f5103270ab19dbc4537445c475b1e02b6d372"
             ],
             "index": "pypi",
-            "version": "==0.9.3"
+            "version": "==0.9.4"
         },
         "prompt-toolkit": {
             "hashes": [
@@ -1602,11 +1601,10 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:a1f0b2e4cdf22f35646f1afdc78146e82d5016c3a72bd6ad0c21d2981afe5ca4",
-                "sha256:e08f4e7a70ac4a475d31e4469e2183f823c4d92462553ec9644f748c7107f06f"
+                "sha256:17836acc0ec4ed16b19c67b8776f5103270ab19dbc4537445c475b1e02b6d372"
             ],
             "index": "pypi",
-            "version": "==0.9.3"
+            "version": "==0.9.4"
         },
         "prometheus-client": {
             "hashes": [

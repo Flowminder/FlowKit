@@ -89,10 +89,10 @@
         },
         "gitdb2": {
             "hashes": [
-                "sha256:2207d5de990b1abe81960c20337c5e080e0490b4942bb252a40934b1838a78c7",
-                "sha256:6e46b9a55fc23d444b1dd984247df81a98c7b55b84a45ce14f3aa3c77b152118"
+                "sha256:0375d983fd887d03c8942e81b1b0abc6c320cfb500cd3fe0d9c0eac87fbf2b52",
+                "sha256:b2b3a67090c17dc61f8407ca485e79ae811225ab5ebcd98ac5ee01448e8987b5"
             ],
-            "version": "==3.0.1"
+            "version": "==3.0.2"
         },
         "gitpython": {
             "hashes": [
