@@ -854,10 +854,10 @@
                 "osv"
             ],
             "hashes": [
-                "sha256:32a399325598945e96bbe1da4497da757411e1582d9d272df33cbe0c80875ba4",
-                "sha256:a128d0d5f639a6a19eefedd787a6ce9603634c3908927b1215653e4a8375195f"
+                "sha256:1f88df76d8d642efac1243801d39d9348bbb7530311270adbd7305ec45e077ac",
+                "sha256:e1ab67ec984c94b94e32bf17a2d6f35960db8b1ee248efea9f00ebaa1fcea1af"
             ],
-            "version": "==0.17.0"
+            "version": "==0.18.2"
         },
         "priority": {
             "hashes": [
@@ -1164,10 +1164,10 @@
         },
         "semver": {
             "hashes": [
-                "sha256:aa1c6be3bf23e346e00c509a7ee87735a7e0fd6b404cf066037cfeab2c770320",
-                "sha256:ed1edeaa0c27f68feb74f09f715077fd07b728446dc2bb7fc470fc0f737873a0"
+                "sha256:095c3cba6d5433f21451101463b22cf831fe6996fcc8a603407fd8bea54f116b",
+                "sha256:723be40c74b6468861e0e3dbb80a41fc3b171a2a45bf956c245304773dc06055"
             ],
-            "version": "==2.9.0"
+            "version": "==2.9.1"
         },
         "shapely": {
             "hashes": [
