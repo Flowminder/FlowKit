@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachineutils" tabindex="1" class="md-skip">
+      <a href="#flowmachineutils" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4284,8 +4296,8 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L0">flowmachine/utils.py</a></p>
 <p>Various simple utilities.</p>
 <h2 id="convert_dict_keys_to_strings">convert_dict_keys_to_strings<a class="headerlink" href="#convert_dict_keys_to_strings" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">convert_dict_keys_to_strings</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">convert_dict_keys_to_strings</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L250">flowmachine/utils.py</a></p>
 <p>Return a copy of the input dictionary where all keys are converted to strings. This is necessary if the dictionary needs to be valid JSON.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
@@ -4303,13 +4315,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="get_dist_query_string">get_dist_query_string<a class="headerlink" href="#get_dist_query_string" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_dist_query_string</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">lon1</span><span class="p">,</span> <span class="n">lat1</span><span class="p">,</span> <span class="n">lon2</span><span class="p">,</span> <span class="n">lat2</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_dist_query_string</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">lon1</span><span class="p">,</span> <span class="n">lat1</span><span class="p">,</span> <span class="n">lon2</span><span class="p">,</span> <span class="n">lat2</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L121">flowmachine/utils.py</a></p>
 <p>function for getting the distance query string between two lon-lat points.</p>
 <h2 id="get_name_and_alias">get_name_and_alias<a class="headerlink" href="#get_name_and_alias" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_name_and_alias</span><span class="p">(</span><span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_name_and_alias</span><span class="p">(</span><span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L221">flowmachine/utils.py</a></p>
 <p>Given a column name string, return the column name and alias (if there is one), or return the provided column name twice if there is no alias.</p>
 <h3 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h3>
@@ -4317,7 +4329,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.Tuple[str]</code></li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="n">get_name_and_alias</span><span class="p">(</span><span class="s2">&quot;col AS alias&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">get_name_and_alias</span><span class="p">(</span><span class="s2">&quot;col AS alias&quot;</span><span class="p">)</span>
   <span class="p">(</span><span class="s1">&#39;col&#39;</span><span class="p">,</span> <span class="s1">&#39;alias&#39;</span><span class="p">)</span>
 <span class="n">get_name_and_alias</span><span class="p">(</span><span class="s2">&quot;col&quot;</span><span class="p">)</span>
   <span class="p">(</span><span class="s1">&#39;col&#39;</span><span class="p">,</span> <span class="s1">&#39;col&#39;</span><span class="p">)</span>
@@ -4325,11 +4337,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
   <span class="p">(</span><span class="s1">&#39;table.col&#39;</span><span class="p">,</span> <span class="s1">&#39;col&#39;</span><span class="p">)</span>
 <span class="n">get_name_and_alias</span><span class="p">(</span><span class="s2">&quot;table.col as alias&quot;</span><span class="p">)</span>
   <span class="p">(</span><span class="s1">&#39;table.col&#39;</span><span class="p">,</span> <span class="s1">&#39;alias&#39;</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <h2 id="list_of_dates">list_of_dates<a class="headerlink" href="#list_of_dates" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">list_of_dates</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">list_of_dates</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L55">flowmachine/utils.py</a></p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4343,8 +4355,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>:</code>list<code>of</code>yyyy-mm-dd format datestrings between start and stop (inclusive)``</li>
 </ul>
 <h2 id="parse_datestring">parse_datestring<a class="headerlink" href="#parse_datestring" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">parse_datestring</span><span class="p">(</span><span class="n">datestring</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">parse_datestring</span><span class="p">(</span><span class="n">datestring</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L21">flowmachine/utils.py</a></p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4358,14 +4370,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>datetime.datetime</code></li>
 </ul>
 <h2 id="pretty_sql">pretty_sql<a class="headerlink" href="#pretty_sql" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">pretty_sql</span><span class="p">(</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">pretty_sql</span><span class="p">(</span>
     <span class="n">sql</span><span class="p">,</span>
     <span class="n">compact_lists_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">split_string_literals_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">special_functions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">comma_at_eoln</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-</pre></div>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L166">flowmachine/utils.py</a></p>
 <p>Prettify and validate the syntax of an SQL query, using pglast</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
@@ -4398,8 +4410,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="proj4string">proj4string<a class="headerlink" href="#proj4string" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">proj4string</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">proj4string</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L132">flowmachine/utils.py</a></p>
 <p>Provide a proj4 string for the input, or by default return the wsg84 proj4 string.</p>
 <h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
@@ -4421,8 +4433,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="sort_recursively">sort_recursively<a class="headerlink" href="#sort_recursively" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">sort_recursively</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">sort_recursively</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L296">flowmachine/utils.py</a></p>
 <p>Helper function to sort a dictionary recursively (including any dicts or sequences inside it).</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
@@ -4440,8 +4452,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="time_period_add">time_period_add<a class="headerlink" href="#time_period_add" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">time_period_add</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">time_period_add</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L85">flowmachine/utils.py</a></p>
 <p>Adds n days to the date (represented as a string). Or alternatively add hours or minutes to the date.</p>
 <h3 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h3>
@@ -4467,13 +4479,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h3 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="n">time_period_add</span><span class="p">(</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">time_period_add</span><span class="p">(</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="s1">&#39;2016-01-04&#39;</span>
-</pre></div>
+</code></pre></div>
 
 <h2 id="to_nested_list">to_nested_list<a class="headerlink" href="#to_nested_list" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">to_nested_list</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">to_nested_list</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils.py#L275">flowmachine/utils.py</a></p>
 <p>Helper function to recursively convert an input dictionary to a nested list.</p>
 <h3 id="parameters_7">Parameters<a class="headerlink" href="#parameters_7" title="Permanent link">&para;</a></h3>
@@ -4545,18 +4557,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4566,7 +4578,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       

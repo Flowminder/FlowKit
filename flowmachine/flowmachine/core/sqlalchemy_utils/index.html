@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecoresqlalchemy_utils" tabindex="1" class="md-skip">
+      <a href="#flowmachinecoresqlalchemy_utils" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4040,8 +4052,8 @@
                 
                 <h1 id="flowmachinecoresqlalchemy_utils">flowmachine.core.sqlalchemy_utils<a class="headerlink" href="#flowmachinecoresqlalchemy_utils" title="Permanent link">&para;</a></h1>
 <h2 id="get_query_result_as_dataframe">get_query_result_as_dataframe<a class="headerlink" href="#get_query_result_as_dataframe" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_query_result_as_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_query_result_as_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/sqlalchemy_utils.py#L74">flowmachine/core/sqlalchemy_utils.py</a></p>
 <p>Run the given sqlalchemy query and return the result as a pandas DataFrame.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
@@ -4063,8 +4075,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="get_sql_string">get_sql_string<a class="headerlink" href="#get_sql_string" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_sql_string</span><span class="p">(</span><span class="n">sqlalchemy_query</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_sql_string</span><span class="p">(</span><span class="n">sqlalchemy_query</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/sqlalchemy_utils.py#L39">flowmachine/core/sqlalchemy_utils.py</a></p>
 <p>Return SQL string compiled from the given sqlalchemy query (using the PostgreSQL dialect).</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
@@ -4082,8 +4094,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="get_sqlalchemy_table_definition">get_sqlalchemy_table_definition<a class="headerlink" href="#get_sqlalchemy_table_definition" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_sqlalchemy_table_definition</span><span class="p">(</span><span class="n">fully_qualified_table_name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_sqlalchemy_table_definition</span><span class="p">(</span><span class="n">fully_qualified_table_name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/sqlalchemy_utils.py#L11">flowmachine/core/sqlalchemy_utils.py</a></p>
 <p>Return sqlalchemy Table object for table with the given name.</p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
@@ -4102,8 +4114,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>:</code>sqlalchemy.Table``</li>
 </ul>
 <h2 id="get_string_representation">get_string_representation<a class="headerlink" href="#get_string_representation" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_string_representation</span><span class="p">(</span><span class="n">sqlalchemy_expr</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_string_representation</span><span class="p">(</span><span class="n">sqlalchemy_expr</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/sqlalchemy_utils.py#L61">flowmachine/core/sqlalchemy_utils.py</a></p>
 <p>Return a string containing a SQL fragment which is compiled from the given sqlalchemy expression.</p>
 <h3 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h3>
@@ -4114,10 +4126,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="make_sqlalchemy_column_from_flowmachine_column_description">make_sqlalchemy_column_from_flowmachine_column_description<a class="headerlink" href="#make_sqlalchemy_column_from_flowmachine_column_description" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">make_sqlalchemy_column_from_flowmachine_column_description</span><span class="p">(</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">make_sqlalchemy_column_from_flowmachine_column_description</span><span class="p">(</span>
     <span class="n">sqlalchemy_table</span><span class="p">,</span> <span class="n">column_str</span>
 <span class="p">)</span>
-</pre></div>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/sqlalchemy_utils.py#L100">flowmachine/core/sqlalchemy_utils.py</a></p>
 <p>Given a sqlalchemy sqlalchemy_table and a string with a column description, return the actual sqlalchemy Column object (or a sqlalchemy Label object if <code>column_str</code> contains an alias such as "<column> AS <alias>".</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
@@ -4136,8 +4148,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>:</code>sqlalchemy.sql.elements.Label<code>,</code>sqlalchemy.Column``</li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; make_sqlalchemy_column_from_flowmachine_column_description(sqlalchemy_table, &quot;msisdn&quot;)     &gt;&gt;&gt; make_sqlalchemy_column_from_flowmachine_column_description(sqlalchemy_table, &quot;msisdn AS subscriber&quot;)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>&gt;&gt;&gt; make_sqlalchemy_column_from_flowmachine_column_description(sqlalchemy_table, &quot;msisdn&quot;)     &gt;&gt;&gt; make_sqlalchemy_column_from_flowmachine_column_description(sqlalchemy_table, &quot;msisdn AS subscriber&quot;)
+</code></pre></div>
                 
                   
                 
@@ -4196,18 +4208,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4217,7 +4229,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
       

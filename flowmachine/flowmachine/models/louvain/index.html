@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinemodelslouvain" tabindex="1" class="md-skip">
+      <a href="#flowmachinemodelslouvain" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -3827,8 +3839,8 @@
 <p>The Louvain Method is a popular community identification algorithm for the exploration of very large networks.
 The algorithm <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> was designed to optimize for the network's Modularity. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> That is, this algorithm measures the density of connections (i.e. edges) from nodes and identifies "small" communities. Then it uses those "small" to identify the interactions that they have with other communities of comparable size. It does so iteratively until "a maximum of modularity is attained". <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
 <h2 id="class-louvain">Class <strong>Louvain</strong><a class="headerlink" href="#class-louvain" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">Louvain</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">Louvain</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/models/louvain.py#L46">flowmachine/models/louvain.py</a></p>
 <p>Class for running the Louvain community identifying on a networkx Graph(). This class is useful for quickly identifying communities from a calculated <code>flowmachine</code> feature (e.g. ContactBalance()).</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
@@ -3840,12 +3852,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <p>The class needs to be instantiated with a networkx.Graph(). One can use classes that have the <code>GraphMixin</code> mixin as follows:<br />
-<div class="codehilite"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Louvain</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">l</span> <span class="o">=</span> <span class="n">Louvain</span><span class="p">(</span>
         <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">ContactBalance</span><span class="p">(</span><span class="s1">&#39;2016-01-02&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-01-07&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">(</span>
             <span class="n">directed_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-</pre></div>
+</code></pre></div>
 Now let's run the algorithm:<br />
-<div class="codehilite"><pre><span></span><span class="n">l</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">weight_property</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">min_members</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">l</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">weight_property</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">min_members</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
                  <span class="n">subscriber</span>  <span class="n">community</span>
 <span class="mi">0</span>    <span class="n">bvEWVnZdwJ8Lgkm2</span>          <span class="mi">0</span>
 <span class="mi">1</span>    <span class="n">YMBqRkzbbxGkX3zA</span>          <span class="mi">0</span>
@@ -3854,7 +3866,7 @@ Now let's run the algorithm:<br />
 <span class="mi">4</span>    <span class="n">w2YgmOPlr2O5x3VJ</span>          <span class="mi">2</span>
 <span class="mi">5</span>    <span class="n">NBpb54xVMEw1Yqza</span>          <span class="mi">2</span>
 <span class="mi">6</span>    <span class="mi">7</span><span class="n">lNP0mDOAK3xKWv4</span>          <span class="mi">3</span>
-</pre></div></p>
+</code></pre></div></p>
 <div class="footnote">
 <hr />
 <ol>
@@ -3930,18 +3942,18 @@ Now let's run the algorithm:<br />
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -3951,7 +3963,7 @@ Now let's run the algorithm:<br />
       
     </div>
     
-      <script src="../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
       

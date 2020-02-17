@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecoreconnection" tabindex="1" class="md-skip">
+      <a href="#flowmachinecoreconnection" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4190,8 +4202,8 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L0">flowmachine/core/connection.py</a></p>
 <p>Class(es) representing our connection to the database, along with utilities regarding the database.</p>
 <h2 id="class-connection">Class <strong>Connection</strong><a class="headerlink" href="#class-connection" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">Connection</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pool_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">overflow</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">conn_str</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">Connection</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pool_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">overflow</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">conn_str</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L29">flowmachine/core/connection.py</a></p>
 <p>Establishes a connection with the database and provide methods for fetching data.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -4236,13 +4248,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="close">close<a class="headerlink" href="#close" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L268">flowmachine/core/connection.py</a></p>
 <p>Close the connection</p>
 <h4 id="fetch">fetch<a class="headerlink" href="#fetch" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L121">flowmachine/core/connection.py</a></p>
 <h5 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4255,8 +4267,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="has_table">has_table<a class="headerlink" href="#has_table" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">has_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L141">flowmachine/core/connection.py</a></p>
 <p>Check if a table exists in the database.</p>
 <h5 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h5>
@@ -4278,8 +4290,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="max_date">max_date<a class="headerlink" href="#max_date" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">max_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;calls&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">max_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;calls&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L218">flowmachine/core/connection.py</a></p>
 <p>Finds the maximum date in the given events table.</p>
 <h5 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h5>
@@ -4294,8 +4306,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>datetime.date</code></li>
 </ul>
 <h4 id="min_date">min_date<a class="headerlink" href="#min_date" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">min_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;calls&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">min_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;calls&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L201">flowmachine/core/connection.py</a></p>
 <p>Finds the minimum date in the given events table.</p>
 <h5 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h5>
@@ -4310,8 +4322,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>datetime.date</code></li>
 </ul>
 <h4 id="available_dates">available_dates<a class="headerlink" href="#available_dates" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">available_dates</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">available_dates</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L170">flowmachine/core/connection.py</a></p>
 <h5 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4321,12 +4333,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="available_tables">available_tables<a class="headerlink" href="#available_tables" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">available_tables</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">available_tables</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L248">flowmachine/core/connection.py</a></p>
 <h4 id="location_table">location_table<a class="headerlink" href="#location_table" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">location_table</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_table</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L235">flowmachine/core/connection.py</a></p>
 <p>Get the name of the table referenced by the location_id field of the events tables.</p>
 <h5 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h5>
@@ -4337,12 +4349,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="location_tables">location_tables<a class="headerlink" href="#location_tables" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">location_tables</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_tables</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L260">flowmachine/core/connection.py</a></p>
 <h4 id="subscriber_tables">subscriber_tables<a class="headerlink" href="#subscriber_tables" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">subscriber_tables</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">subscriber_tables</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/connection.py#L252">flowmachine/core/connection.py</a></p>
                 
                   
@@ -4402,18 +4414,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4423,7 +4435,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
       

@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecoreserverserver_config" tabindex="1" class="md-skip">
+      <a href="#flowmachinecoreserverserver_config" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -3990,38 +4002,38 @@
                 
                 <h1 id="flowmachinecoreserverserver_config">flowmachine.core.server.server_config<a class="headerlink" href="#flowmachinecoreserverserver_config" title="Permanent link">&para;</a></h1>
 <h2 id="class-flowmachineserverconfig">Class <strong>FlowmachineServerConfig</strong><a class="headerlink" href="#class-flowmachineserverconfig" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">FlowmachineServerConfig</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">debug_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">store_dependencies</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cache_pruning_frequency</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cache_pruning_timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">server_thread_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">FlowmachineServerConfig</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">debug_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">store_dependencies</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cache_pruning_frequency</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cache_pruning_timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">server_thread_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L32">flowmachine/core/server/server_config.py</a></p>
 <p>A namedtuple for passing server config options within the Flowmachine server.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="cache_pruning_frequency">cache_pruning_frequency<a class="headerlink" href="#cache_pruning_frequency" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">cache_pruning_frequency</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache_pruning_frequency</span>
+</code></pre></div>
 Alias for field number 3</p>
 <h4 id="cache_pruning_timeout">cache_pruning_timeout<a class="headerlink" href="#cache_pruning_timeout" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">cache_pruning_timeout</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache_pruning_timeout</span>
+</code></pre></div>
 Alias for field number 4</p>
 <h4 id="debug_mode">debug_mode<a class="headerlink" href="#debug_mode" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">debug_mode</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">debug_mode</span>
+</code></pre></div>
 Alias for field number 1</p>
 <h4 id="port">port<a class="headerlink" href="#port" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">port</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">port</span>
+</code></pre></div>
 Alias for field number 0</p>
 <h4 id="server_thread_pool">server_thread_pool<a class="headerlink" href="#server_thread_pool" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">server_thread_pool</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">server_thread_pool</span>
+</code></pre></div>
 Alias for field number 5</p>
 <h4 id="store_dependencies">store_dependencies<a class="headerlink" href="#store_dependencies" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">store_dependencies</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">store_dependencies</span>
+</code></pre></div>
 Alias for field number 2</p>
 <h2 id="get_env_as_bool">get_env_as_bool<a class="headerlink" href="#get_env_as_bool" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_env_as_bool</span><span class="p">(</span><span class="n">env_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_env_as_bool</span><span class="p">(</span><span class="n">env_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L11">flowmachine/core/server/server_config.py</a></p>
 <p>Return a boolean true if the named env var is set to 'true' with any casing, and return False if it is set to anything else or not set at all.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
@@ -4036,8 +4048,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h2 id="get_server_config">get_server_config<a class="headerlink" href="#get_server_config" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_server_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_config</span><span class="o">.</span><span class="n">FlowmachineServerConfig</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_server_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_config</span><span class="o">.</span><span class="n">FlowmachineServerConfig</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server_config.py#L60">flowmachine/core/server/server_config.py</a></p>
 <p>Read config options from environment variables.</p>
 <h3 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h3>
@@ -4105,18 +4117,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4126,7 +4138,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../.."}})</script>
       

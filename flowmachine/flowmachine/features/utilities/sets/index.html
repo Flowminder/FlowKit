@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinefeaturesutilitiessets" tabindex="1" class="md-skip">
+      <a href="#flowmachinefeaturesutilitiessets" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4884,8 +4896,8 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/sets.py#L0">flowmachine/features/utilities/sets.py</a></p>
 <p>Utility classes for subsetting CDRs.</p>
 <h2 id="class-subscriberlocationsubset">Class <strong>SubscriberLocationSubset</strong><a class="headerlink" href="#class-subscriberlocationsubset" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">SubscriberLocationSubset</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">min_calls</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">spatial_unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SubscriberLocationSubset</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">min_calls</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">spatial_unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/sets.py#L122">flowmachine/features/utilities/sets.py</a></p>
 <p>Query to get a subset of users who have made min_calls number of calls within a given region during period of time from start to stop.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -4960,11 +4972,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="n">sls</span> <span class="o">=</span> <span class="n">SubscriberLocationSubset</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-07&quot;</span><span class="p">,</span> <span class="n">min_calls</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<div class="codehilite"><pre><span></span><code><span class="n">sls</span> <span class="o">=</span> <span class="n">SubscriberLocationSubset</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-07&quot;</span><span class="p">,</span> <span class="n">min_calls</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">spatial_unit</span><span class="o">=</span><span class="n">make_spatial_unit</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
-</pre></div>
+</code></pre></div>
 
-<div class="codehilite"><pre><span></span><span class="n">sls</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="n">sls</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
       <span class="n">subscriber</span>     <span class="n">name</span>
 <span class="mi">038</span><span class="n">OVABN11Ak4W5P</span>    <span class="n">Dolpa</span>
 <span class="mi">038</span><span class="n">OVABN11Ak4W5P</span>     <span class="n">Mugu</span>
@@ -4972,12 +4984,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <span class="mi">0</span><span class="n">ayZGYEQrqYlKw6g</span>    <span class="n">Dolpa</span>
 <span class="mi">0</span><span class="n">DB8zw67E9mZAPK2</span>  <span class="n">Baglung</span>
 <span class="o">...</span>
-</pre></div>
+</code></pre></div>
 
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="cache">cache<a class="headerlink" href="#cache" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">cache</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L215">flowmachine/core/query.py</a></p>
 <h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4987,8 +4999,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/sets.py#L209">flowmachine/features/utilities/sets.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
@@ -4999,8 +5011,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_as_string_list">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names_as_string_list</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names_as_string_list</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L346">flowmachine/core/query.py</a></p>
 <p>Get the column names as a comma separated list</p>
 <h5 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h5>
@@ -5011,8 +5023,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="dependencies">dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dependencies</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L736">flowmachine/core/query.py</a></p>
 <h5 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5022,8 +5034,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="fully_qualified_table_name">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">fully_qualified_table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L666">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
 <h5 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h5>
@@ -5034,8 +5046,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="index_cols">index_cols<a class="headerlink" href="#index_cols" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">index_cols</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">index_cols</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L890">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
 <h5 id="returns_5">Returns<a class="headerlink" href="#returns_5" title="Permanent link">&para;</a></h5>
@@ -5046,13 +5058,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h5 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h5>
-<div class="codehilite"><pre><span></span><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
+<div class="codehilite"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
 <span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;&quot;subscriber&quot;&#39;</span><span class="p">]</span>
-</pre></div>
+</code></pre></div>
 
 <h4 id="is_stored">is_stored<a class="headerlink" href="#is_stored" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">is_stored</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_stored</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L692">flowmachine/core/query.py</a></p>
 <h5 id="returns_6">Returns<a class="headerlink" href="#returns_6" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5062,8 +5074,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_id">query_id<a class="headerlink" href="#query_id" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_id</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L82">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
 <h5 id="returns_7">Returns<a class="headerlink" href="#returns_7" title="Permanent link">&para;</a></h5>
@@ -5074,8 +5086,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state">query_state<a class="headerlink" href="#query_state" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_state</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L227">flowmachine/core/query.py</a></p>
 <p>Return the current query state.</p>
 <h5 id="returns_8">Returns<a class="headerlink" href="#returns_8" title="Permanent link">&para;</a></h5>
@@ -5086,8 +5098,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_str">query_state_str<a class="headerlink" href="#query_state_str" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_state_str</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state_str</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L240">flowmachine/core/query.py</a></p>
 <p>Return the current query state as a string</p>
 <h5 id="returns_9">Returns<a class="headerlink" href="#returns_9" title="Permanent link">&para;</a></h5>
@@ -5098,8 +5110,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="table_name">table_name<a class="headerlink" href="#table_name" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L679">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h5 id="returns_10">Returns<a class="headerlink" href="#returns_10" title="Permanent link">&para;</a></h5>
@@ -5110,8 +5122,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="class-uniquesubscribers">Class <strong>UniqueSubscribers</strong><a class="headerlink" href="#class-uniquesubscribers" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">UniqueSubscribers</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">UniqueSubscribers</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/sets.py#L25">flowmachine/features/utilities/sets.py</a></p>
 <p>Class representing the set of all unique subscribers in our interactions table.</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
@@ -5178,14 +5190,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h3 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="n">UU</span> <span class="o">=</span> <span class="n">UniqueSubscribers</span><span class="p">(</span><span class="s1">&#39;2016-01-01 13:30:30&#39;</span><span class="p">,</span>
+<div class="codehilite"><pre><span></span><code><span class="n">UU</span> <span class="o">=</span> <span class="n">UniqueSubscribers</span><span class="p">(</span><span class="s1">&#39;2016-01-01 13:30:30&#39;</span><span class="p">,</span>
                      <span class="s1">&#39;2016-01-02 16:25:00&#39;</span><span class="p">)</span>
 <span class="n">UU</span><span class="o">.</span><span class="n">as_set</span><span class="p">()</span>
 <span class="p">{</span><span class="s1">&#39;038OVABN11Ak4W5P&#39;</span><span class="p">,</span>
  <span class="s1">&#39;09NrjaNNvDanD8pk&#39;</span><span class="p">,</span>
  <span class="s1">&#39;0DB8zw67E9mZAPK2&#39;</span><span class="p">,</span>
  <span class="o">...</span><span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -5195,13 +5207,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </div>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="as_set">as_set<a class="headerlink" href="#as_set" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">as_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">as_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/sets.py#L112">flowmachine/features/utilities/sets.py</a></p>
 <p>Returns all unique subscribers as a set.</p>
 <h4 id="cache_1">cache<a class="headerlink" href="#cache_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">cache</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L215">flowmachine/core/query.py</a></p>
 <h5 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5211,8 +5223,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/sets.py#L105">flowmachine/features/utilities/sets.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h5>
@@ -5223,8 +5235,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_as_string_list_1">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names_as_string_list</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names_as_string_list</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L346">flowmachine/core/query.py</a></p>
 <p>Get the column names as a comma separated list</p>
 <h5 id="returns_13">Returns<a class="headerlink" href="#returns_13" title="Permanent link">&para;</a></h5>
@@ -5235,8 +5247,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="dependencies_1">dependencies<a class="headerlink" href="#dependencies_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dependencies</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L736">flowmachine/core/query.py</a></p>
 <h5 id="returns_14">Returns<a class="headerlink" href="#returns_14" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5246,8 +5258,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="fully_qualified_table_name_1">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">fully_qualified_table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L666">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
 <h5 id="returns_15">Returns<a class="headerlink" href="#returns_15" title="Permanent link">&para;</a></h5>
@@ -5258,8 +5270,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="index_cols_1">index_cols<a class="headerlink" href="#index_cols_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">index_cols</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">index_cols</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L890">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
 <h5 id="returns_16">Returns<a class="headerlink" href="#returns_16" title="Permanent link">&para;</a></h5>
@@ -5270,13 +5282,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h5 id="examples_3">Examples<a class="headerlink" href="#examples_3" title="Permanent link">&para;</a></h5>
-<div class="codehilite"><pre><span></span><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
+<div class="codehilite"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
 <span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;&quot;subscriber&quot;&#39;</span><span class="p">]</span>
-</pre></div>
+</code></pre></div>
 
 <h4 id="is_stored_1">is_stored<a class="headerlink" href="#is_stored_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">is_stored</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_stored</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L692">flowmachine/core/query.py</a></p>
 <h5 id="returns_17">Returns<a class="headerlink" href="#returns_17" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5286,8 +5298,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_id_1">query_id<a class="headerlink" href="#query_id_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_id</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L82">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
 <h5 id="returns_18">Returns<a class="headerlink" href="#returns_18" title="Permanent link">&para;</a></h5>
@@ -5298,8 +5310,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_1">query_state<a class="headerlink" href="#query_state_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_state</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L227">flowmachine/core/query.py</a></p>
 <p>Return the current query state.</p>
 <h5 id="returns_19">Returns<a class="headerlink" href="#returns_19" title="Permanent link">&para;</a></h5>
@@ -5310,8 +5322,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_str_1">query_state_str<a class="headerlink" href="#query_state_str_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_state_str</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state_str</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L240">flowmachine/core/query.py</a></p>
 <p>Return the current query state as a string</p>
 <h5 id="returns_20">Returns<a class="headerlink" href="#returns_20" title="Permanent link">&para;</a></h5>
@@ -5322,8 +5334,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="table_name_1">table_name<a class="headerlink" href="#table_name_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L679">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h5 id="returns_21">Returns<a class="headerlink" href="#returns_21" title="Permanent link">&para;</a></h5>
@@ -5391,18 +5403,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -5412,7 +5424,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../.."}})</script>
       

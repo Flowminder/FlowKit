@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecoreserverquery_schemascustom_fields" tabindex="1" class="md-skip">
+      <a href="#flowmachinecoreserverquery_schemascustom_fields" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4430,8 +4442,8 @@
                 
                 <h1 id="flowmachinecoreserverquery_schemascustom_fields">flowmachine.core.server.query_schemas.custom_fields<a class="headerlink" href="#flowmachinecoreserverquery_schemascustom_fields" title="Permanent link">&para;</a></h1>
 <h2 id="class-aggregateby">Class <strong>AggregateBy</strong><a class="headerlink" href="#class-aggregateby" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">AggregateBy</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">AggregateBy</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L54">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a period type, e.g. "day"</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -4445,18 +4457,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="context">context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root">root<a class="headerlink" href="#root" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-dfsmetric">Class <strong>DFSMetric</strong><a class="headerlink" href="#class-dfsmetric" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">DFSMetric</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">DFSMetric</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L144">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a DFS metric (for example: "amount", "commission", "fee", "discount")</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
@@ -4470,18 +4482,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="context_1">context<a class="headerlink" href="#context_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_1">root<a class="headerlink" href="#root_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-eventtypes">Class <strong>EventTypes</strong><a class="headerlink" href="#class-eventtypes" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">EventTypes</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">EventTypes</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L12">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
 When deserialised, will be deduped, and prefixed with "events."</p>
@@ -4496,18 +4508,18 @@ When deserialised, will be deduped, and prefixed with "events."</p>
 </ul>
 <h2 id="methods_2">Methods<a class="headerlink" href="#methods_2" title="Permanent link">&para;</a></h2>
 <h4 id="context_2">context<a class="headerlink" href="#context_2" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_2">root<a class="headerlink" href="#root_2" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-statistic">Class <strong>Statistic</strong><a class="headerlink" href="#class-statistic" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">Statistic</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">Statistic</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L72">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a statistic type, e.g. "median"</p>
 <h2 id="attributes_3">Attributes<a class="headerlink" href="#attributes_3" title="Permanent link">&para;</a></h2>
@@ -4521,18 +4533,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_3">Methods<a class="headerlink" href="#methods_3" title="Permanent link">&para;</a></h2>
 <h4 id="context_3">context<a class="headerlink" href="#context_3" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_3">root<a class="headerlink" href="#root_3" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-subscribersubset">Class <strong>SubscriberSubset</strong><a class="headerlink" href="#class-subscribersubset" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">SubscriberSubset</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SubscriberSubset</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L90">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>Represents a subscriber subset. This can either be a string representing a query_id or <code>None</code>, meaning "all subscribers".</p>
 <h2 id="attributes_4">Attributes<a class="headerlink" href="#attributes_4" title="Permanent link">&para;</a></h2>
@@ -4546,18 +4558,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_4">Methods<a class="headerlink" href="#methods_4" title="Permanent link">&para;</a></h2>
 <h4 id="context_4">context<a class="headerlink" href="#context_4" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_4">root<a class="headerlink" href="#root_4" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-totalby">Class <strong>TotalBy</strong><a class="headerlink" href="#class-totalby" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">TotalBy</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">TotalBy</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L42">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a period type, e.g. "day"</p>
 <h2 id="attributes_5">Attributes<a class="headerlink" href="#attributes_5" title="Permanent link">&para;</a></h2>
@@ -4571,18 +4583,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_5">Methods<a class="headerlink" href="#methods_5" title="Permanent link">&para;</a></h2>
 <h4 id="context_5">context<a class="headerlink" href="#context_5" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_5">root<a class="headerlink" href="#root_5" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-towerdayofweekscores">Class <strong>TowerDayOfWeekScores</strong><a class="headerlink" href="#class-towerdayofweekscores" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">TowerDayOfWeekScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">TowerDayOfWeekScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L121">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].</p>
 <h2 id="attributes_6">Attributes<a class="headerlink" href="#attributes_6" title="Permanent link">&para;</a></h2>
@@ -4596,18 +4608,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_6">Methods<a class="headerlink" href="#methods_6" title="Permanent link">&para;</a></h2>
 <h4 id="context_6">context<a class="headerlink" href="#context_6" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_6">root<a class="headerlink" href="#root_6" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-towerhourofdayscores">Class <strong>TowerHourOfDayScores</strong><a class="headerlink" href="#class-towerhourofdayscores" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">TowerHourOfDayScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">TowerHourOfDayScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L108">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A list of length 24 containing numerical scores in the range [-1.0, +1.0],</p>
 <h2 id="attributes_7">Attributes<a class="headerlink" href="#attributes_7" title="Permanent link">&para;</a></h2>
@@ -4621,13 +4633,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_7">Methods<a class="headerlink" href="#methods_7" title="Permanent link">&para;</a></h2>
 <h4 id="context_7">context<a class="headerlink" href="#context_7" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">context</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L405">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root_7">root<a class="headerlink" href="#root_7" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">root</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L410">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
                 
@@ -4688,18 +4700,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4709,7 +4721,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
       
     </div>
     
-      <script src="../../../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../../.."}})</script>
       

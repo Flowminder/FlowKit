@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecoreserverquery_schemastopup_amount" tabindex="1" class="md-skip">
+      <a href="#flowmachinecoreserverquery_schemastopup_amount" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4018,8 +4030,8 @@
                 
                 <h1 id="flowmachinecoreserverquery_schemastopup_amount">flowmachine.core.server.query_schemas.topup_amount<a class="headerlink" href="#flowmachinecoreserverquery_schemastopup_amount" title="Permanent link">&para;</a></h1>
 <h2 id="class-topupamountexposed">Class <strong>TopUpAmountExposed</strong><a class="headerlink" href="#class-topupamountexposed" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">TopUpAmountExposed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">TopUpAmountExposed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/topup_amount.py#L30">flowmachine/core/server/query_schemas/topup_amount.py</a></p>
 <p>Base class for exposed flowmachine queries.
 Note: this class and derived classes are not meant to be instantiated directly! Instead, they are instantiated automatically by the class FlowmachineQuerySchema.  Example:      FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})</p>
@@ -4037,8 +4049,8 @@ Note: this class and derived classes are not meant to be instantiated directly! 
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="_flowmachine_query_obj">_flowmachine_query_obj<a class="headerlink" href="#_flowmachine_query_obj" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_flowmachine_query_obj</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_flowmachine_query_obj</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling.py#L31">flowmachine/core/server/query_schemas/base_query_with_sampling.py</a></p>
 <p>Return the underlying flowmachine query object which this class exposes.</p>
 <h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
@@ -4046,8 +4058,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>:</code>Query``</li>
 </ul>
 <h4 id="_unsampled_query_obj">_unsampled_query_obj<a class="headerlink" href="#_unsampled_query_obj" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_unsampled_query_obj</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_unsampled_query_obj</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/topup_amount.py#L42">flowmachine/core/server/query_schemas/topup_amount.py</a></p>
 <p>Return the underlying flowmachine topup_amount object.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
@@ -4055,12 +4067,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>:</code>Query``</li>
 </ul>
 <h4 id="query_id">query_id<a class="headerlink" href="#query_id" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_id</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_exposed_query.py#L61">flowmachine/core/server/query_schemas/base_exposed_query.py</a></p>
 <h2 id="class-topupamountschema">Class <strong>TopUpAmountSchema</strong><a class="headerlink" href="#class-topupamountschema" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">TopUpAmountSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">TopUpAmountSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/topup_amount.py#L18">flowmachine/core/server/query_schemas/topup_amount.py</a></p>
 <p>Base schema class with which to define custom schemas.
 Example usage:  .. code-block:: python      import datetime as dt     from dataclasses import dataclass      from marshmallow import Schema, fields      @dataclass     class Album:         title: str         release_date: dt.date      class AlbumSchema(Schema):         title = fields.Str()         release_date = fields.Date()      album = Album("Beggars Banquet", dt.date(1968, 12, 6))     schema = AlbumSchema()     data = schema.dump(album)     data  # {'release_date': '1968-12-06', 'title': 'Beggars Banquet'}  :param only: Whitelist of the declared fields to select when     instantiating the Schema. If None, all fields are used. Nested fields     can be represented with dot delimiters. :param exclude: Blacklist of the declared fields to exclude     when instantiating the Schema. If a field appears in both <code>only</code> and     <code>exclude</code>, it is not used. Nested fields can be represented with dot     delimiters. :param many: Should be set to <code>True</code> if <code>obj</code> is a collection     so that the object will be serialized to a list. :param context: Optional context passed to :class:<code>fields.Method</code> and     :class:<code>fields.Function</code> fields. :param load_only: Fields to skip during serialization (write-only fields) :param dump_only: Fields to skip during deserialization (read-only fields) :param partial: Whether to ignore missing fields and not require     any fields declared. Propagates down to <code>Nested</code> fields as well. If     its value is an iterable, only missing fields listed in that iterable     will be ignored. Use dot delimiters to specify nested fields. :param unknown: Whether to exclude, include, or raise an error for unknown     fields in the data. Use <code>EXCLUDE</code>, <code>INCLUDE</code> or <code>RAISE</code>.  .. versionchanged:: 3.0.0     <code>prefix</code> parameter removed.  .. versionchanged:: 2.0.0     <code>__validators__</code>, <code>__preprocessors__</code>, and <code>__data_handlers__</code> are removed in favor of     <code>marshmallow.decorators.validates_schema</code>,     <code>marshmallow.decorators.pre_load</code> and <code>marshmallow.decorators.post_dump</code>.     <code>__accessor__</code> and <code>__error_handler__</code> are deprecated. Implement the     <code>handle_error</code> and <code>get_attribute</code> methods instead.</p>
@@ -4075,16 +4087,16 @@ Example usage:  .. code-block:: python      import datetime as dt     from datac
 </ul>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="make_query_object">make_query_object<a class="headerlink" href="#make_query_object" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">make_query_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">make_query_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/topup_amount.py#L25">flowmachine/core/server/query_schemas/topup_amount.py</a></p>
 <h4 id="dict_class">dict_class<a class="headerlink" href="#dict_class" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">dict_class</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dict_class</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L410">marshmallow/schema.py</a></p>
 <h4 id="set_class">set_class<a class="headerlink" href="#set_class" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">set_class</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">set_class</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L414">marshmallow/schema.py</a></p>
                 
                   
@@ -4144,18 +4156,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4165,7 +4177,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
       
     </div>
     
-      <script src="../../../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../../.."}})</script>
       

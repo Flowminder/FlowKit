@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#autoflow" tabindex="1" class="md-skip">
+      <a href="#autoflow" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -500,6 +500,18 @@
   <li class="md-nav__item">
     <a href="../worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4009,18 +4021,18 @@
 <p>If the <code>date_stencil</code> parameter is not provided, the default value is <code>[0]</code> (i.e. only the reference date itself needs to be available).</p>
 <p>For each date for which the workflow runs, the corresponding date ranges described by the date stencil are available to notebooks as the parameter <code>date_ranges</code>, which will contain a list of pairs of absolute dates. Note that <code>date_ranges</code> will always contain pairs of dates, even when the date stencil contains individual dates/offsets.</p>
 <p>As an example, if the date stencil is
-<div class="codehilite"><pre><span></span><span class="nt">date_stencil</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">date_stencil</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">2016-01-01</span><span class="p p-Indicator">,</span> <span class="nv">2016-01-03</span><span class="p p-Indicator">]</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">-3</span>
   <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">-2</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
-</pre></div>
+</code></pre></div>
 then the internal <code>date_ranges</code> parameter for reference date <code>2016-01-07</code> would have the value
-<div class="codehilite"><pre><span></span><span class="p">[</span>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
     <span class="p">[</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-03&quot;</span><span class="p">],</span>
     <span class="p">[</span><span class="s2">&quot;2016-01-04&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-05&quot;</span><span class="p">],</span>
     <span class="p">[</span><span class="s2">&quot;2016-01-05&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-07&quot;</span><span class="p">],</span>
 <span class="p">]</span>
-</pre></div>
+</code></pre></div>
 and the workflow will only run for reference date <code>2016-01-07</code> if all of the dates <code>2016-01-01</code>, <code>2016-01-02</code>, <code>2016-01-04</code>, <code>2016-01-05</code> and <code>2016-01-06</code> are available.</p>
 <h3 id="preparing-notebooks-for-automated-execution">Preparing notebooks for automated execution<a class="headerlink" href="#preparing-notebooks-for-automated-execution" title="Permanent link">&para;</a></h3>
 <h4 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h4>
@@ -4028,17 +4040,17 @@ and the workflow will only run for reference date <code>2016-01-07</code> if all
 <h4 id="passing-data-between-notebooks">Passing data between notebooks<a class="headerlink" href="#passing-data-between-notebooks" title="Permanent link">&para;</a></h4>
 <p><a href="https://github.com/nteract/scrapbook">Scrapbook</a> can be used to attach data to a notebook during execution, so that it can later be retrieved in another notebook.</p>
 <p>To 'glue' the value of a variable <code>x</code> in a notebook:
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
 <span class="n">sb</span><span class="o">.</span><span class="n">glue</span><span class="p">(</span><span class="s2">&quot;scrap_name&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 This value can be retrieved in another notebook:
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
 <span class="n">nb</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="n">read_notebook</span><span class="p">(</span><span class="n">path_to_first_notebook</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">scraps</span><span class="p">[</span><span class="s2">&quot;scrap_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-</pre></div></p>
+</code></pre></div></p>
 <p>See <a href="https://nteract-scrapbook.readthedocs.io/en/latest/index.html">scrapbook's documentation</a> for more details.</p>
 <p>As an example, if the <code>notebooks</code> parameter of a workflow specification is
-<div class="codehilite"><pre><span></span><span class="nt">notebooks</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">notebooks</span><span class="p">:</span>
   <span class="nt">notebook1</span><span class="p">:</span>
     <span class="nt">filename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
     <span class="nt">parameters</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
@@ -4047,18 +4059,18 @@ This value can be retrieved in another notebook:
     <span class="nt">parameters</span><span class="p">:</span>
       <span class="nt">path_to_first_notebook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">notebook1</span>
       <span class="l l-Scalar l-Scalar-Plain">...</span>
-</pre></div>
+</code></pre></div>
 then the <code>path_to_first_notebook</code> parameter in <code>notebook2</code> will be the path to the executed <code>notebook1</code>, so values 'glued' in <code>notebook1</code> can be accessed in <code>notebook2</code> using <code>sb.read_notebook(path_to_first_notebook)</code>.</p>
 <h4 id="connecting-to-flowapi">Connecting to FlowAPI<a class="headerlink" href="#connecting-to-flowapi" title="Permanent link">&para;</a></h4>
 <p>Currently, the best way to create a FlowClient connection in a notebook is to pass the parameter <code>flowapi_url</code> to the notebook, and then run
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
 <span class="kn">from</span> <span class="nn">get_secret_or_env_var</span> <span class="kn">import</span> <span class="n">environ</span><span class="p">,</span> <span class="n">getenv</span>
 <span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="n">flowapi_url</span><span class="p">,</span>
     <span class="n">token</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;FLOWAPI_TOKEN&quot;</span><span class="p">],</span>
     <span class="n">ssl_certificate</span><span class="o">=</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SSL_CERTIFICATE_FILE&quot;</span><span class="p">),</span>
 <span class="p">)</span>
-</pre></div></p>
+</code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This method for accessing the FlowAPI access token is likely to change in the future.</p>
@@ -4077,20 +4089,20 @@ then the <code>path_to_first_notebook</code> parameter in <code>notebook2</code>
 <li>Go to <a href="http://localhost:9091/" target="_blank">FlowAuth</a>, log in with username <code>TEST_USER</code> and password <code>DUMMY_PASSWORD</code>, and create an API token following instructions <a href="../#flowauth">here</a>.  </li>
 <li>Create two empty directories, one for inputs and the other for outputs.  </li>
 <li>Copy the example input files into your inputs directory:<br />
-<div class="codehilite"><pre><span></span><span class="nb">cd</span> &lt;your_inputs_directory&gt;
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> &lt;your_inputs_directory&gt;
 wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/run_flows.ipynb
 wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/flows_report.ipynb
 wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/workflows.yml
-</pre></div></li>
+</code></pre></div></li>
 <li>Start AutoFlow:<br />
-<div class="codehilite"><pre><span></span>docker run -d <span class="se">\</span>
+<div class="codehilite"><pre><span></span><code>docker run -d <span class="se">\</span>
     -v &lt;your_inputs_directory&gt;:/mounts/inputs:ro <span class="se">\</span>
     -v &lt;your_outputs_directory&gt;:/mounts/outputs:rw <span class="se">\</span>
     -e <span class="s2">&quot;AUTOFLOW_LOG_LEVEL=ERROR&quot;</span> <span class="se">\</span>
     -e <span class="s2">&quot;FLOWAPI_URL=http://localhost:9090&quot;</span> <span class="se">\</span>
     -e <span class="s2">&quot;FLOWAPI_TOKEN=&lt;api_token&gt;&quot;</span> <span class="se">\</span>
     flowminder/autoflow:latest
-</pre></div>
+</code></pre></div>
 (where <code>&lt;your_inputs_directory&gt;</code> and <code>&lt;your_outputs_directory&gt;</code> are the paths to the input and output directories you created, and <code>&lt;api_token&gt;</code> is the token you created in FlowAuth).</li>
 </ol>
 <p>To run the sensor immediately without a schedule, rather than waiting until midnight, change the line <code>schedule: "0 0 * * *"</code> to <code>schedule: null</code> in <code>workflows.yml</code>.</p>
@@ -4116,7 +4128,7 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -4125,7 +4137,7 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Unique Subscriber Counts
+                Joined spatial aggregate
               </span>
             </div>
           </a>
@@ -4153,18 +4165,18 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4174,7 +4186,7 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
       
     </div>
     
-      <script src="../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       

@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecorerandom" tabindex="1" class="md-skip">
+      <a href="#flowmachinecorerandom" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -4570,8 +4582,8 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L0">flowmachine/core/random.py</a></p>
 <p>Classes to select random samples from queries or tables.</p>
 <h2 id="class-randombase">Class <strong>RandomBase</strong><a class="headerlink" href="#class-randombase" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">RandomBase</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">RandomBase</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L26">flowmachine/core/random.py</a></p>
 <p>Base class for queries used to obtain a random sample from a table.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -4588,8 +4600,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="_sample_params">_sample_params<a class="headerlink" href="#_sample_params" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_sample_params</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_sample_params</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L58">flowmachine/core/random.py</a></p>
 <p>Parameters passed when initialising this query.</p>
 <h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
@@ -4597,16 +4609,16 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.Dict[str, typing.Any]</code></li>
 </ul>
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L99">flowmachine/core/random.py</a></p>
 <h4 id="table_name">table_name<a class="headerlink" href="#table_name" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L94">flowmachine/core/random.py</a></p>
 <h2 id="class-randomids">Class <strong>RandomIDs</strong><a class="headerlink" href="#class-randomids" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">RandomIDs</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">RandomIDs</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L327">flowmachine/core/random.py</a></p>
 <p>Gets a random sample from the result of a query, using the 'random_ids' sampling method. This method samples rows by randomly sampling the row number.</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
@@ -4653,8 +4665,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </div>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="_sample_params_1">_sample_params<a class="headerlink" href="#_sample_params_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_sample_params</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_sample_params</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L208">flowmachine/core/random.py</a></p>
 <p>Parameters passed when initialising this query.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
@@ -4662,20 +4674,20 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.Dict[str, typing.Any]</code></li>
 </ul>
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L99">flowmachine/core/random.py</a></p>
 <h4 id="seed">seed<a class="headerlink" href="#seed" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">seed</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">seed</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L204">flowmachine/core/random.py</a></p>
 <h4 id="table_name_1">table_name<a class="headerlink" href="#table_name_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L217">flowmachine/core/random.py</a></p>
 <h2 id="class-randomsystemrows">Class <strong>RandomSystemRows</strong><a class="headerlink" href="#class-randomsystemrows" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">RandomSystemRows</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">RandomSystemRows</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L104">flowmachine/core/random.py</a></p>
 <p>Gets a random sample from the result of a query, using a PostgreSQL TABLESAMPLE clause with the 'system_rows' method. This method performs block-level sampling by randomly sampling each physical storage page of the underlying relation. This sampling method is guaranteed to provide a sample of the specified size.</p>
 <h2 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h2>
@@ -4715,8 +4727,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </div>
 <h2 id="methods_2">Methods<a class="headerlink" href="#methods_2" title="Permanent link">&para;</a></h2>
 <h4 id="_sample_params_2">_sample_params<a class="headerlink" href="#_sample_params_2" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_sample_params</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_sample_params</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L58">flowmachine/core/random.py</a></p>
 <p>Parameters passed when initialising this query.</p>
 <h5 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h5>
@@ -4724,16 +4736,16 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.Dict[str, typing.Any]</code></li>
 </ul>
 <h4 id="column_names_2">column_names<a class="headerlink" href="#column_names_2" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L99">flowmachine/core/random.py</a></p>
 <h4 id="table_name_2">table_name<a class="headerlink" href="#table_name_2" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L94">flowmachine/core/random.py</a></p>
 <h2 id="class-randomtablesample">Class <strong>RandomTablesample</strong><a class="headerlink" href="#class-randomtablesample" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">RandomTablesample</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">RandomTablesample</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L224">flowmachine/core/random.py</a></p>
 <p>Gets a random sample from the result of a query, using a PostgreSQL TABLESAMPLE clause with one of the following sampling methods: 'system': performs block-level sampling by randomly sampling each     physical storage page for the underlying relation. This     sampling method is not guaranteed to generate a sample of the     specified size, but an approximation. This method may not     produce a sample at all, so it might be worth running it again     if it returns an empty dataframe. 'bernoulli': samples directly on each row of the underlying     relation. This sampling method is slower and is not guaranteed to     generate a sample of the specified size, but an approximation. The choice of method is determined from the _sampling_method attribute.</p>
 <h2 id="attributes_3">Attributes<a class="headerlink" href="#attributes_3" title="Permanent link">&para;</a></h2>
@@ -4780,8 +4792,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </div>
 <h2 id="methods_3">Methods<a class="headerlink" href="#methods_3" title="Permanent link">&para;</a></h2>
 <h4 id="_sample_params_3">_sample_params<a class="headerlink" href="#_sample_params_3" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_sample_params</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_sample_params</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L208">flowmachine/core/random.py</a></p>
 <p>Parameters passed when initialising this query.</p>
 <h5 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h5>
@@ -4789,20 +4801,20 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.Dict[str, typing.Any]</code></li>
 </ul>
 <h4 id="column_names_3">column_names<a class="headerlink" href="#column_names_3" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L99">flowmachine/core/random.py</a></p>
 <h4 id="seed_1">seed<a class="headerlink" href="#seed_1" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">seed</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">seed</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L204">flowmachine/core/random.py</a></p>
 <h4 id="table_name_3">table_name<a class="headerlink" href="#table_name_3" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L217">flowmachine/core/random.py</a></p>
 <h2 id="class-seedablerandom">Class <strong>SeedableRandom</strong><a class="headerlink" href="#class-seedablerandom" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">SeedableRandom</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SeedableRandom</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L184">flowmachine/core/random.py</a></p>
 <p>Base class for random samples that accept a seed parameter for reproducibility.</p>
 <h2 id="attributes_4">Attributes<a class="headerlink" href="#attributes_4" title="Permanent link">&para;</a></h2>
@@ -4822,8 +4834,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_4">Methods<a class="headerlink" href="#methods_4" title="Permanent link">&para;</a></h2>
 <h4 id="_sample_params_4">_sample_params<a class="headerlink" href="#_sample_params_4" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">_sample_params</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_sample_params</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L208">flowmachine/core/random.py</a></p>
 <p>Parameters passed when initialising this query.</p>
 <h5 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h5>
@@ -4831,20 +4843,20 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.Dict[str, typing.Any]</code></li>
 </ul>
 <h4 id="column_names_4">column_names<a class="headerlink" href="#column_names_4" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L99">flowmachine/core/random.py</a></p>
 <h4 id="seed_2">seed<a class="headerlink" href="#seed_2" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">seed</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">seed</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L204">flowmachine/core/random.py</a></p>
 <h4 id="table_name_4">table_name<a class="headerlink" href="#table_name_4" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L217">flowmachine/core/random.py</a></p>
 <h2 id="random_factory">random_factory<a class="headerlink" href="#random_factory" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">random_factory</span><span class="p">(</span><span class="n">parent_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">],</span> <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;random_ids&#39;</span><span class="p">)</span>
-</pre></div>
+<p><div class="codehilite"><pre><span></span><code><span class="n">random_factory</span><span class="p">(</span><span class="n">parent_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">],</span> <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;random_ids&#39;</span><span class="p">)</span>
+</code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/random.py#L410">flowmachine/core/random.py</a></p>
 <p>Dynamically creates a random class as a descendant of parent_class. The resulting object will query the underlying object for attributes, and methods.</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
@@ -4866,8 +4878,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; query = UniqueSubscribers(&quot;2016-01-01&quot;, &quot;2016-01-31&quot;)     &gt;&gt;&gt; Random = random_factory(query.__class__)     &gt;&gt;&gt; Random(query=query, size=10).get_dataframe()                      msisdn     0  AgvE8pa3Bvqezmo6     1  3XKdxqvyNxO2vLD1     2  5Kgwy8Gp6DlN3Eq9     3  L4V537alj321eWz6     4  GJP3DWdGyb4QBnyo     5  DAlqeZENbeOn2vBw     6  By4j6PKdB4NGMpxr     7  mkqQ4NPBPQLapbeg     8  YNv2EgDJxxAoy0Gr     9  2vmOlAENnxpPM1xX      &gt;&gt;&gt; query = VersionedInfrastructure(&quot;2016-01-01&quot;)     &gt;&gt;&gt; Random = random_factory(query.__class__)     &gt;&gt;&gt; Random(query=query, size=10).get_dataframe()              id  version     0  o9yyxY        0     1  B8OaG5        0     2  DbWg4K        0     3  0xqNDj        0     4  pqg7ZE        0     5  nWM8R3        0     6  LVnDQL        0     7  pdVVV4        0     8  wzrXjw        0     9  RZgwVz        0      # The default method &#39;system_rows&#39; does not support parent tables which have child inheritance     # as is the case with &#39;events.calls&#39;, so we choose another method here.     &gt;&gt;&gt; Random = random_factory(flowmachine.core.Query, sampling_method=&#39;bernoulli&#39;)     &gt;&gt;&gt; Random(query=Table(&#39;events.calls&#39;, columns=[&#39;id&#39;, &#39;duration&#39;]), size=10).get_dataframe()                             id  duration     0  mQjOy-5eVrm-Ll5eE-P4V27     422.0     1  mQjOy-5eVrm-Ll5eE-P4V27     422.0     2  0r4KG-Rb4Lm-VK1bB-LZQxg     762.0     3  BDXMV-yb8Kl-zkmav-AZEJ2     318.0     4  vm9gW-4QbYm-OrKbz-qM5Yx    1407.0     5  WYxk8-mepk9-W3pdM-yJNjQ    1062.0     6  mQjOy-5eVn3-wK5eE-P4V27    1033.0     7  M7Vl4-zbqom-oPDep-rOZqE     879.0     8  58DKg-l9av9-NE8eG-1vzAp    3129.0     9  m9gW4-QbY62-WLYdz-qM5Yx    1117.0
-</pre></div>
+<div class="codehilite"><pre><span></span><code>&gt;&gt;&gt; query = UniqueSubscribers(&quot;2016-01-01&quot;, &quot;2016-01-31&quot;)     &gt;&gt;&gt; Random = random_factory(query.__class__)     &gt;&gt;&gt; Random(query=query, size=10).get_dataframe()                      msisdn     0  AgvE8pa3Bvqezmo6     1  3XKdxqvyNxO2vLD1     2  5Kgwy8Gp6DlN3Eq9     3  L4V537alj321eWz6     4  GJP3DWdGyb4QBnyo     5  DAlqeZENbeOn2vBw     6  By4j6PKdB4NGMpxr     7  mkqQ4NPBPQLapbeg     8  YNv2EgDJxxAoy0Gr     9  2vmOlAENnxpPM1xX      &gt;&gt;&gt; query = VersionedInfrastructure(&quot;2016-01-01&quot;)     &gt;&gt;&gt; Random = random_factory(query.__class__)     &gt;&gt;&gt; Random(query=query, size=10).get_dataframe()              id  version     0  o9yyxY        0     1  B8OaG5        0     2  DbWg4K        0     3  0xqNDj        0     4  pqg7ZE        0     5  nWM8R3        0     6  LVnDQL        0     7  pdVVV4        0     8  wzrXjw        0     9  RZgwVz        0      # The default method &#39;system_rows&#39; does not support parent tables which have child inheritance     # as is the case with &#39;events.calls&#39;, so we choose another method here.     &gt;&gt;&gt; Random = random_factory(flowmachine.core.Query, sampling_method=&#39;bernoulli&#39;)     &gt;&gt;&gt; Random(query=Table(&#39;events.calls&#39;, columns=[&#39;id&#39;, &#39;duration&#39;]), size=10).get_dataframe()                             id  duration     0  mQjOy-5eVrm-Ll5eE-P4V27     422.0     1  mQjOy-5eVrm-Ll5eE-P4V27     422.0     2  0r4KG-Rb4Lm-VK1bB-LZQxg     762.0     3  BDXMV-yb8Kl-zkmav-AZEJ2     318.0     4  vm9gW-4QbYm-OrKbz-qM5Yx    1407.0     5  WYxk8-mepk9-W3pdM-yJNjQ    1062.0     6  mQjOy-5eVn3-wK5eE-P4V27    1033.0     7  M7Vl4-zbqom-oPDep-rOZqE     879.0     8  58DKg-l9av9-NE8eG-1vzAp    3129.0     9  m9gW4-QbY62-WLYdz-qM5Yx    1117.0
+</code></pre></div>
                 
                   
                 
@@ -4926,18 +4938,18 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4947,7 +4959,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
       

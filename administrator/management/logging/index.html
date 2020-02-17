@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#audit-trail-logs" tabindex="1" class="md-skip">
+      <a href="#audit-trail-logs" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -98,7 +98,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../.." title="FlowKit" class="md-header-nav__button md-logo">
+        <a href="../../.." title="FlowKit" aria-label="FlowKit" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -498,6 +498,18 @@
   <li class="md-nav__item">
     <a href="../../../analyst/worked_examples/unique-subscriber-counts/" title="Unique Subscriber Counts" class="md-nav__link">
       Unique Subscriber Counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../analyst/worked_examples/joined-spatial-aggregate/" title="Joined spatial aggregate" class="md-nav__link">
+      Joined spatial aggregate
     </a>
   </li>
 
@@ -3877,7 +3889,7 @@
 <h4 id="authentication-logs">Authentication Logs<a class="headerlink" href="#authentication-logs" title="Permanent link">&para;</a></h4>
 <p>FlowAPI logs all access attempts whether successful or not to stdout using a logger named <code>flowapi.access</code>.</p>
 <p>Where authentication succeeds, the log message will have a <code>level</code> field of <code>info</code>, and an <code>event</code> type of <code>AUTHENTICATED</code>:</p>
-<div class="codehilite"><pre><span></span><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;fe1d5dd2-ddfb-4b34-9d1e-4ebfc205d64c&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/0/run&quot;</span><span class="p">,</span>
     <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;TEST_USER&quot;</span><span class="p">,</span>
@@ -3897,7 +3909,7 @@
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T13:57:35.262214Z&quot;</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 <p>In general, access log messages contain at a minimum the route that access was requested to, any json payload, source IP address for the request, and a timestamp. Every request <em>also</em> has a <em>unique id</em>, which will be the same across all log entries related to that request.</p>
 <p>If authentication fails, then the reason is also included in the log message, along with any error message and as much information about the request and requester as can be discerned.</p>
@@ -3910,7 +3922,7 @@
 <h4 id="complete-logging-cycle">Complete Logging Cycle<a class="headerlink" href="#complete-logging-cycle" title="Permanent link">&para;</a></h4>
 <p>A complete logging cycle for a successful request to retrieve a previously run query's results might look like this:</p>
 <p>FlowAPI access log:</p>
-<div class="codehilite"><pre><span></span><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/0/get/ddc61a04f608dee16fff0655f91c2057&quot;</span><span class="p">,</span>
     <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;TEST_USER&quot;</span><span class="p">,</span>
@@ -3921,10 +3933,10 @@
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.331967Z&quot;</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 <p>FlowAPI usage log:</p>
-<div class="codehilite"><pre><span></span><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;query_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;DAILY_LOCATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/0/get/ddc61a04f608dee16fff0655f91c2057&quot;</span><span class="p">,</span>
@@ -3973,10 +3985,10 @@
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.341010Z&quot;</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 <p>FlowMachine usage log:</p>
-<div class="codehilite"><pre><span></span><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;query_id&quot;</span><span class="p">:</span> <span class="s2">&quot;ddc61a04f608dee16fff0655f91c2057&quot;</span><span class="p">,</span>
     <span class="nt">&quot;query_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;daily_location&quot;</span><span class="p">,</span>
     <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;b&#39;{\&quot;request_id\&quot;:\&quot;d2892489-8fb8-40ec-94e6-2467266a0226\&quot;,\&quot;action\&quot;:\&quot;get_query_kind\&quot;,\&quot;query_id\&quot;:\&quot;ddc61a04f608dee16fff0655f91c2057\&quot;}&#39;&quot;</span><span class="p">,</span>
@@ -4016,7 +4028,7 @@
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.358644Z&quot;</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 <p>Note that the <code>request_id</code> field is identical across the five log entries, which lets you match the request across the multiple services.</p>
 <h3 id="error-and-debugging-logs">Error and Debugging Logs<a class="headerlink" href="#error-and-debugging-logs" title="Permanent link">&para;</a></h3>
@@ -4083,18 +4095,18 @@
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+      <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
     
   </div>
 
@@ -4104,7 +4116,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       
