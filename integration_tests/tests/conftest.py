@@ -19,6 +19,7 @@ import pandas as pd
 import flowmachine
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
+from flowmachine.core.context import get_db, get_redis
 import flowmachine.core.server.server
 
 
@@ -182,10 +183,10 @@ def redis():
     """
     Return redis instance to use when running the tests.
 
-    Currently this is hardcoded to Query.redis but this
+    Currently this is hardcoded to get_redis() but this
     fixture avoids hard-coding it in all our tests.
     """
-    return Query.redis
+    return get_redis()
 
 
 def make_flowmachine_connection_object():
@@ -216,11 +217,8 @@ def fm_conn():
     flowmachine.core.connection.Connection
     """
     fm_conn = make_flowmachine_connection_object()
-    flowmachine.connect(conn=fm_conn)
-
-    yield fm_conn
-
-    fm_conn.close()
+    with flowmachine.connections(conn=fm_conn):
+        yield
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -233,8 +231,8 @@ def reset_flowdb_and_redis(fm_conn):
     test has a clean database to work with.
     """
     print("[DDD] Resetting flowdb and redis into a pristine state")
-    reset_cache_schema(fm_conn, redis_instance=Query.redis)
-    delete_all_redis_keys(redis_instance=Query.redis)
+    reset_cache_schema(get_db(), redis_instance=get_redis())
+    delete_all_redis_keys(redis_instance=get_redis())
 
 
 def delete_all_redis_keys(redis_instance):
@@ -257,7 +255,7 @@ def reset_cache_schema(fm_conn, redis_instance):
 
 @pytest.fixture
 def get_dataframe(fm_conn):
-    yield lambda query: pd.read_sql_query(query.get_query(), con=fm_conn.engine)
+    yield lambda query: pd.read_sql_query(query.get_query(), con=get_db().engine)
 
 
 @pytest.fixture(scope="session")
