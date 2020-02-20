@@ -64,15 +64,15 @@ def test_get_query_blocks_on_store():
     dl.store().result()
     timer = []
 
-    def unlock(timer, redis):
-        qsm = QueryStateMachine(redis, dl.query_id)
+    def unlock(timer, redis, db_id):
+        qsm = QueryStateMachine(redis, dl.query_id, db_id)
         qsm.enqueue()
         for i in range(101):
             timer.append(i)
         qsm.execute()
         qsm.finish()
 
-    timeout = Thread(target=unlock, args=(timer, get_redis()))
+    timeout = Thread(target=unlock, args=(timer, get_redis(), get_db().conn_id))
     timeout.start()
     dl.get_query()
     assert len(timer) == 101
@@ -91,15 +91,15 @@ def test_blocks_on_store_cascades():
     hl = ModalLocation(dl, dl2)
     timer = []
 
-    def unlock(timer, redis):
-        qsm = QueryStateMachine(redis, dl.query_id)
+    def unlock(timer, redis, db_id):
+        qsm = QueryStateMachine(redis, dl.query_id, db_id)
         qsm.enqueue()
         for i in range(101):
             timer.append(i)
         qsm.execute()
         qsm.finish()
 
-    timeout = Thread(target=unlock, args=(timer, get_redis()))
+    timeout = Thread(target=unlock, args=(timer, get_redis(), get_db().conn_id))
     timeout.start()
     hl.get_query()
     assert len(timer) == 101

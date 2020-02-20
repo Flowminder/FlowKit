@@ -21,6 +21,7 @@ from typing import Callable, Union
 
 from marshmallow import ValidationError
 
+from build.lib.flowmachine.core.context import get_db
 from flowmachine.core import Query
 from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.core.query_info_lookup import (
@@ -185,7 +186,7 @@ async def action_handler__poll_query(
             status="error", msg=f"Unknown query id: '{query_id}'", payload=payload
         )
     else:
-        q_state_machine = QueryStateMachine(get_redis(), query_id)
+        q_state_machine = QueryStateMachine(get_redis(), query_id, get_db().conn_id)
         payload = {
             "query_id": query_id,
             "query_kind": query_kind,
@@ -252,7 +253,9 @@ async def action_handler__get_sql(
         payload = {"query_id": query_id, "query_state": "awol"}
         return ZMQReply(status="error", msg=msg, payload=payload)
 
-    query_state = QueryStateMachine(get_redis(), query_id).current_query_state
+    query_state = QueryStateMachine(
+        get_redis(), query_id, get_db().conn_id
+    ).current_query_state
 
     if query_state == QueryState.COMPLETED:
         q = get_query_object_by_id(get_db(), query_id)

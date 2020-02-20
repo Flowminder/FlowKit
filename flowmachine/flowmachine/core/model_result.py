@@ -181,11 +181,11 @@ class ModelResult(Query):
             if store_dependencies:
                 store_all_unstored_dependencies(self)
             self._df.to_sql(name, connection, schema=schema, index=False)
-            QueryStateMachine(get_redis(), self.query_id).finish()
+            QueryStateMachine(get_redis(), self.query_id, get_db().conn_id).finish()
             return self._runtime
 
         current_state, changed_to_queue = QueryStateMachine(
-            get_redis(), self.query_id
+            get_redis(), self.query_id, get_db().conn_id
         ).enqueue()
         logger.debug(
             f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."

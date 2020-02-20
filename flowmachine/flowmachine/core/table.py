@@ -119,7 +119,9 @@ class Table(Query):
         self.columns = columns
         super().__init__()
         # Table is immediately in a 'finished executing' state
-        q_state_machine = QueryStateMachine(get_redis(), self.query_id)
+        q_state_machine = QueryStateMachine(
+            get_redis(), self.query_id, get_db().conn_id
+        )
         if not q_state_machine.is_completed:
             q_state_machine.enqueue()
             q_state_machine.execute()
