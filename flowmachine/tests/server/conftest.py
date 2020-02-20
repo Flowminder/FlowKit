@@ -12,6 +12,7 @@ from asynctest import Mock as AMock
 import pytest
 import zmq
 from flowmachine.core import Query
+from flowmachine.core.context import context, executor, get_executor
 from flowmachine.core.server.server_config import FlowmachineServerConfig
 
 
@@ -47,9 +48,9 @@ def dummy_zmq_server(monkeypatch):
 @pytest.fixture(scope="session", autouse=True)
 def flowmachine_connect():
     """Overrides the flowmachine connection fixture to replace all applicable parts with mocks."""
-    Query.connection = Mock()
-    Query.redis = Mock()
-    print("Replacing connections with mocks.")
+    with context(Mock(), get_executor(), Mock()):
+        print("Replacing connections with mocks.")
+        yield
 
 
 @pytest.fixture(scope="session")

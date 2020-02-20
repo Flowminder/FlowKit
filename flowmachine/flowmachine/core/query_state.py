@@ -100,7 +100,6 @@ class QueryStateMachine:
     """
 
     def __init__(self, redis_client: StrictRedis, query_id: str):
-        self.redis_client = redis_client
         self.query_id = query_id
         must_populate = redis_client.get(f"finist:{query_id}-state") is None
         self.state_machine = Finist(redis_client, f"{query_id}-state", QueryState.KNOWN)

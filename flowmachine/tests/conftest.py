@@ -8,15 +8,15 @@ Commonly used testing fixtures for flowmachine.
 """
 import json
 import os
+import concurrent.futures.thread
 from functools import partial
 from json import JSONDecodeError
 from pathlib import Path
 
 import pandas as pd
 import pytest
-import re
 import logging
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
 from _pytest.capture import CaptureResult
 from approvaltests import verify
@@ -25,8 +25,10 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 )
 
 import flowmachine
-from flowmachine.core import Query, make_spatial_unit, Connection
+from flowmachine.core import make_spatial_unit, Connection
 from flowmachine.core.cache import reset_cache
+from flowmachine.core.context import redis_connection, context, get_db, get_redis
+from flowmachine.core.init import connections
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
@@ -133,12 +135,11 @@ def skip_datecheck(request, monkeypatch):
 
 @pytest.fixture(autouse=True)
 def flowmachine_connect():
-    con = flowmachine.connect()
-    yield con
-    reset_cache(con, Query.redis, protect_table_objects=False)
-    con.engine.dispose()  # Close the connection
-    Query.redis.flushdb()  # Empty the redis
-    del Query.connection  # Ensure we recreate everything at next use
+    with connections():
+        yield
+        reset_cache(get_db(), get_redis(), protect_table_objects=False)
+        get_db().engine.dispose()  # Close the connection
+        get_redis().flushdb()  # Empty the redis
 
 
 @pytest.fixture
@@ -159,16 +160,19 @@ def mocked_connections(monkeypatch):
     """
 
     logging_mock = Mock()
-    connection_mock = Mock(spec=Connection)
+    connection_mock = Mock()
+    connection_mock.return_value.engine.begin.return_value.__enter__ = Mock()
+    connection_mock.return_value.engine.begin.return_value.__exit__ = Mock()
+    connection_mock.return_value.fetch.return_value = MagicMock(return_value=[])
     redis_mock = Mock()
-    tp_mock = Mock()
-    monkeypatch.delattr("flowmachine.core.query.Query.connection", raising=False)
+    tp_mock = Mock(return_value=None)
     monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
     monkeypatch.setattr(flowmachine.core.init, "Connection", connection_mock)
     monkeypatch.setattr("redis.StrictRedis", redis_mock)
-    monkeypatch.setattr(flowmachine.core.init, "_start_threadpool", tp_mock)
+    monkeypatch.setattr(
+        concurrent.futures.thread.ThreadPoolExecutor, "__init__", tp_mock
+    )
     yield logging_mock, connection_mock, redis_mock, tp_mock
-    del Query.connection
 
 
 @pytest.fixture
@@ -189,22 +193,20 @@ def clean_env(monkeypatch):
 def get_dataframe(flowmachine_connect):
     yield lambda query: pd.read_sql_query(
         f"SELECT {', '.join(query.column_names)} FROM ({query.get_query()}) _",
-        con=flowmachine_connect.engine,
+        con=get_db().engine,
     )
 
 
 @pytest.fixture
 def get_column_names_from_run(flowmachine_connect):
     yield lambda query: pd.read_sql_query(
-        f"{query.get_query()} LIMIT 0;", con=flowmachine_connect.engine
+        f"{query.get_query()} LIMIT 0;", con=get_db().engine
     ).columns.tolist()
 
 
 @pytest.fixture
 def get_length(flowmachine_connect):
-    yield lambda query: len(
-        pd.read_sql_query(query.get_query(), con=flowmachine_connect.engine)
-    )
+    yield lambda query: len(pd.read_sql_query(query.get_query(), con=get_db().engine))
 
 
 class DummyRedis:
@@ -253,8 +255,9 @@ class DummyRedis:
 @pytest.fixture(scope="function")
 def dummy_redis(monkeypatch):
     dummy_redis = DummyRedis()
-    monkeypatch.setattr(Query, "redis", dummy_redis)
-    return dummy_redis
+    token = redis_connection.set(dummy_redis)
+    yield dummy_redis
+    redis_connection.reset(token)
 
 
 @pytest.fixture(scope="session")

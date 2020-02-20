@@ -9,6 +9,7 @@ Functions which deal with inspecting and managing the query cache.
 """
 import asyncio
 import pickle
+from contextvars import copy_context
 from concurrent.futures import Executor, TimeoutError
 from functools import partial
 
@@ -801,7 +802,9 @@ async def watch_and_shrink_cache(
 
         try:
             await asyncio.wait_for(
-                asyncio.get_running_loop().run_in_executor(pool, shrink_func),
+                asyncio.get_running_loop().run_in_executor(
+                    pool, copy_context().run, shrink_func
+                ),
                 timeout=timeout,
             )
         except TimeoutError:

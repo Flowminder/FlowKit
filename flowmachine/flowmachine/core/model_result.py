@@ -21,6 +21,7 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 
 from flowmachine.core.cache import write_query_to_cache
+from flowmachine.core.context import get_db, get_redis, submit_to_executor
 from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
@@ -130,7 +131,7 @@ class ModelResult(Query):
             if self.is_stored:
                 return [
                     x[0]
-                    for x in self.connection.fetch(
+                    for x in get_db().fetch(
                         f"""
                 SELECT column_name
                   FROM information_schema.columns
@@ -180,23 +181,23 @@ class ModelResult(Query):
             if store_dependencies:
                 store_all_unstored_dependencies(self)
             self._df.to_sql(name, connection, schema=schema, index=False)
-            QueryStateMachine(self.redis, self.query_id).finish()
+            QueryStateMachine(get_redis(), self.query_id).finish()
             return self._runtime
 
         current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.query_id
+            get_redis(), self.query_id
         ).enqueue()
         logger.debug(
             f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
-        store_future = self.thread_pool_executor.submit(
+        store_future = submit_to_executor(
             write_query_to_cache,
             name=name,
             schema=schema,
             query=self,
-            connection=self.connection,
-            redis=self.redis,
+            connection=get_db(),
+            redis=get_redis(),
             ddl_ops_func=lambda *x: [],
             write_func=write_model_result,
         )

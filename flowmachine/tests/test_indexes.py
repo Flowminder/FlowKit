@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.context import get_db
 from flowmachine.features.subscriber import *
 
 
@@ -29,4 +30,4 @@ def test_index_created(flowmachine_connect):
     ix_qur = "SELECT * FROM pg_indexes WHERE tablename='{}'".format(
         dl.fully_qualified_table_name.split(".")[1]
     )
-    assert len(flowmachine_connect.fetch(ix_qur)) == 2
+    assert len(get_db().fetch(ix_qur)) == 2
