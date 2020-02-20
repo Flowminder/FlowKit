@@ -125,11 +125,12 @@ async def action_handler__run_query(
             # Set the query running (it's safe to call this even if the query was set running before)
             query_id = await asyncio.get_running_loop().run_in_executor(
                 executor=config.server_thread_pool,
-                func=copy_context().run(
+                func=partial(
+                    copy_context().run,
                     partial(
                         query_obj.store_async,
                         store_dependencies=config.store_dependencies,
-                    )
+                    ),
                 ),
             )
         except Exception as e:
