@@ -19,7 +19,7 @@ import pandas as pd
 import flowmachine
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.context import get_db, get_redis
+from flowmachine.core.context import get_db, get_redis, get_executor
 import flowmachine.core.server.server
 
 
@@ -75,7 +75,6 @@ def start_flowmachine_server_with_or_without_dependency_caching(
     Tests using this fixture will run twice: once with dependency caching disabled,
     and again with dependency caching enabled.
     """
-    original_flowmachine_conn = Query.connection
 
     # Ensure this server runs on a different port from the session-scoped server
     main_zmq_port = os.getenv("FLOWMACHINE_PORT", "5555")
@@ -88,17 +87,13 @@ def start_flowmachine_server_with_or_without_dependency_caching(
 
     # Create a new flowmachine connection, because we can't use the old one after starting a new process.
     new_conn = make_flowmachine_connection_object()
-    Query.connection = new_conn
-
-    yield
+    with flowmachine.core.context.context(new_conn, get_executor(), get_redis()):
+        yield
 
     new_conn.close()
 
     fm_thread.terminate()
     sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
-
-    # Switch flowmachine back to using the original connection for the remaining tests.
-    Query.connection = original_flowmachine_conn
 
 
 @pytest.fixture(scope="session", autouse=True)
