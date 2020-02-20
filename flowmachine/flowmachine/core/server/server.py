@@ -22,6 +22,7 @@ from zmq.asyncio import Context
 import flowmachine
 from flowmachine.core import Query, Connection
 from flowmachine.core.cache import watch_and_shrink_cache
+from flowmachine.core.context import get_db, get_executor
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -218,9 +219,7 @@ def shutdown(socket: "zmq.asyncio.Socket") -> None:
     logger.debug("Cancelled all remaining tasks.")
 
 
-async def recv(
-    *, config: "FlowmachineServerConfig", flowdb_connection: Connection
-) -> NoReturn:
+async def recv(*, config: "FlowmachineServerConfig") -> NoReturn:
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
@@ -229,8 +228,6 @@ async def recv(
     ----------
     config : FlowmachineServerConfig
         Server config options
-    flowdb_connection : Connection
-        FlowDB connection
     """
     logger.info(f"Flowmachine server is listening on port {config.port}")
 
@@ -244,8 +241,8 @@ async def recv(
 
     main_loop.create_task(
         watch_and_shrink_cache(
-            flowdb_connection=flowdb_connection,
-            pool=Query.thread_pool_executor,
+            flowdb_connection=get_db(),
+            pool=get_executor(),
             sleep_time=config.cache_pruning_frequency,
             timeout=config.cache_pruning_timeout,
         )
@@ -268,7 +265,7 @@ def main():
     # Read config options from environment variables
     config = get_server_config()
     # Connect to flowdb
-    flowdb_connection = flowmachine.connect()
+    flowmachine.connect()
 
     if not config.store_dependencies:
         logger.info("Dependency caching is disabled.")
@@ -277,8 +274,7 @@ def main():
 
     # Run receive loop which receives zmq messages and sends back replies
     asyncio.run(
-        recv(config=config, flowdb_connection=flowdb_connection),
-        debug=config.debug_mode,
+        recv(config=config), debug=config.debug_mode,
     )  # note: asyncio.run() requires Python 3.7+
 
 
