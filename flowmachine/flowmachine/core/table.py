@@ -10,6 +10,7 @@ database.
 from typing import List
 
 from flowmachine.core.query_state import QueryStateMachine
+from .context import db, get_db, get_redis
 from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
@@ -64,7 +65,7 @@ class Table(Query):
 
         """
         try:
-            self.connection
+            get_db()
         except AttributeError:
             raise NotConnectedError()
 
@@ -88,7 +89,7 @@ class Table(Query):
         # Get actual columns of this table from the database
         db_columns = list(
             zip(
-                *self.connection.fetch(
+                *get_db().fetch(
                     f"""SELECT column_name from INFORMATION_SCHEMA.COLUMNS
              WHERE table_name = '{self.name}' AND table_schema='{self.schema}'"""
                 )
@@ -118,11 +119,11 @@ class Table(Query):
         self.columns = columns
         super().__init__()
         # Table is immediately in a 'finished executing' state
-        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        q_state_machine = QueryStateMachine(get_redis(), self.query_id)
         if not q_state_machine.is_completed:
             q_state_machine.enqueue()
             q_state_machine.execute()
-            write_cache_metadata(self.connection, self, compute_time=0)
+            write_cache_metadata(get_db(), self, compute_time=0)
             q_state_machine.finish()
 
     def __format__(self, fmt):
@@ -140,8 +141,8 @@ class Table(Query):
         return "SELECT {cols} FROM {fqn}".format(fqn=self.fqn, cols=cols)
 
     def get_query(self):
-        with self.connection.engine.begin():
-            self.connection.engine.execute(
+        with get_db().engine.begin():
+            get_db().engine.execute(
                 "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
                     self.query_id
                 )
@@ -150,7 +151,7 @@ class Table(Query):
 
     @property
     def is_stored(self):
-        return self.connection.has_table(self.name, self.schema)
+        return get_db().has_table(self.name, self.schema)
 
     @property
     def fully_qualified_table_name(self):
@@ -192,7 +193,7 @@ class Table(Query):
             WHERE pg_class.oid=counts.oid
             """
 
-        ct = self.connection.fetch(qur.format(sc=self.schema, tn=self.name))[0][0]
+        ct = get_db().fetch(qur.format(sc=self.schema, tn=self.name))[0][0]
         return int(ct)
 
     def has_children(self):
@@ -202,7 +203,7 @@ class Table(Query):
         bool
             True if this table has subtables
         """
-        number_child = self.connection.fetch(
+        number_child = get_db().fetch(
             """
                             SELECT COUNT(*) as oid
                                 FROM pg_inherits

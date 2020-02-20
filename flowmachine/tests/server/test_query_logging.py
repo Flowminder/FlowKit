@@ -8,6 +8,7 @@ import pytest
 import sys
 from logging import getLogger
 
+from flowmachine.core.context import get_redis
 from flowmachine.core.logging import set_log_level
 from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core import Query
@@ -26,7 +27,7 @@ async def test_query_run_logged(json_log, server_config):
     set_log_level(
         "flowmachine.debug", "ERROR"
     )  # Logging of query runs should be independent of other logs
-    Query.redis.get.return_value = (
+    get_redis().get.return_value = (
         b"known"  # Mock enough redis to get to the log messages
     )
     reply = await get_reply_for_message(

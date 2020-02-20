@@ -6,6 +6,7 @@ from marshmallow import Schema, fields
 
 import flowmachine
 from flowmachine.core import Query
+from flowmachine.core.context import get_redis
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
@@ -82,7 +83,7 @@ async def test_get_query_bad_id(server_config):
     """
     Get sql handler should send back an error status for a nonexistent id
     """
-    Query.redis.get.return_value = None
+    get_redis().get.return_value = None
     msg = await action_handler__get_query_params(
         config=server_config, query_id="DUMMY_ID"
     )

@@ -10,6 +10,7 @@ Tests for the subscriber subsetting functionality
 import pytest
 
 from flowmachine.core import Table
+from flowmachine.core.context import get_db
 from flowmachine.features import (
     RadiusOfGyration,
     ModalLocation,
@@ -62,7 +63,7 @@ def subscriber_list():
 
 @pytest.fixture
 def subscriber_list_table(subscriber_list, flowmachine_connect):
-    engine = flowmachine_connect.engine
+    engine = get_db().engine
     with engine.begin():
         sql = """CREATE TABLE subscriber_list (subscriber TEXT)"""
         engine.execute(sql)

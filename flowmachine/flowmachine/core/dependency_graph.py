@@ -9,6 +9,8 @@ import structlog
 from io import BytesIO
 from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional
 from concurrent.futures import wait
+
+from flowmachine.core.context import get_redis
 from flowmachine.core.errors import UnstorableQueryError
 from flowmachine.core.query_state import QueryStateMachine
 
@@ -224,7 +226,7 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
                 # We don't want to include this query in the graph, only its dependencies.
                 y = None
             # Wait for query to complete before checking whether it's stored.
-            q_state_machine = QueryStateMachine(x.redis, x.query_id)
+            q_state_machine = QueryStateMachine(get_redis(), x.query_id)
             q_state_machine.wait_until_complete()
             if not x.is_stored:
                 deps.append((y, x))

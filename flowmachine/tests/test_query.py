@@ -31,7 +31,7 @@ def test_bad_sql_logged_and_raised(caplog):
         fut = BadQuery().store()
         exec = fut.exception()
         raise exec
-    assert "Error executing SQL" in caplog.messages[0]
+    assert "Error executing SQL" in caplog.messages[-1]
 
 
 def test_method_not_implemented():

@@ -13,6 +13,7 @@ import pytest
 
 import flowmachine
 from flowmachine.core import Query
+from flowmachine.core.context import get_redis
 from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
@@ -143,7 +144,7 @@ def test_query_cancellation(start_state, succeeds, dummy_redis):
 def test_store_exceptions(fail_event, expected_exception):
     """Test that exceptions are raised when watching a store op triggered elsewhere."""
     q = DummyQuery(dummy_id=1, sleep_time=5)
-    qsm = QueryStateMachine(q.redis, q.query_id)
+    qsm = QueryStateMachine(get_redis(), q.query_id)
     # Mark the query as having begun executing elsewhere
     qsm.enqueue()
     qsm.execute()
@@ -159,7 +160,7 @@ def test_drop_query_blocks(monkeypatch):
         flowmachine.core.query, "_sleep", Mock(side_effect=BlockingIOError)
     )
     q = DummyQuery(dummy_id=1, sleep_time=5)
-    qsm = QueryStateMachine(q.redis, q.query_id)
+    qsm = QueryStateMachine(get_redis(), q.query_id)
     # Mark the query as in the process of resetting
     qsm.enqueue()
     qsm.execute()
@@ -172,7 +173,7 @@ def test_drop_query_blocks(monkeypatch):
 def test_drop_query_errors():
     """Test that resetting a query's cache will error if in a state where that isn't possible."""
     q = DummyQuery(dummy_id=1, sleep_time=5)
-    qsm = QueryStateMachine(q.redis, q.query_id)
+    qsm = QueryStateMachine(get_redis(), q.query_id)
     # Mark the query as in the process of resetting
     qsm.enqueue()
     qsm.execute()

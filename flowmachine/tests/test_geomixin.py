@@ -15,6 +15,7 @@ import geojson
 import pytest
 
 from flowmachine.core import Query
+from flowmachine.core.context import get_db
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location
@@ -155,7 +156,7 @@ def test_reprojection():
     assert js["features"][0]["geometry"]["coordinates"] == pytest.approx(
         [-8094697.52, 9465052.88]
     )
-    assert js["properties"]["crs"] == proj4string(dl.connection, 2770)
+    assert js["properties"]["crs"] == proj4string(get_db(), 2770)
 
 
 def test_geojson_cache():
@@ -166,7 +167,7 @@ def test_geojson_cache():
         "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
     ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
-    assert js == dl._geojson[proj4string(dl.connection, 2770)]
+    assert js == dl._geojson[proj4string(get_db(), 2770)]
 
 
 def test_geojson_cache_exluded_from_pickle():
@@ -186,7 +187,7 @@ def test_geojson_caching_off():
     js = dl.to_geojson(crs=2770)  # OSGB36
     dl.turn_off_caching()  # Check caching for geojson switches off
     with pytest.raises(KeyError):
-        dl._geojson[proj4string(dl.connection, 2770)]
+        dl._geojson[proj4string(get_db(), 2770)]
     js = dl.to_geojson(crs=2770)  # OSGB36
     with pytest.raises(KeyError):
-        dl._geojson[proj4string(dl.connection, 2770)]
+        dl._geojson[proj4string(get_db(), 2770)]

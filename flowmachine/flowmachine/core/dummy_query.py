@@ -6,6 +6,8 @@ A dummy query class, primarily useful for testing.
 """
 
 import structlog
+
+from .context import get_redis
 from .query import Query
 from .query_state import QueryStateMachine
 
@@ -38,14 +40,14 @@ class DummyQuery(Query):
         """
         Determine dummy 'stored' status from redis, instead of checking the database.
         """
-        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        q_state_machine = QueryStateMachine(get_redis(), self.query_id)
         return q_state_machine.is_completed
 
     def store(self, store_dependencies=False):
         logger.debug(
             "Storing dummy query by marking the query state as 'finished' (but without actually writing to the database)."
         )
-        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        q_state_machine = QueryStateMachine(get_redis(), self.query_id)
         q_state_machine.enqueue()
         q_state_machine.execute()
         q_state_machine.finish()

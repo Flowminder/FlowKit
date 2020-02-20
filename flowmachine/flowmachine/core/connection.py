@@ -10,6 +10,7 @@ regarding the database.
 import os
 import datetime
 import warnings
+from _md5 import md5
 from collections import defaultdict
 
 from typing import Dict, List, Optional
@@ -93,6 +94,10 @@ class Connection:
             pool_timeout=None,
             connect_args=connect_args,
         )
+        conn_id = md5(str(self.engine.url.host).encode())
+        conn_id.update(str(self.engine.url.port).encode())
+        conn_id.update(str(self.engine.url.database).encode())
+        self.conn_id = conn_id.hexdigest()
 
         self.max_connections = pool_size + overflow
         if self.max_connections > os.cpu_count():
