@@ -226,7 +226,9 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
                 # We don't want to include this query in the graph, only its dependencies.
                 y = None
             # Wait for query to complete before checking whether it's stored.
-            q_state_machine = QueryStateMachine(get_redis(), x.query_id)
+            q_state_machine = QueryStateMachine(
+                get_redis(), x.query_id, get_db().conn_id
+            )
             q_state_machine.wait_until_complete()
             if not x.is_stored:
                 deps.append((y, x))

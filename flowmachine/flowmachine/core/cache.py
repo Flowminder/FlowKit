@@ -98,7 +98,7 @@ def write_query_to_cache(
 
     """
     logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
-    q_state_machine = QueryStateMachine(redis, query.query_id)
+    q_state_machine = QueryStateMachine(redis, query.query_id, connection.conn_id)
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
         logger.debug(f"In charge of executing '{query.query_id}'.")
@@ -303,7 +303,9 @@ def resync_redis_with_cache(connection: "Connection", redis: StrictRedis) -> Non
     logger.debug("Flushing redis.")
     for event in (QueryEvent.QUEUE, QueryEvent.EXECUTE, QueryEvent.FINISH):
         for qid in queries_in_cache:
-            new_state, changed = QueryStateMachine(redis, qid[0]).trigger_event(event)
+            new_state, changed = QueryStateMachine(
+                redis, qid[0], connection.conn_id
+            ).trigger_event(event)
             logger.debug(
                 "Redis resync",
                 fast_forwarded=qid[0],

@@ -6,7 +6,7 @@ from marshmallow import Schema, fields
 
 import flowmachine
 from flowmachine.core import Query
-from flowmachine.core.context import get_redis
+from flowmachine.core.context import get_redis, get_db
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
@@ -100,7 +100,7 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     is not finished.
     """
     dummy_redis.set("DUMMY_QUERY_ID", "KNOWN")
-    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
+    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, query_state)
     msg = await action_handler__get_sql(config=server_config, query_id="DUMMY_QUERY_ID")
     assert msg.status == ZMQReplyStatus.ERROR

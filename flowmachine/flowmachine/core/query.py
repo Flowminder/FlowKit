@@ -241,7 +241,7 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.query_state.QueryState
             The current query state
         """
-        state_machine = QueryStateMachine(get_redis(), self.query_id)
+        state_machine = QueryStateMachine(get_redis(), self.query_id, get_db().conn_id)
         return state_machine.current_query_state
 
     @property
@@ -271,7 +271,9 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            state_machine = QueryStateMachine(get_redis(), self.query_id)
+            state_machine = QueryStateMachine(
+                get_redis(), self.query_id, get_db().conn_id
+            )
             state_machine.wait_until_complete()
             if state_machine.is_completed and get_db().has_table(
                 schema=schema, name=name
@@ -616,7 +618,7 @@ class Query(metaclass=ABCMeta):
             ddl_ops_func = self._make_sql
 
         current_state, changed_to_queue = QueryStateMachine(
-            get_redis(), self.query_id
+            get_redis(), self.query_id, get_db().conn_id
         ).enqueue()
         logger.debug(
             f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
@@ -822,7 +824,9 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
-        q_state_machine = QueryStateMachine(get_redis(), self.query_id)
+        q_state_machine = QueryStateMachine(
+            get_redis(), self.query_id, get_db().conn_id
+        )
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
             con = get_db().engine

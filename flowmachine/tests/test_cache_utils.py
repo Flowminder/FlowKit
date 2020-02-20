@@ -460,19 +460,25 @@ def test_redis_resync(flowmachine_connect):
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
-        QueryStateMachine(get_redis(), stored_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), stored_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.COMPLETED
     )
     assert stored_query.is_stored
     get_redis().flushdb()
     assert stored_query.is_stored
     assert (
-        QueryStateMachine(get_redis(), stored_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), stored_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.KNOWN
     )
     resync_redis_with_cache(get_db(), get_redis())
     assert (
-        QueryStateMachine(get_redis(), stored_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), stored_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.COMPLETED
     )
 
@@ -483,13 +489,17 @@ def test_cache_reset(flowmachine_connect):
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
-        QueryStateMachine(get_redis(), stored_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), stored_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.COMPLETED
     )
     assert stored_query.is_stored
     reset_cache(get_db(), get_redis())
     assert (
-        QueryStateMachine(get_redis(), stored_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), stored_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.KNOWN
     )
     assert not stored_query.is_stored
@@ -513,7 +523,9 @@ def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
-        QueryStateMachine(get_redis(), stored_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), stored_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.COMPLETED
     )
     dummy_redis.allow_flush = False
@@ -537,7 +549,9 @@ def test_cache_metadata_write_error(flowmachine_connect, dummy_redis, monkeypatc
         store_future.result()
     assert not dl_query.is_stored
     assert (
-        QueryStateMachine(get_redis(), dl_query.query_id).current_query_state
+        QueryStateMachine(
+            get_redis(), dl_query.query_id, get_db().conn_id
+        ).current_query_state
         == QueryState.ERRORED
     )
 
@@ -548,7 +562,7 @@ def test_cache_ddl_op_error(dummy_redis):
     """
 
     query_mock = Mock(query_id="DUMMY_MD5")
-    qsm = QueryStateMachine(dummy_redis, "DUMMY_MD5")
+    qsm = QueryStateMachine(dummy_redis, "DUMMY_MD5", get_db().conn_id)
     qsm.enqueue()
 
     with pytest.raises(TestException):
