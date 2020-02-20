@@ -562,7 +562,7 @@ def test_cache_ddl_op_error(dummy_redis):
     """
 
     query_mock = Mock(query_id="DUMMY_MD5")
-    qsm = QueryStateMachine(dummy_redis, "DUMMY_MD5", get_db().conn_id)
+    qsm = QueryStateMachine(dummy_redis, "DUMMY_MD5", "DUMMY_CONNECTION")
     qsm.enqueue()
 
     with pytest.raises(TestException):
@@ -570,7 +570,7 @@ def test_cache_ddl_op_error(dummy_redis):
             name="DUMMY_QUERY",
             redis=dummy_redis,
             query=query_mock,
-            connection=Mock(),
+            connection=Mock(conn_id="DUMMY_CONNECTION"),
             ddl_ops_func=Mock(side_effect=TestException),
             write_func=Mock(),
         )
