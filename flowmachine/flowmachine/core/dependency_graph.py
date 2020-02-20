@@ -10,7 +10,7 @@ from io import BytesIO
 from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional
 from concurrent.futures import wait
 
-from flowmachine.core.context import get_redis
+from flowmachine.core.context import get_redis, get_db
 from flowmachine.core.errors import UnstorableQueryError
 from flowmachine.core.query_state import QueryStateMachine
 

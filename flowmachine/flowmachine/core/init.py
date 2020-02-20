@@ -10,6 +10,7 @@ perspective, only the `connect` method is relevant.
 From a developer perspective, this is where one-time operations
 should live - for example configuring loggers.
 """
+import warnings
 from contextlib import contextmanager
 
 import redis
@@ -21,7 +22,8 @@ from redis import StrictRedis
 
 import flowmachine
 from flowmachine.core import Connection
-from flowmachine.core.context import bind_context, context
+from flowmachine.core.context import bind_context, context, get_db
+from flowmachine.core.errors import NotConnectedError
 from flowmachine.core.logging import set_log_level
 from get_secret_or_env_var import environ, getenv
 
@@ -43,6 +45,52 @@ def connections(
     redis_password: Optional[str] = None,
     conn: Optional[Connection] = None,
 ) -> None:
+    """
+    Context manager which connects flowmachine to a database, and performs initial set-up routines.
+    You may provide a Settings object here, which can specify the database
+    you wish to connect to, logging behaviour, available tables and so on.
+
+    After connecting, you should use `flowmachine.core.context.get_db()` to access
+    the database connection, `flowmachine.core.context.get_redis()` to get the redis
+    connection, and `flowmachine.core.context.get_executor()` to get the threadpool.
+
+    Parameters
+    ----------
+    log_level : str, default "error"
+        Level to log at
+    flowdb_port : int, default 9000
+        Port number to connect to flowdb
+    flowdb_user : str, default "flowmachine"
+        Name of user to connect to flowdb as
+    flowdb_password : str
+        Password to connect to flowdb
+    flowdb_host : str, default "localhost"
+        Hostname of flowdb server
+    flowdb_connection_pool_size : int, default 5
+        Default number of database connections to use
+    flowdb_connection_pool_overflow : int, default 1
+        Number of extra database connections to allow
+    redis_host : str, default "localhost"
+        Hostname for redis server.
+    redis_port : int, default 6379
+        Port the redis server is available on
+    redis_password : str
+        Password for the redis instance
+    conn : flowmachine.core.Connection
+        Optionally provide an existing Connection object to use, overriding any the db options specified here.
+
+    Notes
+    -----
+    All parameters can also be provided as environment variables.
+    If a parameter is provided, and an environment variable is set,
+    then the provided value is used. If neither is provided, the defaults as given
+    in the docstring are used.
+
+    Parameters can _also_ be set using Docker secrets, in which case a file with the name
+    of the parameter in upper case should be present at /run/secrets/THE_PARAM.
+    If a secret is available, the secret takes precedence over both the environment variable, and
+    the default.
+    """
     with context(
         *_do_connect(
             log_level=log_level,
@@ -80,6 +128,10 @@ def connect(
     You may provide a Settings object here, which can specify the database
     you wish to connect to, logging behaviour, available tables and so on.
 
+    After connecting, you should use `flowmachine.core.context.get_db()` to access
+    the database connection, `flowmachine.core.context.get_redis()` to get the redis
+    connection, and `flowmachine.core.context.get_executor()` to get the threadpool.
+
     Parameters
     ----------
     log_level : str, default "error"
@@ -105,10 +157,6 @@ def connect(
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
-    Returns
-    -------
-    Connection
-
     Notes
     -----
     All parameters can also be provided as environment variables.
@@ -121,6 +169,11 @@ def connect(
     If a secret is available, the secret takes precedence over both the environment variable, and
     the default.
     """
+    try:
+        get_db()
+        warnings.warn("FlowMachine already started. Overwriting existing context.")
+    except NotConnectedError:
+        pass
     bind_context(
         *_do_connect(
             log_level=log_level,
@@ -245,6 +298,7 @@ def _do_connect(
         )
 
     set_log_level("flowmachine.debug", log_level)
+
     if conn is None:
         conn = Connection(
             host=flowdb_host,
