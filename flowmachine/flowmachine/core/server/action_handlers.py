@@ -21,8 +21,7 @@ from typing import Callable, Union
 
 from marshmallow import ValidationError
 
-from build.lib.flowmachine.core.context import get_db
-from flowmachine.core import Query
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.core.query_info_lookup import (
     QueryInfoLookup,
@@ -37,8 +36,6 @@ from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
-
-from ..context import get_redis
 
 
 async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
