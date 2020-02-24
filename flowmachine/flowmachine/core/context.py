@@ -26,19 +26,21 @@ _jupyter_context = (
     dict()
 )  # Required as a workaround for https://github.com/ipython/ipython/issues/11565
 
+_is_notebook = False
 
-@lru_cache
+
 def _is_notebook():
+    global _is_notebook
     try:
         shell = get_ipython().__class__.__name__
         if shell == "ZMQInteractiveShell":
-            return True  # Jupyter notebook or qtconsole
+            _is_notebook = True  # Jupyter notebook or qtconsole
         elif shell == "TerminalInteractiveShell":
-            return False  # Terminal running IPython
+            _is_notebook = False  # Terminal running IPython
         else:
-            return False  # Other type (?)
+            _is_notebook = False  # Other type (?)
     except NameError:
-        return False  # Probably standard Python interpreter
+        _is_notebook = False  # Probably standard Python interpreter
 
 
 def get_db() -> Connection:
