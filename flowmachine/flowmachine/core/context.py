@@ -10,6 +10,7 @@ managing queries.
 from contextvars import ContextVar, copy_context
 from concurrent.futures import Executor, Future
 from contextlib import contextmanager
+from functools import lru_cache
 from typing import Callable
 
 from redis import StrictRedis
@@ -20,6 +21,24 @@ from flowmachine.core.errors import NotConnectedError
 db = ContextVar("db")
 redis_connection = ContextVar("redis")
 executor = ContextVar("executor")
+
+_jupyter_context = (
+    dict()
+)  # Required as a workaround for https://github.com/ipython/ipython/issues/11565
+
+
+@lru_cache
+def _is_notebook():
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == "ZMQInteractiveShell":
+            return True  # Jupyter notebook or qtconsole
+        elif shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
 
 
 def get_db() -> Connection:
@@ -36,8 +55,11 @@ def get_db() -> Connection:
         If there is not a connection for this context
     """
     try:
-        return db.get()
-    except LookupError:
+        if _is_notebook():
+            return _jupyter_context["db"]
+        else:
+            return db.get()
+    except (LookupError, KeyError):
         raise NotConnectedError
 
 
@@ -55,8 +77,11 @@ def get_redis() -> StrictRedis:
         If there is not a redis client for this context
     """
     try:
-        return redis_connection.get()
-    except LookupError:
+        if _is_notebook():
+            return _jupyter_context["redis_connection"]
+        else:
+            return redis_connection.get()
+    except (LookupError, KeyError):
         raise NotConnectedError
 
 
@@ -74,8 +99,11 @@ def get_executor() -> Executor:
         If there is not a pool for this context
     """
     try:
-        return executor.get()
-    except LookupError:
+        if _is_notebook():
+            return _jupyter_context["executor"]
+        else:
+            return executor.get()
+    except (LookupError, KeyError):
         raise NotConnectedError
 
 
@@ -119,9 +147,15 @@ def bind_context(
         Redis client
 
     """
-    db.set(connection)
-    executor.set(executor_pool)
-    redis_connection.set(redis_conn)
+    if _is_notebook():
+        global _jupyter_context
+        _jupyter_context["db"] = connection
+        _jupyter_context["executor"] = executor_pool
+        _jupyter_context["redis_connection"] = redis_conn
+    else:
+        db.set(connection)
+        executor.set(executor_pool)
+        redis_connection.set(redis_conn)
 
 
 @contextmanager
