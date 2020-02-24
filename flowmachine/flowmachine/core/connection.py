@@ -94,6 +94,8 @@ class Connection:
             pool_timeout=None,
             connect_args=connect_args,
         )
+        # Unique-to-db id for this connection, to allow use of a common redis instance with
+        # multiple databases
         conn_id = md5(str(self.engine.url.host).encode())
         conn_id.update(str(self.engine.url.port).encode())
         conn_id.update(str(self.engine.url.database).encode())
