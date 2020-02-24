@@ -348,14 +348,6 @@
             ],
             "version": "==1.4.3"
         },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "platform_system == 'Darwin'",
-            "version": "==0.1.0"
-        },
         "approvaltests": {
             "hashes": [
                 "sha256:77bcfa60f975a48a378c96f61749d7943ecc27d486394896aa8536d93105d556"
@@ -785,11 +777,11 @@
         },
         "pre-commit": {
             "hashes": [
-                "sha256:5295fb6d652a6c5e0b4636cd2c73183efdf253d45b657ce7367183134e806fe1",
-                "sha256:5387b53bb84ad9abc9b0845775dddd4e3243fd64cdcddaa6db28d3da6fbf06c2"
+                "sha256:09ebe467f43ce24377f8c2f200fe3cd2570d328eb2ce0568c8e96ce19da45fa6",
+                "sha256:f8d555e31e2051892c7f7b3ad9f620bd2c09271d87e9eedb2ad831737d6211eb"
             ],
             "index": "pypi",
-            "version": "==2.1.0"
+            "version": "==2.1.1"
         },
         "prompt-toolkit": {
             "hashes": [
