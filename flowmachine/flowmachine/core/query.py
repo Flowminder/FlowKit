@@ -76,11 +76,6 @@ class Query(metaclass=ABCMeta):
     def __init__(self, cache=True):
         obj = Query._QueryPool.get(self.query_id)
         if obj is None:
-            try:
-                get_db()
-            except AttributeError:
-                raise NotConnectedError()
-
             self._cache = cache
             Query._QueryPool[self.query_id] = self
         else:

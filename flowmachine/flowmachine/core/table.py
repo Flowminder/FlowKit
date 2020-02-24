@@ -10,7 +10,7 @@ database.
 from typing import List
 
 from flowmachine.core.query_state import QueryStateMachine
-from .context import db, get_db, get_redis
+from .context import get_db, get_redis
 from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
@@ -61,14 +61,6 @@ class Table(Query):
     """
 
     def __init__(self, name=None, schema=None, columns=None):
-        """
-
-        """
-        try:
-            get_db()
-        except AttributeError:
-            raise NotConnectedError()
-
         if "." in name:
             extracted_schema, name = name.split(".")
             if schema is not None:
