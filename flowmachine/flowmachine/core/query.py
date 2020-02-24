@@ -27,9 +27,7 @@ from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
 from flowmachine.core.context import (
-    db,
     get_db,
-    get_executor,
     get_redis,
     submit_to_executor,
 )

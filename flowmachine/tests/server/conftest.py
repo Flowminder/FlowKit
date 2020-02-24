@@ -45,10 +45,10 @@ def dummy_zmq_server(monkeypatch):
     yield dummy
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def flowmachine_connect():
     """Overrides the flowmachine connection fixture to replace all applicable parts with mocks."""
-    with context(Mock(), get_executor(), Mock()):
+    with context(Mock(), ThreadPoolExecutor(), Mock()):
         print("Replacing connections with mocks.")
         yield
 

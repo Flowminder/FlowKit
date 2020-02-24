@@ -25,9 +25,9 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 )
 
 import flowmachine
-from flowmachine.core import make_spatial_unit, Connection
+from flowmachine.core import make_spatial_unit
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.context import redis_connection, context, get_db, get_redis
+from flowmachine.core.context import redis_connection, get_db, get_redis
 from flowmachine.core.init import connections
 from flowmachine.features import EventTableSubset
 
@@ -252,8 +252,8 @@ class DummyRedis:
             self._store = {}
 
 
-@pytest.fixture(scope="function")
-def dummy_redis(monkeypatch):
+@pytest.fixture
+def dummy_redis(flowmachine_connect):
     dummy_redis = DummyRedis()
     token = redis_connection.set(dummy_redis)
     yield dummy_redis
