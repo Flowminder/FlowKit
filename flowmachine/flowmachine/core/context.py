@@ -10,7 +10,6 @@ managing queries.
 from contextvars import ContextVar, copy_context
 from concurrent.futures import Executor, Future
 from contextlib import contextmanager
-from functools import lru_cache
 from typing import Callable
 
 from redis import StrictRedis
