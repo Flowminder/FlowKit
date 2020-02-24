@@ -802,7 +802,7 @@ async def watch_and_shrink_cache(
     while True:
         logger.debug("Checking if cache should be shrunk.")
 
-        try:
+        try:  # Set the shrink function running with a copy of the current execution context (db conn etc) in background thread
             await asyncio.wait_for(
                 asyncio.get_running_loop().run_in_executor(
                     pool, copy_context().run, shrink_func
