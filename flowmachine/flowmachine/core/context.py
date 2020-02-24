@@ -28,19 +28,16 @@ _jupyter_context = (
 
 _is_notebook = False
 
-
-def _is_notebook():
-    global _is_notebook
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell == "ZMQInteractiveShell":
-            _is_notebook = True  # Jupyter notebook or qtconsole
-        elif shell == "TerminalInteractiveShell":
-            _is_notebook = False  # Terminal running IPython
-        else:
-            _is_notebook = False  # Other type (?)
-    except NameError:
-        _is_notebook = False  # Probably standard Python interpreter
+try:
+    shell = get_ipython().__class__.__name__
+    if shell == "ZMQInteractiveShell":
+        _is_notebook = True  # Jupyter notebook or qtconsole
+    elif shell == "TerminalInteractiveShell":
+        _is_notebook = False  # Terminal running IPython
+    else:
+        _is_notebook = False  # Other type (?)
+except NameError:
+    _is_notebook = False  # Probably standard Python interpreter
 
 
 def get_db() -> Connection:
@@ -57,7 +54,7 @@ def get_db() -> Connection:
         If there is not a connection for this context
     """
     try:
-        if _is_notebook():
+        if _is_notebook:
             return _jupyter_context["db"]
         else:
             return db.get()
@@ -79,7 +76,7 @@ def get_redis() -> StrictRedis:
         If there is not a redis client for this context
     """
     try:
-        if _is_notebook():
+        if _is_notebook:
             return _jupyter_context["redis_connection"]
         else:
             return redis_connection.get()
@@ -101,7 +98,7 @@ def get_executor() -> Executor:
         If there is not a pool for this context
     """
     try:
-        if _is_notebook():
+        if _is_notebook:
             return _jupyter_context["executor"]
         else:
             return executor.get()
@@ -149,7 +146,7 @@ def bind_context(
         Redis client
 
     """
-    if _is_notebook():
+    if _is_notebook:
         global _jupyter_context
         _jupyter_context["db"] = connection
         _jupyter_context["executor"] = executor_pool
