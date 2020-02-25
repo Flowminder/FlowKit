@@ -17,10 +17,7 @@ FROM postgres@sha256:e6622efd4c5c4010526cfbf7a1afb2ca222a90f09777f32671acf4429d6
 
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=3.0.0
-ARG GEOS_VERSION=3.7.1-1
-ARG PROJ_VERSION=5.2.0-1
-ARG GDAL_VERSION=2.4.0+dfsg-1+b1
+ARG POSTGIS_VERSION=3.0.1+dfsg-1
 ARG PGROUTING_VERSION=3.0.0~rc1-1.pgdg100+1
 ARG PG_MEDIAN_UTILS_VERSION=0.0.7
 ARG OGR_FDW_VERSION=1.0.9-1.pgdg100+1
@@ -35,9 +32,8 @@ ENV TDS_FDW_VERSION=2.0.1
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-        libgeos-c1v5=$GEOS_VERSION libproj13=$PROJ_VERSION libgdal20=$GDAL_VERSION \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION  \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts=$POSTGIS_VERSION \
         postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
         postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
         postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
