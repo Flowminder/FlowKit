@@ -17,10 +17,7 @@ FROM postgres@sha256:e6622efd4c5c4010526cfbf7a1afb2ca222a90f09777f32671acf4429d6
 
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=3.0.0
-ARG GEOS_VERSION=3.7.1-1
-ARG PROJ_VERSION=5.2.0-1
-ARG GDAL_VERSION=2.4.0+dfsg-1+b1
+ARG POSTGIS_VERSION=3.0.0+dfsg-2~exp1.pgdg100+1
 ARG PGROUTING_VERSION=3.0.0~rc1-1.pgdg100+1
 ARG PG_MEDIAN_UTILS_VERSION=0.0.7
 ARG OGR_FDW_VERSION=1.0.9-1.pgdg100+1
@@ -35,11 +32,11 @@ ENV TDS_FDW_VERSION=2.0.1
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-        libgeos-c1v5=$GEOS_VERSION libproj13=$PROJ_VERSION libgdal20=$GDAL_VERSION \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION  \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts=$POSTGIS_VERSION \
         postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
         postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
+        postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
@@ -75,7 +72,6 @@ ENV USE_PGXS=1
 RUN apt-get update \
         && apt-get install -y --no-install-recommends libssl-dev \
         libkrb5-dev \ 
-        postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
         build-essential \
         git \
         && git clone https://git.postgresql.org/git/pldebugger.git \
@@ -84,7 +80,6 @@ RUN apt-get update \
         && make -C /usr/local/src/pldebugger install \
         && apt-get remove -y libssl-dev \
         libkrb5-dev \
-        postgresql-server-dev-$PG_MAJOR \
         build-essential \
         git \
         && apt purge -y --auto-remove \
@@ -94,7 +89,7 @@ RUN apt-get update \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libsybdb5 freetds-dev freetds-common gnupg gcc postgresql-server-dev-$PG_MAJOR=$PG_VERSION wget && \
+        libsybdb5 freetds-dev freetds-common gnupg gcc wget && \
     wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
     tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
     rm v${TDS_FDW_VERSION}.tar.gz && \
@@ -102,7 +97,7 @@ RUN apt-get update && \
     make USE_PGXS=1 && \
     make USE_PGXS=1 install && \
     cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
-    apt-get remove -y gnupg gcc postgresql-server-dev-$PG_MAJOR && \
+    apt-get remove -y gnupg gcc && \
     apt purge -y --auto-remove  &&\
     rm -rf /var/lib/apt/lists/*
 
@@ -133,7 +128,7 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 #
 COPY ./Pipfile* /tmp/
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
+        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev  \
         && pip3 install pgxnclient \
         && pgxnclient install "pg_median_utils=$PG_MEDIAN_UTILS_VERSION" \
         && pip3 install pipenv \
