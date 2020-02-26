@@ -5,6 +5,7 @@ from unittest.mock import Mock
 import importlib
 
 import pytest
+from flowmachine.core.errors import NotConnectedError
 
 
 @pytest.fixture(autouse=True)
@@ -15,14 +16,35 @@ def reload_context(monkeypatch):
     """
     import flowmachine
 
-    yield
-    monkeypatch.delattr(flowmachine.core.context, "get_ipython", raising=False)
-    importlib.reload(flowmachine.core.context)
+    try:
+        yield
+    finally:
+        monkeypatch.delattr(flowmachine.core.context, "get_ipython", raising=False)
+        importlib.reload(flowmachine.core.context)
 
 
 @pytest.fixture
 def flowmachine_connect():  # Override the autoused fixture from the parent
     pass
+
+
+def test_context_manager():
+    import flowmachine
+
+    flowmachine.core.context.bind_context(
+        Mock(mock_name="db"),
+        Mock(mock_name="pool"),
+        Mock(name="cm_redis", mock_name="redis"),
+    )
+    assert flowmachine.core.context.get_db().mock_name == "db"
+    assert flowmachine.core.context.get_executor().mock_name == "pool"
+    assert flowmachine.core.context.get_redis().mock_name == "redis"
+    with flowmachine.core.context.context(
+        Mock(mock_name="db_2"), Mock(mock_name="pool_2"), Mock(mock_name="redis_2")
+    ):
+        assert flowmachine.core.context.get_db().mock_name == "db_2"
+        assert flowmachine.core.context.get_executor().mock_name == "pool_2"
+        assert flowmachine.core.context.get_redis().mock_name == "redis_2"
 
 
 @pytest.mark.parametrize(
@@ -76,7 +98,9 @@ def test_notebook_workaround(monkeypatch):
     importlib.reload(flowmachine.core.context)
 
     flowmachine.core.context.bind_context(
-        Mock(mock_name="db"), Mock(mock_name="pool"), Mock(mock_name="redis")
+        Mock(mock_name="db"),
+        Mock(mock_name="pool"),
+        Mock(name="nb_workaround_redis", mock_name="redis"),
     )
     assert flowmachine.core.context._jupyter_context["db"].mock_name == "db"
     assert flowmachine.core.context._jupyter_context["executor"].mock_name == "pool"

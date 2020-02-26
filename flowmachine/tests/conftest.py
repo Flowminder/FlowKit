@@ -164,7 +164,7 @@ def mocked_connections(monkeypatch):
     connection_mock.return_value.engine.begin.return_value.__enter__ = Mock()
     connection_mock.return_value.engine.begin.return_value.__exit__ = Mock()
     connection_mock.return_value.fetch.return_value = MagicMock(return_value=[])
-    redis_mock = Mock()
+    redis_mock = Mock(name="mocked_connections_redis")
     tp_mock = Mock(return_value=None)
     monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
     monkeypatch.setattr(flowmachine.core.init, "Connection", connection_mock)
@@ -256,6 +256,7 @@ class DummyRedis:
 def dummy_redis(flowmachine_connect):
     dummy_redis = DummyRedis()
     token = redis_connection.set(dummy_redis)
+    print("Replaced redis with dummy redis.")
     yield dummy_redis
     redis_connection.reset(token)
 

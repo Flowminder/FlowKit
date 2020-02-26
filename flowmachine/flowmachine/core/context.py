@@ -17,16 +17,25 @@ from redis import StrictRedis
 from flowmachine.core import Connection
 from flowmachine.core.errors import NotConnectedError
 
-db = ContextVar("db")
-redis_connection = ContextVar("redis")
-executor = ContextVar("executor")
+try:
+    db
+except NameError:
+    db = ContextVar("db")
+
+try:
+    redis_connection
+except NameError:
+    redis_connection = ContextVar("redis")
+try:
+    executor
+except NameError:
+    executor = ContextVar("executor")
 
 _jupyter_context = (
     dict()
 )  # Required as a workaround for https://github.com/ipython/ipython/issues/11565
 
 _is_notebook = False
-
 try:
     shell = get_ipython().__class__.__name__
     if shell == "ZMQInteractiveShell":
