@@ -63,7 +63,7 @@ def get_db() -> Connection:
     """
     try:
         if _is_notebook:
-            return _jupyter_context["db"]
+            return db.get(_jupyter_context["db"])
         else:
             return db.get()
     except (LookupError, KeyError):
@@ -85,7 +85,7 @@ def get_redis() -> StrictRedis:
     """
     try:
         if _is_notebook:
-            return _jupyter_context["redis_connection"]
+            return redis_connection.get(_jupyter_context["redis_connection"])
         else:
             return redis_connection.get()
     except (LookupError, KeyError):
@@ -107,7 +107,7 @@ def get_executor() -> Executor:
     """
     try:
         if _is_notebook:
-            return _jupyter_context["executor"]
+            return executor.get(_jupyter_context["executor"])
         else:
             return executor.get()
     except (LookupError, KeyError):
