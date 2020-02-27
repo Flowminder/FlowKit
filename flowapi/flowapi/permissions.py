@@ -2,10 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import functools
-from itertools import chain, product, repeat
-from typing import Any, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
+from itertools import product, repeat
+from typing import Iterable, List, Optional, Tuple, Union
 
-from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from prance import ResolvingParser
 from rapidjson import dumps
 
@@ -74,7 +73,31 @@ def paths_to_nested_dict(
     return d
 
 
-def valid_tree_walks(*, tree, paths=None, depth=1):
+def valid_tree_walks(
+    *,
+    tree: Union[List[str], dict],
+    paths: Optional[Iterable[str]] = None,
+    depth: int = 1,
+) -> Union[tuple, list]:
+    """
+
+    Parameters
+    ----------
+    tree : list of str or dict
+        Tree to walk through
+    paths : iterable of str or None
+        Nodes already traversed
+    depth : int, default 1
+        Current depth in the tree
+
+
+    Yields
+    ------
+    list of str or tuple of list of str
+        Path through the tree
+
+    """
+
     def sort_func(x):
         if isinstance(x[1], (dict, list)):
             return False, -len(x[1]), x[0]
@@ -101,7 +124,20 @@ def valid_tree_walks(*, tree, paths=None, depth=1):
             yield [*paths, v]
 
 
-def tree_walk_to_scope_list(tree_walk: Union[str, List[str], Tuple[List[str]]]):
+def tree_walk_to_scope_list(tree_walk: Union[str, List[str], Tuple[List[str]]]) -> str:
+    """
+
+    Parameters
+    ----------
+    tree_walk : str, list or str or tuple of list of str
+        A path through the tree
+
+    Yields
+    ------
+    str
+        The tree walk as a . delimited string
+
+    """
     if isinstance(tree_walk, str):
         yield tree_walk
     if isinstance(tree_walk, list):
@@ -124,7 +160,6 @@ def per_query_scopes(
 
     Parameters
     ----------
-    *
     tree : dict
         Dict of nested queries
     all_queries : dict
@@ -176,7 +211,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
 
     Examples
     --------
-    >>>list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
+    >>> list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
     ["get_result&dummy", "run&dummy", "get_result&available_dates"],
     """
     yield from per_query_scopes(
@@ -208,12 +243,28 @@ def expand_scopes(*, scopes: List[str]) -> str:
 
 
 @functools.singledispatch
-def query_to_scope_list(tree, paths=None, keep=["aggregation_unit"]):
+def query_to_scope_list(tree, paths=None, keep=["aggregation_unit"]) -> str:
+    """
+
+    Parameters
+    ----------
+    tree : list of dict or dict
+    paths : tuple
+    keep : list of str
+        List of fields to include in scope strings
+
+    Yields
+    ------
+    str
+        Scope string
+
+
+    """
     yield from ()
 
 
 @query_to_scope_list.register
-def _(tree: list, paths=None, keep=["aggregation_unit"]):
+def _(tree: list, paths=None, keep=["aggregation_unit"]) -> str:
     if paths is None:
         paths = tuple()
     for v in tree:
@@ -221,7 +272,7 @@ def _(tree: list, paths=None, keep=["aggregation_unit"]):
 
 
 @query_to_scope_list.register
-def _(tree: dict, paths=None, keep=["aggregation_unit"]):
+def _(tree: dict, paths=None, keep=["aggregation_unit"]) -> str:
     if paths is None:
         paths = tuple()
     try:
