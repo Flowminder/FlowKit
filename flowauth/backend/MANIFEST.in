@@ -1,2 +1,3 @@
 include versioneer.py
 include flowauth/_version.py
+include flowauth/demo_data/*
