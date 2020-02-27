@@ -136,8 +136,8 @@ class UserAdminDetails extends React.Component {
       (password.length === 0 || password_strength > 3)
     ) {
       try {
-        const user = edit_mode
-          ? await editUser(
+        const user = await (edit_mode
+          ? editUser(
               item_id,
               name,
               password.length > 0 ? password : undefined,
@@ -145,7 +145,7 @@ class UserAdminDetails extends React.Component {
               require_two_factor,
               has_two_factor
             )
-          : await createUser(name, password, is_admin, require_two_factor);
+          : createUser(name, password, is_admin, require_two_factor));
 
         await editGroupServers(user.group_id, servers);
         await editGroupMemberships(user.id, groups);
