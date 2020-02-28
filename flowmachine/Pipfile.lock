@@ -549,10 +549,10 @@
         },
         "ipdb": {
             "hashes": [
-                "sha256:b90f1f661028af17c5043b4ea4534bc2f303d1f23b0c762a08923c7c454d7a59"
+                "sha256:19c5996936609330a85ed355b7bd14bc18d976c7f0e512f26e0511ba9f637d47"
             ],
             "index": "pypi",
-            "version": "==0.13.0"
+            "version": "==0.13.1"
         },
         "ipykernel": {
             "hashes": [
