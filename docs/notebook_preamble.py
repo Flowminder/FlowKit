@@ -25,8 +25,10 @@ warnings.filterwarnings("ignore")
 # Suppress flowmachine log messages
 logging.getLogger().setLevel(logging.ERROR)
 
+
 def format_dict(x):
     return f'><div class="codehilite"><pre>{pprint.pformat(x)}</pre></div>'
+
 
 get_ipython().display_formatter.formatters["text/markdown"].for_type(dict, format_dict)
 get_ipython().display_formatter.formatters["text/markdown"].for_type(
