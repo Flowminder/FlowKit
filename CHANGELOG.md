@@ -7,14 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.2.0]
+
+### Added
 - FlowMachine can now use multiple FlowDB backends, redis instances or execution pools via the `flowmachine.connections` or `flowmachine.core.context.context` context managers. [#391](https://github.com/Flowminder/FlowKit/issues/391)
 - `flowmachine.core.connection.Connection` now has a `conn_id` attribute, which is unique per database host. [#391](https://github.com/Flowminder/FlowKit/issues/391)
 
 ### Changed
 - `flowmachine.connect` no longer returns a `Connection` object. The connection should be accessed via `flowmachine.core.context.get_db()`. [#391](https://github.com/Flowminder/FlowKit/issues/391)
 - `connection`, `redis`, and `threadpool` are no longer available as attributes of `Query`, and should be accessed via `flowmachine.core.context.get_db()`, `flowmachine.core.context.get_redis()` and `flowmachine.core.context.get_executor()`. [#391](https://github.com/Flowminder/FlowKit/issues/391)
-
-### Fixed
 
 ### Removed
 - Removed `Query.connection`, `Query.redis`, and `Query.threadpool`. [#391](https://github.com/Flowminder/FlowKit/issues/391)
@@ -586,7 +594,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.1.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.2.0...master
+[1.2.0]: https://github.com/Flowminder/FlowKit/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/Flowminder/FlowKit/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/Flowminder/FlowKit/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/Flowminder/FlowKit/compare/0.9.1...1.0.0
