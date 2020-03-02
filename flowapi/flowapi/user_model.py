@@ -6,7 +6,6 @@ from typing import List
 
 from quart_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart_jwt_extended.exceptions import UserClaimsVerificationError
-from quart import current_app, request
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from flowapi.permissions import expand_scopes, query_to_scope_list

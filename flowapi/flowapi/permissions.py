@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import functools
 from itertools import product, repeat
-from typing import Iterable, List, Optional, Tuple, Union, Any
+from typing import Iterable, List, Optional, Tuple, Union
 
 from prance import ResolvingParser
 from rapidjson import dumps
