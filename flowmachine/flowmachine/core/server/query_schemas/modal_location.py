@@ -7,8 +7,7 @@ from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from .custom_fields import SubscriberSubset
-from .aggregation_unit import AggregationUnit
-from .daily_location import DailyLocationSchema, DailyLocationExposed
+from .daily_location import DailyLocationSchema
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,

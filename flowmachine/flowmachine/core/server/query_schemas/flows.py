@@ -10,9 +10,8 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
 from .base_exposed_query import BaseExposedQuery
-from .daily_location import DailyLocationSchema, DailyLocationExposed
-from .modal_location import ModalLocationSchema, ModalLocationExposed
-from .aggregation_unit import AggregationUnit
+from .daily_location import DailyLocationSchema
+from .modal_location import ModalLocationSchema
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
