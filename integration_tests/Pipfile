@@ -21,6 +21,5 @@ python_version = "3.7"
 
 [dev-packages]
 
-
 [scripts]
 run-tests = "bash run_tests.sh"

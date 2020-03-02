@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 mkdocs = "*"
+black = "==19.10b0"
 jupyter-client = "*"
 nbconvert = "*"
-nbconvert-utils = "*"
 pygments = "*"
 pymdown-extensions = "*"
 tabulate = "*"
@@ -16,7 +16,6 @@ mkdocs-material = "==4.6.3"
 ipykernel = "*"
 geopandas = "*"
 numpydoc = "*"
-black = "==19.10b0"
 click = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 descartes = "*"

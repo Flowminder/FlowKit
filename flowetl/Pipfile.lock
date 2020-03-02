@@ -18,9 +18,9 @@
     "default": {
         "alembic": {
             "hashes": [
-                "sha256:2df2519a5b002f881517693b95626905a39c5faf4b5a1f94de4f1441095d1d26"
+                "sha256:791a5686953c4b366d3228c5377196db2f534475bb38d26f70eb69668efd9028"
             ],
-            "version": "==1.4.0"
+            "version": "==1.4.1"
         },
         "apache-airflow": {
             "extras": [
@@ -320,7 +320,7 @@
                 "sha256:06f5b3a99029c7134207dd882428a66992a9de2bef7c2b699b5641f9886c3302",
                 "sha256:b97607a1a18a5100839aec1dc26a1ea17ee0d93b20b0f008d80a5a050afb200b"
             ],
-            "markers": "python_version < '3.8'",
+            "markers": "python_version == '3.7'",
             "version": "==1.5.0"
         },
         "iso8601": {
@@ -393,9 +393,10 @@
         },
         "mako": {
             "hashes": [
-                "sha256:2984a6733e1d472796ceef37ad48c26f4a984bb18119bb2dbc37a44d8f6e75a4"
+                "sha256:3139c5d64aa5d175dbafb95027057128b5fbd05a40c53999f3905ceb53366d9d",
+                "sha256:8e8b53c71c7e59f3de716b6832c4e401d903af574f6962edbbbf6ecc2a5fe6c9"
             ],
-            "version": "==1.1.1"
+            "version": "==1.1.2"
         },
         "markdown": {
             "hashes": [
@@ -458,10 +459,10 @@
         },
         "marshmallow-sqlalchemy": {
             "hashes": [
-                "sha256:a370e247216e1a005277d92079d2f0d8d5b0a70fba68ee645730f6a1200991d1",
-                "sha256:f3155e87717e3a52def3a177b4022fd0500e71f626cbb0672adcb95588a99aa3"
+                "sha256:9301c6fd197bd97337820ea1417aa1233d0ee3e22748ebd5821799bc841a57e8",
+                "sha256:dde9e20bcb710e9e59f765a38e3d6d17f1b2d6b4320cbdc2cea0f6b57f70d08c"
             ],
-            "version": "==0.22.2"
+            "version": "==0.22.3"
         },
         "numpy": {
             "hashes": [
@@ -804,9 +805,9 @@
     "develop": {
         "alembic": {
             "hashes": [
-                "sha256:2df2519a5b002f881517693b95626905a39c5faf4b5a1f94de4f1441095d1d26"
+                "sha256:791a5686953c4b366d3228c5377196db2f534475bb38d26f70eb69668efd9028"
             ],
-            "version": "==1.4.0"
+            "version": "==1.4.1"
         },
         "apache-airflow": {
             "extras": [
@@ -1095,7 +1096,7 @@
                 "sha256:06f5b3a99029c7134207dd882428a66992a9de2bef7c2b699b5641f9886c3302",
                 "sha256:b97607a1a18a5100839aec1dc26a1ea17ee0d93b20b0f008d80a5a050afb200b"
             ],
-            "markers": "python_version < '3.8'",
+            "markers": "python_version == '3.7'",
             "version": "==1.5.0"
         },
         "iso8601": {
@@ -1168,9 +1169,10 @@
         },
         "mako": {
             "hashes": [
-                "sha256:2984a6733e1d472796ceef37ad48c26f4a984bb18119bb2dbc37a44d8f6e75a4"
+                "sha256:3139c5d64aa5d175dbafb95027057128b5fbd05a40c53999f3905ceb53366d9d",
+                "sha256:8e8b53c71c7e59f3de716b6832c4e401d903af574f6962edbbbf6ecc2a5fe6c9"
             ],
-            "version": "==1.1.1"
+            "version": "==1.1.2"
         },
         "markdown": {
             "hashes": [
@@ -1233,10 +1235,10 @@
         },
         "marshmallow-sqlalchemy": {
             "hashes": [
-                "sha256:a370e247216e1a005277d92079d2f0d8d5b0a70fba68ee645730f6a1200991d1",
-                "sha256:f3155e87717e3a52def3a177b4022fd0500e71f626cbb0672adcb95588a99aa3"
+                "sha256:9301c6fd197bd97337820ea1417aa1233d0ee3e22748ebd5821799bc841a57e8",
+                "sha256:dde9e20bcb710e9e59f765a38e3d6d17f1b2d6b4320cbdc2cea0f6b57f70d08c"
             ],
-            "version": "==0.22.2"
+            "version": "==0.22.3"
         },
         "more-itertools": {
             "hashes": [

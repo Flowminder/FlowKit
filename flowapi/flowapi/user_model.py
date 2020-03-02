@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from flask_jwt_extended.exceptions import UserClaimsVerificationError
+from quart_jwt_extended.exceptions import UserClaimsVerificationError
 from quart.exceptions import HTTPException
 from typing import Dict, Union, List, Tuple
 
-from flask_jwt_extended import get_jwt_claims, get_jwt_identity
+from quart_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart import current_app, request
 
 from flowapi.flowapi_errors import (
