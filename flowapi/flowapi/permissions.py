@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import functools
 from itertools import product, repeat
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union, Any
 
 from prance import ResolvingParser
 from rapidjson import dumps
@@ -73,11 +73,36 @@ def paths_to_nested_dict(
     return d
 
 
+def dict_and_list_key_function(
+    x: Tuple[str, Union[dict, list, tuple]],
+) -> Union[Tuple[bool, int, str], Tuple[bool, str]]:
+    """
+    Key function which sorts itemviews. Sorts items where the value is
+    a list or a dict _after_ those where it isn't, then sorts dicts and
+    lists by their length, then by the key.
+
+
+    Parameters
+    ----------
+    x : tuple
+        Item to get a key for.
+
+    Returns
+    -------
+    tuple of bool, int and input or tuple of bool and input
+        False, negative length of input and then key for dicts and lists
+        True, key for other tuples
+
+    """
+    if isinstance(x[1], (dict, list)):
+        return False, -len(x[1]), x[0]
+    else:
+        return True, x[0]
+
+
+@functools.singledispatch
 def valid_tree_walks(
-    *,
-    tree: Union[List[str], dict],
-    paths: Optional[Iterable[str]] = None,
-    depth: int = 1,
+    tree, *, paths: Optional[Iterable[str]] = None, depth: int = 1,
 ) -> Union[tuple, list]:
     """
 
@@ -97,34 +122,45 @@ def valid_tree_walks(
         Path through the tree
 
     """
+    yield [*paths, tree]
 
-    def sort_func(x):
-        if isinstance(x[1], (dict, list)):
-            return False, -len(x[1]), x[0]
-        else:
-            return True, x[0]
 
-    even_depth = depth % 2 == 0
+@valid_tree_walks.register
+def _(
+    tree: list, *, paths: Optional[Iterable[str]] = None, depth: int = 1,
+) -> Union[tuple, list]:
     if paths is None:
         paths = tuple()
     if len(tree) == 0 and len(paths) > 0:
         yield list(paths)
-    elif hasattr(tree, "items") and (not even_depth or len(tree) == 1):
-        for k, v in sorted(tree.items(), key=sort_func):
-            yield from valid_tree_walks(paths=(*paths, k), tree=v, depth=depth + 1)
-    elif hasattr(tree, "items"):
-        yield from product(
-            *(
-                valid_tree_walks(paths=(*paths, k), tree=v, depth=depth + 1)
-                for k, v in sorted(tree.items(), key=sort_func,)
-            )
-        )
     else:
         for v in tree:
             yield [*paths, v]
 
 
-def tree_walk_to_scope_list(tree_walk: Union[str, List[str], Tuple[List[str]]]) -> str:
+@valid_tree_walks.register
+def _(
+    tree: dict, *, paths: Optional[Iterable[str]] = None, depth: int = 1,
+) -> Union[tuple, list]:
+    even_depth = depth % 2 == 0
+    if paths is None:
+        paths = tuple()
+    if len(tree) == 0 and len(paths) > 0:
+        yield list(paths)
+    elif not even_depth or len(tree) == 1:
+        for k, v in sorted(tree.items(), key=dict_and_list_key_function):
+            yield from valid_tree_walks(v, paths=(*paths, k), depth=depth + 1)
+    else:
+        yield from product(
+            *(
+                valid_tree_walks(v, paths=(*paths, k), depth=depth + 1)
+                for k, v in sorted(tree.items(), key=dict_and_list_key_function,)
+            )
+        )
+
+
+@functools.singledispatch
+def tree_walk_to_scope_list(tree_walk) -> str:
     """
 
     Parameters
@@ -138,13 +174,18 @@ def tree_walk_to_scope_list(tree_walk: Union[str, List[str], Tuple[List[str]]]) 
         The tree walk as a . delimited string
 
     """
-    if isinstance(tree_walk, str):
-        yield tree_walk
-    if isinstance(tree_walk, list):
-        yield ".".join(tree_walk)
-    elif isinstance(tree_walk, tuple):
-        for walk in tree_walk:
-            yield from tree_walk_to_scope_list(walk)
+    yield tree_walk
+
+
+@tree_walk_to_scope_list.register
+def _(tree_walk: list) -> str:
+    yield ".".join(tree_walk)
+
+
+@tree_walk_to_scope_list.register
+def _(tree_walk: tuple) -> str:
+    for walk in tree_walk:
+        yield from tree_walk_to_scope_list(walk)
 
 
 def per_query_scopes(
@@ -183,7 +224,7 @@ def per_query_scopes(
     )
     yield from (
         "&".join([action, *tree_walk_to_scope_list(scope_list)])
-        for scope_list in valid_tree_walks(tree=nested_qs)
+        for scope_list in valid_tree_walks(nested_qs)
         for action in ("get_result", "run")
     )
     yield "get_result&available_dates"

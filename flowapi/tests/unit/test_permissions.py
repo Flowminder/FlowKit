@@ -24,7 +24,7 @@ import pytest
     ],
 )
 def test_valid_tree_walks(tree, expected):
-    assert list(valid_tree_walks(tree=tree)) == expected
+    assert list(valid_tree_walks(tree)) == expected
 
 
 @pytest.mark.parametrize(
