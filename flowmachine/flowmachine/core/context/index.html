@@ -4056,7 +4056,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L0">flowmachine/core/context.py</a></p>
 <p>Context variables for Flowmachine to talk to FlowDB and Redis, and a common thread pool for managing queries.</p>
 <h2 id="bind_context">bind_context<a class="headerlink" href="#bind_context" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">bind_context</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">executor_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span><span class="p">,</span> <span class="n">redis_conn</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">bind_context</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">executor_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span><span class="p">,</span> <span class="n">redis_conn</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L140">flowmachine/core/context.py</a></p>
 <p>Set the current context's connection, executor and redis connection, replacing any that were previously set.</p>
@@ -4076,7 +4076,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="context">context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">context</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">executor_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span><span class="p">,</span> <span class="n">redis_conn</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">executor_pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span><span class="p">,</span> <span class="n">redis_conn</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L168">flowmachine/core/context.py</a></p>
 <p>Context manager which can be used to temporarily provide a connection, redis client and pool.</p>
@@ -4096,7 +4096,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="get_db">get_db<a class="headerlink" href="#get_db" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L51">flowmachine/core/context.py</a></p>
 <p>Get the current context's database connection.</p>
@@ -4105,7 +4105,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>flowmachine.core.connection.Connection</code></li>
 </ul>
 <h2 id="get_executor">get_executor<a class="headerlink" href="#get_executor" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_executor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_executor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L95">flowmachine/core/context.py</a></p>
 <p>Get the current context's executor pool.</p>
@@ -4114,7 +4114,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>concurrent.futures._base.Executor</code></li>
 </ul>
 <h2 id="get_redis">get_redis<a class="headerlink" href="#get_redis" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_redis</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_redis</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L73">flowmachine/core/context.py</a></p>
 <p>Get the current context's redis client.</p>
@@ -4123,7 +4123,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>redis.client.Redis</code></li>
 </ul>
 <h2 id="submit_to_executor">submit_to_executor<a class="headerlink" href="#submit_to_executor" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">submit_to_executor</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Future</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">submit_to_executor</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Future</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/context.py#L117">flowmachine/core/context.py</a></p>
 <p>Submit a callable to the current context's executor pool and get back a future to monitor execution.</p>

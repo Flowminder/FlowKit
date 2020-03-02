@@ -4088,13 +4088,12 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
 </code></pre></div>
 
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4114,7 +4113,7 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;FLOWAPI_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;http://localhost:9090&quot;</span><span class="p">),</span>
     <span class="n">token</span><span class="o">=</span><span class="n">TOKEN</span><span class="p">,</span>
     <span class="n">ssl_certificate</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SSL_CERTIFICATE_FILE&quot;</span><span class="p">),</span>
@@ -4124,7 +4123,6 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4142,7 +4140,7 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">query_spec</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">spatial_aggregate</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">query_spec</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">spatial_aggregate</span><span class="p">(</span>
     <span class="n">locations</span><span class="o">=</span><span class="n">flowclient</span><span class="o">.</span><span class="n">daily_location</span><span class="p">(</span>
         <span class="n">date</span><span class="o">=</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span>
         <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
@@ -4162,18 +4160,18 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 
 <div class="output_area" markdown="1">
 
-><div class="codehilite"><pre>{'locations': {'aggregation_unit': 'admin3',
+<blockquote><div class="codehilite"><pre>{'locations': {'aggregation_unit': 'admin3',
                'date': '2016-01-01',
                'method': 'last',
                'query_kind': 'daily_location',
                'subscriber_subset': None},
  'query_kind': 'spatial_aggregate'}</pre></div>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4186,7 +4184,9 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">query_id</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query_spec</span><span class="p">)</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">query_id</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query_spec</span><span class="p">)</span>
 <span class="n">query_id</span>
 </code></pre></div>
 
@@ -4198,13 +4198,13 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 
 <div class="output_area" markdown="1">
 
->`2f0513f461be1701194b2a88921aa82b`
+<blockquote><p><code>2f0513f461be1701194b2a88921aa82b</code></p>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4217,7 +4217,7 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">flowclient</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">flowclient</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
 </code></pre></div>
 
 </div>
@@ -4228,13 +4228,13 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 
 <div class="output_area" markdown="1">
 
->`executing`
+<blockquote><p><code>executing</code></p>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4247,7 +4247,9 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4259,19 +4261,46 @@ Example usage of FlowClient to run daily location, modal location and flow queri
 
 <div class="output_area" markdown="1">
 
-|    | pcod        |   value |
-|---:|:------------|--------:|
-|  0 | 524 4 11 60 |      44 |
-|  1 | 524 3 09 50 |      30 |
-|  2 | 524 1 03 11 |    1217 |
-|  3 | 524 3 07 40 |     649 |
-|  4 | 524 1 03 14 |     656 |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">639</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">609</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">1812</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">653</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">1205</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4284,7 +4313,7 @@ Alternative (run query, wait for it to finish, and get result, in one function c
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query_spec</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query_spec</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4296,19 +4325,46 @@ Alternative (run query, wait for it to finish, and get result, in one function c
 
 <div class="output_area" markdown="1">
 
-|    | pcod        |   value |
-|---:|:------------|--------:|
-|  0 | 524 4 11 60 |      44 |
-|  1 | 524 3 09 50 |      30 |
-|  2 | 524 1 03 11 |    1217 |
-|  3 | 524 3 07 40 |     649 |
-|  4 | 524 1 03 14 |     656 |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">639</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">609</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">1812</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">653</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">1205</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4323,7 +4379,9 @@ Alternative (run query, wait for it to finish, and get result, in one function c
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">dl1</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">daily_location</span><span class="p">(</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">dl1</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">daily_location</span><span class="p">(</span>
     <span class="n">date</span><span class="o">=</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span>
     <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
@@ -4348,7 +4406,7 @@ Alternative (run query, wait for it to finish, and get result, in one function c
 
 <div class="output_area" markdown="1">
 
-><div class="codehilite"><pre>{'aggregation_unit': 'admin3',
+<blockquote><div class="codehilite"><pre>{'aggregation_unit': 'admin3',
  'locations': [{'aggregation_unit': 'admin3',
                 'date': '2016-01-01',
                 'method': 'last',
@@ -4360,12 +4418,12 @@ Alternative (run query, wait for it to finish, and get result, in one function c
                 'query_kind': 'daily_location',
                 'subscriber_subset': None}],
  'query_kind': 'modal_location'}</pre></div>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4378,7 +4436,7 @@ Or from a date range:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">ml</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">modal_location_from_dates</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">ml</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">modal_location_from_dates</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span>
     <span class="n">end_date</span><span class="o">=</span><span class="s2">&quot;2016-01-03&quot;</span><span class="p">,</span>
     <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
@@ -4397,7 +4455,7 @@ Or from a date range:
 
 <div class="output_area" markdown="1">
 
-><div class="codehilite"><pre>{'aggregation_unit': 'admin3',
+<blockquote><div class="codehilite"><pre>{'aggregation_unit': 'admin3',
  'locations': [{'aggregation_unit': 'admin3',
                 'date': '2016-01-01',
                 'method': 'last',
@@ -4409,12 +4467,12 @@ Or from a date range:
                 'query_kind': 'daily_location',
                 'subscriber_subset': None}],
  'query_kind': 'modal_location'}</pre></div>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4427,7 +4485,9 @@ Or from a date range:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">query_id</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">query_id</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span>
     <span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">flowclient</span><span class="o">.</span><span class="n">spatial_aggregate</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">ml</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">query_id</span>
@@ -4441,13 +4501,13 @@ Or from a date range:
 
 <div class="output_area" markdown="1">
 
->`e6c870bb24b9c298d02047c69318c096`
+<blockquote><p><code>e6c870bb24b9c298d02047c69318c096</code></p>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4460,7 +4520,7 @@ Or from a date range:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">flowclient</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">flowclient</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
 </code></pre></div>
 
 </div>
@@ -4471,13 +4531,13 @@ Or from a date range:
 
 <div class="output_area" markdown="1">
 
->`executing`
+<blockquote><p><code>executing</code></p>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4490,7 +4550,9 @@ Or from a date range:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4502,19 +4564,46 @@ Or from a date range:
 
 <div class="output_area" markdown="1">
 
-|    | pcod        |   value |
-|---:|:------------|--------:|
-|  0 | 524 4 11 60 |      61 |
-|  1 | 524 3 09 50 |      40 |
-|  2 | 524 1 03 11 |    1377 |
-|  3 | 524 3 07 40 |     756 |
-|  4 | 524 1 03 14 |     761 |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">733</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">700</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">2118</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">768</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">1374</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4527,7 +4616,7 @@ Alternative:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span>
     <span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">flowclient</span><span class="o">.</span><span class="n">spatial_aggregate</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">ml</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -4541,19 +4630,46 @@ Alternative:
 
 <div class="output_area" markdown="1">
 
-|    | pcod        |   value |
-|---:|:------------|--------:|
-|  0 | 524 4 11 60 |      61 |
-|  1 | 524 3 09 50 |      40 |
-|  2 | 524 1 03 11 |    1377 |
-|  3 | 524 3 07 40 |     756 |
-|  4 | 524 1 03 14 |     761 |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">733</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">700</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">2118</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">768</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">1374</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4568,7 +4684,9 @@ Alternative:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">aggregation_unit</span> <span class="o">=</span> <span class="s2">&quot;admin1&quot;</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">aggregation_unit</span> <span class="o">=</span> <span class="s2">&quot;admin1&quot;</span>
 <span class="n">dl_past</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">daily_location</span><span class="p">(</span>
     <span class="n">date</span><span class="o">=</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span>
     <span class="n">aggregation_unit</span><span class="o">=</span><span class="n">aggregation_unit</span><span class="p">,</span>
@@ -4585,8 +4703,6 @@ Alternative:
 
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4597,7 +4713,7 @@ Specify parameters for flow query:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">flow</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">flows</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">flow</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">flows</span><span class="p">(</span>
     <span class="n">from_location</span><span class="o">=</span><span class="n">dl_past</span><span class="p">,</span>
     <span class="n">to_location</span><span class="o">=</span><span class="n">dl_present</span><span class="p">,</span>
     <span class="n">aggregation_unit</span><span class="o">=</span><span class="n">aggregation_unit</span><span class="p">,</span>
@@ -4613,7 +4729,7 @@ Specify parameters for flow query:
 
 <div class="output_area" markdown="1">
 
-><div class="codehilite"><pre>{'aggregation_unit': 'admin1',
+<blockquote><div class="codehilite"><pre>{'aggregation_unit': 'admin1',
  'from_location': {'aggregation_unit': 'admin1',
                    'date': '2016-01-01',
                    'method': 'last',
@@ -4625,12 +4741,12 @@ Specify parameters for flow query:
                  'method': 'last',
                  'query_kind': 'daily_location',
                  'subscriber_subset': None}}</pre></div>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4643,7 +4759,9 @@ Specify parameters for flow query:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">query_id</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">flow</span><span class="p">)</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">query_id</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">flow</span><span class="p">)</span>
 <span class="n">query_id</span>
 </code></pre></div>
 
@@ -4655,13 +4773,13 @@ Specify parameters for flow query:
 
 <div class="output_area" markdown="1">
 
->`e9512f58d08bab3a1f206f2b4d8f833a`
+<blockquote><p><code>e9512f58d08bab3a1f206f2b4d8f833a</code></p>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4674,7 +4792,7 @@ Specify parameters for flow query:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">flowclient</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">flowclient</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
 </code></pre></div>
 
 </div>
@@ -4685,13 +4803,13 @@ Specify parameters for flow query:
 
 <div class="output_area" markdown="1">
 
->`executing`
+<blockquote><p><code>executing</code></p>
+</blockquote>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4704,7 +4822,9 @@ Specify parameters for flow query:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="o">=</span><span class="n">query_id</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4716,19 +4836,52 @@ Specify parameters for flow query:
 
 <div class="output_area" markdown="1">
 
-|    | pcod_from   | pcod_to   |   value |
-|---:|:------------|:----------|--------:|
-|  0 | 524 1       | 524 5     |     178 |
-|  1 | 524 1       | 524 4     |     518 |
-|  2 | 524 1       | 524 3     |     393 |
-|  3 | 524 1       | 524 2     |     353 |
-|  4 | 524 1       | 524 1     |    3409 |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod_from</th>
+<th style="text-align:left">pcod_to</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 1</td>
+<td style="text-align:left">524 5</td>
+<td style="text-align:right">301</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 1</td>
+<td style="text-align:left">524 4</td>
+<td style="text-align:right">563</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1</td>
+<td style="text-align:left">524 3</td>
+<td style="text-align:right">568</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 1</td>
+<td style="text-align:left">524 2</td>
+<td style="text-align:right">399</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1</td>
+<td style="text-align:left">524 1</td>
+<td style="text-align:right">4951</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4741,7 +4894,7 @@ Specify parameters for flow query:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span>
     <span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="n">flowclient</span><span class="o">.</span><span class="n">location_event_counts</span><span class="p">(</span>
         <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span>
@@ -4761,13 +4914,54 @@ Specify parameters for flow query:
 
 <div class="output_area" markdown="1">
 
-|    | pcod        | date       |   hour |   value |
-|---:|:------------|:-----------|-------:|--------:|
-|  0 | 524 1 01 01 | 2016-01-01 |      0 |      58 |
-|  1 | 524 1 01 02 | 2016-01-01 |      0 |      60 |
-|  2 | 524 1 01 04 | 2016-01-01 |      0 |      59 |
-|  3 | 524 1 02 05 | 2016-01-01 |      0 |     101 |
-|  4 | 524 1 02 10 | 2016-01-01 |      0 |      67 |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:left">date</th>
+<th style="text-align:right">hour</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 1 01 01</td>
+<td style="text-align:left">2016-01-01</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">98</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 1 01 04</td>
+<td style="text-align:left">2016-01-01</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">63</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 02 07</td>
+<td style="text-align:left">2016-01-01</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">41</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 1 02 09</td>
+<td style="text-align:left">2016-01-01</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">119</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 02 10</td>
+<td style="text-align:left">2016-01-01</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">59</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 

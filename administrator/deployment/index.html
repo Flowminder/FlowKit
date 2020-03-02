@@ -4365,7 +4365,7 @@
 <p>By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.</p>
 <p>However, you will often wish to set up bind mounts to hold the data, allow access to the postgres logs, and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.</p>
 <p>Adding a bind mount using <code>docker-compose</code> is simple:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
     <span class="nt">flowdb</span><span class="p">:</span>
     <span class="l l-Scalar l-Scalar-Plain">...</span>
         <span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;HOST_USER_ID&gt;:&lt;HOST_GROUP_ID&gt;</span>
@@ -4380,7 +4380,7 @@
 <p>If the bind mounted directories do not exist, docker will create them and you will need to <code>chown</code> them to the correct user.</p>
 </div>
 <p>And similarly when using <code>docker run</code>:</p>
-<div class="highlight"><pre><span></span><code>docker run --name flowdb_testdata -e <span class="nv">FLOWMACHINE_FLOWDB_PASSWORD</span><span class="o">=</span>foo -e <span class="nv">FLOWAPI_FLOWDB_PASSWORD</span><span class="o">=</span>foo <span class="se">\</span>
+<div class="codehilite"><pre><span></span><code>docker run --name flowdb_testdata -e <span class="nv">FLOWMACHINE_FLOWDB_PASSWORD</span><span class="o">=</span>foo -e <span class="nv">FLOWAPI_FLOWDB_PASSWORD</span><span class="o">=</span>foo <span class="se">\</span>
  --publish <span class="m">9000</span>:5432 <span class="se">\</span>
  --user HOST_USER_ID:HOST_GROUP_ID <span class="se">\</span>
  -v /path/to/store/data/on/host:/var/lib/postgresql/data <span class="se">\</span>
@@ -4525,7 +4525,7 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <h4 id="generating-a-key-pair">Generating a key pair<a class="headerlink" href="#generating-a-key-pair" title="Permanent link">&para;</a></h4>
 <p>FlowAuth uses a private key to sign the tokens it generates, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding <em>public</em> key, to allow them to verify the tokens were produced by the right instance of FlowAuth.</p>
 <p>You can use <code>openssl</code> to generate a private key:</p>
-<div class="highlight"><pre><span></span><code>openssl genrsa -out flowauth-private-key.key <span class="m">4096</span>
+<div class="codehilite"><pre><span></span><code>openssl genrsa -out flowauth-private-key.key <span class="m">4096</span>
 </code></pre></div>
 
 <p>And then create a public key from the key file (<code>openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub</code>). Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. <code>base64 -i flowauth-private-key.key</code>). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.</p>
@@ -4742,7 +4742,7 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <p>For convenience, you can also do <code>pipenv run secrets_quickstart</code> from the <code>secrets_quickstart</code> directory.</p>
 <p>Note that if you wish to deploy a branch other than <code>master</code>, you should set the <code>CONTAINER_TAG</code> environment variable before running, to ensure that Docker pulls the correct tags.</p>
 <p>You can then provide the certificate to <code>flowclient</code>, and finally connect via https:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
 <span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
 </code></pre></div>
 

@@ -3770,7 +3770,7 @@
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <p>With the revised design of FlowKit to follow an API-backend model, inter-service, and inter-process communication (IPC) must be considered. Previously, this was only relevant within a single multithreaded instance, for which python's built in <code>RLock</code> sufficed. </p>
 <p><code>RLock</code> implements a re-entrant lock. A lock, in this context is something which may be 'held' by one task, to control access to some set of resources - while one task is holding the lock, any other task must wait for it to be released in order to access the same resources. In a standard lock, this applies <em>within</em> a thread, so for example this -</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
 <span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
 <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Got the lock once.&quot;</span><span class="p">)</span>

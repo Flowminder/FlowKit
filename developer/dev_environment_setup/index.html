@@ -3846,20 +3846,20 @@
 <p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code> (this will set the required environment variables) followed by <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the FlowKit docker containers using the <code>docker-compose.yml</code> file. The docker containers to start can be selected by running <code>make up DOCKER_SERVICES="&lt;service 1&gt; &lt;service 2&gt; ..."</code>, where the services can be any of <code>flowmachine</code>, <code>flowmachine_query_locker</code>, <code>flowapi</code>, <code>flowauth</code>, <code>flowdb</code>, <code>worked_examples</code>, <code>flowdb_testdata</code>, <code>flowdb_synthetic_data</code>, <code>flowetl</code>, <code>flowetl_db</code> or <code>autoflow</code> (at most one of the <code>flowdb</code> containers). The default is to start <code>flowdb</code>, <code>flowapi</code>, <code>flowmachine</code>, <code>flowauth</code>, <code>flowmachine_query_locker</code>, <code>flowetl</code>, <code>flowetl_db</code> and <code>worked_examples</code>. Alternatively, containers can be built, started or stopped individually by running <code>make &lt;service&gt;-build</code>, <code>make &lt;service&gt;-up</code> or <code>make &lt;service&gt;-down</code>, respectively.</p>
 <p>To run the <code>autoflow</code> service, a valid FlowAPI token must be set as the environment variable <code>FLOWAPI_TOKEN</code> (in addition to the environment variables set by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code>).</p>
 <p>FlowKit uses <a href="https://pipenv.readthedocs.io/">pipenv</a> to manage Python environments. To start a Python session in which you can use FlowClient:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> flowclient
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> flowclient
 pipenv install
 pipenv run python
 &gt;&gt;&gt; import flowclient
 </code></pre></div>
 
 <p>To run the tests in the <code>flowapi</code>, <code>flowclient</code>, <code>flowdb</code>, <code>flowmachine</code>, <code>autoflow</code>, <code>flowetl</code> or <code>integration_tests</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> &lt;directory&gt;
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> &lt;directory&gt;
 pipenv install --dev
 pipenv run pytest
 </code></pre></div>
 
 <p>AutoFlow additionally has dependencies on Ruby packages, which we manage using <a href="https://bundler.io/">Bundler</a> which works similarly to pipenv. To run the tests in the <code>autoflow</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> autoflow
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> autoflow
 bundle install
 pipenv install --dev
 pipenv run pytest
@@ -3872,20 +3872,20 @@ pipenv run pytest
 FlowKit pipenv environments). There is also a <a href="https://pre-commit.com/">pre-commit</a> hook which runs black on all Python
 files before each commit.</p>
 <p>To install the pre-commit hook run:
-<div class="highlight"><pre><span></span><code>$ pre-commit install
+<div class="codehilite"><pre><span></span><code>$ pre-commit install
 </code></pre></div>
 If you ever want to uninstall the hook you can do this by running <code>pipenv run pre-commit uninstall</code>.</p>
 <p>The above command requires <code>pre-commit</code> to be installed on your system. For convenience, it is also
 included in the <code>flowmachine</code> pipenv environment, so if you don't want to install it system-wide you
 can run it as follows (it will still be installed and available for all FlowKit components, not just
 flowmachine).
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> flowmachine/
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">cd</span> flowmachine/
 $ pipenv run pre-commit install
 </code></pre></div></p>
 <p>Note that if you run <code>git commit</code> and any files are modified by the re-formatting, the pre-commit hook will abort
 the commit (but leave the files re-formatted). Simply repeat the <code>git commit</code> command in order to complete the commit.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># 1) First attempt to commit; this is aborted because one of the files</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1) First attempt to commit; this is aborted because one of the files</span>
 <span class="c1">#    is reformatted by the pre-commit hook.</span>
 
 $ git commit -a -m <span class="s2">&quot;Some changes&quot;</span>
@@ -3922,7 +3922,7 @@ and <a href="https://www.git-tower.com/blog/diff-tools-windows">Windows</a>.) Th
 <h2 id="option-1-starting-up-all-flowkit-components-inside-a-dockerised-development-environment">Option 1: Starting up all FlowKit components inside a dockerised development environment<a class="headerlink" href="#option-1-starting-up-all-flowkit-components-inside-a-dockerised-development-environment" title="Permanent link">&para;</a></h2>
 <p>For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
 components by running:
-<div class="highlight"><pre><span></span><code>$ make up
+<div class="codehilite"><pre><span></span><code>$ make up
 </code></pre></div></p>
 <p>This will use the specifications in <code>docker-compose.yml</code> to spin up development versions of <code>flowdb_testdata</code>,
 <code>flowmachine</code>, <code>flowapi</code> and <code>flowauth</code> (as well as a <code>redis</code> container, which is used internally by <code>flowmachine</code>).</p>
@@ -3930,7 +3930,7 @@ components by running:
 runs will be much faster because it will typically only need to (re-)start the containers, or re-build small parts
 of the images.</p>
 <p>Here is an example of the running docker services after a successful <code>make up</code>:
-<div class="highlight"><pre><span></span><code>$ docker ps
+<div class="codehilite"><pre><span></span><code>$ docker ps
 
 CONTAINER ID        IMAGE                               COMMAND                  CREATED             STATUS              PORTS                              NAMES
 54857c5f5da5        flowminder/flowdb-testdata:latest   &quot;docker-entrypoint.s…&quot;   5 minutes ago       Up 5 minutes        8000/tcp, 0.0.0.0:9000-&gt;5432/tcp   flowdb_testdata
@@ -3950,21 +3950,21 @@ difficult or impossible if Flowmachine and FlowAPI are running inside a docker c
 and use for example <a href="https://docs.python.org/3/library/pdb.html">pdb</a>, <a href="https://pypi.org/project/ipdb/">ipdb</a> or similar
 debuggers to step through the code then it is easier to start the relevant components manually.</p>
 <p>To do this, first start the components which you want to run inside the dockerised environment, e.g. via:
-<div class="highlight"><pre><span></span><code>$ make flowmachine_testdata-up flowauth-up
+<div class="codehilite"><pre><span></span><code>$ make flowmachine_testdata-up flowauth-up
 </code></pre></div></p>
 <p>Next, run one or more of the following commands (in separate terminals) to start up the remaining components.</p>
 <h3 id="flowmachine">Flowmachine<a class="headerlink" href="#flowmachine" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> flowmachine/
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">cd</span> flowmachine/
 $ pipenv run watchmedo auto-restart --recursive --patterns<span class="o">=</span><span class="s2">&quot;*.py&quot;</span> --directory<span class="o">=</span><span class="s2">&quot;.&quot;</span> pipenv run flowmachine
 </code></pre></div>
 
 <h3 id="flowapi">FlowAPI<a class="headerlink" href="#flowapi" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> flowapi/
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">cd</span> flowapi/
 $ pipenv run hypercorn --debug --reload --bind <span class="m">0</span>.0.0.0:9090 <span class="s2">&quot;app.main:create_app()&quot;</span>
 </code></pre></div>
 
 <h3 id="flowauth">FlowAuth<a class="headerlink" href="#flowauth" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> flowauth/
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">cd</span> flowauth/
 $ pipenv run start-all
 </code></pre></div>
 
@@ -3978,25 +3978,25 @@ Without this setting, both will be started automatically to allow test coverage 
 successfully and are wired up correctly so that they can talk to each other.</p>
 <h2 id="running-the-integration-tests">Running the integration tests<a class="headerlink" href="#running-the-integration-tests" title="Permanent link">&para;</a></h2>
 <p>You can run the integration tests as follows. If these pass, this is a good indication that everything is set up correctly.
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> integration_tests
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">cd</span> integration_tests
 $ pipenv install  <span class="c1"># only needed once to install dependencies</span>
 $ pipenv run pytest
 </code></pre></div></p>
 <h2 id="flowdb">FlowDB<a class="headerlink" href="#flowdb" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code>$ psql &quot;postgresql://flowdb:flowflow@localhost:9000/flowdb&quot; -c &quot;SELECT flowdb_version()&quot;
+<p><div class="codehilite"><pre><span></span><code>$ psql &quot;postgresql://flowdb:flowflow@localhost:9000/flowdb&quot; -c &quot;SELECT flowdb_version()&quot;
 </code></pre></div>
 The output should be similar to this:
-<div class="highlight"><pre><span></span><code>        flowdb_version
+<div class="codehilite"><pre><span></span><code>        flowdb_version
 -------------------------------
  (0.2.2-8-g0558488,2019-01-21)
 (1 row)
 </code></pre></div></p>
 <h2 id="flowmachine_1">Flowmachine<a class="headerlink" href="#flowmachine_1" title="Permanent link">&para;</a></h2>
 <p>From within the <code>flowmachine/</code> folder, run the following command to send an example message to the Flowmachine server via ZeroMQ.
-<div class="highlight"><pre><span></span><code>$ pipenv run python -c &quot;from flowmachine.core.server.utils import FM_EXAMPLE_MESSAGE, send_message_and_receive_reply; print(send_message_and_receive_reply(FM_EXAMPLE_MESSAGE))&quot;
+<div class="codehilite"><pre><span></span><code>$ pipenv run python -c &quot;from flowmachine.core.server.utils import FM_EXAMPLE_MESSAGE, send_message_and_receive_reply; print(send_message_and_receive_reply(FM_EXAMPLE_MESSAGE))&quot;
 </code></pre></div>
 Expected output:
-<div class="highlight"><pre><span></span><code>Sending message: {&#39;action&#39;: &#39;run_query&#39;, &#39;query_kind&#39;: &#39;daily_location&#39;, &#39;request_id&#39;: &#39;DUMMY_ID&#39;, &#39;params&#39;: {&#39;date&#39;: &#39;2016-01-01&#39;, &#39;daily_location_method&#39;: &#39;last&#39;, &#39;aggregation_unit&#39;: &#39;admin3&#39;, &#39;subscriber_subset&#39;: &#39;all&#39;}}
+<div class="codehilite"><pre><span></span><code>Sending message: {&#39;action&#39;: &#39;run_query&#39;, &#39;query_kind&#39;: &#39;daily_location&#39;, &#39;request_id&#39;: &#39;DUMMY_ID&#39;, &#39;params&#39;: {&#39;date&#39;: &#39;2016-01-01&#39;, &#39;daily_location_method&#39;: &#39;last&#39;, &#39;aggregation_unit&#39;: &#39;admin3&#39;, &#39;subscriber_subset&#39;: &#39;all&#39;}}
 {&#39;status&#39;: &#39;accepted&#39;, &#39;id&#39;: &#39;ddc61a04f608dee16fff0655f91c2057&#39;}
 </code></pre></div></p>
 <h2 id="flowapi_1">FlowAPI<a class="headerlink" href="#flowapi_1" title="Permanent link">&para;</a></h2>
@@ -4004,14 +4004,14 @@ Expected output:
 instructions how to do this or link to the appropriate section in the docs) and store it in the environment
 variable <code>TOKEN</code>.</p>
 <p>Then run the following command to submit a daily location calculation to FlowKit via the API:
-<div class="highlight"><pre><span></span><code>$ curl -v -X POST http://localhost:9090/api/0/run \
+<div class="codehilite"><pre><span></span><code>$ curl -v -X POST http://localhost:9090/api/0/run \
   -H &quot;Authorization: Bearer ${TOKEN}&quot; \
   -H &#39;Cache-Control: no-cache&#39; \
   -H &#39;Content-Type: application/json&#39; \
   -d &#39;{&quot;params&quot;: {&quot;date&quot;:&quot;2016-01-01&quot;, &quot;level&quot;:&quot;admin3&quot;, &quot;daily_location_method&quot;:&quot;last&quot;, &quot;aggregation_unit&quot;:&quot;admin3&quot;, &quot;subscriber_subset&quot;:&quot;all&quot;}, &quot;query_kind&quot;:&quot;daily_location&quot;}&#39;
 </code></pre></div></p>
 <p>The output should contain a location header that similar to this:
-<div class="highlight"><pre><span></span><code>[...]
+<div class="codehilite"><pre><span></span><code>[...]
 &lt; location: /api/0/poll/ddc61a04f608dee16fff0655f91c2057
 [...]
 </code></pre></div></p>

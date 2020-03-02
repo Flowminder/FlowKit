@@ -7345,7 +7345,7 @@
 <p>Classes that map cell (or tower or site) IDs to a spatial unit.
 The helper function 'make_spatial_unit' can be used to create spatial unit objects.</p>
 <h2 id="class-cellspatialunit">Class <strong>CellSpatialUnit</strong><a class="headerlink" href="#class-cellspatialunit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">CellSpatialUnit</span><span class="p">()</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">CellSpatialUnit</span><span class="p">()</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L201">flowmachine/core/spatial_unit.py</a></p>
 <p>This class represents the case where no join of cell ID to other data is required. As such, this class does not inherit from Query, is not a valid parameter to JoinToLocation, and only exists to provide the location_id_columns property and for consistency with the other spatial units.</p>
@@ -7369,7 +7369,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="location_subset_clause">location_subset_clause<a class="headerlink" href="#location_subset_clause" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L133">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations.</p>
@@ -7392,7 +7392,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="verify_criterion">verify_criterion<a class="headerlink" href="#verify_criterion" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L83">flowmachine/core/spatial_unit.py</a></p>
 <p>Check whether this spatial unit meets a criterion, and raise an InvalidSpatialUnitError if not.</p>
@@ -7408,7 +7408,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="has_geography">has_geography<a class="headerlink" href="#has_geography" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_geography</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_geography</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L52">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has geography information.</p>
@@ -7417,7 +7417,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="has_lon_lat_columns">has_lon_lat_columns<a class="headerlink" href="#has_lon_lat_columns" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L59">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has lon/lat columns.</p>
@@ -7426,7 +7426,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_network_object">is_network_object<a class="headerlink" href="#is_network_object" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_network_object</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_network_object</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L66">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit is a network object (cell or site).</p>
@@ -7435,7 +7435,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_polygon">is_polygon<a class="headerlink" href="#is_polygon" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_polygon</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_polygon</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L76">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit's geographies are polygons.</p>
@@ -7444,7 +7444,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="location_id_columns">location_id_columns<a class="headerlink" href="#location_id_columns" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L45">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
@@ -7453,7 +7453,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.List[str]</code></li>
 </ul>
 <h2 id="class-geomspatialunit">Class <strong>GeomSpatialUnit</strong><a class="headerlink" href="#class-geomspatialunit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">GeomSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">location_id_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">,</span> <span class="n">geom_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">location_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">GeomSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">location_id_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">,</span> <span class="n">geom_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">location_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L226">flowmachine/core/spatial_unit.py</a></p>
 <p>Base class for spatial units that map location IDs in connection.location_table to geographic locations.</p>
@@ -7537,7 +7537,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="get_geom_query">get_geom_query<a class="headerlink" href="#get_geom_query" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_geom_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_geom_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L393">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a SQL query which can be used to map locations (identified by the values in self.location_id_columns) to their geometries (in a column named "geom").</p>
@@ -7546,7 +7546,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>str</code></li>
 </ul>
 <h4 id="location_subset_clause_1">location_subset_clause<a class="headerlink" href="#location_subset_clause_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L133">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations.</p>
@@ -7569,7 +7569,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="verify_criterion_1">verify_criterion<a class="headerlink" href="#verify_criterion_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L83">flowmachine/core/spatial_unit.py</a></p>
 <p>Check whether this spatial unit meets a criterion, and raise an InvalidSpatialUnitError if not.</p>
@@ -7585,7 +7585,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="cache">cache<a class="headerlink" href="#cache" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">cache</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L215">flowmachine/core/query.py</a></p>
 <h5 id="returns_8">Returns<a class="headerlink" href="#returns_8" title="Permanent link">&para;</a></h5>
@@ -7596,7 +7596,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">column_names</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L378">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns the column names.</p>
@@ -7608,7 +7608,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_as_string_list">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">column_names_as_string_list</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names_as_string_list</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L348">flowmachine/core/query.py</a></p>
 <p>Get the column names as a comma separated list</p>
@@ -7620,7 +7620,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="dependencies">dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">dependencies</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dependencies</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L738">flowmachine/core/query.py</a></p>
 <h5 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h5>
@@ -7631,7 +7631,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="fully_qualified_table_name">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L668">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
@@ -7643,7 +7643,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="has_geography_1">has_geography<a class="headerlink" href="#has_geography_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_geography</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_geography</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L52">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has geography information.</p>
@@ -7652,7 +7652,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="has_lon_lat_columns_1">has_lon_lat_columns<a class="headerlink" href="#has_lon_lat_columns_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L59">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has lon/lat columns.</p>
@@ -7661,7 +7661,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="index_cols">index_cols<a class="headerlink" href="#index_cols" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">index_cols</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">index_cols</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L894">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
@@ -7673,12 +7673,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h5 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
+<div class="codehilite"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
 <span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;&quot;subscriber&quot;&#39;</span><span class="p">]</span>
 </code></pre></div>
 
 <h4 id="is_network_object_1">is_network_object<a class="headerlink" href="#is_network_object_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_network_object</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_network_object</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L66">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit is a network object (cell or site).</p>
@@ -7687,7 +7687,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_polygon_1">is_polygon<a class="headerlink" href="#is_polygon_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_polygon</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_polygon</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L76">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit's geographies are polygons.</p>
@@ -7696,7 +7696,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_stored">is_stored<a class="headerlink" href="#is_stored" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_stored</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_stored</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L694">flowmachine/core/query.py</a></p>
 <h5 id="returns_18">Returns<a class="headerlink" href="#returns_18" title="Permanent link">&para;</a></h5>
@@ -7707,7 +7707,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="location_id_columns_1">location_id_columns<a class="headerlink" href="#location_id_columns_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L45">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
@@ -7716,7 +7716,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.List[str]</code></li>
 </ul>
 <h4 id="query_id">query_id<a class="headerlink" href="#query_id" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L82">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
@@ -7728,7 +7728,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state">query_state<a class="headerlink" href="#query_state" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_state</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L227">flowmachine/core/query.py</a></p>
 <p>Return the current query state.</p>
@@ -7740,7 +7740,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_str">query_state_str<a class="headerlink" href="#query_state_str" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_state_str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state_str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L240">flowmachine/core/query.py</a></p>
 <p>Return the current query state as a string</p>
@@ -7752,7 +7752,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="table_name">table_name<a class="headerlink" href="#table_name" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">table_name</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L681">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
@@ -7764,7 +7764,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="class-lonlatspatialunit">Class <strong>LonLatSpatialUnit</strong><a class="headerlink" href="#class-lonlatspatialunit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">LonLatSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">location_id_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom_point&#39;</span><span class="p">,</span> <span class="n">geom_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">location_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">LonLatSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">location_id_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom_point&#39;</span><span class="p">,</span> <span class="n">geom_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">location_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L419">flowmachine/core/spatial_unit.py</a></p>
 <p>Class that provides a mapping from cell/site IDs in the location table to longitude and latitude.
@@ -7849,7 +7849,7 @@ In addition to the requested geom_table_column_names, this query returns longitu
 </ul>
 <h2 id="methods_2">Methods<a class="headerlink" href="#methods_2" title="Permanent link">&para;</a></h2>
 <h4 id="get_geom_query_1">get_geom_query<a class="headerlink" href="#get_geom_query_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_geom_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_geom_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L393">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a SQL query which can be used to map locations (identified by the values in self.location_id_columns) to their geometries (in a column named "geom").</p>
@@ -7858,7 +7858,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>str</code></li>
 </ul>
 <h4 id="location_subset_clause_2">location_subset_clause<a class="headerlink" href="#location_subset_clause_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L483">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations. This method differs from the default implementation in its handling of lon-lat values, i.e. it returns     WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(<lon_value>, <lat_value>), 4326)' instead of     WHERE lon = '<lon_value>' AND lat = '<lat_value>'</p>
@@ -7881,7 +7881,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="verify_criterion_2">verify_criterion<a class="headerlink" href="#verify_criterion_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L83">flowmachine/core/spatial_unit.py</a></p>
 <p>Check whether this spatial unit meets a criterion, and raise an InvalidSpatialUnitError if not.</p>
@@ -7897,7 +7897,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="cache_1">cache<a class="headerlink" href="#cache_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">cache</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L215">flowmachine/core/query.py</a></p>
 <h5 id="returns_26">Returns<a class="headerlink" href="#returns_26" title="Permanent link">&para;</a></h5>
@@ -7908,7 +7908,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">column_names</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L378">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns the column names.</p>
@@ -7920,7 +7920,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_as_string_list_1">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">column_names_as_string_list</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names_as_string_list</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L348">flowmachine/core/query.py</a></p>
 <p>Get the column names as a comma separated list</p>
@@ -7932,7 +7932,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="dependencies_1">dependencies<a class="headerlink" href="#dependencies_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">dependencies</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dependencies</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L738">flowmachine/core/query.py</a></p>
 <h5 id="returns_29">Returns<a class="headerlink" href="#returns_29" title="Permanent link">&para;</a></h5>
@@ -7943,7 +7943,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="fully_qualified_table_name_1">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L668">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
@@ -7955,7 +7955,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="has_geography_2">has_geography<a class="headerlink" href="#has_geography_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_geography</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_geography</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L52">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has geography information.</p>
@@ -7964,7 +7964,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="has_lon_lat_columns_2">has_lon_lat_columns<a class="headerlink" href="#has_lon_lat_columns_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L59">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has lon/lat columns.</p>
@@ -7973,7 +7973,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="index_cols_1">index_cols<a class="headerlink" href="#index_cols_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">index_cols</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">index_cols</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L894">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
@@ -7985,12 +7985,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h5 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
+<div class="codehilite"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
 <span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;&quot;subscriber&quot;&#39;</span><span class="p">]</span>
 </code></pre></div>
 
 <h4 id="is_network_object_2">is_network_object<a class="headerlink" href="#is_network_object_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_network_object</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_network_object</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L66">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit is a network object (cell or site).</p>
@@ -7999,7 +7999,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_polygon_2">is_polygon<a class="headerlink" href="#is_polygon_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_polygon</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_polygon</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L76">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit's geographies are polygons.</p>
@@ -8008,7 +8008,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_stored_1">is_stored<a class="headerlink" href="#is_stored_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_stored</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_stored</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L694">flowmachine/core/query.py</a></p>
 <h5 id="returns_36">Returns<a class="headerlink" href="#returns_36" title="Permanent link">&para;</a></h5>
@@ -8019,7 +8019,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="location_id_columns_2">location_id_columns<a class="headerlink" href="#location_id_columns_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L476">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
@@ -8028,7 +8028,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.List[str]</code></li>
 </ul>
 <h4 id="query_id_1">query_id<a class="headerlink" href="#query_id_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L82">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
@@ -8040,7 +8040,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_1">query_state<a class="headerlink" href="#query_state_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_state</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L227">flowmachine/core/query.py</a></p>
 <p>Return the current query state.</p>
@@ -8052,7 +8052,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_str_1">query_state_str<a class="headerlink" href="#query_state_str_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_state_str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state_str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L240">flowmachine/core/query.py</a></p>
 <p>Return the current query state as a string</p>
@@ -8064,7 +8064,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="table_name_1">table_name<a class="headerlink" href="#table_name_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">table_name</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L681">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
@@ -8076,7 +8076,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="class-polygonspatialunit">Class <strong>PolygonSpatialUnit</strong><a class="headerlink" href="#class-polygonspatialunit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">PolygonSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">PolygonSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L577">flowmachine/core/spatial_unit.py</a></p>
 <p>Class that provides a mapping from cell/site data in the location table to spatial regions defined by geography information in a table.</p>
@@ -8148,7 +8148,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_3">Methods<a class="headerlink" href="#methods_3" title="Permanent link">&para;</a></h2>
 <h4 id="get_geom_query_2">get_geom_query<a class="headerlink" href="#get_geom_query_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_geom_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_geom_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L393">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a SQL query which can be used to map locations (identified by the values in self.location_id_columns) to their geometries (in a column named "geom").</p>
@@ -8157,7 +8157,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>str</code></li>
 </ul>
 <h4 id="location_subset_clause_3">location_subset_clause<a class="headerlink" href="#location_subset_clause_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L133">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations.</p>
@@ -8180,7 +8180,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="verify_criterion_3">verify_criterion<a class="headerlink" href="#verify_criterion_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L83">flowmachine/core/spatial_unit.py</a></p>
 <p>Check whether this spatial unit meets a criterion, and raise an InvalidSpatialUnitError if not.</p>
@@ -8196,7 +8196,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="cache_2">cache<a class="headerlink" href="#cache_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">cache</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L215">flowmachine/core/query.py</a></p>
 <h5 id="returns_44">Returns<a class="headerlink" href="#returns_44" title="Permanent link">&para;</a></h5>
@@ -8207,7 +8207,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_2">column_names<a class="headerlink" href="#column_names_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">column_names</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L378">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns the column names.</p>
@@ -8219,7 +8219,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="column_names_as_string_list_2">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">column_names_as_string_list</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">column_names_as_string_list</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L348">flowmachine/core/query.py</a></p>
 <p>Get the column names as a comma separated list</p>
@@ -8231,7 +8231,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="dependencies_2">dependencies<a class="headerlink" href="#dependencies_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">dependencies</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dependencies</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L738">flowmachine/core/query.py</a></p>
 <h5 id="returns_47">Returns<a class="headerlink" href="#returns_47" title="Permanent link">&para;</a></h5>
@@ -8242,7 +8242,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="fully_qualified_table_name_2">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L668">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
@@ -8254,7 +8254,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="has_geography_3">has_geography<a class="headerlink" href="#has_geography_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_geography</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_geography</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L52">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has geography information.</p>
@@ -8263,7 +8263,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="has_lon_lat_columns_3">has_lon_lat_columns<a class="headerlink" href="#has_lon_lat_columns_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L59">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has lon/lat columns.</p>
@@ -8272,7 +8272,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="index_cols_2">index_cols<a class="headerlink" href="#index_cols_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">index_cols</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">index_cols</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L894">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
@@ -8284,12 +8284,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h5 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
+<div class="codehilite"><pre><span></span><code><span class="n">daily_location</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index_cols</span>
 <span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;&quot;subscriber&quot;&#39;</span><span class="p">]</span>
 </code></pre></div>
 
 <h4 id="is_network_object_3">is_network_object<a class="headerlink" href="#is_network_object_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_network_object</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_network_object</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L66">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit is a network object (cell or site).</p>
@@ -8298,7 +8298,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_polygon_3">is_polygon<a class="headerlink" href="#is_polygon_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_polygon</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_polygon</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L76">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit's geographies are polygons.</p>
@@ -8307,7 +8307,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_stored_2">is_stored<a class="headerlink" href="#is_stored_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_stored</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_stored</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L694">flowmachine/core/query.py</a></p>
 <h5 id="returns_54">Returns<a class="headerlink" href="#returns_54" title="Permanent link">&para;</a></h5>
@@ -8318,7 +8318,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="location_id_columns_3">location_id_columns<a class="headerlink" href="#location_id_columns_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L45">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
@@ -8327,7 +8327,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.List[str]</code></li>
 </ul>
 <h4 id="query_id_2">query_id<a class="headerlink" href="#query_id_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L82">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
@@ -8339,7 +8339,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_2">query_state<a class="headerlink" href="#query_state_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_state</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L227">flowmachine/core/query.py</a></p>
 <p>Return the current query state.</p>
@@ -8351,7 +8351,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_state_str_2">query_state_str<a class="headerlink" href="#query_state_str_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_state_str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_state_str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L240">flowmachine/core/query.py</a></p>
 <p>Return the current query state as a string</p>
@@ -8363,7 +8363,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="table_name_2">table_name<a class="headerlink" href="#table_name_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">table_name</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">table_name</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L681">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
@@ -8375,7 +8375,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="class-spatialunitmixin">Class <strong>SpatialUnitMixin</strong><a class="headerlink" href="#class-spatialunitmixin" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">SpatialUnitMixin</span><span class="p">()</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SpatialUnitMixin</span><span class="p">()</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L38">flowmachine/core/spatial_unit.py</a></p>
 <p>Mixin for spatial unit classes, which provides a 'location_id_columns' property and methods for verifying whether a spatial unit meets different criteria (useful for checking whether a spatial unit is valid in a given query).</p>
@@ -8399,7 +8399,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_4">Methods<a class="headerlink" href="#methods_4" title="Permanent link">&para;</a></h2>
 <h4 id="location_subset_clause_4">location_subset_clause<a class="headerlink" href="#location_subset_clause_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L133">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations.</p>
@@ -8422,7 +8422,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="verify_criterion_4">verify_criterion<a class="headerlink" href="#verify_criterion_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">verify_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L83">flowmachine/core/spatial_unit.py</a></p>
 <p>Check whether this spatial unit meets a criterion, and raise an InvalidSpatialUnitError if not.</p>
@@ -8438,7 +8438,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="has_geography_4">has_geography<a class="headerlink" href="#has_geography_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_geography</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_geography</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L52">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has geography information.</p>
@@ -8447,7 +8447,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="has_lon_lat_columns_4">has_lon_lat_columns<a class="headerlink" href="#has_lon_lat_columns_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">has_lon_lat_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L59">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit has lon/lat columns.</p>
@@ -8456,7 +8456,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_network_object_4">is_network_object<a class="headerlink" href="#is_network_object_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_network_object</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_network_object</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L66">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit is a network object (cell or site).</p>
@@ -8465,7 +8465,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="is_polygon_4">is_polygon<a class="headerlink" href="#is_polygon_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_polygon</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_polygon</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L76">flowmachine/core/spatial_unit.py</a></p>
 <p>True if spatial unit's geographies are polygons.</p>
@@ -8474,7 +8474,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>bool</code></li>
 </ul>
 <h4 id="location_id_columns_4">location_id_columns<a class="headerlink" href="#location_id_columns_4" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L45">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
@@ -8483,7 +8483,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.List[str]</code></li>
 </ul>
 <h2 id="admin_spatial_unit">admin_spatial_unit<a class="headerlink" href="#admin_spatial_unit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">admin_spatial_unit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">region_id_column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">PolygonSpatialUnit</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">admin_spatial_unit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">region_id_column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">PolygonSpatialUnit</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L668">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a PolygonSpatialUnit object that maps all cells (aka sites) to an admin region. This assumes that you have geography data in the standard location in FlowDB.</p>
@@ -8506,7 +8506,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="grid_spatial_unit">grid_spatial_unit<a class="headerlink" href="#grid_spatial_unit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">grid_spatial_unit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">PolygonSpatialUnit</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">grid_spatial_unit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">PolygonSpatialUnit</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L704">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a PolygonSpatialUnit that maps all the sites in the database to a grid of arbitrary size.</p>
@@ -8525,7 +8525,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="make_spatial_unit">make_spatial_unit<a class="headerlink" href="#make_spatial_unit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">make_spatial_unit</span><span class="p">(</span><span class="n">spatial_unit_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">region_id_column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">]</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">make_spatial_unit</span><span class="p">(</span><span class="n">spatial_unit_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">region_id_column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">]</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L729">flowmachine/core/spatial_unit.py</a></p>
 <p>Helper function to create an object representing a spatial unit.</p>
@@ -8564,7 +8564,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="versioned_cell_spatial_unit">versioned_cell_spatial_unit<a class="headerlink" href="#versioned_cell_spatial_unit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">versioned_cell_spatial_unit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">LonLatSpatialUnit</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">versioned_cell_spatial_unit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">LonLatSpatialUnit</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L626">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a LonLatSpatialUnit that maps cell location_id to a cell version and lon-lat coordinates.</p>
@@ -8573,7 +8573,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>flowmachine.core.spatial_unit.LonLatSpatialUnit</code></li>
 </ul>
 <h2 id="versioned_site_spatial_unit">versioned_site_spatial_unit<a class="headerlink" href="#versioned_site_spatial_unit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">versioned_site_spatial_unit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">LonLatSpatialUnit</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">versioned_site_spatial_unit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">LonLatSpatialUnit</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L645">flowmachine/core/spatial_unit.py</a></p>
 <p>Returns a LonLatSpatialUnit that maps cell location_id to a site version and lon-lat coordinates.</p>

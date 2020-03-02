@@ -4034,7 +4034,7 @@
                 
                 <h1 id="flowmachinecoreserverquery_schemasbase_query_with_sampling">flowmachine.core.server.query_schemas.base_query_with_sampling<a class="headerlink" href="#flowmachinecoreserverquery_schemasbase_query_with_sampling" title="Permanent link">&para;</a></h1>
 <h2 id="class-baseexposedquerywithsampling">Class <strong>BaseExposedQueryWithSampling</strong><a class="headerlink" href="#class-baseexposedquerywithsampling" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">BaseExposedQueryWithSampling</span><span class="p">()</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">BaseExposedQueryWithSampling</span><span class="p">()</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling.py#L16">flowmachine/core/server/query_schemas/base_query_with_sampling.py</a></p>
 <p>Base class for exposed flowmachine queries.
@@ -4053,7 +4053,7 @@ Note: this class and derived classes are not meant to be instantiated directly! 
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="_flowmachine_query_obj">_flowmachine_query_obj<a class="headerlink" href="#_flowmachine_query_obj" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">_flowmachine_query_obj</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_flowmachine_query_obj</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling.py#L31">flowmachine/core/server/query_schemas/base_query_with_sampling.py</a></p>
 <p>Return the underlying flowmachine query object which this class exposes.</p>
@@ -4062,7 +4062,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>Query</code></li>
 </ul>
 <h4 id="_unsampled_query_obj">_unsampled_query_obj<a class="headerlink" href="#_unsampled_query_obj" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">_unsampled_query_obj</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">_unsampled_query_obj</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling.py#L17">flowmachine/core/server/query_schemas/base_query_with_sampling.py</a></p>
 <p>Return the flowmachine query object to be sampled.</p>
@@ -4071,11 +4071,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>Query</code></li>
 </ul>
 <h4 id="query_id">query_id<a class="headerlink" href="#query_id" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_exposed_query.py#L61">flowmachine/core/server/query_schemas/base_exposed_query.py</a></p>
 <h2 id="class-basequerywithsamplingschema">Class <strong>BaseQueryWithSamplingSchema</strong><a class="headerlink" href="#class-basequerywithsamplingschema" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">BaseQueryWithSamplingSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">BaseQueryWithSamplingSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling.py#L12">flowmachine/core/server/query_schemas/base_query_with_sampling.py</a></p>
 <p>Base schema class with which to define custom schemas.
@@ -4091,11 +4091,11 @@ Example usage:  .. code-block:: python      import datetime as dt     from datac
 </ul>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="dict_class">dict_class<a class="headerlink" href="#dict_class" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">dict_class</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dict_class</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L410">marshmallow/schema.py</a></p>
 <h4 id="set_class">set_class<a class="headerlink" href="#set_class" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">set_class</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">set_class</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L414">marshmallow/schema.py</a></p>
                 

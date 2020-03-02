@@ -3912,7 +3912,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/feature_collection.py#L0">flowmachine/features/utilities/feature_collection.py</a></p>
 <p>Class definition for feature_collection, this is a group of joined features.</p>
 <h2 id="feature_collection">feature_collection<a class="headerlink" href="#feature_collection" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">feature_collection</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">join</span><span class="o">.</span><span class="n">Join</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">feature_collection</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">join</span><span class="o">.</span><span class="n">Join</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/feature_collection.py#L12">flowmachine/features/utilities/feature_collection.py</a></p>
 <p>Joined set of features. Takes a set of features and creates one wide dataset about these features. Most often used to gather subscriber metrics into one dataframe, for instance to pass to a machine learning pipeline.</p>
@@ -3936,12 +3936,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <p>There are two alternative constructors to this class. The first is more general, it takes a list of query instances.<br />
-<div class="highlight"><pre><span></span><code><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-01-03&#39;</span>
+<div class="codehilite"><pre><span></span><code><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-01-03&#39;</span>
 <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">RadiusOfGyration</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">),</span>
                <span class="n">NocturnalCalls</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">),</span>
                <span class="n">SubscriberDegree</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)]</span>
 </code></pre></div></p>
-<p><div class="highlight"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">feature_collection</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">feature_collection</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
 <span class="n">fc</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
    <span class="n">subscriber</span>            <span class="o">|</span><span class="n">rog_radiusofgyration_0</span><span class="o">|</span><span class="n">percentage_nocturnal_nocturnalcalls_1</span><span class="o">|</span><span class="n">degree_subscriberdegree_2</span>
     <span class="o">----------------|----------------------|-------------------------------------|-------------------</span>
@@ -3952,7 +3952,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
     <span class="mi">0</span><span class="n">Gl95NRLjW2aw8pW</span><span class="o">|</span><span class="mf">127.234294155594</span>      <span class="o">|</span><span class="mf">44.44444444444444</span>                    <span class="o">|</span><span class="mi">2</span>
 </code></pre></div>
 Sometimes a subscriber may only have a value associated to some of the  features in the collection. The default behaviour of this class is only  to return rows that have values for all the features. To override this  behaviour we can do the following;<br />
-<div class="highlight"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">feature_collection</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">feature_collection</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">fc</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
     <span class="n">subscriber</span>      <span class="o">|</span><span class="n">rog_radiusofgyration_0</span><span class="o">|</span><span class="n">percentage_nocturnal_nocturnalcalls_1</span><span class="o">|</span><span class="n">degree_subscriberdegree_2</span>
     <span class="o">----------------|----------------------|-------------------------------------|-------------------</span>
@@ -3963,12 +3963,12 @@ Sometimes a subscriber may only have a value associated to some of the  features
     <span class="mi">0</span><span class="n">Gl95NRLjW2aw8pW</span><span class="o">|</span><span class="mf">127.234294155594</span>      <span class="o">|</span><span class="mf">44.44444444444444</span>                    <span class="o">|</span><span class="mi">2</span>
 </code></pre></div>
 An alternative, and easier way, to get the following is to do:<br />
-<div class="highlight"><pre><span></span><code><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-01-03&#39;</span>
+<div class="codehilite"><pre><span></span><code><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-01-03&#39;</span>
 <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">RadiusOfGyration</span><span class="p">,</span>
                <span class="n">NocturnalCalls</span><span class="p">,</span>
                <span class="n">SubscriberDegree</span><span class="p">]</span>
 </code></pre></div></p>
-<p><div class="highlight"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">feature_collection</span><span class="o">.</span><span class="n">feature_collection_from_list_of_classes</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">feature_collection</span><span class="o">.</span><span class="n">feature_collection_from_list_of_classes</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
 </code></pre></div>
 But this requires that you want the same arguments for each class  (and are happy with the defaults). </p>
 <div class="admonition note">
@@ -3976,7 +3976,7 @@ But this requires that you want the same arguments for each class  (and are happ
 <p>Each column has the name of the class appended to it to distinguish it from other potential inputs, and an integer. This is because the column names must be unique, and it is possible to use the same metric  multiple times but with different parameters.</p>
 </div>
 <h2 id="feature_collection_from_list_of_classes">feature_collection_from_list_of_classes<a class="headerlink" href="#feature_collection_from_list_of_classes" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">feature_collection_from_list_of_classes</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">join</span><span class="o">.</span><span class="n">Join</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">feature_collection_from_list_of_classes</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">join</span><span class="o">.</span><span class="n">Join</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/feature_collection.py#L93">flowmachine/features/utilities/feature_collection.py</a></p>
 <p>Create a feature collection from uninstantiated classes with common arguments.</p>

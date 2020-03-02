@@ -3907,7 +3907,7 @@
 <h4 id="authentication-logs">Authentication Logs<a class="headerlink" href="#authentication-logs" title="Permanent link">&para;</a></h4>
 <p>FlowAPI logs all access attempts whether successful or not to stdout using a logger named <code>flowapi.access</code>.</p>
 <p>Where authentication succeeds, the log message will have a <code>level</code> field of <code>info</code>, and an <code>event</code> type of <code>AUTHENTICATED</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;fe1d5dd2-ddfb-4b34-9d1e-4ebfc205d64c&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/0/run&quot;</span><span class="p">,</span>
     <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;TEST_USER&quot;</span><span class="p">,</span>
@@ -3940,7 +3940,7 @@
 <h4 id="complete-logging-cycle">Complete Logging Cycle<a class="headerlink" href="#complete-logging-cycle" title="Permanent link">&para;</a></h4>
 <p>A complete logging cycle for a successful request to retrieve a previously run query's results might look like this:</p>
 <p>FlowAPI access log:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/0/get/ddc61a04f608dee16fff0655f91c2057&quot;</span><span class="p">,</span>
     <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;TEST_USER&quot;</span><span class="p">,</span>
@@ -3954,7 +3954,7 @@
 </code></pre></div>
 
 <p>FlowAPI usage log:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;query_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;DAILY_LOCATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/0/get/ddc61a04f608dee16fff0655f91c2057&quot;</span><span class="p">,</span>
@@ -4006,7 +4006,7 @@
 </code></pre></div>
 
 <p>FlowMachine usage log:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="nt">&quot;query_id&quot;</span><span class="p">:</span> <span class="s2">&quot;ddc61a04f608dee16fff0655f91c2057&quot;</span><span class="p">,</span>
     <span class="nt">&quot;query_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;daily_location&quot;</span><span class="p">,</span>
     <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;b&#39;{\&quot;request_id\&quot;:\&quot;d2892489-8fb8-40ec-94e6-2467266a0226\&quot;,\&quot;action\&quot;:\&quot;get_query_kind\&quot;,\&quot;query_id\&quot;:\&quot;ddc61a04f608dee16fff0655f91c2057\&quot;}&#39;&quot;</span><span class="p">,</span>

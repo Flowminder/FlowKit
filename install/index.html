@@ -3876,12 +3876,12 @@
 <p>These instructions assume use of <a href="https://github.com/pyenv/pyenv">Pyenv</a> and <a href="https://github.com/pypa/pipenv">Pipenv</a>. If you are using <a href="https://www.anaconda.com/what-is-anaconda/">Anaconda</a>-based installation commands may be different.</p>
 <p>Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the Docker Hub repositories <a href="https://hub.docker.com/r/flowminder/flowapi">flowminder/flowapi</a>, <a href="https://hub.docker.com/r/flowminder/flowmachine">flowminder/flowmachine</a>, <a href="https://hub.docker.com/r/flowminder/flowdb">flowminder/flowdb</a>, <a href="https://hub.docker.com/r/flowminder/flowauth">flowminder/flowauth</a>, and <a href="https://hub.docker.com/r/flowminder/flowkit-examples">flowminder/flowkit-examples</a> respectively. To install them, you will need <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a>.</p>
 <p>Ensure that you have a Docker installed and running, then start the FlowKit test system by running</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span>
+<div class="codehilite"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span>
 </code></pre></div>
 
 <p>This will pull any necessary docker containers, and start the system in the background with the API exposed on port <code>9090</code> by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:9091/" target="_blank"><a href="http://localhost:9091">http://localhost:9091</a></a> using your web browser.</p>
 <p>The default system includes a small amount of test data. For a test system with considerably more data you can run</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> larger_data
+<div class="codehilite"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> larger_data
 </code></pre></div>
 
 <div class="admonition warning">
@@ -3889,11 +3889,11 @@
 <p>The larger data container will take considerably longer to start up, as it generates data when first run.</p>
 </div>
 <p>The <a href="worked_examples">worked examples</a> are also available as part of the demo system. To install these run</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> examples smaller_data
+<div class="codehilite"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> examples smaller_data
 </code></pre></div>
 
 <p>for the examples with a small dataset, or</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> examples
+<div class="codehilite"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> examples
 </code></pre></div>
 
 <p>to get the examples with the larger dataset (the one used when producing this documentation).</p>
@@ -3906,7 +3906,7 @@
 <p>The worked examples make use of <a href="https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/">Mapbox GL</a> for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions <a href="https://account.mapbox.com/">here</a>), and set this as the value of the <code>MAPBOX_ACCESS_TOKEN</code> environment variable before running the above commands.</p>
 </div>
 <p>To shut down the system, you can either stop all the docker containers directly, or run</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> stop
+<div class="codehilite"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> stop
 </code></pre></div>
 
 <p>In order to use the test system, now <a href="#flowclient">install FlowClient</a>, and generate a token using FlowAuth.</p>
@@ -3915,7 +3915,7 @@
 <p>See the <a href="../administrator/#granting-user-permissions-in-flowauth">administrator section</a> for details of how to add servers and users or modify user permissions, or the <a href="../analyst/#flowauth">analyst section</a> for instructions to generate a token.</p>
 <h3 id="flowclient">FlowClient <a name="flowclient"> </a><a class="headerlink" href="#flowclient" title="Permanent link">&para;</a></h3>
 <p>The FlowClient Python client is used to perform CDR analysis using the JupyterLab Python Data Science Stack. It may be installed using pip:</p>
-<div class="highlight"><pre><span></span><code>pip install flowclient
+<div class="codehilite"><pre><span></span><code>pip install flowclient
 </code></pre></div>
 
 <p>Quick install is continued with an example of FlowClient usage <a href="../analyst/#flowclient">here</a>.</p>

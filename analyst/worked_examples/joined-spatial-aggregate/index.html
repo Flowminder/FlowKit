@@ -4025,7 +4025,7 @@ Once we have the results of these queries, we can investigate whether there is a
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
@@ -4039,7 +4039,6 @@ Once we have the results of these queries, we can investigate whether there is a
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4061,7 +4060,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">conn</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">conn</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;FLOWAPI_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;http://localhost:9090&quot;</span><span class="p">),</span>
     <span class="n">token</span><span class="o">=</span><span class="n">TOKEN</span><span class="p">,</span>
     <span class="n">ssl_certificate</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SSL_CERTIFICATE_FILE&quot;</span><span class="p">),</span>
@@ -4071,7 +4070,6 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4085,7 +4083,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">date_range</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-08&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">date_range</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-08&quot;</span><span class="p">)</span>
 <span class="n">modal_loc</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">modal_location_from_dates</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -4097,7 +4095,6 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4109,7 +4106,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">radius_of_gyration</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">radius_of_gyration</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
 <span class="p">)</span>
@@ -4124,7 +4121,6 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4136,7 +4132,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">handset</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">handset</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="n">characteristic</span><span class="o">=</span><span class="s2">&quot;hnd_type&quot;</span><span class="p">,</span>
@@ -4153,7 +4149,6 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4165,7 +4160,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">jsa_rog_query</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">jsa_rog_query</span><span class="p">)</span>
 <span class="n">rog_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4177,19 +4172,46 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 
 <div class="output_area" markdown="1">
 
-|    | pcod        |   value |
-|---:|:------------|--------:|
-|  0 | 524 1 03 11 | 81.2442 |
-|  1 | 524 3 07 40 | 54.8633 |
-|  2 | 524 1 03 14 | 84.7721 |
-|  3 | 524 3 07 36 | 71.1545 |
-|  4 | 524 5 13 67 | 87.485  |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">69.1628</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">53.5111</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">81.9227</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">53.9886</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">88.2939</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4202,7 +4224,9 @@ The resulting dataframe has two columns: <code>pcod</code> (the P-code of each r
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="p">(</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">rog_results</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">})</span>
     <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;pcod&quot;</span><span class="p">)</span>
 <span class="p">)</span>
@@ -4217,19 +4241,40 @@ The resulting dataframe has two columns: <code>pcod</code> (the P-code of each r
 
 <div class="output_area" markdown="1">
 
-| pcod        |   radius_of_gyration |
-|:------------|---------------------:|
-| 524 1 03 11 |              81.2442 |
-| 524 3 07 40 |              54.8633 |
-| 524 1 03 14 |              84.7721 |
-| 524 3 07 36 |              71.1545 |
-| 524 5 13 67 |              87.485  |
+<table>
+<thead><tr>
+<th style="text-align:left"><br><br>pcod</th>
+<th style="text-align:right">radius_of_gyration<br><br>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">69.1628</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">53.5111</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">81.9227</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">53.9886</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">88.2939</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4242,7 +4287,7 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </code></pre></div>
 
 </div>
@@ -4253,28 +4298,58 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 
 <div class="output_area" markdown="1">
 
-|       |   radius_of_gyration |
-|:------|---------------------:|
-| count |              46      |
-| mean  |              71.555  |
-| std   |              13.9296 |
-| min   |              50.0813 |
-| 25%   |              61.1342 |
-| 50%   |              68.6032 |
-| 75%   |              81.0643 |
-| max   |             106.132  |
+<table>
+<thead><tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">radius_of_gyration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">count</td>
+<td style="text-align:right">46</td>
+</tr>
+<tr>
+<td style="text-align:left">mean</td>
+<td style="text-align:right">70.0261</td>
+</tr>
+<tr>
+<td style="text-align:left">std</td>
+<td style="text-align:right">13.5449</td>
+</tr>
+<tr>
+<td style="text-align:left">min</td>
+<td style="text-align:right">49.1334</td>
+</tr>
+<tr>
+<td style="text-align:left">25%</td>
+<td style="text-align:right">60.0141</td>
+</tr>
+<tr>
+<td style="text-align:left">50%</td>
+<td style="text-align:right">68.5162</td>
+</tr>
+<tr>
+<td style="text-align:left">75%</td>
+<td style="text-align:right">80.1341</td>
+</tr>
+<tr>
+<td style="text-align:left">max</td>
+<td style="text-align:right">102.36</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">();</span>
 </code></pre></div>
 
 </div>
@@ -4297,7 +4372,7 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 </div>
 
 </div>
-
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4308,7 +4383,7 @@ To see the spatial distribution of radius of gyration, we need the geographic bo
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">geog</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="o">.</span><span class="n">from_features</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">geog</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="o">.</span><span class="n">from_features</span><span class="p">(</span>
     <span class="n">fc</span><span class="o">.</span><span class="n">get_geography</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">)</span>
 <span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;pcod&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -4316,7 +4391,6 @@ To see the spatial distribution of radius of gyration, we need the geographic bo
 </div>
 
 </div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4327,7 +4401,7 @@ The <code>plot</code> method is a quick way to see the regions described by this
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </code></pre></div>
 
 </div>
@@ -4349,8 +4423,6 @@ The <code>plot</code> method is a quick way to see the regions described by this
 </div>
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4362,7 +4434,9 @@ Now we can join the geography data to the radius of gyration results, and create
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
 </code></pre></div>
 
 </div>
@@ -4384,8 +4458,6 @@ Now we can join the geography data to the radius of gyration results, and create
 </div>
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4396,7 +4468,7 @@ There are gaps in this choropleth map. Looking at the content of the 'radius_of_
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)[[</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)[[</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
 </div>
@@ -4407,19 +4479,40 @@ There are gaps in this choropleth map. Looking at the content of the 'radius_of_
 
 <div class="output_area" markdown="1">
 
-| pcod        |   radius_of_gyration |
-|:------------|---------------------:|
-| 524 2 05 23 |              64.8326 |
-| 524 2 05 24 |              68.7112 |
-| 524 2 05 25 |              59.9777 |
-| 524 2 05 26 |             nan      |
-| 524 2 05 27 |             nan      |
+<table>
+<thead><tr>
+<th style="text-align:left"><br><br>pcod</th>
+<th style="text-align:right">radius_of_gyration<br><br>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">524 2 05 23</td>
+<td style="text-align:right">69.19</td>
+</tr>
+<tr>
+<td style="text-align:left">524 2 05 24</td>
+<td style="text-align:right">61.2052</td>
+</tr>
+<tr>
+<td style="text-align:left">524 2 05 25</td>
+<td style="text-align:right">nan</td>
+</tr>
+<tr>
+<td style="text-align:left">524 2 05 26</td>
+<td style="text-align:right">nan</td>
+</tr>
+<tr>
+<td style="text-align:left">524 2 05 27</td>
+<td style="text-align:right">59.234</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4432,7 +4525,9 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">background</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">)</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">background</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">)</span>
 <span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">ax</span><span class="o">=</span><span class="n">background</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">);</span>
@@ -4457,8 +4552,6 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 </div>
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4470,7 +4563,7 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">jsa_handset_query</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">jsa_handset_query</span><span class="p">)</span>
 <span class="n">handset_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4482,19 +4575,58 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 
 <div class="output_area" markdown="1">
 
-|    | pcod        | metric   | key     |    value |
-|---:|:------------|:---------|:--------|---------:|
-|  0 | 524 1 01 01 | value    | Smart   | 0.30654  |
-|  1 | 524 1 01 01 | value    | Basic   | 0.371935 |
-|  2 | 524 1 01 01 | value    | Feature | 0.321526 |
-|  3 | 524 1 01 02 | value    | Smart   | 0.316597 |
-|  4 | 524 1 01 02 | value    | Feature | 0.32357  |
+<table>
+<thead><tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:left">metric</th>
+<th style="text-align:left">key</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">524 1 01 01</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">0.31471</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">524 1 01 01</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">0.333098</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">524 1 01 01</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.352192</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">524 1 01 04</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.316474</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">524 1 01 04</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">0.328035</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4505,10 +4637,11 @@ This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code
 </div>
 </div></p>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
+<div class="cell border-box-sizing code_cell rendered"></div>
+</div>
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">handset_results</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;handset_type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;proportion&quot;</span><span class="p">})</span>
     <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;metric&quot;</span><span class="p">)</span>
     <span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;pcod&quot;</span><span class="p">,</span> <span class="s2">&quot;handset_type&quot;</span><span class="p">])</span>
@@ -4524,19 +4657,40 @@ This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code
 
 <div class="output_area" markdown="1">
 
-|                            |   proportion |
-|:---------------------------|-------------:|
-| ('524 1 01 01', 'Smart')   |     0.30654  |
-| ('524 1 01 01', 'Basic')   |     0.371935 |
-| ('524 1 01 01', 'Feature') |     0.321526 |
-| ('524 1 01 02', 'Smart')   |     0.316597 |
-| ('524 1 01 02', 'Feature') |     0.32357  |
+<table>
+<thead><tr>
+<th style="text-align:left"><br><br>pcod, handset_type</th>
+<th style="text-align:right">proportion<br><br>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">('524 1 01 01', 'Smart')</td>
+<td style="text-align:right">0.31471</td>
+</tr>
+<tr>
+<td style="text-align:left">('524 1 01 01', 'Feature')</td>
+<td style="text-align:right">0.333098</td>
+</tr>
+<tr>
+<td style="text-align:left">('524 1 01 01', 'Basic')</td>
+<td style="text-align:right">0.352192</td>
+</tr>
+<tr>
+<td style="text-align:left">('524 1 01 04', 'Basic')</td>
+<td style="text-align:right">0.316474</td>
+</tr>
+<tr>
+<td style="text-align:left">('524 1 01 04', 'Smart')</td>
+<td style="text-align:right">0.328035</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4549,7 +4703,7 @@ We can get a summary of the data using the <code>describe</code> method, but let
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;handset_type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;handset_type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </code></pre></div>
 
 </div>
@@ -4560,17 +4714,60 @@ We can get a summary of the data using the <code>describe</code> method, but let
 
 <div class="output_area" markdown="1">
 
-| handset_type   |   ('proportion', 'count') |   ('proportion', 'mean') |   ('proportion', 'std') |   ('proportion', 'min') |   ('proportion', '25%') |   ('proportion', '50%') |   ('proportion', '75%') |   ('proportion', 'max') |
-|:---------------|--------------------------:|-------------------------:|------------------------:|------------------------:|------------------------:|------------------------:|------------------------:|------------------------:|
-| Basic          |                        46 |                 0.340837 |               0.0177425 |                0.308    |                0.328288 |                0.343347 |                0.352888 |                0.376923 |
-| Feature        |                        46 |                 0.325093 |               0.0176938 |                0.28534  |                0.312853 |                0.323278 |                0.338024 |                0.369333 |
-| Smart          |                        46 |                 0.334069 |               0.017487  |                0.301205 |                0.322873 |                0.331381 |                0.344997 |                0.382316 |
+<table>
+<thead><tr>
+<th style="text-align:left"><br><br><br>handset_type</th>
+<th style="text-align:right">proportion<br>count<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>mean<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>std<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>min<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>25%<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>50%<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>75%<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>max<br><br>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">46</td>
+<td style="text-align:right">0.325814</td>
+<td style="text-align:right">0.0176093</td>
+<td style="text-align:right">0.285917</td>
+<td style="text-align:right">0.316487</td>
+<td style="text-align:right">0.324246</td>
+<td style="text-align:right">0.336789</td>
+<td style="text-align:right">0.358696</td>
+</tr>
+<tr>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">46</td>
+<td style="text-align:right">0.338693</td>
+<td style="text-align:right">0.0123917</td>
+<td style="text-align:right">0.308311</td>
+<td style="text-align:right">0.330314</td>
+<td style="text-align:right">0.341112</td>
+<td style="text-align:right">0.345653</td>
+<td style="text-align:right">0.361304</td>
+</tr>
+<tr>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">46</td>
+<td style="text-align:right">0.335493</td>
+<td style="text-align:right">0.0154463</td>
+<td style="text-align:right">0.30163</td>
+<td style="text-align:right">0.326851</td>
+<td style="text-align:right">0.332463</td>
+<td style="text-align:right">0.345755</td>
+<td style="text-align:right">0.374829</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4583,7 +4780,9 @@ To plot histograms for the three handset types, it would be convenient if the pr
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
 </div>
@@ -4594,19 +4793,52 @@ To plot histograms for the three handset types, it would be convenient if the pr
 
 <div class="output_area" markdown="1">
 
-| pcod        |   ('proportion', 'Basic') |   ('proportion', 'Feature') |   ('proportion', 'Smart') |
-|:------------|--------------------------:|----------------------------:|--------------------------:|
-| 524 1 01 01 |                  0.371935 |                    0.321526 |                  0.30654  |
-| 524 1 01 02 |                  0.359833 |                    0.32357  |                  0.316597 |
-| 524 1 01 04 |                  0.360372 |                    0.308511 |                  0.331117 |
-| 524 1 02 05 |                  0.316632 |                    0.3389   |                  0.344468 |
-| 524 1 02 10 |                  0.351678 |                    0.316779 |                  0.331544 |
+<table>
+<thead><tr>
+<th style="text-align:left"><br>handset_type<br><br>pcod</th>
+<th style="text-align:right">proportion<br>Basic<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>Feature<br><br>&nbsp;</th>
+<th style="text-align:right">proportion<br>Smart<br><br>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">524 1 01 01</td>
+<td style="text-align:right">0.352192</td>
+<td style="text-align:right">0.333098</td>
+<td style="text-align:right">0.31471</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 01 04</td>
+<td style="text-align:right">0.316474</td>
+<td style="text-align:right">0.355491</td>
+<td style="text-align:right">0.328035</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 02 07</td>
+<td style="text-align:right">0.358696</td>
+<td style="text-align:right">0.339674</td>
+<td style="text-align:right">0.30163</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 02 09</td>
+<td style="text-align:right">0.328904</td>
+<td style="text-align:right">0.340864</td>
+<td style="text-align:right">0.330233</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 02 10</td>
+<td style="text-align:right">0.317333</td>
+<td style="text-align:right">0.337333</td>
+<td style="text-align:right">0.345333</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4619,7 +4851,7 @@ This produces a dataframe with a single-level index, and a <code>MultiIndex</cod
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
 </code></pre></div>
 
 </div>
@@ -4641,8 +4873,6 @@ This produces a dataframe with a single-level index, and a <code>MultiIndex</cod
 </div>
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4653,7 +4883,9 @@ As with the radius of gyration results, we can also join to the geography data a
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">handset_results_with_geo</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handset_results</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results_with_geo</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handset_results</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">htype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Basic&quot;</span><span class="p">,</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">]:</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">)</span>
@@ -4702,8 +4934,6 @@ As with the radius of gyration results, we can also join to the geography data a
 </div>
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
@@ -4716,7 +4946,7 @@ As with the radius of gyration results, we can also join to the geography data a
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">combined</span> <span class="o">=</span> <span class="n">rog_results</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">())</span>
+<div class="codehilite"><pre><span></span><code><span class="n">combined</span> <span class="o">=</span> <span class="n">rog_results</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">())</span>
 <span class="n">combined</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4728,19 +4958,58 @@ As with the radius of gyration results, we can also join to the geography data a
 
 <div class="output_area" markdown="1">
 
-| pcod        |   radius_of_gyration |   ('proportion', 'Basic') |   ('proportion', 'Feature') |   ('proportion', 'Smart') |
-|:------------|---------------------:|--------------------------:|----------------------------:|--------------------------:|
-| 524 1 03 11 |              81.2442 |                  0.317931 |                    0.337241 |                  0.344828 |
-| 524 3 07 40 |              54.8633 |                  0.347368 |                    0.319737 |                  0.332895 |
-| 524 1 03 14 |              84.7721 |                  0.376923 |                    0.29359  |                  0.329487 |
-| 524 3 07 36 |              71.1545 |                  0.32807  |                    0.330263 |                  0.341667 |
-| 524 5 13 67 |              87.485  |                  0.356361 |                    0.29275  |                  0.350889 |
+<table>
+<thead><tr>
+<th style="text-align:left"><br><br>pcod</th>
+<th style="text-align:right">radius_of_gyration<br><br>&nbsp;</th>
+<th style="text-align:right">('proportion', 'Basic')<br><br>&nbsp;</th>
+<th style="text-align:right">('proportion', 'Feature')<br><br>&nbsp;</th>
+<th style="text-align:right">('proportion', 'Smart')<br><br>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">524 4 11 60</td>
+<td style="text-align:right">69.1628</td>
+<td style="text-align:right">0.355228</td>
+<td style="text-align:right">0.308311</td>
+<td style="text-align:right">0.336461</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">53.5111</td>
+<td style="text-align:right">0.298269</td>
+<td style="text-align:right">0.335553</td>
+<td style="text-align:right">0.366178</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">81.9227</td>
+<td style="text-align:right">0.324717</td>
+<td style="text-align:right">0.326077</td>
+<td style="text-align:right">0.349206</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 07 40</td>
+<td style="text-align:right">53.9886</td>
+<td style="text-align:right">0.327456</td>
+<td style="text-align:right">0.34005</td>
+<td style="text-align:right">0.332494</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">88.2939</td>
+<td style="text-align:right">0.323162</td>
+<td style="text-align:right">0.352288</td>
+<td style="text-align:right">0.324549</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4754,7 +5023,9 @@ As with the radius of gyration results, we can also join to the geography data a
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">combined</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">combined</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
 </code></pre></div>
 
 </div>
@@ -4765,18 +5036,51 @@ As with the radius of gyration results, we can also join to the geography data a
 
 <div class="output_area" markdown="1">
 
-|                           |   radius_of_gyration |   ('proportion', 'Basic') |   ('proportion', 'Feature') |   ('proportion', 'Smart') |
-|:--------------------------|---------------------:|--------------------------:|----------------------------:|--------------------------:|
-| radius_of_gyration        |           1          |                  0.250308 |                   -0.259148 |                0.00824753 |
-| ('proportion', 'Basic')   |           0.250308   |                  1        |                   -0.512963 |               -0.495581   |
-| ('proportion', 'Feature') |          -0.259148   |                 -0.512963 |                    1        |               -0.491367   |
-| ('proportion', 'Smart')   |           0.00824753 |                 -0.495581 |                   -0.491367 |                1          |
+<table>
+<thead><tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">radius_of_gyration</th>
+<th style="text-align:right">('proportion', 'Basic')</th>
+<th style="text-align:right">('proportion', 'Feature')</th>
+<th style="text-align:right">('proportion', 'Smart')</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">radius_of_gyration</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">0.204124</td>
+<td style="text-align:right">0.21094</td>
+<td style="text-align:right">-0.401936</td>
+</tr>
+<tr>
+<td style="text-align:left">('proportion', 'Basic')</td>
+<td style="text-align:right">0.204124</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">-0.515688</td>
+<td style="text-align:right">-0.72633</td>
+</tr>
+<tr>
+<td style="text-align:left">('proportion', 'Feature')</td>
+<td style="text-align:right">0.21094</td>
+<td style="text-align:right">-0.515688</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">-0.214343</td>
+</tr>
+<tr>
+<td style="text-align:left">('proportion', 'Smart')</td>
+<td style="text-align:right">-0.401936</td>
+<td style="text-align:right">-0.72633</td>
+<td style="text-align:right">-0.214343</td>
+<td style="text-align:right">1</td>
+</tr>
+</tbody>
+</table>
+
 
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">
@@ -4790,7 +5094,7 @@ As with the radius of gyration results, we can also join to the geography data a
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">combined</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;proportion&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">));</span>
+<div class="codehilite"><pre><span></span><code><span class="n">combined</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;proportion&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">));</span>
 </code></pre></div>
 
 </div>
@@ -4812,8 +5116,6 @@ As with the radius of gyration results, we can also join to the geography data a
 </div>
 </div>
 
-</div>
-
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4824,7 +5126,9 @@ We can use <code>matplotlib</code> to plot radius of gyration against proportion
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</div>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">htype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Basic&quot;</span><span class="p">,</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">]:</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
@@ -4854,8 +5158,6 @@ We can use <code>matplotlib</code> to plot radius of gyration against proportion
 </div>
 
 </div>
-</div>
-
 </div>
 
 <div class="cell border-box-sizing text_cell rendered">

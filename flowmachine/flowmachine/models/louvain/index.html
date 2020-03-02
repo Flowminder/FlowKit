@@ -3857,7 +3857,7 @@
 <p>The Louvain Method is a popular community identification algorithm for the exploration of very large networks.
 The algorithm <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> was designed to optimize for the network's Modularity. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> That is, this algorithm measures the density of connections (i.e. edges) from nodes and identifies "small" communities. Then it uses those "small" to identify the interactions that they have with other communities of comparable size. It does so iteratively until "a maximum of modularity is attained". <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
 <h2 id="class-louvain">Class <strong>Louvain</strong><a class="headerlink" href="#class-louvain" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">Louvain</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">Louvain</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/models/louvain.py#L46">flowmachine/models/louvain.py</a></p>
 <p>Class for running the Louvain community identifying on a networkx Graph(). This class is useful for quickly identifying communities from a calculated <code>flowmachine</code> feature (e.g. ContactBalance()).</p>
@@ -3870,12 +3870,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <p>The class needs to be instantiated with a networkx.Graph(). One can use classes that have the <code>GraphMixin</code> mixin as follows:<br />
-<div class="highlight"><pre><span></span><code><span class="n">l</span> <span class="o">=</span> <span class="n">Louvain</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">l</span> <span class="o">=</span> <span class="n">Louvain</span><span class="p">(</span>
         <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">ContactBalance</span><span class="p">(</span><span class="s1">&#39;2016-01-02&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-01-07&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">(</span>
             <span class="n">directed_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </code></pre></div>
 Now let's run the algorithm:<br />
-<div class="highlight"><pre><span></span><code><span class="n">l</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">weight_property</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">min_members</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">l</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">weight_property</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">min_members</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
                  <span class="n">subscriber</span>  <span class="n">community</span>
 <span class="mi">0</span>    <span class="n">bvEWVnZdwJ8Lgkm2</span>          <span class="mi">0</span>
 <span class="mi">1</span>    <span class="n">YMBqRkzbbxGkX3zA</span>          <span class="mi">0</span>

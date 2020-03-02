@@ -4066,7 +4066,7 @@
                 
                 <h1 id="flowetlsensorsfile_flux_sensor">flowetl.sensors.file_flux_sensor<a class="headerlink" href="#flowetlsensorsfile_flux_sensor" title="Permanent link">&para;</a></h1>
 <h2 id="class-filefluxsensor">Class <strong>FileFluxSensor</strong><a class="headerlink" href="#class-filefluxsensor" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">FileFluxSensor</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">flux_check_interval</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">FileFluxSensor</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">flux_check_interval</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/flowetl/sensors/file_flux_sensor.py#L9">flowetl/sensors/file_flux_sensor.py</a></p>
 <p>The file flux sensor monitors a file for a short time to check if it is still being modified.</p>
@@ -4142,65 +4142,65 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowe
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="dag">dag<a class="headerlink" href="#dag" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">dag</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dag</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L518">airflow/models/baseoperator.py</a></p>
 <p>Returns the Operator's DAG if set, otherwise raises an error</p>
 <h4 id="dag_id">dag_id<a class="headerlink" href="#dag_id" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">dag_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">dag_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L552">airflow/models/baseoperator.py</a></p>
 <p>Returns dag id if it has one or an adhoc + owner</p>
 <h4 id="deps">deps<a class="headerlink" href="#deps" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">deps</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">deps</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/sensors/base_sensor_operator.py#L135">airflow/sensors/base_sensor_operator.py</a></p>
 <p>Adds one additional dependency for all sensor operators that checks if a sensor task instance can be rescheduled.</p>
 <h4 id="downstream_list">downstream_list<a class="headerlink" href="#downstream_list" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">downstream_list</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">downstream_list</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L831">airflow/models/baseoperator.py</a></p>
 <p>@property: list of tasks directly downstream</p>
 <h4 id="downstream_task_ids">downstream_task_ids<a class="headerlink" href="#downstream_task_ids" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">downstream_task_ids</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">downstream_task_ids</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L836">airflow/models/baseoperator.py</a></p>
 <p>@property: list of ids of tasks directly downstream</p>
 <h4 id="log">log<a class="headerlink" href="#log" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">log</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">log</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/utils/log/logging_mixin.py#L68">airflow/utils/log/logging_mixin.py</a></p>
 <h4 id="logger">logger<a class="headerlink" href="#logger" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">logger</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">logger</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/utils/log/logging_mixin.py#L57">airflow/utils/log/logging_mixin.py</a></p>
 <h4 id="priority_weight_total">priority_weight_total<a class="headerlink" href="#priority_weight_total" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">priority_weight_total</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">priority_weight_total</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L585">airflow/models/baseoperator.py</a></p>
 <p>Total priority weight for the task. It might include all upstream or downstream tasks. depending on the weight rule.
   - WeightRule.ABSOLUTE - only own weight   - WeightRule.DOWNSTREAM - adds priority weight of all downstream tasks   - WeightRule.UPSTREAM - adds priority weight of all upstream tasks</p>
 <h4 id="reschedule">reschedule<a class="headerlink" href="#reschedule" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">reschedule</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">reschedule</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/sensors/base_sensor_operator.py#L131">airflow/sensors/base_sensor_operator.py</a></p>
 <h4 id="schedule_interval">schedule_interval<a class="headerlink" href="#schedule_interval" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">schedule_interval</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">schedule_interval</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L573">airflow/models/baseoperator.py</a></p>
 <p>The schedule interval of the DAG always wins over individual tasks so that tasks within a DAG always line up. The task still needs a schedule_interval as it may not be attached to a DAG.</p>
 <h4 id="task_type">task_type<a class="headerlink" href="#task_type" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">task_type</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">task_type</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L973">airflow/models/baseoperator.py</a></p>
 <p>@property: type of the task</p>
 <h4 id="upstream_list">upstream_list<a class="headerlink" href="#upstream_list" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">upstream_list</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">upstream_list</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L821">airflow/models/baseoperator.py</a></p>
 <p>@property: list of tasks directly upstream</p>
 <h4 id="upstream_task_ids">upstream_task_ids<a class="headerlink" href="#upstream_task_ids" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">upstream_task_ids</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">upstream_task_ids</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L826">airflow/models/baseoperator.py</a></p>
 <p>@property: list of ids of tasks directly upstream</p>

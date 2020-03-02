@@ -4288,7 +4288,7 @@
                 
                 <h1 id="flowmachinecoresubscriber_subsetter">flowmachine.core.subscriber_subsetter<a class="headerlink" href="#flowmachinecoresubscriber_subsetter" title="Permanent link">&para;</a></h1>
 <h2 id="class-subscribersubsetterbase">Class <strong>SubscriberSubsetterBase</strong><a class="headerlink" href="#class-subscribersubsetterbase" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">SubscriberSubsetterBase</span><span class="p">()</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SubscriberSubsetterBase</span><span class="p">()</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L22">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Base class for the different types of subscriber subsets.</p>
@@ -4303,19 +4303,19 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="apply_subset_if_needed">apply_subset_if_needed<a class="headerlink" href="#apply_subset_if_needed" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L46">flowmachine/core/subscriber_subsetter.py</a></p>
 <h4 id="is_proper_subset">is_proper_subset<a class="headerlink" href="#is_proper_subset" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">is_proper_subset</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">is_proper_subset</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L30">flowmachine/core/subscriber_subsetter.py</a></p>
 <h4 id="query_id">query_id<a class="headerlink" href="#query_id" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L37">flowmachine/core/subscriber_subsetter.py</a></p>
 <h2 id="class-subscribersubsetterforallsubscribers">Class <strong>SubscriberSubsetterForAllSubscribers</strong><a class="headerlink" href="#class-subscribersubsetterforallsubscribers" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">SubscriberSubsetterForAllSubscribers</span><span class="p">()</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SubscriberSubsetterForAllSubscribers</span><span class="p">()</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L53">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Represents the subset of all subscribers - i.e., no subsetting at all. In other words this is the "null object" for the subsetting logic, which represents the case of "no work needed".
@@ -4326,7 +4326,7 @@ The reason this exists is so that external code does not need to know anything a
 </ul>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="apply_subset_if_needed_1">apply_subset_if_needed<a class="headerlink" href="#apply_subset_if_needed_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L76">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Return the input query unchanged, since no subsetting is applied.</p>
@@ -4342,11 +4342,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h4 id="query_id_1">query_id<a class="headerlink" href="#query_id_1" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L37">flowmachine/core/subscriber_subsetter.py</a></p>
 <h2 id="class-subscribersubsetterforexplicitsubset">Class <strong>SubscriberSubsetterForExplicitSubset</strong><a class="headerlink" href="#class-subscribersubsetterforexplicitsubset" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">SubscriberSubsetterForExplicitSubset</span><span class="p">(</span><span class="n">subscribers</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SubscriberSubsetterForExplicitSubset</span><span class="p">(</span><span class="n">subscribers</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L172">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Represents a subset given by an explicit list of subscribers.</p>
@@ -4356,7 +4356,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_2">Methods<a class="headerlink" href="#methods_2" title="Permanent link">&para;</a></h2>
 <h4 id="apply_subset_if_needed_2">apply_subset_if_needed<a class="headerlink" href="#apply_subset_if_needed_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L190">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Return a modified version of the input SQL query which has the subset applied.</p>
@@ -4376,11 +4376,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>sqlalchemy.sql.ClauseElement</code></li>
 </ul>
 <h4 id="query_id_2">query_id<a class="headerlink" href="#query_id_2" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L37">flowmachine/core/subscriber_subsetter.py</a></p>
 <h2 id="class-subscribersubsetterforflowmachinequery">Class <strong>SubscriberSubsetterForFlowmachineQuery</strong><a class="headerlink" href="#class-subscribersubsetterforflowmachinequery" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">SubscriberSubsetterForFlowmachineQuery</span><span class="p">(</span><span class="n">flowmachine_query</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">SubscriberSubsetterForFlowmachineQuery</span><span class="p">(</span><span class="n">flowmachine_query</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L91">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Represents a subset given by a flowmachine query.</p>
@@ -4390,7 +4390,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods_3">Methods<a class="headerlink" href="#methods_3" title="Permanent link">&para;</a></h2>
 <h4 id="apply_subset_if_needed_3">apply_subset_if_needed<a class="headerlink" href="#apply_subset_if_needed_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">apply_subset_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L125">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Return a modified version of the input SQL query which has the subset applied.</p>
@@ -4410,11 +4410,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>sqlalchemy.sql.ClauseElement</code></li>
 </ul>
 <h4 id="query_id_3">query_id<a class="headerlink" href="#query_id_3" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">query_id</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">query_id</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L37">flowmachine/core/subscriber_subsetter.py</a></p>
 <h2 id="make_subscriber_subsetter">make_subscriber_subsetter<a class="headerlink" href="#make_subscriber_subsetter" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">make_subscriber_subsetter</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">make_subscriber_subsetter</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/subscriber_subsetter.py#L212">flowmachine/core/subscriber_subsetter.py</a></p>
 <p>Return an appropriate subsetter for the given input.</p>

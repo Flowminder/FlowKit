@@ -4018,7 +4018,7 @@
                 
                 <h1 id="flowmachinecoreserverserver">flowmachine.core.server.server<a class="headerlink" href="#flowmachinecoreserverserver" title="Permanent link">&para;</a></h1>
 <h2 id="calculate_and_send_reply_for_message">calculate_and_send_reply_for_message<a class="headerlink" href="#calculate_and_send_reply_for_message" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">calculate_and_send_reply_for_message</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">,</span> <span class="n">return_address</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">msg_contents</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">calculate_and_send_reply_for_message</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">,</span> <span class="n">return_address</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">msg_contents</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L167">flowmachine/core/server/server.py</a></p>
 <p>Calculate the reply to a zmq message and return the result to the sender. This function is a small wrapper around <code>get_reply_for_message</code> which can be executed as an asyncio background task.</p>
@@ -4042,7 +4042,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="get_reply_for_message">get_reply_for_message<a class="headerlink" href="#get_reply_for_message" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_reply_for_message</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">msg_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_reply_for_message</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">msg_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L37">flowmachine/core/server/server.py</a></p>
 <p>Parse the zmq message string, perform the desired action and return the result in JSON format.</p>
@@ -4065,11 +4065,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="main">main<a class="headerlink" href="#main" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">main</span><span class="p">()</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L264">flowmachine/core/server/server.py</a></p>
 <h2 id="receive_next_zmq_message_and_send_back_reply">receive_next_zmq_message_and_send_back_reply<a class="headerlink" href="#receive_next_zmq_message_and_send_back_reply" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">receive_next_zmq_message_and_send_back_reply</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">receive_next_zmq_message_and_send_back_reply</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L108">flowmachine/core/server/server.py</a></p>
 <p>Listen on the given zmq socket for the next multipart message, .
@@ -4086,7 +4086,7 @@ Note that the only responsibility of this function is to ensure that the incomin
 </li>
 </ul>
 <h2 id="recv">recv<a class="headerlink" href="#recv" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">recv</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">recv</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L222">flowmachine/core/server/server.py</a></p>
 <p>Main receive-and-reply loop. Listens to zmq messages on the given port, processes them and sends back a reply with the result or an error message.</p>
@@ -4102,7 +4102,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li><code>typing.NoReturn</code></li>
 </ul>
 <h2 id="shutdown">shutdown<a class="headerlink" href="#shutdown" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;zmq.asyncio.Socket&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L206">flowmachine/core/server/server.py</a></p>
 <p>Handler for SIGTERM to allow test coverage data to be written during integration tests.</p>

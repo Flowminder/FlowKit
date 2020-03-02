@@ -4195,7 +4195,7 @@
 <p>When specifing a transform, you may not have (or need) all the fields specified in the schema. Any fields which are not included <em>still need to be specified in the transform</em>.
 Fields which are not being extracted from your source data should be specified as <code>NULL::&lt;field_type&gt;</code>, and fields <em>must</em> be specified in your select statement in the order they are given in the tables below. </p>
 <p>For example, a valid SQL extract statement for calls data with <em>only</em> the mandatory fields available:</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span> <span class="n">uuid_generate_v4</span><span class="p">()::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">id</span><span class="p">,</span> <span class="k">TRUE</span> <span class="k">as</span> <span class="n">outgoing</span><span class="p">,</span> <span class="n">event_time</span><span class="p">::</span><span class="n">TIMESTAMPTZ</span> <span class="k">as</span> <span class="n">datetime</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span> <span class="k">as</span> <span class="n">duration</span><span class="p">,</span>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span> <span class="n">uuid_generate_v4</span><span class="p">()::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">id</span><span class="p">,</span> <span class="k">TRUE</span> <span class="k">as</span> <span class="n">outgoing</span><span class="p">,</span> <span class="n">event_time</span><span class="p">::</span><span class="n">TIMESTAMPTZ</span> <span class="k">as</span> <span class="n">datetime</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span> <span class="k">as</span> <span class="n">duration</span><span class="p">,</span>
 <span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">network</span><span class="p">,</span> <span class="n">msisdn</span><span class="p">::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">msisdn</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">msisdn_counterpart</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">location_id</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">imsi</span><span class="p">,</span>
 <span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span> <span class="k">as</span> <span class="n">imei</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="k">as</span> <span class="n">tac</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span> <span class="k">as</span> <span class="n">operator_code</span><span class="p">,</span> <span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span> <span class="k">as</span> <span class="n">country_code</span>
 
@@ -4590,7 +4590,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <h2 id="connecting-to-different-cdr-data-sources">Connecting to different CDR data sources<a class="headerlink" href="#connecting-to-different-cdr-data-sources" title="Permanent link">&para;</a></h2>
 <h3 id="remote-databases">Remote databases<a class="headerlink" href="#remote-databases" title="Permanent link">&para;</a></h3>
 <p>Extracting data from a remote database has significant benefits, because the source database provides guarantees about the integrity of the data in terms of data types, nullable values and so on. FlowDB uses PostgreSQL's foreign data wrapper mechanism to connect to external databases. In general, to use a remote database table as a source you should create a persistent foreign table that will contain the data (instructions of how to do this for the databases supported by FlowETL are given below), then you will need to provide an SQL snippet to use for extraction. For example, to extract three fields:</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span> <span class="n">event_time</span><span class="p">,</span> <span class="n">msisdn</span><span class="p">,</span> <span class="n">cell_id</span> <span class="k">FROM</span> <span class="err">{{</span> <span class="n">source_table</span> <span class="err">}}</span>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span> <span class="n">event_time</span><span class="p">,</span> <span class="n">msisdn</span><span class="p">,</span> <span class="n">cell_id</span> <span class="k">FROM</span> <span class="err">{{</span> <span class="n">source_table</span> <span class="err">}}</span>
 <span class="k">WHERE</span> <span class="n">event_time</span> <span class="o">&gt;=</span> <span class="s1">&#39;{{ ds_nodash }}&#39;</span> <span class="k">AND</span> <span class="n">event_time</span> <span class="o">&lt;</span> <span class="s1">&#39;{{ tomorrow_ds_nodash }}&#39;</span><span class="p">;</span>
 </code></pre></div>
 
@@ -4598,7 +4598,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <p>You will also need to be able to connect to the remote database from inside FlowDB's docker container. If the remote database is also running as a container, you can achieve this by creating an overlay network and attaching both containers to it. </p>
 <h4 id="postgresql-database">PostgreSQL database<a class="headerlink" href="#postgresql-database" title="Permanent link">&para;</a></h4>
 <p>The <a href="https://www.postgresql.org/docs/current/postgres-fdw.html"><code>postgres_fdw</code> extension</a> allows FlowDB to communicate with other databases built on PostgreSQL. This makes data extraction from remote PostgreSQL-compatible databases (e.g. <a href="https://www.timescale.com">TimescaleDB</a>) simple. You will need to create a foreign server, map a user for it, and then specify the table and schema on the remote database you would like to make available within FlowDB:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">postgres_server</span>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">postgres_server</span>
     <span class="k">FOREIGN</span> <span class="k">DATA</span> <span class="n">WRAPPER</span> <span class="n">postgres_fdw</span>
     <span class="k">OPTIONS</span> <span class="p">(</span>
         <span class="k">host</span> <span class="s1">&#39;&lt;foreign_host&gt;&#39;</span><span class="p">,</span>
@@ -4620,13 +4620,13 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <p>You can then use the remote table as a data source in FlowETL, by providing <code>"&lt;source_table_schema&gt;.&lt;source_table&gt;"</code> as the source table.</p>
 <h4 id="oracle-database">Oracle database<a class="headerlink" href="#oracle-database" title="Permanent link">&para;</a></h4>
 <p>FlowDB supports the <a href="https://github.com/laurenz/oracle_fdw">oracle_fdw</a> connector, but to conform with Oracle's licensing we do not distribute a container which includes it. You will need to supply Oracle client binaries, and build the container by downloading the <a href="https://github.com/Flowminder/FlowKit/tree/master/flowdb/oracle_fdw">Dockerfile and script</a> and running:</p>
-<div class="highlight"><pre><span></span><code>docker build --build-arg <span class="nv">ORACLE_BINARY_SOURCE</span><span class="o">=</span>&lt;oracle_binary_url&gt; <span class="se">\</span>
+<div class="codehilite"><pre><span></span><code>docker build --build-arg <span class="nv">ORACLE_BINARY_SOURCE</span><span class="o">=</span>&lt;oracle_binary_url&gt; <span class="se">\</span>
               --build-arg <span class="nv">CODE_VERSION</span><span class="o">=</span>latest -t flowdb_with_oracle
 </code></pre></div>
 
 <p>Once you have built the image, you can use it in place of standard FlowDB.</p>
 <p>To connect to Oracle, you will need to access FlowDB as the <code>flowdb</code> user and run:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="n">oracle_server</span> <span class="k">FOREIGN</span> <span class="k">DATA</span> <span class="n">WRAPPER</span> <span class="n">oracle_fdw</span>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="n">oracle_server</span> <span class="k">FOREIGN</span> <span class="k">DATA</span> <span class="n">WRAPPER</span> <span class="n">oracle_fdw</span>
           <span class="k">OPTIONS</span> <span class="p">(</span><span class="n">dbserver</span> <span class="s1">&#39;//&lt;oracle_server&gt;:&lt;oracle_port&gt;/&lt;oracle_db&gt;&#39;</span><span class="p">);</span>
 
 <span class="k">CREATE</span> <span class="k">USER</span> <span class="n">MAPPING</span> <span class="k">FOR</span> <span class="n">flowdb</span> <span class="n">SERVER</span> <span class="n">oracle_server</span>
@@ -4640,7 +4640,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <p>Further instructions on use of the wrapper are available from the projects <a href="https://github.com/laurenz/oracle_fdw">Github repo</a>.</p>
 <h4 id="mssql-database">MSSQL database<a class="headerlink" href="#mssql-database" title="Permanent link">&para;</a></h4>
 <p>FlowDB includes <a href="https://github.com/tds-fdw/tds_fdw">tds_fdw</a>, which supports data extraction from Microsoft SQL server. Usage is very similar to the other remote database connections:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="n">mssql_server</span>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="n">mssql_server</span>
     <span class="k">FOREIGN</span> <span class="k">DATA</span> <span class="n">WRAPPER</span> <span class="n">tds_fdw</span>
     <span class="k">OPTIONS</span> <span class="p">(</span><span class="n">servername</span> <span class="s1">&#39;&lt;remote_database_host&gt;&#39;</span><span class="p">,</span> <span class="n">port</span> <span class="s1">&#39;&lt;remote_database_port&gt;&#39;</span><span class="p">,</span> <span class="k">database</span> <span class="s1">&#39;&lt;remote_database_name&gt;&#39;</span><span class="p">,</span> <span class="n">tds_version</span> <span class="s1">&#39;&lt;tds_version&gt;&#39;</span><span class="p">);</span>
 
@@ -4849,7 +4849,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <h2 id="loading-gis-data">Loading GIS data<a class="headerlink" href="#loading-gis-data" title="Permanent link">&para;</a></h2>
 <p>Good spatial data is critical to successful analysis using FlowKit, and you will want to obtain, at a minimum admin 0-3 boundaries for your country of interest. At this time, we recommend using the <a href="https://github.com/pramsey/pgsql-ogr-fdw">OGR foreign data wrapper</a> to load shapefiles.</p>
 <p>Administrative boundaries should be loaded under the <code>geography</code> schema, and named as <code>admin&lt;level&gt;</code>. They should at a minimum contain <code>adminXname</code>, <code>adminXpcod</code> and <code>geom</code> fields. While it is possible to directly mount boundary data into the database using the OGR foreign data wrapper, we would recommend creating in-database tables and using the wrapper only for extraction, for example:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="n">admin_boundaries_source</span>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="n">SERVER</span> <span class="n">admin_boundaries_source</span>
         <span class="k">FOREIGN</span> <span class="k">DATA</span> <span class="n">WRAPPER</span> <span class="n">ogr_fdw</span>
         <span class="k">OPTIONS</span> <span class="p">(</span>
             <span class="n">datasource</span> <span class="s1">&#39;&lt;path_inside_container_to_admin_3_file&#39;</span><span class="p">,</span>
@@ -4870,7 +4870,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 </code></pre></div>
 
 <p>You should also create an index on the <code>geom</code> column:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">admin3_geom_gist</span> <span class="k">ON</span> <span class="n">geography</span><span class="p">.</span><span class="n">admin3</span> <span class="k">USING</span> <span class="n">gist</span> <span class="p">(</span><span class="n">geom</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">admin3_geom_gist</span> <span class="k">ON</span> <span class="n">geography</span><span class="p">.</span><span class="n">admin3</span> <span class="k">USING</span> <span class="n">gist</span> <span class="p">(</span><span class="n">geom</span><span class="p">);</span>
 </code></pre></div>
 
 <h2 id="data-qa-checks">Data QA checks<a class="headerlink" href="#data-qa-checks" title="Permanent link">&para;</a></h2>
@@ -4886,7 +4886,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 </div>
 <p>When writing your QA check, you're almost certain to need to be able to refer to the table of data that's just been loaded. Because the SQL file will be <a href="https://airflow.apache.org/docs/stable/concepts.html#id1">templated</a>, you can use a macro which will be filled in when the check is run. The macro for the final table is <code>{{ final_table }}</code>.</p>
 <p>Here's an example of a valid QA check; one of the defaults which records the number of just-added rows:</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="err">{{</span> <span class="n">final_table</span> <span class="err">}}</span>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="err">{{</span> <span class="n">final_table</span> <span class="err">}}</span>
 </code></pre></div>
 
 <h2 id="worked-example">Worked example<a class="headerlink" href="#worked-example" title="Permanent link">&para;</a></h2>

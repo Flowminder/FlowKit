@@ -4039,13 +4039,13 @@
 <p>If the <code>date_stencil</code> parameter is not provided, the default value is <code>[0]</code> (i.e. only the reference date itself needs to be available).</p>
 <p>For each date for which the workflow runs, the corresponding date ranges described by the date stencil are available to notebooks as the parameter <code>date_ranges</code>, which will contain a list of pairs of absolute dates. Note that <code>date_ranges</code> will always contain pairs of dates, even when the date stencil contains individual dates/offsets.</p>
 <p>As an example, if the date stencil is
-<div class="highlight"><pre><span></span><code><span class="nt">date_stencil</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">date_stencil</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">2016-01-01</span><span class="p p-Indicator">,</span> <span class="nv">2016-01-03</span><span class="p p-Indicator">]</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">-3</span>
   <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">-2</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 then the internal <code>date_ranges</code> parameter for reference date <code>2016-01-07</code> would have the value
-<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
     <span class="p">[</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-03&quot;</span><span class="p">],</span>
     <span class="p">[</span><span class="s2">&quot;2016-01-04&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-05&quot;</span><span class="p">],</span>
     <span class="p">[</span><span class="s2">&quot;2016-01-05&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-07&quot;</span><span class="p">],</span>
@@ -4058,17 +4058,17 @@ and the workflow will only run for reference date <code>2016-01-07</code> if all
 <h4 id="passing-data-between-notebooks">Passing data between notebooks<a class="headerlink" href="#passing-data-between-notebooks" title="Permanent link">&para;</a></h4>
 <p><a href="https://github.com/nteract/scrapbook">Scrapbook</a> can be used to attach data to a notebook during execution, so that it can later be retrieved in another notebook.</p>
 <p>To 'glue' the value of a variable <code>x</code> in a notebook:
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
 <span class="n">sb</span><span class="o">.</span><span class="n">glue</span><span class="p">(</span><span class="s2">&quot;scrap_name&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 This value can be retrieved in another notebook:
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">scrapbook</span> <span class="k">as</span> <span class="nn">sb</span>
 <span class="n">nb</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="n">read_notebook</span><span class="p">(</span><span class="n">path_to_first_notebook</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">scraps</span><span class="p">[</span><span class="s2">&quot;scrap_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 </code></pre></div></p>
 <p>See <a href="https://nteract-scrapbook.readthedocs.io/en/latest/index.html">scrapbook's documentation</a> for more details.</p>
 <p>As an example, if the <code>notebooks</code> parameter of a workflow specification is
-<div class="highlight"><pre><span></span><code><span class="nt">notebooks</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">notebooks</span><span class="p">:</span>
   <span class="nt">notebook1</span><span class="p">:</span>
     <span class="nt">filename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
     <span class="nt">parameters</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
@@ -4081,7 +4081,7 @@ This value can be retrieved in another notebook:
 then the <code>path_to_first_notebook</code> parameter in <code>notebook2</code> will be the path to the executed <code>notebook1</code>, so values 'glued' in <code>notebook1</code> can be accessed in <code>notebook2</code> using <code>sb.read_notebook(path_to_first_notebook)</code>.</p>
 <h4 id="connecting-to-flowapi">Connecting to FlowAPI<a class="headerlink" href="#connecting-to-flowapi" title="Permanent link">&para;</a></h4>
 <p>Currently, the best way to create a FlowClient connection in a notebook is to pass the parameter <code>flowapi_url</code> to the notebook, and then run
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
 <span class="kn">from</span> <span class="nn">get_secret_or_env_var</span> <span class="kn">import</span> <span class="n">environ</span><span class="p">,</span> <span class="n">getenv</span>
 <span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="n">flowapi_url</span><span class="p">,</span>
@@ -4107,13 +4107,13 @@ then the <code>path_to_first_notebook</code> parameter in <code>notebook2</code>
 <li>Go to <a href="http://localhost:9091/" target="_blank">FlowAuth</a>, log in with username <code>TEST_USER</code> and password <code>DUMMY_PASSWORD</code>, and create an API token following instructions <a href="../#flowauth">here</a>.  </li>
 <li>Create two empty directories, one for inputs and the other for outputs.  </li>
 <li>Copy the example input files into your inputs directory:<br />
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> &lt;your_inputs_directory&gt;
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> &lt;your_inputs_directory&gt;
 wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/run_flows.ipynb
 wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/flows_report.ipynb
 wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/workflows.yml
 </code></pre></div></li>
 <li>Start AutoFlow:<br />
-<div class="highlight"><pre><span></span><code>docker run -d <span class="se">\</span>
+<div class="codehilite"><pre><span></span><code>docker run -d <span class="se">\</span>
     -v &lt;your_inputs_directory&gt;:/mounts/inputs:ro <span class="se">\</span>
     -v &lt;your_outputs_directory&gt;:/mounts/outputs:rw <span class="se">\</span>
     -e <span class="s2">&quot;AUTOFLOW_LOG_LEVEL=ERROR&quot;</span> <span class="se">\</span>

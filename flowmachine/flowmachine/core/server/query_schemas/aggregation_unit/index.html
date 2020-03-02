@@ -3928,7 +3928,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/aggregation_unit.py#L0">flowmachine/core/server/query_schemas/aggregation_unit.py</a></p>
 <p>Definition of a custom marshmallow field for aggregation units, and function for getting the corresponding SpatialUnit object.</p>
 <h2 id="class-aggregationunit">Class <strong>AggregationUnit</strong><a class="headerlink" href="#class-aggregationunit" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">AggregationUnit</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">AggregationUnit</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/aggregation_unit.py#L16">flowmachine/core/server/query_schemas/aggregation_unit.py</a></p>
 <p>A string representing an aggregation unit (for example: "admin0", "admin1", "admin2", ...)</p>
@@ -3943,17 +3943,17 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="context">context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">context</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">context</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L404">marshmallow/fields.py</a></p>
 <p>The context dictionary for the parent :class:<code>Schema</code>.</p>
 <h4 id="root">root<a class="headerlink" href="#root" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">root</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">root</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L409">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="get_spatial_unit_obj">get_spatial_unit_obj<a class="headerlink" href="#get_spatial_unit_obj" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">get_spatial_unit_obj</span><span class="p">(</span><span class="n">aggregation_unit_string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_spatial_unit_obj</span><span class="p">(</span><span class="n">aggregation_unit_string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/aggregation_unit.py#L26">flowmachine/core/server/query_schemas/aggregation_unit.py</a></p>
 <p>Given an aggregation unit string (as validated by AggregationUnit()), return a FlowMachine spatial unit object.</p>
