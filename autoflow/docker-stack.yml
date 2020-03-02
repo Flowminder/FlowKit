@@ -1,6 +1,5 @@
 #
 # Example docker stack file for AutoFlow
-# Note: The autoflow container would need to be connected to a network on which the FlowAPI URL is accessible.
 #
 
 version: '3.7'
@@ -12,25 +11,30 @@ secrets:
     external: true
 
 networks:
-  database:
+  autoflow_db:
   api:
 
 services:
+  flowapi:
+    networks:
+      - api
 
   autoflow:
     image: flowminder/autoflow:${CONTAINER_TAG:-latest}
     environment:
       AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:-ERROR}
       AUTOFLOW_DB_URI: postgresql://autoflow:{}@autoflow_postgres:5432/autoflow
-      FLOWAPI_URL: ${FLOWAPI_URL:?Must set FLOWAPI_URL env var}
+      FLOWAPI_URL: https://flowapi:9090
+      SSL_CERTIFICATE_FILE: /run/secrets/cert-flowkit.pem
     secrets:
       - AUTOFLOW_DB_PASSWORD
       - FLOWAPI_TOKEN
+      - cert-flowkit.pem
     volumes:
-      - ${AUTOFLOW_INPUTS_DIR:?Must set AUTOFLOW_INPUTS_DIR env var}:/mounts/inputs:ro
-      - ${AUTOFLOW_OUTPUTS_DIR:?Must set AUTOFLOW_OUTPUTS_DIR env var}:/mounts/outputs:rw
+      - ${AUTOFLOW_INPUTS_DIR:?}:/mounts/inputs:ro
+      - ${AUTOFLOW_OUTPUTS_DIR:?}:/mounts/outputs:rw
     networks:
-      - database
+      - autoflow_db
       - api
   
   autoflow_postgres:
@@ -44,4 +48,4 @@ services:
     secrets:
       - AUTOFLOW_DB_PASSWORD
     networks:
-      - database
+      - autoflow_db

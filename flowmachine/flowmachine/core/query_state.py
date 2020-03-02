@@ -91,6 +91,8 @@ class QueryStateMachine:
         Client for redis
     query_id : str
         Unique query identifier
+    db_id : str
+        FlowDB connection id
 
     Notes
     -----
@@ -99,11 +101,12 @@ class QueryStateMachine:
 
     """
 
-    def __init__(self, redis_client: StrictRedis, query_id: str):
-        self.redis_client = redis_client
+    def __init__(self, redis_client: StrictRedis, query_id: str, db_id: str):
         self.query_id = query_id
-        must_populate = redis_client.get(f"finist:{query_id}-state") is None
-        self.state_machine = Finist(redis_client, f"{query_id}-state", QueryState.KNOWN)
+        must_populate = redis_client.get(f"finist:{db_id}:{query_id}-state") is None
+        self.state_machine = Finist(
+            redis_client, f"{db_id}:{query_id}-state", QueryState.KNOWN
+        )
         if must_populate:  # Need to create the state machine for this query
             self.state_machine.on(QueryEvent.QUEUE, QueryState.KNOWN, QueryState.QUEUED)
             self.state_machine.on(

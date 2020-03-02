@@ -58,12 +58,35 @@ def test_get_available_dates(monkeypatch, test_logger):
         logger=test_logger
     ):
         dates = get_available_dates.run()
-    connect_mock.assert_called_once_with(url="DUMMY_URL", token="DUMMY_TOKEN")
+    connect_mock.assert_called_once_with(
+        ssl_certificate=None, url="DUMMY_URL", token="DUMMY_TOKEN"
+    )
     assert dates == [
         pendulum.date(2016, 1, 1),
         pendulum.date(2016, 1, 2),
         pendulum.date(2016, 1, 3),
     ]
+
+
+def test_get_available_dates_ssl_certificate(monkeypatch, test_logger):
+    flowclient_available_dates = {
+        "cdr_type_1": ["2016-01-01", "2016-01-03"],
+        "cdr_type_2": ["2016-01-01", "2016-01-02"],
+    }
+    connect_mock = Mock()
+    monkeypatch.setattr("flowclient.connect", connect_mock)
+    monkeypatch.setattr(
+        "flowclient.get_available_dates", lambda connection: flowclient_available_dates
+    )
+    monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
+    monkeypatch.setenv("SSL_CERTIFICATE_FILE", "DUMMY_SSL_CERT")
+    with set_temporary_config({"flowapi_url": "DUMMY_URL"}), prefect.context(
+        logger=test_logger
+    ):
+        get_available_dates.run()
+    connect_mock.assert_called_once_with(
+        url="DUMMY_URL", token="DUMMY_TOKEN", ssl_certificate="DUMMY_SSL_CERT"
+    )
 
 
 def test_get_available_dates_cdr_types(monkeypatch, test_logger):

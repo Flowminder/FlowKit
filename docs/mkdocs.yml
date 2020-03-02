@@ -13,6 +13,9 @@ plugins:
         flowclient:
           section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowclient"
+        flowetl:
+          section: flowetl
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowetl/flowetl"
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
@@ -32,6 +35,7 @@ nav:
       - analyst/worked_examples/commuting-patterns.ipynb
       - analyst/worked_examples/cell-towers-per-region.ipynb
       - analyst/worked_examples/unique-subscriber-counts.ipynb
+      - analyst/worked_examples/joined-spatial-aggregate.ipynb
     - analyst/autoflow.md
     - Advanced usage:
         - analyst/advanced_usage/index.md
@@ -56,6 +60,14 @@ nav:
         - developer/adr/0010-prefect-for-autoflow.md
   - System Administrators:
     - administrator/index.md
+    - administrator/deployment.md
+    - System management:
+        - administrator/management/cache.md
+        - ETL:
+          - administrator/management/etl/etl.md
+          - api-docs-flowetl
+        - administrator/management/logging.md
+        - administrator/management/users.md
   - license.md
 
 theme:

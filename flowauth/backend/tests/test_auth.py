@@ -23,7 +23,7 @@ def test_login(client, auth, test_user):
     # check that the user is loaded from the session
     with client:
         client.get("/")
-        assert session["user_id"] == uid
+        assert session["identity.id"] == uid
         assert g.user.username == username
 
 

@@ -6,6 +6,7 @@ from marshmallow import Schema, fields
 
 import flowmachine
 from flowmachine.core import Query
+from flowmachine.core.context import get_redis, get_db, redis_connection
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
@@ -25,7 +26,8 @@ def test_bad_action_handler():
         get_action_handler("NOT_A_HANDLER")
 
 
-def test_run_query_type_error(monkeypatch, server_config):
+@pytest.mark.asyncio
+async def test_run_query_type_error(monkeypatch, server_config):
     """
     Test that developer errors when creating schemas return the error message.
     """
@@ -37,7 +39,7 @@ def test_run_query_type_error(monkeypatch, server_config):
     monkeypatch.setattr(
         flowmachine.core.server.action_handlers, "FlowmachineQuerySchema", BrokenSchema
     )
-    msg = action_handler__run_query(config=server_config, query_kind={})
+    msg = await action_handler__run_query(config=server_config, query_kind={})
     assert msg.status == ZMQReplyStatus.ERROR
     assert (
         msg.msg
@@ -45,11 +47,12 @@ def test_run_query_type_error(monkeypatch, server_config):
     )
 
 
-def test_run_query_error_handled(dummy_redis, server_config):
+@pytest.mark.asyncio
+async def test_run_query_error_handled(dummy_redis, server_config):
     """
     Run query handler should return an error status if query construction failed.
     """
-    msg = action_handler__run_query(
+    msg = await action_handler__run_query(
         config=server_config,
         query_kind="spatial_aggregate",
         locations=dict(
@@ -64,34 +67,43 @@ def test_run_query_error_handled(dummy_redis, server_config):
 
 
 @pytest.mark.parametrize("bad_unit", ["NOT_A_VALID_UNIT", "admin4"])
-def test_geo_handler_bad_unit(bad_unit, server_config):
+@pytest.mark.asyncio
+async def test_geo_handler_bad_unit(bad_unit, server_config):
     """
     Geo handler should send back a message with error status for bad, or missing units
     """
-    msg = action_handler__get_geography(config=server_config, aggregation_unit=bad_unit)
+    msg = await action_handler__get_geography(
+        config=server_config, aggregation_unit=bad_unit
+    )
     assert msg.status == ZMQReplyStatus.ERROR
 
 
-def test_get_query_bad_id(server_config):
+@pytest.mark.asyncio
+async def test_get_query_bad_id(server_config):
     """
     Get sql handler should send back an error status for a nonexistent id
     """
-    Query.redis.get.return_value = None
-    msg = action_handler__get_query_params(config=server_config, query_id="DUMMY_ID")
+    get_redis().get.return_value = None
+    msg = await action_handler__get_query_params(
+        config=server_config, query_id="DUMMY_ID"
+    )
     assert msg.status == ZMQReplyStatus.ERROR
 
 
 @pytest.mark.parametrize(
     "query_state", [state for state in QueryState if state is not QueryState.COMPLETED]
 )
-def test_get_sql_error_states(query_state, dummy_redis, server_config):
+@pytest.mark.asyncio
+async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     """
     Test that get_sql handler replies with an error state when the query
     is not finished.
     """
+    redis_reset = redis_connection.set(dummy_redis)
     dummy_redis.set("DUMMY_QUERY_ID", "KNOWN")
-    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
+    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, query_state)
-    msg = action_handler__get_sql(config=server_config, query_id="DUMMY_QUERY_ID")
+    msg = await action_handler__get_sql(config=server_config, query_id="DUMMY_QUERY_ID")
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.payload["query_state"] == query_state
+    redis_connection.reset(redis_reset)

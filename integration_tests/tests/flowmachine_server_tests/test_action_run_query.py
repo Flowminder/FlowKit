@@ -1,9 +1,14 @@
+import asyncio
 import logging
 import pytest
 import os
 
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine.core.server.utils import (
+    send_zmq_message_and_receive_reply,
+    send_zmq_message_and_await_reply,
+)
+from flowmachine.core.context import get_db
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.dependency_graph import unstored_dependencies_graph
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
@@ -17,7 +22,40 @@ logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
 @pytest.mark.asyncio
-async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
+async def test_run_query_nonblocking(zmq_port, zmq_host, fm_conn, redis):
+    """
+    Run two dummy queries to check that that are executed concurrently.
+    """
+    slow_dummy = {
+        "action": "run_query",
+        "params": {
+            "query_kind": "dummy_query",
+            "aggregation_unit": "admin3",
+            "dummy_param": "slow_dummy",
+            "dummy_delay": 10,
+        },
+        "request_id": "SLOW_DUMMY_ID",
+    }
+    fast_dummy = {
+        "action": "run_query",
+        "params": {
+            "query_kind": "dummy_query",
+            "aggregation_unit": "admin3",
+            "dummy_param": "fast_dummy",
+        },
+        "request_id": "FAST_DUMMY_ID",
+    }
+
+    replies = [
+        send_zmq_message_and_await_reply(dummy, port=zmq_port, host=zmq_host)
+        for dummy in (slow_dummy, fast_dummy)
+    ]
+    for reply in asyncio.as_completed(replies):
+        assert (await reply)["payload"]["query_id"] == "dummy_query_fast_dummy"
+        break
+
+
+def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     """
     Run daily_location query and check the resulting table contains the expected rows.
     """
@@ -50,8 +88,8 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
     #
-    reset_cache(fm_conn, redis, protect_table_objects=False)
-    assert cache_schema_is_empty(fm_conn)
+    reset_cache(get_db(), redis, protect_table_objects=False)
+    assert cache_schema_is_empty(get_db())
     assert not redis.exists(expected_query_id)
 
     #
@@ -76,10 +114,12 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     # and that it contains the expected number of rows.
     #
     output_cache_table = f"x{expected_query_id}"
-    assert output_cache_table in get_cache_tables(fm_conn)
-    num_rows = fm_conn.engine.execute(
-        f"SELECT COUNT(*) FROM cache.{output_cache_table}"
-    ).fetchone()[0]
+    assert output_cache_table in get_cache_tables(get_db())
+    num_rows = (
+        get_db()
+        .engine.execute(f"SELECT COUNT(*) FROM cache.{output_cache_table}")
+        .fetchone()[0]
+    )
     assert num_rows == 14
 
     #
@@ -91,14 +131,17 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         ("524 1 03 13", 20),
         ("524 3 08 43", 35),
     ]
-    first_few_rows = fm_conn.engine.execute(
-        f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
-    ).fetchall()
+    first_few_rows = (
+        get_db()
+        .engine.execute(
+            f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
+        )
+        .fetchall()
+    )
     assert first_few_rows_expected == first_few_rows
 
 
-@pytest.mark.asyncio
-async def test_cache_content(
+def test_cache_content(
     start_flowmachine_server_with_or_without_dependency_caching, fm_conn, redis
 ):
     """
@@ -147,7 +190,7 @@ async def test_cache_content(
                 pass
 
     # Check that we are starting with an empty cache.
-    assert cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=False)
+    assert cache_schema_is_empty(get_db(), check_internal_tables_are_empty=False)
 
     # Send message to run the daily_location query, and check it was accepted
     reply = send_zmq_message_and_receive_reply(
@@ -160,7 +203,7 @@ async def test_cache_content(
     poll_until_done(zmq_port, query_id)
 
     # Check that the cache contains the correct tables.
-    assert sorted(expected_cache_tables) == get_cache_tables(fm_conn)
+    assert sorted(expected_cache_tables) == get_cache_tables(get_db())
 
 
 @pytest.mark.parametrize(
@@ -226,8 +269,7 @@ async def test_cache_content(
         ),
     ],
 )
-@pytest.mark.asyncio
-async def test_run_query_with_wrong_parameters(
+def test_run_query_with_wrong_parameters(
     params, expected_error_messages, zmq_port, zmq_host
 ):
     """
@@ -244,8 +286,7 @@ async def test_run_query_with_wrong_parameters(
     assert expected_error_messages == reply["payload"]["validation_error_messages"]
 
 
-@pytest.mark.asyncio
-async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
+def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     """
     """
     msg = {

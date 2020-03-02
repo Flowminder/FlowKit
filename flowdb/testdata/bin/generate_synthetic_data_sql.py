@@ -519,6 +519,14 @@ if __name__ == "__main__":
                             f"ANALYZE events.{sub}_{table};",
                         )
                     )
+                    post_sql.append(
+                        (
+                            f"Mark events.{sub}_{table} as available in etl.",
+                            f"""
+                            INSERT INTO etl.etl_records (cdr_type, cdr_date, state, timestamp) VALUES
+                            ('{sub}', '{date}'::DATE, 'ingested', NOW());""",
+                        )
+                    )
                 # Mark tables as available for flowmachine
                 post_sql.append(
                     (

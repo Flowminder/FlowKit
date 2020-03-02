@@ -13,17 +13,16 @@
 # function with the action name and parameters. This selects the correct
 # action handler and also gracefully handles any potential errors.
 #
-
-import functools
+import asyncio
+from contextvars import copy_context
+from functools import partial
 import json
 import textwrap
-from typing import Callable, List, Optional, Union
+from typing import Callable, Union
 
-from apispec import APISpec
-from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
-from flowmachine.core import Query, GeoTable
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.core.query_info_lookup import (
     QueryInfoLookup,
@@ -34,12 +33,13 @@ from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema, GeographySchema
+from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
 
 
-def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
+async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
     """
     Handler for 'ping' action.
 
@@ -48,7 +48,7 @@ def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
     return ZMQReply(status="success", msg="pong")
 
 
-def action_handler__get_available_queries(
+async def action_handler__get_available_queries(
     config: "FlowmachineServerConfig",
 ) -> ZMQReply:
     """
@@ -60,26 +60,20 @@ def action_handler__get_available_queries(
     return ZMQReply(status="success", payload={"available_queries": available_queries})
 
 
-@functools.lru_cache(maxsize=1)
-def action_handler__get_query_schemas(config: "FlowmachineServerConfig") -> ZMQReply:
+async def action_handler__get_query_schemas(
+    config: "FlowmachineServerConfig",
+) -> ZMQReply:
     """
     Handler for the 'get_query_schemas' action.
 
     Returns a dict with all supported flowmachine queries as keys
     and the associated schema for the query parameters as values.
     """
-    spec = APISpec(
-        title="FlowAPI",
-        version="1.0.0",
-        openapi_version="3.0.2",
-        plugins=[MarshmallowPlugin()],
-    )
-    spec.components.schema("FlowmachineQuerySchema", schema=FlowmachineQuerySchema)
-    schemas_spec = spec.to_dict()["components"]["schemas"]
-    return ZMQReply(status="success", payload={"query_schemas": schemas_spec})
+
+    return ZMQReply(status="success", payload={"query_schemas": get_query_schema()})
 
 
-def action_handler__run_query(
+async def action_handler__run_query(
     config: "FlowmachineServerConfig", **action_params: dict
 ) -> ZMQReply:
     """
@@ -123,14 +117,21 @@ def action_handler__run_query(
         payload = {"validation_error_messages": validation_error_messages}
         return ZMQReply(status="error", msg=error_msg, payload=payload)
 
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     try:
         query_id = q_info_lookup.get_query_id(action_params)
     except QueryInfoLookupError:
         try:
             # Set the query running (it's safe to call this even if the query was set running before)
-            query_id = query_obj.store_async(
-                store_dependencies=config.store_dependencies
+            query_id = await asyncio.get_running_loop().run_in_executor(
+                executor=config.server_thread_pool,
+                func=partial(
+                    copy_context().run,
+                    partial(
+                        query_obj.store_async,
+                        store_dependencies=config.store_dependencies,
+                    ),
+                ),
             )
         except Exception as e:
             return ZMQReply(
@@ -163,14 +164,14 @@ def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
         The query kind associated with this query_id (or None
         if no query with this query_id exists).
     """
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     try:
         return q_info_lookup.get_query_kind(query_id)
     except UnkownQueryIdError:
         return None
 
 
-def action_handler__poll_query(
+async def action_handler__poll_query(
     config: "FlowmachineServerConfig", query_id: str
 ) -> ZMQReply:
     """
@@ -187,7 +188,7 @@ def action_handler__poll_query(
             status="error", msg=f"Unknown query id: '{query_id}'", payload=payload
         )
     else:
-        q_state_machine = QueryStateMachine(Query.redis, query_id)
+        q_state_machine = QueryStateMachine(get_redis(), query_id, get_db().conn_id)
         payload = {
             "query_id": query_id,
             "query_kind": query_kind,
@@ -196,7 +197,7 @@ def action_handler__poll_query(
         return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_query_kind(
+async def action_handler__get_query_kind(
     config: "FlowmachineServerConfig", query_id: str
 ) -> ZMQReply:
     """
@@ -214,7 +215,7 @@ def action_handler__get_query_kind(
         return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_query_params(
+async def action_handler__get_query_params(
     config: "FlowmachineServerConfig", query_id: str
 ) -> ZMQReply:
     """
@@ -222,7 +223,7 @@ def action_handler__get_query_params(
 
     Returns query parameters of the query with the given `query_id`.
     """
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     try:
         query_params = q_info_lookup.get_query_params(query_id)
     except UnkownQueryIdError:
@@ -235,7 +236,7 @@ def action_handler__get_query_params(
     return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_sql(
+async def action_handler__get_sql(
     config: "FlowmachineServerConfig", query_id: str
 ) -> ZMQReply:
     """
@@ -248,16 +249,18 @@ def action_handler__get_sql(
     # the query_id belongs to a valid query object, so we need to check it
     # manually. Would be good to add a QueryState.UNKNOWN so that we can
     # avoid this separate treatment.
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     if not q_info_lookup.query_is_known(query_id):
         msg = f"Unknown query id: '{query_id}'"
         payload = {"query_id": query_id, "query_state": "awol"}
         return ZMQReply(status="error", msg=msg, payload=payload)
 
-    query_state = QueryStateMachine(Query.redis, query_id).current_query_state
+    query_state = QueryStateMachine(
+        get_redis(), query_id, get_db().conn_id
+    ).current_query_state
 
     if query_state == QueryState.COMPLETED:
-        q = get_query_object_by_id(Query.connection, query_id)
+        q = get_query_object_by_id(get_db(), query_id)
         sql = q.get_query()
         payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
         return ZMQReply(status="success", payload=payload)
@@ -267,7 +270,7 @@ def action_handler__get_sql(
         return ZMQReply(status="error", msg=msg, payload=payload)
 
 
-def action_handler__get_geography(
+async def action_handler__get_geography(
     config: "FlowmachineServerConfig", aggregation_unit: str
 ) -> ZMQReply:
     """
@@ -315,7 +318,9 @@ def action_handler__get_geography(
     return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_available_dates(config: "FlowmachineServerConfig") -> ZMQReply:
+async def action_handler__get_available_dates(
+    config: "FlowmachineServerConfig",
+) -> ZMQReply:
     """
     Handler for the 'get_available_dates' action.
 
@@ -326,16 +331,11 @@ def action_handler__get_available_dates(config: "FlowmachineServerConfig") -> ZM
     ZMQReply
         The reply from the action handler.
     """
-    conn = Query.connection
-    event_types = tuple(
-        sorted([table_name for table_name, _, _, _ in conn.available_tables])
-    )
+    conn = get_db()
 
     available_dates = {
         event_type: [date.strftime("%Y-%m-%d") for date in dates]
-        for (event_type, dates) in conn.available_dates(
-            table=event_types, strictness=2
-        ).items()
+        for (event_type, dates) in conn.available_dates.items()
     }
     return ZMQReply(status="success", payload=available_dates)
 
@@ -348,7 +348,7 @@ def get_action_handler(action: str) -> Callable:
         raise FlowmachineServerError(f"Unknown action: '{action}'")
 
 
-def perform_action(
+async def perform_action(
     action_name: str, action_params: dict, *, config: "FlowmachineServerConfig"
 ) -> ZMQReply:
     """
@@ -374,7 +374,7 @@ def perform_action(
 
     # Run the action handler to obtain the reply
     try:
-        reply = action_handler_func(config=config, **action_params)
+        reply = await action_handler_func(config=config, **action_params)
     except TypeError:
         error_msg = f"Internal flowmachine server error: wrong arguments passed to handler for action '{action_name}'."
         raise FlowmachineServerError(error_msg)

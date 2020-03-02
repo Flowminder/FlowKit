@@ -10,22 +10,26 @@ secrets:
     external: true
   FLOWAUTH_DB_PASSWORD: # Password for flowauth's database
     external: true
+  FLOWAUTH_REDIS_PASSWORD: # Password for flowauth's redis instance
+    external: true
   SECRET_KEY:
     external: true # Flask secret key
 networks:
   web:
   flowauth_database:
+  flowauth_redis:
 volumes:
-    vhost:
-    nginx_home:
-    certs:
+  pgdata:
+  data_volume_flowauth_redis:
 services:
   flowauth:
     image: flowminder/flowauth:${CONTAINER_TAG:-latest}
     ports:
-      - "9091:80"
+      - ${FLOWAUTH_HOST_PORT:-9091}:80
     environment:
       DB_URI: "postgres://flowauth:{}@flowauth_postgres:5432/flowauth"
+      FLOWAUTH_REDIS_HOST: "redis"
+      FLOWAUTH_CACHE_BACKEND: "REDIS"
     secrets:
       - PRIVATE_JWT_SIGNING_KEY
       - FLOWAUTH_FERNET_KEY
@@ -33,10 +37,12 @@ services:
       - FLOWAUTH_ADMIN_PASSWORD
       - FLOWAUTH_DB_PASSWORD
       - SECRET_KEY
+      - FLOWAUTH_REDIS_PASSWORD
     networks:
       flowauth_database:
         aliases:
           - web
+      flowauth_redis:
       web:
         aliases:
           - auth
@@ -47,30 +53,23 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/FLOWAUTH_DB_PASSWORD
       POSTGRES_USER: flowauth
       POSTGRES_DB: flowauth
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     secrets:
       - FLOWAUTH_DB_PASSWORD
     networks:
       - flowauth_database
 
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
+  flowauth_redis:
+    image: bitnami/redis
+    secrets:
+      - FLOWAUTH_REDIS_PASSWORD
+    environment:
+      REDIS_PASSWORD_FILE: /run/secrets/FLOWAUTH_REDIS_PASSWORD
+    restart: always
     volumes:
-      - vhost:/etc/nginx/vhost.d
-      - nginx_home:/usr/share/nginx/html
-      - certs:/etc/nginx/certs
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - data_volume_flowauth_redis:/bitnami/redis/data
     networks:
-      web:
+      flowauth_redis:
         aliases:
-          - proxy
-
-  letsencrypt-nginx-proxy-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    volumes:
-      - vhost:/etc/nginx/vhost.d
-      - nginx_home:/usr/share/nginx/html
-      - certs:/etc/nginx/certs
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+          - redis

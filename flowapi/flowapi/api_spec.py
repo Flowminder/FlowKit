@@ -2,9 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import yaml
 from apispec import APISpec, yaml_utils
-from quart import Blueprint, request, jsonify, render_template, current_app
+from quart import Blueprint, request, render_template, current_app
 from zmq.asyncio import Socket
 from flowapi import __version__
 
@@ -57,18 +56,15 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     )
     # Loop over all the registered views and try to parse a yaml
     # openapi spec from their docstrings
-    for endpoint_func_name, rule in current_app.url_map.endpoints.items():
+    for rule in current_app.url_map.iter_rules():
         try:
-            func = current_app.view_functions[endpoint_func_name]
+            func = current_app.view_functions[rule.endpoint]
             operations = yaml_utils.load_operations_from_docstring(func.__doc__)
             if len(operations) > 0:
                 for method, op in operations.items():
-                    op["operationId"] = f"{endpoint_func_name}.{method}"
+                    op["operationId"] = f"{rule.endpoint}.{method}"
                 spec.path(
-                    path=rule[
-                        0
-                    ].rule,  # In theory, could have multiple rules that match but will only be a single one here
-                    operations=operations,
+                    path=rule.rule, operations=operations,
                 )
         except Exception as e:
             pass  # Don't include in API
@@ -79,13 +75,13 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
 @blueprint.route("/openapi.json")
 async def get_api_spec():
     spec = await get_spec(request.socket, request.request_id)
-    return jsonify(spec.to_dict())
+    return spec.to_dict()
 
 
 @blueprint.route("/openapi.yaml")
 async def get_yaml_api_spec():
     spec = await get_spec(request.socket, request.request_id)
-    return current_app.response_class(spec.to_yaml(), content_type="application/x-yaml")
+    return spec.to_yaml(), 200, dict(content_type="application/x-yaml")
 
 
 @blueprint.route("/redoc")

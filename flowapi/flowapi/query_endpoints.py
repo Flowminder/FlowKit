@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flask_jwt_extended import jwt_required, jwt_required, current_user
+from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
 
@@ -67,9 +67,7 @@ async def run_query():
         #       If we pass on the payload we should also deconstruct it to make it more human-readable
         #       because it will contain marshmallow validation errors (and/or any other possible errors?)
         return (
-            jsonify(
-                {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]}
-            ),
+            {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]},
             400,
         )
     elif reply["status"] == "success":
@@ -79,15 +77,10 @@ async def run_query():
                 f"query.poll_query", query_id=reply["payload"]["query_id"]
             )
         }
-        return jsonify({}), 202, d
+        return {}, 202, d
     else:
         return (
-            jsonify(
-                {
-                    "status": "Error",
-                    "msg": f"Unexpected reply status: {reply['status']}",
-                }
-            ),
+            {"status": "Error", "msg": f"Unexpected reply status: {reply['status']}",},
             500,
         )
 
@@ -156,7 +149,7 @@ async def poll_query(query_id):
     )
 
     if reply["status"] == "error":
-        return jsonify({"status": "error", "msg": reply[""]}), 500
+        return {"status": "error", "msg": reply[""]}, 500
     else:
         assert reply["status"] == "success"
         query_state = reply["payload"]["query_state"]
@@ -167,11 +160,11 @@ async def poll_query(query_id):
                 {"Location": url_for(f"query.get_query_result", query_id=query_id)},
             )
         elif query_state in ("executing", "queued"):
-            return jsonify({"status": query_state, "msg": reply["msg"]}), 202
+            return {"status": query_state, "msg": reply["msg"]}, 202
         elif query_state in ("errored", "cancelled"):
-            return jsonify({"status": query_state, "msg": reply["msg"]}), 500
+            return {"status": query_state, "msg": reply["msg"]}, 500
         else:  # TODO: would be good to have an explicit query state for this, too!
-            return jsonify({"status": query_state, "msg": reply["msg"]}), 404
+            return {"status": query_state, "msg": reply["msg"]}, 404
 
 
 @blueprint.route("/get/<query_id>")
@@ -231,14 +224,14 @@ async def get_query_result(query_id):
             # TODO: check that this path is fully tested!
             query_state = reply["payload"]["query_state"]
             if query_state in ("executing", "queued"):
-                return jsonify({}), 202
+                return {}, 202
             elif query_state == "errored":
                 return (
-                    jsonify({"status": "Error", "msg": reply["msg"]}),
+                    {"status": "Error", "msg": reply["msg"]},
                     403,
                 )  # TODO: should this really be 403?
             elif query_state in ("awol", "known"):
-                return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+                return ({"status": "Error", "msg": reply["msg"]}, 404)
             else:
                 return (
                     jsonify(
@@ -250,7 +243,7 @@ async def get_query_result(query_id):
                     500,
                 )
         except KeyError:
-            return jsonify({"status": "error", "msg": reply["msg"]}), 500
+            return {"status": "error", "msg": reply["msg"]}, 500
     else:
         sql = reply["payload"]["sql"]
         results_streamer = stream_with_context(stream_result_as_json)(
@@ -330,7 +323,7 @@ async def get_available_dates():
     )
 
     if reply["status"] == "success":
-        return jsonify({"available_dates": reply["payload"]}), 200
+        return {"available_dates": reply["payload"]}, 200
     else:
         assert reply["status"] == "error"
-        return jsonify({"status": "error", "msg": reply["msg"]}), 500
+        return {"status": "error", "msg": reply["msg"]}, 500

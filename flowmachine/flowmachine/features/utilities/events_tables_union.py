@@ -7,6 +7,7 @@ import warnings
 from typing import List
 
 from ...core import Query
+from ...core.context import get_db
 from ...core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
 
@@ -83,7 +84,7 @@ class EventsTablesUnion(Query):
 
     def _parse_tables(self, tables):
         if tables is None:
-            return [f"events.{t}" for t in self.connection.subscriber_tables]
+            return [f"events.{t}" for t in get_db().subscriber_tables]
         elif isinstance(tables, str):
             return [tables]
         else:

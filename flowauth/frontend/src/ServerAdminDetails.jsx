@@ -146,44 +146,28 @@ class ServerAdminDetails extends React.Component {
     this.setState(state);
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { item_id } = this.props;
     var name, rights;
-    if (item_id !== -1) {
-      getServer(item_id)
-        .then(json => {
-          name = json.name;
-          return getCapabilities(item_id);
-        })
-        .then(json => {
-          rights = json;
-          return getTimeLimits(item_id);
-        })
-        .then(json => {
-          this.setState({
-            name: name,
-            rights: rights,
-            latest_expiry: json.latest_token_expiry,
-            max_life: json.longest_token_life,
-            edit_mode: true
-          });
-          return getAllCapabilities();
-        })
-        .then(json => this.setState({ permitted: json }))
-        .catch(err => {
-          this.setState({ hasError: true, error: err });
+    try {
+      const all_capabilities = getAllCapabilities();
+      if (item_id !== -1) {
+        const server = getServer(item_id);
+        const capabilities = getCapabilities(item_id);
+        const time_limits = getTimeLimits(item_id);
+        this.setState({
+          name: (await server).name,
+          rights: await capabilities,
+          latest_expiry: (await time_limits).latest_token_expiry,
+          max_life: (await time_limits).longest_token_life,
+          edit_mode: true
         });
-    } else {
-      getAllCapabilities()
-        .then(json => {
-          this.setState({
-            rights: json,
-            permitted: JSON.parse(JSON.stringify(json || {}))
-          });
-        })
-        .catch(err => {
-          this.setState({ hasError: true, error: err });
-        });
+      }
+      const capabilities = all_capabilities;
+
+      this.setState({ permitted: await capabilities });
+    } catch (err) {
+      this.setState({ hasError: true, error: err });
     }
   }
 

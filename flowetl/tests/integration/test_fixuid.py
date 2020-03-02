@@ -20,9 +20,9 @@ def test_uid(docker_client, container_tag):
         "bash -c 'id -u'",
         user=user,
         environment={
-            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
-            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
         },
+        auto_remove=True,
     )
     assert out.decode("utf-8").strip() == "1002"
 
@@ -39,9 +39,9 @@ def test_gid(docker_client, container_tag):
         "bash -c 'id -g'",
         user=user,
         environment={
-            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
-            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
         },
+        auto_remove=True,
     )
     assert out.decode("utf-8").strip() == "1003"
 
@@ -57,8 +57,8 @@ def test_uid_is_airflow(docker_client, container_tag):
         "bash -c 'id -u | id -nu'",
         user=user,
         environment={
-            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
-            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
         },
+        auto_remove=True,
     )
     assert out.decode("utf-8").strip() == "airflow"

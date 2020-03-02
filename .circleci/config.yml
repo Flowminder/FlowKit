@@ -42,6 +42,14 @@ defaults:
       tags:
         only: /.*/
 
+  - &tag_and_master_only_org_context
+    context: org-global
+    filters:
+      branches:
+        only: master
+      tags:
+        only: /.*/
+
 executors:
   python_with_flowdb: # Synthetic data generation execution environment
     parameters:
@@ -694,7 +702,37 @@ jobs:
           command: |
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
 
-  run_flowetl_tests:
+  run_flowetl_unit_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowetl
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - restore_cache:
+          key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock"}}
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pipenv
+      - run:
+          name: Install python dependencies
+          command: |
+            pipenv install --deploy --dev
+      - save_cache:
+          key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
+      - run:
+          name: run flowetl module unit tests
+          command: |
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=flowetl \
+            --cov-report xml \
+            --cov-report term-missing ./tests/unit
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash) -F flowetl_unit_tests
+
+  run_flowetl_integration_tests:
     machine:
       image: ubuntu-1604:201903-01
     environment:
@@ -706,6 +744,9 @@ jobs:
           path: /home/circleci/project/
       - restore_cache:
           key: flowetl-deps-1-{{ checksum "Pipfile.lock"}}
+      - run:
+          name: Set python version
+          command: pyenv global 3.7.0
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -728,16 +769,9 @@ jobs:
       - run:
           name: run flowetl integration tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests
-      - run:
-          name: run etl module unit tests
-          command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=./etl/etl \
-            --cov-report xml \
-            --cov-report term-missing ./etl/tests
+            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
       - store_test_results:
           path: test_results
-      - run: bash <(curl -s https://codecov.io/bash) -F flowetl_unit_tests
 
   integration_tests:
     executor:
@@ -829,7 +863,7 @@ jobs:
           command: |
             wget https://github.com/jgm/pandoc/releases/download/1.19.2.1/pandoc-1.19.2.1-1-amd64.deb
             sudo dpkg -i pandoc-1.19.2.1-1-amd64.deb
-      - run: pipenv install
+      - run: pipenv install --dev
       - run: *wait_for_flowdb
       - run:
           name: Start flowmachine
@@ -1066,7 +1100,9 @@ workflows:
           requires:
             - build_flowauth
           <<: *run_always_org_context
-      - run_flowetl_tests:
+      - run_flowetl_unit_tests:
+          <<: *run_always_org_context
+      - run_flowetl_integration_tests:
           requires:
             - build_flowetl
             - build_flowdb
@@ -1074,6 +1110,12 @@ workflows:
       - build_python_wheel:
           name: build_flowclient_wheel
           project_name: flowclient
+          requires:
+            - install_flowmachine_deps
+          <<: *run_always_org_context
+      - build_python_wheel:
+          name: build_flowetl_wheel
+          project_name: flowetl/flowetl
           requires:
             - install_flowmachine_deps
           <<: *run_always_org_context
@@ -1123,12 +1165,14 @@ workflows:
             - run_flowauth_backend_tests
             - run_flowauth_end_to_end_tests
             - run_flowclient_tests
-            - run_flowetl_tests
+            - run_flowetl_unit_tests
+            - run_flowetl_integration_tests
             - synth_data_python_generator_tests
             - synth_data_sql_generator_tests
             - synth_data_realistic_generator_tests
             - build_flowmachine_wheel
             - build_flowclient_wheel
+            - build_flowetl_wheel
             - run_flowmachine_tests
             - run_autoflow_tests
             - build_autoflow
@@ -1141,15 +1185,18 @@ workflows:
       - push_wheel:
           name: push_flowclient_wheel
           project_name: flowclient
-          requires:
-            - retag_tagged_build
-          <<: *tag_only_org_context
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
+      - push_wheel:
+          name: push_flowetl_wheel
+          project_name: flowetl/flowetl
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
-          requires:
-            - retag_tagged_build
-          <<: *tag_only_org_context
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
       - build_docs:
           name: Deploy docs
           deploy: true

@@ -5,18 +5,17 @@ name = "pypi"
 
 [packages]
 mkdocs = "*"
+black = "==19.10b0"
 jupyter-client = "*"
 nbconvert = "*"
-nbconvert-utils = "*"
 pygments = "*"
 pymdown-extensions = "*"
 tabulate = "*"
 pandas = "*"
-mkdocs-material = "*"
+mkdocs-material = "==4.6.3"
 ipykernel = "*"
 geopandas = "*"
 numpydoc = "*"
-black = "==19.10b0"
 click = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 descartes = "*"
@@ -27,9 +26,11 @@ mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 mapboxgl = "*"
+markdown = "==3.2.1" # Working around version conflict caused by airflow's aggressive pinning
 
 [dev-packages]
 jupyterlab = "*"
+flowetl = {editable = true,path = "./../flowetl/flowetl"} # Working around version conflict caused by airflow's aggressive pinning
 
 [requires]
 python_version = "3.7"

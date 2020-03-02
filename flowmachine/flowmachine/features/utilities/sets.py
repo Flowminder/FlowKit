@@ -12,6 +12,7 @@ from typing import List, Optional, Union, Tuple
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
 from ...core import Query, make_spatial_unit
+from ...core.context import get_db
 from ...core.spatial_unit import AnySpatialUnit
 
 from numpy import inf
@@ -113,7 +114,7 @@ class UniqueSubscribers(Query):
         """
         Returns all unique subscribers as a set.
         """
-        return {u[0] for u in self.connection.fetch(self.get_query())}
+        return {u[0] for u in get_db().fetch(self.get_query())}
 
 
 SubsetDates = EventTableSubset  # Backwards compatibility for unpicking queries from db

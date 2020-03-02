@@ -7,6 +7,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.2.0]
+
+### Added
+- FlowMachine can now use multiple FlowDB backends, redis instances or execution pools via the `flowmachine.connections` or `flowmachine.core.context.context` context managers. [#391](https://github.com/Flowminder/FlowKit/issues/391)
+- `flowmachine.core.connection.Connection` now has a `conn_id` attribute, which is unique per database host. [#391](https://github.com/Flowminder/FlowKit/issues/391)
+
+### Changed
+- `flowmachine.connect` no longer returns a `Connection` object. The connection should be accessed via `flowmachine.core.context.get_db()`. [#391](https://github.com/Flowminder/FlowKit/issues/391)
+- `connection`, `redis`, and `threadpool` are no longer available as attributes of `Query`, and should be accessed via `flowmachine.core.context.get_db()`, `flowmachine.core.context.get_redis()` and `flowmachine.core.context.get_executor()`. [#391](https://github.com/Flowminder/FlowKit/issues/391)
+
+### Removed
+- Removed `Query.connection`, `Query.redis`, and `Query.threadpool`. [#391](https://github.com/Flowminder/FlowKit/issues/391)
+
+## [1.1.1]
+
+### Added
+- Added a worked example to demonstrate using joined spatial aggregate queries. [#1938](https://github.com/Flowminder/FlowKit/issues/1938)
+
+## [1.1.0]
+
+### Changed
+- `Connection.available_dates` is now a property and returns results based on the `etl.etl_records` table. [#1873](https://github.com/Flowminder/FlowKit/issues/1873)
+
+### Fixed
+- Fixed the run action blocking the FlowMachine server in some scenarios. [#1256](https://github.com/Flowminder/FlowKit/issues/1256)
+
+### Removed
+- Removed `tables` and `columns` methods from the `Connection` class in FlowMachine
+- Removed the `inspector` attribute from the `Connection` class in FlowMachine
+
+
+## [1.0.0]
+
+### Added
 - FlowMachine now periodically prunes the cache to below the permitted cache size. [#1307](https://github.com/Flowminder/FlowKit/issues/1307)
   The frequency of this pruning is configurable using the `FLOWMACHINE_CACHE_PRUNING_FREQUENCY` environment variable to Flowmachine, and queries are excluded from being removed by the automatic shrinker based on the `cache_protected_period` config key within FlowDB.
 - FlowDB now includes Paul Ramsey's [OGR foreign data wrapper](https://github.com/pramsey/pgsql-ogr-fdw), for easy loading of GIS data. [#1512](https://github.com/Flowminder/FlowKit/issues/1512)
@@ -17,7 +58,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   To use the new generator, set the `SYNTHETIC_DATA_GENERATOR` environment variable to `realistic`.  
 - `FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS` environment variable added to allow copying the Airflow logs in FlowETL integration tests into the /mounts/logs directory for debugging. [#1019](https://github.com/Flowminder/FlowKit/issues/1019)
 - Added new `IterativeMedianFilter` query to Flowmachine, which applies an iterative median filter to the output of another query. [#1339](https://github.com/Flowminder/FlowKit/issues/1339)
-- FlowDB now includes the [TDS foreign data wrapper](https://github.com/tds-fdw). [#1729](https://github.com/Flowminder/FlowKit/issues/1729) 
+- FlowDB now includes the [TDS foreign data wrapper](https://github.com/tds-fdw). [#1729](https://github.com/Flowminder/FlowKit/issues/1729)
+- Added contributing and support instructions. [#1791](https://github.com/Flowminder/FlowKit/issues/1791)
+- New FlowETL module installable via pip to aid in ETL dag creation.
 
 ### Changed
 - FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
@@ -25,10 +68,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now defaults to disabling Airflow's REST API, and enables RBAC for the webui. [#1516](https://github.com/Flowminder/FlowKit/issues/1516)
 - FlowETL now requires that the `FLOWETL_AIRFLOW_ADMIN_USERNAME` and `FLOWETL_AIRFLOW_ADMIN_PASSWORD` environment variables be set, which specify the default web ui account. [#1516](https://github.com/Flowminder/FlowKit/issues/1516)
 - FlowAPI will no longer return a result for rows in spatial aggregate, joined spatial aggregate, flows, total events, meaningful locations aggregate, meaningful locations od, or unique subscriber count where the aggregate would contain less than 16 sims. [#1026](https://github.com/Flowminder/FlowKit/issues/1026)
+- FlowETL now requires that `AIRFLOW__CORE__SQL_ALCHEMY_CONN` be provided as an environment variable or secret. [#1702](https://github.com/Flowminder/FlowKit/issues/1702), [#1703](https://github.com/Flowminder/FlowKit/issues/1703)
 - FlowAuth now records last used two-factor authentication codes in an expiring cache, which supports either a file-based, or redis backend. [#1173](https://github.com/Flowminder/FlowKit/issues/1173)
 - AutoFlow now uses [Bundler](https://bundler.io/) to manage Ruby dependencies.
 - The `end_date` parameter of `flowclient.modal_location_from_dates` now refers to the day _after_ the final date included in the range, so is now consistent with other queries that have start/end date parameters. [#819](https://github.com/Flowminder/FlowKit/issues/819)
 - Date intervals in AutoFlow date stencils are now interpreted as half-open intervals (i.e. including start date, excluding end date), for consistency with date ranges elsewhere in FlowKit.
+- `flowmachine` user now has read access to ETL metadata tables in FlowDB
 
 ### Fixed
 - Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)
@@ -37,7 +82,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth backend now sends a meaningful 400 response when trying to create a user with an empty password. [#1637](https://github.com/Flowminder/FlowKit/issues/1637)
 - Usernames of deleted users can now be re-used as usernames for new users. [#1638](https://github.com/Flowminder/FlowKit/issues/1638)
 - RedactedJoinedSpatialAggregate now only redacts rows with too few subscribers. [#1747](https://github.com/Flowminder/FlowKit/issues/1747)
-- FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771) 
+- FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771)
+- Aggregation units and api routes can now be added to servers. [#1815](https://github.com/Flowminder/FlowKit/issues/1815)
+- Fixed several issues with FlowETL. [#1529](https://github.com/Flowminder/FlowKit/issues/1529) [#1499](https://github.com/Flowminder/FlowKit/issues/1499) [#1498](https://github.com/Flowminder/FlowKit/issues/1498) [#1497](https://github.com/Flowminder/FlowKit/issues/1497)
 
 ### Removed
 - Removed pg_cron.
@@ -550,7 +597,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.9.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.2.0...master
+[1.2.0]: https://github.com/Flowminder/FlowKit/compare/1.1.1...1.2.0
+[1.1.1]: https://github.com/Flowminder/FlowKit/compare/1.1.0...1.1.1
+[1.1.0]: https://github.com/Flowminder/FlowKit/compare/1.0.0...1.1.0
+[1.0.0]: https://github.com/Flowminder/FlowKit/compare/0.9.1...1.0.0
 [0.9.1]: https://github.com/Flowminder/FlowKit/compare/0.9.0...0.9.1
 [0.9.0]: https://github.com/Flowminder/FlowKit/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/Flowminder/FlowKit/compare/0.7.0...0.8.0
