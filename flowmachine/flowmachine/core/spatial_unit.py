@@ -12,6 +12,7 @@ from typing import Union, List, Iterable, Optional
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
 from . import Query, Table
+from .context import get_db
 from .grid import Grid
 
 # TODO: Currently most spatial units require a FlowDB connection at init time.
@@ -281,7 +282,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if geom_table is None:
             # Creating a Table object here means that we don't have to handle
             # tables and Query objects differently in _make_query and get_geom_query
-            self.geom_table = Table(name=self.connection.location_table)
+            self.geom_table = Table(name=get_db().location_table)
         elif isinstance(geom_table, Query):
             self.geom_table = geom_table
         else:
@@ -309,7 +310,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         """
         Returns a SQL join clause to join the location table to the geography
         table. The join clause is not used if self.geom_table and
-        self.connection.location_table are the same table.
+        get_db().location_table are the same table.
 
         Parameters
         ----------
@@ -335,7 +336,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         loc_table_alias = "loc_table"
 
         if hasattr(self.geom_table, "fully_qualified_table_name") and (
-            self.geom_table.fully_qualified_table_name == self.connection.location_table
+            self.geom_table.fully_qualified_table_name == get_db().location_table
         ):
             # No need to join location_table to itself
             geom_table_alias = loc_table_alias
@@ -368,7 +369,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         SELECT
             {loc_table_cols_string},
             {geom_table_cols_string}
-        FROM {self.connection.location_table} AS {loc_table_alias}
+        FROM {get_db().location_table} AS {loc_table_alias}
         {join_clause}
         """
 
@@ -631,7 +632,7 @@ def versioned_cell_spatial_unit() -> LonLatSpatialUnit:
     -------
     flowmachine.core.spatial_unit.LonLatSpatialUnit
     """
-    if Query.connection.location_table != "infrastructure.cells":
+    if get_db().location_table != "infrastructure.cells":
         raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
     return LonLatSpatialUnit(

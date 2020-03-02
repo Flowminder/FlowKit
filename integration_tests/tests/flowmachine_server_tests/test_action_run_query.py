@@ -8,6 +8,7 @@ from flowmachine.core.server.utils import (
     send_zmq_message_and_receive_reply,
     send_zmq_message_and_await_reply,
 )
+from flowmachine.core.context import get_db
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.dependency_graph import unstored_dependencies_graph
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
@@ -87,8 +88,8 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
     #
-    reset_cache(fm_conn, redis, protect_table_objects=False)
-    assert cache_schema_is_empty(fm_conn)
+    reset_cache(get_db(), redis, protect_table_objects=False)
+    assert cache_schema_is_empty(get_db())
     assert not redis.exists(expected_query_id)
 
     #
@@ -113,10 +114,12 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     # and that it contains the expected number of rows.
     #
     output_cache_table = f"x{expected_query_id}"
-    assert output_cache_table in get_cache_tables(fm_conn)
-    num_rows = fm_conn.engine.execute(
-        f"SELECT COUNT(*) FROM cache.{output_cache_table}"
-    ).fetchone()[0]
+    assert output_cache_table in get_cache_tables(get_db())
+    num_rows = (
+        get_db()
+        .engine.execute(f"SELECT COUNT(*) FROM cache.{output_cache_table}")
+        .fetchone()[0]
+    )
     assert num_rows == 14
 
     #
@@ -128,9 +131,13 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         ("524 1 03 13", 20),
         ("524 3 08 43", 35),
     ]
-    first_few_rows = fm_conn.engine.execute(
-        f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
-    ).fetchall()
+    first_few_rows = (
+        get_db()
+        .engine.execute(
+            f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
+        )
+        .fetchall()
+    )
     assert first_few_rows_expected == first_few_rows
 
 
@@ -183,7 +190,7 @@ def test_cache_content(
                 pass
 
     # Check that we are starting with an empty cache.
-    assert cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=False)
+    assert cache_schema_is_empty(get_db(), check_internal_tables_are_empty=False)
 
     # Send message to run the daily_location query, and check it was accepted
     reply = send_zmq_message_and_receive_reply(
@@ -196,7 +203,7 @@ def test_cache_content(
     poll_until_done(zmq_port, query_id)
 
     # Check that the cache contains the correct tables.
-    assert sorted(expected_cache_tables) == get_cache_tables(fm_conn)
+    assert sorted(expected_cache_tables) == get_cache_tables(get_db())
 
 
 @pytest.mark.parametrize(

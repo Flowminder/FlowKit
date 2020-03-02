@@ -6,6 +6,7 @@ from marshmallow import Schema, fields
 
 import flowmachine
 from flowmachine.core import Query
+from flowmachine.core.context import get_redis, get_db, redis_connection
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
@@ -82,7 +83,7 @@ async def test_get_query_bad_id(server_config):
     """
     Get sql handler should send back an error status for a nonexistent id
     """
-    Query.redis.get.return_value = None
+    get_redis().get.return_value = None
     msg = await action_handler__get_query_params(
         config=server_config, query_id="DUMMY_ID"
     )
@@ -98,9 +99,11 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     Test that get_sql handler replies with an error state when the query
     is not finished.
     """
+    redis_reset = redis_connection.set(dummy_redis)
     dummy_redis.set("DUMMY_QUERY_ID", "KNOWN")
-    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
+    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, query_state)
     msg = await action_handler__get_sql(config=server_config, query_id="DUMMY_QUERY_ID")
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.payload["query_state"] == query_state
+    redis_connection.reset(redis_reset)

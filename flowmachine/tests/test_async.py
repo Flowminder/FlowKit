@@ -4,6 +4,7 @@
 
 from concurrent.futures import Future
 
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.features.subscriber import *
 from threading import Thread
@@ -50,7 +51,7 @@ def test_store_async():
     table_name = dl.fully_qualified_table_name.split(".")[1]
     store_future = dl.store()
     store_future.result()
-    assert dl.connection.has_table(table_name, schema=schema)
+    assert get_db().has_table(table_name, schema=schema)
     dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("cell"))
     assert table_name in dl.get_query()
 
@@ -63,15 +64,15 @@ def test_get_query_blocks_on_store():
     dl.store().result()
     timer = []
 
-    def unlock(timer):
-        qsm = QueryStateMachine(dl.redis, dl.query_id)
+    def unlock(timer, redis, db_id):
+        qsm = QueryStateMachine(redis, dl.query_id, db_id)
         qsm.enqueue()
         for i in range(101):
             timer.append(i)
         qsm.execute()
         qsm.finish()
 
-    timeout = Thread(target=unlock, args=(timer,))
+    timeout = Thread(target=unlock, args=(timer, get_redis(), get_db().conn_id))
     timeout.start()
     dl.get_query()
     assert len(timer) == 101
@@ -90,15 +91,15 @@ def test_blocks_on_store_cascades():
     hl = ModalLocation(dl, dl2)
     timer = []
 
-    def unlock(timer):
-        qsm = QueryStateMachine(dl.redis, dl.query_id)
+    def unlock(timer, redis, db_id):
+        qsm = QueryStateMachine(redis, dl.query_id, db_id)
         qsm.enqueue()
         for i in range(101):
             timer.append(i)
         qsm.execute()
         qsm.finish()
 
-    timeout = Thread(target=unlock, args=(timer,))
+    timeout = Thread(target=unlock, args=(timer, get_redis(), get_db().conn_id))
     timeout.start()
     hl.get_query()
     assert len(timer) == 101

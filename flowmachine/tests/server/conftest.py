@@ -1,17 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import json
-from concurrent.futures.thread import ThreadPoolExecutor
-from json import JSONDecodeError
 
-from _pytest.capture import CaptureResult
+from concurrent.futures.thread import ThreadPoolExecutor
 from unittest.mock import Mock
 from asynctest import Mock as AMock
 
 import pytest
 import zmq
-from flowmachine.core import Query
+from flowmachine.core.context import context
 from flowmachine.core.server.server_config import FlowmachineServerConfig
 
 
@@ -44,12 +41,12 @@ def dummy_zmq_server(monkeypatch):
     yield dummy
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def flowmachine_connect():
     """Overrides the flowmachine connection fixture to replace all applicable parts with mocks."""
-    Query.connection = Mock()
-    Query.redis = Mock()
-    print("Replacing connections with mocks.")
+    with context(Mock(), ThreadPoolExecutor(), Mock(name="connect_redis")):
+        print("Replacing connections with mocks.")
+        yield
 
 
 @pytest.fixture(scope="session")

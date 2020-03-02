@@ -10,6 +10,7 @@ from sqlalchemy import select
 from typing import List
 
 from ...core import Query, Table
+from ...core.context import get_db
 from ...core.errors import MissingDateError
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
@@ -146,7 +147,7 @@ class EventTableSubset(Query):
         self.columns = sorted(self.columns)
 
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
-            self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
+            self.table_ORIG.fully_qualified_table_name, engine=get_db().engine,
         )
 
         if self.start == self.stop:
@@ -171,16 +172,20 @@ class EventTableSubset(Query):
         # If the subscriber does not pass a start or stop date, then we take
         # the min/max date in the events.calls table
         if self.start is None:
-            d1 = self.connection.min_date(
-                self.table_ORIG.fully_qualified_table_name.split(".")[1]
-            ).strftime("%Y-%m-%d")
+            d1 = (
+                get_db()
+                .min_date(self.table_ORIG.fully_qualified_table_name.split(".")[1])
+                .strftime("%Y-%m-%d")
+            )
         else:
             d1 = self.start.split()[0]
 
         if self.stop is None:
-            d2 = self.connection.max_date(
-                self.table_ORIG.fully_qualified_table_name.split(".")[1]
-            ).strftime("%Y-%m-%d")
+            d2 = (
+                get_db()
+                .max_date(self.table_ORIG.fully_qualified_table_name.split(".")[1])
+                .strftime("%Y-%m-%d")
+            )
         else:
             d2 = self.stop.split()[0]
 
@@ -198,7 +203,7 @@ class EventTableSubset(Query):
         try:
             db_dates = [
                 d.strftime("%Y-%m-%d")
-                for d in self.connection.available_dates[self.table_ORIG.name]
+                for d in get_db().available_dates[self.table_ORIG.name]
             ]
         except KeyError:  # No dates at all for this table
             raise MissingDateError

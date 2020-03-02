@@ -14,6 +14,7 @@
 # action handler and also gracefully handles any potential errors.
 #
 import asyncio
+from contextvars import copy_context
 from functools import partial
 import json
 import textwrap
@@ -21,7 +22,7 @@ from typing import Callable, Union
 
 from marshmallow import ValidationError
 
-from flowmachine.core import Query
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.core.query_info_lookup import (
     QueryInfoLookup,
@@ -116,7 +117,7 @@ async def action_handler__run_query(
         payload = {"validation_error_messages": validation_error_messages}
         return ZMQReply(status="error", msg=error_msg, payload=payload)
 
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     try:
         query_id = q_info_lookup.get_query_id(action_params)
     except QueryInfoLookupError:
@@ -125,7 +126,11 @@ async def action_handler__run_query(
             query_id = await asyncio.get_running_loop().run_in_executor(
                 executor=config.server_thread_pool,
                 func=partial(
-                    query_obj.store_async, store_dependencies=config.store_dependencies
+                    copy_context().run,
+                    partial(
+                        query_obj.store_async,
+                        store_dependencies=config.store_dependencies,
+                    ),
                 ),
             )
         except Exception as e:
@@ -159,7 +164,7 @@ def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
         The query kind associated with this query_id (or None
         if no query with this query_id exists).
     """
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     try:
         return q_info_lookup.get_query_kind(query_id)
     except UnkownQueryIdError:
@@ -183,7 +188,7 @@ async def action_handler__poll_query(
             status="error", msg=f"Unknown query id: '{query_id}'", payload=payload
         )
     else:
-        q_state_machine = QueryStateMachine(Query.redis, query_id)
+        q_state_machine = QueryStateMachine(get_redis(), query_id, get_db().conn_id)
         payload = {
             "query_id": query_id,
             "query_kind": query_kind,
@@ -218,7 +223,7 @@ async def action_handler__get_query_params(
 
     Returns query parameters of the query with the given `query_id`.
     """
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     try:
         query_params = q_info_lookup.get_query_params(query_id)
     except UnkownQueryIdError:
@@ -244,16 +249,18 @@ async def action_handler__get_sql(
     # the query_id belongs to a valid query object, so we need to check it
     # manually. Would be good to add a QueryState.UNKNOWN so that we can
     # avoid this separate treatment.
-    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup = QueryInfoLookup(get_redis())
     if not q_info_lookup.query_is_known(query_id):
         msg = f"Unknown query id: '{query_id}'"
         payload = {"query_id": query_id, "query_state": "awol"}
         return ZMQReply(status="error", msg=msg, payload=payload)
 
-    query_state = QueryStateMachine(Query.redis, query_id).current_query_state
+    query_state = QueryStateMachine(
+        get_redis(), query_id, get_db().conn_id
+    ).current_query_state
 
     if query_state == QueryState.COMPLETED:
-        q = get_query_object_by_id(Query.connection, query_id)
+        q = get_query_object_by_id(get_db(), query_id)
         sql = q.get_query()
         payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
         return ZMQReply(status="success", payload=payload)
@@ -324,7 +331,7 @@ async def action_handler__get_available_dates(
     ZMQReply
         The reply from the action handler.
     """
-    conn = Query.connection
+    conn = get_db()
 
     available_dates = {
         event_type: [date.strftime("%Y-%m-%d") for date in dates]
