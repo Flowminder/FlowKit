@@ -120,6 +120,17 @@ async def action_handler__run_query(
     q_info_lookup = QueryInfoLookup(get_redis())
     try:
         query_id = q_info_lookup.get_query_id(action_params)
+        qsm = QueryStateMachine(
+            query_id=query_id, redis_client=get_redis(), db_id=get_db().conn_id
+        )
+        if qsm.current_query_state in [
+            QueryState.CANCELLED,
+            QueryState.KNOWN,
+        ]:  # Start queries running even if they've been cancelled or reset
+            if qsm.is_cancelled:
+                reset = qsm.reset()
+                finish = qsm.finish_resetting()
+            raise QueryInfoLookupError
     except QueryInfoLookupError:
         try:
             # Set the query running (it's safe to call this even if the query was set running before)
