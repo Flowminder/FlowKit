@@ -15,6 +15,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from functools import lru_cache
 
 import jwt
 
@@ -230,6 +231,27 @@ def generate_token(
     ).decode("utf-8")
 
 
+@lru_cache(None)
+def get_security_schemes_from_api_spec(flowapi_url: str) -> dict:
+    """
+    Get the security schemes section of an api spec from a flowapi server.
+    
+    Parameters
+    ----------
+    flowapi_url : str
+        URL of the flowapi instance
+
+    Returns
+    -------
+    dict
+        The security schemes section
+
+    """
+    return requests.get(f"{flowapi_url}/api/0/spec/openapi.json").json()["components"][
+        "securitySchemes"
+    ]
+
+
 def get_all_claims_from_flowapi(flowapi_url: str) -> List[str]:
     """
     Retrieve all the query types available on an instance of flowapi and
@@ -246,8 +268,25 @@ def get_all_claims_from_flowapi(flowapi_url: str) -> List[str]:
         Claims dictionary
 
     """
-    spec = requests.get(f"{flowapi_url}/api/0/spec/openapi.json").json()
-    return spec["components"]["securitySchemes"]["token"]["x-security-scopes"]
+    return get_security_schemes_from_api_spec(flowapi_url)["token"]["x-security-scopes"]
+
+
+def get_audience_from_flowapi(flowapi_url: str) -> str:
+    """
+    Get the audience name from a flowapi server.
+
+    Parameters
+    ----------
+    flowapi_url : str
+        Address of the flowapi server
+
+    Returns
+    -------
+    str
+        The audience name
+
+    """
+    return get_security_schemes_from_api_spec(flowapi_url)["token"]["x-audience"]
 
 
 @click.command()
@@ -263,30 +302,24 @@ def get_all_claims_from_flowapi(flowapi_url: str) -> List[str]:
     "--lifetime", type=int, required=True, help="Lifetime in days of this token."
 )
 @click.option(
-    "--audience",
-    type=str,
-    required=True,
-    help="FlowAPI server this token may be used with.",
-)
-@click.option(
     "--flowapi-url",
     "-u",
     type=str,
     required=True,
     help="URL of the FlowAPI server to grant access to.",
 )
-def print_token(username, private_key, lifetime, audience, flowapi_url):
+def print_token(username, private_key, lifetime, flowapi_url):
     """
     Generate a JWT token for access to FlowAPI.
 
     For example:
 
     \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER -u http://localhost:9090
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 -u http://localhost:9090
     """
     click.echo(
         generate_token(
-            flowapi_identifier=audience,
+            flowapi_identifier=get_audience_from_flowapi(flowapi_url=flowapi_url),
             username=username,
             private_key=load_private_key(private_key),
             lifetime=datetime.timedelta(days=lifetime),
