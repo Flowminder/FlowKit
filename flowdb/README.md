@@ -1,3 +1,3 @@
 # FlowDB
 
-Documentation for FlowDB can be found [here](https://flowminder.github.io/FlowKit/flowdb).
+Documentation for FlowDB can be found in the main [FlowKit documentation](https://flowkit.xyz).
