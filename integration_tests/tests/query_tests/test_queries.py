@@ -3,12 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import pytest
+import flowclient
 from flowclient.client import get_result
 
-import flowclient
-
-from flowkit_jwt_generator import permissions_types, aggregation_types
+import pytest
 
 
 @pytest.mark.parametrize(
@@ -222,7 +220,6 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             {
                 "locations": {
                     "query_kind": "modal_location",
-                    "aggregation_unit": "admin3",
                     "locations": [
                         {
                             "query_kind": "daily_location",
@@ -255,7 +252,6 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     "aggregation_unit": "admin3",
                     "method": "last",
                 },
-                "aggregation_unit": "admin3",
             },
         ),
         (
@@ -263,7 +259,6 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             {
                 "from_location": {
                     "query_kind": "modal_location",
-                    "aggregation_unit": "admin3",
                     "locations": [
                         {
                             "query_kind": "daily_location",
@@ -285,7 +280,6 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     "aggregation_unit": "admin3",
                     "method": "last",
                 },
-                "aggregation_unit": "admin3",
             },
         ),
         (
@@ -657,14 +651,7 @@ def test_get_geography(access_token_builder, flowapi_url):
     """
     con = flowclient.Connection(
         url=flowapi_url,
-        token=access_token_builder(
-            {
-                "geography": {
-                    "permissions": permissions_types,
-                    "spatial_aggregation": aggregation_types,
-                }
-            }
-        ),
+        token=access_token_builder(["get_result&geography.aggregation_unit.admin3"]),
     )
     result_geojson = flowclient.get_geography(connection=con, aggregation_unit="admin3")
     assert "FeatureCollection" == result_geojson["type"]
@@ -744,10 +731,7 @@ def test_get_available_dates(
     Test that queries can be run, and return the expected JSON result.
     """
     con = flowclient.Connection(
-        url=flowapi_url,
-        token=access_token_builder(
-            {"available_dates": {"permissions": {"get_result": True}}}
-        ),
+        url=flowapi_url, token=access_token_builder(["get_result&available_dates"]),
     )
     result = flowclient.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result

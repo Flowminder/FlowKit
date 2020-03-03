@@ -100,36 +100,6 @@ export async function editUser(
   return await getResponse("/admin/users/" + user_id, dat);
 }
 
-export async function deleteAggregationUnit(unit_id) {
-  var dat = {
-    method: "DELETE"
-  };
-  return await getResponse("/spatial_aggregation/" + unit_id, dat);
-}
-
-export async function newAggregationUnit(name) {
-  var dat = {
-    method: "POST",
-    body: JSON.stringify({ name: name })
-  };
-  return await getResponse("/spatial_aggregation", dat);
-}
-
-export async function deleteCapability(capability_id) {
-  var dat = {
-    method: "DELETE"
-  };
-  return await getResponse("/admin/capabilities/" + capability_id, dat);
-}
-
-export async function newCapability(name) {
-  var dat = {
-    method: "POST",
-    body: JSON.stringify({ name: name })
-  };
-  return await getResponse("/admin/capabilities", dat);
-}
-
 export async function editGroupMemberships(user_id, group_ids) {
   var dat = {
     method: "PATCH",

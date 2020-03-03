@@ -33,16 +33,7 @@ class AdminMenu extends React.Component {
           >
             <ListItemText primary="Groups" />
           </ListItem>
-          <ListItem
-            button
-            onClick={() => onClick("capability_admin")}
-            id="api_routes"
-          >
-            <ListItemText primary="API Routes" />
-          </ListItem>
-          <ListItem button onClick={() => onClick("aggregation_unit_admin")}>
-            <ListItemText primary="Aggregation Units" />
-          </ListItem>
+
           <ListItem
             button
             onClick={() => onClick("public_key_admin")}

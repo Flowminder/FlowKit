@@ -8,28 +8,24 @@ FlowAuth is the tool which analysts will use to generate tokens which will allow
 
 1. Log into FlowAuth as an administrator.
 
-2. Under "API Routes", add any applicable API routes (e.g. `daily_location`).
+2. Under "Servers", add a new server by clicking the '+' button, uploading the spec downloaded from the server, and setting the latest expiry and longest life for tokens.
 
-3. Under "Aggregation Units", add any applicable aggregation units (e.g. `admin3`).
+3. Enable or disable permissions for this server under "Available API scopes".
 
-3. Under "Servers", add a new server and give it a name. Note that the name must match the `FLOWAPI_IDENTIFIER` variable set in the FlowAPI docker container on this server.
+4. Under "Users", add a new user, and set the username and password.
 
-4. Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".
-
-5. Under "Users", add a new user, and set the username and password.
-
-6. Either:
-    - Add a server to the user, and enable/disable API permissions and aggregation units,
+5. Either:
+    - Add a server to the user, and enable/disable API scopes
     <p>
 7. Or:
     <p>
     - Under "Groups", add a new group,
 
-    - Add a server to the group, and enable/disable API permissions and aggregation units,
+    - Add a server to the group, and enable/disable API scopes
 
     - Add the user to the group.
 
-The user can then log into FlowAuth and generate a token (see the [analyst section](../analyst/index.md#flowauth) for instructions).
+The user can then log into FlowAuth and generate a token (see the [analyst section](../../analyst/index.md#flowauth) for instructions).
 
 ## Managing access to FlowDB
 

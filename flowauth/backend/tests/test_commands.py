@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowauth import add_admin_command
-from flowauth.models import User, db, init_db_command, demodata, Group
+from flowauth.cli import add_admin_command, demo_data, init_db_command
+from flowauth.models import Group, User, db
 
 
 def test_add_admin(app):
@@ -34,6 +34,7 @@ def test_add_admin_promotes(app):
         result = runner.invoke(
             add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTRATOR_PASSWORD"]
         )
+        assert result.exit_code == 0
         user = User.query.filter(User.username == "DUMMY_ADMINISTRATOR").first()
         assert user.is_admin
         assert user.password != original_password_hash
@@ -76,8 +77,8 @@ def test_demo_data_only_sets_up_once(app, caplog):
     with app.app_context():
         runner = app.test_cli_runner()
         app.config["DB_IS_SET_UP"].clear()
-        result = runner.invoke(demodata)
-        result = runner.invoke(demodata)
+        result = runner.invoke(demo_data)
+        result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
         assert len(Group.query.all()) == 3
     assert "Database already set up by another worker, skipping." in caplog.text
@@ -102,6 +103,6 @@ def test_demo_data(app):
     with app.app_context():
         runner = app.test_cli_runner()
         app.config["DB_IS_SET_UP"].clear()
-        result = runner.invoke(demodata)
+        result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
         assert len(Group.query.all()) == 3

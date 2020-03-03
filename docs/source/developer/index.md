@@ -18,23 +18,21 @@ FlowETL details are found [here](#flowetl).
 
 ### Now
 
--   Additional home location aggregate
--   Work locations aggregate
--   Support for downloading geographies via API
--   Easier linkage between FlowAPI and FlowAuth
+-   Additional FlowMachine aggregates exposed via API
+-   Non-spatial aggregations
+-   Documentation enhancements
 
 ### Next
 
--   Additional FlowMachine aggregates exposed via API
--   Additional language targets for FlowClient
--   Alternative login provider support for FlowAuth
+-   New metrics and insights
 -   Custom geography support
 
 ### Later
 
--   New metrics and insights
+
+-   Additional language targets for FlowClient
+-   Alternative login provider support for FlowAuth
 -   Plugin support
--   Non-spatial aggregations
 -   Enhanced temporal aggregations
 -   Individual level API
 
@@ -42,11 +40,11 @@ FlowETL details are found [here](#flowetl).
 <p>
 <p>
 
-### Contributing
+## Contributing
 
 We are creating FlowKit at [Flowminder](http://flowminder.org).
 
-#### Get involved
+### Get involved
 You are welcome to contribute to the FlowKit library. To get started, please check out our [contributor guidelines](https://github.com/Flowminder/FlowKit/blob/master/.github/CONTRIBUTING.md), and when you're ready to get started, follow the [developer install guide](dev_environment_setup.md).
 
 
@@ -60,17 +58,8 @@ FlowAPI uses [ZeroMQ](http://zeromq.org/) for asynchronous communication with th
 
 ### FlowAPI Access tokens
 
-As explained in the [quick install guide](../install.md#quickinstall), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
-
-- API route permissions
-
-    API routes (`run`, `poll`, `get_result`) the user is allowed to access.
-
-- Spatial aggregation unit permissions
-
-    Level of spatial aggregation at which the user is allowed to access the results of queries. Currently supports administrative levels `admin0`, `admin1`, `admin2`, `admin3`.
-
-JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The FlowAuth authentication management system is designed to generate JWTs for accessing FlowAPI.
+As explained in the [quick install guide](../install.md#quickinstall), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions (`run` and `get_result`) which can be granted to a user.
+JWTs allow these access permissions to be granted independently for each query kind (e.g. get results for daily location only at admin 3 resolution). The FlowAuth authentication management system is designed to generate JWTs for accessing FlowAPI.
 
 #### Test Tokens
 
@@ -171,7 +160,7 @@ Mass relocation scenarios are also supported - a designated admin 2 region can b
 
 ## FlowAuth
 
-## Quick setup to run the Frontend tests interactively
+### Quick setup to run the Frontend tests interactively
 
 For development purposes, it is useful to be able to run the Flowauth frontend tests interactively.
 

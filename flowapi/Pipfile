@@ -15,6 +15,7 @@ python-rapidjson = "*"
 pyyaml = ">=5.1"
 apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
+prance = {extras = ["osv"],version = "*"}
 
 [dev-packages]
 pytest = "*"

@@ -2,10 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
 from json import loads
 
 from tests.unit.zmq_helpers import ZMQReply
+
+import pytest
 from asynctest import CoroutineMock
 
 
@@ -24,12 +25,7 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
         {"json": "bits"},
     ]
     token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        ["get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
     )
 
     reply_1 = {
@@ -91,12 +87,7 @@ async def test_get_json_status_code(
     """
 
     token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        ["get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
     )
 
     # The replies below are in response to the following messages:

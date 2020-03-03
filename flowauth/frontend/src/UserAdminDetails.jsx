@@ -82,22 +82,22 @@ class UserAdminDetails extends React.Component {
       pageError: false,
       errors: ""
     });
-    var state = {
+    this.setState({
       [name]: event.target.value
-    };
+    });
     if (name === "name") {
       var letters = /^[A-Za-z0-9_]+$/;
       let username = event.target.value;
       if (username.match(letters)) {
-        state = Object.assign(state, {
+        this.setState({
           username_helper_text: ""
         });
-      } else if (username.length == 0) {
-        state = Object.assign(state, {
+      } else if (username.length === 0) {
+        this.setState({
           username_helper_text: "Username can not be blank."
         });
       } else {
-        state = Object.assign(state, {
+        this.setState({
           username_helper_text:
             "Username may only contain letters, numbers and underscores."
         });
@@ -105,13 +105,11 @@ class UserAdminDetails extends React.Component {
     }
     if (name === "password") {
       var passStrength = zxcvbn(event.target.value);
-      console.log(passStrength.feedback.warning);
-      state = Object.assign(state, {
+      this.setState({
         password_strength: passStrength.score,
         password_helper_text: passStrength.feedback.suggestions
       });
     }
-    this.setState(state);
   };
   updateGroups = groups => {
     this.setState({ groups: groups });
@@ -119,7 +117,7 @@ class UserAdminDetails extends React.Component {
   updateServers = servers => {
     this.setState({ servers: servers });
   };
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { item_id, onClick } = this.props;
     const {
       edit_mode,
@@ -137,45 +135,35 @@ class UserAdminDetails extends React.Component {
       username_helper_text === "" &&
       (password.length === 0 || password_strength > 3)
     ) {
-      var task;
-      var uid;
-      if (edit_mode) {
-        task = editUser(
-          item_id,
-          name,
-          password.length > 0 ? password : undefined,
-          is_admin,
-          require_two_factor,
-          has_two_factor
-        );
-      } else {
-        task = createUser(name, password, is_admin, require_two_factor);
+      try {
+        const user = await (edit_mode
+          ? editUser(
+              item_id,
+              name,
+              password.length > 0 ? password : undefined,
+              is_admin,
+              require_two_factor,
+              has_two_factor
+            )
+          : createUser(name, password, is_admin, require_two_factor));
+
+        await editGroupServers(user.group_id, servers);
+        await editGroupMemberships(user.id, groups);
+        onClick();
+      } catch (err) {
+        if (err.code === 400) {
+          this.setState({ pageError: true, errors: err });
+        } else {
+          this.setState({ hasError: true, error: err });
+        }
       }
-      task
-        .then(json => {
-          uid = json.id;
-          return editGroupServers(json.group_id, servers);
-        })
-        .then(json => {
-          return editGroupMemberships(uid, groups);
-        })
-        .then(json => {
-          onClick();
-        })
-        .catch(err => {
-          if (err.code === 400) {
-            this.setState({ pageError: true, errors: err });
-          } else {
-            this.setState({ hasError: true, error: err });
-          }
-        });
     }
   };
 
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { classes, onClick, item_id } = this.props;
+    const { classes, item_id, onClick } = this.props;
     const {
       name,
       password,

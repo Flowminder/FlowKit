@@ -386,16 +386,6 @@
   },
   "Flows": {
     "properties": {
-      "aggregation_unit": {
-        "enum": [
-          "admin0",
-          "admin1",
-          "admin2",
-          "admin3",
-          "lon-lat"
-        ],
-        "type": "string"
-      },
       "from_location": {
         "$ref": "#/components/schemas/InputToFlows"
       },
@@ -410,7 +400,6 @@
       }
     },
     "required": [
-      "aggregation_unit",
       "from_location",
       "to_location"
     ],
@@ -1030,16 +1019,6 @@
   },
   "ModalLocation": {
     "properties": {
-      "aggregation_unit": {
-        "enum": [
-          "admin0",
-          "admin1",
-          "admin2",
-          "admin3",
-          "lon-lat"
-        ],
-        "type": "string"
-      },
       "locations": {
         "items": {
           "$ref": "#/components/schemas/InputToModalLocation"
@@ -1069,9 +1048,6 @@
         "type": "string"
       }
     },
-    "required": [
-      "aggregation_unit"
-    ],
     "type": "object"
   },
   "NocturnalEvents": {

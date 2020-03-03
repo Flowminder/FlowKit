@@ -21,6 +21,8 @@ pyotp = "*"
 itsdangerous = "*"
 "dogpile.cache" = "*"
 redis = "*"
+structlog = "*"
+simplejson = "*"
 
 [dev-packages]
 pytest = "*"

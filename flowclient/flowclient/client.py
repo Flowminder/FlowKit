@@ -952,9 +952,7 @@ def meaningful_locations_between_dates_od_matrix(
     }
 
 
-def modal_location(
-    *, locations: List[Dict[str, Union[str, Dict[str, str]]]], aggregation_unit: str
-) -> dict:
+def modal_location(*, locations: List[Dict[str, Union[str, Dict[str, str]]]]) -> dict:
     """
     Return query spec for a modal location query for a list of locations.
     Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
@@ -963,8 +961,7 @@ def modal_location(
     ----------
     locations : list of dicts
         List of location query specifications
-    aggregation_unit : str
-        Unit of aggregation, e.g. "admin3"
+
 
     Returns
     -------
@@ -974,7 +971,6 @@ def modal_location(
     """
     return {
         "query_kind": "modal_location",
-        "aggregation_unit": aggregation_unit,
         "locations": locations,
     }
 
@@ -1025,14 +1021,13 @@ def modal_location_from_dates(
         )
         for date in dates
     ]
-    return modal_location(locations=daily_locations, aggregation_unit=aggregation_unit)
+    return modal_location(locations=daily_locations)
 
 
 def flows(
     *,
     from_location: Dict[str, Union[str, Dict[str, str]]],
     to_location: Dict[str, Union[str, Dict[str, str]]],
-    aggregation_unit: str,
 ) -> dict:
     """
     Return query spec for flows between two locations.
@@ -1043,8 +1038,6 @@ def flows(
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
-    aggregation_unit : str
-        Unit of aggregation, e.g. "admin3"
 
     Returns
     -------
@@ -1056,7 +1049,6 @@ def flows(
         "query_kind": "flows",
         "from_location": from_location,
         "to_location": to_location,
-        "aggregation_unit": aggregation_unit,
     }
 
 

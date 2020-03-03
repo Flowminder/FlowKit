@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from tests.unit.zmq_helpers import ZMQReply
+
 import pytest
 from asynctest import return_once
-
-from tests.unit.zmq_helpers import ZMQReply
 
 
 @pytest.mark.asyncio
@@ -14,13 +14,8 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
     Test that correct status code and any redirect is returned when polling a running query
     """
 
-    token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"poll": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+    token = token = access_token_builder(
+        [f"run&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
     )
 
     dummy_zmq_server.side_effect = return_once(
@@ -36,6 +31,7 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
     assert response.status_code == 404
 
 
+@pytest.mark.parametrize("action_right", ("get_result", "run"))
 @pytest.mark.parametrize(
     "query_state, http_code",
     [
@@ -49,19 +45,14 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
 )
 @pytest.mark.asyncio
 async def test_poll_query(
-    query_state, http_code, app, access_token_builder, dummy_zmq_server
+    action_right, query_state, http_code, app, access_token_builder, dummy_zmq_server
 ):
     """
     Test that correct status code and any redirect is returned when polling a running query
     """
 
     token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"poll": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        [f"{action_right}&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
     )
 
     # The replies below are in response to the following messages:
