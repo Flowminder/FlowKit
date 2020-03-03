@@ -11,9 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Queries which have been removed Flowmachine's cache, or cancelled can now be rerun. [#1898](https://github.com/Flowminder/FlowKit/issues/1898)
 
 ### Removed
+
+## [1.2.1]
+
+## Fixed
+- Queries which have been removed Flowmachine's cache, or cancelled can now be rerun. [#1898](https://github.com/Flowminder/FlowKit/issues/1898)
 
 ## [1.2.0]
 
@@ -595,7 +599,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.2.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.2.1...master
+[1.2.1]: https://github.com/Flowminder/FlowKit/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/Flowminder/FlowKit/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/Flowminder/FlowKit/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/Flowminder/FlowKit/compare/1.0.0...1.1.0
