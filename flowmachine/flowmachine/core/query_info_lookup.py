@@ -61,4 +61,4 @@ class QueryInfoLookup:
         query_id = self.redis_client.get(query_params_str)
         if query_id is None:
             raise QueryInfoLookupError("No id for these params.")
-        return query_id
+        return query_id.decode()
