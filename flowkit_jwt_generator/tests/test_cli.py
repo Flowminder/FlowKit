@@ -31,7 +31,7 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
         key=public_key,
         verify=True,
         algorithms=["RS256"],
-        audience=os.environ["FLOWAPI_IDENTIFIER"],
+        audience=dummy_flowapi["aud"],
     )
     assert result.exit_code == 0
     assert decoded["user_claims"] == dummy_flowapi["claims"]
