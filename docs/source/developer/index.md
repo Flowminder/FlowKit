@@ -18,23 +18,21 @@ FlowETL details are found [here](#flowetl).
 
 ### Now
 
--   Additional home location aggregate
--   Work locations aggregate
--   Support for downloading geographies via API
--   Easier linkage between FlowAPI and FlowAuth
+-   Additional FlowMachine aggregates exposed via API
+-   Non-spatial aggregations
+-   Documentation enhancements
 
 ### Next
 
--   Additional FlowMachine aggregates exposed via API
--   Additional language targets for FlowClient
--   Alternative login provider support for FlowAuth
+-   New metrics and insights
 -   Custom geography support
 
 ### Later
 
--   New metrics and insights
+
+-   Additional language targets for FlowClient
+-   Alternative login provider support for FlowAuth
 -   Plugin support
--   Non-spatial aggregations
 -   Enhanced temporal aggregations
 -   Individual level API
 
