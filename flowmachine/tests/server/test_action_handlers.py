@@ -1,12 +1,22 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from asyncio import sleep
+
 import pytest
 from marshmallow import Schema, fields
 
 import flowmachine
-from flowmachine.core import Query
-from flowmachine.core.context import get_redis, get_db, redis_connection
+from flowmachine import connections
+from flowmachine.core.cache import get_query_object_by_id, reset_cache
+from flowmachine.core.context import (
+    get_redis,
+    get_db,
+    redis_connection,
+    context,
+    get_executor,
+)
+from flowmachine.core.query_info_lookup import QueryInfoLookup
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
@@ -17,6 +27,7 @@ from flowmachine.core.server.action_handlers import (
     get_action_handler,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
+from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 from flowmachine.core.server.zmq_helpers import ZMQReplyStatus
 
 
@@ -24,6 +35,112 @@ def test_bad_action_handler():
     """Exception should be raised if we try to get a handler that doesn't exist."""
     with pytest.raises(FlowmachineServerError):
         get_action_handler("NOT_A_HANDLER")
+
+
+@pytest.mark.asyncio
+async def test_rerun_query_after_removed_from_cache(
+    dummy_redis, server_config, real_connections
+):
+    """
+    Test that a query can be rerun after it has been removed from the cache.
+    """
+    msg = await action_handler__run_query(
+        config=server_config,
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
+    query_id = msg["payload"]["query_id"]
+    qsm = QueryStateMachine(get_redis(), query_id, get_db().conn_id)
+    qsm.wait_until_complete()
+    query_obj = get_query_object_by_id(get_db(), query_id)
+    assert query_obj.is_stored
+    query_obj.invalidate_db_cache()
+    assert not query_obj.is_stored
+    assert qsm.is_known
+    msg = await action_handler__run_query(
+        config=server_config,
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    qsm.wait_until_complete()
+    assert query_obj.is_stored
+
+
+@pytest.fixture
+def real_connections(flowmachine_connect):
+    with connections():
+        try:
+            yield
+        finally:
+            reset_cache(get_db(), get_redis(), protect_table_objects=False)
+            get_db().engine.dispose()  # Close the connection
+            get_redis().flushdb()  # Empty the redis
+
+
+@pytest.mark.asyncio
+async def test_rerun_query_after_cancelled(server_config, real_connections):
+    """
+    Test that a query can be rerun after it has been cancelled.
+    """
+    query_obj = (
+        FlowmachineQuerySchema()
+        .load(
+            dict(
+                query_kind="spatial_aggregate",
+                locations=dict(
+                    query_kind="daily_location",
+                    date="2016-01-01",
+                    method="last",
+                    aggregation_unit="admin3",
+                ),
+            )
+        )
+        ._flowmachine_query_obj
+    )
+    query_id = query_obj.query_id
+    qsm = QueryStateMachine(get_redis(), query_id, get_db().conn_id)
+    qsm.enqueue()
+    qsm.cancel()
+    assert not query_obj.is_stored
+    assert qsm.is_cancelled
+    query_info_lookup = QueryInfoLookup(get_redis())
+    query_info_lookup.register_query(
+        query_id,
+        dict(
+            query_kind="spatial_aggregate",
+            locations=dict(
+                query_kind="daily_location",
+                date="2016-01-01",
+                method="last",
+                aggregation_unit="admin3",
+            ),
+        ),
+    )
+
+    msg = await action_handler__run_query(
+        config=server_config,
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    qsm.wait_until_complete()
+    assert query_obj.is_stored
 
 
 @pytest.mark.asyncio
@@ -52,12 +169,13 @@ async def test_run_query_error_handled(dummy_redis, server_config):
     """
     Run query handler should return an error status if query construction failed.
     """
+    # This is going to error, because the db connection is a mock.
     msg = await action_handler__run_query(
         config=server_config,
         query_kind="spatial_aggregate",
         locations=dict(
             query_kind="daily_location",
-            date="2016-02-02",
+            date="2016-01-01",
             method="last",
             aggregation_unit="admin3",
         ),
