@@ -44,7 +44,7 @@ class GroupServerPermissions extends React.Component {
                 </Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <Grid container spacing={16}>
+                <Grid container spacing={2}>
                   <GroupServerPermissionDetails
                     classes={this.props.classes}
                     server={server}

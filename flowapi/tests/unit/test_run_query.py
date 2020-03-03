@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
-
 from tests.unit.zmq_helpers import ZMQReply
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -14,12 +14,10 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     """
 
     token = access_token_builder(
-        {
-            "daily_location": {
-                "permissions": {"run": True},
-                "spatial_aggregation": ["admin3"],
-            }
-        }
+        [
+            "run&daily_location.aggregation_unit.admin2",
+            "run&daily_location.aggregation_unit.admin3",
+        ]
     )
     dummy_zmq_server.return_value = ZMQReply(
         status="success", payload={"query_id": "DUMMY_QUERY_ID"}
@@ -39,50 +37,7 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
 
 @pytest.mark.parametrize(
     "query, expected_msg",
-    [
-        (
-            {
-                "query_kind": "spatial_aggregate",
-                "locations": {"query_kind": "daily_location", "date": "2016-01-01"},
-            },
-            "Aggregation unit must be specified when running a query.",
-        ),
-        ({"date": "2016-01-01"}, "Query kind must be specified when running a query."),
-        (
-            {"query_kind": "spatial_aggregate", "locations": {"date": "2016-01-01"}},
-            "Query kind must be specified when running a query.",
-        ),
-        (
-            {
-                "query_kind": "joined_spatial_aggregate",
-                "locations": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "aggregation_unit": "admin3",
-                },
-            },
-            "Could not parse query spec.",
-        ),
-        (
-            {
-                "query_kind": "joined_spatial_aggregate",
-                "locations": {"query_kind": "daily_location", "date": "2016-01-01"},
-            },
-            "Aggregation unit must be specified when running a query.",
-        ),
-        (
-            {
-                "query_kind": "joined_spatial_aggregate",
-                "locations": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "aggregation_unit": "admin3",
-                },
-                "metric": {"DUMMY_PARAM": "DUMMY_VALUE"},
-            },
-            "Query kind must be specified when running a query.",
-        ),
-    ],
+    [({"date": "2016-01-01"}, "Query kind must be specified when running a query."),],
 )
 @pytest.mark.asyncio
 async def test_post_query_error(
@@ -92,7 +47,7 @@ async def test_post_query_error(
     Test that correct status of 400 is returned for a broken query.
     """
 
-    token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
+    token = access_token_builder([f"run&spatial_aggregate"])
     dummy_zmq_server.return_value = ZMQReply(status="error", msg="Broken query")
     response = await app.client.post(
         f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=query

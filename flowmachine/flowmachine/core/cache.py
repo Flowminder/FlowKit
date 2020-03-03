@@ -501,20 +501,29 @@ def shrink_below_size(
         shrink = shrink_one
 
     current_cache_size = initial_cache_size
-    while current_cache_size > size_threshold:
-        obj_removed, cache_reduction = shrink(
-            connection, protected_period=protected_period
+    try:
+        while current_cache_size > size_threshold:
+            obj_removed, cache_reduction = shrink(
+                connection, protected_period=protected_period
+            )
+            removed.append(obj_removed)
+            current_cache_size -= cache_reduction
+        logger.info(
+            f"New cache size {'would' if dry_run else 'will'} be {current_cache_size}.",
+            removed=[q.query_id for q in removed],
+            dry_run=dry_run,
+            initial_cache_size=initial_cache_size,
+            current_cache_size=current_cache_size,
+            size_threshold=size_threshold,
         )
-        removed.append(obj_removed)
-        current_cache_size -= cache_reduction
-    logger.info(
-        f"New cache size {'would' if dry_run else 'will'} be {current_cache_size}.",
-        removed=[q.query_id for q in removed],
-        dry_run=dry_run,
-        initial_cache_size=initial_cache_size,
-        current_cache_size=current_cache_size,
-        size_threshold=size_threshold,
-    )
+    except IndexError:
+        logger.info(
+            "Unable to shrink cache. No cache items eligible to be removed.",
+            dry_run=dry_run,
+            initial_cache_size=initial_cache_size,
+            current_cache_size=current_cache_size,
+            size_threshold=size_threshold,
+        )
     return removed
 
 

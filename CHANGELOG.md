@@ -7,12 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Improved UI for API permissions in FlowAuth.
 
 ### Changed
+- The format of user claims expected has changed from a dictionary, to string based format. FlowAPI now expects the claims key of any token to contain a list of scope strings.
+- Permissions for joined spatial aggregates can now be set at a finer level in FlowAuth, to allow administrators to grant access only to specific combinations of query types at different aggregation units.
+- FlowAuth no longer requires administrators to manually configure API routes, and will extract them from a FlowAPI server's open api specification.
+- FlowAuth now uses structlog for log messages.
+- FlowAPI no longer mandates a top level `aggregation_unit` field in query specifications.
+- FlowClient's `flows` and `modal_location` functions no longer require an aggregation unit.
 
 ### Fixed
 
 ### Removed
+- The poll type permission has been removed, and is implicitly granted by both read and get_result rights.
+- FlowAuth no longer allows administrators to specify the name of a FlowAPI server, and will instead use the name specified in the server's open api specification.
 
 ## [1.2.1]
 

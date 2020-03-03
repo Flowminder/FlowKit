@@ -3,14 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import binascii
 
-from flask import request, jsonify, Blueprint, current_app, session
-from flask_login import login_user, logout_user, login_required, current_user
-from flask_principal import identity_changed, Identity, AnonymousIdentity
+from flask import Blueprint, current_app, jsonify, request, session
 from werkzeug.exceptions import abort
 
-from .models import *
-from .invalid_usage import InvalidUsage, Unauthorized
+from flask_login import current_user, login_required, login_user, logout_user
+from flask_principal import AnonymousIdentity, Identity, identity_changed
 
+from .invalid_usage import InvalidUsage, Unauthorized
+from .models import *
 
 blueprint = Blueprint(__name__, __name__)
 
@@ -22,7 +22,9 @@ def signin():
         raise InvalidUsage("Must supply username or password.")
     user = User.query.filter(User.username == json["username"]).first()
     if user is not None:
-        current_app.logger.debug(f"{user.username}:{user.id} trying to log in.")
+        current_app.logger.debug(
+            "Login attempt", username=user.username, user_id=user.id
+        )
         if user.is_correct_password(json["password"]):
             two_factor = user.two_factor_auth
             if two_factor is not None and two_factor.enabled:
@@ -47,7 +49,7 @@ def signin():
                     "require_two_factor_setup": current_user.two_factor_setup_required,
                 }
             )
-    current_app.logger.debug(f"{json['username']} failed to log in.")
+    current_app.logger.debug("Failed login attempt", username=json["username"])
     raise Unauthorized("Incorrect username or password.")
 
 

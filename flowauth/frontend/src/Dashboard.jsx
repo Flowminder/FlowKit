@@ -22,9 +22,7 @@ import UserList from "./UserList";
 import ServerList from "./ServerList";
 import AdminMenu from "./AdminMenu";
 import UserDetails from "./UserDetails";
-import CapabilityList from "./CapabilityList";
 import PublicKey from "./PublicKey";
-import AggregationUnitList from "./AggregationUnitList";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { logout } from "./util/api";
 
@@ -156,10 +154,6 @@ class Dashboard extends React.Component {
         return <GroupList />;
       case "user_details":
         return <UserDetails />;
-      case "capability_admin":
-        return <CapabilityList />;
-      case "aggregation_unit_admin":
-        return <AggregationUnitList />;
       case "public_key_admin":
         return <PublicKey />;
       default:
@@ -168,7 +162,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { classes, setLoggedOut, is_admin } = this.props;
+    const { classes, is_admin } = this.props;
     const { activePage } = this.state;
 
     return (

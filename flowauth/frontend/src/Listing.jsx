@@ -21,15 +21,13 @@ const styles = theme => ({
 
 class Listing extends React.Component {
   state = { objs: [] };
-  componentDidMount() {
+  async componentDidMount() {
     const { getter } = this.props;
-    getter()
-      .then(objs => {
-        this.setState({ objs: objs });
-      })
-      .catch(err => {
-        this.setState({ hasError: true, error: err });
-      });
+    try {
+      this.setState({ objs: await getter() });
+    } catch (err) {
+      this.setState({ hasError: true, error: err });
+    }
   }
   rmObj = obj_id => {
     const { deleteAction } = this.props;
@@ -43,7 +41,7 @@ class Listing extends React.Component {
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { classes, editAction, kind, deleteAction } = this.props;
+    const { classes, editAction, kind } = this.props;
     const { objs } = this.state;
     return (
       <React.Fragment>
