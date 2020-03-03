@@ -19,10 +19,13 @@ def dummy_flowapi(monkeypatch):
     get_mock.return_value.json.return_value = dict(
         components=dict(
             securitySchemes=dict(
-                token={"x-security-scopes": ["get_result&DUMMY_QUERY_KIND.admin0"]}
+                token={
+                    "x-security-scopes": ["get_result&DUMMY_QUERY_KIND.admin0"],
+                    "x-audience": "DUMMY",
+                }
             )
         )
     )
 
     monkeypatch.setattr("requests.get", get_mock)
-    return ["get_result&DUMMY_QUERY_KIND.admin0"]
+    return dict(claims=["get_result&DUMMY_QUERY_KIND.admin0"], aud="DUMMY")

@@ -22,8 +22,6 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
             private_key_bytes,
             "--lifetime",
             1,
-            "--audience",
-            os.environ["FLOWAPI_IDENTIFIER"],
             "--flowapi-url",
             "DUMMY_URL",
         ],
@@ -36,4 +34,5 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
         audience=os.environ["FLOWAPI_IDENTIFIER"],
     )
     assert result.exit_code == 0
-    assert decoded["user_claims"] == dummy_flowapi
+    assert decoded["user_claims"] == dummy_flowapi["claims"]
+    assert decoded["aud"] == dummy_flowapi["aud"]
