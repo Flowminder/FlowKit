@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Flowmachine now uses an enum for interaction direction parameters (but will still accept them as strings). [#357](https://github.com/Flowminder/FlowKit/issues/357)
 
 ### Fixed
 
