@@ -4,21 +4,20 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List, Union
-
 """
 Calculates the number of events at a location
 during a specified time period.
-
-
-
 """
-from ...core import location_joined_query, make_spatial_unit
-from ...core.spatial_unit import AnySpatialUnit
-from ..utilities import EventsTablesUnion
 
-from ...core import Query
-from ...core.mixins import GeoDataMixin
+from typing import List, Union
+
+from flowmachine.core.query import Query
+from flowmachine.core.join_to_location import location_joined_query
+from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
+from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 
 class TotalLocationEvents(GeoDataMixin, Query):
@@ -42,7 +41,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         docstring of make_spatial_unit for more information.
     interval : ['hour', 'day', 'min']
         Records activity on an hourly, daily, or by minute level.
-    direction : str, default 'both'
+    direction : {'out', 'in', 'both'} or Direction, default Direction.BOTH
         Look only at incoming or outgoing events. Can be either
         'out', 'in' or 'both'.
     """
@@ -57,7 +56,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         table: Union[None, List[str]] = None,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         interval: str = "hour",
-        direction: str = "both",
+        direction: Union[str, Direction] = Direction.BOTH,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
@@ -67,7 +66,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         self.table = table
         self.spatial_unit = spatial_unit
         self.interval = interval
-        self.direction = direction
+        self.direction = Direction(direction)
 
         if self.interval not in self.allowed_intervals:
             raise ValueError(
@@ -87,10 +86,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         # column. Don't fetch it if it is not needed for both efficiency and the
         # possibility that we might want to do pass another data type which does not
         # have this information.
-        if self.direction != "both":
-            events_tables_union_cols += ["outgoing"]
-        if self.direction not in ["in", "out", "both"]:
-            raise ValueError("Unrecognised direction: {}".format(self.direction))
+        events_tables_union_cols += self.direction.required_columns
 
         self.unioned = location_joined_query(
             EventsTablesUnion(
@@ -116,16 +112,6 @@ class TotalLocationEvents(GeoDataMixin, Query):
         )
 
     def _make_query(self):
-        # Set a filter clause based on the direction of the event
-        if self.direction == "both":
-            filter_clause = ""
-        elif self.direction == "in":
-            filter_clause = "WHERE NOT outgoing"
-        elif self.direction == "out":
-            filter_clause = "WHERE outgoing"
-        else:
-            raise ValueError("Unrecognised direction: {}".format(self.direction))
-
         # list of columns that we want to group by, these are all the time
         # columns, plus the location columns
         groups = [
@@ -141,7 +127,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
                 count(*) AS value
             FROM
                 ({self.unioned.get_query()}) unioned
-            {filter_clause}
+            {make_where(self.direction.get_filter_clause())}
             GROUP BY
                 {', '.join(groups)}
         """

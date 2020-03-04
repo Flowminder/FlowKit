@@ -13,6 +13,8 @@ from typing import Union, Tuple, List, Optional
 from flowmachine.core import Query
 from flowmachine.features.utilities import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -38,7 +40,7 @@ class IntereventInterval(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.OUT
         Whether to consider calls made, received, or both. Defaults to 'out'.
     tables : str or list of strings, default 'all'
         Can be a string of a single table (with the schema)
@@ -79,7 +81,7 @@ class IntereventInterval(SubscriberFeature):
         tables: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
-        direction: str = "both",
+        direction: Union[str, Direction] = Direction.OUT,
     ):
 
         self.start = start
@@ -87,14 +89,13 @@ class IntereventInterval(SubscriberFeature):
         self.hours = hours
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
+        self.direction = Direction(direction)
 
-        if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "datetime"]
-        elif self.direction in {"in", "out"}:
-            column_list = [self.subscriber_identifier, "datetime", "outgoing"]
-        else:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
+        column_list = [
+            self.subscriber_identifier,
+            "datetime",
+            *self.direction.required_columns,
+        ]
 
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
@@ -121,11 +122,7 @@ class IntereventInterval(SubscriberFeature):
 
     def _make_query(self):
 
-        where_clause = ""
-        if self.direction != "both":
-            where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        where_clause = make_where(self.direction.get_filter_clause())
 
         # Postgres does not support the following three operations with intervals
         if self.statistic in {"median", "stddev", "variance"}:

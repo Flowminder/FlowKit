@@ -6,13 +6,15 @@
 """
 Calculate metrics related with distance between caller and her/his counterparts.
 """
-from typing import List
+from typing import List, Union
+
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.spatial.distance_matrix import DistanceMatrix
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
-
-from ..utilities import EventsTablesUnion
-from .metaclasses import SubscriberFeature
-from ..spatial.distance_matrix import DistanceMatrix
 
 
 class DistanceCounterparts(SubscriberFeature):
@@ -70,7 +72,7 @@ class DistanceCounterparts(SubscriberFeature):
         *,
         hours="all",
         tables="all",
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         subscriber_subset=None,
         exclude_self_calls=True,
     ):
@@ -78,7 +80,7 @@ class DistanceCounterparts(SubscriberFeature):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.direction = direction
+        self.direction = Direction(direction)
         self.exclude_self_calls = exclude_self_calls
 
         self.statistic = statistic.lower()
@@ -125,14 +127,10 @@ class DistanceCounterparts(SubscriberFeature):
 
     def _make_query(self):
 
-        filters = []
-        if self.direction != "both":
-            filters.append(
-                f"A.outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        filters = [self.direction.get_filter_clause("A")]
         if self.exclude_self_calls:
             filters.append("A.subscriber != A.msisdn_counterpart")
-        on_filters = f"AND {' AND '.join(filters)} " if len(filters) > 0 else ""
+        on_filters = make_where(filters)
 
         sql = f"""
         SELECT

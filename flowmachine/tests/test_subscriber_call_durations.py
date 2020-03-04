@@ -53,18 +53,15 @@ def test_polygon_tables(get_dataframe):
     )
     df = get_dataframe(per_location_durations)
 
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 12281
     df = get_dataframe(
         PerLocationSubscriberCallDurations("2016-01-01", "2016-01-07", direction="in")
     )
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 24086
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086
     df = get_dataframe(
         PerLocationSubscriberCallDurations("2016-01-01", "2016-01-07", direction="both")
     )
-    assert (
-        df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum
-        == 24086 + 12281
-    )
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086 + 12281
 
     paired_per_location_durations = PairedPerLocationSubscriberCallDurations(
         "2016-01-01",
@@ -75,11 +72,8 @@ def test_polygon_tables(get_dataframe):
     )
 
     df = get_dataframe(paired_per_location_durations)
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
-    assert (
-        df.groupby("msisdn_counterpart").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum
-        == 24086
-    )
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 12281
+    assert df.groupby("msisdn_counterpart").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086
 
 
 def test_durations(get_dataframe):
@@ -88,15 +82,15 @@ def test_durations(get_dataframe):
     """
     out_durations = SubscriberCallDurations("2016-01-01", "2016-01-07")
     df = get_dataframe(out_durations).set_index("subscriber")
-    assert df.loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
+    assert df.loc["nL9KYGXpz2G5mvDa"].value == 12281
     df = get_dataframe(
         SubscriberCallDurations("2016-01-01", "2016-01-07", direction="in")
     ).set_index("subscriber")
-    assert df.loc["nL9KYGXpz2G5mvDa"].duration_sum == 24086
+    assert df.loc["nL9KYGXpz2G5mvDa"].value == 24086
     df = get_dataframe(
         SubscriberCallDurations("2016-01-01", "2016-01-07", direction="both")
     ).set_index("subscriber")
-    assert df.loc["nL9KYGXpz2G5mvDa"].duration_sum == 24086 + 12281
+    assert df.loc["nL9KYGXpz2G5mvDa"].value == 24086 + 12281
 
 
 def test_paired_durations(get_dataframe):
@@ -105,11 +99,8 @@ def test_paired_durations(get_dataframe):
     """
     paired_durations = PairedSubscriberCallDurations("2016-01-01", "2016-01-07")
     df = get_dataframe(paired_durations)
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
-    assert (
-        df.groupby("msisdn_counterpart").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum
-        == 24086
-    )
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 12281
+    assert df.groupby("msisdn_counterpart").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086
 
 
 def test_per_location_durations(get_dataframe):
@@ -120,18 +111,15 @@ def test_per_location_durations(get_dataframe):
         "2016-01-01", "2016-01-07"
     )
     df = get_dataframe(per_location_durations)
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 12281
     df = get_dataframe(
         PerLocationSubscriberCallDurations("2016-01-01", "2016-01-07", direction="in")
     )
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 24086
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086
     df = get_dataframe(
         PerLocationSubscriberCallDurations("2016-01-01", "2016-01-07", direction="both")
     )
-    assert (
-        df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum
-        == 24086 + 12281
-    )
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086 + 12281
 
 
 def test_paired_per_location_durations(get_dataframe):
@@ -142,11 +130,8 @@ def test_paired_per_location_durations(get_dataframe):
         "2016-01-01", "2016-01-07"
     )
     df = get_dataframe(paired_per_location_durations)
-    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
-    assert (
-        df.groupby("msisdn_counterpart").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum
-        == 24086
-    )
+    assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].value == 12281
+    assert df.groupby("msisdn_counterpart").sum().loc["nL9KYGXpz2G5mvDa"].value == 24086
 
 
 def test_direction_checks():

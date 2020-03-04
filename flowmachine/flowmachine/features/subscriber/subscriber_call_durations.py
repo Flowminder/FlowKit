@@ -10,12 +10,14 @@ Total and per-counterpart call durations for subscribers.
 
 """
 import warnings
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from ...core import location_joined_query, make_spatial_unit
-from ...core.spatial_unit import AnySpatialUnit
-from ..utilities import EventsTablesUnion
-from .metaclasses import SubscriberFeature
+from flowmachine.core import location_joined_query
+from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -38,7 +40,7 @@ class SubscriberCallDurations(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.OUT
         Whether to consider calls made, received, or both. Defaults to 'out'.
     statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
@@ -50,7 +52,7 @@ class SubscriberCallDurations(SubscriberFeature):
     >>> s = SubscriberCallDurations("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
-                   msisdn  duration_sum
+                   msisdn           value
     0    jWlyLwbGdvKV35Mm          4038.0
     1    EreGoBpxJOBNl392         12210.0
     2    nvKNoAmxMvBW4kJr         10847.0
@@ -66,7 +68,7 @@ class SubscriberCallDurations(SubscriberFeature):
         stop,
         *,
         subscriber_identifier="msisdn",
-        direction="out",
+        direction: Union[str, Direction] = Direction.OUT,
         statistic="sum",
         hours="all",
         subscriber_subset=None,
@@ -75,7 +77,7 @@ class SubscriberCallDurations(SubscriberFeature):
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
-        self.direction = direction
+        self.direction = Direction(direction)
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -83,10 +85,12 @@ class SubscriberCallDurations(SubscriberFeature):
                     self.statistic, valid_stats
                 )
             )
-        if direction not in {"in", "out", "both"}:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        column_list = [self.subscriber_identifier, "outgoing", "duration"]
+        column_list = [
+            self.subscriber_identifier,
+            "duration",
+            *self.direction.required_columns,
+        ]
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -100,16 +104,13 @@ class SubscriberCallDurations(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", f"duration_{self.statistic}"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
-        where_clause = ""
-        if self.direction != "both":
-            where_clause = "WHERE {}outgoing".format(
-                "" if self.direction == "out" else "NOT "
-            )
+        where_clause = make_where(self.direction.get_filter_clause())
+
         return f"""
-        SELECT subscriber, {self.statistic}(duration) as duration_{self.statistic} FROM 
+        SELECT subscriber, {self.statistic}(duration) as value FROM 
         ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber
@@ -135,7 +136,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.OUT
         Whether to consider calls made, received, or both. Defaults to 'out'.
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
@@ -150,7 +151,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
     >>> s = PerLocationSubscriberCallDurations("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
-                subscriber            name  duration_sum
+                subscriber            name          value
     0     038OVABN11Ak4W5P         Baglung          1979.0
     1     038OVABN11Ak4W5P           Banke          2204.0
     2     038OVABN11Ak4W5P           Dolpa          9169.0
@@ -164,7 +165,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         stop,
         *,
         subscriber_identifier="msisdn",
-        direction="out",
+        direction: Union[str, Direction] = Direction.OUT,
         statistic="sum",
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
@@ -173,7 +174,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
+        self.direction = Direction(direction)
         if spatial_unit is None:
             self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
@@ -185,16 +186,14 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
                     self.statistic, valid_stats
                 )
             )
-        if direction not in {"in", "out", "both"}:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
 
         column_list = [
             self.subscriber_identifier,
             "msisdn_counterpart",
-            "outgoing",
             "duration",
             "location_id",
             "datetime",
+            *self.direction.required_columns,
         ]
         self.unioned_query = location_joined_query(
             EventsTablesUnion(
@@ -213,21 +212,14 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + self.spatial_unit.location_id_columns
-            + [f"duration_{self.statistic}"]
-        )
+        return ["subscriber"] + self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
         loc_cols = ", ".join(self.spatial_unit.location_id_columns)
-        where_clause = ""
-        if self.direction != "both":
-            where_clause = "WHERE {}outgoing".format(
-                "" if self.direction == "out" else "NOT "
-            )
+        where_clause = make_where(self.direction.get_filter_clause())
+
         return f"""
-        SELECT subscriber, {loc_cols}, {self.statistic}(duration) as duration_{self.statistic} 
+        SELECT subscriber, {loc_cols}, {self.statistic}(duration) as value 
         FROM ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber, {loc_cols}
@@ -262,7 +254,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
     >>> s = PairedSubscriberCallDurations("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
-               subscriber msisdn_counterpart  duration_sum
+               subscriber msisdn_counterpart  value
     0    038OVABN11Ak4W5P   BVYqp0ryO1oj1gRo       10833.0
     1    09NrjaNNvDanD8pk   mJ9eZYnvvr5YGW2j       17028.0
     2    0ayZGYEQrqYlKw6g   Q1jMk7qjqXBnwoDR       10465.0
@@ -313,11 +305,11 @@ class PairedSubscriberCallDurations(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "msisdn_counterpart", f"duration_{self.statistic}"]
+        return ["subscriber", "msisdn_counterpart", "value"]
 
     def _make_query(self):
         return f"""
-        SELECT subscriber, msisdn_counterpart, {self.statistic}(duration) as duration_{self.statistic} 
+        SELECT subscriber, msisdn_counterpart, {self.statistic}(duration) as value 
         FROM ({self.unioned_query.get_query()}) u
         WHERE outgoing
         GROUP BY subscriber, msisdn_counterpart
@@ -360,7 +352,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
     1     038OVABN11Ak4W5P   BVYqp0ryO1oj1gRo          Dolpa           Rasuwa
     2     038OVABN11Ak4W5P   BVYqp0ryO1oj1gRo           Mugu          Baglung
     ...
-              duration_sum
+              value
     0             2756.0
     1             1885.0
     2             1027.0
@@ -436,7 +428,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
             ["subscriber", "msisdn_counterpart"]
             + self.spatial_unit.location_id_columns
             + [f"{x}_counterpart" for x in self.spatial_unit.location_id_columns]
-            + [f"duration_{self.statistic}"]
+            + ["value"]
         )
 
     def _make_query(self):
@@ -447,7 +439,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         loc_cols = ", ".join(loc_cols)
 
         return f"""
-        SELECT subscriber, msisdn_counterpart, {loc_cols}, {self.statistic}(duration) as duration_{self.statistic}
+        SELECT subscriber, msisdn_counterpart, {loc_cols}, {self.statistic}(duration) as value
          FROM ({self.joined.get_query()}) u
         GROUP BY subscriber, msisdn_counterpart, {loc_cols}
         """

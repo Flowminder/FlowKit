@@ -3,13 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+from typing import Union
 
-from typing import List
-
-from ...core import location_joined_query, make_spatial_unit
-from ...core.spatial_unit import AnySpatialUnit
-from ..utilities.sets import EventsTablesUnion
-from .metaclasses import SubscriberFeature
+from flowmachine.core import location_joined_query
+from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -36,8 +37,8 @@ class PerLocationEventStats(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
-        Whether to consider calls made, received, or both. Defaults to 'out'.
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
+        Whether to consider calls made, received, or both. Defaults to 'both'.
     tables : str or list of strings, default 'all'
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
@@ -72,7 +73,7 @@ class PerLocationEventStats(SubscriberFeature):
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         subscriber_subset=None,
     ):
         self.start = start
@@ -81,7 +82,7 @@ class PerLocationEventStats(SubscriberFeature):
         self.hours = hours
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
+        self.direction = Direction(direction)
         self.statistic = statistic
 
         if self.statistic not in valid_stats:
@@ -91,17 +92,12 @@ class PerLocationEventStats(SubscriberFeature):
                 )
             )
 
-        if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "location_id", "datetime"]
-        elif self.direction in {"in", "out"}:
-            column_list = [
-                self.subscriber_identifier,
-                "location_id",
-                "outgoing",
-                "datetime",
-            ]
-        else:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
+        column_list = [
+            self.subscriber_identifier,
+            "location_id",
+            "datetime",
+            *self.direction.required_columns,
+        ]
 
         self.unioned_query = location_joined_query(
             EventsTablesUnion(
@@ -126,11 +122,7 @@ class PerLocationEventStats(SubscriberFeature):
     def _make_query(self):
         loc_cols = ", ".join(self.spatial_unit.location_id_columns)
 
-        where_clause = ""
-        if self.direction != "both":
-            where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
         SELECT subscriber, {self.statistic}(events) AS value

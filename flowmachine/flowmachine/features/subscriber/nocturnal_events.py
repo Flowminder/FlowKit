@@ -11,8 +11,12 @@ hour definitions can be specified.
 
 
 """
-from .metaclasses import SubscriberFeature
-from ..utilities import EventsTablesUnion
+from typing import Union
+
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 
 class NocturnalEvents(SubscriberFeature):
@@ -33,8 +37,8 @@ class NocturnalEvents(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
-        Whether to consider calls made, received, or both. Defaults to 'out'.
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
+        Whether to consider calls made, received, or both. Defaults to 'both'.
     tables : str or list of strings, default 'all'
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
@@ -62,23 +66,22 @@ class NocturnalEvents(SubscriberFeature):
         hours=(20, 4),
         *,
         subscriber_identifier="msisdn",
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         subscriber_subset=None,
         tables="all",
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
+        self.direction = Direction(direction)
         self.hours = hours
         self.tables = tables
 
-        if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "datetime"]
-        elif self.direction in {"in", "out"}:
-            column_list = [self.subscriber_identifier, "datetime", "outgoing"]
-        else:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
+        column_list = [
+            self.subscriber_identifier,
+            "datetime",
+            *self.direction.required_columns,
+        ]
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -96,11 +99,7 @@ class NocturnalEvents(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-        where_clause = ""
-        if self.direction != "both":
-            where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        where_clause = make_where(self.direction.get_filter_clause())
 
         sql = f"""
         SELECT

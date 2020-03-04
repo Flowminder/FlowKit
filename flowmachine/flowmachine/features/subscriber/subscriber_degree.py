@@ -9,10 +9,12 @@ have done over a certain time period.
 
 
 """
-from typing import List
+from typing import List, Union
 
-from .metaclasses import SubscriberFeature
-from ..utilities import EventsTablesUnion
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 
 class SubscriberDegree(SubscriberFeature):
@@ -28,6 +30,8 @@ class SubscriberDegree(SubscriberFeature):
         Restrict the analysis to only a certain set
         of hours within each day.
     tables : str, default 'all'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
+        Whether to consider calls made, received, or both. Defaults to 'both'.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -68,24 +72,23 @@ class SubscriberDegree(SubscriberFeature):
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.direction = direction
+        self.direction = Direction(direction)
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
         self.tables = tables
 
-        if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-        elif self.direction in {"in", "out"}:
-            column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
-        else:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
+        column_list = [
+            self.subscriber_identifier,
+            "msisdn_counterpart",
+            *self.direction.required_columns,
+        ]
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -105,14 +108,11 @@ class SubscriberDegree(SubscriberFeature):
 
     def _make_query(self):
 
-        filters = []
-        if self.direction != "both":
-            filters.append(
-                f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        filters = [self.direction.get_filter_clause()]
+
         if self.exclude_self_calls:
             filters.append("subscriber != msisdn_counterpart")
-        where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
+        where_clause = make_where(filters)
 
         sql = f"""
         SELECT
