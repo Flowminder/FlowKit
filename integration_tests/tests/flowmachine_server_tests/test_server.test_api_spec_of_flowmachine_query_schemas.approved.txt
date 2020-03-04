@@ -76,6 +76,23 @@
     ],
     "type": "object"
   },
+  "Bounds": {
+    "properties": {
+      "lower_bound": {
+        "format": "float",
+        "type": "number"
+      },
+      "upper_bound": {
+        "format": "float",
+        "type": "number"
+      }
+    },
+    "required": [
+      "lower_bound",
+      "upper_bound"
+    ],
+    "type": "object"
+  },
   "DFSTotalMetricAmount": {
     "properties": {
       "aggregation_unit": {
@@ -327,6 +344,7 @@
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
+        "histogram_aggregate": "#/components/schemas/HistogramAggregate",
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
@@ -354,6 +372,9 @@
       },
       {
         "$ref": "#/components/schemas/Geography"
+      },
+      {
+        "$ref": "#/components/schemas/HistogramAggregate"
       },
       {
         "$ref": "#/components/schemas/JoinedSpatialAggregate"
@@ -483,6 +504,90 @@
       "start_date"
     ],
     "type": "object"
+  },
+  "HistogramAggregate": {
+    "properties": {
+      "bins": {
+        "$ref": "#/components/schemas/HistogramBins"
+      },
+      "metric": {
+        "$ref": "#/components/schemas/HistogrammableMetrics"
+      },
+      "query_kind": {
+        "enum": [
+          "histogram_aggregate"
+        ],
+        "type": "string"
+      },
+      "range": {
+        "$ref": "#/components/schemas/Bounds"
+      }
+    },
+    "required": [
+      "metric"
+    ],
+    "type": "object"
+  },
+  "HistogramBins": {
+    "properties": {
+      "bin_list": {
+        "items": {
+          "format": "float",
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "n_bins": {
+        "format": "int32",
+        "type": "integer"
+      }
+    },
+    "type": "object"
+  },
+  "HistogrammableMetrics": {
+    "discriminator": {
+      "mapping": {
+        "displacement": "#/components/schemas/Displacement",
+        "event_count": "#/components/schemas/EventCount",
+        "nocturnal_events": "#/components/schemas/NocturnalEvents",
+        "pareto_interactions": "#/components/schemas/ParetoInteractions",
+        "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
+        "subscriber_degree": "#/components/schemas/SubscriberDegree",
+        "topup_amount": "#/components/schemas/TopUpAmount",
+        "topup_balance": "#/components/schemas/TopUpBalance",
+        "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/Displacement"
+      },
+      {
+        "$ref": "#/components/schemas/EventCount"
+      },
+      {
+        "$ref": "#/components/schemas/NocturnalEvents"
+      },
+      {
+        "$ref": "#/components/schemas/ParetoInteractions"
+      },
+      {
+        "$ref": "#/components/schemas/RadiusOfGyration"
+      },
+      {
+        "$ref": "#/components/schemas/SubscriberDegree"
+      },
+      {
+        "$ref": "#/components/schemas/TopUpAmount"
+      },
+      {
+        "$ref": "#/components/schemas/TopUpBalance"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueLocationCounts"
+      }
+    ]
   },
   "InputToAggregateNetworkObjects": {
     "discriminator": {

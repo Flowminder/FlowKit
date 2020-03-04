@@ -79,6 +79,23 @@
         ],
         "type": "object"
       },
+      "Bounds": {
+        "properties": {
+          "lower_bound": {
+            "format": "float",
+            "type": "number"
+          },
+          "upper_bound": {
+            "format": "float",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lower_bound",
+          "upper_bound"
+        ],
+        "type": "object"
+      },
       "DFSTotalMetricAmount": {
         "properties": {
           "aggregation_unit": {
@@ -335,6 +352,7 @@
             "dummy_query": "#/components/schemas/DummyQuery",
             "flows": "#/components/schemas/Flows",
             "geography": "#/components/schemas/Geography",
+            "histogram_aggregate": "#/components/schemas/HistogramAggregate",
             "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
             "location_event_counts": "#/components/schemas/LocationEventCounts",
             "location_introversion": "#/components/schemas/LocationIntroversion",
@@ -362,6 +380,9 @@
           },
           {
             "$ref": "#/components/schemas/Geography"
+          },
+          {
+            "$ref": "#/components/schemas/HistogramAggregate"
           },
           {
             "$ref": "#/components/schemas/JoinedSpatialAggregate"
@@ -494,6 +515,91 @@
           "start_date"
         ],
         "type": "object"
+      },
+      "HistogramAggregate": {
+        "properties": {
+          "bins": {
+            "$ref": "#/components/schemas/HistogramBins"
+          },
+          "metric": {
+            "$ref": "#/components/schemas/HistogrammableMetrics"
+          },
+          "query_kind": {
+            "enum": [
+              "histogram_aggregate"
+            ],
+            "type": "string"
+          },
+          "range": {
+            "$ref": "#/components/schemas/Bounds"
+          }
+        },
+        "required": [
+          "metric",
+          "query_kind"
+        ],
+        "type": "object"
+      },
+      "HistogramBins": {
+        "properties": {
+          "bin_list": {
+            "items": {
+              "format": "float",
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "n_bins": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "HistogrammableMetrics": {
+        "discriminator": {
+          "mapping": {
+            "displacement": "#/components/schemas/Displacement",
+            "event_count": "#/components/schemas/EventCount",
+            "nocturnal_events": "#/components/schemas/NocturnalEvents",
+            "pareto_interactions": "#/components/schemas/ParetoInteractions",
+            "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
+            "subscriber_degree": "#/components/schemas/SubscriberDegree",
+            "topup_amount": "#/components/schemas/TopUpAmount",
+            "topup_balance": "#/components/schemas/TopUpBalance",
+            "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
+          },
+          "propertyName": "query_kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Displacement"
+          },
+          {
+            "$ref": "#/components/schemas/EventCount"
+          },
+          {
+            "$ref": "#/components/schemas/NocturnalEvents"
+          },
+          {
+            "$ref": "#/components/schemas/ParetoInteractions"
+          },
+          {
+            "$ref": "#/components/schemas/RadiusOfGyration"
+          },
+          {
+            "$ref": "#/components/schemas/SubscriberDegree"
+          },
+          {
+            "$ref": "#/components/schemas/TopUpAmount"
+          },
+          {
+            "$ref": "#/components/schemas/TopUpBalance"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueLocationCounts"
+          }
+        ]
       },
       "InputToAggregateNetworkObjects": {
         "discriminator": {
@@ -1726,6 +1832,28 @@
           "get_result&geography.aggregation_unit.admin2",
           "get_result&geography.aggregation_unit.admin3",
           "get_result&geography.aggregation_unit.lon-lat",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin1",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin2",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin3",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.lon-lat",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin0",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin1",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin2",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin3",
+          "get_result&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.lon-lat",
+          "get_result&histogram_aggregate.metric.event_count",
+          "get_result&histogram_aggregate.metric.nocturnal_events",
+          "get_result&histogram_aggregate.metric.pareto_interactions",
+          "get_result&histogram_aggregate.metric.radius_of_gyration",
+          "get_result&histogram_aggregate.metric.subscriber_degree",
+          "get_result&histogram_aggregate.metric.topup_amount",
+          "get_result&histogram_aggregate.metric.topup_balance",
+          "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin0",
+          "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin1",
+          "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin2",
+          "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin3",
+          "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.lon-lat",
           "get_result&joined_spatial_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
           "get_result&joined_spatial_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
           "get_result&joined_spatial_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
@@ -2121,6 +2249,28 @@
           "run&geography.aggregation_unit.admin2",
           "run&geography.aggregation_unit.admin3",
           "run&geography.aggregation_unit.lon-lat",
+          "run&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0",
+          "run&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin1",
+          "run&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin2",
+          "run&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin3",
+          "run&histogram_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.lon-lat",
+          "run&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin0",
+          "run&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin1",
+          "run&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin2",
+          "run&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.admin3",
+          "run&histogram_aggregate.metric.displacement.reference_location.modal_location.locations.daily_location.aggregation_unit.lon-lat",
+          "run&histogram_aggregate.metric.event_count",
+          "run&histogram_aggregate.metric.nocturnal_events",
+          "run&histogram_aggregate.metric.pareto_interactions",
+          "run&histogram_aggregate.metric.radius_of_gyration",
+          "run&histogram_aggregate.metric.subscriber_degree",
+          "run&histogram_aggregate.metric.topup_amount",
+          "run&histogram_aggregate.metric.topup_balance",
+          "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin0",
+          "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin1",
+          "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin2",
+          "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin3",
+          "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.lon-lat",
           "run&joined_spatial_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
           "run&joined_spatial_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
           "run&joined_spatial_aggregate.metric.displacement.reference_location.daily_location.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
