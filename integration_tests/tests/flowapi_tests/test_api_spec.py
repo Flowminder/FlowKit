@@ -1,7 +1,7 @@
 import json
 import flowapi
 import yaml
-from flowmachine.utils import sort_recursively
+from flowmachine_core.utils import sort_recursively
 import requests
 
 

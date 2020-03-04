@@ -16,11 +16,11 @@ import pytest
 import os
 import pandas as pd
 
-import flowmachine
-from flowmachine.core import Connection, Query
-from flowmachine.core.cache import reset_cache
-from flowmachine.core.context import get_db, get_redis, get_executor
-import flowmachine.core.server.server
+from flowmachine_core.core.init import connections
+from flowmachine_core.core.connection import Connection
+from flowmachine_core.core.cache import reset_cache
+from flowmachine_core.core.context import get_db, get_redis, get_executor, context
+import flowmachine_server.server
 
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +56,7 @@ def autostart_flowmachine_server(logging_config):
     if disable_autostart_servers:
         yield  # need to yield something from either branch of the if statement
     else:
-        fm_thread = Process(target=flowmachine.core.server.server.main)
+        fm_thread = Process(target=flowmachine_server.server.main)
         fm_thread.start()
         yield
         fm_thread.terminate()
@@ -82,12 +82,12 @@ def start_flowmachine_server_with_or_without_dependency_caching(
     # Turn dependency caching on or off
     monkeypatch.setenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", request.param)
     # Start the server
-    fm_thread = Process(target=flowmachine.core.server.server.main)
+    fm_thread = Process(target=flowmachine_server.server.main)
     fm_thread.start()
 
     # Create a new flowmachine connection, because we can't use the old one after starting a new process.
     new_conn = make_flowmachine_connection_object()
-    with flowmachine.core.context.context(new_conn, get_executor(), get_redis()):
+    with context(new_conn, get_executor(), get_redis()):
         yield
 
     new_conn.close()
@@ -212,7 +212,7 @@ def fm_conn():
     flowmachine.core.connection.Connection
     """
     fm_conn = make_flowmachine_connection_object()
-    with flowmachine.connections(conn=fm_conn):
+    with connections(conn=fm_conn):
         yield
 
 

@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+pre_commit = "*"
+black = "==19.10b0"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+pytest-testmon = "*"
+asynctest = "*"
+approvaltests = "*"
+flowmachine-core = {editable = true,path = "./../flowmachine-core"}
+flowmachine-queries = {editable = true,path = "./../flowmachine-queries"}
+
+[requires]
+python_version = "3.7"

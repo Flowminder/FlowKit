@@ -1,0 +1,2 @@
+include versioneer.py
+include flowmachine_queries/_version.py

@@ -138,7 +138,7 @@ FlowMachine usage log:
 	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
 	"params": { "query_id": "ddc61a04f608dee16fff0655f91c2057" },
 	"event": "get_query_kind",
-	"logger": "flowmachine.query_run_log",
+	"logger": "flowmachine_core.query_run_log",
 	"level": "info",
 	"timestamp": "2019-01-10T14:11:03.335437Z"
 }
@@ -156,7 +156,7 @@ FlowMachine usage log:
 	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
 	"params": { "query_id": "ddc61a04f608dee16fff0655f91c2057" },
 	"event": "get_params",
-	"logger": "flowmachine.query_run_log",
+	"logger": "flowmachine_core.query_run_log",
 	"level": "info",
 	"timestamp": "2019-01-10T14:11:03.339602Z"
 }
@@ -167,7 +167,7 @@ FlowMachine usage log:
 	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
 	"params": { "query_id": "ddc61a04f608dee16fff0655f91c2057" },
 	"event": "get_sql",
-	"logger": "flowmachine.query_run_log",
+	"logger": "flowmachine_core.query_run_log",
 	"level": "info",
 	"timestamp": "2019-01-10T14:11:03.358644Z"
 }

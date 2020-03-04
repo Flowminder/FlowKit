@@ -1,10 +1,9 @@
 import itertools
-import zmq
 import textwrap
 import time
 from sqlalchemy import inspect
 
-from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine_server.utils import send_zmq_message_and_receive_reply
 
 
 def poll_until_done(port, query_id, max_tries=100):

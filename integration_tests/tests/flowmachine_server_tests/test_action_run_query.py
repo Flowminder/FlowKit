@@ -3,19 +3,19 @@ import logging
 import pytest
 import os
 
-from flowmachine.core.cache import reset_cache
-from flowmachine.core.server.utils import (
+from flowmachine_core.core.cache import reset_cache
+from flowmachine_server.utils import (
     send_zmq_message_and_receive_reply,
     send_zmq_message_and_await_reply,
 )
-from flowmachine.core.context import get_db
-from flowmachine.core import make_spatial_unit
-from flowmachine.core.dependency_graph import unstored_dependencies_graph
-from flowmachine.features.location.spatial_aggregate import SpatialAggregate
-from flowmachine.features.location.redacted_spatial_aggregate import (
+from flowmachine_core.core.context import get_db
+from flowmachine_core.query_bases.spatial_unit import make_spatial_unit
+from flowmachine_core.core.dependency_graph import unstored_dependencies_graph
+from flowmachine_core.utility_queries.spatial_aggregate import SpatialAggregate
+from flowmachine_core.utility_queries.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
-from flowmachine.features import daily_location
+from flowmachine_queries.features import daily_location
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)

@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
-
-from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine_server.utils import send_zmq_message_and_receive_reply
 
 
 # TODO: add test for code path that raises QueryProxyError with the 'get_params' action

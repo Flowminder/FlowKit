@@ -2,10 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.utils import pretty_sql
+from flowmachine_core.utils import pretty_sql
 
-from flowmachine.core import CustomQuery, make_spatial_unit
-from flowmachine.features import daily_location
+from flowmachine_core.utility_queries.custom_query import CustomQuery
+from flowmachine_core.query_bases.spatial_unit import make_spatial_unit
+from flowmachine_queries.features import daily_location
 
 
 def test_daily_location_1_sql(diff_reporter):

@@ -22,7 +22,7 @@ from datetime import timedelta
 warnings.filterwarnings("ignore")
 
 
-# Suppress flowmachine log messages
+# Suppress flowmachine_core log messages
 logging.getLogger().setLevel(logging.ERROR)
 
 

@@ -2,16 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.core.server.utils import (
+from flowmachine_server.utils import (
     send_zmq_message_and_receive_reply,
     FM_EXAMPLE_MESSAGE,
 )
-from flowmachine.core import make_spatial_unit
-from flowmachine.features.location.spatial_aggregate import SpatialAggregate
-from flowmachine.features.location.redacted_spatial_aggregate import (
+from flowmachine_core.query_bases.spatial_unit import make_spatial_unit
+from flowmachine_core.utility_queries.spatial_aggregate import SpatialAggregate
+from flowmachine_core.utility_queries.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
-from flowmachine.features import daily_location
+from flowmachine_queries.features import daily_location
 from .helpers import poll_until_done
 
 

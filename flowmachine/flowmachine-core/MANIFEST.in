@@ -1,0 +1,2 @@
+include versioneer.py
+include flowmachine_core/_version.py

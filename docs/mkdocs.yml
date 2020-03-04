@@ -8,8 +8,14 @@ plugins:
   - mktheapidocs:
       modules:
         flowmachine:
-          section: flowmachine
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine"
+          section: flowmachine_core
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine_core/flowmachine_core-core"
+        flowmachine-queries:
+          section: flowmachine_core-queries
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine_core/flowmachine_core-queries"
+        flowmachine-server:
+          section: flowmachine_core-server
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine_core/flowmachine_core-server"
         flowclient:
           section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowclient"
@@ -44,7 +50,9 @@ nav:
   - Developers:
       - developer/index.md
       - developer/dev_environment_setup.md
-      - api-docs-flowmachine
+      - api-docs-flowmachine_core
+      - api-docs-flowmachine_core-queries
+      - api-docs-flowmachine_core-server
       - FlowAPI specification: developer/api-spec.html
       - Architectural Decision Records (ADR):
         - developer/adr/README.md
