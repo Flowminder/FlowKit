@@ -696,7 +696,12 @@
   
 </li>
         
-          <li class="md-nav__item">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#contributing" class="md-nav__link">
     Contributing
   </a>
@@ -708,11 +713,6 @@
   <a href="#get-involved" class="md-nav__link">
     Get involved
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -819,12 +819,18 @@
     FlowAuth
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#quick-setup-to-run-the-frontend-tests-interactively" class="md-nav__link">
     Quick setup to run the Frontend tests interactively
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3972,7 +3978,12 @@
   
 </li>
         
-          <li class="md-nav__item">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#contributing" class="md-nav__link">
     Contributing
   </a>
@@ -3984,11 +3995,6 @@
   <a href="#get-involved" class="md-nav__link">
     Get involved
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -4095,12 +4101,18 @@
     FlowAuth
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#quick-setup-to-run-the-frontend-tests-interactively" class="md-nav__link">
     Quick setup to run the Frontend tests interactively
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -4139,50 +4151,37 @@
 <h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
 <h3 id="now">Now<a class="headerlink" href="#now" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Additional home location aggregate</li>
-<li>Work locations aggregate</li>
-<li>Support for downloading geographies via API</li>
-<li>Easier linkage between FlowAPI and FlowAuth</li>
+<li>Additional FlowMachine aggregates exposed via API</li>
+<li>Non-spatial aggregations</li>
+<li>Documentation enhancements</li>
 </ul>
 <h3 id="next">Next<a class="headerlink" href="#next" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Additional FlowMachine aggregates exposed via API</li>
-<li>Additional language targets for FlowClient</li>
-<li>Alternative login provider support for FlowAuth</li>
+<li>New metrics and insights</li>
 <li>Custom geography support</li>
 </ul>
 <h3 id="later">Later<a class="headerlink" href="#later" title="Permanent link">&para;</a></h3>
 <ul>
-<li>New metrics and insights</li>
+<li>Additional language targets for FlowClient</li>
+<li>Alternative login provider support for FlowAuth</li>
 <li>Plugin support</li>
-<li>Non-spatial aggregations</li>
 <li>Enhanced temporal aggregations</li>
 <li>Individual level API</li>
 </ul>
 <p><a name="contrib"></a>
 <p>
 <p></p>
-<h3 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h3>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
 <p>We are creating FlowKit at <a href="http://flowminder.org">Flowminder</a>.</p>
-<h4 id="get-involved">Get involved<a class="headerlink" href="#get-involved" title="Permanent link">&para;</a></h4>
+<h3 id="get-involved">Get involved<a class="headerlink" href="#get-involved" title="Permanent link">&para;</a></h3>
 <p>You are welcome to contribute to the FlowKit library. To get started, please check out our <a href="https://github.com/Flowminder/FlowKit/blob/master/.github/CONTRIBUTING.md">contributor guidelines</a>, and when you're ready to get started, follow the <a href="dev_environment_setup/">developer install guide</a>.</p>
 <p><a name="flowapi"></a></p>
 <h2 id="flowapi-guide">FlowAPI Guide<a class="headerlink" href="#flowapi-guide" title="Permanent link">&para;</a></h2>
 <p>FlowAPI is an HTTP API which provides access to the functionality of <a href="#flowmachine">FlowMachine</a>. A full overview of the available api routes is available as an <a href="api-spec.html">interactive api specification</a>.</p>
 <p>FlowAPI uses <a href="http://zeromq.org/">ZeroMQ</a> for asynchronous communication with the FlowMachine server.</p>
 <h3 id="flowapi-access-tokens">FlowAPI Access tokens<a class="headerlink" href="#flowapi-access-tokens" title="Permanent link">&para;</a></h3>
-<p>As explained in the <a href="../install/#quickinstall">quick install guide</a>, user authentication and access control are handled through the use of <a href="http://jwt.io">JSON Web Tokens (JWT)</a>. There are two categories of permissions which can be granted to a user:</p>
-<ul>
-<li>
-<p>API route permissions</p>
-<p>API routes (<code>run</code>, <code>poll</code>, <code>get_result</code>) the user is allowed to access.</p>
-</li>
-<li>
-<p>Spatial aggregation unit permissions</p>
-<p>Level of spatial aggregation at which the user is allowed to access the results of queries. Currently supports administrative levels <code>admin0</code>, <code>admin1</code>, <code>admin2</code>, <code>admin3</code>.</p>
-</li>
-</ul>
-<p>JWTs allow these access permissions to be granted independently for each query kind (e.g. <code>daily_location</code>, <code>modal_location</code>). The FlowAuth authentication management system is designed to generate JWTs for accessing FlowAPI.</p>
+<p>As explained in the <a href="../install/#quickinstall">quick install guide</a>, user authentication and access control are handled through the use of <a href="http://jwt.io">JSON Web Tokens (JWT)</a>. There are two categories of permissions (<code>run</code> and <code>get_result</code>) which can be granted to a user.
+JWTs allow these access permissions to be granted independently for each query kind (e.g. get results for daily location only at admin 3 resolution). The FlowAuth authentication management system is designed to generate JWTs for accessing FlowAPI.</p>
 <h4 id="test-tokens">Test Tokens<a class="headerlink" href="#test-tokens" title="Permanent link">&para;</a></h4>
 <p>FlowKit includes the <code>flowkit-jwt-generator</code> package, which can be used to generate tokens for testing purposes. This package supplies:</p>
 <ul>
@@ -4265,7 +4264,7 @@ Subscribers also have a consistent phone model across time, and a consistent set
 <li><code>INTERACTIONS_MULTIPLIER</code>: multiplier for interaction pairs, defaults to 5.</li>
 </ul>
 <h2 id="flowauth">FlowAuth<a class="headerlink" href="#flowauth" title="Permanent link">&para;</a></h2>
-<h2 id="quick-setup-to-run-the-frontend-tests-interactively">Quick setup to run the Frontend tests interactively<a class="headerlink" href="#quick-setup-to-run-the-frontend-tests-interactively" title="Permanent link">&para;</a></h2>
+<h3 id="quick-setup-to-run-the-frontend-tests-interactively">Quick setup to run the Frontend tests interactively<a class="headerlink" href="#quick-setup-to-run-the-frontend-tests-interactively" title="Permanent link">&para;</a></h3>
 <p>For development purposes, it is useful to be able to run the Flowauth frontend tests interactively.</p>
 <ul>
 <li>

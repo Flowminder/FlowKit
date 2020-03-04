@@ -3852,16 +3852,10 @@
 <p>Log into FlowAuth as an administrator.</p>
 </li>
 <li>
-<p>Under "API Routes", add any applicable API routes (e.g. <code>daily_location</code>).</p>
+<p>Under "Servers", add a new server by clicking the '+' button, uploading the spec downloaded from the server, and setting the latest expiry and longest life for tokens.</p>
 </li>
 <li>
-<p>Under "Aggregation Units", add any applicable aggregation units (e.g. <code>admin3</code>).</p>
-</li>
-<li>
-<p>Under "Servers", add a new server and give it a name. Note that the name must match the <code>FLOWAPI_IDENTIFIER</code> variable set in the FlowAPI docker container on this server.</p>
-</li>
-<li>
-<p>Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".</p>
+<p>Enable or disable permissions for this server under "Available API scopes".</p>
 </li>
 <li>
 <p>Under "Users", add a new user, and set the username and password.</p>
@@ -3869,7 +3863,7 @@
 <li>
 <p>Either:</p>
 <ul>
-<li>Add a server to the user, and enable/disable API permissions and aggregation units,
+<li>Add a server to the user, and enable/disable API scopes
 <p></li>
 </ul>
 </li>
@@ -3881,7 +3875,7 @@
 <p>Under "Groups", add a new group,</p>
 </li>
 <li>
-<p>Add a server to the group, and enable/disable API permissions and aggregation units,</p>
+<p>Add a server to the group, and enable/disable API scopes</p>
 </li>
 <li>
 <p>Add the user to the group.</p>
@@ -3889,7 +3883,7 @@
 </ul>
 </li>
 </ol>
-<p>The user can then log into FlowAuth and generate a token (see the <a href="../analyst/index.md#flowauth">analyst section</a> for instructions).</p>
+<p>The user can then log into FlowAuth and generate a token (see the <a href="../../../analyst/#flowauth">analyst section</a> for instructions).</p>
 <h2 id="managing-access-to-flowdb">Managing access to FlowDB<a class="headerlink" href="#managing-access-to-flowdb" title="Permanent link">&para;</a></h2>
 <p>Because FlowDB is built using <a href="https://postgresql.org">PostgreSQL</a>, you can use standard Postgres commands to <a href="https://www.postgresql.org/docs/current/sql-createrole.html">manage users</a>. FlowDB contains some default roles which you can use as group templates using <code>CREATE ROLE INHERIT</code>:</p>
 <table>

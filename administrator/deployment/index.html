@@ -3385,6 +3385,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#adding-the-new-server-to-flowauth" class="md-nav__link">
+    Adding the new server to FlowAuth
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sample-stack-files_2" class="md-nav__link">
     Sample stack files
   </a>
@@ -4170,6 +4177,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#adding-the-new-server-to-flowauth" class="md-nav__link">
+    Adding the new server to FlowAuth
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sample-stack-files_2" class="md-nav__link">
     Sample stack files
   </a>
@@ -4726,11 +4740,14 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <tr>
 <td>FLOWAPI_IDENTIFIER</td>
 <td>Secret used in combination with secret key for decoding JWTs</td>
-<td>Should be unique per FlowAPI server</td>
+<td>Should be unique per FlowAPI server; this will also be the <em>name</em> of the server in the FlowAuth user interface</td>
 </tr>
 </tbody>
 </table>
-<p>FlowAPI also makes use of the <code>FLOWAPI_FLOWDB_USER</code> and <code>FLOWAPI_FLOWDB_PASSWORD</code> secrets provided to FlowDB. </p>
+<p>FlowAPI also makes use of the <code>FLOWAPI_FLOWDB_USER</code> and <code>FLOWAPI_FLOWDB_PASSWORD</code> secrets provided to FlowDB.</p>
+<h5 id="adding-the-new-server-to-flowauth">Adding the new server to FlowAuth<a class="headerlink" href="#adding-the-new-server-to-flowauth" title="Permanent link">&para;</a></h5>
+<p>Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from <code>https://&lt;flowapi_host&gt;:&lt;flowapi_port&gt;/api/0/spec/openapi.json</code>. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.</p>
+<p>After uploading the specification, you can configure the maximum token lifetime settings, and use the dropdown box to enable or disable access to the available FlowAPI scopes. If you have updated either the FlowAPI or FlowMachine servers, you should upload the newly generated specification to ensure that the correct API actions are available when assigning users and generating tokens. </p>
 <h5 id="sample-stack-files_2">Sample stack files<a class="headerlink" href="#sample-stack-files_2" title="Permanent link">&para;</a></h5>
 <h6 id="flowmachine_1">FlowMachine<a class="headerlink" href="#flowmachine_1" title="Permanent link">&para;</a></h6>
 <p>A sample stack file suitable for use with the FlowDB and FlowETL stacks can be found <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml">here</a>. This adds an additional two services: FlowMachine, and a redis instance used to coordinate the running state of queries. If you are supporting additional users with FlowMachine as a library, they should also use this redis instance. This stack file requires one additional environment variable: <code>REDIS_HOST_PORT</code>, the localhost port where Redis will be accessible.</p>
@@ -4793,7 +4810,7 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 </div>
 <h4 id="demonstrating-successful-deployment">Demonstrating successful deployment<a class="headerlink" href="#demonstrating-successful-deployment" title="Permanent link">&para;</a></h4>
 <p>Once FlowKit installation is complete, you can verify that the system has been successfully set up by visiting <code>http&lt;s&gt;://&lt;flowapi_url&gt;:&lt;flowapi_port&gt;/api/0/spec/redoc</code>. Once all the services have come up, you will be able to view the interactive API specification.
-We also recommend running the provided <a href="../../analyst/worked_examples/index.md">worked examples</a> against the deployed FlowKit to check that everything is working correctly.</p>
+We also recommend running the provided <a href="../../analyst/worked_examples/">worked examples</a> against the deployed FlowKit to check that everything is working correctly.</p>
 <h2 id="additional-support">Additional support<a class="headerlink" href="#additional-support" title="Permanent link">&para;</a></h2>
 <p>If you require more assistance to get up and running, please reach out to us by <a href="mailto:flowkit@flowminder.org">email</a> and we will try to assist.</p>
                 
