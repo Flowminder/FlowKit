@@ -3,8 +3,17 @@
 All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.3.0]
 
 ### Added
 - Improved UI for API permissions in FlowAuth.
@@ -16,8 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth now uses structlog for log messages.
 - FlowAPI no longer mandates a top level `aggregation_unit` field in query specifications.
 - FlowClient's `flows` and `modal_location` functions no longer require an aggregation unit.
-
-### Fixed
 
 ### Removed
 - The poll type permission has been removed, and is implicitly granted by both read and get_result rights.
@@ -608,7 +615,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.2.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.3.0...master
+[1.3.0]: https://github.com/Flowminder/FlowKit/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/Flowminder/FlowKit/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/Flowminder/FlowKit/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/Flowminder/FlowKit/compare/1.1.0...1.1.1
