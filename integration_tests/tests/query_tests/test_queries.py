@@ -576,6 +576,13 @@ import pytest
                 )
             },
         ),
+        (
+            "histogram_aggregate",
+            dict(
+                metric=flowclient.event_count(start="2016-01-01", stop="2016-01-02"),
+                bins=5,
+            ),
+        ),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):
