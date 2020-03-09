@@ -1,3 +1,3 @@
 # FlowAPI
 
-Documentation for FlowAPI can be found [here](https://flowminder.github.io/FlowKit/flowapi).
+Documentation for FlowAPI can be found in the main [FlowKit documentation](https://flowkit.xyz).

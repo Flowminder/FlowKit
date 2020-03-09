@@ -1,5 +1,5 @@
 # FlowETL
 
-Tool for the automated ingestion of CDR data into FlowDB. Uses [Airflow](http://airflow.apache.org/), a platform for constructing scheduled workflows.
+Documentation for FlowETL can be found in the main [FlowKit documentation](https://flowkit.xyz).
 
-The FlowETL module of the FlowKIT project was partially funded by a grant from the GSMA's Mobile for Humanitarian Innovation Fund. Please note that this does not constitute technical or legal endorsement from the GSMA.
+The FlowETL module of the FlowKit project was partially funded by a grant from the GSMA's Mobile for Humanitarian Innovation Fund. Please note that this does not constitute technical or legal endorsement from the GSMA.

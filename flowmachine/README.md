@@ -1,3 +1,3 @@
 # FlowMachine
 
-Documentation for FlowMachine can be found [here](https://flowminder.github.io/FlowKit/flowmachine).
+Documentation for FlowMachine can be found in the main [FlowKit documentation](https://flowkit.xyz).
