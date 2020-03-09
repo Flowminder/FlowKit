@@ -19,6 +19,8 @@ RUN apt-get update -yqq \
     && apt-get install -yqq pandoc ruby gcc \
     && gem install bundler \
     && bundle install \
+    && apt-get remove -y gcc \
+    && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf \
     /var/lib/apt/lists/* \
@@ -28,6 +30,19 @@ RUN apt-get update -yqq \
     /usr/share/doc \
     /usr/share/doc-base
 
-RUN pip install -U pip && pip install .[postgres,examples]
+RUN apt-get update -yqq \
+    && apt-get install -yqq gcc g++ \
+    && pip install -U pip && pip install .[postgres,examples] \
+    && apt-get remove -y gcc g++ \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf \
+    /var/lib/apt/lists/* \
+    /tmp/* \
+    /var/tmp/* \
+    /usr/share/man \
+    /usr/share/doc \
+    /usr/share/doc-base
+
 
 CMD ["python", "-m", "autoflow"]
