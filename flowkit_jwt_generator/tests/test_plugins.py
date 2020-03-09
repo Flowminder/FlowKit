@@ -47,7 +47,7 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_by
                 verify=True,
                 algorithms=["RS256"],
             )
-            assert decoded["user_claims"] == {dummy_flowapi}
+            assert decoded["user_claims"] == {dummy_flowapi["claims"]}
     """
     )
 
@@ -90,7 +90,7 @@ def test_plugin_works_with_no_audience(
                 verify=True,
                 algorithms=["RS256"],
             )
-            assert decoded["user_claims"] == {dummy_flowapi}
+            assert decoded["user_claims"] == {dummy_flowapi["claims"]}
     """
     )
     # run all tests with pytest

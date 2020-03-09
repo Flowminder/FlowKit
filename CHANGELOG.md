@@ -3,7 +3,6 @@
 All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
 ## [Unreleased]
 
 ### Added
@@ -13,6 +12,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Removed
+
+## [1.3.0]
+
+### Added
+- Improved UI for API permissions in FlowAuth.
+
+### Changed
+- The format of user claims expected has changed from a dictionary, to string based format. FlowAPI now expects the claims key of any token to contain a list of scope strings.
+- Permissions for joined spatial aggregates can now be set at a finer level in FlowAuth, to allow administrators to grant access only to specific combinations of query types at different aggregation units.
+- FlowAuth no longer requires administrators to manually configure API routes, and will extract them from a FlowAPI server's open api specification.
+- FlowAuth now uses structlog for log messages.
+- FlowAPI no longer mandates a top level `aggregation_unit` field in query specifications.
+- FlowClient's `flows` and `modal_location` functions no longer require an aggregation unit.
+
+### Removed
+- The poll type permission has been removed, and is implicitly granted by both read and get_result rights.
+- FlowAuth no longer allows administrators to specify the name of a FlowAPI server, and will instead use the name specified in the server's open api specification.
 
 ## [1.2.1]
 
@@ -599,7 +615,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.2.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.3.0...master
+[1.3.0]: https://github.com/Flowminder/FlowKit/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/Flowminder/FlowKit/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/Flowminder/FlowKit/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/Flowminder/FlowKit/compare/1.1.0...1.1.1

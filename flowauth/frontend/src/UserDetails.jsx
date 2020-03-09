@@ -6,7 +6,6 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -124,7 +123,7 @@ class UserDetails extends React.Component {
     if (!two_factor_setup && !new_backups) {
       return (
         <Paper className={classes.root}>
-          <Grid container spacing={16} alignItems="center">
+          <Grid container spacing={2} alignItems="center">
             <Grid item xs={12}>
               <Typography variant="h5" component="h1">
                 Reset password

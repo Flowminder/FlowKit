@@ -41,7 +41,16 @@ class PublicKey extends React.Component {
       this.setState({ hasError: true, error: err });
     }
   }
-
+  copyToEncodedToClipboard = event => {
+    const textField = document.createElement("textarea");
+    textField.style.whiteSpace = "pre-wrap";
+    textField.value = window.btoa(this.state.key);
+    document.body.appendChild(textField);
+    textField.select();
+    document.execCommand("copy");
+    textField.remove();
+    this.setState({ copySuccess: "Copied!" });
+  };
   copyToClipboard = event => {
     const textField = document.createElement("textarea");
     textField.style.whiteSpace = "pre-wrap";
@@ -78,7 +87,7 @@ class PublicKey extends React.Component {
         <div className={classes.gridRoot}>
           <Grid
             container
-            spacing={16}
+            spacing={2}
             direction="row"
             justify="flex-start"
             alignItems="flex-start"
@@ -107,6 +116,16 @@ class PublicKey extends React.Component {
                   className={classes.button}
                 >
                   Copy
+                </Button>
+              </Tooltip>
+              <Tooltip title={copySuccess} placement="bottom">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={this.copyToEncodedToClipboard}
+                  className={classes.button}
+                >
+                  Copy encoded
                 </Button>
               </Tooltip>
               <Button

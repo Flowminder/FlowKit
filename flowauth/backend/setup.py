@@ -8,7 +8,6 @@ from setuptools import find_packages, setup
 
 import versioneer
 
-
 with io.open("README.md", "rt", encoding="utf8") as f:
     readme = f.read()
 
@@ -40,6 +39,7 @@ setup(
         "pyotp",
         "itsdangerous",
         "dogpile.cache",
+        "simplejson",
     ],
     extras_require={
         "test": ["pytest", "coverage", "flowkit-jwt-generator"],

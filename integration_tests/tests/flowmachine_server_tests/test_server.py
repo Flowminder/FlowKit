@@ -6,13 +6,14 @@ import json
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
-from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from flowmachine.features import ModalLocation, daily_location
+from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
 from flowmachine.features.location.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
-from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
-from flowmachine.features import daily_location, ModalLocation
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.utils import sort_recursively
+
 from .helpers import poll_until_done
 
 
@@ -20,6 +21,7 @@ def test_ping_flowmachine_server(zmq_host, zmq_port):
     """
     Sending the 'ping' action to the flowmachine server evokes a successful 'pong' response.
     """
+
     msg = {"action": "ping", "request_id": "DUMMY_ID"}
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {"status": "success", "msg": "pong", "payload": {}}
@@ -158,7 +160,6 @@ def test_run_modal_location_query(zmq_host, zmq_port):
                         "subscriber_subset": None,
                     },
                 ],
-                "aggregation_unit": "admin3",
                 "subscriber_subset": None,
             },
         },
