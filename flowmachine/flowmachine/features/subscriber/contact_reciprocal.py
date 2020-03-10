@@ -6,11 +6,14 @@
 """
 Classes for searching and dealing with reciprocal contacts.
 """
+from typing import Union
 
-from ..utilities import EventsTablesUnion
-from .metaclasses import SubscriberFeature
-from ...core.mixins.graph_mixin import GraphMixin
-from .contact_balance import ContactBalance
+from flowmachine.core.mixins.graph_mixin import GraphMixin
+from flowmachine.features.subscriber.contact_balance import ContactBalance
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 
 class ContactReciprocal(GraphMixin, SubscriberFeature):
@@ -83,15 +86,13 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         self.exclude_self_calls = exclude_self_calls
         self.tables = tables
 
-        column_list = ["msisdn", "msisdn_counterpart", "outgoing"]
-
         self.contact_in_query = ContactBalance(
             self.start,
             self.stop,
             hours=self.hours,
             tables=self.tables,
             subscriber_identifier="msisdn",
-            direction="in",
+            direction=Direction.IN,
             exclude_self_calls=self.exclude_self_calls,
             subscriber_subset=subscriber_subset,
         )
@@ -102,7 +103,7 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
             hours=self.hours,
             tables=self.tables,
             subscriber_identifier="msisdn",
-            direction="out",
+            direction=Direction.OUT,
             exclude_self_calls=self.exclude_self_calls,
             subscriber_subset=subscriber_subset,
         )
@@ -231,7 +232,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.OUT
         Whether to consider calls made, received, or both. Defaults to 'out'.
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
@@ -262,7 +263,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         stop,
         contact_reciprocal,
         *,
-        direction="both",
+        direction: Union[str, Direction] = Direction.OUT,
         subscriber_identifier="msisdn",
         hours="all",
         subscriber_subset=None,
@@ -275,20 +276,15 @@ class ProportionEventReciprocal(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.exclude_self_calls = exclude_self_calls
-        self.direction = direction
+        self.direction = Direction(direction)
         self.tables = tables
 
-        if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "msisdn", "msisdn_counterpart"]
-        elif self.direction in {"in", "out"}:
-            column_list = [
-                self.subscriber_identifier,
-                "msisdn",
-                "msisdn_counterpart",
-                "outgoing",
-            ]
-        else:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
+        column_list = [
+            self.subscriber_identifier,
+            "msisdn",
+            "msisdn_counterpart",
+            *self.direction.required_columns,
+        ]
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -310,14 +306,11 @@ class ProportionEventReciprocal(SubscriberFeature):
 
     def _make_query(self):
 
-        filters = []
-        if self.direction != "both":
-            filters.append(
-                f"outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        filters = [self.direction.get_filter_clause()]
+
         if self.exclude_self_calls:
             filters.append("subscriber != msisdn_counterpart")
-        where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
+        where_clause = make_where(filters)
 
         on_clause = f"""
         ON {'U.subscriber' if self.subscriber_identifier == 'msisdn' else 'U.msisdn'} = R.subscriber

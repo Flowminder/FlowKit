@@ -9,6 +9,7 @@ Utility classes for subsetting CDRs.
 
 from typing import List, Optional, Union, Tuple
 
+from .direction_enum import Direction
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
 from ...core import Query, make_spatial_unit
@@ -138,7 +139,7 @@ class SubscriberLocationSubset(Query):
         docstring of make_spatial_unit for more information.
     min_calls : int
         minimum number of calls a user must have made within a
-    direction : {'in', 'out', 'both'}, default 'both'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
         Whether to consider calls made, received, or both. Defaults to 'both'.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
@@ -172,7 +173,7 @@ class SubscriberLocationSubset(Query):
         *,
         min_calls,
         subscriber_identifier="msisdn",
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
         subscriber_subset=None,
@@ -184,7 +185,7 @@ class SubscriberLocationSubset(Query):
         self.stop = stop
         self.min_calls = min_calls
         self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
+        self.direction = Direction(direction)
         if spatial_unit is None:
             self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
@@ -202,7 +203,7 @@ class SubscriberLocationSubset(Query):
         )
 
         self.pslds_subset = self.pslds.numeric_subset(
-            "duration_count", low=self.min_calls, high=inf
+            "value", low=self.min_calls, high=inf
         )
 
         super().__init__()

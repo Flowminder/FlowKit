@@ -9,9 +9,8 @@ Various simple utilities.
 
 import datetime
 import re
-from contextlib import contextmanager
-import structlog
-from pathlib import Path
+from functools import singledispatch
+
 from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
@@ -316,3 +315,41 @@ def sort_recursively(d):
         return sorted(d, key=to_nested_list)
     else:
         return d
+
+
+@singledispatch
+def make_where(condition) -> str:
+    """
+    Create an sql where clause from a list of conditions.
+
+    Parameters
+    ----------
+    condition : str or list of str
+        Where conditions to combine
+
+    Returns
+    -------
+    str
+        A where clause or empty string if all clauses are empty
+
+    Examples
+    --------
+    >>> make_where("")
+    ""
+    >>> make_where("NOT outgoing")
+    "WHERE NOT outgoing"
+    >>> make_where(["NOT outgoing", "duration > 5")
+    "WHERE NOT outgoing AND duration > 5"
+
+    """
+    if condition.strip() != "":
+        return f"WHERE {condition}"
+    return ""
+
+
+@make_where.register
+def _(condition: list) -> str:
+    non_empty = set(cond for cond in condition if cond.strip() != "")
+    if len(non_empty) > 0:
+        return f"WHERE {' AND '.join(non_empty)}"
+    return ""

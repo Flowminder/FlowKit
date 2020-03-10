@@ -3,16 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-
-
+from flowmachine.core.query import Query
+from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
 from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
-
-
-from ...core import Query
-from ...core.mixins import GeoDataMixin
+from flowmachine.utils import make_where
 
 
 class RedactedLocationIntroversion(RedactedLocationMetric, GeoDataMixin, Query):
@@ -37,17 +34,6 @@ class RedactedLocationIntroversion(RedactedLocationMetric, GeoDataMixin, Query):
     def _make_query(self):
         location_columns = self.spatial_unit.location_id_columns
 
-        if self.redaction_target.direction == "both":
-            sql_direction = ""
-        elif self.redaction_target.direction == "in":
-            sql_direction = """
-                WHERE NOT A.outgoing
-            """
-        elif self.redaction_target.direction == "out":
-            sql_direction = """
-                WHERE A.outgoing
-            """
-
         sql = f"""
         WITH unioned_table AS ({self.redaction_target.unioned_query.get_query()})
         SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as value FROM (
@@ -59,7 +45,7 @@ class RedactedLocationIntroversion(RedactedLocationMetric, GeoDataMixin, Query):
             INNER JOIN unioned_table AS B
                   ON A.id = B.id
                      AND A.outgoing != B.outgoing
-                     {sql_direction}
+                     {make_where(self.redaction_target.direction.get_filter_clause("A"))}
         ) _
         GROUP BY {', '.join(location_columns)}
         HAVING count(distinct subscriber) > 15

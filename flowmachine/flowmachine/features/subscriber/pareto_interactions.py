@@ -10,12 +10,12 @@ that fraction of their contacts who account for 80% of their interactions.
 
 
 """
-from typing import List
+from typing import List, Union
 
-from .contact_balance import ContactBalance
-from .subscriber_degree import SubscriberDegree
-from ..utilities import EventsTablesUnion
-from .metaclasses import SubscriberFeature
+from flowmachine.features.subscriber.contact_balance import ContactBalance
+from flowmachine.features.subscriber.subscriber_degree import SubscriberDegree
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
 
 
 class ParetoInteractions(SubscriberFeature):
@@ -35,8 +35,8 @@ class ParetoInteractions(SubscriberFeature):
     hours : tuple of float, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    direction : {'in', 'out', 'both'}, default 'both'
-        Whether to consider calls made, received, or both. Defaults to 'out'.
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
+        Whether to consider calls made, received, or both. Defaults to 'both'.
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
     table : str, default 'all'
@@ -70,7 +70,7 @@ class ParetoInteractions(SubscriberFeature):
         stop,
         proportion=0.8,
         *,
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         tables="all",
         subscriber_identifier="msisdn",
         hours="all",
@@ -81,7 +81,7 @@ class ParetoInteractions(SubscriberFeature):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.direction = direction
+        self.direction = Direction(direction)
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls

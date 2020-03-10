@@ -10,11 +10,13 @@ that a given contact participates out of the
 subscriber's total event count.
 
 """
-from typing import List
+from typing import List, Union
 
-from .metaclasses import SubscriberFeature
-from ..utilities import EventsTablesUnion
-from ...core.mixins.graph_mixin import GraphMixin
+from flowmachine.core.mixins import GraphMixin
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import make_where
 
 
 class ContactBalance(GraphMixin, SubscriberFeature):
@@ -44,7 +46,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'both'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
         Event direction to include in computation. This
         can be outgoing ('out'), incoming ('in'), or both ('both').
 
@@ -70,7 +72,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",
-        direction="both",
+        direction: Union[str, Direction] = Direction.BOTH,
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
@@ -78,17 +80,16 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.direction = direction
+        self.direction = Direction(direction)
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
         self.tables = tables
 
-        if self.direction == "both":
-            column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-        elif self.direction in {"in", "out"}:
-            column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
-        else:
-            raise ValueError("Unidentified direction: {}".format(self.direction))
+        column_list = [
+            self.subscriber_identifier,
+            "msisdn_counterpart",
+            *self.direction.required_columns,
+        ]
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -108,14 +109,10 @@ class ContactBalance(GraphMixin, SubscriberFeature):
 
     def _make_query(self):
 
-        filters = []
-        if self.direction != "both":
-            filters.append(
-                f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
+        filters = [self.direction.get_filter_clause()]
         if (self.subscriber_identifier in {"msisdn"}) and (self.exclude_self_calls):
             filters.append("subscriber != msisdn_counterpart")
-        where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
+        where_clause = make_where(filters)
 
         sql = f"""
         WITH unioned AS (

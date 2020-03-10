@@ -4,7 +4,7 @@
 
 import pytest
 
-from flowmachine.features import EventsTablesUnion
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 
 
 @pytest.mark.parametrize(
