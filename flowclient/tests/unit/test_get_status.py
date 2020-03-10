@@ -14,7 +14,10 @@ def test_get_status_reports_running(running_status):
     """ Test that status code 202 is interpreted as query running or queued. """
     con_mock = Mock()
     con_mock.get_url.return_value = Mock(status_code=202)
-    con_mock.get_url.return_value.json.return_value = {"status": running_status}
+    con_mock.get_url.return_value.json.return_value = {
+        "status": running_status,
+        "payload": {"completed": [1, 1]},
+    }
     status = get_status(connection=con_mock, query_id="foo")
     assert status == running_status
 

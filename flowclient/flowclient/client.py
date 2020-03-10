@@ -261,7 +261,9 @@ def query_is_ready(
         )
         return True, reply  # Query is ready, so exit the loop
     elif reply.status_code == 202:
-        logger.info(f"Completed {'/'.join(reply.json()['completed'])} parts")
+        logger.info(
+            f"Completed {'{}/{}'.format(*reply.json()['payload']['completed'])} parts"
+        )
         return False, reply
     else:
         raise FlowclientConnectionError(
