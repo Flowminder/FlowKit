@@ -12,63 +12,6 @@ describe("Server management", function() {
       .get("#server_list")
       .click();
   });
-  it("Add server name with space", function() {
-    cy.get("#new").click();
-    // adding username with space
-    cy.get("#name").type("Server ", {
-      force: true
-    });
-    cy.get("#name").type("Server ", { force: true });
-    //checking validation text
-    cy.get("#name-helper-text").should(
-      "have.text",
-      "Server name may only contain letters, numbers and underscores."
-    );
-    cy.get("#name")
-      .type(" ", {
-        force: true
-      })
-      .clear({
-        force: true
-      });
-    cy.get("#name")
-      .type("SERVER_TEST01", {
-        force: true
-      })
-      .type(" ", { force: true })
-      .clear({ force: true });
-    cy.get("#name").type("SERVER_TEST01", { force: true });
-    cy.contains("#name-helper-text").should("not.exist");
-  });
-  it("Add blank server name", function() {
-    cy.get("#new").click();
-    //adding blank username
-    cy.get("#name")
-      .type(" ", { force: true })
-      .clear({ force: true });
-    //checking validation text
-    cy.get("#name-helper-text").should(
-      "have.text",
-      "Server name can not be blank."
-    );
-    cy.get("#name").type("SERVER_TEST01", { force: true });
-    cy.contains("#name-helper-text").should("not.exist");
-  });
-  it("Add server name more than 120 characters", function() {
-    cy.get("#new").click();
-    //adding username
-    cy.get("#name").type("a".repeat(121), { force: true });
-    //checking validation text
-    cy.get("#name-helper-text").should(
-      "have.text",
-      "Server name must be 120 characters or less."
-    );
-    cy.get("#name")
-      .type(" ", { force: true })
-      .clear({ force: true });
-    cy.get("#name").type("SERVER_TEST01", { force: true });
-    cy.contains("#name-helper-text").should("not.exist");
-  });
 
   it("Add blank maximum lifetime minutes", function() {
     cy.get("#new").click();
@@ -85,8 +28,10 @@ describe("Server management", function() {
   });
   it("Add duplicate Server name", function() {
     cy.get("#new").click();
-    //adding existing server name and new secret key
-    cy.get("#name").type("TEST_SERVER", { force: true });
+    cy.get("#spec-upload-button").uploadFile("api_spec.json");
+    cy.get("#max-life").type("1234", {
+      force: true
+    });
     cy.contains("Save").click();
     //checking error dialogue text
     cy.get("#error-dialog-description").should(
@@ -98,17 +43,86 @@ describe("Server management", function() {
   });
   it("Add server", function() {
     cy.get("#new").click();
-    //Add new user with password
     const server_name = Math.random()
       .toString(36)
       .substring(2, 15);
-    cy.get("#name").type(server_name, {
-      force: true
+    cy.get("#spec-upload-button").then(subject => {
+      cy.fixture("api_spec.json").then(content => {
+        const el = subject[0];
+        content["components"]["securitySchemes"]["token"][
+          "x-audience"
+        ] = server_name;
+        const testFile = new File([JSON.stringify(content)], "api_spec.json");
+        const dataTransfer = new DataTransfer();
+
+        dataTransfer.items.add(testFile);
+        el.files = dataTransfer.files;
+        cy.wrap(subject).trigger("change", { force: true });
+      });
     });
     cy.get("#max-life").type("1234", {
       force: true
     });
-    cy.contains("Save").click();
-    cy.contains(server_name).should("be.visible");
+    cy.contains("Save")
+      .click()
+      .wait(1);
+    /* Edit the server */
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
+    cy.get(".rs-picker-toggle-value")
+      .click()
+      .wait(1);
+    cy.get(
+      ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper"
+    ).click({ force: true });
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
+    /* Check the edit happened */
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]")
+      .click()
+      .wait(1);
+    cy.get(".rs-picker-toggle-value").should("have.text", "run (All)");
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]")
+      .click()
+      .wait(1);
+    /* Supply an updated spec */
+    cy.get("#spec-upload-button")
+      .then(subject => {
+        cy.fixture("api_spec.json").then(content => {
+          const el = subject[0];
+          content["components"]["securitySchemes"]["token"][
+            "x-audience"
+          ] = server_name;
+          content["components"]["securitySchemes"]["token"][
+            "x-security-scopes"
+          ] = ["get_result&test_scope"];
+          const testFile = new File([JSON.stringify(content)], "api_spec.json");
+          const dataTransfer = new DataTransfer();
+
+          dataTransfer.items.add(testFile);
+          el.files = dataTransfer.files;
+          cy.wrap(subject).trigger("change", { force: true });
+        });
+      })
+      .wait(1);
+    cy.get(".rs-picker-toggle-value").should("have.text", "get_result (All)");
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]")
+      .click()
+      .wait(1);
+    cy.get(".rs-picker-toggle-value").should("have.text", "get_result (All)");
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
+    /* Delete it again */
+    cy.get("[data-action=rm][data-item-name=" + server_name + "]").click();
+    cy.get("[data-action=rm][data-item-name=" + server_name + "]").should(
+      "not.exist"
+    );
   });
 });

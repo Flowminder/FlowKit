@@ -9,16 +9,14 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import TextField from "@material-ui/core/TextField";
 import {
-  getGroupCapabilities,
   getGroupTimeLimits,
   getTimeLimits,
-  getCapabilities
+  getGroupCapabilities
 } from "./util/api";
-import PermissionDetails from "./PermissionDetails";
+import GroupServerAccessRights from "./GroupServerAccessRights";
 
 class GroupServerPermissionDetails extends React.Component {
   state = {
-    permitted: {},
     rights: {},
     max_life: "",
     longest_token_life: "",
@@ -28,7 +26,7 @@ class GroupServerPermissionDetails extends React.Component {
 
   handleDateChange = date => {
     const { server, updateServer } = this.props;
-    this.setState(Object.assign(this.state, { latest_expiry: date }));
+    this.setState({ latest_expiry: date });
     server["latest_expiry"] = new Date(date).toISOString();
     updateServer(server);
   };
@@ -45,73 +43,43 @@ class GroupServerPermissionDetails extends React.Component {
     }
   };
 
-  componentDidMount() {
+  handleRightsChange = rights => {
+    const { server, updateServer } = this.props;
+    server["rights"] = rights;
+    updateServer(server);
+  };
+
+  async componentDidMount() {
     const { server, updateServer, group_id } = this.props;
-    var allowed_caps, server_limits, group_rights, group_limits;
-    getCapabilities(server.id)
-      .then(json => {
-        allowed_caps = json;
-        return getTimeLimits(server.id);
-      })
-      .then(json => {
-        server_limits = json;
-        return getGroupCapabilities(server.id, group_id);
-      })
-      .then(json => {
-        group_rights = json;
-        return getGroupTimeLimits(server.id, group_id);
-      })
-      .catch(err => {
-        if (err.code === 404) {
-          group_rights = null;
-          return getGroupTimeLimits(server.id, group_id);
-        } else {
-          throw err;
-        }
-      })
-      .then(json => {
-        group_limits = json;
-      })
-      .catch(err => {
-        if (err.code === 404) {
-          group_limits = null;
-        } else {
-          throw err;
-        }
-      })
-      .then(() => {
-        var rights =
-          group_rights || JSON.parse(JSON.stringify(allowed_caps || {}));
-        var limits = group_limits || server_limits;
-        this.setState({
-          rights: rights,
-          permitted: allowed_caps || {},
-          latest_expiry: limits.latest_token_expiry,
-          max_life: limits.longest_token_life,
-          longest_token_life: server_limits.longest_token_life,
-          server_latest_expiry: server_limits.latest_token_expiry
-        });
-        server["rights"] = rights;
-        var expiry = limits.latest_token_expiry;
-        server["latest_expiry"] = new Date(expiry).toISOString();
-        server["max_life"] = limits.longest_token_life;
-        updateServer(server);
-      })
-      .catch(err => {
+    const serverLimits = await getTimeLimits(server.id);
+    var limits = serverLimits;
+    try {
+      const groupLimits = await getGroupTimeLimits(server.id, group_id);
+      limits = groupLimits;
+    } catch (err) {
+      if (err.code !== 404) {
         this.setState({ hasError: true, error: err });
-      });
+      }
+    }
+
+    server["rights"] = await getGroupCapabilities(server.id, group_id);
+    const expiry = limits.latest_token_expiry;
+    server["latest_expiry"] = new Date(expiry).toISOString();
+    server["max_life"] = limits.longest_token_life;
+    updateServer(server);
+    this.setState({
+      latest_expiry: limits.latest_token_expiry,
+      max_life: limits.longest_token_life,
+      longest_token_life: serverLimits.longest_token_life,
+      server_latest_expiry: serverLimits.latest_token_expiry
+    });
   }
 
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const {
-      latest_expiry,
-      server_latest_expiry,
-      rights,
-      permitted
-    } = this.state;
-    const { classes } = this.props;
+    const { latest_expiry, server_latest_expiry } = this.state;
+    const { classes, server, group_id } = this.props;
 
     return (
       <React.Fragment>
@@ -145,10 +113,10 @@ class GroupServerPermissionDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={12}>
-          <PermissionDetails
-            rights={rights}
-            permitted={permitted}
-            updateRights={rights => this.setState({ rights: rights })}
+          <GroupServerAccessRights
+            groupId={group_id}
+            serverId={server.id}
+            parentUpdate={this.handleRightsChange}
           />
         </Grid>
       </React.Fragment>

@@ -6,6 +6,8 @@ A dummy query class, primarily useful for testing.
 """
 
 import structlog
+
+from .context import get_redis, get_db
 from .query import Query
 from .query_state import QueryStateMachine
 
@@ -20,13 +22,11 @@ class DummyQuery(Query):
 
     def __init__(self, dummy_param):
         self.dummy_param = dummy_param
+        super().__init__()
 
     @property
     def query_id(self):
-        # Prefix the usual query_id hash with 'dummy_query' to make it obvious
-        # that this is not a regular query.
-        md5_hash = super().query_id
-        return f"dummy_query_{md5_hash}"
+        return f"dummy_query_{self.dummy_param}"
 
     def _make_query(self):
         return "SQL_of_dummy_query"
@@ -40,14 +40,18 @@ class DummyQuery(Query):
         """
         Determine dummy 'stored' status from redis, instead of checking the database.
         """
-        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        q_state_machine = QueryStateMachine(
+            get_redis(), self.query_id, get_db().conn_id
+        )
         return q_state_machine.is_completed
 
     def store(self, store_dependencies=False):
         logger.debug(
             "Storing dummy query by marking the query state as 'finished' (but without actually writing to the database)."
         )
-        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        q_state_machine = QueryStateMachine(
+            get_redis(), self.query_id, get_db().conn_id
+        )
         q_state_machine.enqueue()
         q_state_machine.execute()
         q_state_machine.finish()

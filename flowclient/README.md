@@ -1,3 +1,3 @@
 # FlowClient
 
-Documentation for FlowClient can be found [here](https://flowminder.github.io/FlowKit/components/flowclient).
+Documentation for FlowClient can be found in the main [FlowKit documentation](https://flowkit.xyz).

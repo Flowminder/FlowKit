@@ -1,20 +1,20 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from typing import Dict, Union
+from pathlib import Path
 
 import datetime
-import pyotp
-from flowauth.invalid_usage import Unauthorized
 from itertools import chain
+from typing import Dict, List, Union
 
-import click
-from cryptography.fernet import Fernet
 from flask import current_app
-from flask.cli import with_appcontext
+
+import pyotp
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.ext.hybrid import hybrid_property
+from flowauth.invalid_usage import Unauthorized
+from flowauth.util import get_fernet
 from passlib.hash import argon2
+from sqlalchemy.ext.hybrid import hybrid_property
 
 db = SQLAlchemy()
 
@@ -25,50 +25,6 @@ group_memberships = db.Table(
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("group_id", db.Integer, db.ForeignKey("group.id"), primary_key=True),
 )
-
-# Link table for mapping spatial aggregation units to server capabilities
-spatial_capabilities = db.Table(
-    "spatial_capabilities",
-    db.Column(
-        "spatial_aggregation_unit_id",
-        db.Integer,
-        db.ForeignKey("spatial_aggregation_unit.id"),
-        primary_key=True,
-    ),
-    db.Column(
-        "server_capability_id",
-        db.Integer,
-        db.ForeignKey("server_capability.id"),
-        primary_key=True,
-    ),
-)
-
-# Link table for mapping spatial aggregation units to group permissions
-group_spatial_capabilities = db.Table(
-    "group_spatial_capabilities",
-    db.Column(
-        "spatial_aggregation_unit_id",
-        db.Integer,
-        db.ForeignKey("spatial_aggregation_unit.id"),
-        primary_key=True,
-    ),
-    db.Column(
-        "group_server_permission_id",
-        db.Integer,
-        db.ForeignKey("group_server_permission.id"),
-        primary_key=True,
-    ),
-)
-
-
-def get_fernet() -> Fernet:
-    """
-    Get the app's Fernet object to encrypt & decrypt things.
-    Returns
-    -------
-    crypography.fernet.Fernet
-    """
-    return Fernet(current_app.config["FLOWAUTH_FERNET_KEY"])
 
 
 class User(db.Model):
@@ -131,7 +87,7 @@ class User(db.Model):
         """
         return argon2.verify(plaintext, self._password)
 
-    def allowed_claims(self, server) -> dict:
+    def allowed_claims(self, server) -> List[str]:
         """
         Get the claims the user is allowed to generate tokens for on a server.
 
@@ -142,29 +98,13 @@ class User(db.Model):
 
         Returns
         -------
-        dict
+        list of str
 
         """
 
-        allowed = {}
-        for cap in server.capabilities:
-            using_groups = cap.group_uses
-            my_rights = [p for p in using_groups if p.group in self.groups]
-            get_result = cap.get_result and any(p.get_result for p in my_rights)
-            run = cap.run and any(p.run for p in my_rights)
-            poll = cap.poll and any(p.poll for p in my_rights)
-            group_agg_units = set(
-                chain(*[right.spatial_aggregation for right in my_rights])
-            )
-            agg_units = [
-                agg.name for agg in cap.spatial_aggregation if agg in group_agg_units
-            ]
-            if any((run, poll, get_result)):
-                allowed[cap.capability.name] = {
-                    "permissions": {"run": run, "poll": poll, "get_result": get_result},
-                    "spatial_aggregation": agg_units,
-                }
-        return allowed
+        return sorted(
+            set(chain.from_iterable(group.rights(server) for group in self.groups))
+        )
 
     def latest_token_expiry(self, server: "Server") -> datetime.datetime:
         """
@@ -266,7 +206,9 @@ class TwoFactorAuth(db.Model):
         Unauthorized
             Raised if the code is invalid, or has just been used.
         """
-        current_app.logger.debug(f"Verifying {code} using {self.decrypted_secret_key}")
+        current_app.logger.debug(
+            "Verifying 2factor code", code=code, secret_key=self.decrypted_secret_key
+        )
         is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(code)
         if is_valid:
             if (
@@ -344,7 +286,7 @@ class TwoFactorAuth(db.Model):
             return get_fernet().decrypt(key).decode()
         except Exception as exc:
             current_app.logger.debug(
-                f"Failed to decrypt '{key}'. Original was '{self._secret_key}'. Error was {exc}"
+                "Failed to decrypt key.", key=key, orig=self._secret_key, exception=exc
             )
             raise exc
 
@@ -513,21 +455,14 @@ class Server(db.Model):
 
 class ServerCapability(db.Model):
     """
-    The set of API capabilities which are available on a server, which is
-    a subset of Capabilities.
+    The set of API capabilities which are available on a server.
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    get_result = db.Column(db.Boolean, default=False)
-    run = db.Column(db.Boolean, default=False)
-    poll = db.Column(db.Boolean, default=False)
-
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="capabilities", lazy=True)
-    capability_id = db.Column(
-        db.Integer, db.ForeignKey("capability.id"), nullable=False
-    )
-    capability = db.relationship("Capability", back_populates="usages", lazy=True)
+    capability = db.Column(db.String, nullable=False)
+    enabled = db.Column(db.Boolean, default=False)
     group_uses = db.relationship(
         "GroupServerPermission",
         back_populates="server_capability",
@@ -535,11 +470,11 @@ class ServerCapability(db.Model):
         cascade="all, delete, delete-orphan",
     )
     __table_args__ = (
-        db.UniqueConstraint("server_id", "capability_id", name="_server_cap_uc"),
+        db.UniqueConstraint("server_id", "capability", name="_server_cap_uc"),
     )  # Enforce only one of each capability per server
 
     def __repr__(self) -> str:
-        return f"<ServerCapability {self.capability}> {self.get_result}:{self.run}:{self.poll}, {self.spatial_aggregation}@{self.server}>"
+        return f"<ServerCapability {self.capability}@{self.server}>"
 
 
 class GroupServerTokenLimits(db.Model):
@@ -570,9 +505,6 @@ class GroupServerPermission(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    get_result = db.Column(db.Boolean, default=False)
-    run = db.Column(db.Boolean, default=False)
-    poll = db.Column(db.Boolean, default=False)
     group_id = db.Column(db.Integer, db.ForeignKey("group.id"), nullable=False)
     group = db.relationship("Group", back_populates="server_permissions", lazy=True)
     server_capability_id = db.Column(
@@ -588,49 +520,7 @@ class GroupServerPermission(db.Model):
     )  # Enforce only only group - capability pair
 
     def __repr__(self) -> str:
-        return f"<GroupServerPermission {self.server_capability.capability}> {self.get_result}:{self.run}:{self.poll}, {self.spatial_aggregation} {self.group}@{self.server_capability.server}>"
-
-
-class SpatialAggregationUnit(db.Model):
-    """
-    An unit of spatial aggregation.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
-    server_usages = db.relationship(
-        "ServerCapability",
-        secondary=spatial_capabilities,
-        lazy="subquery",
-        backref=db.backref("spatial_aggregation", lazy=True),
-    )
-
-    group_server_capability_usages = db.relationship(
-        "GroupServerPermission",
-        secondary=group_spatial_capabilities,
-        lazy="subquery",
-        backref=db.backref("spatial_aggregation", lazy=True),
-    )
-
-    def __repr__(self) -> str:
-        return f"<SpatialAggregationUnit {self.name}>"
-
-
-class Capability(db.Model):
-    """
-    An API capability.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
-    usages = db.relationship(
-        "ServerCapability",
-        back_populates="capability",
-        cascade="all, delete, delete-orphan",
-    )
-
-    def __repr__(self) -> str:
-        return f"<Capability {self.name}>"
+        return f"<GroupServerPermission {self.server_capability}-{self.group}>"
 
 
 class Group(db.Model):
@@ -652,18 +542,16 @@ class Group(db.Model):
         cascade="all, delete, delete-orphan",
     )
 
+    def rights(self, server: Server) -> List[str]:
+        return [
+            perm.server_capability.capability
+            for perm in self.server_permissions
+            if perm.server_capability.server.id == server.id
+            and perm.server_capability.enabled
+        ]
+
     def __repr__(self) -> str:
         return f"<Group {self.name}>"
-
-
-@click.command("init-db")
-@click.option(
-    "--force/--no-force", default=False, help="Optionally wipe any existing data first."
-)
-@with_appcontext
-def init_db_command(force: bool) -> None:
-    init_db(force)
-    click.echo("Initialized the database.")
 
 
 def init_db(force: bool = False) -> None:
@@ -688,15 +576,6 @@ def init_db(force: bool = False) -> None:
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
     current_app.logger.debug("Initialised db.")
-
-
-@click.command("add-admin")
-@click.argument("username", envvar="ADMIN_USER")
-@click.argument("password", envvar="ADMIN_PASSWORD")
-@with_appcontext
-def add_admin_command(username, password):
-    add_admin(username, password)
-    click.echo(f"Added {username} as an admin.")
 
 
 def add_admin(username: str, password: str) -> None:
@@ -742,12 +621,6 @@ def make_demodata():
     current_app.logger.debug("Creating demo data.")
     db.drop_all()
     db.create_all()
-    agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
-    agg_units += [
-        SpatialAggregationUnit(name="cell"),
-        SpatialAggregationUnit(name="site"),
-    ]
-    db.session.add_all(agg_units)
     users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
     for user in users:
         user.password = "DUMMY_PASSWORD"
@@ -765,28 +638,9 @@ def make_demodata():
     for x in users + groups:
         db.session.add(x)
     # Add some things that you can do
-    caps = []
-    for c in (
-        "available_dates",
-        "daily_location",
-        "flows",
-        "modal_location",
-        "location_event_counts",
-        "meaningful_locations_aggregate",
-        "meaningful_locations_between_label_od_matrix",
-        "meaningful_locations_between_dates_od_matrix",
-        "geography",
-        "unique_subscriber_counts",
-        "location_introversion",
-        "total_network_objects",
-        "aggregate_network_objects",
-        "radius_of_gyration",
-        "unique_location_counts",
-        "subscriber_degree",
-    ):
-        c = Capability(name=c)
-        db.session.add(c)
-        caps.append(c)
+    with open(Path(__file__).parent / "demo_data" / "api_scopes.txt") as fin:
+        caps = fin.readlines()
+
     # Add some servers
     test_server = Server(
         name="TEST_SERVER",
@@ -799,23 +653,13 @@ def make_demodata():
     # Add some things that you can do on the servers
     scs = []
     for cap in caps:
-        scs.append(
-            ServerCapability(
-                capability=cap, server=test_server, get_result=True, run=True, poll=True
-            )
-        )
-
-    for sc in scs:
-        sc.spatial_aggregation = agg_units
+        sc = ServerCapability(capability=cap, server=test_server, enabled=True)
+        scs.append(sc)
         db.session.add(sc)
-    # Give bob group permissions on Haiti
-    for sc in test_server.capabilities:
-        gsp = GroupServerPermission(
-            group=groups[0], server_capability=sc, get_result=True, run=True, poll=True
-        )
-        for agg_unit in agg_units[:4]:  # Give Bob access to adminX agg units
-            gsp.spatial_aggregation.append(agg_unit)
 
+    # Give bob group permissions on test server
+    for sc in test_server.capabilities:
+        gsp = GroupServerPermission(group=groups[0], server_capability=sc)
         db.session.add(gsp)
     db.session.add(
         GroupServerTokenLimits(
@@ -828,10 +672,3 @@ def make_demodata():
     db.session.commit()
     current_app.config["DB_IS_SET_UP"].set()
     current_app.logger.debug("Made demo data.")
-
-
-@click.command("demodata")
-@with_appcontext
-def demodata():
-    make_demodata()
-    click.echo("Made demo data.")

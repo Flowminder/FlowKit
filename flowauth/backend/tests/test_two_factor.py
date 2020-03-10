@@ -1,10 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import pyotp
-import pytest
-from flowauth import User, Unauthorized, db
 from itsdangerous import TimestampSigner
+from tests.conftest import get_two_factor_code
+import pytest
+from flowauth.invalid_usage import Unauthorized
+from flowauth.models import User, db
 
 
 def test_two_factor_enabled_but_not_confirmed(client, auth, test_user):
@@ -51,7 +52,7 @@ def test_two_factor_confirmed(app, client, auth, test_user):
             .unsign(json["secret"], max_age=86400)
             .decode()
         )
-        json["two_factor_code"] = pyotp.totp.TOTP(secret).now()
+        json["two_factor_code"] = get_two_factor_code(secret)
         response = client.post(
             "/user/confirm_two_factor", headers={"X-CSRF-Token": csrf_cookie}, json=json
         )
@@ -95,7 +96,7 @@ def test_confirm_errors(
 ):
     """Test expected error statuses come back when bad data is sent to confirm code reset.."""
     uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
-    otp_code = otp_generator.now()
+    otp_code = otp_generator()
     # Log in once
     response, csrf_cookie = auth.two_factor_login(
         username=username, password=password, otp_code=otp_code
@@ -114,7 +115,7 @@ def test_confirm_errors(
 def test_backup_code_generation(client, auth, test_two_factor_auth_user):
     """Test that we can generate backup codes."""
     uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
-    otp_code = otp_generator.now()
+    otp_code = otp_generator()
     # Log in once
     response, csrf_cookie = auth.two_factor_login(
         username=username, password=password, otp_code=otp_code
@@ -163,7 +164,7 @@ def test_backup_code_confirm_errors(
 ):
     """Test expected error statuses come back when bad data is sent to confirm code reset.."""
     uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
-    otp_code = otp_generator.now()
+    otp_code = otp_generator()
     # Log in once
     response, csrf_cookie = auth.two_factor_login(
         username=username, password=password, otp_code=otp_code
@@ -183,7 +184,7 @@ def test_backup_code_confirm_errors(
 def test_two_factor_login(client, auth, test_two_factor_auth_user):
     """Test that we can log in with two factor.."""
     uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
-    otp_code = otp_generator.now()
+    otp_code = otp_generator()
     # Log in once
     response, csrf_cookie = auth.two_factor_login(
         username=username, password=password, otp_code=otp_code
@@ -199,7 +200,7 @@ def test_two_factor_login(client, auth, test_two_factor_auth_user):
 def test_two_factor_login_no_reuse(client, auth, test_two_factor_auth_user):
     """Test that we can't log in twice with the same code."""
     uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
-    otp_code = otp_generator.now()
+    otp_code = otp_generator()
     # Log in once
     response, csrf_cookie = auth.two_factor_login(
         username=username, password=password, otp_code=otp_code
@@ -237,7 +238,7 @@ def test_two_factor_login_no_backup_reuse(client, auth, test_two_factor_auth_use
     auth.logout()
     # Log in again with a real code to make sure the backup isn't the last used
     response, csrf_cookie = auth.two_factor_login(
-        username=username, password=password, otp_code=otp_generator.now()
+        username=username, password=password, otp_code=otp_generator()
     )
     auth.logout()
     # Log in again with the original backup code
@@ -254,7 +255,7 @@ def test_disable_two_factor_login(client, auth, test_two_factor_auth_user):
 
     # Log in once with a backup code
     response, csrf_cookie = auth.two_factor_login(
-        username=username, password=password, otp_code=otp_generator.now()
+        username=username, password=password, otp_code=otp_generator()
     )
     assert response.status_code == 200
     with client:
@@ -273,7 +274,7 @@ def test_two_factor_status(client, auth, test_two_factor_auth_user):
 
     # Log in once with a backup code
     response, csrf_cookie = auth.two_factor_login(
-        username=username, password=password, otp_code=otp_generator.now()
+        username=username, password=password, otp_code=otp_generator()
     )
     with client:
         response = client.get(
@@ -288,7 +289,7 @@ def test_two_factor_require(client, auth, test_two_factor_auth_user):
 
     # Log in once with a backup code
     response, csrf_cookie = auth.two_factor_login(
-        username=username, password=password, otp_code=otp_generator.now()
+        username=username, password=password, otp_code=otp_generator()
     )
     with client:
         response = client.get(

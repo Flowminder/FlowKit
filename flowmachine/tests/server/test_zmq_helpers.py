@@ -4,6 +4,7 @@
 
 import pytest
 from unittest.mock import Mock, patch
+from asynctest import CoroutineMock
 
 import rapidjson
 
@@ -107,9 +108,10 @@ def test_zmq_reply_as_json():
         ),
     ],
 )
-def test_zmq_msg_parse_error(bad_message, expected_message, server_config):
+@pytest.mark.asyncio
+async def test_zmq_msg_parse_error(bad_message, expected_message, server_config):
     """Test errors are raised as expected when failing to parse zmq messages"""
-    reply = get_reply_for_message(msg_str=bad_message, config=server_config)
+    reply = await get_reply_for_message(msg_str=bad_message, config=server_config)
     assert reply["status"] == "error"
     assert reply["msg"] == expected_message
 
@@ -120,6 +122,7 @@ async def test_generic_error_catch(server_config):
     Test that calculate_and_send_reply_for_message sends a reply if get_reply_for_message raises an unexpected error
     """
     mock_socket = Mock()
+    mock_socket.send_multipart = CoroutineMock()
     expected_response = [
         "DUMMY_RETURN_ADDRESS",
         b"",

@@ -4,7 +4,6 @@
 
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import { getTwoFactorBackups } from "./util/api";
 import Button from "@material-ui/core/Button";
 import ErrorDialog from "./ErrorDialog";
 import PropTypes from "prop-types";
@@ -60,7 +59,7 @@ class BackupCodes extends React.Component {
     return (
       <Grid
         container
-        spacing={16}
+        spacing={2}
         direction="column"
         justify="center"
         alignItems="center"

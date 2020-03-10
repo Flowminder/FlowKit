@@ -36,8 +36,7 @@ from .helpers import poll_until_done
         },
     ],
 )
-@pytest.mark.asyncio
-async def test_get_query_params(params, zmq_port, zmq_host):
+def test_get_query_params(params, zmq_port, zmq_host):
     """
     Running 'get_query_params' against an existing query_id returns the expected parameters with which the query was run.
     """
@@ -75,8 +74,7 @@ async def test_get_query_params(params, zmq_port, zmq_host):
 
 
 @pytest.mark.skip(reason="The 'get_query_params' action will likely be removed soon.")
-@pytest.mark.asyncio
-async def test_get_query_params_for_nonexistent_query_id(zmq_port, zmq_host):
+def test_get_query_params_for_nonexistent_query_id(zmq_port, zmq_host):
     """
     Running 'get_query_params' on a non-existent query id returns an error.
     """

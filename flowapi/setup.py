@@ -31,11 +31,12 @@ setup(
         "hypercorn",
         "python-rapidjson",
         "structlog",
-        "flask-jwt-extended[asymmetric_crypto]",
+        "quart-jwt-extended[asymmetric_crypto]",
         "asyncpg",
         "pyyaml >= 5.1",
         "apispec[yaml]",
         "get-secret-or-env-var",
+        "prance[osv]",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )

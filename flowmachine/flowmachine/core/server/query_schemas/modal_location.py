@@ -7,8 +7,7 @@ from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from .custom_fields import SubscriberSubset
-from .aggregation_unit import AggregationUnit
-from .daily_location import DailyLocationSchema, DailyLocationExposed
+from .daily_location import DailyLocationSchema
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -26,7 +25,6 @@ class ModalLocationSchema(BaseQueryWithSamplingSchema):
     locations = fields.Nested(
         InputToModalLocationSchema, many=True, validate=Length(min=1)
     )
-    aggregation_unit = AggregationUnit(required=True)
     subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
@@ -35,13 +33,10 @@ class ModalLocationSchema(BaseQueryWithSamplingSchema):
 
 
 class ModalLocationExposed(BaseExposedQueryWithSampling):
-    def __init__(
-        self, locations, *, aggregation_unit, subscriber_subset=None, sampling=None
-    ):
+    def __init__(self, locations, *, subscriber_subset=None, sampling=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
-        self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 

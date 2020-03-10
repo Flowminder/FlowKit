@@ -16,6 +16,8 @@ from flowmachine.utils import proj4string
 
 import structlog
 
+from ..context import get_db
+
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
@@ -143,7 +145,7 @@ class GeoDataMixin:
         """
         features = [
             {"type": x[0], "id": x[1], "geometry": x[2], "properties": x[3]}
-            for x in self.connection.fetch(self.geojson_query(crs=proj4))
+            for x in get_db().fetch(self.geojson_query(crs=proj4))
         ]
         js = {
             "properties": {"crs": proj4},
@@ -164,7 +166,7 @@ class GeoDataMixin:
         dict
             This query as a GeoJson FeatureCollection in dict form.
         """
-        proj4_string = proj4string(self.connection, crs)
+        proj4_string = proj4string(get_db(), crs)
         try:
             js = self._geojson.get(proj4_string, self._get_geojson(proj4_string))
         except AttributeError:

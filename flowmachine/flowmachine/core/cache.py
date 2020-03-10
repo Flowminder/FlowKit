@@ -9,6 +9,7 @@ Functions which deal with inspecting and managing the query cache.
 """
 import asyncio
 import pickle
+from contextvars import copy_context
 from concurrent.futures import Executor, TimeoutError
 from functools import partial
 
@@ -96,9 +97,8 @@ def write_query_to_cache(
     This is a _blocking function_, and will not return until the query is no longer in an executing state.
 
     """
-    q_state_machine = QueryStateMachine(redis, query.query_id)
-
     logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
+    q_state_machine = QueryStateMachine(redis, query.query_id, connection.conn_id)
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
         logger.debug(f"In charge of executing '{query.query_id}'.")
@@ -303,7 +303,9 @@ def resync_redis_with_cache(connection: "Connection", redis: StrictRedis) -> Non
     logger.debug("Flushing redis.")
     for event in (QueryEvent.QUEUE, QueryEvent.EXECUTE, QueryEvent.FINISH):
         for qid in queries_in_cache:
-            new_state, changed = QueryStateMachine(redis, qid[0]).trigger_event(event)
+            new_state, changed = QueryStateMachine(
+                redis, qid[0], connection.conn_id
+            ).trigger_event(event)
             logger.debug(
                 "Redis resync",
                 fast_forwarded=qid[0],
@@ -499,20 +501,29 @@ def shrink_below_size(
         shrink = shrink_one
 
     current_cache_size = initial_cache_size
-    while current_cache_size > size_threshold:
-        obj_removed, cache_reduction = shrink(
-            connection, protected_period=protected_period
+    try:
+        while current_cache_size > size_threshold:
+            obj_removed, cache_reduction = shrink(
+                connection, protected_period=protected_period
+            )
+            removed.append(obj_removed)
+            current_cache_size -= cache_reduction
+        logger.info(
+            f"New cache size {'would' if dry_run else 'will'} be {current_cache_size}.",
+            removed=[q.query_id for q in removed],
+            dry_run=dry_run,
+            initial_cache_size=initial_cache_size,
+            current_cache_size=current_cache_size,
+            size_threshold=size_threshold,
         )
-        removed.append(obj_removed)
-        current_cache_size -= cache_reduction
-    logger.info(
-        f"New cache size {'would' if dry_run else 'will'} be {current_cache_size}.",
-        removed=[q.query_id for q in removed],
-        dry_run=dry_run,
-        initial_cache_size=initial_cache_size,
-        current_cache_size=current_cache_size,
-        size_threshold=size_threshold,
-    )
+    except IndexError:
+        logger.info(
+            "Unable to shrink cache. No cache items eligible to be removed.",
+            dry_run=dry_run,
+            initial_cache_size=initial_cache_size,
+            current_cache_size=current_cache_size,
+            size_threshold=size_threshold,
+        )
     return removed
 
 
@@ -800,9 +811,11 @@ async def watch_and_shrink_cache(
     while True:
         logger.debug("Checking if cache should be shrunk.")
 
-        try:
+        try:  # Set the shrink function running with a copy of the current execution context (db conn etc) in background thread
             await asyncio.wait_for(
-                asyncio.get_running_loop().run_in_executor(pool, shrink_func),
+                asyncio.get_running_loop().run_in_executor(
+                    pool, copy_context().run, shrink_func
+                ),
                 timeout=timeout,
             )
         except TimeoutError:

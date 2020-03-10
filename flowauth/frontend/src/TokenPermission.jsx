@@ -3,69 +3,84 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import FormLabel from "@material-ui/core/FormLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-
-const styles = theme => ({
-  root: {
-    display: "flex"
-  },
-  formControl: {
-    margin: theme.spacing.unit * 3
-  }
-});
+import ErrorDialog from "./ErrorDialog";
+import RightsCascade from "./RightsCascade";
+import { jsonify, scopesGraph } from "./util/util";
 
 class TokenPermission extends React.Component {
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.checked });
+  state = {
+    rights: [],
+    enabledRights: [],
+    fullRights: [],
+    errors: { message: "" }
   };
 
+  handleRightsChange = value => {
+    const { parentUpdate } = this.props;
+    this.setState({ enabledRights: value });
+    const { fullRights } = this.state;
+    parentUpdate(fullRights.filter(r => value.some(cur => r.startsWith(cur))));
+  };
+
+  async componentDidMount() {
+    const { rights, unblock, parentUpdate } = this.props;
+    if (rights.length > 0) {
+      const scopesObj = rights.reduce(
+        (obj, cur) => ({ ...obj, [cur]: {} }),
+        {}
+      );
+
+      const scopeGraph = scopesGraph(scopesObj);
+      const enabledKeys = [];
+      const scopes = jsonify(
+        scopeGraph,
+        [],
+        Object.keys(scopesObj).filter(k => scopesObj[k]),
+        enabledKeys
+      );
+      parentUpdate(Object.keys(scopesObj));
+
+      this.setState({
+        rights: scopes,
+        fullRights: Object.keys(scopesObj),
+        enabledRights: enabledKeys
+      });
+      if (unblock) {
+        console.log(rights);
+        unblock();
+      }
+    }
+  }
+
   render() {
-    const {
-      classes,
-      claim,
-      permissions,
-      checkedHandler,
-      permitted
-    } = this.props;
+    if (this.state.hasError && this.state.error.code === 401)
+      throw this.state.error;
+
+    const { rights, enabledRights } = this.state;
 
     return (
-      <Grid item xs>
-        <FormControl component="fieldset" className={classes.formControl}>
-          <FormLabel component="legend">{claim}</FormLabel>
-          <FormGroup>
-            {Object.keys(permissions).map(key => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    data-cy="permission-nested"
-                    data-permission-id={claim + "_" + key}
-                    id="permission"
-                    checked={permissions[key]}
-                    onChange={checkedHandler(claim, key)}
-                    value={claim + ":" + key}
-                    color="primary"
-                  />
-                }
-                disabled={!permitted[key]}
-                label={key}
-              />
-            ))}
-          </FormGroup>
-        </FormControl>
-      </Grid>
+      <React.Fragment>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Available API scopes
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <RightsCascade
+            options={rights}
+            value={enabledRights}
+            onChange={this.handleRightsChange}
+          />
+        </Grid>
+        <ErrorDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
+        />
+      </React.Fragment>
     );
   }
 }
 
-TokenPermission.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles)(TokenPermission);
+export default TokenPermission;

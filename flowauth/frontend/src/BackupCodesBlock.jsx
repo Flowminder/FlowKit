@@ -33,7 +33,7 @@ class BackupCodesBlock extends React.Component {
   render() {
     const { backup_codes } = this.props;
     return (
-      <Grid item xs={8} container direction="row">
+      <Grid item xs={4} container direction="row">
         {backup_codes.map(code => this.renderBackupCode(code))}
       </Grid>
     );

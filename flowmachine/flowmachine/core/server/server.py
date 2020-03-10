@@ -22,6 +22,7 @@ from zmq.asyncio import Context
 import flowmachine
 from flowmachine.core import Query, Connection
 from flowmachine.core.cache import watch_and_shrink_cache
+from flowmachine.core.context import get_db, get_executor
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -33,52 +34,7 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
-async def update_available_dates(
-    *,
-    flowdb_connection: Connection,
-    pool: Executor,
-    sleep_time: int = 1800,
-    loop: bool = True,
-) -> None:
-    """
-    Background task to periodically refresh the cache entries for available dates
-    based on the content of the database.
-
-    Parameters
-    ----------
-    flowdb_connection : Connection
-        Flowdb connection to check dates on
-    pool : Executor
-        Executor to run the date check with
-    sleep_time : int, default 1800
-        Number of seconds to sleep for between checks
-    loop : bool, default True
-        Set to false to return after the first check
-
-    Returns
-    -------
-    None
-
-    """
-    check_func = partial(
-        flowdb_connection.available_dates.__wrapped__,
-        flowdb_connection,
-        table="all",
-        strictness=1,
-        schema="events",
-    )
-    while True:
-        logger.debug("Checking available dates.")
-        avail = await asyncio.get_running_loop().run_in_executor(
-            pool, check_func
-        )  # Note we're calling the uncached version here.
-        if not loop:
-            break
-        await asyncio.sleep(sleep_time)
-    return avail
-
-
-def get_reply_for_message(
+async def get_reply_for_message(
     *, msg_str: str, config: "FlowmachineServerConfig"
 ) -> ZMQReply:
     """
@@ -121,7 +77,7 @@ def get_reply_for_message(
             params=action_request.params,
         )
 
-        reply = perform_action(
+        reply = await perform_action(
             action_request.action, action_request.params, config=config
         )
 
@@ -232,7 +188,7 @@ async def calculate_and_send_reply_for_message(
         Server config options
     """
     try:
-        reply_json = get_reply_for_message(msg_str=msg_contents, config=config)
+        reply_json = await get_reply_for_message(msg_str=msg_contents, config=config)
     except Exception as exc:
         # Catch and log any unhandled errors, and send a generic error response to the API
         # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
@@ -241,7 +197,10 @@ async def calculate_and_send_reply_for_message(
             traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
         )
         reply_json = ZMQReply(status="error", msg="Could not get reply for message")
-    socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
+    await socket.send_multipart(
+        [return_address, b"", rapidjson.dumps(reply_json).encode()]
+    )
+    logger.debug("Sent reply", reply=reply_json, msg=msg_contents)
 
 
 def shutdown(socket: "zmq.asyncio.Socket") -> None:
@@ -260,9 +219,7 @@ def shutdown(socket: "zmq.asyncio.Socket") -> None:
     logger.debug("Cancelled all remaining tasks.")
 
 
-async def recv(
-    *, config: "FlowmachineServerConfig", flowdb_connection: Connection
-) -> NoReturn:
+async def recv(*, config: "FlowmachineServerConfig") -> NoReturn:
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
@@ -271,8 +228,6 @@ async def recv(
     ----------
     config : FlowmachineServerConfig
         Server config options
-    flowdb_connection : Connection
-        FlowDB connection
     """
     logger.info(f"Flowmachine server is listening on port {config.port}")
 
@@ -285,14 +240,9 @@ async def recv(
     main_loop.add_signal_handler(signal.SIGTERM, partial(shutdown, socket=socket))
 
     main_loop.create_task(
-        update_available_dates(
-            flowdb_connection=flowdb_connection, pool=Query.thread_pool_executor
-        )
-    )
-    main_loop.create_task(
         watch_and_shrink_cache(
-            flowdb_connection=flowdb_connection,
-            pool=Query.thread_pool_executor,
+            flowdb_connection=get_db(),
+            pool=get_executor(),
             sleep_time=config.cache_pruning_frequency,
             timeout=config.cache_pruning_timeout,
         )
@@ -315,7 +265,7 @@ def main():
     # Read config options from environment variables
     config = get_server_config()
     # Connect to flowdb
-    flowdb_connection = flowmachine.connect()
+    flowmachine.connect()
 
     if not config.store_dependencies:
         logger.info("Dependency caching is disabled.")
@@ -324,8 +274,7 @@ def main():
 
     # Run receive loop which receives zmq messages and sends back replies
     asyncio.run(
-        recv(config=config, flowdb_connection=flowdb_connection),
-        debug=config.debug_mode,
+        recv(config=config), debug=config.debug_mode,
     )  # note: asyncio.run() requires Python 3.7+
 
 

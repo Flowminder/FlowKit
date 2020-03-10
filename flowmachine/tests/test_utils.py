@@ -8,6 +8,7 @@ Tests for flowmachine small helper functions
 import pytest
 import pglast
 
+from flowmachine.core.context import get_db
 from flowmachine.utils import *
 from flowmachine.utils import _makesafe
 
@@ -17,9 +18,7 @@ def test_proj4string(crs, flowmachine_connect):
     """
     Test proj4string behaviour for known codes
     """
-    assert (
-        proj4string(flowmachine_connect, crs) == "+proj=longlat +datum=WGS84 +no_defs"
-    )
+    assert proj4string(get_db(), crs) == "+proj=longlat +datum=WGS84 +no_defs"
 
 
 @pytest.mark.parametrize("crs", (-1, (1, 1)))
@@ -28,7 +27,7 @@ def test_proj4string_valueerror(crs, flowmachine_connect):
     Test proj4string valueerrors for bad values
     """
     with pytest.raises(ValueError):
-        proj4string(flowmachine_connect, crs)
+        proj4string(get_db(), crs)
 
 
 def test_time_period_add():

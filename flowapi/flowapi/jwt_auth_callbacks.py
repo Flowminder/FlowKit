@@ -2,16 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flask_jwt_extended import JWTManager, get_jwt_identity
-from flask_jwt_extended.default_callbacks import (
+from quart_jwt_extended import JWTManager, get_jwt_identity
+from quart_jwt_extended.default_callbacks import (
     default_expired_token_callback,
-    default_verify_claims_failed_callback,
     default_invalid_token_callback,
     default_revoked_token_callback,
     default_unauthorized_callback,
 )
 from quart import current_app, request, Response, jsonify
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 
 def register_logging_callbacks(jwt: JWTManager):
@@ -71,7 +70,7 @@ async def expired_token_callback(expired_token: Dict[str, Any]) -> Response:
     return default_expired_token_callback(expired_token)
 
 
-async def claims_verification_failed_callback() -> Response:
+async def claims_verification_failed_callback() -> Tuple[Dict[str, str], int]:
     """
     Log that an access attempt was made with claims that failed verification and return
     a json error message and 401 error code.
@@ -88,7 +87,7 @@ async def claims_verification_failed_callback() -> Response:
         src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
-    return jsonify({"msg": "User claims verification failed"}), 403
+    return {"msg": "User claims verification failed"}, 403
 
 
 async def invalid_token_callback(error_string) -> Response:

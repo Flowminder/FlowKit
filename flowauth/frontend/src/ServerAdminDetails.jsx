@@ -4,51 +4,100 @@
 
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import TextField from "@material-ui/core/TextField";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
-  getAllAggregationUnits,
-  getAllCapabilities,
-  getCapabilities,
-  getTimeLimits,
   createServer,
-  getServer,
+  editServer,
   editServerCapabilities,
-  editServer
+  getCapabilities,
+  getServer,
+  getTimeLimits
 } from "./util/api";
-import PermissionDetails from "./PermissionDetails";
+import RightsCascade from "./RightsCascade";
+import { jsonify, scopesGraph } from "./util/util";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core";
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit
+  }
+});
 
 class ServerAdminDetails extends React.Component {
-  state = {
-    name: "",
-    rights: {},
-    max_life: 1440,
-    latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-    edit_mode: false,
-    name_helper_text: "",
-    key_helper_text: "",
-    maxlife_helper_text: "",
-    pageError: false,
-    errors: { message: "" }
+  constructor() {
+    super();
+    this.state = {
+      name: "",
+      rights: [],
+      enabledRights: [],
+      fullRights: [],
+      max_life: 1440,
+      latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+      name_helper_text: "",
+      key_helper_text: "",
+      maxlife_helper_text: "",
+      pageError: false,
+      errors: { message: "" }
+    };
+
+    this.fileReader = new FileReader();
+
+    this.fileReader.onload = event => {
+      const parsedSpec = JSON.parse(event.target.result);
+      const specScopes = parsedSpec["components"]["securitySchemes"]["token"][
+        "x-security-scopes"
+      ].reduce((obj, cur) => ({ ...obj, [cur]: true }), {});
+      const scopeGraph = scopesGraph(specScopes);
+      const enabledKeys = [];
+      const scopes = jsonify(
+        scopeGraph,
+        [],
+        Object.keys(specScopes),
+        enabledKeys
+      );
+
+      this.setState({
+        rights: scopes,
+        scopeGraph: scopeGraph,
+        fullRights: Object.keys(specScopes),
+        enabledRights: enabledKeys,
+        name: parsedSpec["components"]["securitySchemes"]["token"]["x-audience"]
+      });
+    };
+  }
+
+  submitAndExit = () => {
+    this.handleSubmit().then();
   };
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const {
-      edit_mode,
       name,
       latest_expiry,
       max_life,
-      rights,
+      fullRights,
+      enabledRights,
       name_helper_text,
       key_helper_text,
       maxlife_helper_text
     } = this.state;
     const { item_id, onClick } = this.props;
+
+    const rightsObjs = fullRights.reduce(
+      (obj, cur) => ({
+        ...obj,
+        [cur]: enabledRights.some(r => cur.startsWith(r))
+      }),
+      {}
+    );
+
     if (
       name &&
       name_helper_text === "" &&
@@ -56,43 +105,24 @@ class ServerAdminDetails extends React.Component {
       max_life &&
       maxlife_helper_text === ""
     ) {
-      var task;
-      if (edit_mode) {
-        task = editServer(
-          item_id,
-          name,
-          new Date(latest_expiry).toISOString(),
-          max_life
-        );
-      } else {
-        task = createServer(
-          name,
-          new Date(latest_expiry).toISOString(),
-          max_life
-        );
+      const server = this.editMode()
+        ? editServer(
+            item_id,
+            name,
+            new Date(latest_expiry).toISOString(),
+            max_life
+          )
+        : createServer(name, new Date(latest_expiry).toISOString(), max_life);
+      try {
+        await editServerCapabilities((await server).id, rightsObjs);
+        onClick();
+      } catch (err) {
+        if (err.code === 400) {
+          this.setState({ pageError: true, errors: err });
+        } else {
+          this.setState({ hasError: true, error: err });
+        }
       }
-      task
-        .then(json => {
-          return editServerCapabilities(json.id, rights);
-        })
-        .then(json => {
-          onClick();
-        })
-        .catch(err => {
-          if (err.code === 400) {
-            this.setState({ pageError: true, errors: err });
-          } else {
-            this.setState({ hasError: true, error: err });
-          }
-        });
-    }
-  };
-
-  fieldHasError = field => {
-    if (this.state.hasError && this.state.error.code === 400) {
-      return this.state.error.bad_field === field;
-    } else {
-      return false;
     }
   };
 
@@ -100,74 +130,74 @@ class ServerAdminDetails extends React.Component {
     this.setState({ latest_expiry: date });
   };
 
+  handleRightsChange = value => {
+    this.setState({ enabledRights: value });
+  };
+
   handleTextChange = name => event => {
     this.setState({
       pageError: false,
       errors: ""
     });
-    var state = {
+    this.setState({
       [name]: event.target.value
-    };
-    if (name === "name") {
-      var letters = /^[A-Za-z0-9_]+$/;
-      let servername = event.target.value;
-      if (servername.match(letters) && servername.length <= 120) {
-        state = Object.assign(state, {
-          name_helper_text: ""
-        });
-      } else if (servername.length == 0) {
-        state = Object.assign(state, {
-          name_helper_text: "Server name can not be blank."
-        });
-      } else if (!servername.match(letters)) {
-        state = Object.assign(state, {
-          name_helper_text:
-            "Server name may only contain letters, numbers and underscores."
-        });
-      } else {
-        state = Object.assign(state, {
-          name_helper_text: "Server name must be 120 characters or less."
-        });
-      }
-    }
+    });
 
     if (name === "max_life") {
       let maxlife = event.target.value;
-      if (maxlife.length == 0) {
-        state = Object.assign(state, {
+      if (maxlife.length === 0) {
+        this.setState({
           maxlife_helper_text: "Maximum lifetime minutes can not be blank."
         });
       } else {
-        state = Object.assign(state, {
+        this.setState({
           maxlife_helper_text: ""
         });
       }
     }
-    this.setState(state);
+  };
+
+  editMode = () => {
+    return this.props.item_id !== -1;
   };
 
   async componentDidMount() {
     const { item_id } = this.props;
-    var name, rights;
-    try {
-      const all_capabilities = getAllCapabilities();
-      if (item_id !== -1) {
-        const server = getServer(item_id);
-        const capabilities = getCapabilities(item_id);
-        const time_limits = getTimeLimits(item_id);
-        this.setState({
-          name: (await server).name,
-          rights: await capabilities,
-          latest_expiry: (await time_limits).latest_token_expiry,
-          max_life: (await time_limits).longest_token_life,
-          edit_mode: true
+    if (item_id !== -1) {
+      try {
+        const capAwait = getCapabilities(item_id);
+        const limitsAwait = getTimeLimits(item_id);
+        const scopeGraph = scopesGraph(await capAwait);
+        const enabledKeys = [];
+        const rights = await capAwait;
+        const scopes = jsonify(
+          scopeGraph,
+          [],
+          Object.keys(rights).filter(k => rights[k]),
+          enabledKeys
+        );
+        const serverName = (await getServer(item_id)).name;
+        const latestExpiry = (await limitsAwait).latest_token_expiry;
+        const maxLife = (await limitsAwait).longest_token_life;
+        this.setState((state, props) => {
+          return {
+            name: serverName,
+            rights: state.rights.length == 0 ? scopes : state.rights,
+            fullRights:
+              state.fullRights.length == 0
+                ? Object.keys(rights)
+                : state.fullRights,
+            enabledRights:
+              state.enabledRights.length == 0
+                ? enabledKeys
+                : state.enabledRights,
+            latest_expiry: latestExpiry,
+            max_life: maxLife
+          };
         });
+      } catch (err) {
+        this.setState({ hasError: true, error: err });
       }
-      const capabilities = all_capabilities;
-
-      this.setState({ permitted: await capabilities });
-    } catch (err) {
-      this.setState({ hasError: true, error: err });
     }
   }
 
@@ -175,33 +205,55 @@ class ServerAdminDetails extends React.Component {
     if (this.state.hasError && this.state.error.code === 401)
       throw this.state.error;
 
-    const { rights, latest_expiry, name, permitted, max_life } = this.state;
+    const { rights, latest_expiry, name, enabledRights, max_life } = this.state;
     const { classes, onClick } = this.props;
 
     return (
       <React.Fragment>
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
-            {(this.state.edit_mode && "Edit ") || "New "} Server
+            {(this.editMode() && "Edit ") || "New "} Server
           </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Upload API Spec
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <input
+            accept=".json,.yml"
+            className={classes.input}
+            id="spec-upload-button"
+            type="file"
+            style={{ display: "none" }}
+            onChange={event => {
+              this.fileReader.readAsText(event.target.files[0]);
+            }}
+          />
+          <label htmlFor="spec-upload-button">
+            <Button
+              variant="contained"
+              component="span"
+              className={classes.button}
+              id="spec-upload-button-target"
+            >
+              Upload
+            </Button>
+          </label>
         </Grid>
         <Grid item xs={6}>
           <TextField
             // error={this.fieldHasError("name")}
-            placeholder="Maximum 120 characters"
             id="name"
             label="Name"
             className={classes.textField}
             value={name}
-            onChange={this.handleTextChange("name")}
             margin="normal"
-            required={true}
-            error={this.state.name_helper_text}
-            helperText={this.state.name_helper_text}
+            disabled={true}
           />
         </Grid>
         <Grid item xs={6} />
-        <Divider />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             Token Lifetime Limits
@@ -233,21 +285,29 @@ class ServerAdminDetails extends React.Component {
             helperText={this.state.maxlife_helper_text}
           />
         </Grid>
+
         <Grid item xs={12}>
-          <PermissionDetails
-            rights={rights}
-            permitted={permitted}
-            updateRights={rights => this.setState({ rights: rights })}
+          <Typography variant="h5" component="h1">
+            Available API scopes
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <RightsCascade
+            options={rights}
+            value={enabledRights}
+            onChange={this.handleRightsChange}
           />
         </Grid>
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}
         />
-        <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
+        <SubmitButtons handleSubmit={this.submitAndExit} onClick={onClick} />
       </React.Fragment>
     );
   }
 }
-
-export default ServerAdminDetails;
+ServerAdminDetails.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+export default withStyles(styles)(ServerAdminDetails);

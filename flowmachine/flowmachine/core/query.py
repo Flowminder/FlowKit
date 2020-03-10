@@ -26,6 +26,11 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
+from flowmachine.core.context import (
+    get_db,
+    get_redis,
+    submit_to_executor,
+)
 from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
@@ -69,11 +74,6 @@ class Query(metaclass=ABCMeta):
     def __init__(self, cache=True):
         obj = Query._QueryPool.get(self.query_id)
         if obj is None:
-            try:
-                self.connection
-            except AttributeError:
-                raise NotConnectedError()
-
             self._cache = cache
             Query._QueryPool[self.query_id] = self
         else:
@@ -163,7 +163,7 @@ class Query(metaclass=ABCMeta):
         return f"<{', '.join(all_descriptions)}>"
 
     def __iter__(self):
-        con = self.connection.engine
+        con = get_db().engine
         qur = self.get_query()
         with con.begin():
             self._query_object = con.execute(qur)
@@ -187,7 +187,7 @@ class Query(metaclass=ABCMeta):
                   """.format(
                 everything=self.get_query()
             )
-            self._len = self.connection.fetch(sql)[0][0]
+            self._len = get_db().fetch(sql)[0][0]
             return self._len
 
     def turn_on_caching(self):
@@ -234,7 +234,7 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.query_state.QueryState
             The current query state
         """
-        state_machine = QueryStateMachine(self.redis, self.query_id)
+        state_machine = QueryStateMachine(get_redis(), self.query_id, get_db().conn_id)
         return state_machine.current_query_state
 
     @property
@@ -264,13 +264,15 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            state_machine = QueryStateMachine(self.redis, self.query_id)
+            state_machine = QueryStateMachine(
+                get_redis(), self.query_id, get_db().conn_id
+            )
             state_machine.wait_until_complete()
-            if state_machine.is_completed and self.connection.has_table(
+            if state_machine.is_completed and get_db().has_table(
                 schema=schema, name=name
             ):
                 try:
-                    touch_cache(self.connection, self.query_id)
+                    touch_cache(get_db(), self.query_id)
                 except ValueError:
                     pass  # Cache record not written yet, which can happen for Models
                     # which will call through to this method from their `_make_query` method while writing metadata.
@@ -304,16 +306,16 @@ class Query(metaclass=ABCMeta):
                     return self._df.copy()
                 except AttributeError:
                     qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
-                    with self.connection.engine.begin():
-                        self._df = pd.read_sql_query(qur, con=self.connection.engine)
+                    with get_db().engine.begin():
+                        self._df = pd.read_sql_query(qur, con=get_db().engine)
 
                     return self._df.copy()
             else:
                 qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
-                with self.connection.engine.begin():
-                    return pd.read_sql_query(qur, con=self.connection.engine)
+                with get_db().engine.begin():
+                    return pd.read_sql_query(qur, con=get_db().engine)
 
-        df_future = self.thread_pool_executor.submit(do_get)
+        df_future = submit_to_executor(do_get)
         return df_future
 
     def get_dataframe(self):
@@ -373,7 +375,7 @@ class Query(metaclass=ABCMeta):
             return self._df.head(n)
         except AttributeError:
             Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
-            con = self.connection.engine
+            con = get_db().engine
             with con.begin():
                 df = pd.read_sql_query(Q, con=con)
                 return df
@@ -526,7 +528,7 @@ class Query(metaclass=ABCMeta):
             full_name = name
         queries = []
         # Deal with the table already existing potentially
-        if self.connection.has_table(name, schema=schema):
+        if get_db().has_table(name, schema=schema):
             logger.info("Table already exists")
             return []
 
@@ -609,19 +611,19 @@ class Query(metaclass=ABCMeta):
             ddl_ops_func = self._make_sql
 
         current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.query_id
+            get_redis(), self.query_id, get_db().conn_id
         ).enqueue()
         logger.debug(
             f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
-        store_future = self.thread_pool_executor.submit(
+        store_future = submit_to_executor(
             write_query_to_cache,
             name=name,
             schema=schema,
             query=self,
-            connection=self.connection,
-            redis=self.redis,
+            connection=get_db(),
+            redis=get_redis(),
             ddl_ops_func=ddl_ops_func,
             write_func=write_query,
         )
@@ -655,7 +657,7 @@ class Query(metaclass=ABCMeta):
             opts.append("ANALYZE")
         Q = "EXPLAIN ({})".format(", ".join(opts)) + self.get_query()
 
-        exp = self.connection.fetch(Q)
+        exp = get_db().fetch(Q)
 
         if format == "TEXT":
             return "\n".join(
@@ -700,7 +702,7 @@ class Query(metaclass=ABCMeta):
 
         try:
             schema, name = self.fully_qualified_table_name.split(".")
-            return self.connection.has_table(name, schema)
+            return get_db().has_table(name, schema)
         except NotImplementedError:
             return False
 
@@ -815,11 +817,13 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
-        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        q_state_machine = QueryStateMachine(
+            get_redis(), self.query_id, get_db().conn_id
+        )
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
             try:
-                con = self.connection.engine
+                con = get_db().engine
                 try:
                     table_reference_to_this_query = self.get_table()
                     if table_reference_to_this_query is not self:
@@ -829,7 +833,7 @@ class Query(metaclass=ABCMeta):
                 except (ValueError, NotImplementedError) as e:
                     pass  # This cache record isn't actually stored
                 try:
-                    deps = self.connection.fetch(
+                    deps = get_db().fetch(
                         """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
                         ON cache.cached.query_id=cache.dependencies.query_id
                         WHERE depends_on='{}'""".format(
@@ -992,7 +996,7 @@ class Query(metaclass=ABCMeta):
 
         """
         try:
-            Query.connection
+            get_db()
         except:
             raise NotConnectedError()
 
@@ -1001,7 +1005,7 @@ class Query(metaclass=ABCMeta):
         else:
             qry = "SELECT obj FROM cache.cached WHERE class='{}'".format(cls.__name__)
         logger.debug(qry)
-        objs = Query.connection.fetch(qry)
+        objs = get_db().fetch(qry)
         return (pickle.loads(obj[0]) for obj in objs)
 
     def random_sample(self, sampling_method="random_ids", **params):

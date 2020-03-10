@@ -13,6 +13,7 @@ at the network level.
 
 from typing import List, Optional
 
+from ...core.context import get_db
 from ...core.mixins import GeoDataMixin
 from ...core import location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
@@ -76,12 +77,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         subscriber_identifier="msisdn",
     ):
         self.start = (
-            self.connection.min_date(table=table).strftime("%Y-%m-%d")
+            get_db().min_date(table=table).strftime("%Y-%m-%d")
             if start is None
             else start
         )
         self.stop = (
-            self.connection.max_date(table=table).strftime("%Y-%m-%d")
+            get_db().max_date(table=table).strftime("%Y-%m-%d")
             if stop is None
             else stop
         )

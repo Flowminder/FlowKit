@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import rapidjson
 import structlog
 from redis import StrictRedis
@@ -57,4 +61,4 @@ class QueryInfoLookup:
         query_id = self.redis_client.get(query_params_str)
         if query_id is None:
             raise QueryInfoLookupError("No id for these params.")
-        return query_id
+        return query_id.decode()

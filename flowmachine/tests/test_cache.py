@@ -9,6 +9,7 @@ Tests for query caching functions.
 import pytest
 
 from flowmachine.core.cache import cache_table_exists, write_cache_metadata
+from flowmachine.core.context import get_db
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location, ModalLocation, Flows
 
@@ -19,10 +20,10 @@ def test_table_records_removed(flowmachine_connect):
     dl.store().result()
     assert dl.is_stored
     table = dl.get_table()
-    assert cache_table_exists(flowmachine_connect, table.query_id)
+    assert cache_table_exists(get_db(), table.query_id)
 
     dl.invalidate_db_cache()
-    assert not cache_table_exists(flowmachine_connect, table.query_id)
+    assert not cache_table_exists(get_db(), table.query_id)
 
 
 def test_do_cache_simple(flowmachine_connect):
@@ -31,8 +32,8 @@ def test_do_cache_simple(flowmachine_connect):
 
     """
     dl1 = daily_location("2016-01-01")
-    write_cache_metadata(flowmachine_connect, dl1)
-    assert cache_table_exists(flowmachine_connect, dl1.query_id)
+    write_cache_metadata(get_db(), dl1)
+    assert cache_table_exists(get_db(), dl1.query_id)
 
 
 def test_do_cache_multi(flowmachine_connect):
@@ -42,9 +43,9 @@ def test_do_cache_multi(flowmachine_connect):
     """
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    write_cache_metadata(flowmachine_connect, hl1)
+    write_cache_metadata(get_db(), hl1)
 
-    assert cache_table_exists(flowmachine_connect, hl1.query_id)
+    assert cache_table_exists(get_db(), hl1.query_id)
 
 
 def test_do_cache_nested(flowmachine_connect):
@@ -55,9 +56,9 @@ def test_do_cache_nested(flowmachine_connect):
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
-    write_cache_metadata(flowmachine_connect, flow)
+    write_cache_metadata(get_db(), flow)
 
-    assert cache_table_exists(flowmachine_connect, flow.query_id)
+    assert cache_table_exists(get_db(), flow.query_id)
 
 
 def test_store_cache_simple(flowmachine_connect):
@@ -70,7 +71,7 @@ def test_store_cache_simple(flowmachine_connect):
     # Should be stored
     assert dl1.is_stored
 
-    assert cache_table_exists(flowmachine_connect, dl1.query_id)
+    assert cache_table_exists(get_db(), dl1.query_id)
 
 
 def test_store_cache_multi(flowmachine_connect):
@@ -83,7 +84,7 @@ def test_store_cache_multi(flowmachine_connect):
     # Should be stored
     assert hl1.is_stored
 
-    assert cache_table_exists(flowmachine_connect, hl1.query_id)
+    assert cache_table_exists(get_db(), hl1.query_id)
 
 
 def test_store_cache_nested(flowmachine_connect):
@@ -97,7 +98,7 @@ def test_store_cache_nested(flowmachine_connect):
     flow.store().result()
     # Should be stored
     assert flow.is_stored
-    assert cache_table_exists(flowmachine_connect, flow.query_id)
+    assert cache_table_exists(get_db(), flow.query_id)
 
 
 def test_invalidate_cache_simple(flowmachine_connect):
@@ -111,7 +112,7 @@ def test_invalidate_cache_simple(flowmachine_connect):
     assert dl1.is_stored
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
-    assert not cache_table_exists(flowmachine_connect, dl1.query_id)
+    assert not cache_table_exists(get_db(), dl1.query_id)
 
 
 def test_invalidate_cache_multi(flowmachine_connect):
@@ -130,9 +131,9 @@ def test_invalidate_cache_multi(flowmachine_connect):
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
     assert not hl1.is_stored
-    assert not cache_table_exists(flowmachine_connect, dl1.query_id)
-    assert not cache_table_exists(flowmachine_connect, hl1.query_id)
-    has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
+    assert not cache_table_exists(get_db(), dl1.query_id)
+    assert not cache_table_exists(get_db(), hl1.query_id)
+    has_deps = bool(get_db().fetch("SELECT * FROM cache.dependencies"))
     assert has_deps  # the remaining dependencies are due to underlying Table objects
 
 
@@ -156,10 +157,10 @@ def test_invalidate_cache_midchain(flowmachine_connect):
     assert dl1.is_stored
     assert not hl1.is_stored
     assert not flow.is_stored
-    assert cache_table_exists(flowmachine_connect, dl1.query_id)
-    assert not cache_table_exists(flowmachine_connect, hl1.query_id)
-    assert not cache_table_exists(flowmachine_connect, flow.query_id)
-    has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
+    assert cache_table_exists(get_db(), dl1.query_id)
+    assert not cache_table_exists(get_db(), hl1.query_id)
+    assert not cache_table_exists(get_db(), flow.query_id)
+    has_deps = bool(get_db().fetch("SELECT * FROM cache.dependencies"))
     assert has_deps  # Daily location deps should remain
 
 
@@ -182,9 +183,9 @@ def test_invalidate_cascade(flowmachine_connect):
     assert not dl1.is_stored
     assert hl1.is_stored
     assert flow.is_stored
-    assert not cache_table_exists(flowmachine_connect, dl1.query_id)
-    assert cache_table_exists(flowmachine_connect, hl1.query_id)
-    has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
+    assert not cache_table_exists(get_db(), dl1.query_id)
+    assert cache_table_exists(get_db(), hl1.query_id)
+    has_deps = bool(get_db().fetch("SELECT * FROM cache.dependencies"))
     assert has_deps
 
 
