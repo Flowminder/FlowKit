@@ -11,7 +11,7 @@ import textwrap
 import IPython
 from io import StringIO
 
-from flowmachine.core import CustomQuery
+from flowmachine.core import CustomQuery, Query
 from flowmachine.core.dummy_query import DummyQuery
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.features import daily_location, EventTableSubset
@@ -22,6 +22,9 @@ from flowmachine.core.dependency_graph import (
     unstored_dependencies_graph,
     plot_dependency_graph,
     store_queries_in_order,
+    storable_dependencies,
+    stored_dependencies,
+    stored_dependencies_ratio,
 )
 
 
@@ -164,3 +167,46 @@ def test_store_queries_in_order():
     dummy5 = QueryWithStoreAssertions(dummy_param=["dummy5", dummy3, dummy4])
     graph = calculate_dependency_graph(dummy5)
     store_queries_in_order(graph)
+
+
+def test_storable_dependencies():
+    """
+    Test that the set of only storeable dependencies is returned.
+    """
+
+    class UnStoreableQuery(DummyQuery):
+        @property
+        def table_name(self):
+            raise NotImplementedError("This dummy cannot be stored.")
+
+    dummy = DummyQuery(dummy_param="DUMMY")
+    unstoreable_dummy = UnStoreableQuery(dummy_param="UNSTOREABLE_DUMMY")
+
+    nested = DummyQuery(dummy_param=[dummy, unstoreable_dummy])
+    assert storable_dependencies(nested) == {dummy, nested}
+
+
+def test_stored_dependencies(dummy_redis):
+    """
+    Test that the set of already stored dependencies is returned.
+    """
+    dummy = DummyQuery(dummy_param="DUMMY")
+    stored_dummy = DummyQuery(dummy_param="STORED_DUMMY")
+    stored_dummy.store()
+
+    nested = DummyQuery(dummy_param=[dummy, stored_dummy])
+    assert stored_dependencies(nested) == {stored_dummy}
+
+
+def test_stored_dependencies_ratio(dummy_redis):
+    """
+    Test correct ratio of stored to unstored dependencies is returned.
+    """
+    dummy = DummyQuery(dummy_param="DUMMY")
+    stored_dummy = DummyQuery(dummy_param="STORED_DUMMY")
+    stored_dummy.store()
+
+    nested = DummyQuery(dummy_param=[dummy, stored_dummy])
+    assert stored_dependencies_ratio(nested) == (1, 3)
+    nested.store()
+    assert stored_dependencies_ratio(nested) == (1, 1)

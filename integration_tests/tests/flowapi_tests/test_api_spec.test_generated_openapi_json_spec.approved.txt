@@ -2597,6 +2597,15 @@
               "application/json": {
                 "schema": {
                   "properties": {
+                    "completed": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
                     "msg": {
                       "type": "string"
                     },
@@ -2664,6 +2673,27 @@
         },
         "responses": {
           "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "completed": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    "query_id": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
             "description": "Request accepted.",
             "headers": {
               "Location": {

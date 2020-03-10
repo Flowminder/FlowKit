@@ -31,6 +31,20 @@ async def run_query():
               schema:
                 format: url
                 type: string
+          content:
+            application/json:
+              schema:
+                properties:
+                  query_id:
+                    type: string
+                  completed:
+                    items:
+                      format: int32
+                      type: integer
+                    type: array
+                    maxItems: 2
+                    minItems: 2
+                type: object
         '401':
           description: Unauthorized.
         '403':
@@ -111,6 +125,13 @@ async def poll_query(query_id):
                       - executing
                       - queued
                     type: string
+                  completed:
+                    items:
+                      format: int32
+                      type: integer
+                    type: array
+                    maxItems: 2
+                    minItems: 2
                 type: object
           description: Request accepted.
         '303':

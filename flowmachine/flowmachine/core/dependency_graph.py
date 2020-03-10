@@ -7,8 +7,9 @@ import networkx as nx
 import sys
 import structlog
 from io import BytesIO
-from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional
+from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional, List, Set
 from concurrent.futures import wait
+from functools import lru_cache
 
 from flowmachine.core.context import get_redis, get_db
 from flowmachine.core.errors import UnstorableQueryError
@@ -169,14 +170,7 @@ def calculate_dependency_graph(query_obj: "Query", analyse: bool = False) -> nx.
     The queries listed as dependencies are not _guaranteed_ to be
     used in the actual running of a query, only to be referenced by it.
     """
-    openlist = [(None, query_obj)]
-    deps = []
-
-    while openlist:
-        y, x = openlist.pop()
-        deps.append((y, x))
-
-        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+    deps = get_dependency_links(query_obj)
 
     def get_node_attrs(q):
         attrs = _get_query_attrs_for_dependency_graph(q, analyse=analyse)
@@ -191,6 +185,20 @@ def calculate_dependency_graph(query_obj: "Query", analyse: bool = False) -> nx.
         return attrs
 
     return _assemble_dependency_graph(dependencies=deps, attrs_func=get_node_attrs)
+
+
+@lru_cache(maxsize=256)
+def get_dependency_links(
+    query_obj: "Query",
+) -> List[Tuple[Union[None, "Query"], "Query"]]:
+    openlist = [(None, query_obj)]
+    deps = []
+    while openlist:
+        y, x = openlist.pop()
+        deps.append((y, x))
+
+        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+    return deps
 
 
 def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
@@ -361,3 +369,42 @@ def store_all_unstored_dependencies(query_obj: "Query") -> None:
 
     logger.debug(f"Waiting for dependencies to finish executing...")
     wait(list(dependency_futures.values()))
+
+
+def storable_dependencies(query: "Query") -> Set["Query"]:
+    """
+    Get the set of dependencies for this query which can be stored.
+
+    Parameters
+    ----------
+    query : Query
+        Query object to get potentially storeable dependencies for
+
+    Returns
+    -------
+    set of Query
+        The set of dependencies of this query that can be stored.
+
+    """
+    dependency_graph = calculate_dependency_graph(query_obj=query)
+    storeable = {query}
+    for node, data in dependency_graph.nodes(data=True):
+        try:
+            data["query_object"].table_name
+            storeable.add(data["query_object"])
+        except NotImplementedError:
+            pass  # Not a storeable query type
+    return storeable
+
+
+def stored_dependencies(query: "Query") -> Set["Query"]:
+    return set(qur for qur in storable_dependencies(query=query) if qur.is_stored)
+
+
+def stored_dependencies_ratio(query: "Query") -> Tuple[int, int]:
+    if query.is_stored:
+        return 1, 1  # Special case for an already stored query
+    return (
+        len(stored_dependencies(query=query)),
+        len(storable_dependencies(query=query)),
+    )
