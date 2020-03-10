@@ -47,6 +47,8 @@ async def run_query():
           description: Query spec could not be run..
         '500':
           description: Server error.
+        '503':
+          description: Query is resetting; try again later.
       summary: Run a query
 
     """
@@ -62,14 +64,36 @@ async def run_query():
     )
 
     if reply["status"] == "error":
-        # TODO: currently the reply msg is empty; we should either pass on the message payload (which contains
-        #       further information about the error) or add a non-empty human-readable error message.
-        #       If we pass on the payload we should also deconstruct it to make it more human-readable
-        #       because it will contain marshmallow validation errors (and/or any other possible errors?)
-        return (
-            {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]},
-            400,
-        )
+        if "query_state" in reply["payload"]:
+            # Query could not run due to query state
+            if reply["payload"]["query_state"] == "resetting":
+                return (
+                    {
+                        "status": "Resetting",
+                        "msg": reply["msg"],
+                        "payload": reply["payload"],
+                    },
+                    503,
+                )
+            else:
+                return (
+                    {
+                        "status": "Error",
+                        "msg": reply["msg"],
+                        "payload": reply["payload"],
+                    },
+                    500,
+                )
+        else:
+            # Query object could not be constructed
+            # TODO: currently the reply msg is empty; we should either pass on the message payload (which contains
+            #       further information about the error) or add a non-empty human-readable error message.
+            #       If we pass on the payload we should also deconstruct it to make it more human-readable
+            #       because it will contain marshmallow validation errors (and/or any other possible errors?)
+            return (
+                {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]},
+                400,
+            )
     elif reply["status"] == "success":
         assert "query_id" in reply["payload"]
         d = {
@@ -110,8 +134,6 @@ async def poll_query(query_id):
                     enum:
                       - executing
                       - queued
-                      - resetting
-                      - known
                     type: string
                 type: object
           description: Request accepted.
@@ -135,6 +157,8 @@ async def poll_query(query_id):
           description: Unknown ID
         '500':
           description: Server error.
+        '503':
+          description: Query is resetting.
       summary: Get the status of a query
     """
     await current_user.can_poll_by_query_id(query_id=query_id)
@@ -150,23 +174,34 @@ async def poll_query(query_id):
         f"Received reply {reply}", request_id=request.request_id
     )
 
-    if reply["status"] == "error":
-        return {"status": "error", "msg": reply[""]}, 500
-    else:
-        assert reply["status"] == "success"
+    try:
         query_state = reply["payload"]["query_state"]
-        if query_state == "completed":
-            return (
-                jsonify({}),
-                303,
-                {"Location": url_for(f"query.get_query_result", query_id=query_id)},
-            )
-        elif query_state in ("executing", "queued", "resetting", "known"):
-            return jsonify({"status": query_state, "msg": reply["msg"]}), 202
-        elif query_state in ("errored", "cancelled", "reset_failed"):
-            return jsonify({"status": query_state, "msg": reply["msg"]}), 500
-        else:  # TODO: would be good to have an explicit query state for this, too!
-            return {"status": query_state, "msg": reply["msg"]}, 404
+    except KeyError:
+        return {"status": "error", "msg": reply[""]}, 500
+
+    response_codes = {
+        "completed": 303,
+        "queued": 202,
+        "executing": 202,
+        "unknown": 404,
+        "known": 404,
+        "cancelled": 404,
+        "resetting": 503,
+        "errored": 500,
+        "reset_failed": 500,
+    }
+
+    if query_state == "completed":
+        return (
+            jsonify({}),
+            response_codes[query_state],
+            {"Location": url_for(f"query.get_query_result", query_id=query_id)},
+        )
+    else:
+        return (
+            {"status": query_state, "msg": reply["msg"]},
+            response_codes.get(query_state, 500),
+        )
 
 
 @blueprint.route("/get/<query_id>")
@@ -189,12 +224,6 @@ async def get_query_result(query_id):
               schema:
                 type: object
           description: Results returning.
-        '202':
-          content:
-            application/json:
-              schema:
-                type: object
-          description: Request accepted.
         '401':
           description: Unauthorized.
         '403':
@@ -204,7 +233,7 @@ async def get_query_result(query_id):
                 type: object
           description: Token does not grant results access to this query or spatial aggregation unit.
         '404':
-          description: Unknown ID
+          description: Result unavailable.
         '500':
           description: Server error.
       summary: Get the output of query
@@ -221,32 +250,7 @@ async def get_query_result(query_id):
         f"Received reply: {reply}", request_id=request.request_id
     )
 
-    if reply["status"] == "error":
-        try:
-            # TODO: check that this path is fully tested!
-            query_state = reply["payload"]["query_state"]
-            if query_state in ("executing", "queued"):
-                return {}, 202
-            elif query_state == "errored":
-                return (
-                    {"status": "Error", "msg": reply["msg"]},
-                    403,
-                )  # TODO: should this really be 403?
-            elif query_state in ("awol", "known"):
-                return ({"status": "Error", "msg": reply["msg"]}, 404)
-            else:
-                return (
-                    jsonify(
-                        {
-                            "status": "Error",
-                            "msg": f"Unexpected query state: {query_state}",
-                        }
-                    ),
-                    500,
-                )
-        except KeyError:
-            return {"status": "error", "msg": reply["msg"]}, 500
-    else:
+    if reply["status"] == "success":
         sql = reply["payload"]["sql"]
         results_streamer = stream_with_context(stream_result_as_json)(
             sql, additional_elements={"query_id": query_id}
@@ -265,6 +269,8 @@ async def get_query_result(query_id):
                 "Content-type": mimetype,
             },
         )
+    else:
+        return {"status": "Error", "msg": reply["msg"]}, 404
 
 
 @blueprint.route("/available_dates")

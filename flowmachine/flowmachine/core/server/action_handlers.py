@@ -211,7 +211,7 @@ async def action_handler__poll_query(
     # TODO: we should probably be able to use the QueryStateMachine to determine
     # whether the query already exists.
     if query_kind is None:
-        payload = {"query_id": query_id, "query_state": "awol"}
+        payload = {"query_id": query_id, "query_state": "unknown"}
         return ZMQReply(
             status="error", msg=f"Unknown query id: '{query_id}'", payload=payload
         )
@@ -236,7 +236,7 @@ async def action_handler__get_query_kind(
     query_kind = _get_query_kind_for_query_id(query_id)
     if query_kind is None:
         error_msg = f"Unknown query id: '{query_id}'"
-        payload = {"query_id": query_id, "query_state": "awol"}
+        payload = {"query_id": query_id, "query_state": "unknown"}
         return ZMQReply(status="error", msg=error_msg, payload=payload)
     else:
         payload = {"query_id": query_id, "query_kind": query_kind}
@@ -255,7 +255,7 @@ async def action_handler__get_query_params(
     try:
         query_params = q_info_lookup.get_query_params(query_id)
     except UnkownQueryIdError:
-        payload = {"query_id": query_id, "query_state": "awol"}
+        payload = {"query_id": query_id, "query_state": "unknown"}
         return ZMQReply(
             status="error", msg=f"Unknown query id: '{query_id}'", payload=payload
         )
@@ -280,7 +280,7 @@ async def action_handler__get_sql(
     q_info_lookup = QueryInfoLookup(get_redis())
     if not q_info_lookup.query_is_known(query_id):
         msg = f"Unknown query id: '{query_id}'"
-        payload = {"query_id": query_id, "query_state": "awol"}
+        payload = {"query_id": query_id, "query_state": "unknown"}
         return ZMQReply(status="error", msg=msg, payload=payload)
 
     query_state = QueryStateMachine(
