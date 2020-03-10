@@ -220,12 +220,28 @@ async def get_query_result(query_id, filetype="json"):
           required: true
           schema:
             type: string
+        - in: path
+          name: filetype
+          required: false
+          default: json
+          schema:
+            type: string
+            enum:
+              - json
+              - geojson
+              - csv
       responses:
         '200':
           content:
             application/json:
               schema:
                 type: object
+            application/geo+json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
           description: Results returning.
         '202':
           content:
@@ -250,7 +266,9 @@ async def get_query_result(query_id, filetype="json"):
     await current_user.can_get_results_by_query_id(query_id=query_id)
     msg = {
         "request_id": request.request_id,
-        "action": "get_sql_for_query_result",
+        "action": "get_geo_sql_for_query_result"
+        if filetype == "geojson"
+        else "get_sql_for_query_result",
         "params": {"query_id": query_id},
     }
     request.socket.send_json(msg)
@@ -292,6 +310,13 @@ async def get_query_result(query_id, filetype="json"):
         elif filetype == "csv":
             results_streamer = stream_with_context(stream_result_as_csv)(sql)
             mimetype = "text/csv"
+        elif filetype == "geojson":
+            results_streamer = stream_with_context(stream_result_as_json)(
+                reply["payload"]["sql"],
+                result_name="features",
+                additional_elements={"type": "FeatureCollection"},
+            )
+            mimetype = "application/geo+json"
         else:
             return {"status": "error", "msg": "Invalid file format"}, 400
 

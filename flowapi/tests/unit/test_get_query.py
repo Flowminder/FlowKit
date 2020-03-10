@@ -23,6 +23,11 @@ from asynctest import CoroutineMock
             b'{"query_id":"DUMMY_QUERY_ID", "query_result":[{"key":"value1"}, {"key":"value2"}]}',
             "json",
         ),
+        (
+            ".geojson",
+            b'{"type":"FeatureCollection", "features":[{"key":"value1"}, {"key":"value2"}]}',
+            "geojson",
+        ),
         (".csv", b"key\r\nvalue1\r\nvalue2\r\n", "csv",),
     ],
 )
