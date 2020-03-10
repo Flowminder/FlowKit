@@ -10,8 +10,26 @@ import pytest
 from asynctest import CoroutineMock
 
 
+@pytest.mark.parametrize(
+    "filetype, expected, expected_file_ext",
+    [
+        (
+            ".json",
+            b'{"query_id":"DUMMY_QUERY_ID", "query_result":[{"key":"value1"}, {"key":"value2"}]}',
+            "json",
+        ),
+        (
+            "",
+            b'{"query_id":"DUMMY_QUERY_ID", "query_result":[{"key":"value1"}, {"key":"value2"}]}',
+            "json",
+        ),
+        (".csv", b"key\r\nvalue1\r\nvalue2\r\n", "csv",),
+    ],
+)
 @pytest.mark.asyncio
-async def test_get_query(app, access_token_builder, dummy_zmq_server):
+async def test_get_query(
+    filetype, expected, expected_file_ext, app, access_token_builder, dummy_zmq_server
+):
     """
     Test that JSON is returned when getting a query.
     """
@@ -21,8 +39,8 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
     # the pool's context manager, getting the cursor on that, and then looping
     # over the values in cursor
     app.db_pool.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
-        {"some": "valid"},
-        {"json": "bits"},
+        {"key": "value1"},
+        {"key": "value2"},
     ]
     token = access_token_builder(
         ["get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
@@ -45,14 +63,13 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
     }
     dummy_zmq_server.side_effect = (reply_1, reply_2)
     response = await app.client.get(
-        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/get/DUMMY_QUERY_ID{filetype}",
+        headers={"Authorization": f"Bearer {token}"},
     )
     reply = await response.get_data()
-    json_data = loads(reply)
-    assert "DUMMY_QUERY_ID" == json_data["query_id"]
-    assert [{"some": "valid"}, {"json": "bits"}] == json_data["query_result"]
+    assert expected == reply
     assert (
-        "attachment;filename=DUMMY_QUERY_ID.json"
+        f"attachment;filename=DUMMY_QUERY_ID.{expected_file_ext}"
         == response.headers["content-disposition"]
     )
 

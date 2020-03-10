@@ -4,7 +4,7 @@
 
 from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
-from .stream_results import stream_result_as_json
+from .stream_results import stream_result_as_json, stream_result_as_csv
 
 blueprint = Blueprint("query", __name__)
 
@@ -207,8 +207,9 @@ async def poll_query(query_id):
 
 
 @blueprint.route("/get/<query_id>")
+@blueprint.route("/get/<query_id>.<filetype>")
 @jwt_required
-async def get_query_result(query_id):
+async def get_query_result(query_id, filetype="json"):
     """
     Get the output of a completed query.
     ---
@@ -270,25 +271,29 @@ async def get_query_result(query_id):
                     403,
                 )  # TODO: should this really be 403?
             elif query_state in ("awol", "known"):
-                return ({"status": "Error", "msg": reply["msg"]}, 404)
+                return {"status": "Error", "msg": reply["msg"]}, 404
             else:
                 return (
-                    jsonify(
-                        {
-                            "status": "Error",
-                            "msg": f"Unexpected query state: {query_state}",
-                        }
-                    ),
+                    {
+                        "status": "Error",
+                        "msg": f"Unexpected query state: {query_state}",
+                    },
                     500,
                 )
         except KeyError:
             return {"status": "error", "msg": reply["msg"]}, 500
     else:
         sql = reply["payload"]["sql"]
-        results_streamer = stream_with_context(stream_result_as_json)(
-            sql, additional_elements={"query_id": query_id}
-        )
-        mimetype = "application/json"
+        if filetype == "json":
+            results_streamer = stream_with_context(stream_result_as_json)(
+                sql, additional_elements={"query_id": query_id}
+            )
+            mimetype = "application/json"
+        elif filetype == "csv":
+            results_streamer = stream_with_context(stream_result_as_csv)(sql)
+            mimetype = "text/csv"
+        else:
+            return {"status": "error", "msg": "Invalid file format"}, 400
 
         current_app.flowapi_logger.debug(
             f"Returning result of query {query_id}.", request_id=request.request_id
@@ -298,7 +303,7 @@ async def get_query_result(query_id):
             200,
             {
                 "Transfer-Encoding": "chunked",
-                "Content-Disposition": f"attachment;filename={query_id}.json",
+                "Content-Disposition": f"attachment;filename={query_id}.{filetype}",
                 "Content-type": mimetype,
             },
         )
