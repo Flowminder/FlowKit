@@ -22,7 +22,7 @@ def test_poll_existing_query(zmq_port, zmq_host):
     expected_reply = {
         "status": "success",
         "msg": "",
-        "payload": {"query_id": expected_query_id},
+        "payload": {"completed": [1, 1], "query_id": expected_query_id},
     }
     assert expected_reply == reply
 
@@ -42,6 +42,7 @@ def test_poll_existing_query(zmq_port, zmq_host):
             "query_id": expected_query_id,
             "query_kind": "dummy_query",
             "query_state": "completed",
+            "completed": [1, 1],
         },
     }
     assert expected_reply == reply
