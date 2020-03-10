@@ -15,32 +15,10 @@ for reference by programs that connect to the database.
 
 */
 
-/*
-
-Schema that stores calculated features (e.g. daily locations).
-
-*/
-CREATE SCHEMA IF NOT EXISTS features;
 
 /*
 
-The results schema is where Flowminder analysts store
-the results of their analysis. This schema is designed to
-have less privileges than other schemas. This is meant
-to allow other applications (i.e. visualizations) to
-have access to results data.
-
-*/
-CREATE SCHEMA IF NOT EXISTS results;
-
-
-/*
-
-Schema used for storing population estimates. See issue
-
-	https://github.com/Flowminder/cdr-database/issues/86
-
-for detailed discussion on what this schema addresses.
+Schema used for storing population estimates.
 
 */
 CREATE SCHEMA IF NOT EXISTS population;
@@ -92,21 +70,3 @@ COMMENT ON TABLE etl.post_etl_queries
         IS 'Records outcomes of queries (e.g. simple quality checks) that are run '
            'as part of the regular ETL process, after data has been ingested.';
 
-/*
-
-Schema used for record keeping of aggregate calculations.
-
-*/
-
-CREATE SCHEMA IF NOT EXISTS aggregates;
-
-CREATE TYPE aggstatus AS ENUM ('in_process', 'done', 'failed');
-CREATE TABLE aggregates.aggregates (
-	id SERIAL NOT NULL,
-	aggregate_type VARCHAR,
-	aggregate_date DATE,
-	status aggstatus,
-	cache_ref VARCHAR,
-	time_stamp TIMESTAMP WITH TIME ZONE,
-	PRIMARY KEY (id)
-);
