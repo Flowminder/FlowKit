@@ -157,8 +157,6 @@ async def poll_query(query_id):
           description: Unknown ID
         '500':
           description: Server error.
-        '503':
-          description: Query is resetting.
       summary: Get the status of a query
     """
     await current_user.can_poll_by_query_id(query_id=query_id)
@@ -186,7 +184,7 @@ async def poll_query(query_id):
         "unknown": 404,
         "known": 404,
         "cancelled": 404,
-        "resetting": 503,
+        "resetting": 404,
         "errored": 500,
         "reset_failed": 500,
     }
