@@ -3106,6 +3106,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/direction_enum/" title="direction_enum" class="md-nav__link">
+      direction_enum
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
       event_table_subset
     </a>
@@ -4352,9 +4364,9 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/interevent_period.py#L0">flowmachine/features/subscriber/interevent_period.py</a></p>
 <p>Intervent period statistics, such as the average and standard deviation of the duration between calls.</p>
 <h2 id="class-intereventperiod">Class <strong>IntereventPeriod</strong><a class="headerlink" href="#class-intereventperiod" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">IntereventPeriod</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">time_resolution</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">tables</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">IntereventPeriod</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">time_resolution</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">tables</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">direction_enum</span><span class="o">.</span><span class="n">Direction</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Direction</span><span class="o">.</span><span class="n">OUT</span><span class="p">:</span> <span class="s1">&#39;out&#39;</span><span class="o">&gt;</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/interevent_period.py#L21">flowmachine/features/subscriber/interevent_period.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/interevent_period.py#L22">flowmachine/features/subscriber/interevent_period.py</a></p>
 <p>This class calculates intervent period statistics such as the average and standard deviation of the duration between calls and returns them as fractional time units.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4418,7 +4430,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>If provided, string or list of string which are msisdn or imeis to limit results to; or, a query or table which has a column with a name matching subscriber_identifier (typically, msisdn), to limit results to.</p>
 </li>
 <li>
-<p><code>direction</code>: <code>str</code>, default <code>both</code></p>
+<p><code>direction</code>: <code>typing.Union[str, flowmachine.features.utilities.direction_enum.Direction]</code>, default <code>out</code></p>
 <p>Whether to consider calls made, received, or both. Defaults to 'out'.</p>
 </li>
 <li>
@@ -4462,7 +4474,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/interevent_period.py#L104">flowmachine/features/subscriber/interevent_period.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/interevent_period.py#L105">flowmachine/features/subscriber/interevent_period.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
 <ul>

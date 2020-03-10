@@ -3964,6 +3964,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/direction_enum/" title="direction_enum" class="md-nav__link">
+      direction_enum
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
       event_table_subset
     </a>
@@ -6070,7 +6082,7 @@
 <h2 id="class-baseentropy">Class <strong>BaseEntropy</strong><a class="headerlink" href="#class-baseentropy" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">BaseEntropy</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L22">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L25">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Base query for calculating entropy of subscriber features. </p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -6118,11 +6130,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="_absolute_freq_query">_absolute_freq_query<a class="headerlink" href="#_absolute_freq_query" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_absolute_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L39">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L42">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="_relative_freq_query">_relative_freq_query<a class="headerlink" href="#_relative_freq_query" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_relative_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L45">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L48">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="cache">cache<a class="headerlink" href="#cache" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
@@ -6137,7 +6149,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L25">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L28">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -6258,9 +6270,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="class-contactentropy">Class <strong>ContactEntropy</strong><a class="headerlink" href="#class-contactentropy" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">ContactEntropy</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">exclude_self_calls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">ContactEntropy</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">direction_enum</span><span class="o">.</span><span class="n">Direction</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Direction</span><span class="o">.</span><span class="n">BOTH</span><span class="p">:</span> <span class="s1">&#39;both&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">exclude_self_calls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L296">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L292">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Calculates the entropy of counterparts contacted. For instance, if an individual regularly interacts with a few determined counterparts on a predictable way then this user will have a low contact entropy.
 Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  where <code>relative_freq</code> is the relative frequency of events with a given counterpart.  This formula represents a consistent estimate of the true entropy only under certain conditions. Among them, that the relative frequency is a good approximation to the probability that a certain event will occur with a given counterpart. In case of strong correlation between counterparts, this might not be true.</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
@@ -6320,8 +6332,8 @@ Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  
 <p>If provided, string or list of string which are msisdn or imeis to limit results to; or, a query or table which has a column with a name matching subscriber_identifier (typically, msisdn), to limit results to.</p>
 </li>
 <li>
-<p><code>direction</code>: <code>{'in', 'out', 'both'}</code>, default <code>'out'</code></p>
-<p>Whether to consider calls made, received, or both. Defaults to 'out'.</p>
+<p><code>direction</code>: <code>typing.Union[str, flowmachine.features.utilities.direction_enum.Direction]</code>, default <code>both</code></p>
+<p>Whether to consider calls made, received, or both. Defaults to 'both'.</p>
 </li>
 <li>
 <p><code>hours</code>: <code>2-tuple</code> of <code>floats</code>, default <code>'all'</code></p>
@@ -6345,11 +6357,11 @@ Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  
 <h4 id="_absolute_freq_query_1">_absolute_freq_query<a class="headerlink" href="#_absolute_freq_query_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_absolute_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L376">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L372">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="_relative_freq_query_1">_relative_freq_query<a class="headerlink" href="#_relative_freq_query_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_relative_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L384">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L380">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="cache_1">cache<a class="headerlink" href="#cache_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
@@ -6364,7 +6376,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L25">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L28">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h5>
 <ul>
@@ -6487,7 +6499,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-locationentropy">Class <strong>LocationEntropy</strong><a class="headerlink" href="#class-locationentropy" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">LocationEntropy</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">spatial_unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">]</span> <span class="o">=</span> <span class="n">CellSpatialUnit</span><span class="p">(),</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">ignore_nulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L201">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L197">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Calculates the entropy of locations visited. For instance, if an individual regularly makes her/his calls from certain location then this user will have a low location entropy.
 Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  where <code>relative_freq</code> is the relative frequency of events occurring at a certain location (eg. cell, site, admnistrative region, etc.).  This formula represents a consistent estimate of the true entropy only under certain conditions. Among them, that the relative frequency is a good approximation to the probability that a certain event occurs in a given location. In case of strong spatial autocorrelation, this might not be true.</p>
 <h2 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h2>
@@ -6568,11 +6580,11 @@ Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  
 <h4 id="_absolute_freq_query_2">_absolute_freq_query<a class="headerlink" href="#_absolute_freq_query_2" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_absolute_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L282">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L278">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="_relative_freq_query_2">_relative_freq_query<a class="headerlink" href="#_relative_freq_query_2" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_relative_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L45">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L48">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="cache_2">cache<a class="headerlink" href="#cache_2" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
@@ -6587,7 +6599,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_2">column_names<a class="headerlink" href="#column_names_2" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L25">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L28">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_23">Returns<a class="headerlink" href="#returns_23" title="Permanent link">&para;</a></h5>
 <ul>
@@ -6708,9 +6720,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="class-periodicentropy">Class <strong>PeriodicEntropy</strong><a class="headerlink" href="#class-periodicentropy" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">PeriodicEntropy</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">PeriodicEntropy</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">direction_enum</span><span class="o">.</span><span class="n">Direction</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Direction</span><span class="o">.</span><span class="n">BOTH</span><span class="p">:</span> <span class="s1">&#39;both&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L55">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L58">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Calculates the recurrence period entropy for events, that is the entropy associated with the period in which events take place. For instance, if events regularly occur at a certain time of day, say at 9:00 and 18:00 then this user will have a low period entropy.
 Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  where <code>relative_freq</code> is the relative frequency of events occurring at a certain period (eg. hour of the day, day of the week, month of the year).  This formula represents a consistent estimate of the true entropy only under certain conditions. Among them, that the relative frequency is a good approximation to the probability that a certain event occurs within certain periodic phases. In case of strong autocorrelation, this might not be true.</p>
 <h2 id="attributes_3">Attributes<a class="headerlink" href="#attributes_3" title="Permanent link">&para;</a></h2>
@@ -6777,8 +6789,8 @@ Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  
 <p>If provided, string or list of string which are msisdn or imeis to limit results to; or, a query or table which has a column with a name matching subscriber_identifier (typically, msisdn), to limit results to.</p>
 </li>
 <li>
-<p><code>direction</code>: <code>{'in', 'out', 'both'}</code>, default <code>'out'</code></p>
-<p>Whether to consider calls made, received, or both. Defaults to 'out'.</p>
+<p><code>direction</code>: <code>typing.Union[str, flowmachine.features.utilities.direction_enum.Direction]</code>, default <code>both</code></p>
+<p>Whether to consider calls made, received, or both. Defaults to 'both'.</p>
 </li>
 <li>
 <p><code>hours</code>: <code>2-tuple</code> of <code>floats</code>, default <code>'all'</code></p>
@@ -6798,11 +6810,11 @@ Entropy is calculated as:      -1 * SUM( relative_freq * LN( relative_freq ) )  
 <h4 id="_absolute_freq_query_3">_absolute_freq_query<a class="headerlink" href="#_absolute_freq_query_3" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_absolute_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L183">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L185">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="_relative_freq_query_3">_relative_freq_query<a class="headerlink" href="#_relative_freq_query_3" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">_relative_freq_query</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L45">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L48">flowmachine/features/subscriber/entropy.py</a></p>
 <h4 id="cache_3">cache<a class="headerlink" href="#cache_3" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">cache</span>
 </code></pre></div>
@@ -6817,7 +6829,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_3">column_names<a class="headerlink" href="#column_names_3" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L25">flowmachine/features/subscriber/entropy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/entropy.py#L28">flowmachine/features/subscriber/entropy.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_34">Returns<a class="headerlink" href="#returns_34" title="Permanent link">&para;</a></h5>
 <ul>

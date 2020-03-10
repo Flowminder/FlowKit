@@ -3106,6 +3106,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/direction_enum/" title="direction_enum" class="md-nav__link">
+      direction_enum
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
       event_table_subset
     </a>
@@ -4350,7 +4362,7 @@
                 
                 <h1 id="flowmachinefeaturessubscriberevent_type_proportion">flowmachine.features.subscriber.event_type_proportion<a class="headerlink" href="#flowmachinefeaturessubscriberevent_type_proportion" title="Permanent link">&para;</a></h1>
 <h2 id="class-proportioneventtype">Class <strong>ProportionEventType</strong><a class="headerlink" href="#class-proportioneventtype" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">ProportionEventType</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">numerator_direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">ProportionEventType</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">numerator_direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">direction_enum</span><span class="o">.</span><span class="n">Direction</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Direction</span><span class="o">.</span><span class="n">BOTH</span><span class="p">:</span> <span class="s1">&#39;both&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">direction_enum</span><span class="o">.</span><span class="n">Direction</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Direction</span><span class="o">.</span><span class="n">BOTH</span><span class="p">:</span> <span class="s1">&#39;both&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/event_type_proportion.py#L14">flowmachine/features/subscriber/event_type_proportion.py</a></p>
 <p>This class returns the proportion of events of a certain type out of all events observed during the target period per subscriber in all tables specified in <code>tables</code>.</p>
@@ -4401,7 +4413,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>The event tables for which we are seeking as the proportion of the total events observed in all tables specified in <code>tables</code>.</p>
 </li>
 <li>
-<p><code>numerator_direction</code>: <code>{'in', 'out', 'both'}</code>, default <code>'both'</code></p>
+<p><code>numerator_direction</code>: <code>typing.Union[str, flowmachine.features.utilities.direction_enum.Direction]</code>, default <code>both</code></p>
 <p>Whether to consider events made, received, or both in the numerator. Defaults to 'both'.</p>
 </li>
 <li>
@@ -4417,7 +4429,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>If provided, string or list of string which are msisdn or imeis to limit results to; or, a query or table which has a column with a name matching subscriber_identifier (typically, msisdn), to limit results to.</p>
 </li>
 <li>
-<p><code>direction</code>: <code>{'in', 'out', 'both'}</code>, default <code>'both'</code></p>
+<p><code>direction</code>: <code>typing.Union[str, flowmachine.features.utilities.direction_enum.Direction]</code>, default <code>both</code></p>
 <p>Whether to consider events made, received, or both. Defaults to 'both'.</p>
 </li>
 <li>

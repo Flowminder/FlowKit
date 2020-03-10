@@ -3106,6 +3106,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/direction_enum/" title="direction_enum" class="md-nav__link">
+      direction_enum
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
       event_table_subset
     </a>
@@ -4352,7 +4364,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/pareto_interactions.py#L0">flowmachine/features/subscriber/pareto_interactions.py</a></p>
 <p>This class calculates the Pareto proportion for a subscriber's interactions - that fraction of their contacts who account for 80% of their interactions.</p>
 <h2 id="class-paretointeractions">Class <strong>ParetoInteractions</strong><a class="headerlink" href="#class-paretointeractions" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">ParetoInteractions</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">proportion</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">exclude_self_calls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">ParetoInteractions</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">proportion</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">direction_enum</span><span class="o">.</span><span class="n">Direction</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Direction</span><span class="o">.</span><span class="n">BOTH</span><span class="p">:</span> <span class="s1">&#39;both&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">exclude_self_calls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/pareto_interactions.py#L21">flowmachine/features/subscriber/pareto_interactions.py</a></p>
 <p>Calculates the proportion of a subscriber's contacts who account for some proportion of their interactions, ala the Pareto Principle.
@@ -4404,8 +4416,8 @@ Returns a two columns, a subscriber, pareto - the proportion of that subscribers
 <p>Restrict the analysis to only a certain set of hours within each day.</p>
 </li>
 <li>
-<p><code>direction</code>: <code>{'in', 'out', 'both'}</code>, default <code>'both'</code></p>
-<p>Whether to consider calls made, received, or both. Defaults to 'out'.</p>
+<p><code>direction</code>: <code>typing.Union[str, flowmachine.features.utilities.direction_enum.Direction]</code>, default <code>both</code></p>
+<p>Whether to consider calls made, received, or both. Defaults to 'both'.</p>
 </li>
 <li>
 <p><code>exclude_self_calls</code>: <code>bool</code>, default <code>True</code></p>
