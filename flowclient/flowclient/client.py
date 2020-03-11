@@ -428,7 +428,7 @@ def get_result_by_query_id(
     return get_json_dataframe(connection=connection, location=result_endpoint)
 
 
-def get_result(*, connection: Connection, query: dict) -> pd.DataFrame:
+def get_result(*, connection: Connection, query_spec: dict) -> pd.DataFrame:
     """
     Run and retrieve a query of a specified kind with parameters.
 
@@ -436,8 +436,8 @@ def get_result(*, connection: Connection, query: dict) -> pd.DataFrame:
     ----------
     connection : Connection
         API connection to use
-    query : dict
-        A query specification to run, e.g. `{'kind':'daily_location', 'params':{'date':'2016-01-01'}}`
+    query_spec : dict
+        A query specification to run, e.g. `{'kind':'daily_location', 'date':'2016-01-01'}`
 
     Returns
     -------
@@ -446,7 +446,7 @@ def get_result(*, connection: Connection, query: dict) -> pd.DataFrame:
 
     """
     return get_result_by_query_id(
-        connection=connection, query_id=run_query(connection=connection, query=query)
+        connection=connection, query_id=run_query(connection=connection, query_spec=query_spec)
     )
 
 
@@ -528,7 +528,7 @@ def get_available_dates(
         return {k: v for k, v in result.items() if k in event_types}
 
 
-def run_query(*, connection: Connection, query: dict) -> str:
+def run_query(*, connection: Connection, query_spec: dict) -> str:
     """
     Run a query of a specified kind with parameters and get the identifier for it.
 
@@ -536,8 +536,8 @@ def run_query(*, connection: Connection, query: dict) -> str:
     ----------
     connection : Connection
         API connection to use
-    query : dict
-        Query to run
+   query_spec : dict
+        Query specification to run
 
     Returns
     -------
@@ -545,24 +545,23 @@ def run_query(*, connection: Connection, query: dict) -> str:
         Identifier of the query
     """
     logger.info(
-        f"Requesting run of {query} at {connection.url}/api/{connection.api_version}"
+        f"Requesting run of {query_spec} at {connection.url}/api/{connection.api_version}"
     )
-    r = connection.post_json(route="run", data=query)
+    r = connection.post_json(route="run", data=query_spec)
     if r.status_code == 202:
         query_id = r.headers["Location"].split("/").pop()
         logger.info(
-            f"Accepted {query} at {connection.url}/api/{connection.api_version} with id {query_id}"
+            f"Accepted {query_spec} at {connection.url}/api/{connection.api_version} with id {query_id}"
         )
         return query_id
     else:
         try:
             error = r.json()["msg"]
         except (ValueError, KeyError):
-            error = "Unknown error."
+            error = "Unknown error"
         raise FlowclientConnectionError(
             f"Error running the query: {error}. Status code: {r.status_code}."
         )
-
 
 def location_event_counts(
     *,
