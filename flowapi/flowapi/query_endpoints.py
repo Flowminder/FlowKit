@@ -155,7 +155,7 @@ async def poll_query(query_id):
         query_state = reply["payload"]["query_state"]
         if query_state == "completed":
             return (
-                jsonify({}),
+                {"status": query_state},
                 303,
                 {"Location": url_for(f"query.get_query_result", query_id=query_id)},
             )
