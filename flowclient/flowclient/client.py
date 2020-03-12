@@ -233,7 +233,7 @@ def connect(
 
 def get_status(
     *, connection: Connection, query_id: str
-) -> Tuple[str, requests.Response]:
+) -> str:
     """
     Check the status of a query.
 
@@ -246,16 +246,17 @@ def get_status(
 
     Returns
     -------
-    Tuple[str, requests.Response]
+    str
         Query status
 
+    Raises
+    ------
+    FlowclientConnectionError
+        if response does not contain the query status
     """
-    logger.info(
-        f"Polling server on {connection.url}/api/{connection.api_version}/poll/{query_id}"
-    )
     reply = connection.get_url(route=f"poll/{query_id}")
     try:
-        return reply.json()["status"], reply
+        return reply.json()["status"]
     except (KeyError, TypeError):
         raise FlowclientConnectionError(
             f"No status reported: {reply}. API returned with status code: {reply.status_code}."
@@ -280,8 +281,15 @@ def query_is_ready(
     Tuple[bool, requests.Response]
         True if the query result is available
 
+    Raises
+    ------
+    FlowclientConnectionError
+        if query is not running or has errored
     """
-    status, reply = get_status(connection=connection, query_id=query_id)
+    logger.info(
+        f"Polling server on {connection.url}/api/{connection.api_version}/poll/{query_id}"
+    )
+    reply = connection.get_url(route=f"poll/{query_id}")
 
     if reply.status_code == 303:
         logger.info(
