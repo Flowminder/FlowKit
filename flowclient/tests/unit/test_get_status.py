@@ -16,7 +16,7 @@ def test_get_status_reports_running(running_status):
     con_mock.get_url.return_value = Mock(status_code=202)
     con_mock.get_url.return_value.json.return_value = {
         "status": running_status,
-        "payload": {"progress": {"eligible": 0, "queued": 0, "executing": 0}},
+        "progress": {"eligible": 0, "queued": 0, "running": 0},
     }
     status = get_status(connection=con_mock, query_id="foo")
     assert status == running_status
