@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowAPI can now return results in CSV and GeoJSON format, FlowClient now supports getting GeoJSON formatted results. [#2003](https://github.com/Flowminder/FlowKit/issues/2003)
 
 ### Changed
 
