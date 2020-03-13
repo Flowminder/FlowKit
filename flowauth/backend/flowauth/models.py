@@ -639,7 +639,7 @@ def make_demodata():
         db.session.add(x)
     # Add some things that you can do
     with open(Path(__file__).parent / "demo_data" / "api_scopes.txt") as fin:
-        caps = fin.readlines()
+        caps = [x.strip() for x in fin.readlines()]
 
     # Add some servers
     test_server = Server(
