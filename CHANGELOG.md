@@ -10,9 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Fixed tokens which used the FlowAuth demo data not being accepted by FlowAPI. [#2108](https://github.com/Flowminder/FlowKit/issues/2108)
 
 ### Removed
+
+## [1.3.2]
+
+### Fixed
+- Fixed tokens which used the FlowAuth demo data not being accepted by FlowAPI. [#2108](https://github.com/Flowminder/FlowKit/issues/2108)
 
 ## [1.3.1]
 
