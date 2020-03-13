@@ -263,7 +263,7 @@ def query_is_ready(
     elif reply.status_code == 202:
         logger.info(
             "{eligible} parts to run, {queued} in queue and {executing} running.".format(
-                **reply.json()["payload"]["completed"]
+                **reply.json()["payload"]["progress"]
             )
         )
         return False, reply

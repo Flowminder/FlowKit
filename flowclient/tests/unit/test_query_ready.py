@@ -16,7 +16,7 @@ def test_query_ready_reports_false():
     con_mock.get_url.return_value = Mock(status_code=202)
     con_mock.get_url.return_value.json.return_value = {
         "status": "completed",
-        "payload": {"completed": [1, 1]},
+        "payload": {"progress": {"eligible": 0, "queued": 0, "executing": 0}},
     }
     is_ready, reply = query_is_ready(connection=con_mock, query_id="foo")
     assert not is_ready
