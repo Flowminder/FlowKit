@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- Fixed the display of deeply nested permissions for flows in FlowAuth. [#2110](https://github.com/Flowminder/FlowKit/issues/2110)
 
 ### Removed
 
