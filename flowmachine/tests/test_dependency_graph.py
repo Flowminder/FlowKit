@@ -12,7 +12,9 @@ import IPython
 from io import StringIO
 
 from flowmachine.core import CustomQuery, Query
+from flowmachine.core.context import get_db
 from flowmachine.core.dummy_query import DummyQuery
+from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.features import daily_location, EventTableSubset
 
@@ -22,9 +24,10 @@ from flowmachine.core.dependency_graph import (
     unstored_dependencies_graph,
     plot_dependency_graph,
     store_queries_in_order,
-    storable_dependencies,
-    stored_dependencies,
-    stored_dependencies_ratio,
+    dependencies_eligible_for_store,
+    queued_dependencies,
+    executing_dependencies,
+    query_progress,
 )
 
 
@@ -169,7 +172,7 @@ def test_store_queries_in_order():
     store_queries_in_order(graph)
 
 
-def test_storable_dependencies():
+def test_dependencies_eligible_for_store():
     """
     Test that the set of only storeable dependencies is returned.
     """
@@ -183,30 +186,70 @@ def test_storable_dependencies():
     unstoreable_dummy = UnStoreableQuery(dummy_param="UNSTOREABLE_DUMMY")
 
     nested = DummyQuery(dummy_param=[dummy, unstoreable_dummy])
-    assert storable_dependencies(nested) == {dummy, nested}
+    assert dependencies_eligible_for_store(nested) == {dummy, nested}
 
 
-def test_stored_dependencies(dummy_redis):
+def test_queued_dependencies(dummy_redis):
     """
-    Test that the set of already stored dependencies is returned.
-    """
-    dummy = DummyQuery(dummy_param="DUMMY")
-    stored_dummy = DummyQuery(dummy_param="STORED_DUMMY")
-    stored_dummy.store()
-
-    nested = DummyQuery(dummy_param=[dummy, stored_dummy])
-    assert stored_dependencies(nested) == {stored_dummy}
-
-
-def test_stored_dependencies_ratio(dummy_redis):
-    """
-    Test correct ratio of stored to unstored dependencies is returned.
+    Test that only queued dependencies are returned.
     """
     dummy = DummyQuery(dummy_param="DUMMY")
+    queued_qsm = QueryStateMachine(dummy_redis, dummy.query_id, get_db().conn_id)
+    queued_qsm.enqueue()
     stored_dummy = DummyQuery(dummy_param="STORED_DUMMY")
     stored_dummy.store()
+    executing_dummy = DummyQuery(dummy_param="EXECUTING_DUMMY")
+    executing_qsm = QueryStateMachine(
+        dummy_redis, executing_dummy.query_id, get_db().conn_id
+    )
+    executing_qsm.enqueue()
+    executing_qsm.execute()
 
-    nested = DummyQuery(dummy_param=[dummy, stored_dummy])
-    assert stored_dependencies_ratio(nested) == (1, 3)
+    nested = DummyQuery(dummy_param=[dummy, stored_dummy, executing_dummy])
+    assert queued_dependencies(set([nested, dummy, stored_dummy, executing_dummy])) == [
+        dummy
+    ]
+
+
+def test_executing_dependencies(dummy_redis):
+    """
+    Test that only executing dependencies are returned.
+    """
+    dummy = DummyQuery(dummy_param="DUMMY")
+    queued_qsm = QueryStateMachine(dummy_redis, dummy.query_id, get_db().conn_id)
+    queued_qsm.enqueue()
+    stored_dummy = DummyQuery(dummy_param="STORED_DUMMY")
+    stored_dummy.store()
+    executing_dummy = DummyQuery(dummy_param="EXECUTING_DUMMY")
+    executing_qsm = QueryStateMachine(
+        dummy_redis, executing_dummy.query_id, get_db().conn_id
+    )
+    executing_qsm.enqueue()
+    executing_qsm.execute()
+
+    nested = DummyQuery(dummy_param=[dummy, stored_dummy, executing_dummy])
+    assert executing_dependencies(
+        set([nested, dummy, stored_dummy, executing_dummy])
+    ) == [executing_dummy]
+
+
+def test_query_progress(dummy_redis):
+    """
+    Test correct counts for dependency progress are returned.
+    """
+    dummy = DummyQuery(dummy_param="DUMMY")
+    queued_qsm = QueryStateMachine(dummy_redis, dummy.query_id, get_db().conn_id)
+    queued_qsm.enqueue()
+    stored_dummy = DummyQuery(dummy_param="STORED_DUMMY")
+    stored_dummy.store()
+    executing_dummy = DummyQuery(dummy_param="EXECUTING_DUMMY")
+    executing_qsm = QueryStateMachine(
+        dummy_redis, executing_dummy.query_id, get_db().conn_id
+    )
+    executing_qsm.enqueue()
+    executing_qsm.execute()
+
+    nested = DummyQuery(dummy_param=[dummy, stored_dummy, executing_dummy])
+    assert query_progress(nested) == (3, 1, 1)
     nested.store()
-    assert stored_dependencies_ratio(nested) == (1, 1)
+    assert query_progress(nested) == (0, 0, 0)

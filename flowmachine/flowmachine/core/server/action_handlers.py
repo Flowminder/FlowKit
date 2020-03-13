@@ -38,7 +38,7 @@ from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
 
-from ..dependency_graph import stored_dependencies_ratio
+from ..dependency_graph import query_progress
 
 
 async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
@@ -162,7 +162,7 @@ async def action_handler__run_query(
         status="success",
         payload={
             "query_id": query_id,
-            "completed": stored_dependencies_ratio(query_obj._flowmachine_query_obj),
+            "progress": query_progress(query_obj._flowmachine_query_obj),
         },
     )
 
@@ -212,7 +212,7 @@ async def action_handler__poll_query(
             "query_id": query_id,
             "query_kind": query_kind,
             "query_state": q_state_machine.current_query_state,
-            "completed": stored_dependencies_ratio(
+            "progress": query_progress(
                 FlowmachineQuerySchema()
                 .load(QueryInfoLookup(get_redis()).get_query_params(query_id))
                 ._flowmachine_query_obj

@@ -2597,17 +2597,22 @@
               "application/json": {
                 "schema": {
                   "properties": {
-                    "completed": {
-                      "items": {
-                        "format": "int32",
-                        "type": "integer"
-                      },
-                      "maxItems": 2,
-                      "minItems": 2,
-                      "type": "array"
-                    },
                     "msg": {
                       "type": "string"
+                    },
+                    "progress": {
+                      "schema": {
+                        "eligible": {
+                          "type": "integer"
+                        },
+                        "queued": {
+                          "type": "integer"
+                        },
+                        "running": {
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
                     },
                     "status": {
                       "enum": [
@@ -2677,14 +2682,19 @@
               "application/json": {
                 "schema": {
                   "properties": {
-                    "completed": {
-                      "items": {
-                        "format": "int32",
-                        "type": "integer"
+                    "progress": {
+                      "schema": {
+                        "eligible": {
+                          "type": "integer"
+                        },
+                        "queued": {
+                          "type": "integer"
+                        },
+                        "running": {
+                          "type": "integer"
+                        }
                       },
-                      "maxItems": 2,
-                      "minItems": 2,
-                      "type": "array"
+                      "type": "object"
                     },
                     "query_id": {
                       "type": "string"

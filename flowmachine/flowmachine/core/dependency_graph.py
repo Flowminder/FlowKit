@@ -13,7 +13,7 @@ from functools import lru_cache
 
 from flowmachine.core.context import get_redis, get_db
 from flowmachine.core.errors import UnstorableQueryError
-from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.core.query_state import QueryStateMachine, QueryState
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -371,40 +371,102 @@ def store_all_unstored_dependencies(query_obj: "Query") -> None:
     wait(list(dependency_futures.values()))
 
 
-def storable_dependencies(query: "Query") -> Set["Query"]:
+def dependencies_eligible_for_store(query_obj: "Query") -> Set["Query"]:
     """
-    Get the set of dependencies for this query which can be stored.
+    Get the set of dependencies for this query which may be stored before it is run.
 
     Parameters
     ----------
-    query : Query
-        Query object to get potentially storeable dependencies for
+    query_obj : Query
+        Query object to get potentially eligible dependencies for
 
     Returns
     -------
     set of Query
-        The set of dependencies of this query that can be stored.
+        The set of dependencies of this query which may be stored before it is run.
 
     """
-    dependency_graph = calculate_dependency_graph(query_obj=query)
-    storeable = {query}
-    for node, data in dependency_graph.nodes(data=True):
+    logger.debug(f"Getting dependencies eligible for store for: {query_obj.query_id}")
+    dependencies = set()
+
+    openlist = set([query_obj])
+
+    while openlist:
+        x = openlist.pop()
+        if not x.is_stored:
+            dependencies.add(x)
+            openlist.update(dep for dep in x.dependencies if dep not in dependencies)
+
+    eligible = set()
+    for query in dependencies:
         try:
-            data["query_object"].table_name
-            storeable.add(data["query_object"])
+            query.table_name
+            eligible.add(query)
         except NotImplementedError:
-            pass  # Not a storeable query type
-    return storeable
+            pass
+    return eligible
 
 
-def stored_dependencies(query: "Query") -> Set["Query"]:
-    return set(qur for qur in storable_dependencies(query=query) if qur.is_stored)
+def queued_dependencies(eligible_dependencies: Set["Query"]) -> List["Query"]:
+    """
+    Get the query objects from a set which are currently queued.
+
+    Parameters
+    ----------
+    eligible_dependencies : set of Query
+        Set of query objects that might be queued
+
+    Returns
+    -------
+    list of Query
+        List of query objects currently queued
+
+    """
+    return [
+        qur for qur in eligible_dependencies if qur.query_state is QueryState.QUEUED
+    ]
 
 
-def stored_dependencies_ratio(query: "Query") -> Tuple[int, int]:
+def executing_dependencies(eligible_dependencies: Set["Query"]) -> List["Query"]:
+    """
+    Get the query objects from a set which are currently executing.
+
+    Parameters
+    ----------
+    eligible_dependencies : set of Query
+        Set of query objects that might be executing
+
+    Returns
+    -------
+    list of Query
+        List of query objects currently executing
+
+    """
+    return [
+        qur for qur in eligible_dependencies if qur.query_state is QueryState.EXECUTING
+    ]
+
+
+def query_progress(query: "Query") -> Dict[str, int]:
+    """
+    Check the progress of a query.
+
+    Parameters
+    ----------
+    query : Query
+        Query object to check progress of
+
+    Returns
+    -------
+    dict
+        eligible: Number of subqueries that must be run
+        queued: number queued to be run
+        executing: number currently running
+
+    """
     if query.is_stored:
-        return 1, 1  # Special case for an already stored query
-    return (
-        len(stored_dependencies(query=query)),
-        len(storable_dependencies(query=query)),
-    )
+        return dict(eligible=0, queued=0, running=0)
+    eligible = dependencies_eligible_for_store(query)
+    queued = queued_dependencies(eligible)
+    running = executing_dependencies(eligible)
+    return dict(eligible=len(eligible), queued=len(queued), running=len(running))
