@@ -250,6 +250,6 @@ def test_query_progress(dummy_redis):
     executing_qsm.execute()
 
     nested = DummyQuery(dummy_param=[dummy, stored_dummy, executing_dummy])
-    assert query_progress(nested) == (3, 1, 1)
+    assert query_progress(nested) == dict(eligible=3, running=1, queued=1,)
     nested.store()
-    assert query_progress(nested) == (0, 0, 0)
+    assert query_progress(nested) == dict(eligible=0, running=0, queued=0,)
