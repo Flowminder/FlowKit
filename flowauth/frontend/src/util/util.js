@@ -2,6 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+function dropWhile(func) {
+  let arr = this;
+  while (arr.length > 0 && !func(arr[0])) {
+    arr = arr.slice(1);
+  }
+  return arr;
+}
+
+Array.prototype.dropWhile = dropWhile;
+
 function zip() {
   /* https://stackoverflow.com/a/10284006 */
   var args = [].slice.call(arguments);
@@ -26,7 +36,7 @@ export function scopesGraph(array) {
       obj["parent"] = parents.join("&");
       let split = sub_scope.split(".");
       split = zip(last_split, split)
-        .filter(x => x[0] !== x[1])
+        .dropWhile(x => x[0] !== x[1])
         .map(x => x[1])
         .filter(x => x !== undefined);
       split.forEach((k, ix) => {
