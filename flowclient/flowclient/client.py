@@ -231,9 +231,7 @@ def connect(
     )
 
 
-def get_status(
-    *, connection: Connection, query_id: str
-) -> str:
+def get_status(*, connection: Connection, query_id: str) -> str:
     """
     Check the status of a query.
 
@@ -457,7 +455,8 @@ def get_result(*, connection: Connection, query_spec: dict) -> pd.DataFrame:
 
     """
     return get_result_by_query_id(
-        connection=connection, query_id=run_query(connection=connection, query_spec=query_spec)
+        connection=connection,
+        query_id=run_query(connection=connection, query_spec=query_spec),
     )
 
 
@@ -573,6 +572,7 @@ def run_query(*, connection: Connection, query_spec: dict) -> str:
         raise FlowclientConnectionError(
             f"Error running the query: {error}. Status code: {r.status_code}."
         )
+
 
 def location_event_counts(
     *,
