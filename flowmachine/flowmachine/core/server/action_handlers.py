@@ -324,9 +324,7 @@ async def action_handler__get_geo_sql(
             payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
             return ZMQReply(status="success", payload=payload)
         except AttributeError:
-            msg = (
-                f"Query with id '{query_id}' has no geojson compatible representation."
-            )
+            msg = f"Query with id '{query_id}' has no geojson compatible representation."  # TODO: This codepath is untested because all queries right now have geography
             payload = {"query_id": query_id, "query_state": "errored"}
             return ZMQReply(status="error", msg=msg, payload=payload)
     else:

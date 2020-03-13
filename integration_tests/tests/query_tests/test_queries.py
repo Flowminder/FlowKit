@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import geojson
 import flowclient
 from flowclient.client import get_result
 
@@ -587,6 +588,27 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     get_result(connection=con, query=query_spec)
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
     # so we can only check it runs without erroring
+
+
+def test_geo_result(universal_access_token, flowapi_url):
+    query_spec = flowclient.joined_spatial_aggregate(
+        **{
+            "locations": flowclient.daily_location(
+                date="2016-01-01", aggregation_unit="admin3", method="last"
+            ),
+            "metric": flowclient.handset(
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                characteristic="brand",
+                method="last",
+            ),
+            "method": "distr",
+        }
+    )
+    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
+
+    result = flowclient.get_geojson_result(connection=con, query=query_spec)
+    assert geojson.GeoJSON(result).is_valid
 
 
 @pytest.mark.parametrize(
