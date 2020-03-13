@@ -59,7 +59,7 @@ class Query:
                 self._result = get_result_by_query_id(
                     connection=self.connection, query_id=self.query_id
                 )
-            except AttributeError, FlowclientConnectionError:
+            except (AttributeError, FlowclientConnectionError):
                 # TODO: Warn before running?
                 self.run()
                 self._result = get_result_by_query_id(
