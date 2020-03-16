@@ -18,8 +18,16 @@ def test_query_ready_reports_false():
     assert not is_ready
 
 
+def test_query_ready_reports_true():
+    """ Test that status code 303 is interpreted as query ready. """
+    con_mock = Mock()
+    con_mock.get_url.return_value = Mock(status_code=303)
+    is_ready, reply = query_is_ready(connection=con_mock, query_id="foo")
+    assert is_ready
+
+
 def test_query_ready_raises():
-    """ Test that status codes other than 202, 300, 401, and 404 raise a generic error. """
+    """ Test that status codes other than 202, 303, 401, and 404 raise a generic error. """
     con_mock = Mock()
     con_mock.get_url.return_value = Mock(status_code=999)
     with pytest.raises(FlowclientConnectionError):
