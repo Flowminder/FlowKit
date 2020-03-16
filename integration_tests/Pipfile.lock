@@ -1143,10 +1143,10 @@
         },
         "python-box": {
             "hashes": [
-                "sha256:b4dcd0a4175ebe7ea73d3d85cbb4d33efe1ccbfaef131fa7c77702f235577fb8",
-                "sha256:cdacba5a9121143bcc87df9bac4088b51fd21765009d1cc2e497f26f028accd7"
+                "sha256:5168fcd5572ec1e97754a636a9a93abef5d7f300cd5f1906927feb19839e7068",
+                "sha256:b47cac911e9d8f2ba6551fdb29d3e70a394b67691758baa114d4fcd9c0f1b1f8"
             ],
-            "version": "==4.2.1"
+            "version": "==4.2.2"
         },
         "python-dateutil": {
             "hashes": [
@@ -1406,9 +1406,9 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:64a7b71846db6423807e96820993fa12a03b89127d278290ca25c0b11ed7b4fb"
+                "sha256:c4cca4aed606297afbe90d4306b49ad3a4cd36feb3f87e4bfd655c57fd9ef445"
             ],
-            "version": "==1.3.13"
+            "version": "==1.3.15"
         },
         "stevedore": {
             "hashes": [
