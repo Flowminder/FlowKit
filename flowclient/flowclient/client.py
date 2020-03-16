@@ -231,36 +231,6 @@ def connect(
     )
 
 
-def get_status(*, connection: Connection, query_id: str) -> str:
-    """
-    Check the status of a query.
-
-    Parameters
-    ----------
-    connection : Connection
-        API connection to use
-    query_id : str
-        Identifier of the query to retrieve
-
-    Returns
-    -------
-    str
-        Query status
-
-    Raises
-    ------
-    FlowclientConnectionError
-        if response does not contain the query status
-    """
-    reply = connection.get_url(route=f"poll/{query_id}")
-    try:
-        return reply.json()["status"]
-    except (KeyError, TypeError):
-        raise FlowclientConnectionError(
-            f"No status reported: {reply}. API returned with status code: {reply.status_code}."
-        )
-
-
 def query_is_ready(
     *, connection: Connection, query_id: str
 ) -> Tuple[bool, requests.Response]:
@@ -282,7 +252,7 @@ def query_is_ready(
     Raises
     ------
     FlowclientConnectionError
-        if query is not running or has errored
+        if query has errored
     """
     logger.info(
         f"Polling server on {connection.url}/api/{connection.api_version}/poll/{query_id}"
@@ -296,12 +266,47 @@ def query_is_ready(
         return True, reply  # Query is ready, so exit the loop
     elif reply.status_code == 202:
         return False, reply
-    elif reply.status_code == 404:
-        raise FlowClientConnectionError(f"Query {query_id} is not running.")
     else:
         raise FlowclientConnectionError(
             f"Something went wrong: {reply}. API returned with status code: {reply.status_code}"
         )
+
+
+def get_status(*, connection: Connection, query_id: str) -> str:
+    """
+    Check the status of a query.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    query_id : str
+        Identifier of the query to retrieve
+
+    Returns
+    -------
+    str
+        Query status
+
+    Raises
+    ------
+    FlowclientConnectionError
+        if response does not contain the query status
+    """
+    try:
+        ready, reply = query_is_ready(connection=connection, query_id=query_id)
+    except FileNotFoundError:
+        # Can't distinguish 'known', 'cancelled', 'resetting' and 'awol' from the error,
+        # so return generic 'not running' status.
+        return "not running"
+
+    if ready:
+        return "completed"
+    else:
+        try:
+            return reply.json()["status"]
+        except (KeyError, TypeError):
+            raise FlowclientConnectionError(f"No status reported.")
 
 
 def wait_for_query_to_be_ready(
