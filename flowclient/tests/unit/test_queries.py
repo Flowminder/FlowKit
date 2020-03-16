@@ -27,7 +27,7 @@ def test_get_result_by_params(monkeypatch, token):
     monkeypatch.setattr(flowclient.client, "get_result_by_query_id", dummy_method)
     get_result(
         connection=connection_mock,
-        query={"query_kind": "query_type", "params": {"param": "value"}},
+        query_spec={"query_kind": "query_type", "params": {"param": "value"}},
     )
     # Should request the query by id
     dummy_method.assert_called_with(connection=connection_mock, query_id="99")

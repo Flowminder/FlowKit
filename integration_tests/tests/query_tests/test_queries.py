@@ -584,7 +584,7 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
 
-    get_result(connection=con, query=query_spec)
+    get_result(connection=con, query_spec=query_spec)
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
     # so we can only check it runs without erroring
 
@@ -642,7 +642,7 @@ def test_fail_query_incorrect_parameters(
     with pytest.raises(
         flowclient.client.FlowclientConnectionError, match="Must be one of:"
     ):
-        result_dataframe = get_result(connection=con, query=query_spec)
+        result_dataframe = get_result(connection=con, query_spec=query_spec)
 
 
 def test_get_geography(access_token_builder, flowapi_url):
