@@ -95,17 +95,13 @@ class Query:
         -------
         str
             One of:
-            - "unknown"
-            - "known"
+            - "not running"
             - "queued"
             - "executing"
             - "completed"
-            - "cancelled"
-            - "errored"
-            - "resetting"
         """
         if not hasattr(self, "query_id"):
-            return "unknown"
+            return "not running"
         status, _ = get_status(connection=self.connection, query_id=self.query_id)
         return status
 
@@ -150,7 +146,7 @@ class Query:
             if query is not running or has errored
         """
         if not hasattr(self, "query_id"):
-            raise FlowclientConnectionError("Query is not running.")
+            raise FileNotFoundError("Query is not running.")
         wait_for_query_to_be_ready(
             connection=self.connection,
             query_id=self.query_id,
