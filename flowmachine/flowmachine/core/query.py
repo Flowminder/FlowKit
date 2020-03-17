@@ -1054,3 +1054,6 @@ class Query(metaclass=ABCMeta):
 
         random_class = random_factory(self.__class__, sampling_method=sampling_method)
         return random_class(query=self, **params)
+
+    def __hash__(self):
+        return hash(self.query_id)

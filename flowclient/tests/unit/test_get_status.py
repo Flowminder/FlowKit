@@ -9,18 +9,25 @@ import pytest
 from flowclient.client import get_status, FlowclientConnectionError
 
 
-@pytest.mark.parametrize(
-    "code,status", [(202, "queued"), (202, "executing"), (303, "completed")],
-)
-def test_get_status(code, status):
-    """
-    Test that get_status reports the status returned by the API for completed or running queries.
-    """
+@pytest.mark.parametrize("running_status", ["queued", "executing"])
+def test_get_status_reports_running(running_status):
+    """ Test that status code 202 is interpreted as query running or queued. """
     con_mock = Mock()
-    con_mock.get_url.return_value = Mock(status_code=code)
-    con_mock.get_url.return_value.json.return_value = {"status": status}
-    status_returned = get_status(connection=con_mock, query_id="foo")
-    assert status_returned == status
+    con_mock.get_url.return_value = Mock(status_code=202)
+    con_mock.get_url.return_value.json.return_value = {
+        "status": running_status,
+        "progress": {"eligible": 0, "queued": 0, "running": 0},
+    }
+    status = get_status(connection=con_mock, query_id="foo")
+    assert status == running_status
+
+
+def test_get_status_reports_finished():
+    """ Test that status code 303 is interpreted as query finished. """
+    con_mock = Mock()
+    con_mock.get_url.return_value = Mock(status_code=303)
+    status = get_status(connection=con_mock, query_id="foo")
+    assert status == "completed"
 
 
 def test_get_status_404():

@@ -31,6 +31,22 @@ async def run_query():
               schema:
                 format: url
                 type: string
+          content:
+            application/json:
+              schema:
+                properties:
+                  query_id:
+                    type: string
+                  progress:
+                    schema:
+                      eligible:
+                        type: integer
+                      queued:
+                        type: integer
+                      running:
+                        type: integer
+                    type: object
+                type: object
         '401':
           description: Unauthorized.
         '403':
@@ -77,7 +93,14 @@ async def run_query():
                 f"query.poll_query", query_id=reply["payload"]["query_id"]
             )
         }
-        return {}, 202, d
+        return (
+            dict(
+                query_id=reply["payload"]["query_id"],
+                progress=reply["payload"]["progress"],
+            ),
+            202,
+            d,
+        )
     else:
         return (
             {"status": "Error", "msg": f"Unexpected reply status: {reply['status']}",},
@@ -111,6 +134,15 @@ async def poll_query(query_id):
                       - executing
                       - queued
                     type: string
+                  progress:
+                    schema:
+                      eligible:
+                        type: integer
+                      queued:
+                        type: integer
+                      running:
+                        type: integer
+                    type: object
                 type: object
           description: Request accepted.
         '303':
@@ -160,7 +192,14 @@ async def poll_query(query_id):
                 {"Location": url_for(f"query.get_query_result", query_id=query_id)},
             )
         elif query_state in ("executing", "queued"):
-            return {"status": query_state, "msg": reply["msg"]}, 202
+            return (
+                {
+                    "status": query_state,
+                    "msg": reply["msg"],
+                    "progress": reply["payload"]["progress"],
+                },
+                202,
+            )
         elif query_state in ("errored", "cancelled"):
             return {"status": query_state, "msg": reply["msg"]}, 500
         else:  # TODO: would be good to have an explicit query state for this, too!

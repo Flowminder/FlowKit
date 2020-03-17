@@ -265,6 +265,11 @@ def query_is_ready(
         )
         return True, reply  # Query is ready, so exit the loop
     elif reply.status_code == 202:
+        logger.info(
+            "{eligible} parts to run, {queued} in queue and {running} running.".format(
+                **reply.json()["progress"]
+            )
+        )
         return False, reply
     else:
         raise FlowclientConnectionError(

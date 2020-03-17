@@ -2600,6 +2600,20 @@
                     "msg": {
                       "type": "string"
                     },
+                    "progress": {
+                      "schema": {
+                        "eligible": {
+                          "type": "integer"
+                        },
+                        "queued": {
+                          "type": "integer"
+                        },
+                        "running": {
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
                     "status": {
                       "enum": [
                         "executing",
@@ -2664,6 +2678,32 @@
         },
         "responses": {
           "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "progress": {
+                      "schema": {
+                        "eligible": {
+                          "type": "integer"
+                        },
+                        "queued": {
+                          "type": "integer"
+                        },
+                        "running": {
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "query_id": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
             "description": "Request accepted.",
             "headers": {
               "Location": {
