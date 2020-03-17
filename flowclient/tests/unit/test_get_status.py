@@ -26,7 +26,7 @@ def test_get_status(code, status):
 def test_get_status_404():
     """ Test that get_status reports that a query is not running. """
     con_mock = Mock()
-    con_mock.get_url.return_value = Mock(status_code=404)
+    con_mock.get_url.side_effect = FileNotFoundError("DUMMY_404")
     status_returned = get_status(connection=con_mock, query_id="foo")
     assert status_returned == "not running"
 
