@@ -115,6 +115,33 @@ def test_missing_location_columns_raises_error():
 
 
 @pytest.mark.parametrize(
+    "make_spatial_unit_args, expected_name",
+    [
+        ({"spatial_unit_type": "admin", "level": 2}, "admin2"),
+        ({"spatial_unit_type": "versioned-site"}, "versioned-site"),
+        ({"spatial_unit_type": "versioned-cell"}, "versioned-cell"),
+        ({"spatial_unit_type": "cell"}, "cell"),
+        ({"spatial_unit_type": "lon-lat"}, "lon-lat"),
+        ({"spatial_unit_type": "grid", "size": 5}, "grid"),
+        (
+            {
+                "spatial_unit_type": "polygon",
+                "region_id_column_name": "id",
+                "geom_table": "infrastructure.sites",
+                "geom_column": "geom_point",
+            },
+            "polygon",
+        ),
+    ],
+)
+def test_canonical_names(make_spatial_unit_args, expected_name):
+    """
+    Test that canonical names are correct and present.
+    """
+    assert make_spatial_unit(**make_spatial_unit_args).canonical_name == expected_name
+
+
+@pytest.mark.parametrize(
     "make_spatial_unit_args",
     [
         {"spatial_unit_type": "admin", "level": 2},
@@ -155,10 +182,10 @@ def test_spatial_unit_equals_itself(make_spatial_unit_args):
 
 def test_cell_spatial_unit_not_equal_to_other_spatial_unit():
     """
-    Test that a CellSpatialUnit is not equal to a versioned_cell_spatial_unit.
+    Test that a CellSpatialUnit is not equal to a VersionedCellSpatialUnit.
     """
     su1 = CellSpatialUnit()
-    su2 = versioned_cell_spatial_unit()
+    su2 = VersionedCellSpatialUnit()
     assert su1 != su2
     assert su2 != su1
 
@@ -167,35 +194,35 @@ def test_different_spatial_units_are_not_equal():
     """
     Test that two different spatial units are not equal.
     """
-    su1 = versioned_cell_spatial_unit()
-    su2 = versioned_site_spatial_unit()
+    su1 = VersionedCellSpatialUnit()
+    su2 = VersionedSiteSpatialUnit()
     assert su1 != su2
 
 
-def test_different_level_admin_spatial_units_are_not_equal():
+def test_different_level_AdminSpatialUnits_are_not_equal():
     """
     Test that two admin spatial units with different levels are not equal.
     """
-    su1 = admin_spatial_unit(level=1)
-    su2 = admin_spatial_unit(level=3)
+    su1 = AdminSpatialUnit(level=1)
+    su2 = AdminSpatialUnit(level=3)
     assert su1 != su2
 
 
-def test_different_column_name_admin_spatial_units_are_not_equal():
+def test_different_column_name_AdminSpatialUnits_are_not_equal():
     """
     Test that two admin spatial units with different column_names are not equal.
     """
-    su1 = admin_spatial_unit(level=3, region_id_column_name="admin3pcod")
-    su2 = admin_spatial_unit(level=3, region_id_column_name="admin3name")
+    su1 = AdminSpatialUnit(level=3, region_id_column_name="admin3pcod")
+    su2 = AdminSpatialUnit(level=3, region_id_column_name="admin3name")
     assert su1 != su2
 
 
-def test_different_grid_spatial_units_are_not_equal():
+def test_different_GridSpatialUnits_are_not_equal():
     """
     Test that two grid spatial units with different sizes are not equal.
     """
-    su1 = grid_spatial_unit(size=5)
-    su2 = grid_spatial_unit(size=50)
+    su1 = GridSpatialUnit(size=5)
+    su2 = GridSpatialUnit(size=50)
     assert su1 != su2
 
 

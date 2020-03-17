@@ -311,6 +311,9 @@ async def get_query_result(query_id, filetype="json"):
             results_streamer = stream_with_context(stream_result_as_csv)(sql)
             mimetype = "text/csv"
         elif filetype == "geojson":
+            current_user.can_get_geography(
+                aggregation_unit=reply["payload"]["aggregation_unit"]
+            )
             results_streamer = stream_with_context(stream_result_as_json)(
                 sql,
                 result_name="features",

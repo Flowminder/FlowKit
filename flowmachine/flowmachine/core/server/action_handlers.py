@@ -321,7 +321,12 @@ async def action_handler__get_geo_sql(
         q = get_query_object_by_id(get_db(), query_id)
         try:
             sql = q.geojson_query()
-            payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
+            payload = {
+                "query_id": query_id,
+                "query_state": query_state,
+                "sql": sql,
+                "aggregation_unit": q.spatial_unit.canonical_name,
+            }
             return ZMQReply(status="success", payload=payload)
         except AttributeError:
             msg = f"Query with id '{query_id}' has no geojson compatible representation."  # TODO: This codepath is untested because all queries right now have geography
