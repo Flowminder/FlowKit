@@ -20,7 +20,11 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
         ]
     )
     dummy_zmq_server.return_value = ZMQReply(
-        status="success", payload={"query_id": "DUMMY_QUERY_ID"}
+        status="success",
+        payload={
+            "query_id": "DUMMY_QUERY_ID",
+            "progress": {"eligible": 0, "queued": 0, "executing": 0},
+        },
     )
     response = await app.client.post(
         f"/api/0/run",

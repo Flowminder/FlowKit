@@ -47,7 +47,10 @@ async def test_granular_run_access(
     dummy_zmq_server.return_value = {
         "status": "success",
         "msg": "",
-        "payload": {"query_id": "DUMMY_QUERY_ID"},
+        "payload": {
+            "query_id": "DUMMY_QUERY_ID",
+            "progress": {"eligible": 0, "queued": 0, "executing": 0},
+        },
     }
     responses = {}
     for q_kind in query_kinds:

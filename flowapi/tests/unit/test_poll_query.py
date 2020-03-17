@@ -75,7 +75,11 @@ async def test_poll_query(
         ),
         then=ZMQReply(
             status="success",
-            payload={"query_id": "DUMMY_QUERY_ID", "query_state": query_state},
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "query_state": query_state,
+                "progress": {"eligible": 0, "queued": 0, "executing": 0},
+            },
         ),
     )
     response = await app.client.get(

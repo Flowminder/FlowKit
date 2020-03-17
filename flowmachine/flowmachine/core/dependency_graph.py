@@ -7,12 +7,13 @@ import networkx as nx
 import sys
 import structlog
 from io import BytesIO
-from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional
+from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional, List, Set
 from concurrent.futures import wait
+from functools import lru_cache
 
 from flowmachine.core.context import get_redis, get_db
 from flowmachine.core.errors import UnstorableQueryError
-from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.core.query_state import QueryStateMachine, QueryState
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -169,14 +170,7 @@ def calculate_dependency_graph(query_obj: "Query", analyse: bool = False) -> nx.
     The queries listed as dependencies are not _guaranteed_ to be
     used in the actual running of a query, only to be referenced by it.
     """
-    openlist = [(None, query_obj)]
-    deps = []
-
-    while openlist:
-        y, x = openlist.pop()
-        deps.append((y, x))
-
-        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+    deps = get_dependency_links(query_obj)
 
     def get_node_attrs(q):
         attrs = _get_query_attrs_for_dependency_graph(q, analyse=analyse)
@@ -191,6 +185,20 @@ def calculate_dependency_graph(query_obj: "Query", analyse: bool = False) -> nx.
         return attrs
 
     return _assemble_dependency_graph(dependencies=deps, attrs_func=get_node_attrs)
+
+
+@lru_cache(maxsize=256)
+def get_dependency_links(
+    query_obj: "Query",
+) -> List[Tuple[Union[None, "Query"], "Query"]]:
+    openlist = [(None, query_obj)]
+    deps = []
+    while openlist:
+        y, x = openlist.pop()
+        deps.append((y, x))
+
+        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+    return deps
 
 
 def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
@@ -361,3 +369,104 @@ def store_all_unstored_dependencies(query_obj: "Query") -> None:
 
     logger.debug(f"Waiting for dependencies to finish executing...")
     wait(list(dependency_futures.values()))
+
+
+def dependencies_eligible_for_store(query_obj: "Query") -> Set["Query"]:
+    """
+    Get the set of dependencies for this query which may be stored before it is run.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to get potentially eligible dependencies for
+
+    Returns
+    -------
+    set of Query
+        The set of dependencies of this query which may be stored before it is run.
+
+    """
+    logger.debug(f"Getting dependencies eligible for store for: {query_obj.query_id}")
+    dependencies = set()
+
+    openlist = set([query_obj])
+
+    while openlist:
+        x = openlist.pop()
+        if not x.is_stored:
+            dependencies.add(x)
+            openlist.update(dep for dep in x.dependencies if dep not in dependencies)
+
+    eligible = set()
+    for query in dependencies:
+        try:
+            query.table_name
+            eligible.add(query)
+        except NotImplementedError:
+            pass
+    return eligible
+
+
+def queued_dependencies(eligible_dependencies: Set["Query"]) -> List["Query"]:
+    """
+    Get the query objects from a set which are currently queued.
+
+    Parameters
+    ----------
+    eligible_dependencies : set of Query
+        Set of query objects that might be queued
+
+    Returns
+    -------
+    list of Query
+        List of query objects currently queued
+
+    """
+    return [
+        qur for qur in eligible_dependencies if qur.query_state is QueryState.QUEUED
+    ]
+
+
+def executing_dependencies(eligible_dependencies: Set["Query"]) -> List["Query"]:
+    """
+    Get the query objects from a set which are currently executing.
+
+    Parameters
+    ----------
+    eligible_dependencies : set of Query
+        Set of query objects that might be executing
+
+    Returns
+    -------
+    list of Query
+        List of query objects currently executing
+
+    """
+    return [
+        qur for qur in eligible_dependencies if qur.query_state is QueryState.EXECUTING
+    ]
+
+
+def query_progress(query: "Query") -> Dict[str, int]:
+    """
+    Check the progress of a query.
+
+    Parameters
+    ----------
+    query : Query
+        Query object to check progress of
+
+    Returns
+    -------
+    dict
+        eligible: Number of subqueries that must be run
+        queued: number queued to be run
+        executing: number currently running
+
+    """
+    if query.is_stored:
+        return dict(eligible=0, queued=0, running=0)
+    eligible = dependencies_eligible_for_store(query)
+    queued = queued_dependencies(eligible)
+    running = executing_dependencies(eligible)
+    return dict(eligible=len(eligible), queued=len(queued), running=len(running))

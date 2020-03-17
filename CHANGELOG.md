@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowAPI now reports the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
+- FlowClient now logs info messages with the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
 
 ### Changed
 
