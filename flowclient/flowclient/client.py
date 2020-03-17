@@ -551,7 +551,7 @@ def run_query(*, connection: Connection, query_spec: dict) -> str:
     ----------
     connection : Connection
         API connection to use
-   query_spec : dict
+    query_spec : dict
         Query specification to run
 
     Returns
