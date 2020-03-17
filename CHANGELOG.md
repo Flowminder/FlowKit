@@ -6,15 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- FlowAPI now reports the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
-- FlowClient now logs info messages with the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
 
 ### Changed
 
 ### Fixed
-- Fixed the display of deeply nested permissions for flows in FlowAuth. [#2110](https://github.com/Flowminder/FlowKit/issues/2110)
 
 ### Removed
+
+## [1.3.3]
+
+### Added
+- FlowAPI now reports the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
+- FlowClient now logs info messages with the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
+
+### Fixed
+- Fixed the display of deeply nested permissions for flows in FlowAuth. [#2110](https://github.com/Flowminder/FlowKit/issues/2110)
 
 ## [1.3.2]
 
@@ -631,7 +637,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.3.2...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.3.3...master
+[1.3.3]: https://github.com/Flowminder/FlowKit/compare/1.3.2...1.3.3
 [1.3.2]: https://github.com/Flowminder/FlowKit/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/Flowminder/FlowKit/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/Flowminder/FlowKit/compare/1.2.1...1.3.0
