@@ -4310,7 +4310,7 @@
 <h2 id="action_handler__get_available_dates">action_handler__get_available_dates<a class="headerlink" href="#action_handler__get_available_dates" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_available_dates</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L332">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L345">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'get_available_dates' action.
 Returns a dict of the form {"calls": [...], "sms": [...], ...}.</p>
 <h3 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h3>
@@ -4323,7 +4323,7 @@ Returns a dict of the form {"calls": [...], "sms": [...], ...}.</p>
 <h2 id="action_handler__get_available_queries">action_handler__get_available_queries<a class="headerlink" href="#action_handler__get_available_queries" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_available_queries</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L51">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L53">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for 'get_available_queries' action.
 Returns a list of available flowmachine queries.</p>
 <h3 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h3>
@@ -4333,7 +4333,7 @@ Returns a list of available flowmachine queries.</p>
 <h2 id="action_handler__get_geography">action_handler__get_geography<a class="headerlink" href="#action_handler__get_geography" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_geography</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L284">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L297">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'get_query_geography' action.
 Returns SQL to get geography for the given <code>aggregation_unit</code> as GeoJSON.</p>
 <h3 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h3>
@@ -4343,7 +4343,7 @@ Returns SQL to get geography for the given <code>aggregation_unit</code> as GeoJ
 <h2 id="action_handler__get_query_kind">action_handler__get_query_kind<a class="headerlink" href="#action_handler__get_query_kind" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_query_kind</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L211">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L224">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'get_query_kind' action.
 Returns query kind of the query with the given <code>query_id</code>.</p>
 <h3 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h3>
@@ -4353,7 +4353,7 @@ Returns query kind of the query with the given <code>query_id</code>.</p>
 <h2 id="action_handler__get_query_params">action_handler__get_query_params<a class="headerlink" href="#action_handler__get_query_params" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_query_params</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L229">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L242">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'get_query_params' action.
 Returns query parameters of the query with the given <code>query_id</code>.</p>
 <h3 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h3>
@@ -4363,7 +4363,7 @@ Returns query parameters of the query with the given <code>query_id</code>.</p>
 <h2 id="action_handler__get_query_schemas">action_handler__get_query_schemas<a class="headerlink" href="#action_handler__get_query_schemas" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_query_schemas</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L63">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L65">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'get_query_schemas' action.
 Returns a dict with all supported flowmachine queries as keys and the associated schema for the query parameters as values.</p>
 <h3 id="returns_5">Returns<a class="headerlink" href="#returns_5" title="Permanent link">&para;</a></h3>
@@ -4373,7 +4373,7 @@ Returns a dict with all supported flowmachine queries as keys and the associated
 <h2 id="action_handler__get_sql">action_handler__get_sql<a class="headerlink" href="#action_handler__get_sql" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__get_sql</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L250">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L263">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'get_sql' action.
 Returns a SQL string which can be run against flowdb to obtain the result of the query with given <code>query_id</code>.</p>
 <h3 id="returns_6">Returns<a class="headerlink" href="#returns_6" title="Permanent link">&para;</a></h3>
@@ -4383,7 +4383,7 @@ Returns a SQL string which can be run against flowdb to obtain the result of the
 <h2 id="action_handler__ping">action_handler__ping<a class="headerlink" href="#action_handler__ping" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__ping</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L42">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L44">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for 'ping' action.
 Returns the message 'pong'.</p>
 <h3 id="returns_7">Returns<a class="headerlink" href="#returns_7" title="Permanent link">&para;</a></h3>
@@ -4393,7 +4393,7 @@ Returns the message 'pong'.</p>
 <h2 id="action_handler__poll_query">action_handler__poll_query<a class="headerlink" href="#action_handler__poll_query" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__poll_query</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L185">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L193">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'poll_query' action.
 Returns the status of the query with the given <code>query_id</code>.</p>
 <h3 id="returns_8">Returns<a class="headerlink" href="#returns_8" title="Permanent link">&para;</a></h3>
@@ -4403,7 +4403,7 @@ Returns the status of the query with the given <code>query_id</code>.</p>
 <h2 id="action_handler__run_query">action_handler__run_query<a class="headerlink" href="#action_handler__run_query" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">action_handler__run_query</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">action_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L76">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L78">flowmachine/core/server/action_handlers.py</a></p>
 <p>Handler for the 'run_query' action.
 Constructs a flowmachine query object, sets it running and returns the query_id. For this action handler the <code>action_params</code> are exactly the query kind plus the parameters needed to construct the query.</p>
 <h3 id="returns_9">Returns<a class="headerlink" href="#returns_9" title="Permanent link">&para;</a></h3>
@@ -4413,7 +4413,7 @@ Constructs a flowmachine query object, sets it running and returns the query_id.
 <h2 id="get_action_handler">get_action_handler<a class="headerlink" href="#get_action_handler" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">get_action_handler</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L354">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L367">flowmachine/core/server/action_handlers.py</a></p>
 <p>Exception should be raised for handlers that don't exist.</p>
 <h3 id="returns_10">Returns<a class="headerlink" href="#returns_10" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4422,7 +4422,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="perform_action">perform_action<a class="headerlink" href="#perform_action" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">perform_action</span><span class="p">(</span><span class="n">action_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;FlowmachineServerConfig&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_helpers</span><span class="o">.</span><span class="n">ZMQReply</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L362">flowmachine/core/server/action_handlers.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/action_handlers.py#L375">flowmachine/core/server/action_handlers.py</a></p>
 <p>Perform action with the given action parameters.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
