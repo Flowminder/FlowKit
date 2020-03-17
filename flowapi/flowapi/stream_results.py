@@ -69,23 +69,21 @@ class Line(object):
         return self._line.encode()
 
 
-async def stream_result_as_csv(sql_query, result_name=None, additional_elements=None):
+async def stream_result_as_csv(sql_query, additional_elements=None, **kwargs):
     """
-    Generate a JSON representation of a query result.
+    Generate a CSV representation of a query result.
 
     Parameters
     ----------
     sql_query : str
         SQL query to stream output of
-    result_name : str
-        Name of the JSON item containing the rows of the result
     additional_elements : dict
         Additional columns elements to include along with the query result
 
     Yields
     ------
     bytes
-        Encoded lines of JSON
+        Encoded csv lines
 
     """
     logger = current_app.flowapi_logger
