@@ -410,7 +410,7 @@ def get_geojson_result_by_query_id(
     *, connection: Connection, query_id: str, poll_interval: int = 1
 ) -> dict:
     """
-    Get a query by id, and return it as a dataframe
+    Get a query by id, and return it as a geojson dict
 
     Parameters
     ----------

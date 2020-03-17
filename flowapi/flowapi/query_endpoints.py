@@ -312,7 +312,7 @@ async def get_query_result(query_id, filetype="json"):
             mimetype = "text/csv"
         elif filetype == "geojson":
             results_streamer = stream_with_context(stream_result_as_json)(
-                reply["payload"]["sql"],
+                sql,
                 result_name="features",
                 additional_elements={"type": "FeatureCollection"},
             )
