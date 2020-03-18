@@ -109,10 +109,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.radius_of_gyration(
+                "metric": flowclient.radius_of_gyration_spec(
                     start_date="2016-01-01", end_date="2016-01-02"
                 ),
             },
@@ -120,10 +120,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.nocturnal_events(
+                "metric": flowclient.nocturnal_events_spec(
                     start="2016-01-01", stop="2016-01-02", hours=(20, 4)
                 ),
             },
@@ -131,10 +131,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.subscriber_degree(
+                "metric": flowclient.subscriber_degree_spec(
                     start="2016-01-01", stop="2016-01-02", direction="both"
                 ),
             },
@@ -142,10 +142,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.unique_location_counts(
+                "metric": flowclient.unique_location_counts_spec(
                     start_date="2016-01-01",
                     end_date="2016-01-02",
                     aggregation_unit="admin3",
@@ -155,10 +155,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.topup_amount(
+                "metric": flowclient.topup_amount_spec(
                     start="2016-01-01", stop="2016-01-02", statistic="avg"
                 ),
             },
@@ -166,10 +166,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.event_count(
+                "metric": flowclient.event_count_spec(
                     start="2016-01-01",
                     stop="2016-01-02",
                     direction="both",
@@ -180,14 +180,14 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.displacement(
+                "metric": flowclient.displacement_spec(
                     start="2016-01-01",
                     stop="2016-01-02",
                     statistic="avg",
-                    reference_location=flowclient.daily_location(
+                    reference_location=flowclient.daily_location_spec(
                         date="2016-01-01", aggregation_unit="lon-lat", method="last"
                     ),
                 ),
@@ -196,10 +196,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.pareto_interactions(
+                "metric": flowclient.pareto_interactions_spec(
                     start="2016-01-01", stop="2016-01-02", proportion="0.8"
                 ),
             },
@@ -207,7 +207,7 @@ import pytest
         (
             "spatial_aggregate",
             {
-                "locations": flowclient.modal_location_from_dates(
+                "locations": flowclient.modal_location_from_dates_spec(
                     start_date="2016-01-01",
                     end_date="2016-01-03",
                     aggregation_unit="admin3",
@@ -503,10 +503,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.topup_balance(
+                "metric": flowclient.topup_balance_spec(
                     start_date="2016-01-01", end_date="2016-01-02", statistic="avg"
                 ),
             },
@@ -533,10 +533,10 @@ import pytest
         (
             "joined_spatial_aggregate",
             {
-                "locations": flowclient.daily_location(
+                "locations": flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.handset(
+                "metric": flowclient.handset_spec(
                     start_date="2016-01-01",
                     end_date="2016-01-02",
                     characteristic="brand",
@@ -548,8 +548,8 @@ import pytest
         (
             "spatial_aggregate",
             {
-                "locations": flowclient.random_sample(
-                    query=flowclient.daily_location(
+                "locations": flowclient.random_sample_spec(
+                    query=flowclient.daily_location_spec(
                         date="2016-01-01",
                         aggregation_unit="admin3",
                         method="most-common",
@@ -562,8 +562,8 @@ import pytest
         (
             "spatial_aggregate",
             {
-                "locations": flowclient.random_sample(
-                    query=flowclient.daily_location(
+                "locations": flowclient.random_sample_spec(
+                    query=flowclient.daily_location_spec(
                         date="2016-01-01",
                         aggregation_unit="admin3",
                         method="most-common",
@@ -581,10 +581,10 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     """
     Test that queries can be run, and return a QueryResult object.
     """
-    query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
+    query = getattr(flowclient, query_kind)(connection=con, **params) # FIXME: Functions not implemented yet
 
-    get_result(connection=con, query_spec=query_spec)
+    query.result
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
     # so we can only check it runs without erroring
 
@@ -637,12 +637,12 @@ def test_fail_query_incorrect_parameters(
     """
     Test that queries fail with incorrect parameters.
     """
-    query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
+    query = getattr(flowclient, query_kind)(connection=con, **params)
     with pytest.raises(
         flowclient.client.FlowclientConnectionError, match="Must be one of:"
     ):
-        result_dataframe = get_result(connection=con, query_spec=query_spec)
+        result_dataframe = query.result
 
 
 def test_get_geography(access_token_builder, flowapi_url):
