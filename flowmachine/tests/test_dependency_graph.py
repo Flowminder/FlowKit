@@ -11,7 +11,7 @@ import textwrap
 import IPython
 from io import StringIO
 
-from flowmachine.core import CustomQuery, Query
+from flowmachine.core import CustomQuery
 from flowmachine.core.context import get_db
 from flowmachine.core.dummy_query import DummyQuery
 from flowmachine.core.query_state import QueryStateMachine
@@ -48,11 +48,11 @@ def test_print_dependency_tree():
     expected_output = textwrap.dedent(
         """\
         <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
-          - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+          - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
              - <Table: 'geography.admin3', query_id: 'xxxxx'>
           - <Query of type: SubscriberLocations, query_id: 'xxxxx'>
              - <Query of type: JoinToLocation, query_id: 'xxxxx'>
-                - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+                - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
                    - <Table: 'geography.admin3', query_id: 'xxxxx'>
                 - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
                    - <Query of type: EventTableSubset, query_id: 'xxxxx'>
@@ -63,7 +63,7 @@ def test_print_dependency_tree():
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.calls', query_id: 'xxxxx'>
                          - <Table: 'events.calls', query_id: 'xxxxx'>
-             - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+             - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
                 - <Table: 'geography.admin3', query_id: 'xxxxx'>
         """
     )
