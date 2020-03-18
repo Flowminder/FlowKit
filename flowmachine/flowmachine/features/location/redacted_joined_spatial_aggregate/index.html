@@ -4419,7 +4419,7 @@ A general class that join metric information about a subscriber with location  i
 </li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code>&gt;&gt;&gt;  mfl = subscribers.MostFrequentLocation(&#39;2016-01-01&#39;,                                           &#39;2016-01-04&#39;,                                           spatial_unit=admin_spatial_unit(level=3))     &gt;&gt;&gt; rog = subscribers.RadiusOfGyration(&#39;2016-01-01&#39;,                                      &#39;2016-01-04&#39;)     &gt;&gt;&gt; sm = JoinedSpatialAggregate(metric=rog, locations=mfl)     &gt;&gt;&gt; sm.head()             name     rog         0   Rasuwa   157.200039         1   Sindhuli 192.194037         2   Humla    123.676914         3   Gulmi    163.980299         4   Jumla    144.432886         ...
+<div class="codehilite"><pre><span></span><code>&gt;&gt;&gt;  mfl = subscribers.MostFrequentLocation(&#39;2016-01-01&#39;,                                           &#39;2016-01-04&#39;,                                           spatial_unit=AdminSpatialUnit(level=3))     &gt;&gt;&gt; rog = subscribers.RadiusOfGyration(&#39;2016-01-01&#39;,                                      &#39;2016-01-04&#39;)     &gt;&gt;&gt; sm = JoinedSpatialAggregate(metric=rog, locations=mfl)     &gt;&gt;&gt; sm.head()             name     rog         0   Rasuwa   157.200039         1   Sindhuli 192.194037         2   Humla    123.676914         3   Gulmi    163.980299         4   Jumla    144.432886         ...
 </code></pre></div>
 
 
