@@ -63,7 +63,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
     Examples
     --------
-    >>> usc = UniqueSubscriberCounts('2016-01-01', '2016-01-04', spatial_unit=admin_spatial_unit(level=3), hours=(5,17))
+    >>> usc = UniqueSubscriberCounts('2016-01-01', '2016-01-04', spatial_unit=AdminSpatialUnit(level=3), hours=(5,17))
     >>> usc.head(4)
           name                  unique_subscriber_counts
     0     Arghakhanchi          313

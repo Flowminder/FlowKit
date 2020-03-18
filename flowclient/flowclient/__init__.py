@@ -45,6 +45,7 @@ from .client import (
     nocturnal_events,
     handset,
     random_sample,
+    get_geojson_result,
 )
 
 __all__ = [
@@ -82,4 +83,5 @@ __all__ = [
     "nocturnal_events",
     "handset",
     "random_sample",
+    "get_geojson_result",
 ]

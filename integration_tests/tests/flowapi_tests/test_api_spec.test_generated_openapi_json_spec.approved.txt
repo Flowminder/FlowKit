@@ -2526,6 +2526,20 @@
         "operationId": "query.get_query_result.get",
         "parameters": [
           {
+            "default": "json",
+            "in": "path",
+            "name": "filetype",
+            "required": true,
+            "schema": {
+              "enum": [
+                "json",
+                "geojson",
+                "csv"
+              ],
+              "type": "string"
+            }
+          },
+          {
             "in": "path",
             "name": "query_id",
             "required": true,
@@ -2537,9 +2551,100 @@
         "responses": {
           "200": {
             "content": {
+              "application/geo+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
               "application/json": {
                 "schema": {
                   "type": "object"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Results returning."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Request accepted."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Token does not grant results access to this query or spatial aggregation unit."
+          },
+          "404": {
+            "description": "Unknown ID"
+          },
+          "500": {
+            "description": "Server error."
+          }
+        },
+        "summary": "Get the output of query"
+      }
+    },
+    "/api/0/get/<query_id>.<filetype>": {
+      "get": {
+        "operationId": "query.get_query_result.get",
+        "parameters": [
+          {
+            "default": "json",
+            "in": "path",
+            "name": "filetype",
+            "required": true,
+            "schema": {
+              "enum": [
+                "json",
+                "geojson",
+                "csv"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "query_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
                 }
               }
             },

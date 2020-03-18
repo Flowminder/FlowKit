@@ -7,6 +7,7 @@ Classes that map cell (or tower or site) IDs to a spatial unit.
 
 The helper function 'make_spatial_unit' can be used to create spatial unit objects.
 """
+from abc import abstractmethod, ABCMeta
 from typing import Union, List, Iterable, Optional
 
 from flowmachine.utils import get_name_and_alias
@@ -35,12 +36,26 @@ def _substitute_lat_lon(location_dict):
     return location_copy
 
 
-class SpatialUnitMixin:
+class SpatialUnitMixin(metaclass=ABCMeta):
     """
     Mixin for spatial unit classes, which provides a 'location_id_columns' property
     and methods for verifying whether a spatial unit meets different criteria
     (useful for checking whether a spatial unit is valid in a given query).
     """
+
+    @property
+    @abstractmethod
+    def canonical_name(self) -> str:
+        """
+        Get the canonical name for this type of spatial unit, to allow checking access rights
+        in FlowAPI.
+        
+        Returns
+        -------
+        str
+            The name of this type of spatial unit, suitable for comparison with flowapi's geography permissions.
+        """
+        raise NotImplementedError
 
     @property
     def location_id_columns(self) -> List[str]:
@@ -221,6 +236,10 @@ class CellSpatialUnit(SpatialUnitMixin):
         # We may never need CellSpatialUnits to be hashable, but we define this
         # just in case.
         return hash(str(self))
+
+    @property
+    def canonical_name(self) -> str:
+        return "cell"
 
 
 class GeomSpatialUnit(SpatialUnitMixin, Query):
@@ -474,6 +493,10 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         ]
 
     @property
+    def canonical_name(self) -> str:
+        return "lon-lat"
+
+    @property
     def location_id_columns(self) -> List[str]:
         """
         Names of the columns that identify a location.
@@ -622,54 +645,60 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         )
         """
 
+    @property
+    def canonical_name(self) -> str:
+        return "polygon"
 
-def versioned_cell_spatial_unit() -> LonLatSpatialUnit:
+
+class VersionedCellSpatialUnit(LonLatSpatialUnit):
     """
-    Returns a LonLatSpatialUnit that maps cell location_id to a cell version
+    Subclass of LonLatSpatialUnit that maps cell location_id to a cell version
     and lon-lat coordinates.
-
-    Returns
-    -------
-    flowmachine.core.spatial_unit.LonLatSpatialUnit
     """
-    if get_db().location_table != "infrastructure.cells":
-        raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
-    return LonLatSpatialUnit(
-        geom_table_column_names=["version"],
-        location_id_column_names=["location_id", "version"],
-        geom_table="infrastructure.cells",
-    )
+    def __init__(self) -> None:
+        if get_db().location_table != "infrastructure.cells":
+            raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
+
+        super().__init__(
+            geom_table_column_names=["version"],
+            location_id_column_names=["location_id", "version"],
+            geom_table="infrastructure.cells",
+        )
+
+    @property
+    def canonical_name(self) -> str:
+        return "versioned-cell"
 
 
-def versioned_site_spatial_unit() -> LonLatSpatialUnit:
+class VersionedSiteSpatialUnit(LonLatSpatialUnit):
     """
-    Returns a LonLatSpatialUnit that maps cell location_id to a site version
+    Subclass of LonLatSpatialUnit that maps cell location_id to a site version
     and lon-lat coordinates.
-
-    Returns
-    -------
-    flowmachine.core.spatial_unit.LonLatSpatialUnit
     """
-    return LonLatSpatialUnit(
-        geom_table_column_names=[
-            "date_of_first_service",
-            "date_of_last_service",
-            "id AS site_id",
-            "version",
-        ],
-        location_id_column_names=["site_id", "version"],
-        geom_table="infrastructure.sites",
-        geom_table_join_on="id",
-        location_table_join_on="site_id",
-    )
+
+    def __init__(self) -> None:
+        super().__init__(
+            geom_table_column_names=[
+                "date_of_first_service",
+                "date_of_last_service",
+                "id AS site_id",
+                "version",
+            ],
+            location_id_column_names=["site_id", "version"],
+            geom_table="infrastructure.sites",
+            geom_table_join_on="id",
+            location_table_join_on="site_id",
+        )
+
+    @property
+    def canonical_name(self) -> str:
+        return "versioned-site"
 
 
-def admin_spatial_unit(
-    *, level: int, region_id_column_name: Optional[str] = None
-) -> PolygonSpatialUnit:
+class AdminSpatialUnit(PolygonSpatialUnit):
     """
-    Returns a PolygonSpatialUnit object that maps all cells (aka sites) to an
+    Subclass of PolygonSpatialUnit object that maps all cells (aka sites) to an
     admin region. This assumes that you have geography data in the standard
     location in FlowDB.
 
@@ -682,45 +711,56 @@ def admin_spatial_unit(
         identifier of the admin region. By default
         this will be admin*pcod. But you may wish
         to use something else, such as admin3name.
-    
-    Returns
-    -------
-    flowmachine.core.spatial_unit.PolygonSpatialUnit
-        Query which maps cell/site IDs to admin regions
     """
-    # If there is no region_id_column_name passed then we can use the default,
-    # which is of the form admin3pcod. If the user has asked for the standard
-    # region_id_column_name then we will alias this column as 'pcod', otherwise
-    # we won't alias it at all.
-    if region_id_column_name is None or region_id_column_name == f"admin{level}pcod":
-        col_name = f"admin{level}pcod AS pcod"
-    else:
-        col_name = region_id_column_name
-    table = f"geography.admin{level}"
 
-    return PolygonSpatialUnit(geom_table_column_names=col_name, geom_table=table)
+    def __init__(
+        self, *, level: int, region_id_column_name: Optional[str] = None
+    ) -> None:
+
+        # If there is no region_id_column_name passed then we can use the default,
+        # which is of the form admin3pcod. If the user has asked for the standard
+        # region_id_column_name then we will alias this column as 'pcod', otherwise
+        # we won't alias it at all.
+        if (
+            region_id_column_name is None
+            or region_id_column_name == f"admin{level}pcod"
+        ):
+            col_name = f"admin{level}pcod AS pcod"
+        else:
+            col_name = region_id_column_name
+        table = f"geography.admin{level}"
+        self.level = level
+
+        super().__init__(geom_table_column_names=col_name, geom_table=table)
+
+    @property
+    def canonical_name(self) -> str:
+        return f"admin{self.level}"
 
 
-def grid_spatial_unit(*, size: Union[float, int]) -> PolygonSpatialUnit:
+class GridSpatialUnit(PolygonSpatialUnit):
     """
-    Returns a PolygonSpatialUnit that maps all the sites in the database to a
+    Subclass of PolygonSpatialUnit that maps all the sites in the database to a
     grid of arbitrary size.
 
     Parameters
     ----------
     size : float or int
         Size of the grid in kilometres
-    
-    Returns
-    -------
-    flowmachine.core.spatial_unit.PolygonSpatialUnit
-        Query which maps cell/site IDs to grid squares
     """
-    return PolygonSpatialUnit(
-        geom_table_column_names="grid_id",
-        geom_table=Grid(size),
-        geom_column="geom_square",
-    )
+
+    def __init__(self, *, size: Union[float, int]) -> None:
+        self.grid = Grid(size)
+
+        super().__init__(
+            geom_table_column_names="grid_id",
+            geom_table=self.grid,
+            geom_column="geom_square",
+        )
+
+    @property
+    def canonical_name(self) -> str:
+        return "grid"
 
 
 AnySpatialUnit = Union[CellSpatialUnit, GeomSpatialUnit]
@@ -795,9 +835,9 @@ def make_spatial_unit(
     if spatial_unit_type == "cell":
         return CellSpatialUnit()
     elif spatial_unit_type == "versioned-cell":
-        return versioned_cell_spatial_unit()
+        return VersionedCellSpatialUnit()
     elif spatial_unit_type == "versioned-site":
-        return versioned_site_spatial_unit()
+        return VersionedSiteSpatialUnit()
     elif spatial_unit_type == "lon-lat":
         return LonLatSpatialUnit()
     elif spatial_unit_type == "admin":
@@ -805,7 +845,7 @@ def make_spatial_unit(
             raise ValueError(
                 "'level' parameter is required for spatial unit of type 'admin'."
             )
-        return admin_spatial_unit(
+        return AdminSpatialUnit(
             level=level, region_id_column_name=region_id_column_name
         )
     elif spatial_unit_type == "grid":
@@ -813,7 +853,7 @@ def make_spatial_unit(
             raise ValueError(
                 "'size' parameter is required for spatial unit of type 'grid'."
             )
-        return grid_spatial_unit(size=size)
+        return GridSpatialUnit(size=size)
     elif spatial_unit_type == "polygon":
         if geom_table is None:
             raise ValueError(

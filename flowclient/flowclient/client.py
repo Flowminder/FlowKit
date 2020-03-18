@@ -406,6 +406,43 @@ def get_json_dataframe(*, connection: Connection, location: str) -> pd.DataFrame
     return pd.DataFrame.from_records(result["query_result"])
 
 
+def get_geojson_result_by_query_id(
+    *, connection: Connection, query_id: str, poll_interval: int = 1
+) -> dict:
+    """
+    Get a query by id, and return it as a geojson dict
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection  to use
+    query_id : str
+        Identifier of the query to retrieve
+    poll_interval : int
+        Number of seconds to wait between checks for the query being ready
+
+    Returns
+    -------
+    dict
+        geojson
+
+    """
+    result_endpoint = get_result_location_from_id_when_ready(
+        connection=connection, query_id=query_id, poll_interval=poll_interval
+    )
+    response = connection.get_url(route=f"{result_endpoint}.geojson")
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
+        )
+    return response.json()
+
+
 def get_result_by_query_id(
     *, connection: Connection, query_id: str, poll_interval: int = 1
 ) -> pd.DataFrame:
@@ -431,6 +468,28 @@ def get_result_by_query_id(
         connection=connection, query_id=query_id, poll_interval=poll_interval
     )
     return get_json_dataframe(connection=connection, location=result_endpoint)
+
+
+def get_geojson_result(*, connection: Connection, query: dict) -> dict:
+    """
+    Run and retrieve a query of a specified kind with parameters.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    query : dict
+        A query specification to run, e.g. `{'kind':'daily_location', 'params':{'date':'2016-01-01'}}`
+
+    Returns
+    -------
+    dict
+       Geojson
+
+    """
+    return get_geojson_result_by_query_id(
+        connection=connection, query_id=run_query(connection=connection, query=query)
+    )
 
 
 def get_result(*, connection: Connection, query: dict) -> pd.DataFrame:

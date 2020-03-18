@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d61898eb1fc8b2672d83ea700399c997a145011c8a97afe955a16e81ccf381d6"
+            "sha256": "90755a5c8ee21d68d4e90f99016820d0c694f4298e9e85dcedde9e3aae9ed0e7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,7 +59,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "approvaltests": {
@@ -426,6 +426,14 @@
                 "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
             ],
             "version": "==0.18.2"
+        },
+        "geojson": {
+            "hashes": [
+                "sha256:6e4bb7ace4226a45d9c8c8b1348b3fc43540658359f93c3f7e03efa9f15f658a",
+                "sha256:ccbd13368dd728f4e4f13ffe6aaf725b6e802c692ba0dde628be475040c534ba"
+            ],
+            "index": "pypi",
+            "version": "==2.5.0"
         },
         "geopandas": {
             "hashes": [
