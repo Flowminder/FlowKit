@@ -48,7 +48,10 @@ async def test_get_query(
         {"key": "value2"},
     ]
     token = access_token_builder(
-        ["get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
+        [
+            "get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION",
+            "get_result&geography.aggregation_unit.DUMMY_AGGREGATION",
+        ]
     )
 
     reply_1 = {
@@ -64,7 +67,11 @@ async def test_get_query(
 
     reply_2 = {
         "status": "success",
-        "payload": {"query_state": "completed", "sql": "SELECT 1;"},
+        "payload": {
+            "query_state": "completed",
+            "sql": "SELECT 1;",
+            "aggregation_unit": "DUMMY_AGGREGATION",
+        },
     }
     dummy_zmq_server.side_effect = (reply_1, reply_2)
     response = await app.client.get(
