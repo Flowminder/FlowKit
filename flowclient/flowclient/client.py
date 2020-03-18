@@ -5,6 +5,7 @@
 import logging
 import warnings
 import re
+from functools import partial
 
 import jwt
 import pandas as pd
@@ -12,6 +13,7 @@ import requests
 import time
 from requests import ConnectionError
 from typing import Tuple, Union, Dict, List, Optional
+from tqdm.auto import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -326,7 +328,11 @@ def get_status(*, connection: Connection, query_id: str) -> str:
 
 
 def wait_for_query_to_be_ready(
-    *, connection: Connection, query_id: str, poll_interval: int = 1
+    *,
+    connection: Connection,
+    query_id: str,
+    poll_interval: int = 1,
+    disable_progress: Optional[bool] = None,
 ) -> requests.Response:
     """
     Wait until a query id has finished running, and if it finished successfully
@@ -340,6 +346,9 @@ def wait_for_query_to_be_ready(
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
+    disable_progress : bool, default None
+        Set to True to disable progress bar display entirely, None to disable on
+        non-TTY, or False to always enable
 
     Returns
     -------
@@ -354,19 +363,49 @@ def wait_for_query_to_be_ready(
     query_ready, reply = query_is_ready(
         connection=connection, query_id=query_id
     )  # Poll the server
-    while not query_ready:
-        logger.info("Waiting before polling again.")
-        time.sleep(
-            poll_interval
-        )  # Wait a second, then check if the query is ready again
-        query_ready, reply = query_is_ready(
-            connection=connection, query_id=query_id
-        )  # Poll the server
+
+    if not query_ready:
+        progress = reply.json()["progress"]
+        total_eligible = progress["eligible"]
+        completed = 0
+        tq = partial(tqdm, disable=disable_progress, unit="q", total=total_eligible)
+        with tq(desc="Parts run") as total_bar:
+            with tq(desc="Currently running", leave=False) as running_bar:
+                with tq(desc="Queued", leave=False) as queued_bar:
+                    while not query_ready:
+                        logger.info("Waiting before polling again.")
+                        time.sleep(
+                            poll_interval
+                        )  # Wait a second, then check if the query is ready again
+                        query_ready, reply = query_is_ready(
+                            connection=connection, query_id=query_id
+                        )  # Poll the server
+                        progress = reply.json()["progress"]
+                        completion_change = (
+                            total_eligible - progress["eligible"]
+                        ) - completed
+                        completed += completion_change
+
+                        total_bar.update(completion_change)
+                        try:
+                            running_bar.reset(progress["eligible"])
+                            queued_bar.reset(progress["eligible"])
+                        except AttributeError:
+                            pass  # Resetting a bar which hasn't been updated once
+
+                        running_bar.update(progress["running"])
+                        queued_bar.update(progress["queued"])
+            total_bar.update(total_eligible - completed)  # Finish the bar
+
     return reply
 
 
 def get_result_location_from_id_when_ready(
-    *, connection: Connection, query_id: str, poll_interval: int = 1
+    *,
+    connection: Connection,
+    query_id: str,
+    poll_interval: int = 1,
+    disable_progress: Optional[bool] = None,
 ) -> str:
     """
     Return, once ready, the location at which results of a query will be obtainable.
@@ -379,6 +418,9 @@ def get_result_location_from_id_when_ready(
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
+    disable_progress : bool, default None
+        Set to True to disable progress bar display entirely, None to disable on
+        non-TTY, or False to always enable
 
     Returns
     -------
@@ -387,7 +429,10 @@ def get_result_location_from_id_when_ready(
 
     """
     reply = wait_for_query_to_be_ready(
-        connection=connection, query_id=query_id, poll_interval=poll_interval
+        connection=connection,
+        query_id=query_id,
+        poll_interval=poll_interval,
+        disable_progress=disable_progress,
     )
 
     result_location = reply.headers[
@@ -432,7 +477,11 @@ def get_json_dataframe(*, connection: Connection, location: str) -> pd.DataFrame
 
 
 def get_geojson_result_by_query_id(
-    *, connection: Connection, query_id: str, poll_interval: int = 1
+    *,
+    connection: Connection,
+    query_id: str,
+    poll_interval: int = 1,
+    disable_progress: Optional[bool] = None,
 ) -> dict:
     """
     Get a query by id, and return it as a geojson dict
@@ -445,6 +494,9 @@ def get_geojson_result_by_query_id(
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
+    disable_progress : bool, default None
+        Set to True to disable progress bar display entirely, None to disable on
+        non-TTY, or False to always enable
 
     Returns
     -------
@@ -453,7 +505,10 @@ def get_geojson_result_by_query_id(
 
     """
     result_endpoint = get_result_location_from_id_when_ready(
-        connection=connection, query_id=query_id, poll_interval=poll_interval
+        connection=connection,
+        query_id=query_id,
+        poll_interval=poll_interval,
+        disable_progress=disable_progress,
     )
     response = connection.get_url(route=f"{result_endpoint}.geojson")
     if response.status_code != 200:
@@ -469,7 +524,11 @@ def get_geojson_result_by_query_id(
 
 
 def get_result_by_query_id(
-    *, connection: Connection, query_id: str, poll_interval: int = 1
+    *,
+    connection: Connection,
+    query_id: str,
+    poll_interval: int = 1,
+    disable_progress: Optional[bool] = None,
 ) -> pd.DataFrame:
     """
     Get a query by id, and return it as a dataframe
@@ -482,6 +541,9 @@ def get_result_by_query_id(
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
+    disable_progress : bool, default None
+        Set to True to disable progress bar display entirely, None to disable on
+        non-TTY, or False to always enable
 
     Returns
     -------
@@ -490,12 +552,20 @@ def get_result_by_query_id(
 
     """
     result_endpoint = get_result_location_from_id_when_ready(
-        connection=connection, query_id=query_id, poll_interval=poll_interval
+        connection=connection,
+        query_id=query_id,
+        poll_interval=poll_interval,
+        disable_progress=disable_progress,
     )
     return get_json_dataframe(connection=connection, location=result_endpoint)
 
 
-def get_geojson_result(*, connection: Connection, query_spec: dict) -> dict:
+def get_geojson_result(
+    *,
+    connection: Connection,
+    query_spec: dict,
+    disable_progress: Optional[bool] = None,
+) -> dict:
     """
     Run and retrieve a query of a specified kind with parameters.
 
@@ -505,6 +575,9 @@ def get_geojson_result(*, connection: Connection, query_spec: dict) -> dict:
         API connection to use
     query_spec : dict
         A query specification to run, e.g. `{'kind':'daily_location', 'params':{'date':'2016-01-01'}}`
+    disable_progress : bool, default None
+        Set to True to disable progress bar display entirely, None to disable on
+        non-TTY, or False to always enable
 
     Returns
     -------
@@ -515,10 +588,16 @@ def get_geojson_result(*, connection: Connection, query_spec: dict) -> dict:
     return get_geojson_result_by_query_id(
         connection=connection,
         query_id=run_query(connection=connection, query_spec=query_spec),
+        disable_progress=disable_progress,
     )
 
 
-def get_result(*, connection: Connection, query_spec: dict) -> pd.DataFrame:
+def get_result(
+    *,
+    connection: Connection,
+    query_spec: dict,
+    disable_progress: Optional[bool] = None,
+) -> pd.DataFrame:
     """
     Run and retrieve a query of a specified kind with parameters.
 
@@ -528,6 +607,9 @@ def get_result(*, connection: Connection, query_spec: dict) -> pd.DataFrame:
         API connection to use
     query_spec : dict
         A query specification to run, e.g. `{'kind':'daily_location', 'date':'2016-01-01'}`
+    disable_progress : bool, default None
+        Set to True to disable progress bar display entirely, None to disable on
+        non-TTY, or False to always enable
 
     Returns
     -------
@@ -538,6 +620,7 @@ def get_result(*, connection: Connection, query_spec: dict) -> pd.DataFrame:
     return get_result_by_query_id(
         connection=connection,
         query_id=run_query(connection=connection, query_spec=query_spec),
+        disable_progress=disable_progress,
     )
 
 

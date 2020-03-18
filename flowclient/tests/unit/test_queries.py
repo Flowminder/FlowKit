@@ -30,7 +30,9 @@ def test_get_result_by_params(monkeypatch, token):
         query_spec={"query_kind": "query_type", "params": {"param": "value"}},
     )
     # Should request the query by id
-    dummy_method.assert_called_with(connection=connection_mock, query_id="99")
+    dummy_method.assert_called_with(
+        connection=connection_mock, disable_progress=None, query_id="99"
+    )
 
 
 def test_get_result_by_id(token):
@@ -86,7 +88,21 @@ def test_get_result_by_id_poll_loop(monkeypatch):
     """
     Test requesting a query polls.
     """
-    ready_mock = Mock(side_effect=[(False, None), StopIteration])
+    ready_mock = Mock(
+        side_effect=[
+            (
+                False,
+                Mock(
+                    json=Mock(
+                        return_value=dict(
+                            progress=dict(eligible=2, running=2, queued=0)
+                        )
+                    )
+                ),
+            ),
+            StopIteration,
+        ]
+    )
     monkeypatch.setattr("flowclient.client.query_is_ready", ready_mock)
     with pytest.raises(StopIteration):
         get_result_by_query_id(connection="placeholder", query_id="99")
