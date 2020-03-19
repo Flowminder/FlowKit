@@ -23,6 +23,9 @@ describe("User management", function() {
     cy.get("[data-action=edit][data-item-name=" + user_name + "]").click();
     cy.get("#password").type("DUMMY_UPDATED_PASSWORD");
     cy.contains("Save").click();
+    cy.get("[data-action=edit][data-item-name=" + user_name + "]").should(
+      "exist"
+    );
     cy.request("/signout");
     cy.request("POST", "/signin", {
       username: user_name,
