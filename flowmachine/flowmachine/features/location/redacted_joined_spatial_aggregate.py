@@ -42,7 +42,7 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
     --------
         >>>  mfl = subscribers.MostFrequentLocation('2016-01-01',
                                               '2016-01-04',
-                                              spatial_unit=admin_spatial_unit(level=3))
+                                              spatial_unit=AdminSpatialUnit(level=3))
         >>> rog = subscribers.RadiusOfGyration('2016-01-01',
                                          '2016-01-04')
         >>> sm = JoinedSpatialAggregate(metric=rog, locations=mfl)

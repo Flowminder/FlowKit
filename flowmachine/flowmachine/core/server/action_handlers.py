@@ -294,6 +294,50 @@ async def action_handler__get_sql(
         return ZMQReply(status="error", msg=msg, payload=payload)
 
 
+async def action_handler__get_geo_sql(
+    config: "FlowmachineServerConfig", query_id: str
+) -> ZMQReply:
+    """
+    Handler for the 'get_sql' action.
+
+    Returns a SQL string which can be run against flowdb to obtain
+    the result of the query with given `query_id`.
+    """
+    # TODO: currently we can't use QueryStateMachine to determine whether
+    # the query_id belongs to a valid query object, so we need to check it
+    # manually. Would be good to add a QueryState.UNKNOWN so that we can
+    # avoid this separate treatment.
+    q_info_lookup = QueryInfoLookup(get_redis())
+    if not q_info_lookup.query_is_known(query_id):
+        msg = f"Unknown query id: '{query_id}'"
+        payload = {"query_id": query_id, "query_state": "awol"}
+        return ZMQReply(status="error", msg=msg, payload=payload)
+
+    query_state = QueryStateMachine(
+        get_redis(), query_id, get_db().conn_id
+    ).current_query_state
+
+    if query_state == QueryState.COMPLETED:
+        q = get_query_object_by_id(get_db(), query_id)
+        try:
+            sql = q.geojson_query()
+            payload = {
+                "query_id": query_id,
+                "query_state": query_state,
+                "sql": sql,
+                "aggregation_unit": q.spatial_unit.canonical_name,
+            }
+            return ZMQReply(status="success", payload=payload)
+        except AttributeError:
+            msg = f"Query with id '{query_id}' has no geojson compatible representation."  # TODO: This codepath is untested because all queries right now have geography
+            payload = {"query_id": query_id, "query_state": "errored"}
+            return ZMQReply(status="error", msg=msg, payload=payload)
+    else:
+        msg = f"Query with id '{query_id}' {query_state.description}."
+        payload = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, payload=payload)
+
+
 async def action_handler__get_geography(
     config: "FlowmachineServerConfig", aggregation_unit: str
 ) -> ZMQReply:
@@ -420,6 +464,7 @@ ACTION_HANDLERS = {
     "get_query_kind": action_handler__get_query_kind,
     "get_query_params": action_handler__get_query_params,
     "get_sql_for_query_result": action_handler__get_sql,
+    "get_geo_sql_for_query_result": action_handler__get_geo_sql,
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
 }
