@@ -582,7 +582,7 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     Test that queries can be run, and return a QueryResult object.
     """
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
-    query = getattr(flowclient, query_kind)(connection=con, **params) # FIXME: Functions not implemented yet
+    query = getattr(flowclient, query_kind)(connection=con, **params)
 
     query.result
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
