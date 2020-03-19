@@ -15,7 +15,8 @@ def test_query_run():
     )
     query_spec = {"query_kind": "dummy_query"}
     query = Query(connection=connection_mock, parameters=query_spec)
-    assert not hasattr(query, "query_id")
+    assert not hasattr(query, "_query_id")
     query.run()
     connection_mock.post_json.assert_called_once_with(route="run", data=query_spec)
-    assert query.query_id == "DUMMY_ID"
+    assert query._query_id == "DUMMY_ID"
+
