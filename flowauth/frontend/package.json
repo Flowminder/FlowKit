@@ -9,7 +9,7 @@
     "@material-ui/pickers": "^3.2.10",
     "date-fns": "^2.11.0",
     "generate-password": "^1.5.1",
-    "react": "^16.13.0",
+    "react": "^16.13.1",
     "react-dom": "^16.13.0",
     "react-qr-svg": "^2.2.1",
     "react-scripts": "^3.4.0",
