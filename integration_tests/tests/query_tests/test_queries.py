@@ -585,13 +585,14 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
     query = getattr(flowclient, query_kind)(connection=con, **params)
 
-    query.result
+    query.get_result()
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
     # so we can only check it runs without erroring
 
 
 def test_geo_result(universal_access_token, flowapi_url):
-    query_spec = flowclient.joined_spatial_aggregate(
+    query = flowclient.joined_spatial_aggregate(
+        connection=flowclient.Connection(url=flowapi_url, token=universal_access_token),
         **{
             "locations": flowclient.daily_location(
                 date="2016-01-01", aggregation_unit="admin3", method="last"
@@ -605,9 +606,8 @@ def test_geo_result(universal_access_token, flowapi_url):
             "method": "distr",
         }
     )
-    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
 
-    result = flowclient.get_geojson_result(connection=con, query=query_spec)
+    result = query.get_result(format="geojson")
     assert geojson.GeoJSON(result).is_valid
 
 
@@ -664,7 +664,7 @@ def test_fail_query_incorrect_parameters(
     with pytest.raises(
         flowclient.client.FlowclientConnectionError, match="Must be one of:"
     ):
-        result_dataframe = query.result
+        result_dataframe = query.get_result()
 
 
 def test_get_geography(access_token_builder, flowapi_url):

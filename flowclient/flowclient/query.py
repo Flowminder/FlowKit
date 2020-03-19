@@ -2,12 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+from typing import Union
+
 from flowclient.client import (
     FlowclientConnectionError,
     Connection,
     run_query,
     get_status,
     get_result_by_query_id,
+    get_geojson_result_by_query_id,
     wait_for_query_to_be_ready,
 )
 
@@ -28,12 +32,13 @@ class Query:
     parameters
     connection
     status
-    result
     """
 
     def __init__(self, *, connection: Connection, parameters: dict):
         self.connection = connection
-        self.parameters = parameters  # TODO: make this a property? (For immutability; otherwise parameters could differ from query ID / result)
+        self.parameters = dict(
+            parameters
+        )  # TODO: make this a property? (For immutability; otherwise parameters could differ from query ID / result)
 
     def run(self) -> None:
         """
@@ -44,7 +49,7 @@ class Query:
         FlowclientConnectionError
             if the query cannot be set running
         """
-        self.query_id = run_query(
+        self._query_id = run_query(
             connection=self.connection, query_spec=self.parameters
         )
         # TODO: Return a future?
@@ -75,13 +80,9 @@ class Query:
         """
         if hasattr(self, "_connection") and new_connection.url != self._connection.url:
             # If new URL is for a different API, invalidate query ID and result
-            # TODO: Or should we disallow this?
+            # TODO: Or should we disallow this, and instead add a Connection.update_token method?
             try:
-                delattr(self, "query_id")
-            except AttributeError:
-                pass
-            try:
-                delattr(self, "_result")
+                delattr(self, "_query_id")
             except AttributeError:
                 pass
         self._connection = new_connection
@@ -100,36 +101,54 @@ class Query:
             - "executing"
             - "completed"
         """
-        if not hasattr(self, "query_id"):
+        if not hasattr(self, "_query_id"):
             return "not running"
-        status, _ = get_status(connection=self.connection, query_id=self.query_id)
+        status, _ = get_status(connection=self.connection, query_id=self._query_id)
         return status
 
-    @property
-    def result(self) -> "pandas.DataFrame":
+    def get_result(
+        self, format: str = "pandas", poll_interval: int = 1
+    ) -> Union["pandas.DataFrame", dict]:
         """
-        Result of this query, as a pandas DataFrame.
+        Get the result of this query, as a pandas DataFrame or GeoJSON dict.
+
+        Parameters
+        ----------
+        format : str
+            Result format. One of {'pandas', 'geojson'}
+        poll_interval : int
+            Number of seconds to wait between checks for the query being ready
 
         Returns
         -------
-        pandas.DataFrame
-            Dataframe containing the query result
+        pandas.DataFrame or dict
+            Query result
         """
-        if not hasattr(self, "_result"):
-            # Don't have result yet
+        if format == "pandas":
+            result_getter = get_result_by_query_id
+        elif format == "geojson":
+            result_getter = get_geojson_result_by_query_id
+        else:
+            raise ValueError(
+                f"Invalid format: {format}. Expected one of {{'pandas', 'geojson'}}."
+            )
+
+        # TODO: Cache result internally?
+        try:
             # TODO: Warn if not yet completed?
-            try:
-                self._result = get_result_by_query_id(
-                    connection=self.connection, query_id=self.query_id
-                )
-            except (AttributeError, FlowclientConnectionError):
-                # TODO: Warn before running?
-                self.run()
-                self._result = get_result_by_query_id(
-                    connection=self.connection, query_id=self.query_id
-                )
-        # Return a copy, to avoid modifying the internal result
-        return self._result.copy()
+            return result_getter(
+                connection=self.connection,
+                query_id=self._query_id,
+                poll_interval=poll_interval,
+            )
+        except (AttributeError, FlowclientConnectionError):
+            # TODO: Warn before running?
+            self.run()
+            return result_getter(
+                connection=self.connection,
+                query_id=self._query_id,
+                poll_interval=poll_interval,
+            )
 
     def wait_until_ready(self, poll_interval: int = 1) -> None:
         """
@@ -145,10 +164,10 @@ class Query:
         FlowclientConnectionError
             if query is not running or has errored
         """
-        if not hasattr(self, "query_id"):
+        if not hasattr(self, "_query_id"):
             raise FileNotFoundError("Query is not running.")
         wait_for_query_to_be_ready(
             connection=self.connection,
-            query_id=self.query_id,
+            query_id=self._query_id,
             poll_interval=poll_interval,
         )
