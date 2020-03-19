@@ -64,11 +64,11 @@ RUN apt update && apt install -y curl && \
     echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list && \
     curl https://bazel.build/bazel-release.pub.gpg | apt-key add - && \
     apt update && \
-    apt install -y bazel git bison postgresql-server-dev-$PG_MAJOR libreadline-dev flex build-essential && \
+    apt install -y bazel git bison libreadline-dev flex build-essential && \
     git clone https://github.com/greenape/differential-privacy.git && \
     cd differential-privacy && \
     differential_privacy/postgres/install_extension.sh && \
-    apt remove -y bazel git bison postgresql-server-dev-$PG_MAJOR libreadline-dev flex curl build-essential && \
+    apt remove -y bazel git bison libreadline-dev flex curl build-essential && \
     apt purge -y --auto-remove && \
     rm /etc/apt/sources.list.d/bazel.list && \
     cd / && rm -rf /differential-privacy
