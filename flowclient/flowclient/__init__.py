@@ -36,6 +36,19 @@ from .client import (
     random_sample_spec,
 )
 from . import aggregates
+from .aggregates import (
+    location_event_counts,
+    meaningful_locations_aggregate,
+    meaningful_locations_between_label_od_matrix,
+    meaningful_locations_between_dates_od_matrix,
+    flows,
+    unique_subscriber_counts,
+    location_introversion,
+    total_network_objects,
+    aggregate_network_objects,
+    spatial_aggregate,
+    joined_spatial_aggregate,
+)
 
 __all__ = [
     "aggregates",
@@ -62,4 +75,15 @@ __all__ = [
     "nocturnal_events_spec",
     "handset_spec",
     "random_sample_spec",
+    "location_event_counts",
+    "meaningful_locations_aggregate",
+    "meaningful_locations_between_label_od_matrix",
+    "meaningful_locations_between_dates_od_matrix",
+    "flows",
+    "unique_subscriber_counts",
+    "location_introversion",
+    "total_network_objects",
+    "aggregate_network_objects",
+    "spatial_aggregate",
+    "joined_spatial_aggregate",
 ]
