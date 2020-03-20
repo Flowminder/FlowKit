@@ -37,6 +37,7 @@ class Query:
     def __init__(self, *, connection: Connection, parameters: dict):
         self._connection = connection
         self.parameters = dict(parameters)
+        # TODO: Run query when it's created?
 
     def run(self) -> None:
         """
