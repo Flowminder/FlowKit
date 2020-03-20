@@ -40,7 +40,7 @@ def test_cannot_replace_query_connection():
     (which could invalidate internal state)
     """
     query = Query(connection=Mock(), parameters={"query_kind": "dummy_query"})
-    with pytet.raises(AttributeError, match="can't set attribute"):
+    with pytest.raises(AttributeError, match="can't set attribute"):
         query.connection = "NEW_CONNECTION"
 
 
@@ -53,7 +53,7 @@ def test_query_status():
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
     )
     connection_mock.get_url.return_value = Mock(status_code=202)
-    con_mock.get_url.return_value.json.return_value = {
+    connection_mock.get_url.return_value.json.return_value = {
         "status": "executing",
         "progress": {"eligible": 0, "queued": 0, "running": 0},
     }
@@ -125,10 +125,11 @@ def test_query_get_result_runs(monkeypatch):
     get_result_mock = Mock(return_value="DUMMY_RESULT")
     monkeypatch.setattr(f"flowclient.query.get_result_by_query_id", get_result_mock)
     connection_mock = Mock()
+    query_spec = {"query_kind": "dummy_query"}
     connection_mock.post_json.return_value = Mock(
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
     )
-    query = Query(connection=connection_mock, parameters={"query_kind": "dummy_query"})
+    query = Query(connection=connection_mock, parameters=query_spec)
     query.get_result()
     connection_mock.post_json.assert_called_once_with(route="run", data=query_spec)
 
