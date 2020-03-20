@@ -594,10 +594,10 @@ def test_geo_result(universal_access_token, flowapi_url):
     query = flowclient.joined_spatial_aggregate(
         connection=flowclient.Connection(url=flowapi_url, token=universal_access_token),
         **{
-            "locations": flowclient.daily_location(
+            "locations": flowclient.daily_location_spec(
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
-            "metric": flowclient.handset(
+            "metric": flowclient.handset_spec(
                 start_date="2016-01-01",
                 end_date="2016-01-02",
                 characteristic="brand",
