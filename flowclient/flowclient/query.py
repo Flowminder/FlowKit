@@ -35,7 +35,7 @@ class Query:
     """
 
     def __init__(self, *, connection: Connection, parameters: dict):
-        self.connection = connection
+        self._connection = connection
         self.parameters = dict(
             parameters
         )  # TODO: make this a property? (For immutability; otherwise parameters could differ from query ID / result)
@@ -65,27 +65,6 @@ class Query:
             Connection to FlowKit API
         """
         return self._connection
-
-    @connection.setter
-    def connection(self, new_connection: Connection) -> None:
-        """
-        Set a new connection (e.g. to replace an expired token).
-        Note: if the URL of the new connection differs from that of the existing connection,
-        the query result will be invalidated.
-
-        Parameters
-        ----------
-        new_connection : Connection
-            New API connection to use with this query.
-        """
-        if hasattr(self, "_connection") and new_connection.url != self._connection.url:
-            # If new URL is for a different API, invalidate query ID and result
-            # TODO: Or should we disallow this, and instead add a Connection.update_token method?
-            try:
-                delattr(self, "_query_id")
-            except AttributeError:
-                pass
-        self._connection = new_connection
 
     @property
     def status(self) -> str:
