@@ -313,8 +313,8 @@ def get_status(*, connection: Connection, query_id: str) -> str:
         ready, reply = query_is_ready(connection=connection, query_id=query_id)
     except FileNotFoundError:
         # Can't distinguish 'known', 'cancelled', 'resetting' and 'awol' from the error,
-        # so return generic 'not running' status.
-        return "not running"
+        # so return generic 'not_running' status.
+        return "not_running"
 
     if ready:
         return "completed"

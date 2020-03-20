@@ -36,9 +36,7 @@ class Query:
 
     def __init__(self, *, connection: Connection, parameters: dict):
         self._connection = connection
-        self.parameters = dict(
-            parameters
-        )  # TODO: make this a property? (For immutability; otherwise parameters could differ from query ID / result)
+        self.parameters = dict(parameters)
 
     def run(self) -> None:
         """
@@ -75,13 +73,13 @@ class Query:
         -------
         str
             One of:
-            - "not running"
+            - "not_running"
             - "queued"
             - "executing"
             - "completed"
         """
         if not hasattr(self, "_query_id"):
-            return "not running"
+            return "not_running"
         status, _ = get_status(connection=self.connection, query_id=self._query_id)
         return status
 
@@ -93,9 +91,9 @@ class Query:
 
         Parameters
         ----------
-        format : str
+        format : str, default 'pandas'
             Result format. One of {'pandas', 'geojson'}
-        poll_interval : int
+        poll_interval : int, default 1
             Number of seconds to wait between checks for the query being ready
 
         Returns
@@ -109,18 +107,17 @@ class Query:
             result_getter = get_geojson_result_by_query_id
         else:
             raise ValueError(
-                f"Invalid format: {format}. Expected one of {{'pandas', 'geojson'}}."
+                f"Invalid format: '{format}'. Expected one of {{'pandas', 'geojson'}}."
             )
 
         # TODO: Cache result internally?
         try:
-            # TODO: Warn if not yet completed?
             return result_getter(
                 connection=self.connection,
                 query_id=self._query_id,
                 poll_interval=poll_interval,
             )
-        except (AttributeError, FlowclientConnectionError):
+        except (AttributeError, FileNotFoundError):
             # TODO: Warn before running?
             self.run()
             return result_getter(
@@ -135,7 +132,7 @@ class Query:
 
         Parameters
         ----------
-        poll_interval : int
+        poll_interval : int, default 1
             Number of seconds to wait between checks for the query being ready
 
         Raises

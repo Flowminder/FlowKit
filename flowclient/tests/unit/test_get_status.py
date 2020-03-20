@@ -35,7 +35,7 @@ def test_get_status_404():
     con_mock = Mock()
     con_mock.get_url.side_effect = FileNotFoundError("DUMMY_404")
     status_returned = get_status(connection=con_mock, query_id="foo")
-    assert status_returned == "not running"
+    assert status_returned == "not_running"
 
 
 def test_get_status_raises():
