@@ -6,8 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added a flowclient `Query` class to represent a FlowKit query [#1980](https://github.com/Flowminder/FlowKit/issues/1980).
+- Added method `flowclient.Connection.update_token`, to replace the API token for an existing connection.
 
 ### Changed
+- The names of flowclient functions for generating query specifications have been renamed to `<previous_name>_spec` (e.g. `flowclient.modal_location` is now `flowclient.modal_location_spec`).
+- `flowclient.get_status` now returns `"not_running"` (instead of raising `FileNotFoundError`) if a query is not running or completed.
+- Flowclient functions `location_event_counts_spec`, `meaningful_locations_aggregate_spec`, `meaningful_locations_between_label_od_matrix_spec`, `meaningful_locations_between_dates_od_matrix_spec`, `flows_spec`, `unique_subscriber_counts_spec`,	`location_introversion_spec`, `total_network_objects_spec`, `aggregate_network_objects_spec`, `spatial_aggregate_spec` and `joined_spatial_aggregate_spec` have moved to the `flowclient.aggregates` submodule.
 
 ### Fixed
 
