@@ -19,4 +19,3 @@ def test_query_run():
     query.run()
     connection_mock.post_json.assert_called_once_with(route="run", data=query_spec)
     assert query._query_id == "DUMMY_ID"
-
