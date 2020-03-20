@@ -36,6 +36,7 @@ from .client import (
     handset_spec,
     random_sample_spec,
 )
+from .query import Query
 from . import aggregates
 from .aggregates import (
     location_event_counts,
@@ -77,6 +78,7 @@ __all__ = [
     "nocturnal_events_spec",
     "handset_spec",
     "random_sample_spec",
+    "Query",
     "location_event_counts",
     "meaningful_locations_aggregate",
     "meaningful_locations_between_label_od_matrix",

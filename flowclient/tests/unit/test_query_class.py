@@ -70,7 +70,7 @@ def test_query_status_not_running():
     assert query.status == "not_running"
 
 
-def test_wait_until_ready():
+def test_wait_until_ready(monkeypatch):
     """
     Test that wait_until_ready polls until query_is_ready returns True
     """
@@ -118,7 +118,7 @@ def test_query_get_result_pandas(monkeypatch, format, function):
     )
 
 
-def test_query_get_result_runs():
+def test_query_get_result_runs(monkeypatch):
     """
     Test that get_result runs the query if it's not already running.
     """
