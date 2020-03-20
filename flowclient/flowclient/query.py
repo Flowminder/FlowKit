@@ -81,8 +81,7 @@ class Query:
         """
         if not hasattr(self, "_query_id"):
             return "not_running"
-        status, _ = get_status(connection=self.connection, query_id=self._query_id)
-        return status
+        return get_status(connection=self.connection, query_id=self._query_id)
 
     def get_result(
         self, format: str = "pandas", poll_interval: int = 1
