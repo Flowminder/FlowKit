@@ -68,17 +68,28 @@ class Connection:
                 "Communications with this server are NOT SECURE.", stacklevel=2
             )
         self.url = url
-        self.token = token
         self.api_version = api_version
+        self.session = requests.Session()
+        if ssl_certificate is not None:
+            self.session.verify = ssl_certificate
+        self.update_token(token=token)
+
+    def update_token(self, token: str) -> None:
+        """
+        Replace this connection's API token with a new one.
+
+        Parameters
+        ----------
+        token : str
+            JSON Web Token for this API server
+        """
         try:
             self.user = jwt.decode(token, verify=False)["identity"]
         except jwt.DecodeError:
             raise FlowclientConnectionError(f"Unable to decode token: '{token}'")
         except KeyError:
             raise FlowclientConnectionError(f"Token does not contain user identity.")
-        self.session = requests.Session()
-        if ssl_certificate is not None:
-            self.session.verify = ssl_certificate
+        self.token = token
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
     def get_url(
@@ -746,7 +757,7 @@ def modal_location_from_dates_spec(
         for d in pd.date_range(start_date, end_date, freq="D", closed="left")
     ]
     daily_locations = [
-        daily_location(
+        daily_location_spec(
             date=date,
             aggregation_unit=aggregation_unit,
             method=method,
@@ -754,7 +765,7 @@ def modal_location_from_dates_spec(
         )
         for date in dates
     ]
-    return modal_location(locations=daily_locations)
+    return modal_location_spec(locations=daily_locations)
 
 
 def radius_of_gyration_spec(
