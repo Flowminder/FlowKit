@@ -12,12 +12,9 @@ from flowmachine.features import daily_location
 from .helpers import poll_until_done
 
 
-# TODO: add test for code path that raises QueryProxyError with the 'get_sql' action
-
-
-def test_get_sql(zmq_port, zmq_host):
+def test_get_geo_sql(zmq_port, zmq_host):
     """
-    Running 'get_sql' on finished query returns the expected result.
+    Running 'get_geo_sql' on finished query returns the expected result.
     """
     #
     # Run daily_location query.
@@ -62,32 +59,10 @@ def test_get_sql(zmq_port, zmq_host):
     # Get query result.
     #
     msg = {
-        "action": "get_sql_for_query_result",
+        "action": "get_geo_sql_for_query_result",
         "params": {"query_id": expected_query_id},
         "request_id": "DUMMY_ID",
     }
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "success" == reply["status"]
-    assert f"SELECT * FROM cache.x{expected_query_id}" == reply["payload"]["sql"]
-
-
-def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
-    """
-    Polling a query with non-existent query id returns expected error.
-    """
-    #
-    # Try getting query result for nonexistent ID.
-    #
-    msg = {
-        "action": "get_sql_for_query_result",
-        "params": {"query_id": "FOOBAR"},
-        "request_id": "DUMMY_ID",
-    }
-
-    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
-    expected_reply = {
-        "status": "error",
-        "msg": "Unknown query id: 'FOOBAR'",
-        "payload": {"query_id": "FOOBAR", "query_state": "awol"},
-    }
-    assert expected_reply == reply
+    assert q.geojson_query() == reply["payload"]["sql"]

@@ -12,6 +12,7 @@ from typing import List, Union, Tuple, Optional
 from flowmachine.core import Query
 from flowmachine.features.subscriber.interevent_interval import IntereventInterval
 from .metaclasses import SubscriberFeature
+from ..utilities.direction_enum import Direction
 
 time_resolutions = dict(
     second=1, minute=60, hour=3600, day=86400, month=2592000, year=31557600
@@ -39,7 +40,7 @@ class IntereventPeriod(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
+    direction : {'in', 'out', 'both'} or Direction, default Direction.OUT
         Whether to consider calls made, received, or both. Defaults to 'out'.
     tables : str or list of strings, default 'all'
         Can be a string of a single table (with the schema)
@@ -80,7 +81,7 @@ class IntereventPeriod(SubscriberFeature):
         tables: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
-        direction: str = "both",
+        direction: Union[str, Direction] = Direction.OUT,
     ):
         try:
             self.time_divisor = time_resolutions[time_resolution.lower()]

@@ -97,8 +97,8 @@ class UserObject:
 
         Parameters
         ----------
-        query_json : list of tuples
-            List of tuples giving a query kind and aggregation unit
+        query_json : dict
+            Query spec
 
         Returns
         -------
@@ -141,8 +141,8 @@ class UserObject:
         Returns true if the user can get the results of this kind of query at this unit of aggregation.
         Parameters
         ----------
-        query_kinds_and_aggregations : list of tuples
-            List of tuples giving a query kind and aggregation unit
+        query_json : dict
+            Query spec
 
         Returns
         -------
@@ -159,7 +159,7 @@ class UserObject:
 
     def can_get_geography(self, *, aggregation_unit: str) -> bool:
         """
-        Returns true if the user can get the this geography as geojson.
+        Returns true if the user can get this geography as geojson.
         .
         Parameters
         ----------

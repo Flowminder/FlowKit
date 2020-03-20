@@ -39,7 +39,7 @@ def test_unknown_action_returns_error(zmq_host, zmq_port):
         "msg": "Invalid action request.",
         "payload": {
             "action": [
-                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geography, get_available_dates."
+                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geo_sql_for_query_result, get_geography, get_available_dates."
             ]
         },
     }
@@ -125,7 +125,7 @@ def test_run_daily_location_query(zmq_host, zmq_port):
 
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
-    assert ["query_id"] == list(reply["payload"].keys())
+    assert ["query_id", "progress"] == list(reply["payload"].keys())
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may
@@ -189,7 +189,7 @@ def test_run_modal_location_query(zmq_host, zmq_port):
 
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
-    assert ["query_id"] == list(reply["payload"].keys())
+    assert ["query_id", "progress"] == list(reply["payload"].keys())
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may
@@ -225,7 +225,7 @@ def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
 
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
-    assert ["query_id"] == list(reply["payload"].keys())
+    assert ["query_id", "progress"] == list(reply["payload"].keys())
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may

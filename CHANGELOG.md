@@ -12,6 +12,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Removed
+
+## [1.4.0]
+
+### Added
+- FlowAPI can now return results in CSV and GeoJSON format, FlowClient now supports getting GeoJSON formatted results. [#2003](https://github.com/Flowminder/FlowKit/issues/2003)
+
+## [1.3.3]
+
+### Added
+- FlowAPI now reports the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
+- FlowClient now logs info messages with the proportion of subqueries cached for a query when polling. [#1202](https://github.com/Flowminder/FlowKit/issues/1202)
+
+### Fixed
+- Fixed the display of deeply nested permissions for flows in FlowAuth. [#2110](https://github.com/Flowminder/FlowKit/issues/2110)
+
+## [1.3.2]
+
+### Fixed
+- Fixed tokens which used the FlowAuth demo data not being accepted by FlowAPI. [#2108](https://github.com/Flowminder/FlowKit/issues/2108)
+
+## [1.3.1]
+
+### Changed
+- Flowmachine now uses an enum for interaction direction parameters (but will still accept them as strings). [#357](https://github.com/Flowminder/FlowKit/issues/357)
+
+### Removed
 - Removed unused aggregates, results and features schemas from FlowDB. [#587](https://github.com/Flowminder/FlowKit/issues/587)
 
 ## [1.3.0]
@@ -616,7 +642,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.3.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.4.0...master
+[1.4.0]: https://github.com/Flowminder/FlowKit/compare/1.3.3...1.4.0
+[1.3.3]: https://github.com/Flowminder/FlowKit/compare/1.3.2...1.3.3
+[1.3.2]: https://github.com/Flowminder/FlowKit/compare/1.3.1...1.3.2
+[1.3.1]: https://github.com/Flowminder/FlowKit/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/Flowminder/FlowKit/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/Flowminder/FlowKit/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/Flowminder/FlowKit/compare/1.1.1...1.2.0

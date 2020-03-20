@@ -278,7 +278,7 @@ def expand_scopes(*, scopes: List[str]) -> str:
 
     """
     for scope in scopes:
-        parts = scope.split("&")
+        parts = scope.strip().split("&")
         ps = (x.split(",") for x in parts)
         yield from (set(x) for x in product(*ps))
 

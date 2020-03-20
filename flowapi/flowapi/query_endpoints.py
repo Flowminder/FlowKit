@@ -4,7 +4,7 @@
 
 from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
-from .stream_results import stream_result_as_json
+from .stream_results import stream_result_as_json, stream_result_as_csv
 
 blueprint = Blueprint("query", __name__)
 
@@ -31,6 +31,22 @@ async def run_query():
               schema:
                 format: url
                 type: string
+          content:
+            application/json:
+              schema:
+                properties:
+                  query_id:
+                    type: string
+                  progress:
+                    schema:
+                      eligible:
+                        type: integer
+                      queued:
+                        type: integer
+                      running:
+                        type: integer
+                    type: object
+                type: object
         '401':
           description: Unauthorized.
         '403':
@@ -101,7 +117,14 @@ async def run_query():
                 f"query.poll_query", query_id=reply["payload"]["query_id"]
             )
         }
-        return {}, 202, d
+        return (
+            dict(
+                query_id=reply["payload"]["query_id"],
+                progress=reply["payload"]["progress"],
+            ),
+            202,
+            d,
+        )
     else:
         return (
             {"status": "Error", "msg": f"Unexpected reply status: {reply['status']}",},
@@ -135,6 +158,15 @@ async def poll_query(query_id):
                       - executing
                       - queued
                     type: string
+                  progress:
+                    schema:
+                      eligible:
+                        type: integer
+                      queued:
+                        type: integer
+                      running:
+                        type: integer
+                    type: object
                 type: object
           description: Request accepted.
         '303':
@@ -192,19 +224,34 @@ async def poll_query(query_id):
     if query_state == "completed":
         return (
             jsonify({}),
-            response_codes[query_state],
+            303,
             {"Location": url_for(f"query.get_query_result", query_id=query_id)},
+        )
+    elif query_state in ("executing", "queued"):
+        return (
+            {
+                "status": query_state,
+                "msg": reply["msg"],
+                "progress": reply["payload"]["progress"],
+            },
+            202,
+        )
+    elif query_state in ("unknown", "known", "cancelled", "resetting"):
+        return (
+            {"status": query_state, "msg": reply["msg"]},
+            404,
         )
     else:
         return (
             {"status": query_state, "msg": reply["msg"]},
-            response_codes.get(query_state, 500),
+            500,
         )
 
 
 @blueprint.route("/get/<query_id>")
+@blueprint.route("/get/<query_id>.<filetype>")
 @jwt_required
-async def get_query_result(query_id):
+async def get_query_result(query_id, filetype="json"):
     """
     Get the output of a completed query.
     ---
@@ -215,12 +262,28 @@ async def get_query_result(query_id):
           required: true
           schema:
             type: string
+        - in: path
+          name: filetype
+          required: false
+          default: json
+          schema:
+            type: string
+            enum:
+              - json
+              - geojson
+              - csv
       responses:
         '200':
           content:
             application/json:
               schema:
                 type: object
+            application/geo+json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
           description: Results returning.
         '401':
           description: Unauthorized.
@@ -239,7 +302,9 @@ async def get_query_result(query_id):
     await current_user.can_get_results_by_query_id(query_id=query_id)
     msg = {
         "request_id": request.request_id,
-        "action": "get_sql_for_query_result",
+        "action": "get_geo_sql_for_query_result"
+        if filetype == "geojson"
+        else "get_sql_for_query_result",
         "params": {"query_id": query_id},
     }
     request.socket.send_json(msg)
@@ -250,10 +315,26 @@ async def get_query_result(query_id):
 
     if reply["status"] == "success":
         sql = reply["payload"]["sql"]
-        results_streamer = stream_with_context(stream_result_as_json)(
-            sql, additional_elements={"query_id": query_id}
-        )
-        mimetype = "application/json"
+        if filetype == "json":
+            results_streamer = stream_with_context(stream_result_as_json)(
+                sql, additional_elements={"query_id": query_id}
+            )
+            mimetype = "application/json"
+        elif filetype == "csv":
+            results_streamer = stream_with_context(stream_result_as_csv)(sql)
+            mimetype = "text/csv"
+        elif filetype == "geojson":
+            current_user.can_get_geography(
+                aggregation_unit=reply["payload"]["aggregation_unit"]
+            )
+            results_streamer = stream_with_context(stream_result_as_json)(
+                sql,
+                result_name="features",
+                additional_elements={"type": "FeatureCollection"},
+            )
+            mimetype = "application/geo+json"
+        else:
+            return {"status": "error", "msg": "Invalid file format"}, 400
 
         current_app.flowapi_logger.debug(
             f"Returning result of query {query_id}.", request_id=request.request_id
@@ -263,7 +344,7 @@ async def get_query_result(query_id):
             200,
             {
                 "Transfer-Encoding": "chunked",
-                "Content-Disposition": f"attachment;filename={query_id}.json",
+                "Content-Disposition": f"attachment;filename={query_id}.{filetype}",
                 "Content-type": mimetype,
             },
         )

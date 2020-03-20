@@ -1,4 +1,6 @@
-import pytest
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from .helpers import poll_until_done
@@ -22,7 +24,10 @@ def test_poll_existing_query(zmq_port, zmq_host):
     expected_reply = {
         "status": "success",
         "msg": "",
-        "payload": {"query_id": expected_query_id},
+        "payload": {
+            "progress": {"eligible": 0, "queued": 0, "running": 0},
+            "query_id": expected_query_id,
+        },
     }
     assert expected_reply == reply
 
@@ -42,6 +47,7 @@ def test_poll_existing_query(zmq_port, zmq_host):
             "query_id": expected_query_id,
             "query_kind": "dummy_query",
             "query_state": "completed",
+            "progress": {"eligible": 0, "queued": 0, "running": 0},
         },
     }
     assert expected_reply == reply

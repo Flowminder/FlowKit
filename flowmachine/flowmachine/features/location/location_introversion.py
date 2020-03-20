@@ -6,6 +6,8 @@
 
 from typing import List, Union
 
+from ..utilities.direction_enum import Direction
+
 """
 Location introversion [1]_ calculates the proportion
 of interactions made within a certain location 
@@ -19,13 +21,14 @@ References
 .. [1] Christopher Smith, Afra Mashhadi, Licia Capra. "Ubiquitous Sensing for Mapping Poverty in Developing Countries". NetMob Conference Proceedings, 2013. http://haig.cs.ucl.ac.uk/staff/L.Capra/publicatiONs/d4d.pdf
 
 """
-from ...core import Query
-from ...core.mixins import GeoDataMixin
+from flowmachine.core.query import Query
+from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
 
 
-from ...core import location_joined_query, make_spatial_unit
-from ...core.spatial_unit import AnySpatialUnit
-from ..utilities import EventsTablesUnion
+from flowmachine.core.join_to_location import location_joined_query
+from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.utils import make_where
 
 
 class LocationIntroversion(GeoDataMixin, Query):
@@ -48,7 +51,7 @@ class LocationIntroversion(GeoDataMixin, Query):
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
-    direction : str, default 'both'.
+    direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH.
         Determines if query should filter only outgoing
         events ('out'), incoming events ('in'), or both ('both').
 
@@ -77,7 +80,7 @@ class LocationIntroversion(GeoDataMixin, Query):
         *,
         table: str = "all",
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        direction: str = "both",
+        direction: Union[Direction, str] = Direction.BOTH,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
@@ -86,7 +89,7 @@ class LocationIntroversion(GeoDataMixin, Query):
         self.stop = stop
         self.table = table
         self.spatial_unit = spatial_unit
-        self.direction = direction
+        self.direction = Direction(direction)
 
         self.unioned_query = location_joined_query(
             EventsTablesUnion(
@@ -116,18 +119,6 @@ class LocationIntroversion(GeoDataMixin, Query):
 
     def _make_query(self):
         location_columns = self.spatial_unit.location_id_columns
-
-        if self.direction == "both":
-            sql_direction = ""
-        elif self.direction == "in":
-            sql_direction = """
-                WHERE NOT A.outgoing
-            """
-        elif self.direction == "out":
-            sql_direction = """
-                WHERE A.outgoing
-            """
-
         sql = f"""
         WITH unioned_table AS ({self.unioned_query.get_query()})
         SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as value FROM (
@@ -138,7 +129,7 @@ class LocationIntroversion(GeoDataMixin, Query):
             INNER JOIN unioned_table AS B
                   ON A.id = B.id
                      AND A.outgoing != B.outgoing
-                     {sql_direction}
+                     {make_where(self.direction.get_filter_clause(prefix="A"))}
         ) _
         GROUP BY {', '.join(location_columns)}
         ORDER BY {', '.join(location_columns)}

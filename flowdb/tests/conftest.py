@@ -99,9 +99,9 @@ def _skip_usr(request):
     # based on
     # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
     if request.node.get_closest_marker("skip_usrs"):
-        usr_env_prefix = request.getfixturevalue("usr_env_prefix")
-        if usr_env_prefix in request.node.get_closest_marker("skip_usrs").args[0]:
-            pytest.skip("does not apply to: {}".format(usr_env_prefix))
+        user = request.getfixturevalue("user")
+        if user in request.node.get_closest_marker("skip_usrs").args[0]:
+            pytest.xfail(f"Should fail for {user}")
 
 
 @pytest.fixture(scope="session")
