@@ -350,6 +350,14 @@
             ],
             "version": "==1.4.3"
         },
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
+        },
         "approvaltests": {
             "hashes": [
                 "sha256:77bcfa60f975a48a378c96f61749d7943ecc27d486394896aa8536d93105d556"
@@ -537,10 +545,10 @@
         },
         "identify": {
             "hashes": [
-                "sha256:1222b648251bdcb8deb240b294f450fbf704c7984e08baa92507e4ea10b436d5",
-                "sha256:d824ebe21f38325c771c41b08a95a761db1982f1fc0eee37c6c97df3f1636b96"
+                "sha256:46b5583a7ae1b0c5d8b51902940f8e11ab339515d1a40b91acf51d5c3ae83029",
+                "sha256:5793876ecee0475b4e78ba60869f3c8a4407535d9dffd898048753f61c68eacd"
             ],
-            "version": "==1.4.11"
+            "version": "==1.4.12"
         },
         "importlib-metadata": {
             "hashes": [
@@ -1082,10 +1090,10 @@
         },
         "wcwidth": {
             "hashes": [
-                "sha256:8fd29383f539be45b20bd4df0dc29c20ba48654a41e661925e612311e9f3c603",
-                "sha256:f28b3e8a6483e5d49e7f8949ac1a78314e740333ae305b4ba5defd3e74fb37a8"
+                "sha256:cafe2186b3c009a04067022ce1dcd79cb38d8d65ee4f4791b8888d6599d1bbe1",
+                "sha256:ee73862862a156bf77ff92b09034fc4825dd3af9cf81bc5b360668d425f3c5f1"
             ],
-            "version": "==0.1.8"
+            "version": "==0.1.9"
         },
         "zipp": {
             "hashes": [
