@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowClient now displays a progress bar when waiting for a query to ready, indicating how many parts of that query still need to be run. 
 
 ### Changed
 
