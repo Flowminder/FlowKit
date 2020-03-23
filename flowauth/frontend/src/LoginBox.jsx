@@ -12,7 +12,7 @@ function LoginBox(props) {
     username,
     password,
     usernameChangeHandler,
-    passwordChangeHandler
+    passwordChangeHandler,
   } = props;
   return (
     <>

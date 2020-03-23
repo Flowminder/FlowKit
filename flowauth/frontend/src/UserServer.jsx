@@ -10,23 +10,23 @@ import Grid from "@material-ui/core/Grid";
 import TokenList from "./TokenList";
 import TokenDetails from "./TokenDetails";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
-  }
+    paddingBottom: theme.spacing.unit * 2,
+  },
 });
 
 class UserServer extends React.Component {
   state = {
     editing: false,
-    editing_item: null
+    editing_item: null,
   };
-  toggleEdit = item_id => {
+  toggleEdit = (item_id) => {
     this.setState({
       editing: !this.state.editing,
-      editing_item: item_id
+      editing_item: item_id,
     });
   };
 
@@ -65,11 +65,11 @@ class UserServer extends React.Component {
 }
 
 UserServer.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 UserServer.defaultProps = {
-  editing: false
+  editing: false,
 };
 
 export default withStyles(styles)(UserServer);

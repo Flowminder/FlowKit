@@ -9,10 +9,10 @@ import Picker from "./Picker";
 class GroupMembersPicker extends React.Component {
   state = {
     members: [],
-    all_users: []
+    all_users: [],
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({ members: event.target.value });
     this.props.updateMembers(event.target.value);
   };
@@ -21,10 +21,10 @@ class GroupMembersPicker extends React.Component {
     var members;
     var all_users;
     getGroupMembers(this.props.group_id)
-      .then(json => {
+      .then((json) => {
         members = json;
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.code === 404) {
           members = [];
         } else {
@@ -34,10 +34,10 @@ class GroupMembersPicker extends React.Component {
       .then(() => {
         return getUsers();
       })
-      .then(json => {
+      .then((json) => {
         all_users = json;
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.code === 404) {
           all_users = [];
         } else {
@@ -47,13 +47,13 @@ class GroupMembersPicker extends React.Component {
       .then(() => {
         this.setState({
           members: members.map(
-            member =>
-              all_users[all_users.map(user => user.id).indexOf(member.id)]
+            (member) =>
+              all_users[all_users.map((user) => user.id).indexOf(member.id)]
           ),
-          all_users: all_users
+          all_users: all_users,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({ hasError: true, error: err });
       });
   }

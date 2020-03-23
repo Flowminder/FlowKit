@@ -12,13 +12,13 @@ import BackupCodes from "./BackupCodes";
 import TwoFactorActivate from "./TwoFactorActivate";
 import { Typography } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
-    margin: theme.spacing.unit
+    margin: theme.spacing.unit,
   },
   codeBlock: {
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
-  }
+    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+  },
 });
 
 class TwoFactorConfirm extends React.Component {
@@ -30,7 +30,7 @@ class TwoFactorConfirm extends React.Component {
     pageError: false,
     errors: {},
     confirming: false,
-    activating: false
+    activating: false,
   };
   async componentDidMount() {
     try {
@@ -43,13 +43,13 @@ class TwoFactorConfirm extends React.Component {
     }
   }
 
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     this.setState({ two_factor_code: event.target.value });
   };
 
   advance = () =>
     this.setState({
-      confirming: true
+      confirming: true,
     });
   backstep = () => {
     const { confirming } = this.state;
@@ -67,7 +67,7 @@ class TwoFactorConfirm extends React.Component {
       confirming,
       backup_codes,
       secret,
-      backup_codes_signature
+      backup_codes_signature,
     } = this.state;
     return (
       <Paper className={classes.root}>
@@ -105,6 +105,6 @@ class TwoFactorConfirm extends React.Component {
 }
 
 TwoFactorConfirm.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(TwoFactorConfirm);

@@ -24,7 +24,7 @@ class RightsCascade extends React.Component {
               <span>
                 {selectedItems
                   .map(
-                    item =>
+                    (item) =>
                       item.value +
                       (item.hasOwnProperty("children") ? " (All)" : "")
                   )

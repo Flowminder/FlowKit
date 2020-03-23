@@ -15,7 +15,7 @@ import {
   getGroup,
   editMembers,
   renameGroup,
-  editGroupServers
+  editGroupServers,
 } from "./util/api";
 
 class GroupDetails extends React.Component {
@@ -26,7 +26,7 @@ class GroupDetails extends React.Component {
     edit_mode: false,
     name_helper_text: "",
     pageError: false,
-    errors: { message: "" }
+    errors: { message: "" },
   };
 
   async componentDidMount() {
@@ -40,13 +40,13 @@ class GroupDetails extends React.Component {
     }
   }
 
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     this.setState({
       pageError: false,
-      errors: ""
+      errors: "",
     });
     this.setState({
-      [name]: event.target.value
+      [name]: event.target.value,
     });
     if (name === "name") {
       var letters = /^[A-Za-z0-9_]+$/;
@@ -58,15 +58,15 @@ class GroupDetails extends React.Component {
       } else {
         this.setState({
           name_helper_text:
-            "Group name may only contain letters, numbers and underscores."
+            "Group name may only contain letters, numbers and underscores.",
         });
       }
     }
   };
-  updateMembers = members => {
+  updateMembers = (members) => {
     this.setState({ members: members });
   };
-  updateServers = servers => {
+  updateServers = (servers) => {
     this.setState({ servers: servers });
   };
   handleSubmit = async () => {

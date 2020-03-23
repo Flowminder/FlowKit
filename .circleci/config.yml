@@ -396,7 +396,7 @@ jobs:
             - ~/.cache
       - run:
           name: Linting JS with prettier
-          command: $(npm bin)/prettier --check "**/*.js"
+          command: $(npm bin)/prettier --check "**/*.*(js|jsx|json)"
 
   run_flowmachine_tests:
     executor:

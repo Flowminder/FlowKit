@@ -9,25 +9,25 @@ class App extends Component {
     super(props);
     this.state = {
       loggedIn: false,
-      is_admin: false
+      is_admin: false,
     };
   }
-  setLoggedIn = is_admin => {
+  setLoggedIn = (is_admin) => {
     this.setState({
       loggedIn: true,
-      is_admin: is_admin
+      is_admin: is_admin,
     });
   };
   componentDidCatch(error, info) {
     console.log(error);
-    logout().then(json => {
+    logout().then((json) => {
       this.setLoggedOut();
     });
   }
   setLoggedOut = () => {
     this.setState({
       loggedIn: false,
-      is_admin: false
+      is_admin: false,
     });
   };
   render() {

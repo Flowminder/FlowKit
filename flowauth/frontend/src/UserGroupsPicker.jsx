@@ -9,10 +9,10 @@ import Picker from "./Picker";
 class UserGroupsPicker extends React.Component {
   state = {
     groups: [],
-    all_groups: []
+    all_groups: [],
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({ groups: event.target.value });
     this.props.updateGroups(event.target.value);
   };
@@ -20,24 +20,24 @@ class UserGroupsPicker extends React.Component {
   getData = () => {
     var all_groups;
     getGroups()
-      .then(json => {
+      .then((json) => {
         all_groups = json;
         return getGroupsForUser(this.props.user_id);
       })
-      .then(json => {
+      .then((json) => {
         this.setState({
           groups: json.map(
-            member =>
-              all_groups[all_groups.map(user => user.id).indexOf(member.id)]
+            (member) =>
+              all_groups[all_groups.map((user) => user.id).indexOf(member.id)]
           ),
-          all_groups: all_groups
+          all_groups: all_groups,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.code === 404) {
           this.setState({
             groups: [],
-            all_groups: all_groups
+            all_groups: all_groups,
           });
         } else {
           this.setState({ hasError: true, error: err });

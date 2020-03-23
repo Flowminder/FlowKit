@@ -12,7 +12,7 @@ import Button from "@material-ui/core/Button";
 
 class WarningDialog extends React.Component {
   state = {
-    open: this.props.open
+    open: this.props.open,
   };
 
   handleClose = () => {

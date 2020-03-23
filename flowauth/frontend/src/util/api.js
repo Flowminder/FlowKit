@@ -22,9 +22,9 @@ async function getResponse(path, dat) {
     credentials: "same-origin",
     headers: {
       "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    ...dat
+    ...dat,
   };
   var err;
   var response = await fetch(path, fullDat);
@@ -46,8 +46,8 @@ async function getResponseDefault(path) {
   // Same as 'getResponse', but with default data.
   var dat = {
     headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
+      "X-CSRF-Token": getCookieValue("X-CSRF"),
+    },
   };
   return await getResponse(path, dat);
 }
@@ -73,8 +73,8 @@ export async function editPassword(oldPassword, newPassword) {
     method: "PATCH",
     body: JSON.stringify({
       password: oldPassword,
-      newPassword: newPassword
-    })
+      newPassword: newPassword,
+    }),
   };
   return await getResponse("/user/password", dat);
 }
@@ -94,8 +94,8 @@ export async function editUser(
       password: password,
       is_admin: is_admin,
       require_two_factor: require_two_factor,
-      has_two_factor: has_two_factor
-    })
+      has_two_factor: has_two_factor,
+    }),
   };
   return await getResponse("/admin/users/" + user_id, dat);
 }
@@ -103,7 +103,7 @@ export async function editUser(
 export async function editGroupMemberships(user_id, group_ids) {
   var dat = {
     method: "PATCH",
-    body: JSON.stringify({ groups: group_ids })
+    body: JSON.stringify({ groups: group_ids }),
   };
   return await getResponse("/admin/users/" + user_id + "/groups", dat);
 }
@@ -192,15 +192,15 @@ export async function createUser(
       username: username,
       password: password,
       is_admin: is_admin,
-      require_two_factor: require_two_factor
-    })
+      require_two_factor: require_two_factor,
+    }),
   };
   return await getResponse("/admin/users", dat);
 }
 
 export async function deleteUser(user_id) {
   var dat = {
-    method: "DELETE"
+    method: "DELETE",
   };
   return await getResponse("/admin/users/" + user_id, dat);
 }
@@ -208,7 +208,7 @@ export async function deleteUser(user_id) {
 export async function editServerCapabilities(server_id, rights) {
   var dat = {
     method: "PATCH",
-    body: JSON.stringify(rights)
+    body: JSON.stringify(rights),
   };
   return await getResponse(
     "/admin/servers/" + server_id + "/capabilities",
@@ -227,8 +227,8 @@ export async function editServer(
     body: JSON.stringify({
       name: server_name,
       latest_token_expiry: latest_token_expiry,
-      longest_token_life: longest_token_life
-    })
+      longest_token_life: longest_token_life,
+    }),
   };
   return await getResponse("/admin/servers/" + server_id, dat);
 }
@@ -243,15 +243,15 @@ export async function createServer(
     body: JSON.stringify({
       name: server_name,
       latest_token_expiry: latest_token_expiry,
-      longest_token_life: longest_token_life
-    })
+      longest_token_life: longest_token_life,
+    }),
   };
   return await getResponse("/admin/servers", dat);
 }
 
 export async function deleteServer(server_id) {
   var dat = {
-    method: "DELETE"
+    method: "DELETE",
   };
   return await getResponse("/admin/servers/" + server_id, dat);
 }
@@ -259,7 +259,7 @@ export async function deleteServer(server_id) {
 export async function editMembers(group_id, member_ids) {
   var dat = {
     method: "PATCH",
-    body: JSON.stringify({ members: member_ids })
+    body: JSON.stringify({ members: member_ids }),
   };
   return await getResponse("/admin/groups/" + group_id + "/members", dat);
 }
@@ -267,7 +267,7 @@ export async function editMembers(group_id, member_ids) {
 export async function editGroupServers(group_id, servers) {
   var dat = {
     method: "PATCH",
-    body: JSON.stringify({ servers: servers })
+    body: JSON.stringify({ servers: servers }),
   };
   return await getResponse("/admin/groups/" + group_id + "/servers", dat);
 }
@@ -275,14 +275,14 @@ export async function editGroupServers(group_id, servers) {
 export async function renameGroup(group_id, group_name) {
   var dat = {
     method: "PATCH",
-    body: JSON.stringify({ name: group_name })
+    body: JSON.stringify({ name: group_name }),
   };
   return await getResponse("/admin/groups/" + group_id, dat);
 }
 
 export async function deleteGroup(group_id) {
   var dat = {
-    method: "DELETE"
+    method: "DELETE",
   };
   return await getResponse("/admin/groups/" + group_id, dat);
 }
@@ -290,7 +290,7 @@ export async function deleteGroup(group_id) {
 export async function createGroup(group_name) {
   var dat = {
     method: "POST",
-    body: JSON.stringify({ name: group_name })
+    body: JSON.stringify({ name: group_name }),
   };
   return await getResponse("/admin/groups", dat);
 }
@@ -298,7 +298,7 @@ export async function createGroup(group_name) {
 export async function createToken(name, server_id, expiry, claims) {
   var dat = {
     method: "POST",
-    body: JSON.stringify({ name: name, expiry: expiry, claims: claims })
+    body: JSON.stringify({ name: name, expiry: expiry, claims: claims }),
   };
   return await getResponse("/tokens/tokens/" + server_id, dat);
 }
@@ -306,7 +306,7 @@ export async function createToken(name, server_id, expiry, claims) {
 export async function login(username, password) {
   var dat = {
     method: "POST",
-    body: JSON.stringify({ username: username, password: password })
+    body: JSON.stringify({ username: username, password: password }),
   };
   return await getResponse("/signin", dat);
 }
@@ -317,22 +317,22 @@ export async function twoFactorlogin(username, password, two_factor_code) {
     body: JSON.stringify({
       username: username,
       password: password,
-      two_factor_code: two_factor_code
-    })
+      two_factor_code: two_factor_code,
+    }),
   };
   return await getResponse("/signin", dat);
 }
 
 export async function startTwoFactorSetup() {
   var dat = {
-    method: "POST"
+    method: "POST",
   };
   return await getResponse("/user/enable_two_factor", dat);
 }
 
 export async function getTwoFactorBackups() {
   var dat = {
-    method: "GET"
+    method: "GET",
   };
   return await getResponse("/user/generate_two_factor_backups", dat);
 }
@@ -341,8 +341,8 @@ export async function confirmTwoFactorBackups(backup_codes_signature) {
   var dat = {
     method: "POST",
     body: JSON.stringify({
-      backup_codes_signature: backup_codes_signature
-    })
+      backup_codes_signature: backup_codes_signature,
+    }),
   };
   return await getResponse("/user/generate_two_factor_backups", dat);
 }
@@ -357,15 +357,15 @@ export async function confirmTwoFactor(
     body: JSON.stringify({
       two_factor_code: two_factor_code,
       secret: secret,
-      backup_codes_signature: backup_codes_signature
-    })
+      backup_codes_signature: backup_codes_signature,
+    }),
   };
   return await getResponse("/user/confirm_two_factor", dat);
 }
 
 export async function disableTwoFactor() {
   var dat = {
-    method: "POST"
+    method: "POST",
   };
   return await getResponse("/user/disable_two_factor", dat);
 }

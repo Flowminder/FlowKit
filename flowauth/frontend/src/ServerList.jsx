@@ -7,12 +7,12 @@ import ServerAdminDetails from "./ServerAdminDetails";
 import Lister from "./Lister";
 import { getServers, deleteServer } from "./util/api";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
-  }
+    paddingBottom: theme.spacing.unit * 2,
+  },
 });
 const ServerList = Lister(
   ServerAdminDetails,

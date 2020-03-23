@@ -19,7 +19,7 @@ import {
   editPassword,
   isTwoFactorActive,
   isTwoFactorRequired,
-  disableTwoFactor
+  disableTwoFactor,
 } from "./util/api";
 import ErrorDialog from "./ErrorDialog";
 import MessageSnackbar from "./MessageSnackbar";
@@ -27,15 +27,15 @@ import TwoFactorConfirm from "./TwoFactorConfirm";
 import GenerateBackupCodes from "./GenerateBackupCodes";
 var zxcvbn = require("zxcvbn");
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
+    paddingBottom: theme.spacing.unit * 2,
   },
   button: {
-    margin: theme.spacing.unit
-  }
+    margin: theme.spacing.unit,
+  },
 });
 
 class UserDetails extends React.Component {
@@ -49,10 +49,10 @@ class UserDetails extends React.Component {
     require_two_factor: false,
     two_factor_setup: false,
     hasError: false,
-    error: { message: "" }
+    error: { message: "" },
   };
 
-  handleSubmit = async event => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     if (this.state.newPasswordA === this.state.newPasswordB) {
       editPassword(this.state.oldPassword, this.state.newPasswordA)
@@ -64,32 +64,32 @@ class UserDetails extends React.Component {
             newPasswordB: "",
             password_strength: null,
             hasError: false,
-            error: { message: "" }
+            error: { message: "" },
           });
         })
-        .catch(err => {
+        .catch((err) => {
           this.setState({ passwordChanged: false, hasError: true, error: err });
         });
     } else {
       this.setState({
         passwordChanged: false,
         hasError: true,
-        error: { message: "Passwords do not match." }
+        error: { message: "Passwords do not match." },
       });
     }
   };
 
-  handleTextChange = name => event => {
+  handleTextChange = (name) => (event) => {
     var passStrength = zxcvbn(event.target.value);
     var state = {
       [name]: event.target.value,
       passwordChanged: false,
       hasError: false,
-      error: { message: "" }
+      error: { message: "" },
     };
     if (name === "newPasswordA") {
       state = Object.assign(state, {
-        password_strength: passStrength.score
+        password_strength: passStrength.score,
       });
     }
     this.setState(state);
@@ -117,7 +117,7 @@ class UserDetails extends React.Component {
       require_two_factor,
       new_backups,
       two_factor_enabled,
-      two_factor_setup
+      two_factor_setup,
     } = this.state;
 
     if (!two_factor_setup && !new_backups) {
@@ -268,7 +268,7 @@ class UserDetails extends React.Component {
   }
 }
 UserDetails.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(UserDetails);

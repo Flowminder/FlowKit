@@ -14,20 +14,20 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
-    margin: theme.spacing.unit
-  }
+    margin: theme.spacing.unit,
+  },
 });
 class Token extends React.Component {
   state = {
     isOpen: false,
-    copySuccess: ""
+    copySuccess: "",
   };
   toggleOpen = () => {
     this.setState({ isOpen: !this.state.isOpen });
   };
-  copyToClipboard = event => {
+  copyToClipboard = (event) => {
     var textField = document.createElement("textarea");
     textField.innerText = this.props.token;
     document.body.appendChild(textField);
@@ -98,6 +98,6 @@ class Token extends React.Component {
 }
 
 Token.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(Token);

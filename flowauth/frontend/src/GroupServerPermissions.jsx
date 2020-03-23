@@ -14,9 +14,9 @@ import GroupServerPermissionDetails from "./GroupServerPermissionDetails";
 import PropTypes from "prop-types";
 
 class GroupServerPermissions extends React.Component {
-  updateServer = server => {
+  updateServer = (server) => {
     const { servers, updateServers } = this.props;
-    servers[servers.map(s => s.id).indexOf(server.id)] = server;
+    servers[servers.map((s) => s.id).indexOf(server.id)] = server;
     updateServers(servers);
   };
 
@@ -35,7 +35,7 @@ class GroupServerPermissions extends React.Component {
           servers={servers}
           updateServers={updateServers}
         />
-        {servers.map(server => (
+        {servers.map((server) => (
           <Grid item xs={12}>
             <ExpansionPanel>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -62,7 +62,7 @@ class GroupServerPermissions extends React.Component {
 }
 
 GroupServerPermissions.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default GroupServerPermissions;
