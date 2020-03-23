@@ -10,15 +10,15 @@ import { getMyServers } from "./util/api";
 
 class UserServerList extends React.Component {
   state = {
-    servers: []
+    servers: [],
   };
 
   componentDidMount() {
     getMyServers()
-      .then(servers => {
+      .then((servers) => {
         this.setState({ servers: servers });
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.code === 401 || err.code === 405) {
           this.setState({ hasError: true, error: err });
         }

@@ -23,7 +23,7 @@ import {
   getUser,
   editGroupMemberships,
   editUser,
-  editGroupServers
+  editGroupServers,
 } from "./util/api";
 var zxcvbn = require("zxcvbn");
 
@@ -43,7 +43,7 @@ class UserAdminDetails extends React.Component {
     has_two_factor: false,
     two_factor_can_be_disabled: false,
     pageError: false,
-    errors: { message: "" }
+    errors: { message: "" },
   };
   async componentDidMount() {
     const json = getUser(this.props.item_id);
@@ -60,46 +60,46 @@ class UserAdminDetails extends React.Component {
     }
   }
 
-  generatePassword = event => {
+  generatePassword = (event) => {
     var pass = generate({ length: 16, numbers: true, symbols: true });
     var passStrength = zxcvbn(pass);
     this.setState({
       password: pass,
-      password_strength: passStrength.score
+      password_strength: passStrength.score,
     });
   };
-  setTwoFactorRequired = event => {
+  setTwoFactorRequired = (event) => {
     this.setState({ require_two_factor: event.target.checked });
   };
-  setHasTwoFactor = event => {
+  setHasTwoFactor = (event) => {
     this.setState({ has_two_factor: event.target.checked });
   };
-  setAdmin = event => {
+  setAdmin = (event) => {
     this.setState({ is_admin: event.target.checked });
   };
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     this.setState({
       pageError: false,
-      errors: ""
+      errors: "",
     });
     this.setState({
-      [name]: event.target.value
+      [name]: event.target.value,
     });
     if (name === "name") {
       var letters = /^[A-Za-z0-9_]+$/;
       let username = event.target.value;
       if (username.match(letters)) {
         this.setState({
-          username_helper_text: ""
+          username_helper_text: "",
         });
       } else if (username.length === 0) {
         this.setState({
-          username_helper_text: "Username can not be blank."
+          username_helper_text: "Username can not be blank.",
         });
       } else {
         this.setState({
           username_helper_text:
-            "Username may only contain letters, numbers and underscores."
+            "Username may only contain letters, numbers and underscores.",
         });
       }
     }
@@ -107,14 +107,14 @@ class UserAdminDetails extends React.Component {
       var passStrength = zxcvbn(event.target.value);
       this.setState({
         password_strength: passStrength.score,
-        password_helper_text: passStrength.feedback.suggestions
+        password_helper_text: passStrength.feedback.suggestions,
       });
     }
   };
-  updateGroups = groups => {
+  updateGroups = (groups) => {
     this.setState({ groups: groups });
   };
-  updateServers = servers => {
+  updateServers = (servers) => {
     this.setState({ servers: servers });
   };
   handleSubmit = async () => {
@@ -129,7 +129,7 @@ class UserAdminDetails extends React.Component {
       username_helper_text,
       password_strength,
       require_two_factor,
-      has_two_factor
+      has_two_factor,
     } = this.state;
     if (
       username_helper_text === "" &&
@@ -174,7 +174,7 @@ class UserAdminDetails extends React.Component {
       require_two_factor,
       has_two_factor,
       two_factor_can_be_disabled,
-      is_admin
+      is_admin,
     } = this.state;
     return (
       <React.Fragment>
@@ -224,7 +224,7 @@ class UserAdminDetails extends React.Component {
                       <LockOpenIcon color="secondary" />
                     ))}
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>

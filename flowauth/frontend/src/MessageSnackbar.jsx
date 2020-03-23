@@ -21,33 +21,33 @@ const variantIcon = {
   success: CheckCircleIcon,
   warning: WarningIcon,
   error: ErrorIcon,
-  info: InfoIcon
+  info: InfoIcon,
 };
 
-const styles1 = theme => ({
+const styles1 = (theme) => ({
   success: {
-    backgroundColor: green[600]
+    backgroundColor: green[600],
   },
   error: {
-    backgroundColor: theme.palette.error.dark
+    backgroundColor: theme.palette.error.dark,
   },
   info: {
-    backgroundColor: theme.palette.primary.dark
+    backgroundColor: theme.palette.primary.dark,
   },
   warning: {
-    backgroundColor: amber[700]
+    backgroundColor: amber[700],
   },
   icon: {
-    fontSize: 20
+    fontSize: 20,
   },
   iconVariant: {
     opacity: 0.9,
-    marginRight: theme.spacing.unit
+    marginRight: theme.spacing.unit,
   },
   message: {
     display: "flex",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 });
 
 function MessageSnackbarContent(props) {
@@ -73,7 +73,7 @@ function MessageSnackbarContent(props) {
           onClick={onClose}
         >
           <CloseIcon className={classes.icon} />
-        </IconButton>
+        </IconButton>,
       ]}
       {...other}
     />
@@ -85,22 +85,22 @@ MessageSnackbarContent.propTypes = {
   className: PropTypes.string,
   message: PropTypes.node,
   onClose: PropTypes.func,
-  variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired
+  variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired,
 };
 
 const MessageSnackbarContentWrapper = withStyles(styles1)(
   MessageSnackbarContent
 );
 
-const styles2 = theme => ({
+const styles2 = (theme) => ({
   margin: {
-    margin: theme.spacing.unit
-  }
+    margin: theme.spacing.unit,
+  },
 });
 
 class MessageSnackbar extends React.Component {
   state = {
-    open: this.props.open
+    open: this.props.open,
   };
 
   handleClose = (event, reason) => {
@@ -118,7 +118,7 @@ class MessageSnackbar extends React.Component {
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left"
+          horizontal: "left",
         }}
         open={this.state.open}
         autoHideDuration={6000}
@@ -141,7 +141,7 @@ class MessageSnackbar extends React.Component {
 }
 
 MessageSnackbar.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles2)(MessageSnackbar);

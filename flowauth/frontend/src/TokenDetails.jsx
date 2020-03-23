@@ -16,16 +16,16 @@ import SubmitButtons from "./SubmitButtons";
 import WarningDialog from "./WarningDialog";
 import TokenPermission from "./TokenPermission";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
+    paddingBottom: theme.spacing.unit * 2,
   },
   heading: {
     fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.alignCenter
-  }
+    fontWeight: theme.typography.alignCenter,
+  },
 });
 class TokenDetails extends React.Component {
   constructor(props) {
@@ -41,7 +41,7 @@ class TokenDetails extends React.Component {
     name_helper_text: "",
     pageError: false,
     errors: { message: "" },
-    uiBlock: true
+    uiBlock: true,
   };
   completeToken = async () => {
     const { name, expiry, rights } = this.state;
@@ -62,48 +62,48 @@ class TokenDetails extends React.Component {
         pageError: true,
         errors: {
           message:
-            "Warning: no permissions will be granted by this token. Are you sure?"
-        }
+            "Warning: no permissions will be granted by this token. Are you sure?",
+        },
       });
     } else if (!name) {
       this.setState({
-        name_helper_text: "Token name cannot be blank."
+        name_helper_text: "Token name cannot be blank.",
       });
       this.scrollToRef(this.nameRef);
     }
   };
 
-  handleRightsChange = rights => this.setState({ rights: rights });
+  handleRightsChange = (rights) => this.setState({ rights: rights });
 
   unblockUI = () => this.setState({ uiBlock: false });
   uiReady = async () => {
     while (this.state.uiBlock) {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 2000));
     }
     return true;
   };
 
-  handleDateChange = date => {
+  handleDateChange = (date) => {
     this.setState({ expiry: date });
   };
 
-  scrollToRef = ref => ref.current.scrollIntoView();
+  scrollToRef = (ref) => ref.current.scrollIntoView();
 
-  handleNameChange = event => {
+  handleNameChange = (event) => {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
     if (name.match(letters)) {
       this.setState({
-        name_helper_text: ""
+        name_helper_text: "",
       });
     } else if (name.length === 0) {
       this.setState({
-        name_helper_text: "Token name cannot be blank."
+        name_helper_text: "Token name cannot be blank.",
       });
     } else {
       this.setState({
         name_helper_text:
-          "Token name may only contain letters, numbers and underscores."
+          "Token name may only contain letters, numbers and underscores.",
       });
     }
     this.setState({ name: event.target.value });
@@ -116,7 +116,7 @@ class TokenDetails extends React.Component {
         rights: (await rights).allowed_claims,
         permitted: (await rights).allowed_claims,
         expiry: (await rights).latest_expiry,
-        latest_expiry: (await rights).latest_expiry
+        latest_expiry: (await rights).latest_expiry,
       });
     } catch (err) {
       this.setState({ hasError: true, error: err });
@@ -132,7 +132,7 @@ class TokenDetails extends React.Component {
       name,
       name_helper_text,
       rights,
-      permitted
+      permitted,
     } = this.state;
     const { classes, onClick } = this.props;
 
@@ -196,7 +196,7 @@ class TokenDetails extends React.Component {
 }
 
 TokenDetails.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TokenDetails);

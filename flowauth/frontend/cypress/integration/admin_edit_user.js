@@ -2,19 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-describe("User management", function() {
+describe("User management", function () {
   Cypress.Cookies.debug(true);
 
-  beforeEach(function() {
+  beforeEach(function () {
     // Log in and navigate to user details screen
     cy.login_admin();
     cy.goto("/");
     cy.get("#user_list").click();
   });
-  it("Edit existing user password", function() {
-    const user_name = Math.random()
-      .toString(36)
-      .substring(2, 15);
+  it("Edit existing user password", function () {
+    const user_name = Math.random().toString(36).substring(2, 15);
     cy.get("#new").click();
     //Add new user with password
     cy.get("#username").type(user_name);
@@ -29,7 +27,7 @@ describe("User management", function() {
     cy.request("/signout");
     cy.request("POST", "/signin", {
       username: user_name,
-      password: "DUMMY_UPDATED_PASSWORD"
+      password: "DUMMY_UPDATED_PASSWORD",
     });
   });
 });

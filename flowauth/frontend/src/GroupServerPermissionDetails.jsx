@@ -11,7 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import {
   getGroupTimeLimits,
   getTimeLimits,
-  getGroupCapabilities
+  getGroupCapabilities,
 } from "./util/api";
 import GroupServerAccessRights from "./GroupServerAccessRights";
 
@@ -21,29 +21,29 @@ class GroupServerPermissionDetails extends React.Component {
     max_life: "",
     longest_token_life: "",
     server_latest_expiry: new Date(),
-    latest_expiry: new Date()
+    latest_expiry: new Date(),
   };
 
-  handleDateChange = date => {
+  handleDateChange = (date) => {
     const { server, updateServer } = this.props;
     this.setState({ latest_expiry: date });
     server["latest_expiry"] = new Date(date).toISOString();
     updateServer(server);
   };
 
-  handleTextChange = name => event => {
+  handleTextChange = (name) => (event) => {
     const { server, updateServer } = this.props;
     var val = parseInt(event.target.value, 10);
     if (val <= this.state.longest_token_life) {
       this.setState({
-        [name]: val
+        [name]: val,
       });
       server["max_life"] = val;
       updateServer(server);
     }
   };
 
-  handleRightsChange = rights => {
+  handleRightsChange = (rights) => {
     const { server, updateServer } = this.props;
     server["rights"] = rights;
     updateServer(server);
@@ -71,7 +71,7 @@ class GroupServerPermissionDetails extends React.Component {
       latest_expiry: limits.latest_token_expiry,
       max_life: limits.longest_token_life,
       longest_token_life: serverLimits.longest_token_life,
-      server_latest_expiry: serverLimits.latest_token_expiry
+      server_latest_expiry: serverLimits.latest_token_expiry,
     });
   }
 

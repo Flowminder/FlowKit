@@ -7,12 +7,12 @@ import GroupDetails from "./GroupDetails";
 import Lister from "./Lister";
 import { getGroups, deleteGroup } from "./util/api";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
-  }
+    paddingBottom: theme.spacing.unit * 2,
+  },
 });
 const GroupList = Lister(GroupDetails, "Groups", getGroups, deleteGroup);
 export default withStyles(styles)(GroupList);

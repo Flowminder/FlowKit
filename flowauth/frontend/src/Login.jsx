@@ -16,7 +16,7 @@ import LoginBox from "./LoginBox";
 import TwoFactorLoginBox from "./TwoFactorLoginBox";
 import TwoFactorConfirm from "./TwoFactorConfirm";
 
-const styles = theme => ({
+const styles = (theme) => ({
   layout: {
     width: "auto",
     display: "block", // Fix IE11 issue.
@@ -25,28 +25,29 @@ const styles = theme => ({
     [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
       width: 400,
       marginLeft: "auto",
-      marginRight: "auto"
-    }
+      marginRight: "auto",
+    },
   },
   root: {
     marginTop: theme.spacing.unit * 8,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
-      .spacing.unit * 3}px`
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${
+      theme.spacing.unit * 3
+    }px`,
   },
   avatar: {
     margin: theme.spacing.unit,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   form: {
     width: "100%", // Fix IE11 issue.
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing.unit,
   },
   submit: {
-    marginTop: theme.spacing.unit * 3
-  }
+    marginTop: theme.spacing.unit * 3,
+  },
 });
 
 class Login extends React.Component {
@@ -59,7 +60,7 @@ class Login extends React.Component {
       need_two_factor: false,
       require_two_factor_setup: false,
       hasError: false,
-      error: { message: "" }
+      error: { message: "" },
     };
   }
 
@@ -69,7 +70,7 @@ class Login extends React.Component {
     setLoggedIn(is_admin);
   };
 
-  handleSubmit = async event => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password, two_factor_code } = this.state;
     try {
@@ -77,7 +78,7 @@ class Login extends React.Component {
       if (json.require_two_factor_setup) {
         this.setState({
           require_two_factor_setup: true,
-          is_admin: json.is_admin
+          is_admin: json.is_admin,
         });
       } else {
         this.props.setLoggedIn(json.is_admin);
@@ -90,17 +91,17 @@ class Login extends React.Component {
           hasError: true,
           error: err,
           need_two_factor: false,
-          two_factor_code: ""
+          two_factor_code: "",
         });
       }
     }
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
       [event.target.id]: event.target.value,
       hasError: false,
-      error: { message: "" }
+      error: { message: "" },
     });
   };
 
@@ -131,7 +132,7 @@ class Login extends React.Component {
       two_factor_code,
       require_two_factor_setup,
       username,
-      password
+      password,
     } = this.state;
 
     return (
@@ -192,7 +193,7 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Login);

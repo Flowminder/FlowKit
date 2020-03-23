@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import { getVersion } from "./util/api";
 import PropTypes from "prop-types";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     position: "absolute",
     display: "block",
@@ -17,13 +17,13 @@ const styles = theme => ({
     right: 0,
     opacity: 0.8,
     zIndex: 1300,
-    padding: 2
-  }
+    padding: 2,
+  },
 });
 
 class Version extends React.Component {
   state = {
-    version: null
+    version: null,
   };
 
   async componentDidMount() {
@@ -47,7 +47,7 @@ class Version extends React.Component {
 }
 
 Version.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Version);

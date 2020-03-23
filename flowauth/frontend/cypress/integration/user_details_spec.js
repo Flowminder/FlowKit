@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 Cypress.Cookies.debug(true);
-describe("User details screen", function() {
+describe("User details screen", function () {
   var username, password;
 
-  beforeEach(function() {
+  beforeEach(function () {
     // Log in and navigate to user details screen
-    username = Math.random()
-      .toString(36)
-      .substring(2, 15);
+    username = Math.random().toString(36).substring(2, 15);
     password = "ORIGINAL_DUMMY_PASSWORD";
     cy.create_user_and_log_in(username, password)
       .log("Created user: " + username + ":" + password)
@@ -18,7 +16,7 @@ describe("User details screen", function() {
       .click();
   });
 
-  it("Change user password", function() {
+  it("Change user password", function () {
     // Change password
     cy.get("#oldPassword").type(password);
     cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
@@ -37,7 +35,7 @@ describe("User details screen", function() {
     cy.contains("My Servers");
   });
 
-  it("Display error when old password is incorrect", function() {
+  it("Display error when old password is incorrect", function () {
     // Attempt to change password with incorrect old password
     cy.get("#oldPassword").type("WRONG_PASSWORD");
     cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
@@ -51,7 +49,7 @@ describe("User details screen", function() {
     );
   });
 
-  it("Display error when passwords do not match", function() {
+  it("Display error when passwords do not match", function () {
     // Attempt to change password with non-matching new passwords
     cy.get("#oldPassword").type(password);
     cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
@@ -65,7 +63,7 @@ describe("User details screen", function() {
     );
   });
 
-  it("Display error when password is not complex enough", function() {
+  it("Display error when password is not complex enough", function () {
     // Attempt to change password to something too simple
     cy.get("#oldPassword").type(password);
     cy.get("#newPasswordA").type("PASSWORD");
@@ -79,31 +77,27 @@ describe("User details screen", function() {
     );
   });
 
-  it("Error dialog re-appears after closing if password wasn't changed", function() {
+  it("Error dialog re-appears after closing if password wasn't changed", function () {
     // Attempt to change password with incorrect old password
     cy.get("#oldPassword").type("WRONG_PASSWORD");
     cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
     cy.get("#newPasswordB").type("ANOTHER_DUMMY_PASSWORD");
     cy.contains("Save").click();
     // Close dialog for the first time
-    cy.contains("OK")
-      .click()
-      .should("not.exist");
+    cy.contains("OK").click().should("not.exist");
     // Check that dialog reappears if we try logging in again
     cy.contains("Save").click();
     cy.get("#error-dialog");
   });
 
-  it("Error dialog does not reappear when typing in input", function() {
+  it("Error dialog does not reappear when typing in input", function () {
     // Attempt to change password with incorrect old password
     cy.get("#oldPassword").type("WRONG_PASSWORD");
     cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
     cy.get("#newPasswordB").type("ANOTHER_DUMMY_PASSWORD");
     cy.contains("Save").click();
     // Close dialog
-    cy.contains("OK")
-      .click()
-      .should("not.exist");
+    cy.contains("OK").click().should("not.exist");
     // Check that dialog doesn't reappear when we type in the username input
     cy.get("#newPasswordA").type("_CHANGED");
     cy.get("#error-dialog").should("not.exist");

@@ -12,13 +12,13 @@ import { withStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
-    margin: theme.spacing.unit
+    margin: theme.spacing.unit,
   },
   codeBlock: {
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
-  }
+    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+  },
 });
 
 class BackupCodes extends React.Component {
@@ -26,10 +26,10 @@ class BackupCodes extends React.Component {
     hasError: false,
     pageError: false,
     errors: {},
-    backupsCollected: false
+    backupsCollected: false,
   };
 
-  copyToClipboard = event => {
+  copyToClipboard = (event) => {
     var textField = document.createElement("textarea");
     textField.style.whiteSpace = "pre-wrap";
     textField.value = this.props.backup_codes.join("\n");
@@ -42,7 +42,7 @@ class BackupCodes extends React.Component {
   downloadTxtFile = () => {
     const element = document.createElement("a");
     const file = new Blob([this.props.backup_codes.join("\n")], {
-      type: "text/plain"
+      type: "text/plain",
     });
     element.href = URL.createObjectURL(file);
     element.download = "two_factor_backups.txt";
@@ -144,6 +144,6 @@ class BackupCodes extends React.Component {
 }
 
 BackupCodes.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(BackupCodes);
