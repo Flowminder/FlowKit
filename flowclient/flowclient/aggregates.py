@@ -8,7 +8,7 @@ from typing import Union, Dict, List
 from merge_args import merge_args
 
 from flowclient.client import Connection
-from flowclient.query import Query
+from flowclient.api_query import APIQuery
 
 
 def location_event_counts_spec(
@@ -62,7 +62,7 @@ def location_event_counts_spec(
 
 
 @merge_args(location_event_counts_spec)
-def location_event_counts(*, connection: Connection, **kwargs) -> Query:
+def location_event_counts(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Return a location event counts query aggregated spatially and temporally.
     Counts are taken over between 00:01 of start_date up until 00:00 of end_date (i.e. exclusive date range).
@@ -90,10 +90,12 @@ def location_event_counts(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Location event counts query
     """
-    return Query(connection=connection, parameters=location_event_counts_spec(**kwargs))
+    return APIQuery(
+        connection=connection, parameters=location_event_counts_spec(**kwargs)
+    )
 
 
 def meaningful_locations_aggregate_spec(
@@ -193,7 +195,7 @@ def meaningful_locations_aggregate_spec(
 
 
 @merge_args(meaningful_locations_aggregate_spec)
-def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> Query:
+def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Return a count of meaningful locations at some unit of spatial aggregation.
     Generates clusters of towers used by subscribers over the given time period, scores the clusters based on the
@@ -252,7 +254,7 @@ def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> Query
 
     Returns
     -------
-    Query
+    APIQuery
         Meaningful locations aggregate query
 
     References
@@ -264,7 +266,7 @@ def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> Query
     -----
     Does not return any value below 15.
     """
-    return Query(
+    return APIQuery(
         connection=connection, parameters=meaningful_locations_aggregate_spec(**kwargs)
     )
 
@@ -370,7 +372,7 @@ def meaningful_locations_between_label_od_matrix_spec(
 @merge_args(meaningful_locations_between_label_od_matrix_spec)
 def meaningful_locations_between_label_od_matrix(
     *, connection: Connection, **kwargs
-) -> Query:
+) -> APIQuery:
     """
     Return an origin-destination matrix between two meaningful locations at some unit of spatial aggregation.
     Generates clusters of towers used by subscribers' over the given time period, scores the clusters based on the
@@ -429,7 +431,7 @@ def meaningful_locations_between_label_od_matrix(
 
     Returns
     -------
-    Query
+    APIQuery
         Meaningful locations between label OD matrix query
 
     Notes
@@ -441,7 +443,7 @@ def meaningful_locations_between_label_od_matrix(
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
-    return Query(
+    return APIQuery(
         connection=connection,
         parameters=meaningful_locations_between_label_od_matrix_spec(**kwargs),
     )
@@ -555,7 +557,7 @@ def meaningful_locations_between_dates_od_matrix_spec(
 @merge_args(meaningful_locations_between_dates_od_matrix_spec)
 def meaningful_locations_between_dates_od_matrix(
     *, connection: Connection, **kwargs
-) -> Query:
+) -> APIQuery:
     """
     Return an origin-destination matrix between one meaningful location in two time periods at some unit of spatial
     aggregation. This is analagous to performing a `flows` calculation.
@@ -619,7 +621,7 @@ def meaningful_locations_between_dates_od_matrix(
 
     Returns
     -------
-    Query
+    APIQuery
         Meaningful locations between dates OD matrix query
 
     Notes
@@ -631,7 +633,7 @@ def meaningful_locations_between_dates_od_matrix(
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
-    return Query(
+    return APIQuery(
         connection=connection,
         parameters=meaningful_locations_between_dates_od_matrix_spec(**kwargs),
     )
@@ -666,7 +668,7 @@ def flows_spec(
 
 
 @merge_args(flows_spec)
-def flows(*, connection: Connection, **kwargs) -> Query:
+def flows(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Flows between two locations.
 
@@ -681,11 +683,11 @@ def flows(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Flows query
 
     """
-    return Query(connection=connection, parameters=flows_spec(**kwargs))
+    return APIQuery(connection=connection, parameters=flows_spec(**kwargs))
 
 
 def unique_subscriber_counts_spec(
@@ -717,7 +719,7 @@ def unique_subscriber_counts_spec(
 
 
 @merge_args(unique_subscriber_counts_spec)
-def unique_subscriber_counts(*, connection: Connection, **kwargs) -> Query:
+def unique_subscriber_counts(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Return unique subscriber counts query
 
@@ -734,10 +736,10 @@ def unique_subscriber_counts(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Unique subscriber counts query
     """
-    return Query(
+    return APIQuery(
         connection=connection, parameters=unique_subscriber_counts_spec(**kwargs)
     )
 
@@ -774,7 +776,7 @@ def location_introversion_spec(
 
 
 @merge_args(location_introversion_spec)
-def location_introversion(*, connection: Connection, **kwargs) -> Query:
+def location_introversion(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Return location introversion query
 
@@ -793,10 +795,12 @@ def location_introversion(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Location introversion query
     """
-    return Query(connection=connection, parameters=location_introversion_spec(**kwargs))
+    return APIQuery(
+        connection=connection, parameters=location_introversion_spec(**kwargs)
+    )
 
 
 def total_network_objects_spec(
@@ -831,7 +835,7 @@ def total_network_objects_spec(
 
 
 @merge_args(total_network_objects_spec)
-def total_network_objects(*, connection: Connection, **kwargs) -> Query:
+def total_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Return total network objects query
 
@@ -850,10 +854,12 @@ def total_network_objects(*, connection: Connection, **kwargs) -> Query:
     
     Returns
     -------
-    Query
+    APIQuery
         Total network objects query
     """
-    return Query(connection=connection, parameters=total_network_objects_spec(**kwargs))
+    return APIQuery(
+        connection=connection, parameters=total_network_objects_spec(**kwargs)
+    )
 
 
 def aggregate_network_objects_spec(
@@ -887,7 +893,7 @@ def aggregate_network_objects_spec(
 
 
 @merge_args(aggregate_network_objects_spec)
-def aggregate_network_objects(*, connection: Connection, **kwargs) -> Query:
+def aggregate_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Return aggregate network objects query
 
@@ -904,10 +910,10 @@ def aggregate_network_objects(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Aggregate network objects query
     """
-    return Query(
+    return APIQuery(
         connection=connection, parameters=aggregate_network_objects_spec(**kwargs)
     )
 
@@ -930,7 +936,7 @@ def spatial_aggregate_spec(*, locations: Dict[str, Union[str, Dict[str, str]]]) 
 
 
 @merge_args(spatial_aggregate_spec)
-def spatial_aggregate(*, connection: Connection, **kwargs) -> Query:
+def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Spatially aggregated modal or daily location.
 
@@ -943,10 +949,10 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Spatial aggregate query
     """
-    return Query(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
+    return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
 
 
 def joined_spatial_aggregate_spec(
@@ -982,7 +988,7 @@ def joined_spatial_aggregate_spec(
 
 
 @merge_args(joined_spatial_aggregate_spec)
-def joined_spatial_aggregate(*, connection: Connection, **kwargs) -> Query:
+def joined_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     """
     Query for a metric aggregated by attaching location information.
 
@@ -999,9 +1005,9 @@ def joined_spatial_aggregate(*, connection: Connection, **kwargs) -> Query:
 
     Returns
     -------
-    Query
+    APIQuery
         Joined spatial aggregate query
     """
-    return Query(
+    return APIQuery(
         connection=connection, parameters=joined_spatial_aggregate_spec(**kwargs)
     )

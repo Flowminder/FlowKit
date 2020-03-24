@@ -16,9 +16,9 @@ from flowclient.client import (
 )
 
 
-class Query:
+class APIQuery:
     """
-    Representation of a FlowKit query, including parameters and result.
+    Representation of a FlowKit query.
 
     Parameters
     ----------
@@ -37,7 +37,6 @@ class Query:
     def __init__(self, *, connection: Connection, parameters: dict):
         self._connection = connection
         self.parameters = dict(parameters)
-        # TODO: Run query when it's created?
 
     def run(self) -> None:
         """

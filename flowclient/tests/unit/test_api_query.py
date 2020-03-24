@@ -5,7 +5,7 @@
 import pytest
 from unittest.mock import Mock
 
-from flowclient.query import Query
+from flowclient.api_query import APIQuery
 
 
 def test_query_run():
@@ -17,7 +17,7 @@ def test_query_run():
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
     )
     query_spec = {"query_kind": "dummy_query"}
-    query = Query(connection=connection_mock, parameters=query_spec)
+    query = APIQuery(connection=connection_mock, parameters=query_spec)
     assert not hasattr(query, "_query_id")
     query.run()
     connection_mock.post_json.assert_called_once_with(route="run", data=query_spec)
@@ -30,7 +30,9 @@ def test_can_get_query_connection():
     (e.g. so that token can be updated).
     """
     connection_mock = Mock()
-    query = Query(connection=connection_mock, parameters={"query_kind": "dummy_query"})
+    query = APIQuery(
+        connection=connection_mock, parameters={"query_kind": "dummy_query"}
+    )
     assert query.connection is connection_mock
 
 
@@ -39,7 +41,7 @@ def test_cannot_replace_query_connection():
     Test that 'connection' property does not allow setting a new connection
     (which could invalidate internal state)
     """
-    query = Query(connection=Mock(), parameters={"query_kind": "dummy_query"})
+    query = APIQuery(connection=Mock(), parameters={"query_kind": "dummy_query"})
     with pytest.raises(AttributeError, match="can't set attribute"):
         query.connection = "NEW_CONNECTION"
 
@@ -57,7 +59,9 @@ def test_query_status():
         "status": "executing",
         "progress": {"eligible": 0, "queued": 0, "running": 0},
     }
-    query = Query(connection=connection_mock, parameters={"query_kind": "dummy_query"})
+    query = APIQuery(
+        connection=connection_mock, parameters={"query_kind": "dummy_query"}
+    )
     query.run()
     assert query.status == "executing"
 
@@ -66,7 +70,7 @@ def test_query_status_not_running():
     """
     Test that the 'status' property returns 'not_running' if the query has not been set running.
     """
-    query = Query(connection=Mock(), parameters={"query_kind": "dummy_query"})
+    query = APIQuery(connection=Mock(), parameters={"query_kind": "dummy_query"})
     assert query.status == "not_running"
 
 
@@ -80,7 +84,9 @@ def test_wait_until_ready(monkeypatch):
     connection_mock.post_json.return_value = Mock(
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
     )
-    query = Query(connection=connection_mock, parameters={"query_kind": "dummy_query"})
+    query = APIQuery(
+        connection=connection_mock, parameters={"query_kind": "dummy_query"}
+    )
     query.run()
     query.wait_until_ready()
 
@@ -91,7 +97,7 @@ def test_wait_until_ready_raises():
     """
     Test that 'wait_until_ready' raises an error if the query has not been set running.
     """
-    query = Query(connection=Mock(), parameters={"query_kind": "dummy_query"})
+    query = APIQuery(connection=Mock(), parameters={"query_kind": "dummy_query"})
     with pytest.raises(FileNotFoundError):
         query.wait_until_ready()
 
@@ -110,7 +116,9 @@ def test_query_get_result_pandas(monkeypatch, format, function):
     connection_mock.post_json.return_value = Mock(
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
     )
-    query = Query(connection=connection_mock, parameters={"query_kind": "dummy_query"})
+    query = APIQuery(
+        connection=connection_mock, parameters={"query_kind": "dummy_query"}
+    )
     query.run()
     assert "DUMMY_RESULT" == query.get_result(format=format, poll_interval=2)
     get_result_mock.assert_called_once_with(
@@ -129,7 +137,7 @@ def test_query_get_result_runs(monkeypatch):
     connection_mock.post_json.return_value = Mock(
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
     )
-    query = Query(connection=connection_mock, parameters=query_spec)
+    query = APIQuery(connection=connection_mock, parameters=query_spec)
     query.get_result()
     connection_mock.post_json.assert_called_once_with(route="run", data=query_spec)
 
@@ -138,7 +146,7 @@ def test_query_get_result_invalid_format():
     """
     Test that get_result raises an error for format other than 'pandas' or 'geojson'.
     """
-    query = Query(
+    query = APIQuery(
         connection="DUMMY_CONNECTION", parameters={"query_kind": "dummy_query"}
     )
     with pytest.raises(ValueError):
