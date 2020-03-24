@@ -388,7 +388,7 @@ class Query(metaclass=ABCMeta):
         flowmachine_core.core.Table
             The stored version of this Query as a Table object
         """
-        return flowmachine.query_bases.table.Table(self.fully_qualified_table_name)
+        return flowmachine_core.query_bases.table.Table(self.fully_qualified_table_name)
 
     def union(self, other, all=True):
         """
