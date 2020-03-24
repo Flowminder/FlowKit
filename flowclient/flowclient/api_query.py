@@ -38,6 +38,9 @@ class APIQuery:
         self._connection = connection
         self.parameters = dict(parameters)
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__module__}.{self.__class__.__name__} object, connection={self.connection}, parameters={self.parameters}>"
+
     def run(self) -> None:
         """
         Set this query running in FlowKit
