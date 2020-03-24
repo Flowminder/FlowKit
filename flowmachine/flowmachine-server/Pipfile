@@ -16,6 +16,7 @@ asynctest = "*"
 approvaltests = "*"
 flowmachine-core = {editable = true,path = "./../flowmachine-core"}
 flowmachine-queries = {editable = true,path = "./../flowmachine-queries"}
+flowmachine-server = {editable=true,path="./"}
 
 [requires]
 python_version = "3.7"
