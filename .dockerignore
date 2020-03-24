@@ -16,13 +16,21 @@
 !docs/source/analyst/worked_examples/*.ipynb
 !docs/source/analyst/advanced_usage/worked_examples/*.ipynb
 
-!flowmachine/flowmachine
+
 !flowmachine/Pipfile*
-!flowmachine/setup.cfg
-!flowmachine/setup.py
-!flowmachine/README.md
-!flowmachine/versioneer.py
-!flowmachine/MANIFEST.in
+!flowmachine/flowmachine-core/flowmachine_core
+!flowmachine/flowmachine-core/setup.cfg
+!flowmachine/flowmachine-core/setup.py
+!flowmachine/flowmachine-core/README.md
+!flowmachine/flowmachine-core/versioneer.py
+!flowmachine/flowmachine-core/MANIFEST.in
+
+!flowmachine/flowmachine-queries/flowmachine_queries
+!flowmachine/flowmachine-queries/setup.cfg
+!flowmachine/flowmachine-queries/setup.py
+!flowmachine/flowmachine-queries/README.md
+!flowmachine/flowmachine-queries/versioneer.py
+!flowmachine/flowmachine-queries/MANIFEST.in
 
 !flowclient/flowclient
 !flowclient/Pipfile*

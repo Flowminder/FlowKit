@@ -84,7 +84,7 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,
     extras_require={"test": test_requirements},
-    python_require=">=3.7",
+    python_requires=">=3.7",
     include_package_data=True,
     zip_safe=False,
     platforms=["MacOS X", "Linux"],

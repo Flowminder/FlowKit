@@ -50,7 +50,7 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=["flowmachine-core", "flowmachine-queries", "flowmachine-server",],
-    python_require=">=3.7",
+    python_requires=">=3.7",
     include_package_data=True,
     zip_safe=False,
     platforms=["MacOS X", "Linux"],
