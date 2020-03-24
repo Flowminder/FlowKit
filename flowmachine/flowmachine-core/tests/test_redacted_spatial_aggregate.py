@@ -4,7 +4,7 @@
 from flowmachine_core.utility_queries.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
-from utility_queries.spatial_aggregate import SpatialAggregate
+from flowmachine_core.utility_queries.spatial_aggregate import SpatialAggregate
 
 
 def test_all_above_threshold(get_dataframe, redactable_locations):

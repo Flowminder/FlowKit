@@ -15,7 +15,7 @@ from flowmachine_core.query_bases.query import Query
 from flowmachine_core.core.mixins import GraphMixin
 from flowmachine_core.utility_queries.custom_query import CustomQuery
 from flowmachine_core.query_bases.table import Table
-from utility_queries.event_table_subset import EventTableSubset
+from flowmachine_core.utility_queries.event_table_subset import EventTableSubset
 
 
 def test_random_msisdn(get_dataframe):

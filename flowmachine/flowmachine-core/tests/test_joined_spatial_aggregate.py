@@ -10,7 +10,9 @@ import pytest
 
 from flowmachine_core.query_bases.spatial_unit import make_spatial_unit
 from flowmachine_core.query_bases.query import Query
-from utility_queries.joined_spatial_aggregate import JoinedSpatialAggregate
+from flowmachine_core.utility_queries.joined_spatial_aggregate import (
+    JoinedSpatialAggregate,
+)
 
 
 class Metric(Query):
