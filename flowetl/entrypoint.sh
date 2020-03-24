@@ -42,10 +42,10 @@ do
   SECRET_NAME=$(basename "$f")
   if [[ $f == *_FILE ]]
   then
-    echo "$f is a file secret. Setting ${SECRET_NAME%?????}=$f"
+    echo "$f is a file secret."
     export ${SECRET_NAME%?????}="$f"
   else
-    echo "Setting $SECRET_NAME=$(cat "$f")"
+    echo "Setting $SECRET_NAME"
     export $SECRET_NAME=$(cat "$f")
   fi
 done
