@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from asyncio import sleep
 from unittest.mock import Mock
 
 import pytest
@@ -21,7 +20,7 @@ from flowmachine_core.core.cache import reset_cache, get_query_object_by_id
 from marshmallow import Schema
 from flowmachine_server.query_info_lookup import QueryInfoLookup
 from flowmachine_server.query_schemas.flowmachine_query import get_schema
-from zmq_helpers import ZMQReplyStatus
+from flowmachine_server.zmq_helpers import ZMQReplyStatus
 
 
 def test_bad_action_handler():
