@@ -415,6 +415,78 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash) -F flowmachine_core_unit_tests
           when: always
 
+  run_flowmachine_queries_tests:
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "testdata"
+    working_directory: /home/circleci/project/flowmachine/flowmachine-queries
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - restore_cache:
+          key: flowmachine-queries-deps-2-{{ checksum "Pipfile.lock" }}
+
+      - run: pipenv install --dev
+      - save_cache:
+          key: flowmachine-queries-deps-2-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
+      - run:
+          name: Install graphviz
+          command: sudo apt-get install -y xvfb libgraphviz-dev graphviz
+      - run: *wait_for_flowdb
+      - run:
+          name: Run tests
+          command: |
+            pipenv run pytest \
+                      --junit-xml=test_results/pytest/results.xml \
+                      --cov flowmachine/ \
+                      --cov-report xml \
+                      --cov-report term \
+                      --durations=50
+      - store_test_results:
+          path: test_results
+      - run:
+          name: Upload coverage
+          command: bash <(curl -s https://codecov.io/bash) -F flowmachine_queries_unit_tests
+          when: always
+
+  run_flowmachine_server_tests:
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "testdata"
+    working_directory: /home/circleci/project/flowmachine/flowmachine-server
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - restore_cache:
+          key: flowmachine-server-deps-2-{{ checksum "Pipfile.lock" }}
+
+      - run: pipenv install --dev
+      - save_cache:
+          key: flowmachine-server-deps-2-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
+      - run:
+          name: Install graphviz
+          command: sudo apt-get install -y xvfb libgraphviz-dev graphviz
+      - run: *wait_for_flowdb
+      - run:
+          name: Run tests
+          command: |
+            pipenv run pytest \
+                      --junit-xml=test_results/pytest/results.xml \
+                      --cov flowmachine/ \
+                      --cov-report xml \
+                      --cov-report term \
+                      --durations=50
+      - store_test_results:
+          path: test_results
+      - run:
+          name: Upload coverage
+          command: bash <(curl -s https://codecov.io/bash) -F flowmachine_server_unit_tests
+          when: always
+
   run_flowdbsynth_tests:
     parameters:
       synthetic_data_generator:
@@ -805,7 +877,7 @@ jobs:
       - run: *wait_for_flowdb
       - run:
           name: Start flowmachine
-          command: FLOWMACHINE_LOG_LEVEL=debug pipenv run flowmachine
+          command: FLOWMACHINE_LOG_LEVEL=debug pipenv run flowmachine-server
           background: true
       - run:
           name: Start flowapi
@@ -970,6 +1042,14 @@ workflows:
           requires:
             - build_flowdb_testdata
           <<: *run_always_org_context
+      - run_flowmachine_server_tests:
+          requires:
+            - build_flowdb_testdata
+          <<: *run_always_org_context
+      - run_flowmachine_queries_tests:
+          requires:
+            - build_flowdb_testdata
+          <<: *run_always_org_context
       - run_flowdbsynth_tests:
           name: synth_data_python_generator_tests
           synthetic_data_generator: python
@@ -1099,6 +1179,8 @@ workflows:
             - build_flowclient_wheel
             - build_flowetl_wheel
             - run_flowmachine_core_tests
+            - run_flowmachine_queries_tests
+            - run_flowmachine_server_tests
             - run_autoflow_tests
             - build_autoflow
           <<: *master_only_org_context
@@ -1118,8 +1200,18 @@ workflows:
           requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - push_wheel:
-          name: push_flowmachine_wheel
-          project_name: flowmachine
+          name: push_flowmachine_core_wheel
+          project_name: flowmachine/flowmachine-core
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
+      - push_wheel:
+          name: push_flowmachine_server_wheel
+          project_name: flowmachine/flowmachine-server
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
+      - push_wheel:
+          name: push_flowmachine_queries_wheel
+          project_name: flowmachine/flowmachine-queries
           requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - build_docs:
