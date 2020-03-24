@@ -7,7 +7,7 @@
 Simple utility class that represents tables with geometry.
 """
 
-from core.mixins import GeoDataMixin
+from flowmachine_core.core.mixins import GeoDataMixin
 from flowmachine_core.query_bases.table import Table
 
 
