@@ -387,10 +387,14 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - attach_workspace:
-          at: /home/circleci/
       - restore_cache:
-          key: flowmachine-deps-2-{{ checksum "Pipfile.lock" }}
+          key: flowmachine-core-deps-2-{{ checksum "Pipfile.lock" }}
+
+      - run: pipenv install --dev
+      - save_cache:
+          key: flowmachine-core-deps-2-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
       - run:
           name: Install graphviz
           command: sudo apt-get install -y xvfb libgraphviz-dev graphviz
