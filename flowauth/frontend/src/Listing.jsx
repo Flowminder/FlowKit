@@ -11,12 +11,12 @@ import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import AdminListItem from "./AdminListItem";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
-  }
+    paddingBottom: theme.spacing.unit * 2,
+  },
 });
 
 class Listing extends React.Component {
@@ -29,11 +29,11 @@ class Listing extends React.Component {
       this.setState({ hasError: true, error: err });
     }
   }
-  rmObj = obj_id => {
+  rmObj = (obj_id) => {
     const { deleteAction } = this.props;
-    deleteAction(obj_id).then(json =>
+    deleteAction(obj_id).then((json) =>
       this.setState({
-        objs: this.state.objs.filter(obj => obj.id !== obj_id)
+        objs: this.state.objs.filter((obj) => obj.id !== obj_id),
       })
     );
   };
@@ -54,7 +54,7 @@ class Listing extends React.Component {
           <Typography component="h3">Name</Typography>
         </Grid>
         <Grid item xs={6} />
-        {objs.map(object => (
+        {objs.map((object) => (
           <AdminListItem
             name={object.name}
             id={object.id}
@@ -82,7 +82,7 @@ class Listing extends React.Component {
 }
 
 Listing.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Listing);

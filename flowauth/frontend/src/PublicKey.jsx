@@ -12,21 +12,21 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
+    paddingBottom: theme.spacing.unit * 2,
   },
   button: {
-    margin: theme.spacing.unit
+    margin: theme.spacing.unit,
   },
   gridRoot: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   codeBlock: {
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
-  }
+    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+  },
 });
 
 class PublicKey extends React.Component {
@@ -35,13 +35,13 @@ class PublicKey extends React.Component {
     try {
       const key = await getPublicKey();
       this.setState({
-        key: key.public_key
+        key: key.public_key,
       });
     } catch (err) {
       this.setState({ hasError: true, error: err });
     }
   }
-  copyToEncodedToClipboard = event => {
+  copyToEncodedToClipboard = (event) => {
     const textField = document.createElement("textarea");
     textField.style.whiteSpace = "pre-wrap";
     textField.value = window.btoa(this.state.key);
@@ -51,7 +51,7 @@ class PublicKey extends React.Component {
     textField.remove();
     this.setState({ copySuccess: "Copied!" });
   };
-  copyToClipboard = event => {
+  copyToClipboard = (event) => {
     const textField = document.createElement("textarea");
     textField.style.whiteSpace = "pre-wrap";
     textField.value = this.state.key;
@@ -146,7 +146,7 @@ class PublicKey extends React.Component {
 }
 
 PublicKey.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(PublicKey);

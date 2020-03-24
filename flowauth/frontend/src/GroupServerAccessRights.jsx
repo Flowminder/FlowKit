@@ -15,14 +15,16 @@ class GroupServerAccessRights extends React.Component {
     rights: [],
     enabledRights: [],
     fullRights: [],
-    errors: { message: "" }
+    errors: { message: "" },
   };
 
-  handleRightsChange = value => {
+  handleRightsChange = (value) => {
     const { parentUpdate } = this.props;
     this.setState({ enabledRights: value });
     const { fullRights } = this.state;
-    parentUpdate(fullRights.filter(r => value.some(cur => r.startsWith(cur))));
+    parentUpdate(
+      fullRights.filter((r) => value.some((cur) => r.startsWith(cur)))
+    );
   };
 
   async componentDidMount() {
@@ -30,7 +32,7 @@ class GroupServerAccessRights extends React.Component {
     const groupCapabilities = await getGroupCapabilities(serverId, groupId);
     const serverCapabilities = await getCapabilities(serverId);
     const scopesObj = {};
-    Object.keys(serverCapabilities).forEach(sCap => {
+    Object.keys(serverCapabilities).forEach((sCap) => {
       if (serverCapabilities[sCap]) {
         scopesObj[sCap] = groupCapabilities.includes(sCap);
       }
@@ -41,14 +43,14 @@ class GroupServerAccessRights extends React.Component {
     const scopes = jsonify(
       scopeGraph,
       [],
-      Object.keys(scopesObj).filter(k => scopesObj[k]),
+      Object.keys(scopesObj).filter((k) => scopesObj[k]),
       enabledKeys
     );
 
     this.setState({
       rights: scopes,
       fullRights: Object.keys(scopesObj),
-      enabledRights: enabledKeys
+      enabledRights: enabledKeys,
     });
   }
 

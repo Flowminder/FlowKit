@@ -8,14 +8,14 @@ import Picker from "./Picker";
 
 class GroupServerPicker extends React.Component {
   state = {
-    all_servers: []
+    all_servers: [],
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.props.updateServers(event.target.value);
   };
 
-  deleteServer = del => {
+  deleteServer = (del) => {
     const servers = [...this.props.servers];
     const serverToDelete = this.props.servers.indexOf(del);
     servers.splice(serverToDelete, 1);
@@ -26,10 +26,10 @@ class GroupServerPicker extends React.Component {
     var all_servers;
     const { servers } = this.props;
     getServers()
-      .then(json => {
+      .then((json) => {
         all_servers = json;
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.code === 404) {
           all_servers = [];
         } else {
@@ -38,14 +38,14 @@ class GroupServerPicker extends React.Component {
       })
       .then(() => {
         this.setState({
-          all_servers: all_servers.map(server => {
-            var groupHas = servers.map(s => s.id);
+          all_servers: all_servers.map((server) => {
+            var groupHas = servers.map((s) => s.id);
             var inList = groupHas.indexOf(server.id);
             return inList !== -1 ? servers[inList] : server;
-          })
+          }),
         });
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({ hasError: true, error: err });
       });
   };

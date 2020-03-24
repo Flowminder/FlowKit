@@ -14,14 +14,16 @@ class TokenPermission extends React.Component {
     rights: [],
     enabledRights: [],
     fullRights: [],
-    errors: { message: "" }
+    errors: { message: "" },
   };
 
-  handleRightsChange = value => {
+  handleRightsChange = (value) => {
     const { parentUpdate } = this.props;
     this.setState({ enabledRights: value });
     const { fullRights } = this.state;
-    parentUpdate(fullRights.filter(r => value.some(cur => r.startsWith(cur))));
+    parentUpdate(
+      fullRights.filter((r) => value.some((cur) => r.startsWith(cur)))
+    );
   };
 
   async componentDidMount() {
@@ -37,7 +39,7 @@ class TokenPermission extends React.Component {
       const scopes = jsonify(
         scopeGraph,
         [],
-        Object.keys(scopesObj).filter(k => scopesObj[k]),
+        Object.keys(scopesObj).filter((k) => scopesObj[k]),
         enabledKeys
       );
       parentUpdate(Object.keys(scopesObj));
@@ -45,7 +47,7 @@ class TokenPermission extends React.Component {
       this.setState({
         rights: scopes,
         fullRights: Object.keys(scopesObj),
-        enabledRights: enabledKeys
+        enabledRights: enabledKeys,
       });
       if (unblock) {
         console.log(rights);

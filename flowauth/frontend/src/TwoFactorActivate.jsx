@@ -16,10 +16,10 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
-    margin: theme.spacing.unit
-  }
+    margin: theme.spacing.unit,
+  },
 });
 
 class TwoFactorActivate extends React.Component {
@@ -27,10 +27,10 @@ class TwoFactorActivate extends React.Component {
     hasError: false,
     pageError: false,
     errors: {},
-    activating: false
+    activating: false,
   };
 
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     this.setState({ two_factor_code: event.target.value, pageError: false });
   };
 
@@ -60,7 +60,7 @@ class TwoFactorActivate extends React.Component {
       secret,
       two_factor_code,
       cancel,
-      classes
+      classes,
     } = this.props;
     if (this.state.hasError) throw this.state.error;
 
@@ -144,6 +144,6 @@ class TwoFactorActivate extends React.Component {
 }
 
 TwoFactorActivate.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(TwoFactorActivate);

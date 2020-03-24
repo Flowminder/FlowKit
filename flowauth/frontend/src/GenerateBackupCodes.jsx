@@ -13,7 +13,7 @@ class GenerateBackupCodes extends React.Component {
     backup_codes_signature: "",
     hasError: false,
     pageError: false,
-    errors: {}
+    errors: {},
   };
   async componentDidMount() {
     try {

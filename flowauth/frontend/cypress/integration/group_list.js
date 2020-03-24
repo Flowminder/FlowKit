@@ -2,21 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-describe("Group list screen", function() {
+describe("Group list screen", function () {
   Cypress.Cookies.debug(true);
 
-  beforeEach(function() {
+  beforeEach(function () {
     // Log in and navigate to user details screen
     cy.login_admin();
     cy.goto("/");
     cy.get("#group_admin").click();
   });
-  it("Add blank group", function() {
+  it("Add blank group", function () {
     cy.get("#new").click();
     //adding blank groupname
-    cy.get("#name")
-      .type(" ")
-      .clear();
+    cy.get("#name").type(" ").clear();
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
@@ -25,7 +23,7 @@ describe("Group list screen", function() {
     cy.get("#name").type("TEST_GROUP");
     cy.contains("#name-helper-text").should("not.exist");
   });
-  it("Add group name with space", function() {
+  it("Add group name with space", function () {
     cy.get("#new").click();
     //adding groupname with space
     cy.get("#name").type("Group ");
@@ -34,13 +32,11 @@ describe("Group list screen", function() {
       "have.text",
       "Group name may only contain letters, numbers and underscores."
     );
-    cy.get("#name")
-      .type(" ")
-      .clear();
+    cy.get("#name").type(" ").clear();
     cy.get("#name").type("TEST_GROUP");
     cy.contains("#name-helper-text").should("not.exist");
   });
-  it("Add duplicate group name", function() {
+  it("Add duplicate group name", function () {
     cy.get("#new").click();
     //adding existing username and new password
     cy.get("#name").type("Test_Group");
@@ -54,11 +50,9 @@ describe("Group list screen", function() {
     cy.contains("#error-dialog").should("not.exist");
   });
 
-  it("Add group", function() {
+  it("Add group", function () {
     // Add a new group
-    const group_name = Math.random()
-      .toString(36)
-      .substring(2, 15);
+    const group_name = Math.random().toString(36).substring(2, 15);
     cy.contains(group_name).should("not.exist");
     cy.get("#new").click();
     cy.get("#name").type(group_name);
@@ -67,13 +61,11 @@ describe("Group list screen", function() {
     cy.contains(group_name).should("be.visible");
   });
 
-  it("Delete group", function() {
+  it("Delete group", function () {
     // Create the group
     const group_name =
-      Math.random()
-        .toString(36)
-        .substring(2, 15) + "_TO_DELETE";
-    cy.create_group(group_name).then(group => {
+      Math.random().toString(36).substring(2, 15) + "_TO_DELETE";
+    cy.create_group(group_name).then((group) => {
       console.log("Group " + group);
       // Reload the groups page
       cy.goto("/");
@@ -85,12 +77,10 @@ describe("Group list screen", function() {
     });
   });
 
-  it("Edit group", function() {
+  it("Edit group", function () {
     const group_name =
-      Math.random()
-        .toString(36)
-        .substring(2, 15) + "_TO_BE_EDITED";
-    cy.create_group(group_name).then(group => {
+      Math.random().toString(36).substring(2, 15) + "_TO_BE_EDITED";
+    cy.create_group(group_name).then((group) => {
       console.log("Group " + group);
 
       // Reload the groups page

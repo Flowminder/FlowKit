@@ -17,17 +17,17 @@ import {
   editServerCapabilities,
   getCapabilities,
   getServer,
-  getTimeLimits
+  getTimeLimits,
 } from "./util/api";
 import RightsCascade from "./RightsCascade";
 import { jsonify, scopesGraph } from "./util/util";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
-    margin: theme.spacing.unit
-  }
+    margin: theme.spacing.unit,
+  },
 });
 
 class ServerAdminDetails extends React.Component {
@@ -44,12 +44,12 @@ class ServerAdminDetails extends React.Component {
       key_helper_text: "",
       maxlife_helper_text: "",
       pageError: false,
-      errors: { message: "" }
+      errors: { message: "" },
     };
 
     this.fileReader = new FileReader();
 
-    this.fileReader.onload = event => {
+    this.fileReader.onload = (event) => {
       const parsedSpec = JSON.parse(event.target.result);
       const specScopes = parsedSpec["components"]["securitySchemes"]["token"][
         "x-security-scopes"
@@ -68,7 +68,8 @@ class ServerAdminDetails extends React.Component {
         scopeGraph: scopeGraph,
         fullRights: Object.keys(specScopes),
         enabledRights: enabledKeys,
-        name: parsedSpec["components"]["securitySchemes"]["token"]["x-audience"]
+        name:
+          parsedSpec["components"]["securitySchemes"]["token"]["x-audience"],
       });
     };
   }
@@ -86,14 +87,14 @@ class ServerAdminDetails extends React.Component {
       enabledRights,
       name_helper_text,
       key_helper_text,
-      maxlife_helper_text
+      maxlife_helper_text,
     } = this.state;
     const { item_id, onClick } = this.props;
 
     const rightsObjs = fullRights.reduce(
       (obj, cur) => ({
         ...obj,
-        [cur]: enabledRights.some(r => cur.startsWith(r))
+        [cur]: enabledRights.some((r) => cur.startsWith(r)),
       }),
       {}
     );
@@ -126,32 +127,32 @@ class ServerAdminDetails extends React.Component {
     }
   };
 
-  handleDateChange = date => {
+  handleDateChange = (date) => {
     this.setState({ latest_expiry: date });
   };
 
-  handleRightsChange = value => {
+  handleRightsChange = (value) => {
     this.setState({ enabledRights: value });
   };
 
-  handleTextChange = name => event => {
+  handleTextChange = (name) => (event) => {
     this.setState({
       pageError: false,
-      errors: ""
+      errors: "",
     });
     this.setState({
-      [name]: event.target.value
+      [name]: event.target.value,
     });
 
     if (name === "max_life") {
       let maxlife = event.target.value;
       if (maxlife.length === 0) {
         this.setState({
-          maxlife_helper_text: "Maximum lifetime minutes can not be blank."
+          maxlife_helper_text: "Maximum lifetime minutes can not be blank.",
         });
       } else {
         this.setState({
-          maxlife_helper_text: ""
+          maxlife_helper_text: "",
         });
       }
     }
@@ -173,7 +174,7 @@ class ServerAdminDetails extends React.Component {
         const scopes = jsonify(
           scopeGraph,
           [],
-          Object.keys(rights).filter(k => rights[k]),
+          Object.keys(rights).filter((k) => rights[k]),
           enabledKeys
         );
         const serverName = (await getServer(item_id)).name;
@@ -192,7 +193,7 @@ class ServerAdminDetails extends React.Component {
                 ? enabledKeys
                 : state.enabledRights,
             latest_expiry: latestExpiry,
-            max_life: maxLife
+            max_life: maxLife,
           };
         });
       } catch (err) {
@@ -227,7 +228,7 @@ class ServerAdminDetails extends React.Component {
             id="spec-upload-button"
             type="file"
             style={{ display: "none" }}
-            onChange={event => {
+            onChange={(event) => {
               this.fileReader.readAsText(event.target.files[0]);
             }}
           />
@@ -308,6 +309,6 @@ class ServerAdminDetails extends React.Component {
   }
 }
 ServerAdminDetails.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(ServerAdminDetails);

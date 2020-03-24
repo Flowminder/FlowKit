@@ -12,22 +12,22 @@ import AddIcon from "@material-ui/icons/Add";
 import Token from "./Token";
 import { getMyTokensForServer } from "./util/api";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2
-  }
+    paddingBottom: theme.spacing.unit * 2,
+  },
 });
 
 class TokenList extends React.Component {
   state = { tokens: [] };
   componentDidMount() {
     getMyTokensForServer(this.props.serverID)
-      .then(tokens => {
+      .then((tokens) => {
         this.setState({ tokens: tokens });
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({ hasError: true, error: err });
       });
   }
@@ -48,7 +48,7 @@ class TokenList extends React.Component {
           <Typography component="h3">Expiry</Typography>
         </Grid>
         <Grid item xs={7} />
-        {tokens.map(object => (
+        {tokens.map((object) => (
           <Token
             name={object.name}
             expiry={object.expires}
@@ -74,7 +74,7 @@ class TokenList extends React.Component {
 }
 
 TokenList.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TokenList);

@@ -12,23 +12,23 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
-    maxWidth: 300
+    maxWidth: 300,
   },
   chips: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   chip: {
-    margin: theme.spacing.unit / 4
-  }
+    margin: theme.spacing.unit / 4,
+  },
 });
 
 const ITEM_HEIGHT = 48;
@@ -37,9 +37,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+      width: 250,
+    },
+  },
 };
 
 class Picker extends React.Component {
@@ -52,7 +52,7 @@ class Picker extends React.Component {
       hasError,
       error,
       handleChange,
-      label
+      label,
     } = this.props;
     if (hasError) throw error;
     return (
@@ -64,9 +64,9 @@ class Picker extends React.Component {
             value={objs}
             onChange={handleChange}
             input={<Input id="select-multiple-chip" />}
-            renderValue={selected => (
+            renderValue={(selected) => (
               <div className={classes.chips}>
-                {selected.map(value => (
+                {selected.map((value) => (
                   <Chip
                     key={value.id}
                     label={value.name}
@@ -77,7 +77,7 @@ class Picker extends React.Component {
             )}
             MenuProps={MenuProps}
           >
-            {all_objs.map(obj => (
+            {all_objs.map((obj) => (
               <MenuItem
                 key={obj.id}
                 value={obj}
@@ -86,7 +86,7 @@ class Picker extends React.Component {
                   fontWeight:
                     objs.indexOf(obj) === -1
                       ? theme.typography.fontWeightRegular
-                      : theme.typography.fontWeightMedium
+                      : theme.typography.fontWeightMedium,
                 }}
               >
                 {obj.name}
@@ -101,7 +101,7 @@ class Picker extends React.Component {
 
 Picker.propTypes = {
   classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired
+  theme: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles, { withTheme: true })(Picker);

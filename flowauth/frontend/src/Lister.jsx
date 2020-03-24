@@ -11,12 +11,12 @@ function Lister(DetailComponent, kind, get_fn, delete_fn) {
   return class extends React.Component {
     state = {
       editing: false,
-      editing_item: null
+      editing_item: null,
     };
-    toggleEdit = item_id => {
+    toggleEdit = (item_id) => {
       this.setState({
         editing: !this.state.editing,
-        editing_item: item_id
+        editing_item: item_id,
       });
     };
 

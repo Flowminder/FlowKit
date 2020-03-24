@@ -3,16 +3,16 @@ import Typography from "@material-ui/core/Typography";
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
-    margin: theme.spacing.unit
+    margin: theme.spacing.unit,
   },
   codeBlock: {
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
-  }
+    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+  },
 });
 class BackupCodesBlock extends React.Component {
-  renderBackupCode = code => {
+  renderBackupCode = (code) => {
     return (
       <Grid item xs={6}>
         <Typography
@@ -34,13 +34,13 @@ class BackupCodesBlock extends React.Component {
     const { backup_codes } = this.props;
     return (
       <Grid item xs={4} container direction="row">
-        {backup_codes.map(code => this.renderBackupCode(code))}
+        {backup_codes.map((code) => this.renderBackupCode(code))}
       </Grid>
     );
   }
 }
 
 BackupCodesBlock.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(BackupCodesBlock);
