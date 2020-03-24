@@ -27,7 +27,7 @@ class DFSTotalMetricAmountSchema(Schema):
 
 
 class DFSTotalMetricAmountExposed(BaseExposedQuery):
-    def __init__(self, *, metric, start_date, end_date, aggregation_unit):
+    def __init__(self, *, metric, start_date, end_date, aggregation_unit, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.metric = metric

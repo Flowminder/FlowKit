@@ -28,7 +28,7 @@ class TotalNetworkObjectsSchema(Schema):
 
 
 class TotalNetworkObjectsExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit, total_by):
+    def __init__(self, *, start_date, end_date, aggregation_unit, total_by, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date

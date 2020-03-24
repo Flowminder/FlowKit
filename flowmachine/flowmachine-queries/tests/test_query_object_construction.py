@@ -268,7 +268,7 @@ def test_construct_query(diff_reporter):
     ]
 
     def get_query_id_for_query_spec(query_spec):
-        return schemas[query_spec.pop("query_kind")]().load(query_spec).query_id
+        return schemas[query_spec.get("query_kind")]().load(query_spec).query_id
 
     query_ids_and_specs_as_json_string = json.dumps(
         {get_query_id_for_query_spec(spec): spec for spec in query_specs_to_test},

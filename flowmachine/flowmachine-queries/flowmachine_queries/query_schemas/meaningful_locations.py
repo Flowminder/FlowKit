@@ -118,6 +118,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
         subscriber_subset: Union[dict, None] = None,
+        **kwargs,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -200,6 +201,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
         subscriber_subset: Union[dict, None] = None,
+        **kwargs,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -288,6 +290,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
         subscriber_subset: Union[dict, None] = None,
+        **kwargs,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.

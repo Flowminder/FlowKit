@@ -31,7 +31,7 @@ class LocationIntroversionSchema(Schema):
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit, direction):
+    def __init__(self, *, start_date, end_date, aggregation_unit, direction, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date

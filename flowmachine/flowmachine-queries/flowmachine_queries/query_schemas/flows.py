@@ -36,7 +36,7 @@ class FlowsSchema(Schema):
 
 
 class FlowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location):
+    def __init__(self, *, from_location, to_location, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.from_location = from_location

@@ -46,7 +46,8 @@ class LocationEventCountsExposed(BaseExposedQuery):
         direction,
         event_types,
         aggregation_unit,
-        subscriber_subset=None
+        subscriber_subset=None,
+        **kwargs
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.

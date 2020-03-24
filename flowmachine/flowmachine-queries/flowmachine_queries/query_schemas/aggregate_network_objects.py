@@ -34,7 +34,7 @@ class AggregateNetworkObjectsSchema(Schema):
 
 
 class AggregateNetworkObjectsExposed(BaseExposedQuery):
-    def __init__(self, *, total_network_objects, statistic, aggregate_by):
+    def __init__(self, *, total_network_objects, statistic, aggregate_by, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.total_network_objects = total_network_objects

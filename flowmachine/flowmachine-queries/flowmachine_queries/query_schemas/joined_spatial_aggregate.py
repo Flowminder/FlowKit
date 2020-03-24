@@ -89,7 +89,7 @@ class JoinedSpatialAggregateSchema(Schema):
 
 
 class JoinedSpatialAggregateExposed(BaseExposedQuery):
-    def __init__(self, *, locations, metric, method):
+    def __init__(self, *, locations, metric, method, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations

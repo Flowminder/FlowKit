@@ -28,7 +28,7 @@ class UniqueSubscriberCountsSchema(Schema):
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit):
+    def __init__(self, *, start_date, end_date, aggregation_unit, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date

@@ -23,7 +23,7 @@ class GeographySchema(Schema):
 
 
 class GeographyExposed(BaseExposedQuery):
-    def __init__(self, *, aggregation_unit):
+    def __init__(self, *, aggregation_unit, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.aggregation_unit = aggregation_unit

@@ -30,7 +30,7 @@ class DummyQuerySchema(Schema):
 
 
 class DummyQueryExposed(BaseExposedQuery):
-    def __init__(self, dummy_param, aggregation_unit, dummy_delay):
+    def __init__(self, dummy_param, aggregation_unit, dummy_delay, **kwargs):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.dummy_param = dummy_param
