@@ -111,7 +111,7 @@ def test_wait_until_ready_raises():
 )
 def test_query_get_result_pandas(monkeypatch, format, function):
     get_result_mock = Mock(return_value="DUMMY_RESULT")
-    monkeypatch.setattr(f"flowclient.query.{function}", get_result_mock)
+    monkeypatch.setattr(f"flowclient.api_query.{function}", get_result_mock)
     connection_mock = Mock()
     connection_mock.post_json.return_value = Mock(
         status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
@@ -131,7 +131,7 @@ def test_query_get_result_runs(monkeypatch):
     Test that get_result runs the query if it's not already running.
     """
     get_result_mock = Mock(return_value="DUMMY_RESULT")
-    monkeypatch.setattr(f"flowclient.query.get_result_by_query_id", get_result_mock)
+    monkeypatch.setattr(f"flowclient.api_query.get_result_by_query_id", get_result_mock)
     connection_mock = Mock()
     query_spec = {"query_kind": "dummy_query"}
     connection_mock.post_json.return_value = Mock(
