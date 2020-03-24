@@ -35,6 +35,8 @@ services:
     secrets:
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - FLOWETL_AIRFLOW_ADMIN_USERNAME
+      - FLOWETL_AIRFLOW_ADMIN_PASSWORD
     ports:
       - ${FLOWETL_HOST_PORT:?}:8080
     volumes:
@@ -45,7 +47,7 @@ services:
       - flowdb
       - flowetl_airflow_db
 
-  flowetl_airflow_db:
+  flowetl_db:
     image: postgres:11
     tty: true
     stdin_open: true
