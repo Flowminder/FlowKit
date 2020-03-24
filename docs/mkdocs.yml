@@ -7,15 +7,15 @@ edit_uri: ""
 plugins:
   - mktheapidocs:
       modules:
-        flowmachine:
-          section: flowmachine_core
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine_core/flowmachine_core-core"
+        flowmachine-core:
+          section: flowmachine-core
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine-core/flowmachine_core"
         flowmachine-queries:
-          section: flowmachine_core-queries
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine_core/flowmachine_core-queries"
+          section: flowmachine-queries
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine-queries/flowmachine_queries"
         flowmachine-server:
-          section: flowmachine_core-server
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine_core/flowmachine_core-server"
+          section: flowmachine-server
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine-server/flowmachine_server"
         flowclient:
           section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowclient"
@@ -50,9 +50,9 @@ nav:
   - Developers:
       - developer/index.md
       - developer/dev_environment_setup.md
-      - api-docs-flowmachine_core
-      - api-docs-flowmachine_core-queries
-      - api-docs-flowmachine_core-server
+      - api-docs-flowmachine-core
+      - api-docs-flowmachine-queries
+      - api-docs-flowmachine-server
       - FlowAPI specification: developer/api-spec.html
       - Architectural Decision Records (ADR):
         - developer/adr/README.md
