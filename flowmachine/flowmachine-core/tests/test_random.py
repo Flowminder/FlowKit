@@ -14,7 +14,7 @@ import pickle
 from flowmachine_core.query_bases.query import Query
 from flowmachine_core.core.mixins import GraphMixin
 from flowmachine_core.utility_queries.custom_query import CustomQuery
-from query_bases.table import Table
+from flowmachine_core.query_bases.table import Table
 from utility_queries.event_table_subset import EventTableSubset
 
 

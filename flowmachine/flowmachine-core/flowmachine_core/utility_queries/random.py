@@ -9,8 +9,8 @@ import random
 from typing import List, Optional, Dict, Any, Type, Tuple
 from abc import ABCMeta, abstractmethod
 
-from query_bases.query import Query
-from query_bases.table import Table
+from flowmachine_core.query_bases.query import Query
+from flowmachine_core.query_bases.table import Table
 
 
 class _RandomGetter:

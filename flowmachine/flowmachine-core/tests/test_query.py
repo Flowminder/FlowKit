@@ -11,7 +11,7 @@ from typing import List
 import pytest
 from sqlalchemy.exc import ProgrammingError
 
-from query_bases.query import Query
+from flowmachine_core.query_bases.query import Query
 
 
 def test_bad_sql_logged_and_raised(caplog):

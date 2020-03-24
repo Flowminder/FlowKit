@@ -30,7 +30,7 @@ from flowmachine_core.core.query_state import QueryStateMachine, QueryEvent
 from flowmachine_core import __version__
 
 if TYPE_CHECKING:
-    from query_bases.query import Query
+    from flowmachine_core.query_bases.query import Query
     from .connection import Connection
 
 import structlog

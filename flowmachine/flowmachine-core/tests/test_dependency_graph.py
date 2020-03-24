@@ -12,7 +12,7 @@ import IPython
 from io import StringIO
 
 from flowmachine_core.utility_queries.custom_query import CustomQuery
-from query_bases.dummy_query import DummyQuery
+from flowmachine_core.query_bases.dummy_query import DummyQuery
 from flowmachine_core.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine_core.utility_queries.event_table_subset import EventTableSubset
 

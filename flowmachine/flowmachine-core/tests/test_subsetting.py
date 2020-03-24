@@ -8,7 +8,7 @@ Tests the check the queries subset method.
 import pandas as pd
 import pytest
 
-from query_bases.table import Table
+from flowmachine_core.query_bases.table import Table
 
 
 def test_can_numsubset_with_low_and_high(get_dataframe):

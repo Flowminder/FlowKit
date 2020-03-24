@@ -11,7 +11,7 @@ import time
 
 import pytest
 
-import flowmachine
+import flowmachine_core
 from flowmachine_core.query_bases.query import Query
 from flowmachine_core.core.context import get_redis, get_db
 from flowmachine_core.core.errors.flowmachine_errors import (
@@ -20,7 +20,6 @@ from flowmachine_core.core.errors.flowmachine_errors import (
     QueryResetFailedException,
 )
 from flowmachine_core.core.query_state import QueryStateMachine, QueryState, QueryEvent
-import flowmachine.utils
 
 
 class DummyQuery(Query):
@@ -58,7 +57,7 @@ def test_blocks(blocking_state, monkeypatch, dummy_redis):
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, blocking_state)
     monkeypatch.setattr(
-        flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
+        flowmachine_core.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
 
     with pytest.raises(BlockingIOError):
@@ -69,7 +68,7 @@ def test_no_limit_on_blocks(monkeypatch):
     """Test that even with a large number of queries, starting a store op will block calls to get_query."""
 
     monkeypatch.setattr(
-        flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
+        flowmachine_core.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
     dummies = [DummyQuery(dummy_id=x) for x in range(50)]
     [dummy.store() for dummy in dummies]
@@ -84,7 +83,7 @@ def test_non_blocking(monkeypatch):
     dummies = [DummyQuery(dummy_id=x) for x in range(50)]
     [dummy.store() for dummy in dummies]
     monkeypatch.setattr(
-        flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
+        flowmachine_core.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
 
     with pytest.raises(BlockingIOError):
@@ -105,7 +104,7 @@ def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redi
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, non_blocking_state)
     monkeypatch.setattr(
-        flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
+        flowmachine_core.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
 
     try:
@@ -157,7 +156,7 @@ def test_store_exceptions(fail_event, expected_exception):
 def test_drop_query_blocks(monkeypatch):
     """Test that resetting a query's cache will block if that's already happening."""
     monkeypatch.setattr(
-        flowmachine.query_bases.query, "_sleep", Mock(side_effect=BlockingIOError)
+        flowmachine_core.query_bases.query, "_sleep", Mock(side_effect=BlockingIOError)
     )
     q = DummyQuery(dummy_id=1, sleep_time=5)
     qsm = QueryStateMachine(get_redis(), q.query_id, get_db().conn_id)

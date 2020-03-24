@@ -13,7 +13,7 @@ from flowmachine_core.core.cache import (
     write_cache_metadata,
 )
 from flowmachine_core.core.context import get_db
-from query_bases.query import Query
+from flowmachine_core.query_bases.query import Query
 
 
 def test_table_records_removed(test_query):

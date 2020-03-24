@@ -9,7 +9,7 @@ Tests for the subscriber subsetting functionality
 
 import pytest
 
-from query_bases.table import Table
+from flowmachine_core.query_bases.table import Table
 from flowmachine_core.core.context import get_db
 from flowmachine_core.utility_queries.event_table_subset import EventTableSubset
 from utility_queries.custom_query import CustomQuery

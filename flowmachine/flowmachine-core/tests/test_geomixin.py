@@ -14,13 +14,13 @@ import geojson
 
 
 import pytest
-from query_bases.geotable import GeoTable
+from flowmachine_core.query_bases.geotable import GeoTable
 
 from flowmachine_core.query_bases.query import Query
 from flowmachine_core.core.context import get_db
 from flowmachine_core.core.mixins import GeoDataMixin
 from flowmachine_core.utils import proj4string
-from query_bases.spatial_unit import make_spatial_unit
+from flowmachine_core.query_bases.spatial_unit import make_spatial_unit
 
 
 def test_massive_geojson():

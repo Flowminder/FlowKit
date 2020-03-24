@@ -24,7 +24,7 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
 
-import flowmachine
+import flowmachine_core
 from flowmachine_core.query_bases.spatial_unit import make_spatial_unit
 from flowmachine_core.core.cache import reset_cache
 from flowmachine_core.core.context import redis_connection, get_db, get_redis
@@ -155,8 +155,8 @@ def mocked_connections(monkeypatch):
     connection_mock.return_value.fetch.return_value = MagicMock(return_value=[])
     redis_mock = Mock(name="mocked_connections_redis")
     tp_mock = Mock(return_value=None)
-    monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
-    monkeypatch.setattr(flowmachine.core.init, "Connection", connection_mock)
+    monkeypatch.setattr(flowmachine_core.core.init, "set_log_level", logging_mock)
+    monkeypatch.setattr(flowmachine_core.core.init, "Connection", connection_mock)
     monkeypatch.setattr("redis.StrictRedis", redis_mock)
     monkeypatch.setattr(
         concurrent.futures.thread.ThreadPoolExecutor, "__init__", tp_mock
