@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from flowclient.client import get_status
+from flowclient.client import get_status, FlowclientConnectionError
 
 
 @pytest.mark.parametrize("running_status", ["queued", "executing"])
@@ -27,4 +27,20 @@ def test_get_status_reports_finished():
     con_mock = Mock()
     con_mock.get_url.return_value = Mock(status_code=303)
     status = get_status(connection=con_mock, query_id="foo")
-    assert status == "Finished"
+    assert status == "completed"
+
+
+def test_get_status_404():
+    """ Test that get_status reports that a query is not running. """
+    con_mock = Mock()
+    con_mock.get_url.side_effect = FileNotFoundError("DUMMY_404")
+    status_returned = get_status(connection=con_mock, query_id="foo")
+    assert status_returned == "not_running"
+
+
+def test_get_status_raises():
+    """ Test that get_status raises an error for a status code other than 202, 303 or 404. """
+    con_mock = Mock()
+    con_mock.get_url.return_value = Mock(status_code=500)
+    with pytest.raises(FlowclientConnectionError):
+        get_status(connection=con_mock, query_id="foo")

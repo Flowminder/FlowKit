@@ -426,6 +426,13 @@
             "index": "pypi",
             "version": "==3.2.1"
         },
+        "merge-args": {
+            "hashes": [
+                "sha256:8ef3d1887aefb8eaf5eb7431c34f3c82c4049e13768aecc24d7447abf39ff60d",
+                "sha256:ec1455e8c1663f04951be4d4a38df1ab74014fd8d042038f2d02b942a25d0a22"
+            ],
+            "version": "==0.1.3"
+        },
         "mistune": {
             "hashes": [
                 "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e",
