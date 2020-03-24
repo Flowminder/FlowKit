@@ -347,33 +347,14 @@ jobs:
           command: |
             docker push flowminder/flowdb-synthetic-data:${CIRCLE_SHA1}
 
-
-  install_flowmachine_deps:
-    docker: *base_docker
-    working_directory: /home/circleci/project
-    steps:
-      - checkout
-      - restore_cache:
-          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
-      # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
-      # (see https://github.com/Flowminder/FlowKit/issues/952)
-      - run: cd flowmachine && sudo apt-get install -y libgraphviz-dev graphviz && pipenv run pip install pygraphviz
-      - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
-      - save_cache:
-          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
-          paths:
-            - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
-
   lint_python:
     docker: *base_docker
     working_directory: /home/circleci/project
     steps:
       - checkout
-      - restore_cache:
-          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
       - run:
           name: Linting files with black
-          command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv run black --check .
+          command: pip install black && black --check .
 
   lint_js:
     docker:
@@ -398,11 +379,11 @@ jobs:
           name: Linting JS with prettier
           command: $(npm bin)/prettier --check "**/*.js"
 
-  run_flowmachine_tests:
+  run_flowmachine_core_tests:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
-    working_directory: /home/circleci/project/flowmachine
+    working_directory: /home/circleci/project/flowmachine/flowmachine-core
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -427,7 +408,7 @@ jobs:
           path: test_results
       - run:
           name: Upload coverage
-          command: bash <(curl -s https://codecov.io/bash) -F flowmachine_unit_tests
+          command: bash <(curl -s https://codecov.io/bash) -F flowmachine_core_unit_tests
           when: always
 
   run_flowdbsynth_tests:
@@ -929,8 +910,8 @@ jobs:
       - run:
           name: Upload <<parameters.project_name>> Wheel
           command: |
-            pipenv install twine
-            pipenv run twine upload /home/circleci/<<parameters.project_name>>/dist/*
+            pip install twine
+            twine upload /home/circleci/<<parameters.project_name>>/dist/*
 
   retag_images:
     parameters:
@@ -971,8 +952,6 @@ workflows:
           requires:
             - build_flowdb
           <<: *run_always_org_context
-      - install_flowmachine_deps:
-          <<: *run_always_org_context
       - run_flowkit_api_tests:
           <<: *run_always_org_context
       - run_flowclient_tests:
@@ -980,15 +959,12 @@ workflows:
       - run_flowauth_backend_tests:
           <<: *run_always_org_context
       - lint_python:
-          requires:
-            - install_flowmachine_deps
           <<: *run_always_org_context
       - lint_js:
           <<: *run_always_org_context
-      - run_flowmachine_tests:
+      - run_flowmachine_core_tests:
           requires:
             - build_flowdb_testdata
-            - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
           name: synth_data_python_generator_tests
@@ -1022,7 +998,6 @@ workflows:
       - build_docs:
           name: build_docs
           requires:
-            - install_flowmachine_deps
             - build_flowdb_synthdata
           <<: *run_always_org_context
       - build_docker_image:
@@ -1054,20 +1029,22 @@ workflows:
       - build_python_wheel:
           name: build_flowclient_wheel
           project_name: flowclient
-          requires:
-            - install_flowmachine_deps
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowetl_wheel
           project_name: flowetl/flowetl
-          requires:
-            - install_flowmachine_deps
           <<: *run_always_org_context
       - build_python_wheel:
-          name: build_flowmachine_wheel
-          project_name: flowmachine
-          requires:
-            - install_flowmachine_deps
+          name: build_flowmachine_core_wheel
+          project_name: flowmachine/flowmachine-core
+          <<: *run_always_org_context
+      - build_python_wheel:
+          name: build_flowmachine_queries_wheel
+          project_name: flowmachine/flowmachine-queries
+          <<: *run_always_org_context
+      - build_python_wheel:
+          name: build_flowmachine_server_wheel
+          project_name: flowmachine/flowmachine-server
           <<: *run_always_org_context
       - run_quickstart_tests:
           name: test_quickstart
@@ -1094,7 +1071,6 @@ workflows:
       #          <<: *run_always_org_context
       - integration_tests:
           requires:
-            - install_flowmachine_deps
             - build_flowdb_testdata
           <<: *run_always_org_context
       - retag_images:
@@ -1113,10 +1089,12 @@ workflows:
             - run_flowetl_integration_tests
             - synth_data_python_generator_tests
             - synth_data_sql_generator_tests
-            - build_flowmachine_wheel
+            - build_flowmachine_core_wheel
+            - build_flowmachine_queries_wheel
+            - build_flowmachine_server_wheel
             - build_flowclient_wheel
             - build_flowetl_wheel
-            - run_flowmachine_tests
+            - run_flowmachine_core_tests
             - run_autoflow_tests
             - build_autoflow
           <<: *master_only_org_context
