@@ -16,7 +16,7 @@ from flowmachine_server.server import get_reply_for_message
 @pytest.mark.asyncio
 async def test_query_run_logged(json_log, server_config):
     # Local import so pytest can capture stdout
-    logger = getLogger("flowmachine.query_run_log")
+    logger = getLogger("flowmachine_core.query_run_log")
     logger.handlers[0].stream = sys.stdout  # Reset log stream for capsys
     msg_contents = {
         "action": "run_query",
@@ -24,7 +24,7 @@ async def test_query_run_logged(json_log, server_config):
         "params": {"query_kind": "dummy_query", "dummy_param": "DUMMY"},
     }
     set_log_level(
-        "flowmachine-server.debug", "ERROR"
+        "flowmachine_core.debug", "ERROR"
     )  # Logging of query runs should be independent of other logs
     get_redis().get.return_value = (
         b"known"  # Mock enough redis to get to the log messages
@@ -38,4 +38,4 @@ async def test_query_run_logged(json_log, server_config):
     log_lines = log_lines.out
     assert log_lines[0]["request_id"] == "DUMMY_API_REQUEST_ID"
     assert log_lines[0]["action"] == "run_query"
-    assert log_lines[0]["logger"] == "flowmachine.query_run_log"
+    assert log_lines[0]["logger"] == "flowmachine_core.query_run_log"

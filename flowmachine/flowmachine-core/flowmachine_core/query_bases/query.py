@@ -24,6 +24,7 @@ from hashlib import md5
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
+import flowmachine_core
 from flowmachine_core.core.cache import touch_cache
 from flowmachine_core.core.context import (
     get_db,
