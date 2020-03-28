@@ -78,7 +78,15 @@ def test_wait_until_ready(monkeypatch):
     """
     Test that wait_until_ready polls until query_is_ready returns True
     """
-    ready_mock = Mock(side_effect=[(False, None), (True, None)])
+    reply_mock = Mock(
+        json=Mock(
+            return_value={
+                "status": "executing",
+                "progress": {"eligible": 0, "queued": 0, "running": 0},
+            }
+        )
+    )
+    ready_mock = Mock(side_effect=[(False, reply_mock,), (True, reply_mock),])
     monkeypatch.setattr("flowclient.client.query_is_ready", ready_mock)
     connection_mock = Mock()
     connection_mock.post_json.return_value = Mock(
@@ -122,7 +130,10 @@ def test_query_get_result_pandas(monkeypatch, format, function):
     query.run()
     assert "DUMMY_RESULT" == query.get_result(format=format, poll_interval=2)
     get_result_mock.assert_called_once_with(
-        connection=connection_mock, query_id="DUMMY_ID", poll_interval=2
+        connection=connection_mock,
+        disable_progress=None,
+        query_id="DUMMY_ID",
+        poll_interval=2,
     )
 
 
