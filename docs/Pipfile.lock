@@ -393,10 +393,10 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:a146146a48f658f5dca32841f3eb866d67b15cb3007ab125b96037272f1f2f84",
-                "sha256:be7b31d869ad8da11c9737894a952cdf28b570f86bac319ba2e61c257b9d6873"
+                "sha256:35bec0a3b07ec1f77b712763e8ecf307814b17a67607600bbf5d44174b8d9aaa",
+                "sha256:940cc9492a24413937bfa910a1580bbff69db51c5bf771e722b89848a54c5786"
             ],
-            "version": "==0.9.3"
+            "version": "==0.9.4"
         },
         "hyperframe": {
             "hashes": [
@@ -1115,10 +1115,10 @@
         },
         "quart": {
             "hashes": [
-                "sha256:4a569f5994ef66046ecc047165ffa61264cdb16edcdbfb5e8fe6065818855a10",
-                "sha256:eef9c074c7ca856b9abc85e9291c684b955822bf38dbd23378886064415a20f6"
+                "sha256:187427d1a2d7fed20dcb825dddbe20fd971efd7ec413639f95d2e28ff59a0cb1",
+                "sha256:bd93650fa856dcfbc3890952ab3ca53f7755ab506d453a209db63713eceeceda"
             ],
-            "version": "==0.11.3"
+            "version": "==0.11.5"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1388,10 +1388,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096",
-                "sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16"
+                "sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43",
+                "sha256:6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c"
             ],
-            "version": "==1.0.0"
+            "version": "==1.0.1"
         },
         "wsproto": {
             "hashes": [
@@ -1588,11 +1588,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:2cdf552f115eafe36456c9015162d4cae0275c68792015806a58a97622d77a11",
-                "sha256:92d3d088c475138cf455b9516e969d9a2b54039a3c9143f65b84b8d0d5cd5d41"
+                "sha256:50f682f8413df4584f136a5617dee9d04f2f72a8ad006e3c0f4ebd194b8114b6",
+                "sha256:8934017c4dee955fbdd4da122406a14ae54380198f865fe451bfdfe95c9be09e"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.0"
+            "version": "==2.3.1"
         },
         "flask-babel": {
             "hashes": [
@@ -2335,10 +2335,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096",
-                "sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16"
+                "sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43",
+                "sha256:6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c"
             ],
-            "version": "==1.0.0"
+            "version": "==1.0.1"
         },
         "wtforms": {
             "hashes": [
