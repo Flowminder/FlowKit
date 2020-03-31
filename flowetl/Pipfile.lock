@@ -223,11 +223,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:2cdf552f115eafe36456c9015162d4cae0275c68792015806a58a97622d77a11",
-                "sha256:92d3d088c475138cf455b9516e969d9a2b54039a3c9143f65b84b8d0d5cd5d41"
+                "sha256:50f682f8413df4584f136a5617dee9d04f2f72a8ad006e3c0f4ebd194b8114b6",
+                "sha256:8934017c4dee955fbdd4da122406a14ae54380198f865fe451bfdfe95c9be09e"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.0"
+            "version": "==2.3.1"
         },
         "flask-babel": {
             "hashes": [
@@ -445,10 +445,10 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:90854221bbb1498d003a0c3cc9d8390259137551917961c8b5258c64026b2f85",
-                "sha256:ac2e13b30165501b7d41fc0371b8df35944f5849769d136f20e2c5f6cdc6e665"
+                "sha256:7cb1881a0fa84be4b5c1e301168236932c345f6910725f99905d636bfe93e9e9",
+                "sha256:e9390c0c80437d7a02d84e3d1635dc20f37a8bcb149ca443d93791bdc683f28d"
             ],
-            "version": "==3.5.1"
+            "version": "==2.21.0"
         },
         "marshmallow-enum": {
             "hashes": [
@@ -997,11 +997,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:2cdf552f115eafe36456c9015162d4cae0275c68792015806a58a97622d77a11",
-                "sha256:92d3d088c475138cf455b9516e969d9a2b54039a3c9143f65b84b8d0d5cd5d41"
+                "sha256:50f682f8413df4584f136a5617dee9d04f2f72a8ad006e3c0f4ebd194b8114b6",
+                "sha256:8934017c4dee955fbdd4da122406a14ae54380198f865fe451bfdfe95c9be09e"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.0"
+            "version": "==2.3.1"
         },
         "flask-babel": {
             "hashes": [
@@ -1223,10 +1223,10 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:90854221bbb1498d003a0c3cc9d8390259137551917961c8b5258c64026b2f85",
-                "sha256:ac2e13b30165501b7d41fc0371b8df35944f5849769d136f20e2c5f6cdc6e665"
+                "sha256:7cb1881a0fa84be4b5c1e301168236932c345f6910725f99905d636bfe93e9e9",
+                "sha256:e9390c0c80437d7a02d84e3d1635dc20f37a8bcb149ca443d93791bdc683f28d"
             ],
-            "version": "==3.5.1"
+            "version": "==2.21.0"
         },
         "marshmallow-enum": {
             "hashes": [
