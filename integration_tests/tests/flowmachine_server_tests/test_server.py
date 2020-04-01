@@ -72,6 +72,8 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "spatial_aggregate",
                 "joined_spatial_aggregate",
                 "histogram_aggregate",
+                "active_at_reference_location_counts",
+                "unique_visitor_counts",
             ]
         },
     }
