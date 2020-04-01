@@ -15,6 +15,7 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
     SpatialAggregateSchema,
 )
 from .histogram_aggregate import HistogramAggregateSchema
+from .active_at_reference_location_counts import ActiveAtReferenceLocationCountsSchema
 from .dummy_query import DummyQuerySchema
 from .flows import FlowsSchema
 from .meaningful_locations import (
@@ -51,6 +52,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "spatial_aggregate": SpatialAggregateSchema,
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
         "histogram_aggregate": HistogramAggregateSchema,
+        "active_at_reference_location": ActiveAtReferenceLocationCountsSchema,
     }
 
 
