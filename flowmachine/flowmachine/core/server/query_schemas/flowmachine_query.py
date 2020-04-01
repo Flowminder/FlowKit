@@ -32,6 +32,7 @@ from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 from .location_introversion import LocationIntroversionSchema
 from .total_network_objects import TotalNetworkObjectsSchema
 from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
+from .unique_visitor_counts import UniqueVisitorCountsSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -53,6 +54,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
         "histogram_aggregate": HistogramAggregateSchema,
         "active_at_reference_location": ActiveAtReferenceLocationCountsSchema,
+        "unique_visitor_counts": UniqueVisitorCountsSchema,
     }
 
 
