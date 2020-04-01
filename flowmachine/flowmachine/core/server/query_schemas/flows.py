@@ -15,12 +15,15 @@ from .modal_location import ModalLocationSchema
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
+from .unique_locations import UniqueLocationsSchema
+
 
 class InputToFlowsSchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
+        "unique_locations": UniqueLocationsSchema,
     }
 
 
