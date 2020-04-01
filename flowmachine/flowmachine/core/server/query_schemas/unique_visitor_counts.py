@@ -23,8 +23,10 @@ from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 class UniqueVisitorCountsSchema(Schema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_visitor_counts"]))
-    active_at_reference_location_counts = ActiveAtReferenceLocationCountsSchema()
-    unique_subscriber_counts = UniqueSubscriberCountsSchema()
+    active_at_reference_location_counts = fields.Nested(
+        ActiveAtReferenceLocationCountsSchema()
+    )
+    unique_subscriber_counts = fields.Nested(UniqueSubscriberCountsSchema())
 
     @post_load
     def make_query_object(self, params, **kwargs):

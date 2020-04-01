@@ -4,7 +4,6 @@
 
 from marshmallow import fields, post_load, Schema
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import ActiveAtReferenceLocationCounts
 from flowmachine.features.location import RedactedActiveAtReferenceLocationCounts
@@ -17,22 +16,11 @@ __all__ = [
     "ActiveAtReferenceLocationCountsExposed",
 ]
 
-from .daily_location import DailyLocationSchema
-from .modal_location import ModalLocationSchema
-
-
-class ReferenceLocationSchema(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-    }
-
 
 class ActiveAtReferenceLocationCountsSchema(Schema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["active_at_reference_location_counts"]))
-    active_at_reference_location = ActiveAtReferenceLocationSchema()
+    active_at_reference_location = fields.Nested(ActiveAtReferenceLocationSchema())
 
     @post_load
     def make_query_object(self, params, **kwargs):

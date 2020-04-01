@@ -32,8 +32,8 @@ class ReferenceLocationSchema(OneOfSchema):
 class ActiveAtReferenceLocationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["active_at_reference_location"]))
-    unique_locations = UniqueLocationsSchema()
-    reference_locations = ReferenceLocationSchema()
+    unique_locations = fields.Nested(UniqueLocationsSchema())
+    reference_locations = fields.Nested(ReferenceLocationSchema())
 
     @post_load
     def make_query_object(self, params, **kwargs):

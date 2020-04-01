@@ -53,7 +53,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "spatial_aggregate": SpatialAggregateSchema,
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
         "histogram_aggregate": HistogramAggregateSchema,
-        "active_at_reference_location": ActiveAtReferenceLocationCountsSchema,
+        "active_at_reference_location_counts": ActiveAtReferenceLocationCountsSchema,
         "unique_visitor_counts": UniqueVisitorCountsSchema,
     }
 
