@@ -9,12 +9,12 @@ Methods for fetching a set of versioned infrastructure elements.
 A version is selected based on the date in which that version is valid.
 
 """
-from typing import List
+from typing import List, Optional
 
 from datetime import datetime
 
-from flowmachine.core import Table
-from ...core.query import Query
+from flowmachine.core.table import Table
+from flowmachine.core.query import Query
 
 
 class VersionedInfrastructure(Query):
@@ -38,7 +38,7 @@ class VersionedInfrastructure(Query):
         the current date will be used (i.e. `datetime.now()`).
     """
 
-    def __init__(self, table="sites", date=None):
+    def __init__(self, table: str = "sites", date: Optional[str] = None) -> None:
         """
         Parameters
         ----------
@@ -84,3 +84,8 @@ class VersionedInfrastructure(Query):
         """
 
         return sql
+
+    @property
+    def table_name(self):
+        #  Versioned infrastructure shouldn't be cacheable
+        raise NotImplementedError

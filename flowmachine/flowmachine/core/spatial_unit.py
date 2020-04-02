@@ -19,6 +19,7 @@ from .grid import Grid
 # TODO: Currently most spatial units require a FlowDB connection at init time.
 # It would be useful to remove this requirement wherever possible, and instead
 # implement a method to check whether the required data can be found in the DB.
+from ..features.spatial.tower_cluster import TowerCluster
 
 
 def _substitute_lat_lon(location_dict):
@@ -761,6 +762,51 @@ class GridSpatialUnit(PolygonSpatialUnit):
     @property
     def canonical_name(self) -> str:
         return "grid"
+
+
+class TowerClusterSpatialUnit(PolygonSpatialUnit):
+    """
+    Subclass of PolygonSpatialUnit that maps all the sites in the database to a
+    cluster formed from cells.
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        Half-open date range where towers must have been active.
+    minimum_points : int, default 1
+        Minimum number of infrastructure items to form a cluster
+    distance : int, default 1000
+        Distance in meters to build clusters
+    infrastructure_table : {'cells', 'sites'}, default 'cells'
+        Infrastructure table to cluster
+    """
+
+    def __init__(
+        self,
+        start_date: str,
+        end_date: str,
+        *,
+        minimum_points: int = 1,
+        distance: int = 1000,
+        infrastructure_table: str = "cells",
+    ) -> None:
+        self.clusters = TowerCluster(
+            start_date,
+            end_date,
+            minimum_points=minimum_points,
+            distance=distance,
+            infrastructure_table=infrastructure_table,
+        )
+
+        super().__init__(
+            geom_table_column_names="cluster_id",
+            geom_table=self.clusters,
+            geom_column="geom",
+        )
+
+    @property
+    def canonical_name(self) -> str:
+        return "TowerCluster"
 
 
 AnySpatialUnit = Union[CellSpatialUnit, GeomSpatialUnit]
