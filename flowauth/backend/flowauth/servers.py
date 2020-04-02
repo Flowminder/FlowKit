@@ -74,15 +74,17 @@ def edit_server_capabilities(server_id):
     current_app.logger.debug(
         "Editing capabilities for server", server_id=server_obj, new_permissions=json
     )
+    caps = []
     for cap, enabled in json.items():
         try:
             cap = ServerCapability.query.filter_by(
                 server_id=server_id, capability=cap
             ).one()
         except NoResultFound:
-            cap = ServerCapability(server=server_obj, capability=cap)
+            cap = ServerCapability(server_id=server_id, capability=cap)
         cap.enabled = enabled
-        db.session.add(cap)
+        caps.append(cap)
+    db.session.bulk_save_objects(caps)
 
     for cap in to_remove:
         db.session.delete(cap)
