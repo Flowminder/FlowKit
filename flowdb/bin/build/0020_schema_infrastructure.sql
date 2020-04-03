@@ -43,7 +43,8 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
-
+        last_updated DATE,
+        first_added DATE,
         UNIQUE (id, version)
 
         );
@@ -101,6 +102,8 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
+        last_updated DATE,
+        first_added DATE,
         UNIQUE (id, version)
         );
 

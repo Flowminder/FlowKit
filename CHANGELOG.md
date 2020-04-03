@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Adds `last_updated` and `first_added` columns to the cell and site infrastructure tables for recording per-cell etl metadata.
 
 ### Changed
 
