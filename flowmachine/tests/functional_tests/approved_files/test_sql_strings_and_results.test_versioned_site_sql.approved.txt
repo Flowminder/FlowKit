@@ -16,6 +16,8 @@ FROM infrastructure.cells AS loc_table
                        is_cow,
                        date_of_first_service,
                        date_of_last_service,
+                       last_updated,
+                       first_added,
                        geom_point,
                        geom_polygon
                 FROM infrastructure.sites) AS geom_table ON loc_table.site_id = geom_table.id
