@@ -410,6 +410,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../flowclient/flowclient/aggregates/" title="aggregates" class="md-nav__link">
+      aggregates
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../flowclient/flowclient/api_query/" title="api_query" class="md-nav__link">
+      api_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../flowclient/flowclient/client/" title="client" class="md-nav__link">
       client
     </a>
@@ -4010,7 +4034,36 @@
               
                 
                 
-                <div class="cell border-box-sizing text_cell rendered">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script>
+(function() {
+  function addWidgetsRenderer() {
+    var mimeElement = document.querySelector('script[type="application/vnd.jupyter.widget-view+json"]');
+    var scriptElement = document.createElement('script');
+    var widgetRendererSrc = 'https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js';
+    var widgetState;
+
+    // Fallback for older version:
+    try {
+      widgetState = mimeElement && JSON.parse(mimeElement.innerHTML);
+
+      if (widgetState && (widgetState.version_major < 2 || !widgetState.version_major)) {
+        widgetRendererSrc = 'jupyter-js-widgets@*/dist/embed.js';
+      }
+    } catch(e) {}
+
+    scriptElement.src = widgetRendererSrc;
+    document.body.appendChild(scriptElement);
+  }
+
+  document.addEventListener('DOMContentLoaded', addWidgetsRenderer);
+}());
+</script>
+
+<div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1"></p>
 <h1 id="joined-spatial-aggregate">Joined spatial aggregate<a class="headerlink" href="#joined-spatial-aggregate" title="Permanent link">&para;</a></h1>
@@ -4096,7 +4149,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="input">
 
 <div class="codehilite"><pre><span></span><code><span class="n">date_range</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-08&quot;</span><span class="p">)</span>
-<span class="n">modal_loc</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">modal_location_from_dates</span><span class="p">(</span>
+<span class="n">modal_loc</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">modal_location_from_dates_spec</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
@@ -4118,12 +4171,12 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="codehilite"><pre><span></span><code><span class="n">rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">radius_of_gyration</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">radius_of_gyration_spec</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
 <span class="p">)</span>
 
-<span class="n">jsa_rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">joined_spatial_aggregate</span><span class="p">(</span>
+<span class="n">jsa_rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">aggregates</span><span class="o">.</span><span class="n">joined_spatial_aggregate_spec</span><span class="p">(</span>
     <span class="n">locations</span><span class="o">=</span><span class="n">modal_loc</span><span class="p">,</span>
     <span class="n">metric</span><span class="o">=</span><span class="n">rog_query</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span>
@@ -4144,14 +4197,14 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="codehilite"><pre><span></span><code><span class="n">handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">handset</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">handset_spec</span><span class="p">(</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="n">characteristic</span><span class="o">=</span><span class="s2">&quot;hnd_type&quot;</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;most-common&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">jsa_handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">joined_spatial_aggregate</span><span class="p">(</span>
+<span class="n">jsa_handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">aggregates</span><span class="o">.</span><span class="n">joined_spatial_aggregate_spec</span><span class="p">(</span>
     <span class="n">locations</span><span class="o">=</span><span class="n">modal_loc</span><span class="p">,</span>
     <span class="n">metric</span><span class="o">=</span><span class="n">handset_query</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;distr&quot;</span><span class="p">,</span>
@@ -4172,7 +4225,7 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="codehilite"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">jsa_rog_query</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_spec</span><span class="o">=</span><span class="n">jsa_rog_query</span><span class="p">)</span>
 <span class="n">rog_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4195,27 +4248,27 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <tr>
 <td style="text-align:right">0</td>
 <td style="text-align:left">524 4 11 60</td>
-<td style="text-align:right">71.2685</td>
+<td style="text-align:right">66.1509</td>
 </tr>
 <tr>
 <td style="text-align:right">1</td>
-<td style="text-align:left">524 3 07 40</td>
-<td style="text-align:right">58.9155</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">86.043</td>
 </tr>
 <tr>
 <td style="text-align:right">2</td>
 <td style="text-align:left">524 1 03 14</td>
-<td style="text-align:right">90.5986</td>
+<td style="text-align:right">86.4538</td>
 </tr>
 <tr>
 <td style="text-align:right">3</td>
-<td style="text-align:left">524 5 13 67</td>
-<td style="text-align:right">95.3378</td>
+<td style="text-align:left">524 3 07 36</td>
+<td style="text-align:right">72.5836</td>
 </tr>
 <tr>
 <td style="text-align:right">4</td>
-<td style="text-align:left">524 1 03 13</td>
-<td style="text-align:right">68.6237</td>
+<td style="text-align:left">524 5 13 67</td>
+<td style="text-align:right">84.1795</td>
 </tr>
 </tbody>
 </table>
@@ -4262,23 +4315,23 @@ The resulting dataframe has two columns: <code>pcod</code> (the P-code of each r
 <tbody>
 <tr>
 <td style="text-align:left">524 4 11 60</td>
-<td style="text-align:right">71.2685</td>
+<td style="text-align:right">66.1509</td>
 </tr>
 <tr>
-<td style="text-align:left">524 3 07 40</td>
-<td style="text-align:right">58.9155</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">86.043</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 03 14</td>
-<td style="text-align:right">90.5986</td>
+<td style="text-align:right">86.4538</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 07 36</td>
+<td style="text-align:right">72.5836</td>
 </tr>
 <tr>
 <td style="text-align:left">524 5 13 67</td>
-<td style="text-align:right">95.3378</td>
-</tr>
-<tr>
-<td style="text-align:left">524 1 03 13</td>
-<td style="text-align:right">68.6237</td>
+<td style="text-align:right">84.1795</td>
 </tr>
 </tbody>
 </table>
@@ -4319,35 +4372,35 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 <tbody>
 <tr>
 <td style="text-align:left">count</td>
-<td style="text-align:right">46</td>
+<td style="text-align:right">52</td>
 </tr>
 <tr>
 <td style="text-align:left">mean</td>
-<td style="text-align:right">76.911</td>
+<td style="text-align:right">74.5851</td>
 </tr>
 <tr>
 <td style="text-align:left">std</td>
-<td style="text-align:right">14.8235</td>
+<td style="text-align:right">14.1755</td>
 </tr>
 <tr>
 <td style="text-align:left">min</td>
-<td style="text-align:right">51.3797</td>
+<td style="text-align:right">52.8536</td>
 </tr>
 <tr>
 <td style="text-align:left">25%</td>
-<td style="text-align:right">65.7462</td>
+<td style="text-align:right">63.9148</td>
 </tr>
 <tr>
 <td style="text-align:left">50%</td>
-<td style="text-align:right">72.7922</td>
+<td style="text-align:right">71.1591</td>
 </tr>
 <tr>
 <td style="text-align:left">75%</td>
-<td style="text-align:right">90.8387</td>
+<td style="text-align:right">85.191</td>
 </tr>
 <tr>
 <td style="text-align:left">max</td>
-<td style="text-align:right">101.973</td>
+<td style="text-align:right">111.456</td>
 </tr>
 </tbody>
 </table>
@@ -4500,11 +4553,11 @@ There are gaps in this choropleth map. Looking at the content of the 'radius_of_
 <tbody>
 <tr>
 <td style="text-align:left">524 2 05 23</td>
-<td style="text-align:right">69.1254</td>
+<td style="text-align:right">nan</td>
 </tr>
 <tr>
 <td style="text-align:left">524 2 05 24</td>
-<td style="text-align:right">62.6425</td>
+<td style="text-align:right">66.0543</td>
 </tr>
 <tr>
 <td style="text-align:left">524 2 05 25</td>
@@ -4575,7 +4628,7 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">jsa_handset_query</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_spec</span><span class="o">=</span><span class="n">jsa_handset_query</span><span class="p">)</span>
 <span class="n">handset_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
@@ -4601,36 +4654,36 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 <td style="text-align:right">0</td>
 <td style="text-align:left">524 1 01 01</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Smart</td>
-<td style="text-align:right">0.34701</td>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">0.332143</td>
 </tr>
 <tr>
 <td style="text-align:right">1</td>
 <td style="text-align:left">524 1 01 01</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Feature</td>
-<td style="text-align:right">0.317803</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.329286</td>
 </tr>
 <tr>
 <td style="text-align:right">2</td>
 <td style="text-align:left">524 1 01 01</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Basic</td>
-<td style="text-align:right">0.335188</td>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">0.338571</td>
 </tr>
 <tr>
 <td style="text-align:right">3</td>
 <td style="text-align:left">524 1 01 02</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Basic</td>
-<td style="text-align:right">0.33404</td>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">0.319001</td>
 </tr>
 <tr>
 <td style="text-align:right">4</td>
 <td style="text-align:left">524 1 01 02</td>
 <td style="text-align:left">value</td>
 <td style="text-align:left">Smart</td>
-<td style="text-align:right">0.32839</td>
+<td style="text-align:right">0.346741</td>
 </tr>
 </tbody>
 </table>
@@ -4677,24 +4730,24 @@ This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">('524 1 01 01', 'Smart')</td>
-<td style="text-align:right">0.34701</td>
-</tr>
-<tr>
 <td style="text-align:left">('524 1 01 01', 'Feature')</td>
-<td style="text-align:right">0.317803</td>
+<td style="text-align:right">0.332143</td>
 </tr>
 <tr>
 <td style="text-align:left">('524 1 01 01', 'Basic')</td>
-<td style="text-align:right">0.335188</td>
+<td style="text-align:right">0.329286</td>
 </tr>
 <tr>
-<td style="text-align:left">('524 1 01 02', 'Basic')</td>
-<td style="text-align:right">0.33404</td>
+<td style="text-align:left">('524 1 01 01', 'Smart')</td>
+<td style="text-align:right">0.338571</td>
+</tr>
+<tr>
+<td style="text-align:left">('524 1 01 02', 'Feature')</td>
+<td style="text-align:right">0.319001</td>
 </tr>
 <tr>
 <td style="text-align:left">('524 1 01 02', 'Smart')</td>
-<td style="text-align:right">0.32839</td>
+<td style="text-align:right">0.346741</td>
 </tr>
 </tbody>
 </table>
@@ -4742,36 +4795,36 @@ We can get a summary of the data using the <code>describe</code> method, but let
 <tbody>
 <tr>
 <td style="text-align:left">Basic</td>
-<td style="text-align:right">46</td>
-<td style="text-align:right">0.333597</td>
-<td style="text-align:right">0.0136626</td>
-<td style="text-align:right">0.30604</td>
-<td style="text-align:right">0.323909</td>
-<td style="text-align:right">0.333447</td>
-<td style="text-align:right">0.342042</td>
-<td style="text-align:right">0.361893</td>
+<td style="text-align:right">52</td>
+<td style="text-align:right">0.324728</td>
+<td style="text-align:right">0.0145201</td>
+<td style="text-align:right">0.292614</td>
+<td style="text-align:right">0.316386</td>
+<td style="text-align:right">0.325324</td>
+<td style="text-align:right">0.33436</td>
+<td style="text-align:right">0.365714</td>
 </tr>
 <tr>
 <td style="text-align:left">Feature</td>
-<td style="text-align:right">46</td>
-<td style="text-align:right">0.330187</td>
-<td style="text-align:right">0.0157399</td>
-<td style="text-align:right">0.30118</td>
-<td style="text-align:right">0.31941</td>
-<td style="text-align:right">0.33276</td>
-<td style="text-align:right">0.339168</td>
-<td style="text-align:right">0.366022</td>
+<td style="text-align:right">52</td>
+<td style="text-align:right">0.339228</td>
+<td style="text-align:right">0.0171758</td>
+<td style="text-align:right">0.298571</td>
+<td style="text-align:right">0.330039</td>
+<td style="text-align:right">0.341053</td>
+<td style="text-align:right">0.349675</td>
+<td style="text-align:right">0.389902</td>
 </tr>
 <tr>
 <td style="text-align:left">Smart</td>
-<td style="text-align:right">46</td>
-<td style="text-align:right">0.336215</td>
-<td style="text-align:right">0.0160215</td>
-<td style="text-align:right">0.292588</td>
-<td style="text-align:right">0.325986</td>
-<td style="text-align:right">0.336601</td>
-<td style="text-align:right">0.346436</td>
-<td style="text-align:right">0.371812</td>
+<td style="text-align:right">52</td>
+<td style="text-align:right">0.336045</td>
+<td style="text-align:right">0.014525</td>
+<td style="text-align:right">0.292614</td>
+<td style="text-align:right">0.3289</td>
+<td style="text-align:right">0.338018</td>
+<td style="text-align:right">0.34628</td>
+<td style="text-align:right">0.364023</td>
 </tr>
 </tbody>
 </table>
@@ -4816,33 +4869,33 @@ To plot histograms for the three handset types, it would be convenient if the pr
 <tbody>
 <tr>
 <td style="text-align:left">524 1 01 01</td>
-<td style="text-align:right">0.335188</td>
-<td style="text-align:right">0.317803</td>
-<td style="text-align:right">0.34701</td>
+<td style="text-align:right">0.329286</td>
+<td style="text-align:right">0.332143</td>
+<td style="text-align:right">0.338571</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 01 02</td>
-<td style="text-align:right">0.33404</td>
-<td style="text-align:right">0.337571</td>
-<td style="text-align:right">0.32839</td>
+<td style="text-align:right">0.334258</td>
+<td style="text-align:right">0.319001</td>
+<td style="text-align:right">0.346741</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 01 03</td>
-<td style="text-align:right">0.333791</td>
-<td style="text-align:right">0.332418</td>
-<td style="text-align:right">0.333791</td>
+<td style="text-align:right">0.292614</td>
+<td style="text-align:right">0.349432</td>
+<td style="text-align:right">0.357955</td>
+</tr>
+<tr>
+<td style="text-align:left">524 1 01 04</td>
+<td style="text-align:right">0.334979</td>
+<td style="text-align:right">0.345557</td>
+<td style="text-align:right">0.319464</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 02 05</td>
-<td style="text-align:right">0.30604</td>
-<td style="text-align:right">0.322148</td>
-<td style="text-align:right">0.371812</td>
-</tr>
-<tr>
-<td style="text-align:left">524 1 02 06</td>
-<td style="text-align:right">0.326503</td>
-<td style="text-align:right">0.352459</td>
-<td style="text-align:right">0.321038</td>
+<td style="text-align:right">0.326446</td>
+<td style="text-align:right">0.336088</td>
+<td style="text-align:right">0.337466</td>
 </tr>
 </tbody>
 </table>
@@ -4982,38 +5035,38 @@ As with the radius of gyration results, we can also join to the geography data a
 <tbody>
 <tr>
 <td style="text-align:left">524 4 11 60</td>
-<td style="text-align:right">71.2685</td>
-<td style="text-align:right">0.33168</td>
-<td style="text-align:right">0.32601</td>
-<td style="text-align:right">0.34231</td>
+<td style="text-align:right">66.1509</td>
+<td style="text-align:right">0.316176</td>
+<td style="text-align:right">0.332888</td>
+<td style="text-align:right">0.350936</td>
 </tr>
 <tr>
-<td style="text-align:left">524 3 07 40</td>
-<td style="text-align:right">58.9155</td>
-<td style="text-align:right">0.341962</td>
-<td style="text-align:right">0.336058</td>
-<td style="text-align:right">0.32198</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">86.043</td>
+<td style="text-align:right">0.325811</td>
+<td style="text-align:right">0.32299</td>
+<td style="text-align:right">0.351199</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 03 14</td>
-<td style="text-align:right">90.5986</td>
-<td style="text-align:right">0.342448</td>
-<td style="text-align:right">0.302083</td>
-<td style="text-align:right">0.355469</td>
+<td style="text-align:right">86.4538</td>
+<td style="text-align:right">0.315549</td>
+<td style="text-align:right">0.358232</td>
+<td style="text-align:right">0.32622</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 07 36</td>
+<td style="text-align:right">72.5836</td>
+<td style="text-align:right">0.340862</td>
+<td style="text-align:right">0.312799</td>
+<td style="text-align:right">0.346338</td>
 </tr>
 <tr>
 <td style="text-align:left">524 5 13 67</td>
-<td style="text-align:right">95.3378</td>
-<td style="text-align:right">0.324324</td>
-<td style="text-align:right">0.334373</td>
-<td style="text-align:right">0.341303</td>
-</tr>
-<tr>
-<td style="text-align:left">524 1 03 13</td>
-<td style="text-align:right">68.6237</td>
-<td style="text-align:right">0.339489</td>
-<td style="text-align:right">0.306818</td>
-<td style="text-align:right">0.353693</td>
+<td style="text-align:right">84.1795</td>
+<td style="text-align:right">0.344729</td>
+<td style="text-align:right">0.325499</td>
+<td style="text-align:right">0.329772</td>
 </tr>
 </tbody>
 </table>
@@ -5061,29 +5114,29 @@ As with the radius of gyration results, we can also join to the geography data a
 <tr>
 <td style="text-align:left">radius_of_gyration</td>
 <td style="text-align:right">1</td>
-<td style="text-align:right">-0.14969</td>
-<td style="text-align:right">-0.0406527</td>
-<td style="text-align:right">0.167588</td>
+<td style="text-align:right">-0.00199691</td>
+<td style="text-align:right">-0.113516</td>
+<td style="text-align:right">0.136228</td>
 </tr>
 <tr>
 <td style="text-align:left">('proportion', 'Basic')</td>
-<td style="text-align:right">-0.14969</td>
+<td style="text-align:right">-0.00199691</td>
 <td style="text-align:right">1</td>
-<td style="text-align:right">-0.413212</td>
-<td style="text-align:right">-0.446816</td>
+<td style="text-align:right">-0.591165</td>
+<td style="text-align:right">-0.300615</td>
 </tr>
 <tr>
 <td style="text-align:left">('proportion', 'Feature')</td>
-<td style="text-align:right">-0.0406527</td>
-<td style="text-align:right">-0.413212</td>
+<td style="text-align:right">-0.113516</td>
+<td style="text-align:right">-0.591165</td>
 <td style="text-align:right">1</td>
-<td style="text-align:right">-0.630048</td>
+<td style="text-align:right">-0.591532</td>
 </tr>
 <tr>
 <td style="text-align:left">('proportion', 'Smart')</td>
-<td style="text-align:right">0.167588</td>
-<td style="text-align:right">-0.446816</td>
-<td style="text-align:right">-0.630048</td>
+<td style="text-align:right">0.136228</td>
+<td style="text-align:right">-0.300615</td>
+<td style="text-align:right">-0.591532</td>
 <td style="text-align:right">1</td>
 </tr>
 </tbody>
