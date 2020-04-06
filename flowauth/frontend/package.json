@@ -32,7 +32,7 @@
     "cypress-plugin-retries": "^1.5.2",
     "husky": "^4.2.3",
     "otp-cli": "^0.2.0",
-    "prettier": "^2.0.3",
+    "prettier": "^2.0.4",
     "pretty-quick": "^2.0.1"
   },
   "browserslist": [
