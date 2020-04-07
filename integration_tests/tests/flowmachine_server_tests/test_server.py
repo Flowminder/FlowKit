@@ -75,6 +75,7 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "active_at_reference_location_counts",
                 "unique_visitor_counts",
                 "consecutive_trips",
+                "unmoving_counts",
             ]
         },
     }

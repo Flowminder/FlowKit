@@ -1,0 +1,1 @@
+test_api_spec.test_generated_openapi_json_spec.approved.txt

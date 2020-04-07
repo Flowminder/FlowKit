@@ -34,6 +34,7 @@ from .location_introversion import LocationIntroversionSchema
 from .total_network_objects import TotalNetworkObjectsSchema
 from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 from .unique_visitor_counts import UniqueVisitorCountsSchema
+from .unmoving_counts import UnmovingCountsSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -57,6 +58,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "active_at_reference_location_counts": ActiveAtReferenceLocationCountsSchema,
         "unique_visitor_counts": UniqueVisitorCountsSchema,
         "consecutive_trips": ConsecutiveTripsSchema,
+        "unmoving_counts": UnmovingCountsSchema,
     }
 
 

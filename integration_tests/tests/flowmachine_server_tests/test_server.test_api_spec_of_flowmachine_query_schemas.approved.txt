@@ -444,7 +444,8 @@
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts",
-        "unique_visitor_counts": "#/components/schemas/UniqueVisitorCounts"
+        "unique_visitor_counts": "#/components/schemas/UniqueVisitorCounts",
+        "unmoving_counts": "#/components/schemas/UnmovingCounts"
       },
       "propertyName": "query_kind"
     },
@@ -502,6 +503,9 @@
       },
       {
         "$ref": "#/components/schemas/UniqueVisitorCounts"
+      },
+      {
+        "$ref": "#/components/schemas/UnmovingCounts"
       }
     ]
   },
@@ -1858,6 +1862,28 @@
       },
       "unique_subscriber_counts": {
         "$ref": "#/components/schemas/UniqueSubscriberCounts"
+      }
+    },
+    "type": "object"
+  },
+  "UnmovingCounts": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/UniqueLocations"
+      },
+      "query_kind": {
+        "enum": [
+          "unmoving_counts"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       }
     },
     "type": "object"
