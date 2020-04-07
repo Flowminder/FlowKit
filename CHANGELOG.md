@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- FlowClient now displays a progress bar when waiting for a query to ready, indicating how many parts of that query still need to be run. 
 
 ### Changed
 
 ### Fixed
 
 ### Removed
+
+## [Unreleased]
+
+### Added
+- FlowClient now displays a progress bar when waiting for a query to ready, indicating how many parts of that query still need to be run. 
 
 ## [1.5.0]
 ### Added
@@ -653,7 +657,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.5.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.5.1...master
+[1.5.1]: https://github.com/Flowminder/FlowKit/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/Flowminder/FlowKit/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/Flowminder/FlowKit/compare/1.3.3...1.4.0
 [1.3.3]: https://github.com/Flowminder/FlowKit/compare/1.3.2...1.3.3
