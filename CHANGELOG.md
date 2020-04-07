@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
--   Added new FlowAPI aggregates `unique_visitor_counts` and `active_at_reference_location_counts`
+-   Added new FlowAPI aggregates; `unique_visitor_counts`, `active_at_reference_location_counts`, and `consecutive_trips_od_matrix`
 -   Added new Flows type query to FlowAPI `unique_locations`, which produces the paired regional connectivity [COVID-19 indicator](https://github.com/Flowminder/COVID-19/blob/master/aggregate_5.md)
 
 ### Changed
