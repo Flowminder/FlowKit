@@ -207,10 +207,10 @@
         },
         "fsspec": {
             "hashes": [
-                "sha256:442e65c9b0cbb7ef0036e6cbbc2c045e3d68a7aba4703b46cd786bba507f7fd1",
-                "sha256:cddcf4390488175f6eb4694a8dc259d66916c27a8349db693873877b47ebd473"
+                "sha256:2f74d8cb37820480d5802620f819385a162202c7d9dbafcf82bc25e5fade4fd7",
+                "sha256:7ba96c818572afd82c8a1c658ea2bfedcdb3762ed7cf3ddcbb9896a79d1b7d78"
             ],
-            "version": "==0.7.1"
+            "version": "==0.7.2"
         },
         "future": {
             "hashes": [
@@ -649,11 +649,11 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:56106d208e38c6fe5c71001a373e94c5649368f12aadaaf2b3a32938e093fefb",
-                "sha256:5d297c3caca3fd58839f1a2ebbd2e717dd408b8a67d3d19455560abc3ce08c93"
+                "sha256:1fffa66bd616e53cf9a2dfb7823cb7741125e4bc16794b07294a40ca80ea45ae",
+                "sha256:416e36351b0db99a538cb0ba5eac6da526980676a7bebdea8126b4355483ebcb"
             ],
             "index": "pypi",
-            "version": "==0.10.0"
+            "version": "==0.10.1"
         },
         "prometheus-client": {
             "hashes": [
@@ -1341,10 +1341,10 @@
         },
         "fsspec": {
             "hashes": [
-                "sha256:442e65c9b0cbb7ef0036e6cbbc2c045e3d68a7aba4703b46cd786bba507f7fd1",
-                "sha256:cddcf4390488175f6eb4694a8dc259d66916c27a8349db693873877b47ebd473"
+                "sha256:2f74d8cb37820480d5802620f819385a162202c7d9dbafcf82bc25e5fade4fd7",
+                "sha256:7ba96c818572afd82c8a1c658ea2bfedcdb3762ed7cf3ddcbb9896a79d1b7d78"
             ],
-            "version": "==0.7.1"
+            "version": "==0.7.2"
         },
         "graphviz": {
             "hashes": [
@@ -1449,18 +1449,18 @@
         },
         "jupyterlab": {
             "hashes": [
-                "sha256:5d1a833a9e49e6d90d68191917cb16a97ff4ec668c26c85d33ebce629df14141",
-                "sha256:7c0a777aae68bc11c2a772d4c1e32c1f2a15388a3fb4fd43fa621e2261c368e9"
+                "sha256:6663eed77b10d567499ab998eb71dabb510572f7337ec8efc48ed56cd37f9c5f",
+                "sha256:8c239aababf5baa0b3d36e375fddeb9fd96f3a9a24a8cda098d6a414f5bbdc81"
             ],
             "index": "pypi",
-            "version": "==2.0.1"
+            "version": "==2.1.0"
         },
         "jupyterlab-server": {
             "hashes": [
-                "sha256:12381712f2e70b68442c03046b3afa6483dad4ccae9f47673ffe8a808cefd8e2",
-                "sha256:d554d3660049bd1495b190e63a96e06a2707a59936dd58ba3ec1dfe64775987e"
+                "sha256:6aeaa1133069ec8d109f474b628059da2ec2e73f4e448c89e56821e6cfc26c0f",
+                "sha256:bac27e2ea40f686e592d6429877e7d46947ea76c08c878081b028c2c89f71733"
             ],
-            "version": "==1.0.7"
+            "version": "==1.1.0"
         },
         "locket": {
             "hashes": [
@@ -1671,11 +1671,11 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:56106d208e38c6fe5c71001a373e94c5649368f12aadaaf2b3a32938e093fefb",
-                "sha256:5d297c3caca3fd58839f1a2ebbd2e717dd408b8a67d3d19455560abc3ce08c93"
+                "sha256:1fffa66bd616e53cf9a2dfb7823cb7741125e4bc16794b07294a40ca80ea45ae",
+                "sha256:416e36351b0db99a538cb0ba5eac6da526980676a7bebdea8126b4355483ebcb"
             ],
             "index": "pypi",
-            "version": "==0.10.0"
+            "version": "==0.10.1"
         },
         "prometheus-client": {
             "hashes": [
