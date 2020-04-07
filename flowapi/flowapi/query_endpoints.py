@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from quart_jwt_extended import jwt_required, current_user
-from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
+from quart import Blueprint, current_app, request, url_for, stream_with_context
 from .stream_results import stream_result_as_json, stream_result_as_csv
 
 blueprint = Blueprint("query", __name__)

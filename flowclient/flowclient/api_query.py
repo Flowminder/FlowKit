@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import Union
+from typing import Union, Optional
 
 from flowclient.client import (
     FlowclientConnectionError,
@@ -86,7 +86,10 @@ class APIQuery:
         return get_status(connection=self.connection, query_id=self._query_id)
 
     def get_result(
-        self, format: str = "pandas", poll_interval: int = 1
+        self,
+        format: str = "pandas",
+        poll_interval: int = 1,
+        disable_progress: Optional[bool] = None,
     ) -> Union["pandas.DataFrame", dict]:
         """
         Get the result of this query, as a pandas DataFrame or GeoJSON dict.
@@ -97,6 +100,9 @@ class APIQuery:
             Result format. One of {'pandas', 'geojson'}
         poll_interval : int, default 1
             Number of seconds to wait between checks for the query being ready
+        disable_progress : bool, default None
+            Set to True to disable progress bar display entirely, None to disable on
+            non-TTY, or False to always enable
 
         Returns
         -------
@@ -118,6 +124,7 @@ class APIQuery:
                 connection=self.connection,
                 query_id=self._query_id,
                 poll_interval=poll_interval,
+                disable_progress=disable_progress,
             )
         except (AttributeError, FileNotFoundError):
             # TODO: Warn before running?
@@ -126,9 +133,12 @@ class APIQuery:
                 connection=self.connection,
                 query_id=self._query_id,
                 poll_interval=poll_interval,
+                disable_progress=disable_progress,
             )
 
-    def wait_until_ready(self, poll_interval: int = 1) -> None:
+    def wait_until_ready(
+        self, poll_interval: int = 1, disable_progress: Optional[bool] = None
+    ) -> None:
         """
         Wait until this query has finished running.
 
@@ -136,6 +146,10 @@ class APIQuery:
         ----------
         poll_interval : int, default 1
             Number of seconds to wait between checks for the query being ready
+        disable_progress : bool, default None
+            Set to True to disable progress bar display entirely, None to disable on
+            non-TTY, or False to always enable
+
 
         Raises
         ------
@@ -148,4 +162,5 @@ class APIQuery:
             connection=self.connection,
             query_id=self._query_id,
             poll_interval=poll_interval,
+            disable_progress=disable_progress,
         )

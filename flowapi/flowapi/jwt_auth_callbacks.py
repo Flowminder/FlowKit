@@ -9,7 +9,7 @@ from quart_jwt_extended.default_callbacks import (
     default_revoked_token_callback,
     default_unauthorized_callback,
 )
-from quart import current_app, request, Response, jsonify
+from quart import current_app, request, Response
 from typing import Any, Dict, Tuple
 
 
