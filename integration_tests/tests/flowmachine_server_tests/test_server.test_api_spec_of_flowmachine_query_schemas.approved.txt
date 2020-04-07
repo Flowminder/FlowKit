@@ -154,14 +154,6 @@
         ],
         "type": "string"
       },
-      "sampling": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/RandomSample"
-          }
-        ],
-        "nullable": true
-      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -445,6 +437,7 @@
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts",
         "unique_visitor_counts": "#/components/schemas/UniqueVisitorCounts",
+        "unmoving_at_reference_location_counts": "#/components/schemas/UnmovingAtReferenceLocationCounts",
         "unmoving_counts": "#/components/schemas/UnmovingCounts"
       },
       "propertyName": "query_kind"
@@ -503,6 +496,9 @@
       },
       {
         "$ref": "#/components/schemas/UniqueVisitorCounts"
+      },
+      {
+        "$ref": "#/components/schemas/UnmovingAtReferenceLocationCounts"
       },
       {
         "$ref": "#/components/schemas/UnmovingCounts"
@@ -1632,14 +1628,6 @@
         ],
         "type": "string"
       },
-      "sampling": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/RandomSample"
-          }
-        ],
-        "nullable": true
-      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -1866,6 +1854,23 @@
     },
     "type": "object"
   },
+  "UnmovingAtReferenceLocationCounts": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/UniqueLocations"
+      },
+      "query_kind": {
+        "enum": [
+          "unmoving_at_reference_location_counts"
+        ],
+        "type": "string"
+      },
+      "reference_locations": {
+        "$ref": "#/components/schemas/ReferenceLocation"
+      }
+    },
+    "type": "object"
+  },
   "UnmovingCounts": {
     "properties": {
       "locations": {
@@ -1876,14 +1881,6 @@
           "unmoving_counts"
         ],
         "type": "string"
-      },
-      "sampling": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/RandomSample"
-          }
-        ],
-        "nullable": true
       }
     },
     "type": "object"

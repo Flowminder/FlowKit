@@ -4,7 +4,6 @@
 
 from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features.subscriber.active_at_reference_location import (
     ActiveAtReferenceLocation,
@@ -16,17 +15,8 @@ from .base_query_with_sampling import (
 
 __all__ = ["ActiveAtReferenceLocationSchema", "ActiveAtReferenceLocationExposed"]
 
-from .daily_location import DailyLocationSchema
-from .modal_location import ModalLocationSchema
+from .reference_location import ReferenceLocationSchema
 from .unique_locations import UniqueLocationsSchema
-
-
-class ReferenceLocationSchema(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-    }
 
 
 class ActiveAtReferenceLocationSchema(BaseQueryWithSamplingSchema):

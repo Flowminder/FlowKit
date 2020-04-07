@@ -2,21 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields, post_load, Schema
+from marshmallow.validate import OneOf
 
 from flowmachine.features import UniqueLocationCounts
+from . import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
-from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
-    BaseExposedQueryWithSampling,
-)
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
 
 
-class UniqueLocationCountsSchema(BaseQueryWithSamplingSchema):
+class UniqueLocationCountsSchema(Schema):
     query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -28,7 +25,7 @@ class UniqueLocationCountsSchema(BaseQueryWithSamplingSchema):
         return UniqueLocationCountsExposed(**params)
 
 
-class UniqueLocationCountsExposed(BaseExposedQueryWithSampling):
+class UniqueLocationCountsExposed(BaseExposedQuery):
     def __init__(
         self,
         *,
@@ -44,10 +41,9 @@ class UniqueLocationCountsExposed(BaseExposedQueryWithSampling):
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
-        self.sampling = sampling
 
     @property
-    def _unsampled_query_obj(self):
+    def _flowmachine_query_obj(self):
         """
         Return the underlying flowmachine unique_location_counts object.
 

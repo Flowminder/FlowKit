@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields, post_load, Schema
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_consecutive_trips import (
@@ -10,17 +10,14 @@ from flowmachine.features.location.redacted_consecutive_trips import (
 )
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.location.consecutive_trips import ConsecutiveTrips
+from . import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
-from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
-    BaseExposedQueryWithSampling,
-)
 
 __all__ = ["ConsecutiveTripsSchema", "ConsecutiveTripsExposed"]
 
 
-class ConsecutiveTripsSchema(BaseQueryWithSamplingSchema):
+class ConsecutiveTripsSchema(Schema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["consecutive_trips"]))
     start_date = fields.Date(required=True)
@@ -33,7 +30,7 @@ class ConsecutiveTripsSchema(BaseQueryWithSamplingSchema):
         return ConsecutiveTripsExposed(**params)
 
 
-class ConsecutiveTripsExposed(BaseExposedQueryWithSampling):
+class ConsecutiveTripsExposed(BaseExposedQuery):
     def __init__(
         self,
         start_date,
