@@ -4237,6 +4237,31 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 
 <div class="output_area" markdown="1">
 
+
+
+
+
+<div id="5b636a3f-fc87-466a-8815-d3f716ba9886"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#5b636a3f-fc87-466a-8815-d3f716ba9886');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major": 2, "version_minor": 0, "model_id": "3abc12ec811f4d67a246d6e0d8abe5ad"}
+</script>
+</div>
+
+</div>
+
+<div class="output_area" markdown="1">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+<div class="output_area" markdown="1">
+
 <table>
 <thead><tr>
 <th style="text-align:right"></th>
@@ -4248,27 +4273,27 @@ We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using
 <tr>
 <td style="text-align:right">0</td>
 <td style="text-align:left">524 4 11 60</td>
-<td style="text-align:right">66.1509</td>
+<td style="text-align:right">56.8459</td>
 </tr>
 <tr>
 <td style="text-align:right">1</td>
-<td style="text-align:left">524 1 03 11</td>
-<td style="text-align:right">86.043</td>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">59.9014</td>
 </tr>
 <tr>
 <td style="text-align:right">2</td>
-<td style="text-align:left">524 1 03 14</td>
-<td style="text-align:right">86.4538</td>
+<td style="text-align:left">524 1 03 11</td>
+<td style="text-align:right">78.5867</td>
 </tr>
 <tr>
 <td style="text-align:right">3</td>
-<td style="text-align:left">524 3 07 36</td>
-<td style="text-align:right">72.5836</td>
+<td style="text-align:left">524 1 03 14</td>
+<td style="text-align:right">86.2522</td>
 </tr>
 <tr>
 <td style="text-align:right">4</td>
 <td style="text-align:left">524 5 13 67</td>
-<td style="text-align:right">84.1795</td>
+<td style="text-align:right">85.3894</td>
 </tr>
 </tbody>
 </table>
@@ -4289,8 +4314,6 @@ The resulting dataframe has two columns: <code>pcod</code> (the P-code of each r
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-</div>
-</div>
 <div class="codehilite"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">rog_results</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">})</span>
     <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;pcod&quot;</span><span class="p">)</span>
@@ -4315,23 +4338,23 @@ The resulting dataframe has two columns: <code>pcod</code> (the P-code of each r
 <tbody>
 <tr>
 <td style="text-align:left">524 4 11 60</td>
-<td style="text-align:right">66.1509</td>
+<td style="text-align:right">56.8459</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">59.9014</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 03 11</td>
-<td style="text-align:right">86.043</td>
+<td style="text-align:right">78.5867</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 03 14</td>
-<td style="text-align:right">86.4538</td>
-</tr>
-<tr>
-<td style="text-align:left">524 3 07 36</td>
-<td style="text-align:right">72.5836</td>
+<td style="text-align:right">86.2522</td>
 </tr>
 <tr>
 <td style="text-align:left">524 5 13 67</td>
-<td style="text-align:right">84.1795</td>
+<td style="text-align:right">85.3894</td>
 </tr>
 </tbody>
 </table>
@@ -4349,7 +4372,9 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 </div>
 </div></p>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
+<div class="cell border-box-sizing code_cell rendered"></div>
+</div>
+</div>
 <div class="input">
 
 <div class="codehilite"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
@@ -4372,35 +4397,35 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 <tbody>
 <tr>
 <td style="text-align:left">count</td>
-<td style="text-align:right">52</td>
+<td style="text-align:right">48</td>
 </tr>
 <tr>
 <td style="text-align:left">mean</td>
-<td style="text-align:right">74.5851</td>
+<td style="text-align:right">74.3701</td>
 </tr>
 <tr>
 <td style="text-align:left">std</td>
-<td style="text-align:right">14.1755</td>
+<td style="text-align:right">15.4824</td>
 </tr>
 <tr>
 <td style="text-align:left">min</td>
-<td style="text-align:right">52.8536</td>
+<td style="text-align:right">49.3545</td>
 </tr>
 <tr>
 <td style="text-align:left">25%</td>
-<td style="text-align:right">63.9148</td>
+<td style="text-align:right">60.1742</td>
 </tr>
 <tr>
 <td style="text-align:left">50%</td>
-<td style="text-align:right">71.1591</td>
+<td style="text-align:right">74.9762</td>
 </tr>
 <tr>
 <td style="text-align:left">75%</td>
-<td style="text-align:right">85.191</td>
+<td style="text-align:right">85.6051</td>
 </tr>
 <tr>
 <td style="text-align:left">max</td>
-<td style="text-align:right">111.456</td>
+<td style="text-align:right">104.991</td>
 </tr>
 </tbody>
 </table>
@@ -4436,8 +4461,6 @@ We can get a summary of the data using the dataframe's <code>describe</code> met
 </div>
 </div>
 
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4448,6 +4471,8 @@ To see the spatial distribution of radius of gyration, we need the geographic bo
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
+</div>
+</div>
 <div class="codehilite"><pre><span></span><code><span class="n">geog</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="o">.</span><span class="n">from_features</span><span class="p">(</span>
     <span class="n">fc</span><span class="o">.</span><span class="n">get_geography</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">)</span>
 <span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;pcod&quot;</span><span class="p">)</span>
@@ -4455,7 +4480,6 @@ To see the spatial distribution of radius of gyration, we need the geographic bo
 
 </div>
 
-</div>
 <div class="cell border-box-sizing text_cell rendered">
 <p><div class="inner_cell" markdown="1">
 <div class="text_cell_render border-box-sizing rendered_html" markdown="1">
@@ -4553,15 +4577,15 @@ There are gaps in this choropleth map. Looking at the content of the 'radius_of_
 <tbody>
 <tr>
 <td style="text-align:left">524 2 05 23</td>
-<td style="text-align:right">nan</td>
+<td style="text-align:right">71.8383</td>
 </tr>
 <tr>
 <td style="text-align:left">524 2 05 24</td>
-<td style="text-align:right">66.0543</td>
+<td style="text-align:right">59.4359</td>
 </tr>
 <tr>
 <td style="text-align:left">524 2 05 25</td>
-<td style="text-align:right">nan</td>
+<td style="text-align:right">60.1224</td>
 </tr>
 <tr>
 <td style="text-align:left">524 2 05 26</td>
@@ -4569,7 +4593,7 @@ There are gaps in this choropleth map. Looking at the content of the 'radius_of_
 </tr>
 <tr>
 <td style="text-align:left">524 2 05 27</td>
-<td style="text-align:right">nan</td>
+<td style="text-align:right">56.4911</td>
 </tr>
 </tbody>
 </table>
@@ -4640,6 +4664,31 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 
 <div class="output_area" markdown="1">
 
+
+
+
+
+<div id="581a9f05-f096-45e9-b245-b5f071f5b295"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#581a9f05-f096-45e9-b245-b5f071f5b295');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major": 2, "version_minor": 0, "model_id": "8c6acb07002248b0987a922bb479cbc4"}
+</script>
+</div>
+
+</div>
+
+<div class="output_area" markdown="1">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+<div class="output_area" markdown="1">
+
 <table>
 <thead><tr>
 <th style="text-align:right"></th>
@@ -4654,36 +4703,36 @@ There are some regions for which we have no <code>radius_of_gyration</code> data
 <td style="text-align:right">0</td>
 <td style="text-align:left">524 1 01 01</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Feature</td>
-<td style="text-align:right">0.332143</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.349437</td>
 </tr>
 <tr>
 <td style="text-align:right">1</td>
 <td style="text-align:left">524 1 01 01</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Basic</td>
-<td style="text-align:right">0.329286</td>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">0.327598</td>
 </tr>
 <tr>
 <td style="text-align:right">2</td>
 <td style="text-align:left">524 1 01 01</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Smart</td>
-<td style="text-align:right">0.338571</td>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">0.322965</td>
 </tr>
 <tr>
 <td style="text-align:right">3</td>
 <td style="text-align:left">524 1 01 02</td>
 <td style="text-align:left">value</td>
-<td style="text-align:left">Feature</td>
-<td style="text-align:right">0.319001</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.338656</td>
 </tr>
 <tr>
 <td style="text-align:right">4</td>
 <td style="text-align:left">524 1 01 02</td>
 <td style="text-align:left">value</td>
 <td style="text-align:left">Smart</td>
-<td style="text-align:right">0.346741</td>
+<td style="text-align:right">0.330007</td>
 </tr>
 </tbody>
 </table>
@@ -4702,8 +4751,7 @@ This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code
 </div>
 </div></p>
 </div>
-<div class="cell border-box-sizing code_cell rendered"></div>
-</div>
+<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="codehilite"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="p">(</span>
@@ -4730,24 +4778,24 @@ This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">('524 1 01 01', 'Feature')</td>
-<td style="text-align:right">0.332143</td>
-</tr>
-<tr>
 <td style="text-align:left">('524 1 01 01', 'Basic')</td>
-<td style="text-align:right">0.329286</td>
+<td style="text-align:right">0.349437</td>
 </tr>
 <tr>
 <td style="text-align:left">('524 1 01 01', 'Smart')</td>
-<td style="text-align:right">0.338571</td>
+<td style="text-align:right">0.327598</td>
 </tr>
 <tr>
-<td style="text-align:left">('524 1 01 02', 'Feature')</td>
-<td style="text-align:right">0.319001</td>
+<td style="text-align:left">('524 1 01 01', 'Feature')</td>
+<td style="text-align:right">0.322965</td>
+</tr>
+<tr>
+<td style="text-align:left">('524 1 01 02', 'Basic')</td>
+<td style="text-align:right">0.338656</td>
 </tr>
 <tr>
 <td style="text-align:left">('524 1 01 02', 'Smart')</td>
-<td style="text-align:right">0.346741</td>
+<td style="text-align:right">0.330007</td>
 </tr>
 </tbody>
 </table>
@@ -4764,6 +4812,8 @@ This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code
 We can get a summary of the data using the <code>describe</code> method, but let's first group by <code>handset_type</code> to get a summary per handset type.
 </div>
 </div></p>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -4795,36 +4845,36 @@ We can get a summary of the data using the <code>describe</code> method, but let
 <tbody>
 <tr>
 <td style="text-align:left">Basic</td>
-<td style="text-align:right">52</td>
-<td style="text-align:right">0.324728</td>
-<td style="text-align:right">0.0145201</td>
-<td style="text-align:right">0.292614</td>
-<td style="text-align:right">0.316386</td>
-<td style="text-align:right">0.325324</td>
-<td style="text-align:right">0.33436</td>
-<td style="text-align:right">0.365714</td>
+<td style="text-align:right">48</td>
+<td style="text-align:right">0.340959</td>
+<td style="text-align:right">0.0165209</td>
+<td style="text-align:right">0.298789</td>
+<td style="text-align:right">0.330822</td>
+<td style="text-align:right">0.3411</td>
+<td style="text-align:right">0.351702</td>
+<td style="text-align:right">0.377688</td>
 </tr>
 <tr>
 <td style="text-align:left">Feature</td>
-<td style="text-align:right">52</td>
-<td style="text-align:right">0.339228</td>
-<td style="text-align:right">0.0171758</td>
-<td style="text-align:right">0.298571</td>
-<td style="text-align:right">0.330039</td>
-<td style="text-align:right">0.341053</td>
-<td style="text-align:right">0.349675</td>
-<td style="text-align:right">0.389902</td>
+<td style="text-align:right">48</td>
+<td style="text-align:right">0.335306</td>
+<td style="text-align:right">0.0141146</td>
+<td style="text-align:right">0.307692</td>
+<td style="text-align:right">0.325811</td>
+<td style="text-align:right">0.334266</td>
+<td style="text-align:right">0.345082</td>
+<td style="text-align:right">0.367429</td>
 </tr>
 <tr>
 <td style="text-align:left">Smart</td>
-<td style="text-align:right">52</td>
-<td style="text-align:right">0.336045</td>
-<td style="text-align:right">0.014525</td>
-<td style="text-align:right">0.292614</td>
-<td style="text-align:right">0.3289</td>
-<td style="text-align:right">0.338018</td>
-<td style="text-align:right">0.34628</td>
-<td style="text-align:right">0.364023</td>
+<td style="text-align:right">48</td>
+<td style="text-align:right">0.323735</td>
+<td style="text-align:right">0.0142692</td>
+<td style="text-align:right">0.28978</td>
+<td style="text-align:right">0.312588</td>
+<td style="text-align:right">0.324763</td>
+<td style="text-align:right">0.334949</td>
+<td style="text-align:right">0.350461</td>
 </tr>
 </tbody>
 </table>
@@ -4869,33 +4919,33 @@ To plot histograms for the three handset types, it would be convenient if the pr
 <tbody>
 <tr>
 <td style="text-align:left">524 1 01 01</td>
-<td style="text-align:right">0.329286</td>
-<td style="text-align:right">0.332143</td>
-<td style="text-align:right">0.338571</td>
+<td style="text-align:right">0.349437</td>
+<td style="text-align:right">0.322965</td>
+<td style="text-align:right">0.327598</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 01 02</td>
-<td style="text-align:right">0.334258</td>
-<td style="text-align:right">0.319001</td>
-<td style="text-align:right">0.346741</td>
+<td style="text-align:right">0.338656</td>
+<td style="text-align:right">0.331337</td>
+<td style="text-align:right">0.330007</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 01 03</td>
-<td style="text-align:right">0.292614</td>
-<td style="text-align:right">0.349432</td>
-<td style="text-align:right">0.357955</td>
+<td style="text-align:right">0.298789</td>
+<td style="text-align:right">0.367429</td>
+<td style="text-align:right">0.333782</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 01 04</td>
-<td style="text-align:right">0.334979</td>
-<td style="text-align:right">0.345557</td>
-<td style="text-align:right">0.319464</td>
+<td style="text-align:right">0.377688</td>
+<td style="text-align:right">0.30914</td>
+<td style="text-align:right">0.313172</td>
 </tr>
 <tr>
-<td style="text-align:left">524 1 02 05</td>
-<td style="text-align:right">0.326446</td>
-<td style="text-align:right">0.336088</td>
-<td style="text-align:right">0.337466</td>
+<td style="text-align:left">524 1 02 06</td>
+<td style="text-align:right">0.346614</td>
+<td style="text-align:right">0.312085</td>
+<td style="text-align:right">0.341301</td>
 </tr>
 </tbody>
 </table>
@@ -5035,38 +5085,38 @@ As with the radius of gyration results, we can also join to the geography data a
 <tbody>
 <tr>
 <td style="text-align:left">524 4 11 60</td>
-<td style="text-align:right">66.1509</td>
-<td style="text-align:right">0.316176</td>
-<td style="text-align:right">0.332888</td>
-<td style="text-align:right">0.350936</td>
+<td style="text-align:right">56.8459</td>
+<td style="text-align:right">0.356863</td>
+<td style="text-align:right">0.322876</td>
+<td style="text-align:right">0.320261</td>
+</tr>
+<tr>
+<td style="text-align:left">524 3 09 50</td>
+<td style="text-align:right">59.9014</td>
+<td style="text-align:right">0.312253</td>
+<td style="text-align:right">0.337286</td>
+<td style="text-align:right">0.350461</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 03 11</td>
-<td style="text-align:right">86.043</td>
-<td style="text-align:right">0.325811</td>
-<td style="text-align:right">0.32299</td>
-<td style="text-align:right">0.351199</td>
+<td style="text-align:right">78.5867</td>
+<td style="text-align:right">0.335735</td>
+<td style="text-align:right">0.329971</td>
+<td style="text-align:right">0.334294</td>
 </tr>
 <tr>
 <td style="text-align:left">524 1 03 14</td>
-<td style="text-align:right">86.4538</td>
-<td style="text-align:right">0.315549</td>
-<td style="text-align:right">0.358232</td>
-<td style="text-align:right">0.32622</td>
-</tr>
-<tr>
-<td style="text-align:left">524 3 07 36</td>
-<td style="text-align:right">72.5836</td>
-<td style="text-align:right">0.340862</td>
-<td style="text-align:right">0.312799</td>
-<td style="text-align:right">0.346338</td>
+<td style="text-align:right">86.2522</td>
+<td style="text-align:right">0.338245</td>
+<td style="text-align:right">0.32217</td>
+<td style="text-align:right">0.339585</td>
 </tr>
 <tr>
 <td style="text-align:left">524 5 13 67</td>
-<td style="text-align:right">84.1795</td>
-<td style="text-align:right">0.344729</td>
-<td style="text-align:right">0.325499</td>
-<td style="text-align:right">0.329772</td>
+<td style="text-align:right">85.3894</td>
+<td style="text-align:right">0.33378</td>
+<td style="text-align:right">0.345845</td>
+<td style="text-align:right">0.320375</td>
 </tr>
 </tbody>
 </table>
@@ -5114,29 +5164,29 @@ As with the radius of gyration results, we can also join to the geography data a
 <tr>
 <td style="text-align:left">radius_of_gyration</td>
 <td style="text-align:right">1</td>
-<td style="text-align:right">-0.00199691</td>
-<td style="text-align:right">-0.113516</td>
-<td style="text-align:right">0.136228</td>
+<td style="text-align:right">-0.089102</td>
+<td style="text-align:right">-0.141075</td>
+<td style="text-align:right">0.24271</td>
 </tr>
 <tr>
 <td style="text-align:left">('proportion', 'Basic')</td>
-<td style="text-align:right">-0.00199691</td>
+<td style="text-align:right">-0.089102</td>
 <td style="text-align:right">1</td>
-<td style="text-align:right">-0.591165</td>
-<td style="text-align:right">-0.300615</td>
+<td style="text-align:right">-0.575834</td>
+<td style="text-align:right">-0.588204</td>
 </tr>
 <tr>
 <td style="text-align:left">('proportion', 'Feature')</td>
-<td style="text-align:right">-0.113516</td>
-<td style="text-align:right">-0.591165</td>
+<td style="text-align:right">-0.141075</td>
+<td style="text-align:right">-0.575834</td>
 <td style="text-align:right">1</td>
-<td style="text-align:right">-0.591532</td>
+<td style="text-align:right">-0.322468</td>
 </tr>
 <tr>
 <td style="text-align:left">('proportion', 'Smart')</td>
-<td style="text-align:right">0.136228</td>
-<td style="text-align:right">-0.300615</td>
-<td style="text-align:right">-0.591532</td>
+<td style="text-align:right">0.24271</td>
+<td style="text-align:right">-0.588204</td>
+<td style="text-align:right">-0.322468</td>
 <td style="text-align:right">1</td>
 </tr>
 </tbody>
@@ -5232,6 +5282,9 @@ There is no obvious pattern visible in these plots, so for this test dataset we 
 </div>
 </div></p>
 </div>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {"d01226b150f0485e8f7d395e1582eac4": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "ab1269bab8994773a5404e984043d3b1": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": "initial"}}, "7e08f76111f64d6fb7f3f332de0b09de": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "Parts run: 100%", "description_tooltip": null, "layout": "IPY_MODEL_d01226b150f0485e8f7d395e1582eac4", "max": 11.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_ab1269bab8994773a5404e984043d3b1", "value": 11.0}}, "3600e9e130644abe8d91c6d211324a9a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "debe77f981a24aed8fe77bfc7f99d12c": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "152bab2f9a414da8adc3faa452e65d33": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_3600e9e130644abe8d91c6d211324a9a", "placeholder": "\u200b", "style": "IPY_MODEL_debe77f981a24aed8fe77bfc7f99d12c", "value": " 11/11 [00:16&lt;00:00,  1.49s/q]"}}, "eea43dbf81a5480881b3a2cc87bc8489": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "3abc12ec811f4d67a246d6e0d8abe5ad": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_7e08f76111f64d6fb7f3f332de0b09de", "IPY_MODEL_152bab2f9a414da8adc3faa452e65d33"], "layout": "IPY_MODEL_eea43dbf81a5480881b3a2cc87bc8489"}}, "7bba2b15118d47a3915befda7a8b2a4d": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "28e94aee06174647974aa2d87c7c8bbc": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": "initial"}}, "e819ec94421e4f569b9fb76bfc01be76": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "Parts run: 100%", "description_tooltip": null, "layout": "IPY_MODEL_7bba2b15118d47a3915befda7a8b2a4d", "max": 10.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_28e94aee06174647974aa2d87c7c8bbc", "value": 10.0}}, "0f232abdf99648df9b3390d19684a6a9": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "5061e74b18eb40b68f5bcddbd8c3b5bd": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "9c708ca621d24504bebdc84b48956d28": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_0f232abdf99648df9b3390d19684a6a9", "placeholder": "\u200b", "style": "IPY_MODEL_5061e74b18eb40b68f5bcddbd8c3b5bd", "value": " 10/10 [00:11&lt;00:00,  1.12s/q]"}}, "104e9ae6020d43f4b1dca2e35ec65085": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "8c6acb07002248b0987a922bb479cbc4": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_e819ec94421e4f569b9fb76bfc01be76", "IPY_MODEL_9c708ca621d24504bebdc84b48956d28"], "layout": "IPY_MODEL_104e9ae6020d43f4b1dca2e35ec65085"}}}, "version_major": 2, "version_minor": 0}
+</script>
                 
                   
                 

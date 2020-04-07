@@ -5538,7 +5538,7 @@
 <h2 id="class-connection">Class <strong>Connection</strong><a class="headerlink" href="#class-connection" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">Connection</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L25">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L27">flowclient/client.py</a></p>
 <p>A connection to a FlowKit API server.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5582,7 +5582,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h4 id="get_url">get_url<a class="headerlink" href="#get_url" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NoneType</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L95">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L97">flowclient/client.py</a></p>
 <p>Attempt to get something from the API, and return the raw response object if an error response wasn't received. If an error response was received, raises an error.</p>
 <h5 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5602,7 +5602,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h4 id="post_json">post_json<a class="headerlink" href="#post_json" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">post_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L152">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L154">flowclient/client.py</a></p>
 <p>Attempt to post json to the API, and return the raw response object if an error response wasn't received. If an error response was received, raises an error.</p>
 <h5 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5622,7 +5622,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h4 id="update_token">update_token<a class="headerlink" href="#update_token" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><code><span class="n">update_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L77">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L79">flowclient/client.py</a></p>
 <p>Replace this connection's API token with a new one.</p>
 <h5 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5632,12 +5632,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="class-flowclientconnectionerror">Class <strong>FlowclientConnectionError</strong><a class="headerlink" href="#class-flowclientconnectionerror" title="Permanent link">&para;</a></h2>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L19">flowclient/client.py</a></p>
+<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L21">flowclient/client.py</a></p>
 <p>Custom exception to indicate an error when connecting to a FlowKit API.</p>
 <h2 id="connect">connect<a class="headerlink" href="#connect" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">connect</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L214">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L216">flowclient/client.py</a></p>
 <p>Connect to a FlowKit API server and return the resulting Connection object.</p>
 <h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5665,7 +5665,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="daily_location_spec">daily_location_spec<a class="headerlink" href="#daily_location_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">daily_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L658">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L736">flowclient/client.py</a></p>
 <p>Return query spec for a daily location query for a date and unit of aggregation. Must be passed to <code>spatial_aggregate</code> to retrieve a result from the aggregates API.</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5696,7 +5696,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="displacement_spec">displacement_spec<a class="headerlink" href="#displacement_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">displacement_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reference_location</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L991">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1069">flowclient/client.py</a></p>
 <p>Return query spec for displacement </p>
 <h3 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5730,7 +5730,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="event_count_spec">event_count_spec<a class="headerlink" href="#event_count_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">event_count_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L949">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1027">flowclient/client.py</a></p>
 <p>Return query spec for event count</p>
 <h3 id="parameters_7">Parameters<a class="headerlink" href="#parameters_7" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5765,7 +5765,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="get_available_dates">get_available_dates<a class="headerlink" href="#get_available_dates" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">get_available_dates</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NoneType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L581">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L659">flowclient/client.py</a></p>
 <p>Get available dates for different event types from the database.</p>
 <h3 id="parameters_8">Parameters<a class="headerlink" href="#parameters_8" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5788,7 +5788,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="get_geography">get_geography<a class="headerlink" href="#get_geography" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">get_geography</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L544">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L622">flowclient/client.py</a></p>
 <p>Get geography data from the database.</p>
 <h3 id="parameters_9">Parameters<a class="headerlink" href="#parameters_9" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5809,9 +5809,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="get_geojson_result">get_geojson_result<a class="headerlink" href="#get_geojson_result" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">get_geojson_result</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_spec</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_geojson_result</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_spec</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L498">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L558">flowclient/client.py</a></p>
 <p>Run and retrieve a query of a specified kind with parameters.</p>
 <h3 id="parameters_10">Parameters<a class="headerlink" href="#parameters_10" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5823,6 +5823,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p><code>query_spec</code>: <code>dict</code></p>
 <p>A query specification to run, e.g. <code>{'kind':'daily_location', 'params':{'date':'2016-01-01'}}</code></p>
 </li>
+<li>
+<p><code>disable_progress</code>: <code>typing.Union[bool, NoneType]</code>, default <code>None</code></p>
+<p>Set to True to disable progress bar display entirely, None to disable on non-TTY, or False to always enable</p>
+</li>
 </ul>
 <h3 id="returns_8">Returns<a class="headerlink" href="#returns_8" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5832,9 +5836,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="get_geojson_result_by_query_id">get_geojson_result_by_query_id<a class="headerlink" href="#get_geojson_result_by_query_id" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">get_geojson_result_by_query_id</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_geojson_result_by_query_id</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L434">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L474">flowclient/client.py</a></p>
 <p>Get a query by id, and return it as a geojson dict</p>
 <h3 id="parameters_11">Parameters<a class="headerlink" href="#parameters_11" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5850,6 +5854,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p><code>poll_interval</code>: <code>int</code>, default <code>1</code></p>
 <p>Number of seconds to wait between checks for the query being ready</p>
 </li>
+<li>
+<p><code>disable_progress</code>: <code>typing.Union[bool, NoneType]</code>, default <code>None</code></p>
+<p>Set to True to disable progress bar display entirely, None to disable on non-TTY, or False to always enable</p>
+</li>
 </ul>
 <h3 id="returns_9">Returns<a class="headerlink" href="#returns_9" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5861,7 +5869,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="get_json_dataframe">get_json_dataframe<a class="headerlink" href="#get_json_dataframe" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">get_json_dataframe</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L401">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L441">flowclient/client.py</a></p>
 <p>Get a dataframe from a json source.</p>
 <h3 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5882,9 +5890,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="get_result">get_result<a class="headerlink" href="#get_result" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">get_result</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_spec</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_result</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_spec</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L521">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L590">flowclient/client.py</a></p>
 <p>Run and retrieve a query of a specified kind with parameters.</p>
 <h3 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5896,6 +5904,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p><code>query_spec</code>: <code>dict</code></p>
 <p>A query specification to run, e.g. <code>{'kind':'daily_location', 'date':'2016-01-01'}</code></p>
 </li>
+<li>
+<p><code>disable_progress</code>: <code>typing.Union[bool, NoneType]</code>, default <code>None</code></p>
+<p>Set to True to disable progress bar display entirely, None to disable on non-TTY, or False to always enable</p>
+</li>
 </ul>
 <h3 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5905,9 +5917,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="get_result_by_query_id">get_result_by_query_id<a class="headerlink" href="#get_result_by_query_id" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_result_by_query_id</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L471">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L521">flowclient/client.py</a></p>
 <p>Get a query by id, and return it as a dataframe</p>
 <h3 id="parameters_14">Parameters<a class="headerlink" href="#parameters_14" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5923,6 +5935,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p><code>poll_interval</code>: <code>int</code>, default <code>1</code></p>
 <p>Number of seconds to wait between checks for the query being ready</p>
 </li>
+<li>
+<p><code>disable_progress</code>: <code>typing.Union[bool, NoneType]</code>, default <code>None</code></p>
+<p>Set to True to disable progress bar display entirely, None to disable on non-TTY, or False to always enable</p>
+</li>
 </ul>
 <h3 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5932,9 +5948,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="get_result_location_from_id_when_ready">get_result_location_from_id_when_ready<a class="headerlink" href="#get_result_location_from_id_when_ready" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">get_result_location_from_id_when_ready</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">get_result_location_from_id_when_ready</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L368">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L398">flowclient/client.py</a></p>
 <p>Return, once ready, the location at which results of a query will be obtainable.</p>
 <h3 id="parameters_15">Parameters<a class="headerlink" href="#parameters_15" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5950,6 +5966,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p><code>poll_interval</code>: <code>int</code>, default <code>1</code></p>
 <p>Number of seconds to wait between checks for the query being ready</p>
 </li>
+<li>
+<p><code>disable_progress</code>: <code>typing.Union[bool, NoneType]</code>, default <code>None</code></p>
+<p>Set to True to disable progress bar display entirely, None to disable on non-TTY, or False to always enable</p>
+</li>
 </ul>
 <h3 id="returns_13">Returns<a class="headerlink" href="#returns_13" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5961,7 +5981,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="get_status">get_status<a class="headerlink" href="#get_status" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">get_status</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L291">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L293">flowclient/client.py</a></p>
 <p>Check the status of a query.</p>
 <h3 id="parameters_16">Parameters<a class="headerlink" href="#parameters_16" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5984,7 +6004,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="handset_spec">handset_spec<a class="headerlink" href="#handset_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">handset_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">characteristic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hnd_type&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1109">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1187">flowclient/client.py</a></p>
 <p>Return query spec for handset</p>
 <h3 id="parameters_17">Parameters<a class="headerlink" href="#parameters_17" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6019,7 +6039,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="modal_location_from_dates_spec">modal_location_from_dates_spec<a class="headerlink" href="#modal_location_from_dates_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">modal_location_from_dates_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L722">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L800">flowclient/client.py</a></p>
 <p>Return query spec for a modal location query for a date range and unit of aggregation. Must be passed to <code>spatial_aggregate</code> to retrieve a result from the aggregates API.</p>
 <h3 id="parameters_18">Parameters<a class="headerlink" href="#parameters_18" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6054,7 +6074,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="modal_location_spec">modal_location_spec<a class="headerlink" href="#modal_location_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">modal_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">locations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L697">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L775">flowclient/client.py</a></p>
 <p>Return query spec for a modal location query for a list of locations. Must be passed to <code>spatial_aggregate</code> to retrieve a result from the aggregates API.</p>
 <h3 id="parameters_19">Parameters<a class="headerlink" href="#parameters_19" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6073,7 +6093,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="nocturnal_events_spec">nocturnal_events_spec<a class="headerlink" href="#nocturnal_events_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">nocturnal_events_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1069">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1147">flowclient/client.py</a></p>
 <p>Return query spec for nocturnal events</p>
 <h3 id="parameters_20">Parameters<a class="headerlink" href="#parameters_20" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6104,7 +6124,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="pareto_interactions_spec">pareto_interactions_spec<a class="headerlink" href="#pareto_interactions_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">pareto_interactions_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">proportion</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1032">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1110">flowclient/client.py</a></p>
 <p>Return query spec for pareto interactions</p>
 <h3 id="parameters_21">Parameters<a class="headerlink" href="#parameters_21" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6135,7 +6155,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="query_is_ready">query_is_ready<a class="headerlink" href="#query_is_ready" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">query_is_ready</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span><span class="p">]</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L245">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L247">flowclient/client.py</a></p>
 <p>Check if a query id has results available.</p>
 <h3 id="parameters_22">Parameters<a class="headerlink" href="#parameters_22" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6158,7 +6178,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="radius_of_gyration_spec">radius_of_gyration_spec<a class="headerlink" href="#radius_of_gyration_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">radius_of_gyration_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L771">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L849">flowclient/client.py</a></p>
 <p>Return query spec for radius of gyration</p>
 <h3 id="parameters_23">Parameters<a class="headerlink" href="#parameters_23" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6185,7 +6205,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="random_sample_spec">random_sample_spec<a class="headerlink" href="#random_sample_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">random_sample_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;random_ids&#39;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1150">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L1228">flowclient/client.py</a></p>
 <p>Return spec for a random sample from a query result.</p>
 <h3 id="parameters_24">Parameters<a class="headerlink" href="#parameters_24" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6224,7 +6244,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="run_query">run_query<a class="headerlink" href="#run_query" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">run_query</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_spec</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L622">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L700">flowclient/client.py</a></p>
 <p>Run a query of a specified kind with parameters and get the identifier for it.</p>
 <h3 id="parameters_25">Parameters<a class="headerlink" href="#parameters_25" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6247,7 +6267,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="subscriber_degree_spec">subscriber_degree_spec<a class="headerlink" href="#subscriber_degree_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">subscriber_degree_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L875">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L953">flowclient/client.py</a></p>
 <p>Return query spec for subscriber degree</p>
 <h3 id="parameters_26">Parameters<a class="headerlink" href="#parameters_26" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6278,7 +6298,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="topup_amount_spec">topup_amount_spec<a class="headerlink" href="#topup_amount_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">topup_amount_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L912">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L990">flowclient/client.py</a></p>
 <p>Return query spec for topup amount</p>
 <h3 id="parameters_27">Parameters<a class="headerlink" href="#parameters_27" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6309,7 +6329,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="topup_balance_spec">topup_balance_spec<a class="headerlink" href="#topup_balance_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">topup_balance_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L838">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L916">flowclient/client.py</a></p>
 <p>Return query spec for top-up balance.</p>
 <h3 id="parameters_28">Parameters<a class="headerlink" href="#parameters_28" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6340,7 +6360,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="unique_location_counts_spec">unique_location_counts_spec<a class="headerlink" href="#unique_location_counts_spec" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><code><span class="n">unique_location_counts_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L801">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L879">flowclient/client.py</a></p>
 <p>Return query spec for unique location count</p>
 <h3 id="parameters_29">Parameters<a class="headerlink" href="#parameters_29" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6369,9 +6389,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="wait_for_query_to_be_ready">wait_for_query_to_be_ready<a class="headerlink" href="#wait_for_query_to_be_ready" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><code><span class="n">wait_for_query_to_be_ready</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span>
+<p><div class="codehilite"><pre><span></span><code><span class="n">wait_for_query_to_be_ready</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L328">flowclient/client.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/client.py#L330">flowclient/client.py</a></p>
 <p>Wait until a query id has finished running, and if it finished successfully return the reply from flowapi.</p>
 <h3 id="parameters_30">Parameters<a class="headerlink" href="#parameters_30" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6386,6 +6406,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <li>
 <p><code>poll_interval</code>: <code>int</code>, default <code>1</code></p>
 <p>Number of seconds to wait between checks for the query being ready</p>
+</li>
+<li>
+<p><code>disable_progress</code>: <code>typing.Union[bool, NoneType]</code>, default <code>None</code></p>
+<p>Set to True to disable progress bar display entirely, None to disable on non-TTY, or False to always enable</p>
 </li>
 </ul>
 <h3 id="returns_28">Returns<a class="headerlink" href="#returns_28" title="Permanent link">&para;</a></h3>
