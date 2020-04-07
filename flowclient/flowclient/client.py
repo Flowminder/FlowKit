@@ -368,33 +368,28 @@ def wait_for_query_to_be_ready(
         progress = reply.json()["progress"]
         total_eligible = progress["eligible"]
         completed = 0
-        tq = partial(tqdm, disable=disable_progress, unit="q", total=total_eligible)
-        with tq(desc="Parts run") as total_bar:
-            with tq(desc="Currently running", leave=False) as running_bar:
-                with tq(desc="Queued", leave=False) as queued_bar:
-                    while not query_ready:
-                        logger.info("Waiting before polling again.")
-                        time.sleep(
-                            poll_interval
-                        )  # Wait a second, then check if the query is ready again
-                        query_ready, reply = query_is_ready(
-                            connection=connection, query_id=query_id
-                        )  # Poll the server
-                        progress = reply.json()["progress"]
-                        completion_change = (
-                            total_eligible - progress["eligible"]
-                        ) - completed
-                        completed += completion_change
+        with tqdm(
+            desc="Parts run", disable=disable_progress, unit="q", total=total_eligible
+        ) as total_bar:
+            while not query_ready:
+                logger.info("Waiting before polling again.")
+                time.sleep(
+                    poll_interval
+                )  # Wait a second, then check if the query is ready again
+                query_ready, reply = query_is_ready(
+                    connection=connection, query_id=query_id
+                )  # Poll the server
+                if query_ready:
+                    break
+                else:
+                    progress = reply.json()["progress"]
+                    completion_change = (
+                        total_eligible - progress["eligible"]
+                    ) - completed
+                    completed += completion_change
 
-                        total_bar.update(completion_change)
-                        try:
-                            running_bar.reset(progress["eligible"])
-                            queued_bar.reset(progress["eligible"])
-                        except AttributeError:
-                            pass  # Resetting a bar which hasn't been updated once
+                total_bar.update(completion_change)
 
-                        running_bar.update(progress["running"])
-                        queued_bar.update(progress["queued"])
             total_bar.update(total_eligible - completed)  # Finish the bar
 
     return reply
