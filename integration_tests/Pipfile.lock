@@ -59,7 +59,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "sys_platform == 'darwin'",
+            "markers": "platform_system == 'Darwin'",
             "version": "==0.1.0"
         },
         "approvaltests": {
@@ -400,10 +400,10 @@
         },
         "fsspec": {
             "hashes": [
-                "sha256:442e65c9b0cbb7ef0036e6cbbc2c045e3d68a7aba4703b46cd786bba507f7fd1",
-                "sha256:cddcf4390488175f6eb4694a8dc259d66916c27a8349db693873877b47ebd473"
+                "sha256:2f74d8cb37820480d5802620f819385a162202c7d9dbafcf82bc25e5fade4fd7",
+                "sha256:7ba96c818572afd82c8a1c658ea2bfedcdb3762ed7cf3ddcbb9896a79d1b7d78"
             ],
-            "version": "==0.7.1"
+            "version": "==0.7.2"
         },
         "future": {
             "hashes": [
@@ -877,10 +877,10 @@
         },
         "pbr": {
             "hashes": [
-                "sha256:139d2625547dbfa5fb0b81daebb39601c478c21956dc57e2e07b74450a8c506b",
-                "sha256:61aa52a0f18b71c5cc58232d2cf8f8d09cd67fcad60b742a60124cb8d6951488"
+                "sha256:07f558fece33b05caf857474a366dfcc00562bca13dd8b47b2b3e22d9f9bf55c",
+                "sha256:579170e23f8e0c2f24b0de612f71f648eccb79fb1322c814ae6b3c07b5ba23e8"
             ],
-            "version": "==5.4.4"
+            "version": "==5.4.5"
         },
         "pendulum": {
             "hashes": [
@@ -962,10 +962,10 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:56106d208e38c6fe5c71001a373e94c5649368f12aadaaf2b3a32938e093fefb",
-                "sha256:5d297c3caca3fd58839f1a2ebbd2e717dd408b8a67d3d19455560abc3ce08c93"
+                "sha256:1fffa66bd616e53cf9a2dfb7823cb7741125e4bc16794b07294a40ca80ea45ae",
+                "sha256:416e36351b0db99a538cb0ba5eac6da526980676a7bebdea8126b4355483ebcb"
             ],
-            "version": "==0.10.0"
+            "version": "==0.10.1"
         },
         "priority": {
             "hashes": [

@@ -59,7 +59,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "asyncpg": {
@@ -955,11 +955,11 @@
         },
         "pymdown-extensions": {
             "hashes": [
-                "sha256:66fae2683c7a1dac53184f7de57f51f8dad73f9ead2f453e94e85096cb811335",
-                "sha256:cb879686a586b22292899771f5e5bc3382808e92aa938f71b550ecdea709419f"
+                "sha256:71cbc748789959d4b964fe8dc038f5436779d244399fd5ba3a0bbfe9a0e43b1f",
+                "sha256:d27a8bc8bb7ecac589e832465dbefe24d7fedd9792636c6d0ac521e5045bedc0"
             ],
             "index": "pypi",
-            "version": "==6.3"
+            "version": "==7.0"
         },
         "pyparsing": {
             "hashes": [
@@ -1326,10 +1326,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:03d2366c64d44c7f61e74c700d9b202d57e9efe355ea5c28814c52bfe7a50b8c",
-                "sha256:be5ddeec77d78ba781ea41eacb2358a77f74cc2407f54b82222d7ee7dc8c8ccf"
+                "sha256:00339634a22c10a7a22476ee946bbde2dbe48d042ded784e4d88e0236eca5d81",
+                "sha256:ea9e3fd6bd9a37e8783d75bfc4c1faf3c6813da6bd1c3e776488b41ec683af94"
             ],
-            "version": "==4.44.1"
+            "version": "==4.45.0"
         },
         "traitlets": {
             "hashes": [
@@ -1462,7 +1462,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "argcomplete": {
@@ -1808,18 +1808,18 @@
         },
         "jupyterlab": {
             "hashes": [
-                "sha256:5d1a833a9e49e6d90d68191917cb16a97ff4ec668c26c85d33ebce629df14141",
-                "sha256:7c0a777aae68bc11c2a772d4c1e32c1f2a15388a3fb4fd43fa621e2261c368e9"
+                "sha256:6663eed77b10d567499ab998eb71dabb510572f7337ec8efc48ed56cd37f9c5f",
+                "sha256:8c239aababf5baa0b3d36e375fddeb9fd96f3a9a24a8cda098d6a414f5bbdc81"
             ],
             "index": "pypi",
-            "version": "==2.0.1"
+            "version": "==2.1.0"
         },
         "jupyterlab-server": {
             "hashes": [
-                "sha256:12381712f2e70b68442c03046b3afa6483dad4ccae9f47673ffe8a808cefd8e2",
-                "sha256:d554d3660049bd1495b190e63a96e06a2707a59936dd58ba3ec1dfe64775987e"
+                "sha256:6aeaa1133069ec8d109f474b628059da2ec2e73f4e448c89e56821e6cfc26c0f",
+                "sha256:bac27e2ea40f686e592d6429877e7d46947ea76c08c878081b028c2c89f71733"
             ],
-            "version": "==1.0.7"
+            "version": "==1.1.0"
         },
         "lazy-object-proxy": {
             "hashes": [
