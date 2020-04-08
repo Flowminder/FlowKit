@@ -5,8 +5,26 @@
 # This file contains custom definitions of marshmallow fields for use
 # by the flowmachine query schemas.
 
-from marshmallow import fields
+from marshmallow import fields, Schema, validates_schema, ValidationError, post_load
 from marshmallow.validate import Range, Length, OneOf
+
+
+class Bounds(Schema):
+    """
+    Schema representing a range (i.e. lower and upper bound, both required, lower bound must be less than upper.
+    """
+
+    lower_bound = fields.Float(required=True)
+    upper_bound = fields.Float(required=True)
+
+    @validates_schema
+    def validate_bounds_if_present(self, data, **kwargs):
+        if data["lower_bound"] >= data["upper_bound"]:
+            raise ValidationError("lower_bound should be less than upper_bound")
+
+    @post_load
+    def to_tuple(self, params, **kwargs):
+        return params["lower_bound"], params["upper_bound"]
 
 
 class EventTypes(fields.List):

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # TODO: Add __all__
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Optional, Tuple
 
 from merge_args import merge_args
 
@@ -1010,4 +1010,64 @@ def joined_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     """
     return APIQuery(
         connection=connection, parameters=joined_spatial_aggregate_spec(**kwargs)
+    )
+
+
+def histogram_aggregate_spec(
+    *,
+    metric: Dict[str, Union[str, Dict[str, str]]],
+    bins: Union[int, List[float]],
+    range: Optional[Tuple[float, float]] = None,
+) -> dict:
+    """
+    Return a query spec for a metric aggregated as a histogram.
+
+    Parameters
+    ----------
+    metric : dict
+        Metric to calculate and aggregate
+    bins : int, or list of floats
+       Either an integer number of bins for equally spaced bins, or a list of floats giving the lower and upper edges
+    range : tuple of floats or None, default None
+        Optionally supply inclusive lower and upper bounds to build the histogram over. By default, the
+        histogram will cover the whole range of the data.
+
+    Returns
+    -------
+    dict
+
+        Query specification for histogram aggregate over a metric
+    """
+    if isinstance(bins, list):
+        bins = dict(bin_list=bins)
+    else:
+        bins = dict(n_bins=bins)
+    spec = dict(query_kind="histogram_aggregate", metric=metric, bins=bins)
+    if range is not None:
+        spec["range"] = list(range[:2])
+    return spec
+
+
+@merge_args(histogram_aggregate_spec)
+def histogram_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Return a query spec for a metric aggregated as a histogram.
+
+    Parameters
+    ----------
+    metric : dict
+        Metric to calculate and aggregate
+    bins : int, or list of floats
+       Either an integer number of bins for equally spaced bins, or a list of floats giving the lower and upper edges
+    range : tuple of floats or None, default None
+        Optionally supply inclusive lower and upper bounds to build the histogram over. By default, the
+        histogram will cover the whole range of the data.
+
+    Returns
+    -------
+    APIQuery
+        Histogram aggregate query
+    """
+    return APIQuery(
+        connection=connection, parameters=histogram_aggregate_spec(**kwargs)
     )
