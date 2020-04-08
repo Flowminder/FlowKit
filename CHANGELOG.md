@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- `histogram_aggregate` added to FlowAPI and FlowClient. Allows the user to obtain a histogram over a per-subscriber metric. [#1076](https://github.com/Flowminder/FlowKit/issues/1076)
 
 ### Changed
 
@@ -14,7 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
-## [Unreleased]
+## [1.6.0]
+
+### Added
+- `histogram_aggregate` added to FlowAPI and FlowClient. Allows the user to obtain a histogram over a per-subscriber metric. [#1076](https://github.com/Flowminder/FlowKit/issues/1076)
+
+## [1.5.1]
 
 ### Added
 - FlowClient now displays a progress bar when waiting for a query to ready, indicating how many parts of that query still need to be run. 
@@ -658,7 +662,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.5.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.6.0...master
+[1.6.0]: https://github.com/Flowminder/FlowKit/compare/1.5.1...1.6.0
 [1.5.1]: https://github.com/Flowminder/FlowKit/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/Flowminder/FlowKit/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/Flowminder/FlowKit/compare/1.3.3...1.4.0
