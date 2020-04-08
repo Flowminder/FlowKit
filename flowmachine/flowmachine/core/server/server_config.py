@@ -79,7 +79,7 @@ def get_server_config() -> FlowmachineServerConfig:
     try:
         thread_pool_size = int(thread_pool_size)
     except (TypeError, ValueError):
-        pass  # Not an int
+        thread_pool_size = None  # Not an int
 
     return FlowmachineServerConfig(
         port=port,
