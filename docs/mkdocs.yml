@@ -78,22 +78,22 @@ theme:
 
   # Default values, taken from mkdocs_theme.yml
   language: en
-  feature:
-    # True to use tabs at the top, in addition to the side navbar
-    tabs: true
+  features:
+    - tabs
   palette:
-    primary: "#095798"
-    accent: "#2977B8"
+    accent: "#095798"
+    primary: "#2977B8"
   font:
     text: Roboto
     code: Roboto Mono
   favicon: assets/images/favicon.png
-  logo:
-    icon: "\uE80C"
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/scatter-plot
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
-  - markdown.extensions.codehilite:
+  - codehilite:
       guess_lang: false
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
@@ -107,6 +107,7 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
       emoji_generator: !!python/name:pymdownx.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.keys
@@ -120,6 +121,7 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_div_format
   - pymdownx.tasklist:
       custom_checkbox: true
+  - pymdownx.tabbed
   - pymdownx.tilde
 
 extra_css:
@@ -128,9 +130,8 @@ extra_css:
 extra_javascript:
   - https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js
 extra:
-  repo_icon: "github"
   social:
-    - type: "github"
+    - icon: fontawesome/brands/github
       link: "https://github.com/Flowminder"
-    - type: "twitter"
+    - icon: fontawesome/brands/twitter
       link: "https://twitter.com/Flowminder"
