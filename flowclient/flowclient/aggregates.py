@@ -1036,7 +1036,7 @@ def histogram_aggregate_spec(
     -------
     dict
 
-        Query specification for an aggregated daily or modal location
+        Query specification for histogram aggregate over a metric
     """
     if isinstance(bins, list):
         bins = dict(bin_list=bins)
