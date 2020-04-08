@@ -1628,6 +1628,14 @@
         ],
         "type": "string"
       },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -1726,14 +1734,6 @@
           "unique_location_counts"
         ],
         "type": "string"
-      },
-      "sampling": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/RandomSample"
-          }
-        ],
-        "nullable": true
       },
       "start_date": {
         "format": "date",
