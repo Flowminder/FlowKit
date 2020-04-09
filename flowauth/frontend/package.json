@@ -30,7 +30,7 @@
   "devDependencies": {
     "cypress": "^4.3.0",
     "cypress-plugin-retries": "^1.5.2",
-    "husky": "^4.2.4",
+    "husky": "^4.2.5",
     "otp-cli": "^0.2.0",
     "prettier": "^2.0.4",
     "pretty-quick": "^2.0.1"
