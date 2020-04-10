@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.9"}
+apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.10"}
 Click = "*"
 
 [dev-packages]
