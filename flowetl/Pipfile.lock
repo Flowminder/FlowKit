@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "751fccf36ba9759176fa31a24e91e71b335428778166f7ded9238474fc688243"
+            "sha256": "c677e2916b1bbca3b684038abafb179ffdaf473689dd65b8003ed2a5866cc480"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -28,10 +28,11 @@
                 "postgres"
             ],
             "hashes": [
-                "sha256:ef54ea91b5a1c1c79e26212779fa6bb855988e252185797066d30453a9b76c41"
+                "sha256:046e16266e30a78c848f0fd53a910203bf141d9357e3179854a75909a1824a66",
+                "sha256:95ba96ef7e7a5547105b5a256ed4bf51cea0901daf3ec19235bd28eb2bec5bb1"
             ],
             "index": "pypi",
-            "version": "==1.10.9"
+            "version": "==1.10.10"
         },
         "apispec": {
             "extras": [
@@ -288,9 +289,9 @@
         },
         "future": {
             "hashes": [
-                "sha256:e39ced1ab767b5936646cedba8bcce582398233d6a627067d4c6a454c90cfedb"
+                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
             ],
-            "version": "==0.16.0"
+            "version": "==0.18.2"
         },
         "graphviz": {
             "hashes": [
@@ -318,7 +319,7 @@
                 "sha256:2a688cbaa90e0cc587f1df48bdc97a6eadccdcd9c35fb3f976a09e3b5016d90f",
                 "sha256:34513a8a0c4962bc66d35b359558fd8a5e10cd472d37aec5f66858addef32c1e"
             ],
-            "markers": "python_version < '3.8'",
+            "markers": "python_version == '3.7'",
             "version": "==1.6.0"
         },
         "iso8601": {
@@ -813,10 +814,11 @@
                 "postgres"
             ],
             "hashes": [
-                "sha256:ef54ea91b5a1c1c79e26212779fa6bb855988e252185797066d30453a9b76c41"
+                "sha256:046e16266e30a78c848f0fd53a910203bf141d9357e3179854a75909a1824a66",
+                "sha256:95ba96ef7e7a5547105b5a256ed4bf51cea0901daf3ec19235bd28eb2bec5bb1"
             ],
             "index": "pypi",
-            "version": "==1.10.9"
+            "version": "==1.10.10"
         },
         "apispec": {
             "extras": [
@@ -1064,9 +1066,9 @@
         },
         "future": {
             "hashes": [
-                "sha256:e39ced1ab767b5936646cedba8bcce582398233d6a627067d4c6a454c90cfedb"
+                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
             ],
-            "version": "==0.16.0"
+            "version": "==0.18.2"
         },
         "graphviz": {
             "hashes": [
@@ -1094,7 +1096,7 @@
                 "sha256:2a688cbaa90e0cc587f1df48bdc97a6eadccdcd9c35fb3f976a09e3b5016d90f",
                 "sha256:34513a8a0c4962bc66d35b359558fd8a5e10cd472d37aec5f66858addef32c1e"
             ],
-            "markers": "python_version < '3.8'",
+            "markers": "python_version == '3.7'",
             "version": "==1.6.0"
         },
         "iso8601": {
