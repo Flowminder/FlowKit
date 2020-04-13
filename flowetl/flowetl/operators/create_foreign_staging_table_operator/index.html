@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.0.1">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.0.2">
     
     
       
@@ -19,9 +19,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.c3000690.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.07c9fbf5.min.css">
       
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.4444686e.min.css">
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ecd4686e.min.css">
       
       
         
@@ -4285,27 +4285,27 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowe
 <h4 id="dag">dag<a class="headerlink" href="#dag" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">dag</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L518">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L524">airflow/models/baseoperator.py</a></p>
 <p>Returns the Operator's DAG if set, otherwise raises an error</p>
 <h4 id="dag_id">dag_id<a class="headerlink" href="#dag_id" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">dag_id</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L552">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L558">airflow/models/baseoperator.py</a></p>
 <p>Returns dag id if it has one or an adhoc + owner</p>
 <h4 id="deps">deps<a class="headerlink" href="#deps" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">deps</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L560">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L566">airflow/models/baseoperator.py</a></p>
 <p>Returns the list of dependencies for the operator. These differ from execution context dependencies in that they are specific to tasks and can be extended/overridden by subclasses.</p>
 <h4 id="downstream_list">downstream_list<a class="headerlink" href="#downstream_list" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">downstream_list</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L831">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L837">airflow/models/baseoperator.py</a></p>
 <p>@property: list of tasks directly downstream</p>
 <h4 id="downstream_task_ids">downstream_task_ids<a class="headerlink" href="#downstream_task_ids" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">downstream_task_ids</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L836">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L842">airflow/models/baseoperator.py</a></p>
 <p>@property: list of ids of tasks directly downstream</p>
 <h4 id="log">log<a class="headerlink" href="#log" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">log</span>
@@ -4318,28 +4318,28 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowe
 <h4 id="priority_weight_total">priority_weight_total<a class="headerlink" href="#priority_weight_total" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">priority_weight_total</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L585">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L591">airflow/models/baseoperator.py</a></p>
 <p>Total priority weight for the task. It might include all upstream or downstream tasks. depending on the weight rule.
   - WeightRule.ABSOLUTE - only own weight   - WeightRule.DOWNSTREAM - adds priority weight of all downstream tasks   - WeightRule.UPSTREAM - adds priority weight of all upstream tasks</p>
 <h4 id="schedule_interval">schedule_interval<a class="headerlink" href="#schedule_interval" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">schedule_interval</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L573">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L579">airflow/models/baseoperator.py</a></p>
 <p>The schedule interval of the DAG always wins over individual tasks so that tasks within a DAG always line up. The task still needs a schedule_interval as it may not be attached to a DAG.</p>
 <h4 id="task_type">task_type<a class="headerlink" href="#task_type" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">task_type</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L973">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L979">airflow/models/baseoperator.py</a></p>
 <p>@property: type of the task</p>
 <h4 id="upstream_list">upstream_list<a class="headerlink" href="#upstream_list" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">upstream_list</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L821">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L827">airflow/models/baseoperator.py</a></p>
 <p>@property: list of tasks directly upstream</p>
 <h4 id="upstream_task_ids">upstream_task_ids<a class="headerlink" href="#upstream_task_ids" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">upstream_task_ids</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L826">airflow/models/baseoperator.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowetl/airflow/models/baseoperator.py#L832">airflow/models/baseoperator.py</a></p>
 <p>@property: list of ids of tasks directly upstream</p>
                 
                   
@@ -4425,8 +4425,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/flowe
       
     </div>
     
-      <script src="../../../../assets/javascripts/vendor.f45d2d8d.min.js"></script>
-      <script src="../../../../assets/javascripts/bundle.74d0b805.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../../assets/javascripts/vendor.36cbf620.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.00c583dd.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
