@@ -53,7 +53,7 @@ services:
     ports:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
     volumes:
-      - ${FLOWETL_HOST_DAG_DIR:?Must set FLOWETL_HOST_DAG_DIR env var}:/usr/local/airflow/dags:ro
+      - ${FLOWETL_HOST_DAG_DIR:?Must set FLOWETL_HOST_DAG_DIR env var}:/opt/airflow/dags:ro
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor

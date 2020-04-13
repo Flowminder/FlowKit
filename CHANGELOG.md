@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- FlowETL is now based on the official apache-airflow docker image. As a result, you should now bind mount your host dags directory to `/opt/airflow/dags`, and your logs directory to `/opt/airflow/logs`.
 
 ### Fixed
 
