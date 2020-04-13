@@ -10,9 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- FlowMachine server will now ignore values for the `FLOWMACHINE_SERVER_THREADPOOL_SIZE` environment variable which can't be cast to `int`. [#2304](https://github.com/Flowminder/FlowKit/issues/2304)
 
 ### Removed
+
+## [1.6.1]
+
+### Fixed
+- FlowMachine server will now ignore values for the `FLOWMACHINE_SERVER_THREADPOOL_SIZE` environment variable which can't be cast to `int`. [#2304](https://github.com/Flowminder/FlowKit/issues/2304)
 
 ## [1.6.0]
 
@@ -663,7 +667,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.6.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.6.1...master
+[1.6.1]: https://github.com/Flowminder/FlowKit/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/Flowminder/FlowKit/compare/1.5.1...1.6.0
 [1.5.1]: https://github.com/Flowminder/FlowKit/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/Flowminder/FlowKit/compare/1.4.0...1.5.0
