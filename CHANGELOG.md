@@ -10,7 +10,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- FlowMachine server will now ignore values for the `FLOWMACHINE_SERVER_THREADPOOL_SIZE` environment variable which can't be cast to `int`. [#2304](https://github.com/Flowminder/FlowKit/issues/2304)
 
 ### Removed
 
