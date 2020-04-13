@@ -9,12 +9,10 @@
 #
 # Now un-exclude only those folders and files that are needed for building the image:
 #
-!Pipfile
-!Pipfile.lock
-!flowapi/
-!MANIFEST.in
-!setup.cfg
-!setup.py
-!versioneer.py
-!start.sh
-!README.md
+!flowmachine/Pipfile
+!flowmachine/Pipfile.lock
+!flowmachine/flowmachine/
+!flowmachine/setup.cfg
+!flowmachine/setup.py
+!flowmachine/MANIFEST.in
+!flowmachine/versioneer.py

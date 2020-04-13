@@ -8,12 +8,12 @@ ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowapi
-COPY Pipfile* ./
+COPY ./flowapi/Pipfile* ./
 RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-base libffi-dev \
     gcc wget git musl-dev zeromq-dev openssl-dev && \
     pip install --no-cache-dir pipenv Cython && pipenv install --clear --deploy && \
     apk del build-dependencies
-COPY . /${SOURCE_TREE}/flowapi/
+COPY ./* /${SOURCE_TREE}/
 RUN pipenv run python setup.py install
 ENV QUART_ENV=production
 CMD ["pipenv", "run", "./start.sh"]

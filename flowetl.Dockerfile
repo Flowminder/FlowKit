@@ -14,7 +14,6 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 ENV AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.deny_all
 ENV AIRFLOW__WEBSERVER__RBAC=True
 USER root
-WORKDIR /usr/src/deps
 
 # Needed for custom users passed through docker's --user argument, otherwise it's /
 ENV HOME ${AIRFLOW_HOME}
@@ -28,6 +27,7 @@ RUN set -eux; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
 
+
 COPY ./entrypoint.sh /entrypoint.sh
 
 # Install FlowETL module
@@ -37,7 +37,7 @@ ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowetl
 
-COPY Pipfile* ./
+COPY ./* /${SOURCE_TREE}/
 
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git build-essential && \
@@ -46,7 +46,6 @@ RUN apt-get update && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
 
-COPY ./flowetl /${SOURCE_TREE}/flowetl
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
         python setup.py install && \
@@ -67,7 +66,7 @@ RUN chmod -R 777 ${AIRFLOW_HOME}
 USER airflow
 
 WORKDIR ${AIRFLOW_HOME}
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/${SOURCE_TREE}/flowetl/entrypoint.sh"]
 # set default arg for entrypoint
 CMD ["webserver"]
 

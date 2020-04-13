@@ -194,8 +194,8 @@ jobs:
             docker pull flowminder/flowdb:latest && export BUILD_CACHE_TAG=latest || true
             docker pull flowminder/flowdb:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
             echo Using cache from $BUILD_CACHE_TAG
-            docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
-              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 flowdb
+            DOCKER_BUILDKIT=1 docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
+              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 -f flowdb.Dockerfile .
       - run:
           name: Test that not providing a superuser password causes the container to exit
           command: |
@@ -248,7 +248,7 @@ jobs:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
       image: circleci/classic:201808-01
     environment: *flowdb_env
-    working_directory: /home/circleci/project/flowdb
+    working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -269,8 +269,8 @@ jobs:
           command: |
             echo Building oracle_fdw version $FLOWDB_VERSION
             echo Tagging as oracle-$CIRCLE_SHA1
-            docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb:oracle-$CIRCLE_SHA1 oracle_fdw
+            DOCKER_BUILDKIT=1 docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
+              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb:oracle-$CIRCLE_SHA1 -f flowdb_oracle_fdw.Dockerfile .
       - run:
           name: Launch flowdb
           command: |
@@ -294,7 +294,7 @@ jobs:
   build_flowdb_testdata:
     docker:
       - image: circleci/python:3.7
-    working_directory: /home/circleci/project/flowdb/testdata
+    working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -310,7 +310,7 @@ jobs:
           command: |
             echo Building testdata version $FLOWDB_VERSION
             echo Tagging as $CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 .
+            DOCKER_BUILDKIT=1 docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 -f flowdb_testdata.Dockefile .
       - run:
           name: Push images to Docker cloud
           command: |
@@ -319,7 +319,7 @@ jobs:
   build_flowdb_synthdata:
     docker:
       - image: circleci/python:3.7
-    working_directory: /home/circleci/project/flowdb/testdata
+    working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -335,8 +335,8 @@ jobs:
           command: |
             echo Building flowdb-synthetic-data version $FLOWDB_VERSION
             echo Tagging as $CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
-                -f Dockerfile.synthetic_data .
+            DOCKER_BUILDKIT=1 docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
+                -f flowdb_synthetic_data.Dockerfile .
       - run:
           name: Test that a data generator must be set for synth data
           command: |
@@ -659,7 +659,7 @@ jobs:
           command: |
             echo "Tagging as $CIRCLE_SHA1"
             export SOURCE_VERSION=$(git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g)
-            docker build --build-arg SOURCE_VERSION=$SOURCE_VERSION -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
+            DOCKER_BUILDKIT=1 docker build --build-arg SOURCE_VERSION=$SOURCE_VERSION -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 -f <<parameters.component_path>>.Dockerfile .
       - run:
           name: Push images to Docker cloud
           command: |
@@ -1021,7 +1021,7 @@ workflows:
       - build_docker_image:
           name: build_examples
           component: flowkit-examples
-          component_path: .
+          component_path: examples
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowetl
