@@ -16,7 +16,7 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
 )
 from .histogram_aggregate import HistogramAggregateSchema
 from .active_at_reference_location_counts import ActiveAtReferenceLocationCountsSchema
-from .consecutive_trips import ConsecutiveTripsSchema
+from .consecutive_trips_od_matrix import ConsecutiveTripsODMatrixSchema
 from .dummy_query import DummyQuerySchema
 from .flows import FlowsSchema
 from .meaningful_locations import (
@@ -60,7 +60,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "histogram_aggregate": HistogramAggregateSchema,
         "active_at_reference_location_counts": ActiveAtReferenceLocationCountsSchema,
         "unique_visitor_counts": UniqueVisitorCountsSchema,
-        "consecutive_trips": ConsecutiveTripsSchema,
+        "consecutive_trips_od_matrix": ConsecutiveTripsODMatrixSchema,
         "unmoving_counts": UnmovingCountsSchema,
         "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
     }

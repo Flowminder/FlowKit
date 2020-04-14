@@ -135,7 +135,7 @@
         ],
         "type": "object"
       },
-      "ConsecutiveTrips": {
+      "ConsecutiveTripsODMatrix": {
         "properties": {
           "aggregation_unit": {
             "enum": [
@@ -153,7 +153,7 @@
           },
           "query_kind": {
             "enum": [
-              "consecutive_trips"
+              "consecutive_trips_od_matrix"
             ],
             "type": "string"
           },
@@ -430,7 +430,7 @@
           "mapping": {
             "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
             "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
-            "consecutive_trips": "#/components/schemas/ConsecutiveTrips",
+            "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
             "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
             "dummy_query": "#/components/schemas/DummyQuery",
             "flows": "#/components/schemas/Flows",
@@ -459,7 +459,7 @@
             "$ref": "#/components/schemas/AggregateNetworkObjects"
           },
           {
-            "$ref": "#/components/schemas/ConsecutiveTrips"
+            "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
           },
           {
             "$ref": "#/components/schemas/DFSTotalMetricAmount"
@@ -1979,11 +1979,11 @@
           "get_result&aggregate_network_objects.total_network_objects.total_network_objects.aggregation_unit.admin3",
           "get_result&aggregate_network_objects.total_network_objects.total_network_objects.aggregation_unit.lon-lat",
           "get_result&available_dates",
-          "get_result&consecutive_trips.aggregation_unit.admin0",
-          "get_result&consecutive_trips.aggregation_unit.admin1",
-          "get_result&consecutive_trips.aggregation_unit.admin2",
-          "get_result&consecutive_trips.aggregation_unit.admin3",
-          "get_result&consecutive_trips.aggregation_unit.lon-lat",
+          "get_result&consecutive_trips_od_matrix.aggregation_unit.admin0",
+          "get_result&consecutive_trips_od_matrix.aggregation_unit.admin1",
+          "get_result&consecutive_trips_od_matrix.aggregation_unit.admin2",
+          "get_result&consecutive_trips_od_matrix.aggregation_unit.admin3",
+          "get_result&consecutive_trips_od_matrix.aggregation_unit.lon-lat",
           "get_result&dfs_metric_total_amount.aggregation_unit.admin0",
           "get_result&dfs_metric_total_amount.aggregation_unit.admin1",
           "get_result&dfs_metric_total_amount.aggregation_unit.admin2",
@@ -2881,11 +2881,11 @@
           "run&aggregate_network_objects.total_network_objects.total_network_objects.aggregation_unit.admin2",
           "run&aggregate_network_objects.total_network_objects.total_network_objects.aggregation_unit.admin3",
           "run&aggregate_network_objects.total_network_objects.total_network_objects.aggregation_unit.lon-lat",
-          "run&consecutive_trips.aggregation_unit.admin0",
-          "run&consecutive_trips.aggregation_unit.admin1",
-          "run&consecutive_trips.aggregation_unit.admin2",
-          "run&consecutive_trips.aggregation_unit.admin3",
-          "run&consecutive_trips.aggregation_unit.lon-lat",
+          "run&consecutive_trips_od_matrix.aggregation_unit.admin0",
+          "run&consecutive_trips_od_matrix.aggregation_unit.admin1",
+          "run&consecutive_trips_od_matrix.aggregation_unit.admin2",
+          "run&consecutive_trips_od_matrix.aggregation_unit.admin3",
+          "run&consecutive_trips_od_matrix.aggregation_unit.lon-lat",
           "run&dfs_metric_total_amount.aggregation_unit.admin0",
           "run&dfs_metric_total_amount.aggregation_unit.admin1",
           "run&dfs_metric_total_amount.aggregation_unit.admin2",

@@ -74,7 +74,7 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "histogram_aggregate",
                 "active_at_reference_location_counts",
                 "unique_visitor_counts",
-                "consecutive_trips",
+                "consecutive_trips_od_matrix",
                 "unmoving_counts",
                 "unmoving_at_reference_location_counts",
             ]

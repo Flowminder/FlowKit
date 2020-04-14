@@ -5,21 +5,23 @@
 from marshmallow import fields, post_load, Schema
 from marshmallow.validate import OneOf
 
-from flowmachine.features.location.redacted_consecutive_trips import (
-    RedactedConsecutiveTrips,
+from flowmachine.features.location.redacted_consecutive_trips_od_matrix import (
+    RedactedConsecutiveTripsODMatrix,
 )
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
-from flowmachine.features.location.consecutive_trips import ConsecutiveTrips
+from flowmachine.features.location.consecutive_trips_od_matrix import (
+    ConsecutiveTripsODMatrix,
+)
 from . import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
-__all__ = ["ConsecutiveTripsSchema", "ConsecutiveTripsExposed"]
+__all__ = ["ConsecutiveTripsODMatrixSchema", "ConsecutiveTripsODMatrixExposed"]
 
 
-class ConsecutiveTripsSchema(Schema):
+class ConsecutiveTripsODMatrixSchema(Schema):
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["consecutive_trips"]))
+    query_kind = fields.String(validate=OneOf(["consecutive_trips_od_matrix"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit()
@@ -27,10 +29,10 @@ class ConsecutiveTripsSchema(Schema):
 
     @post_load
     def make_query_object(self, params, **kwargs):
-        return ConsecutiveTripsExposed(**params)
+        return ConsecutiveTripsODMatrixExposed(**params)
 
 
-class ConsecutiveTripsExposed(BaseExposedQuery):
+class ConsecutiveTripsODMatrixExposed(BaseExposedQuery):
     def __init__(
         self,
         start_date,
@@ -57,8 +59,8 @@ class ConsecutiveTripsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return RedactedConsecutiveTrips(
-            consecutive_trips=ConsecutiveTrips(
+        return RedactedConsecutiveTripsODMatrix(
+            consecutive_trips_od_matrix=ConsecutiveTripsODMatrix(
                 SubscriberLocations(
                     self.start_date,
                     self.end_date,

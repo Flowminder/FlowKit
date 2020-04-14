@@ -13,10 +13,10 @@ from flowmachine.features.location.redacted_consecutive_trips_od_matrix import (
 )
 
 
-def test_redacted_consecutive_trips_column_names(get_column_names_from_run):
+def test_redacted_consecutive_trips_od_matrix_column_names(get_column_names_from_run):
     assert get_column_names_from_run(
         RedactedConsecutiveTripsODMatrix(
-            consecutive_trips=ConsecutiveTripsODMatrix(
+            consecutive_trips_od_matrix=ConsecutiveTripsODMatrix(
                 subscriber_locations=SubscriberLocations(
                     "2016-01-01 13:30:30", "2016-01-07 16:25:00"
                 )
@@ -25,12 +25,12 @@ def test_redacted_consecutive_trips_column_names(get_column_names_from_run):
     ) == ["location_id_from", "location_id_to", "value"]
 
 
-def test_redacted_consecutive_trips_counts(get_dataframe):
+def test_redacted_consecutive_trips_od_matrix_counts(get_dataframe):
     """
     Values test for redacted consecutive trips counts.
     """
     trips = RedactedConsecutiveTripsODMatrix(
-        consecutive_trips=ConsecutiveTripsODMatrix(
+        consecutive_trips_od_matrix=ConsecutiveTripsODMatrix(
             subscriber_locations=SubscriberLocations(
                 "2016-01-01 13:30:30", "2016-01-07 16:25:00"
             )

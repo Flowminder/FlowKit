@@ -8,7 +8,7 @@ from flowmachine.features.location.consecutive_trips_od_matrix import (
 )
 
 
-def test_consecutive_trips_column_names(get_column_names_from_run):
+def test_consecutive_trips_od_matrix_column_names(get_column_names_from_run):
     assert get_column_names_from_run(
         ConsecutiveTripsODMatrix(
             subscriber_locations=SubscriberLocations(
@@ -18,7 +18,7 @@ def test_consecutive_trips_column_names(get_column_names_from_run):
     ) == ["location_id_from", "location_id_to", "value"]
 
 
-def test_consecutive_trips_counts(get_dataframe):
+def test_consecutive_trips_od_matrix_counts(get_dataframe):
     """
     Values test for consecutive trips counts.
     """

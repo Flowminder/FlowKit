@@ -132,7 +132,7 @@
     ],
     "type": "object"
   },
-  "ConsecutiveTrips": {
+  "ConsecutiveTripsODMatrix": {
     "properties": {
       "aggregation_unit": {
         "enum": [
@@ -150,7 +150,7 @@
       },
       "query_kind": {
         "enum": [
-          "consecutive_trips"
+          "consecutive_trips_od_matrix"
         ],
         "type": "string"
       },
@@ -421,7 +421,7 @@
       "mapping": {
         "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
         "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
-        "consecutive_trips": "#/components/schemas/ConsecutiveTrips",
+        "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
@@ -450,7 +450,7 @@
         "$ref": "#/components/schemas/AggregateNetworkObjects"
       },
       {
-        "$ref": "#/components/schemas/ConsecutiveTrips"
+        "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
       },
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
