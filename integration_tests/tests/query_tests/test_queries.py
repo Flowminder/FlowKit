@@ -521,6 +521,14 @@ import pytest
                 aggregation_unit="admin3",
             ),
         ),
+        partial(
+            flowclient.unmoving_counts,
+            unique_locations=flowclient.unique_locations_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-03",
+                aggregation_unit="admin3",
+            ),
+        ),
     ],
     ids=lambda val: val.func.__name__,
 )

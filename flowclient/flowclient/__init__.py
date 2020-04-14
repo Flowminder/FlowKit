@@ -54,6 +54,7 @@ from .aggregates import (
     histogram_aggregate,
     active_at_reference_location_counts,
     unmoving_at_reference_location_counts,
+    unmoving_counts,
 )
 
 __all__ = [
@@ -98,4 +99,5 @@ __all__ = [
     "active_at_reference_location_counts",
     "unique_locations_spec",
     "unmoving_at_reference_location_counts",
+    "unmoving_counts",
 ]

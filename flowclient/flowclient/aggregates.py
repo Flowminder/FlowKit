@@ -955,13 +955,53 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
 
 
+def unmoving_counts_spec(
+    *, unique_locations: Dict[str, Union[str, Dict[str, str]]],
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    A count by location of subscribers who were unmoving at that location.
+
+    Parameters
+    ----------
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    dict
+        Query specification
+
+    """
+    return dict(query_kind="unmoving_counts", locations=unique_locations,)
+
+
+@merge_args(unmoving_counts_spec)
+def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    A count by location of subscribers who were unmoving in their reference location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    APIQuery
+        unmoving_counts query
+    """
+    return APIQuery(connection=connection, parameters=unmoving_counts_spec(**kwargs),)
+
+
 def unmoving_at_reference_location_counts_spec(
     *,
     reference_locations: Dict[str, Union[str, Dict[str, str]]],
     unique_locations: Dict[str, Union[str, Dict[str, str]]],
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
-    A count by location of subscribers who where unmoving in their reference location.
+    A count by location of subscribers who were unmoving in their reference location.
 
     Parameters
     ----------
@@ -978,11 +1018,8 @@ def unmoving_at_reference_location_counts_spec(
     """
     return dict(
         query_kind="unmoving_at_reference_location_counts",
-        unmoving_at_reference_location=dict(
-            query_kind="unmoving_at_reference_location",
-            unique_locations=unique_locations,
-            reference_locations=reference_locations,
-        ),
+        unique_locations=unique_locations,
+        reference_locations=reference_locations,
     )
 
 
@@ -991,7 +1028,7 @@ def unmoving_at_reference_location_counts(
     *, connection: Connection, **kwargs
 ) -> APIQuery:
     """
-    A count by location of subscribers who where unmoving in their reference location.
+    A count by location of subscribers who were unmoving in their reference location.
 
     Parameters
     ----------
@@ -1019,7 +1056,7 @@ def active_at_reference_location_counts_spec(
     unique_locations: Dict[str, Union[str, Dict[str, str]]],
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
-    A count by location of subscribers who where active in their reference location.
+    A count by location of subscribers who were active in their reference location.
 
     Parameters
     ----------
@@ -1036,11 +1073,8 @@ def active_at_reference_location_counts_spec(
     """
     return dict(
         query_kind="active_at_reference_location_counts",
-        active_at_reference_location=dict(
-            query_kind="active_at_reference_location",
-            unique_locations=unique_locations,
-            reference_locations=reference_locations,
-        ),
+        unique_locations=unique_locations,
+        reference_locations=reference_locations,
     )
 
 
@@ -1049,7 +1083,7 @@ def active_at_reference_location_counts(
     *, connection: Connection, **kwargs
 ) -> APIQuery:
     """
-    A count by location of subscribers who where active in their reference location.
+    A count by location of subscribers who were active in their reference location.
 
     Parameters
     ----------
