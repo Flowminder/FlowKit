@@ -535,6 +535,12 @@ import pytest
             end_date="2016-01-03",
             aggregation_unit="admin3",
         ),
+        partial(
+            flowclient.trips_od_matrix,
+            start_date="2016-01-01",
+            end_date="2016-01-03",
+            aggregation_unit="admin3",
+        ),
     ],
     ids=lambda val: val.func.__name__,
 )

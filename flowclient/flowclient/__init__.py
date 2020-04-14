@@ -56,6 +56,7 @@ from .aggregates import (
     unmoving_at_reference_location_counts,
     unmoving_counts,
     consecutive_trips_od_matrix,
+    trips_od_matrix,
 )
 
 __all__ = [
@@ -102,4 +103,5 @@ __all__ = [
     "unmoving_at_reference_location_counts",
     "unmoving_counts",
     "consecutive_trips_od_matrix",
+    "trips_od_matrix",
 ]
