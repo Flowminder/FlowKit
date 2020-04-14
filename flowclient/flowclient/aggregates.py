@@ -1082,7 +1082,7 @@ def unmoving_at_reference_location_counts_spec(
     """
     return dict(
         query_kind="unmoving_at_reference_location_counts",
-        unique_locations=unique_locations,
+        locations=unique_locations,
         reference_locations=reference_locations,
     )
 
