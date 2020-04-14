@@ -510,6 +510,17 @@ import pytest
                 aggregation_unit="admin3",
             ),
         ),
+        partial(
+            flowclient.unmoving_at_reference_location_counts,
+            reference_locations=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="admin3", method="most-common",
+            ),
+            unique_locations=flowclient.unique_locations_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-03",
+                aggregation_unit="admin3",
+            ),
+        ),
     ],
     ids=lambda val: val.func.__name__,
 )
