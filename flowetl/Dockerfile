@@ -6,9 +6,8 @@
 #  FLOWETL
 #  -----
 
-FROM puckel/docker-airflow@sha256:30e7cb9744ad367c54ae30a379fa46c9df4ea582bf2fcb96604adfc2760be79a
+FROM apache/airflow:1.10.10-python3.7
 
-ARG AIRFLOW_HOME=/usr/local/airflow
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 # Turn off api access
@@ -29,7 +28,6 @@ RUN set -eux; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
 
-RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
 # Install FlowETL module
@@ -42,9 +40,9 @@ WORKDIR /${SOURCE_TREE}/flowetl
 COPY Pipfile* ./
 
 RUN apt-get update && \
-        apt-get install -y --no-install-recommends git && \
+        apt-get install -y --no-install-recommends git build-essential && \
         pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
-        apt-get -y remove git && \
+        apt-get -y remove git build-essential && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
 
@@ -55,6 +53,10 @@ RUN apt-get update && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
+
+# Deal with old bind mounts to /usr/local/airflow
+
+RUN ln -s /opt/airflow /usr/local/airflow
 
 # Needed on $AIRFLOW_HOME so that different users passed through --user
 # have the permission to create and use their files for Airflow

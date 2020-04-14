@@ -40,7 +40,7 @@ services:
     ports:
       - ${FLOWETL_HOST_PORT:?}:8080
     volumes:
-      - ${FLOWETL_HOST_DAG_DIR:?}:/usr/local/airflow/dags:ro
+      - ${FLOWETL_HOST_DAG_DIR:?}:/opt/airflow/dags:ro
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
     networks:

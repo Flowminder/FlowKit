@@ -166,9 +166,7 @@ def mounts(tmpdir_factory, flowetl_mounts_dir):
     logs = tmpdir_factory.mktemp("logs")
     pgdata = tmpdir_factory.mktemp("pgdata")
 
-    dags_mount = Mount(
-        "/usr/local/airflow/dags", f"{flowetl_mounts_dir}/dags", type="bind"
-    )
+    dags_mount = Mount("/opt/airflow/dags", f"{flowetl_mounts_dir}/dags", type="bind")
 
     logs_mount = Mount("/mounts/logs", str(logs), type="bind")
     flowetl_mounts = [dags_mount, logs_mount]
