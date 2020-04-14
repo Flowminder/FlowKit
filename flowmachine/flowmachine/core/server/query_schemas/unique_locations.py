@@ -27,6 +27,9 @@ class UniqueLocationsSchema(BaseQueryWithSamplingSchema):
 
     @post_load
     def make_query_object(self, params, **kwargs):
+        params.pop(
+            "query_kind", None
+        )  # Strip off query kind if present, because this isn't always wrapped in a OneOfSchema
         return UniqueLocationsExposed(**params)
 
 
