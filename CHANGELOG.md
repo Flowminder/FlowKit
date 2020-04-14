@@ -8,11 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-- FlowETL is now based on the official apache-airflow docker image. As a result, you should now bind mount your host dags directory to `/opt/airflow/dags`, and your logs directory to `/opt/airflow/logs`.
 
 ### Fixed
 
 ### Removed
+
+## [1.7.0]
+
+### Changed
+- FlowETL is now based on the official apache-airflow docker image. As a result, you should now bind mount your host dags directory to `/opt/airflow/dags`, and your logs directory to `/opt/airflow/logs`.
 
 ## [1.6.1]
 
@@ -668,7 +672,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.6.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.7.0...master
+[1.7.0]: https://github.com/Flowminder/FlowKit/compare/1.6.1...1.7.0
 [1.6.1]: https://github.com/Flowminder/FlowKit/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/Flowminder/FlowKit/compare/1.5.1...1.6.0
 [1.5.1]: https://github.com/Flowminder/FlowKit/compare/1.5.0...1.5.1
