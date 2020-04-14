@@ -188,6 +188,41 @@ import pytest
             from_location=flowclient.daily_location_spec(
                 date="2016-01-01", aggregation_unit="admin3", method="last",
             ),
+            to_location=flowclient.unique_locations_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-04",
+                aggregation_unit="admin3",
+            ),
+        ),
+        partial(
+            flowclient.flows,
+            to_location=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="admin3", method="last",
+            ),
+            from_location=flowclient.unique_locations_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-04",
+                aggregation_unit="admin3",
+            ),
+        ),
+        partial(
+            flowclient.flows,
+            from_location=flowclient.unique_locations_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-04",
+                aggregation_unit="admin3",
+            ),
+            to_location=flowclient.unique_locations_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-04",
+                aggregation_unit="admin3",
+            ),
+        ),
+        partial(
+            flowclient.flows,
+            from_location=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="admin3", method="last",
+            ),
             to_location=flowclient.daily_location_spec(
                 date="2016-01-04", aggregation_unit="admin3", method="last",
             ),
@@ -469,7 +504,7 @@ import pytest
             reference_locations=flowclient.daily_location_spec(
                 date="2016-01-01", aggregation_unit="admin3", method="most-common",
             ),
-            unique_locations=flowclient.client.unique_locations_spec(
+            unique_locations=flowclient.unique_locations_spec(
                 start_date="2016-01-01",
                 end_date="2016-01-03",
                 aggregation_unit="admin3",
