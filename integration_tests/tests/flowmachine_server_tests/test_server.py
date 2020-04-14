@@ -77,6 +77,7 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "consecutive_trips_od_matrix",
                 "unmoving_counts",
                 "unmoving_at_reference_location_counts",
+                "trips_od_matrix",
             ]
         },
     }

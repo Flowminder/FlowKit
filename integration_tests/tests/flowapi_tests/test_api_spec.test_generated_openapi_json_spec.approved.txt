@@ -444,6 +444,7 @@
             "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
             "spatial_aggregate": "#/components/schemas/SpatialAggregate",
             "total_network_objects": "#/components/schemas/TotalNetworkObjects",
+            "trips_od_matrix": "#/components/schemas/TripsODMatrix",
             "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts",
             "unique_visitor_counts": "#/components/schemas/UniqueVisitorCounts",
             "unmoving_at_reference_location_counts": "#/components/schemas/UnmovingAtReferenceLocationCounts",
@@ -499,6 +500,9 @@
           },
           {
             "$ref": "#/components/schemas/TotalNetworkObjects"
+          },
+          {
+            "$ref": "#/components/schemas/TripsODMatrix"
           },
           {
             "$ref": "#/components/schemas/UniqueSubscriberCounts"
@@ -1740,6 +1744,48 @@
         ],
         "type": "object"
       },
+      "TripsODMatrix": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0",
+              "admin1",
+              "admin2",
+              "admin3",
+              "lon-lat"
+            ],
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "trips_od_matrix"
+            ],
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "aggregation_unit",
+          "end_date",
+          "query_kind",
+          "start_date"
+        ],
+        "type": "object"
+      },
       "UniqueLocationCounts": {
         "properties": {
           "aggregation_unit": {
@@ -2516,6 +2562,11 @@
           "get_result&total_network_objects.aggregation_unit.admin2",
           "get_result&total_network_objects.aggregation_unit.admin3",
           "get_result&total_network_objects.aggregation_unit.lon-lat",
+          "get_result&trips_od_matrix.aggregation_unit.admin0",
+          "get_result&trips_od_matrix.aggregation_unit.admin1",
+          "get_result&trips_od_matrix.aggregation_unit.admin2",
+          "get_result&trips_od_matrix.aggregation_unit.admin3",
+          "get_result&trips_od_matrix.aggregation_unit.lon-lat",
           "get_result&unique_subscriber_counts.aggregation_unit.admin0",
           "get_result&unique_subscriber_counts.aggregation_unit.admin1",
           "get_result&unique_subscriber_counts.aggregation_unit.admin2",
@@ -3418,6 +3469,11 @@
           "run&total_network_objects.aggregation_unit.admin2",
           "run&total_network_objects.aggregation_unit.admin3",
           "run&total_network_objects.aggregation_unit.lon-lat",
+          "run&trips_od_matrix.aggregation_unit.admin0",
+          "run&trips_od_matrix.aggregation_unit.admin1",
+          "run&trips_od_matrix.aggregation_unit.admin2",
+          "run&trips_od_matrix.aggregation_unit.admin3",
+          "run&trips_od_matrix.aggregation_unit.lon-lat",
           "run&unique_subscriber_counts.aggregation_unit.admin0",
           "run&unique_subscriber_counts.aggregation_unit.admin1",
           "run&unique_subscriber_counts.aggregation_unit.admin2",
