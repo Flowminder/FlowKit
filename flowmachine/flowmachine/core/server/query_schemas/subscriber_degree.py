@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberDegree
 from .custom_fields import SubscriberSubset
@@ -13,20 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["SubscriberDegreeSchema", "SubscriberDegreeExposed"]
-
-
-class SubscriberDegreeSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["subscriber_degree"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
-    direction = fields.String(
-        required=False, validate=OneOf(["in", "out", "both"]), default="both"
-    )  # TODO: use a globally defined enum for this
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return SubscriberDegreeExposed(**params)
 
 
 class SubscriberDegreeExposed(BaseExposedQueryWithSampling):
@@ -56,3 +42,15 @@ class SubscriberDegreeExposed(BaseExposedQueryWithSampling):
             direction=self.direction,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class SubscriberDegreeSchema(BaseQueryWithSamplingSchema):
+    query_kind = fields.String(validate=OneOf(["subscriber_degree"]))
+    start = fields.Date(required=True)
+    stop = fields.Date(required=True)
+    direction = fields.String(
+        required=False, validate=OneOf(["in", "out", "both"]), default="both"
+    )  # TODO: use a globally defined enum for this
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = SubscriberDegreeExposed

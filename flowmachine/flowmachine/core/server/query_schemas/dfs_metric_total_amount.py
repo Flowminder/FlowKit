@@ -2,28 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
 from .custom_fields import DFSMetric
 from .aggregation_unit import AggregationUnit
 
 __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
-
-
-class DFSTotalMetricAmountSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
-    metric = DFSMetric()
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return DFSTotalMetricAmountExposed(**params)
 
 
 class DFSTotalMetricAmountExposed(BaseExposedQuery):
@@ -50,3 +38,14 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
             end_date=self.end_date,
             aggregation_unit=self.aggregation_unit,
         )
+
+
+class DFSTotalMetricAmountSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
+    metric = DFSMetric()
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit()
+
+    __model__ = DFSTotalMetricAmountExposed

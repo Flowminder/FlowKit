@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
@@ -14,19 +14,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
-
-
-class DailyLocationSchema(BaseQueryWithSamplingSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["daily_location"]))
-    date = fields.Date(required=True)
-    method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
-    aggregation_unit = AggregationUnit()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return DailyLocationExposed(**params)
 
 
 class DailyLocationExposed(BaseExposedQueryWithSampling):
@@ -56,3 +43,14 @@ class DailyLocationExposed(BaseExposedQueryWithSampling):
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class DailyLocationSchema(BaseQueryWithSamplingSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["daily_location"]))
+    date = fields.Date(required=True)
+    method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
+    aggregation_unit = AggregationUnit()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = DailyLocationExposed

@@ -2,36 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from flowmachine.features import TotalLocationEvents
 from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
 from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
 from .custom_fields import EventTypes, SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
-
-
-class LocationEventCountsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["location_event_counts"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    interval = fields.String(
-        required=True, validate=OneOf(TotalLocationEvents.allowed_intervals)
-    )
-    direction = fields.String(
-        required=True, validate=OneOf(["in", "out", "both"])
-    )  # TODO: use a globally defined enum for this
-    event_types = EventTypes()
-    aggregation_unit = AggregationUnit()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return LocationEventCountsExposed(**params)
 
 
 class LocationEventCountsExposed(BaseExposedQuery):
@@ -76,3 +57,21 @@ class LocationEventCountsExposed(BaseExposedQuery):
                 subscriber_subset=self.subscriber_subset,
             )
         )
+
+
+class LocationEventCountsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["location_event_counts"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    interval = fields.String(
+        required=True, validate=OneOf(TotalLocationEvents.allowed_intervals)
+    )
+    direction = fields.String(
+        required=True, validate=OneOf(["in", "out", "both"])
+    )  # TODO: use a globally defined enum for this
+    event_types = EventTypes()
+    aggregation_unit = AggregationUnit()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = LocationEventCountsExposed

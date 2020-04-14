@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load, Schema
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.active_at_reference_location_counts import (
@@ -22,20 +22,11 @@ __all__ = [
     "ActiveAtReferenceLocationCountsExposed",
 ]
 
+from .base_schema import BaseSchema
+
 from .reference_location import ReferenceLocationSchema
 
 from .unique_locations import UniqueLocationsSchema
-
-
-class ActiveAtReferenceLocationCountsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["active_at_reference_location_counts"]))
-    unique_locations = fields.Nested(UniqueLocationsSchema())
-    reference_locations = fields.Nested(ReferenceLocationSchema())
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return ActiveAtReferenceLocationCountsExposed(**params)
 
 
 class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
@@ -64,3 +55,12 @@ class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
                 ),
             )
         )
+
+
+class ActiveAtReferenceLocationCountsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["active_at_reference_location_counts"]))
+    unique_locations = fields.Nested(UniqueLocationsSchema())
+    reference_locations = fields.Nested(ReferenceLocationSchema())
+
+    __model__ = ActiveAtReferenceLocationCountsExposed

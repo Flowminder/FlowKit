@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length, Range
+from marshmallow import fields
+from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import ParetoInteractions
 from .custom_fields import SubscriberSubset
@@ -13,18 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["ParetoInteractionsSchema", "ParetoInteractionsExposed"]
-
-
-class ParetoInteractionsSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
-    proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return ParetoInteractionsExposed(**params)
 
 
 class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
@@ -54,3 +42,13 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
             proportion=self.proportion,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class ParetoInteractionsSchema(BaseQueryWithSamplingSchema):
+    query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
+    start = fields.Date(required=True)
+    stop = fields.Date(required=True)
+    proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = ParetoInteractionsExposed

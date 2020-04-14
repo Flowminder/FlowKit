@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberLocations
@@ -15,22 +15,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["UniqueLocationsSchema", "UniqueLocationsExposed"]
-
-
-class UniqueLocationsSchema(BaseQueryWithSamplingSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unique_locations"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        params.pop(
-            "query_kind", None
-        )  # Strip off query kind if present, because this isn't always wrapped in a OneOfSchema
-        return UniqueLocationsExposed(**params)
 
 
 class UniqueLocationsExposed(BaseExposedQueryWithSampling):
@@ -68,3 +52,14 @@ class UniqueLocationsExposed(BaseExposedQueryWithSampling):
                 subscriber_subset=self.subscriber_subset,
             )
         )
+
+
+class UniqueLocationsSchema(BaseQueryWithSamplingSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["unique_locations"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = UniqueLocationsExposed

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load, Schema
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_consecutive_trips_od_matrix import (
@@ -13,23 +13,11 @@ from flowmachine.features.location.consecutive_trips_od_matrix import (
     ConsecutiveTripsODMatrix,
 )
 from . import BaseExposedQuery
+from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["ConsecutiveTripsODMatrixSchema", "ConsecutiveTripsODMatrixExposed"]
-
-
-class ConsecutiveTripsODMatrixSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["consecutive_trips_od_matrix"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return ConsecutiveTripsODMatrixExposed(**params)
 
 
 class ConsecutiveTripsODMatrixExposed(BaseExposedQuery):
@@ -69,3 +57,14 @@ class ConsecutiveTripsODMatrixExposed(BaseExposedQuery):
                 )
             )
         )
+
+
+class ConsecutiveTripsODMatrixSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["consecutive_trips_od_matrix"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = ConsecutiveTripsODMatrixExposed

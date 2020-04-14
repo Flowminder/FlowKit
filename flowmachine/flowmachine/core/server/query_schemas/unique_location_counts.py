@@ -2,27 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load, Schema
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import UniqueLocationCounts
 from . import BaseExposedQuery
+from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
-
-
-class UniqueLocationCountsSchema(Schema):
-    query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return UniqueLocationCountsExposed(**params)
 
 
 class UniqueLocationCountsExposed(BaseExposedQuery):
@@ -57,3 +46,13 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
             spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class UniqueLocationCountsSchema(BaseSchema):
+    query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = UniqueLocationCountsExposed

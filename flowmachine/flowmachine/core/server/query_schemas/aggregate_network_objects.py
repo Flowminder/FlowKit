@@ -2,35 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length
-from marshmallow_oneofschema import OneOfSchema
+from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from flowmachine.features import AggregateNetworkObjects
 from .base_exposed_query import BaseExposedQuery
-from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
+from .base_schema import BaseSchema
+from .total_network_objects import TotalNetworkObjectsSchema
 from .custom_fields import Statistic, AggregateBy
 
 __all__ = ["AggregateNetworkObjectsSchema", "AggregateNetworkObjectsExposed"]
-
-
-class InputToAggregateNetworkObjectsSchema(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {"total_network_objects": TotalNetworkObjectsSchema}
-
-
-class AggregateNetworkObjectsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["aggregate_network_objects"]))
-    total_network_objects = fields.Nested(
-        InputToAggregateNetworkObjectsSchema, required=True
-    )
-    statistic = Statistic()
-    aggregate_by = AggregateBy()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return AggregateNetworkObjectsExposed(**params)
 
 
 class AggregateNetworkObjectsExposed(BaseExposedQuery):
@@ -57,3 +38,13 @@ class AggregateNetworkObjectsExposed(BaseExposedQuery):
             statistic=self.statistic,
             aggregate_by=self.aggregate_by,
         )
+
+
+class AggregateNetworkObjectsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["aggregate_network_objects"]))
+    total_network_objects = fields.Nested(TotalNetworkObjectsSchema, required=True)
+    statistic = Statistic()
+    aggregate_by = AggregateBy()
+
+    __model__ = AggregateNetworkObjectsExposed

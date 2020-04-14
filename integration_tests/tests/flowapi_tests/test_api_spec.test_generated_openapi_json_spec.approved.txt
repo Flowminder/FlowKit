@@ -51,7 +51,7 @@
             "type": "string"
           },
           "total_network_objects": {
-            "$ref": "#/components/schemas/InputToAggregateNetworkObjects"
+            "$ref": "#/components/schemas/TotalNetworkObjects"
           }
         },
         "required": [
@@ -681,19 +681,6 @@
           },
           {
             "$ref": "#/components/schemas/UniqueLocationCounts"
-          }
-        ]
-      },
-      "InputToAggregateNetworkObjects": {
-        "discriminator": {
-          "mapping": {
-            "total_network_objects": "#/components/schemas/TotalNetworkObjects"
-          },
-          "propertyName": "query_kind"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/TotalNetworkObjects"
           }
         ]
       },

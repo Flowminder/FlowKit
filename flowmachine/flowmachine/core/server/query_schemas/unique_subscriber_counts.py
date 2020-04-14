@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields, post_load
+from marshmallow.validate import OneOf
 
 from flowmachine.features import UniqueSubscriberCounts
 from flowmachine.features.location.redacted_unique_subscriber_counts import (
@@ -14,17 +14,7 @@ from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
-
-class UniqueSubscriberCountsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return UniqueSubscriberCountsExposed(**params)
+from .base_schema import BaseSchema
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
@@ -51,3 +41,13 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
                 spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             )
         )
+
+
+class UniqueSubscriberCountsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit()
+
+    __model__ = UniqueSubscriberCountsExposed

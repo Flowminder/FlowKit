@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load, Schema
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_unmoving_counts import (
@@ -11,19 +11,10 @@ from flowmachine.features.location.redacted_unmoving_counts import (
 from flowmachine.features.location.unmoving_counts import UnmovingCounts
 from flowmachine.features.subscriber.unmoving import Unmoving
 from . import BaseExposedQuery
+from .base_schema import BaseSchema
 from .unique_locations import UniqueLocationsSchema
 
 __all__ = ["UnmovingCountsSchema", "UnmovingCountsExposed"]
-
-
-class UnmovingCountsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unmoving_counts"]))
-    locations = fields.Nested(UniqueLocationsSchema)
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return UnmovingCountsExposed(**params)
 
 
 class UnmovingCountsExposed(BaseExposedQuery):
@@ -46,3 +37,11 @@ class UnmovingCountsExposed(BaseExposedQuery):
                 Unmoving(self.locations._flowmachine_query_obj)
             )
         )
+
+
+class UnmovingCountsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["unmoving_counts"]))
+    locations = fields.Nested(UniqueLocationsSchema)
+
+    __model__ = UnmovingCountsExposed

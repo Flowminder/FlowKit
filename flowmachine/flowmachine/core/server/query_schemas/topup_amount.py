@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from flowmachine.features import TopUpAmount
 from .custom_fields import SubscriberSubset, Statistic
@@ -13,18 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
-
-
-class TopUpAmountSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["topup_amount"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
-    statistic = Statistic()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return TopUpAmountExposed(**params)
 
 
 class TopUpAmountExposed(BaseExposedQueryWithSampling):
@@ -54,3 +42,13 @@ class TopUpAmountExposed(BaseExposedQueryWithSampling):
             statistic=self.statistic,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class TopUpAmountSchema(BaseQueryWithSamplingSchema):
+    query_kind = fields.String(validate=OneOf(["topup_amount"]))
+    start = fields.Date(required=True)
+    stop = fields.Date(required=True)
+    statistic = Statistic()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = TopUpAmountExposed

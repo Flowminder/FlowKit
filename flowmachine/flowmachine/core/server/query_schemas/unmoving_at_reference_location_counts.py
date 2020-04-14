@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load, Schema
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_unmoving_at_reference_location_counts import (
@@ -15,27 +15,14 @@ from flowmachine.features.subscriber.unmoving_at_reference_location import (
     UnmovingAtReferenceLocation,
 )
 from . import BaseExposedQuery
+from .base_schema import BaseSchema
 from .reference_location import ReferenceLocationSchema
-from .base_query_with_sampling import BaseQueryWithSamplingSchema
 from .unique_locations import UniqueLocationsSchema
 
 __all__ = [
     "UnmovingAtReferenceLocationCountsSchema",
     "UnmovingAtReferenceLocationCountsExposed",
 ]
-
-
-class UnmovingAtReferenceLocationCountsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(
-        validate=OneOf(["unmoving_at_reference_location_counts"])
-    )
-    locations = fields.Nested(UniqueLocationsSchema)
-    reference_locations = fields.Nested(ReferenceLocationSchema)
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return UnmovingAtReferenceLocationCountsExposed(**params)
 
 
 class UnmovingAtReferenceLocationCountsExposed(BaseExposedQuery):
@@ -62,3 +49,14 @@ class UnmovingAtReferenceLocationCountsExposed(BaseExposedQuery):
                 )
             )
         )
+
+
+class UnmovingAtReferenceLocationCountsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(
+        validate=OneOf(["unmoving_at_reference_location_counts"])
+    )
+    locations = fields.Nested(UniqueLocationsSchema)
+    reference_locations = fields.Nested(ReferenceLocationSchema)
+
+    __model__ = UnmovingAtReferenceLocationCountsExposed
