@@ -955,6 +955,64 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
 
 
+def active_at_reference_location_counts_spec(
+    *,
+    reference_locations: Dict[str, Union[str, Dict[str, str]]],
+    unique_locations: Dict[str, Union[str, Dict[str, str]]],
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    A count by location of subscribers who where active in their reference location.
+
+    Parameters
+    ----------
+    reference_locations : dict
+        Modal or daily location
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    dict
+        Query specification
+
+    """
+    return dict(
+        query_kind="active_at_reference_location_counts",
+        active_at_reference_location=dict(
+            query_kind="active_at_reference_location",
+            unique_locations=unique_locations,
+            reference_locations=reference_locations,
+        ),
+    )
+
+
+@merge_args(active_at_reference_location_counts_spec)
+def active_at_reference_location_counts(
+    *, connection: Connection, **kwargs
+) -> APIQuery:
+    """
+    A count by location of subscribers who where active in their reference location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    reference_locations : dict
+        Modal or daily location
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    APIQuery
+        active_at_reference_location_counts query
+    """
+    return APIQuery(
+        connection=connection,
+        parameters=active_at_reference_location_counts_spec(**kwargs),
+    )
+
+
 def joined_spatial_aggregate_spec(
     *,
     locations: Dict[str, Union[str, Dict[str, str]]],

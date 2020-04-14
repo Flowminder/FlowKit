@@ -35,6 +35,7 @@ from .client import (
     nocturnal_events_spec,
     handset_spec,
     random_sample_spec,
+    unique_locations_spec,
 )
 from .api_query import APIQuery
 from . import aggregates
@@ -51,6 +52,7 @@ from .aggregates import (
     spatial_aggregate,
     joined_spatial_aggregate,
     histogram_aggregate,
+    active_at_reference_location_counts,
 )
 
 __all__ = [
@@ -92,4 +94,6 @@ __all__ = [
     "spatial_aggregate",
     "joined_spatial_aggregate",
     "histogram_aggregate",
+    "active_at_reference_location_counts",
+    "unique_locations_spec",
 ]

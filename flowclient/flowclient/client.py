@@ -733,6 +733,43 @@ def run_query(*, connection: Connection, query_spec: dict) -> str:
         )
 
 
+def unique_locations_spec(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Subscriber level query which retrives the unique set of locations visited by each subscriber
+    in the time period.
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        ISO format dates between which to get unique locations, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve daily locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Unique locations query specification.
+
+    """
+    return dict(
+        query_kind="unique_locations",
+        start_date=start_date,
+        end_date=end_date,
+        aggregation_unit=aggregation_unit,
+        subscriber_subset=subscriber_subset,
+    )
+
+
 def daily_location_spec(
     *,
     date: str,
