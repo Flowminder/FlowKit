@@ -55,6 +55,7 @@ from .aggregates import (
     active_at_reference_location_counts,
     unmoving_at_reference_location_counts,
     unmoving_counts,
+    consecutive_trips_od_matrix,
 )
 
 __all__ = [
@@ -100,4 +101,5 @@ __all__ = [
     "unique_locations_spec",
     "unmoving_at_reference_location_counts",
     "unmoving_counts",
+    "consecutive_trips_od_matrix",
 ]

@@ -741,7 +741,7 @@ def unique_locations_spec(
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
-    Subscriber level query which retrives the unique set of locations visited by each subscriber
+    Subscriber level query which retrieves the unique set of locations visited by each subscriber
     in the time period.
 
     Parameters

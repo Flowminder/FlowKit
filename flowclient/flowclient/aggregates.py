@@ -955,6 +955,70 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
 
 
+def consecutive_trips_od_matrix_spec(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    Retrieves the count of subscriber who made consecutive visits between locations
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        ISO format dates between which to find trips, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve trips for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Consecutive trips od matrix query specification.
+
+    """
+    return dict(
+        query_kind="consecutive_trips_od_matrix",
+        start_date=start_date,
+        end_date=end_date,
+        aggregation_unit=aggregation_unit,
+        subscriber_subset=subscriber_subset,
+    )
+
+
+@merge_args(consecutive_trips_od_matrix_spec)
+def consecutive_trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Retrieves the count of subscriber who made consecutive visits between locations
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    start_date, end_date : str
+        ISO format dates between which to find trips, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve trips for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    APIQuery
+        consecutive_trips_od_matrix query
+    """
+    return APIQuery(
+        connection=connection, parameters=consecutive_trips_od_matrix_spec(**kwargs),
+    )
+
+
 def unmoving_counts_spec(
     *, unique_locations: Dict[str, Union[str, Dict[str, str]]],
 ) -> Dict[str, Union[str, Dict[str, str]]]:
