@@ -5,22 +5,33 @@
 from marshmallow import fields, post_load, Schema
 from marshmallow.validate import OneOf
 
-from flowmachine.features import ActiveAtReferenceLocationCounts
-from flowmachine.features.location import RedactedActiveAtReferenceLocationCounts
+from flowmachine.features.location.active_at_reference_location_counts import (
+    ActiveAtReferenceLocationCounts,
+)
+from flowmachine.features.subscriber.active_at_reference_location import (
+    ActiveAtReferenceLocation,
+)
+from flowmachine.features.location.redacted_active_at_reference_location_counts import (
+    RedactedActiveAtReferenceLocationCounts,
+)
 
 from . import BaseExposedQuery
-from .active_at_reference_location import ActiveAtReferenceLocationSchema
 
 __all__ = [
     "ActiveAtReferenceLocationCountsSchema",
     "ActiveAtReferenceLocationCountsExposed",
 ]
 
+from .reference_location import ReferenceLocationSchema
+
+from .unique_locations import UniqueLocationsSchema
+
 
 class ActiveAtReferenceLocationCountsSchema(Schema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["active_at_reference_location_counts"]))
-    active_at_reference_location = fields.Nested(ActiveAtReferenceLocationSchema())
+    unique_locations = fields.Nested(UniqueLocationsSchema())
+    reference_locations = fields.Nested(ReferenceLocationSchema())
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -29,11 +40,12 @@ class ActiveAtReferenceLocationCountsSchema(Schema):
 
 class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
     def __init__(
-        self, active_at_reference_location,
+        self, unique_locations, reference_locations,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.active_at_reference_location = active_at_reference_location
+        self.unique_locations = unique_locations
+        self.reference_locations = reference_locations
 
     @property
     def _flowmachine_query_obj(self):
@@ -46,6 +58,9 @@ class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
         """
         return RedactedActiveAtReferenceLocationCounts(
             active_at_reference_location_counts=ActiveAtReferenceLocationCounts(
-                active_at_reference_location=self.active_at_reference_location._flowmachine_query_obj,
+                active_at_reference_location=ActiveAtReferenceLocation(
+                    reference_locations=self.reference_locations._flowmachine_query_obj,
+                    subscriber_locations=self.unique_locations._flowmachine_query_obj,
+                ),
             )
         )

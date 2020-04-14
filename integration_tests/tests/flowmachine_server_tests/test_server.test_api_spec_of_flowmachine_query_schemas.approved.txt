@@ -1,39 +1,17 @@
 {
-  "ActiveAtReferenceLocation": {
+  "ActiveAtReferenceLocationCounts": {
     "properties": {
       "query_kind": {
         "enum": [
-          "active_at_reference_location"
+          "active_at_reference_location_counts"
         ],
         "type": "string"
       },
       "reference_locations": {
         "$ref": "#/components/schemas/ReferenceLocation"
       },
-      "sampling": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/RandomSample"
-          }
-        ],
-        "nullable": true
-      },
       "unique_locations": {
         "$ref": "#/components/schemas/UniqueLocations"
-      }
-    },
-    "type": "object"
-  },
-  "ActiveAtReferenceLocationCounts": {
-    "properties": {
-      "active_at_reference_location": {
-        "$ref": "#/components/schemas/ActiveAtReferenceLocation"
-      },
-      "query_kind": {
-        "enum": [
-          "active_at_reference_location_counts"
-        ],
-        "type": "string"
       }
     },
     "type": "object"
