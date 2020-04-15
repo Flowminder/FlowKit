@@ -62,6 +62,7 @@ setup(
         "flowkit.queries": [
             "top_level_queries = flowmachine.core.server.query_schemas.top_level_queries:top_level_queries",
             "histogrammable_queries = flowmachine.core.server.query_schemas.histogrammable_queries:histogrammable_queries",
+            "joinable_metrics = flowmachine.core.server.query_schemas.joinable_metrics:joinable_metrics",
         ],
     },
     description="Digestion program for Call Detail Record (CDR) data.",

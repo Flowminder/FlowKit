@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import ContinuousMetric
 
 __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
@@ -50,7 +51,7 @@ class TopUpBalanceExposed(BaseExposedQueryWithSampling):
         )
 
 
-class TopUpBalanceSchema(BaseQueryWithSamplingSchema):
+class TopUpBalanceSchema(ContinuousMetric, BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["topup_balance"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)

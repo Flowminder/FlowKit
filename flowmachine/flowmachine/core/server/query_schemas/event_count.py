@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import EventCount
@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import ContinuousMetric
 
 __all__ = ["EventCountSchema", "EventCountExposed"]
 
@@ -53,7 +54,7 @@ class EventCountExposed(BaseExposedQueryWithSampling):
         )
 
 
-class EventCountSchema(BaseQueryWithSamplingSchema):
+class EventCountSchema(ContinuousMetric, BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["event_count"]))
     start = ISODateTime(required=True)
     stop = ISODateTime(required=True)
