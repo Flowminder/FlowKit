@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
-from concurrent.futures import Executor
 from json import JSONDecodeError
 import traceback
 
@@ -20,7 +19,6 @@ from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 import flowmachine
-from flowmachine.core import Query, Connection
 from flowmachine.core.cache import watch_and_shrink_cache
 from flowmachine.core.context import get_db, get_executor
 from flowmachine.utils import convert_dict_keys_to_strings
