@@ -6,7 +6,7 @@ import pytest
 from requests import ConnectionError
 
 import flowclient
-from flowclient.client import FlowclientConnectionError
+from flowclient.errors import FlowclientConnectionError
 
 from .zmq_helpers import ZMQReply
 

@@ -6,8 +6,8 @@ from unittest.mock import Mock
 import jwt
 import pytest
 
-from flowclient.client import Connection, FlowclientConnectionError
-
+from flowclient.errors import FlowclientConnectionError
+from flowclient import Connection
 
 pytestmark = pytest.mark.usefixtures("session_mock")
 

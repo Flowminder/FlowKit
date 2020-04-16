@@ -11,18 +11,15 @@ __version__ = get_versions()["version"]
 del get_versions
 
 from flowclient.api_query import APIQuery
-from flowclient.client import Connection
+from .connection import Connection
 from flowclient.client import connect
 
 from flowclient.async_api_query import ASyncAPIQuery
-from flowclient.async_client import ASyncConnection
+from .async_connection import ASyncConnection
 from flowclient.async_client import connect_async
 
 
 from .client import (
-    daily_location_spec,
-    modal_location_spec,
-    modal_location_from_dates_spec,
     get_geography,
     get_result,
     get_result_by_query_id,
@@ -31,11 +28,16 @@ from .client import (
     query_is_ready,
     run_query,
     get_available_dates,
+)
+from .query_specs import (
+    daily_location_spec,
+    modal_location_spec,
+    modal_location_from_dates_spec,
     radius_of_gyration_spec,
     unique_location_counts_spec,
+    topup_balance_spec,
     subscriber_degree_spec,
     topup_amount_spec,
-    topup_balance_spec,
     event_count_spec,
     displacement_spec,
     pareto_interactions_spec,
@@ -67,13 +69,8 @@ from .aggregates import (
 
 __all__ = [
     "aggregates",
-    "Connection",
-    "ASyncConnection",
     "connect_async",
     "connect",
-    "daily_location_spec",
-    "modal_location_spec",
-    "modal_location_from_dates_spec",
     "get_geography",
     "get_result",
     "get_result_by_query_id",
@@ -82,19 +79,8 @@ __all__ = [
     "query_is_ready",
     "run_query",
     "get_available_dates",
-    "radius_of_gyration_spec",
-    "unique_location_counts_spec",
-    "subscriber_degree_spec",
-    "topup_amount_spec",
-    "topup_balance_spec",
-    "event_count_spec",
-    "displacement_spec",
-    "pareto_interactions_spec",
-    "nocturnal_events_spec",
-    "handset_spec",
-    "random_sample_spec",
     "APIQuery",
-    "AsyncAPIQuery",
+    "ASyncAPIQuery",
     "location_event_counts",
     "meaningful_locations_aggregate",
     "meaningful_locations_between_label_od_matrix",

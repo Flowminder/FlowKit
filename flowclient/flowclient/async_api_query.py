@@ -5,9 +5,9 @@
 
 from typing import Union, Optional
 
-from flowclient import APIQuery
+from flowclient.api_query import APIQuery
+from flowclient.async_connection import ASyncConnection
 from flowclient.async_client import (
-    ASyncConnection,
     run_query,
     get_status,
     get_result_by_query_id,

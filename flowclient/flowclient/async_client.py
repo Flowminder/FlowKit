@@ -12,87 +12,10 @@ from typing import Tuple, Union, List, Optional
 from tqdm.auto import tqdm
 
 
-import flowclient.client as sync_client
-
+import flowclient.errors
+from flowclient.async_connection import ASyncConnection
 
 logger = logging.getLogger(__name__)
-
-
-class ASyncConnection(sync_client.Connection):
-    """
-    A connection to a FlowKit API server.
-
-    Attributes
-    ----------
-    url : str
-        URL of the API server
-    token : str
-        JSON Web Token for this API server
-    api_version : int
-        Version of the API to connect to
-    user : str
-        Username of token
-
-    Parameters
-    ----------
-    url : str
-        URL of the API server, e.g. "https://localhost:9090"
-    token : str
-        JSON Web Token for this API server
-    api_version : int, default 0
-        Version of the API to connect to
-    ssl_certificate: str or None
-        Provide a path to an ssl certificate to use, or None to use
-        default root certificates.
-    """
-
-    async def get_url(
-        self, *, route: str, data: Union[None, dict] = None
-    ) -> requests.Response:
-        """
-        Attempt to get something from the API, and return the raw
-        response object if an error response wasn't received.
-        If an error response was received, raises an error.
-
-        Parameters
-        ----------
-        route : str
-            Path relative to API host to get
-
-        data : dict, optional
-            JSON data to send in the request body (optional)
-
-        Returns
-        -------
-        requests.Response
-
-        """
-        return super().get_url(route=route, data=data)
-
-    async def post_json(self, *, route: str, data: dict) -> requests.Response:
-        """
-        Attempt to post json to the API, and return the raw
-        response object if an error response wasn't received.
-        If an error response was received, raises an error.
-
-        Parameters
-        ----------
-        route : str
-            Path relative to API host to post_json to
-        data: dict
-            Dictionary of json-encodeable data to post_json
-
-        Returns
-        -------
-        requests.Response
-
-        """
-        return super().post_json(route=route, data=data)
-
-    def make_api_query(self, parameters: dict) -> "ASyncAPIQuery":
-        from flowclient.async_api_query import ASyncAPIQuery
-
-        return ASyncAPIQuery(connection=self, parameters=parameters)
 
 
 async def connect_async(
@@ -167,7 +90,7 @@ async def query_is_ready(
         )
         return False, reply
     else:
-        raise sync_client.FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Something went wrong: {reply}. API returned with status code: {reply.status_code}"
         )
 
@@ -206,7 +129,7 @@ async def get_status(*, connection: ASyncConnection, query_id: str) -> str:
         try:
             return reply.json()["status"]
         except (KeyError, TypeError):
-            raise sync_client.FlowclientConnectionError(f"No status reported.")
+            raise flowclient.errors.FlowclientConnectionError(f"No status reported.")
 
 
 async def wait_for_query_to_be_ready(
@@ -347,7 +270,7 @@ async def get_json_dataframe(
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise sync_client.FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()
@@ -396,7 +319,7 @@ async def get_geojson_result_by_query_id(
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise sync_client.FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     return response.json()
@@ -530,7 +453,7 @@ async def get_geography(*, connection: ASyncConnection, aggregation_unit: str) -
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise sync_client.FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()
@@ -570,7 +493,7 @@ async def get_available_dates(
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise sync_client.FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get available dates. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()["available_dates"]
@@ -612,6 +535,6 @@ async def run_query(*, connection: ASyncConnection, query_spec: dict) -> str:
             error = r.json()["msg"]
         except (ValueError, KeyError):
             error = "Unknown error"
-        raise sync_client.FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Error running the query: {error}. Status code: {r.status_code}."
         )

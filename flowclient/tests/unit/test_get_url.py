@@ -4,7 +4,7 @@
 import pytest
 from requests import ConnectionError
 import flowclient
-from flowclient.client import FlowclientConnectionError
+from flowclient.errors import FlowclientConnectionError
 
 
 @pytest.mark.parametrize("status_code", [200, 202, 303])

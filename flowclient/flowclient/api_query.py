@@ -6,13 +6,13 @@
 from typing import Union, Optional
 
 from flowclient.client import (
-    Connection,
     run_query,
     get_status,
     get_result_by_query_id,
     get_geojson_result_by_query_id,
     wait_for_query_to_be_ready,
 )
+from flowclient.connection import Connection
 
 
 class APIQuery:

@@ -7,7 +7,7 @@ from typing import Union, Dict, List, Optional, Tuple
 
 from merge_args import merge_args
 
-from flowclient.client import Connection
+from flowclient import Connection
 from flowclient.api_query import APIQuery
 
 

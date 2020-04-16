@@ -6,7 +6,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from flowclient.client import get_status, FlowclientConnectionError
+from flowclient.client import get_status
+from flowclient.errors import FlowclientConnectionError
 
 
 @pytest.mark.parametrize("running_status", ["queued", "executing"])

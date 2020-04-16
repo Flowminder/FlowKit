@@ -5,7 +5,8 @@
 from unittest.mock import Mock
 
 import pytest
-from flowclient.client import FlowclientConnectionError, get_available_dates
+from flowclient.client import get_available_dates
+from flowclient.errors import FlowclientConnectionError
 
 
 @pytest.mark.parametrize("http_code", [401, 500])
