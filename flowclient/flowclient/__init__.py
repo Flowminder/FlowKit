@@ -10,9 +10,16 @@ from ._version import get_versions
 __version__ = get_versions()["version"]
 del get_versions
 
+from flowclient.api_query import APIQuery
+from flowclient.client import Connection
+from flowclient.client import connect
+
+from flowclient.async_api_query import ASyncAPIQuery
+from flowclient.async_client import ASyncConnection
+from flowclient.async_client import connect_async
+
+
 from .client import (
-    Connection,
-    connect,
     daily_location_spec,
     modal_location_spec,
     modal_location_from_dates_spec,
@@ -37,7 +44,6 @@ from .client import (
     random_sample_spec,
     unique_locations_spec,
 )
-from .api_query import APIQuery
 from . import aggregates
 from .aggregates import (
     location_event_counts,
@@ -62,6 +68,8 @@ from .aggregates import (
 __all__ = [
     "aggregates",
     "Connection",
+    "ASyncConnection",
+    "connect_async",
     "connect",
     "daily_location_spec",
     "modal_location_spec",
@@ -86,6 +94,7 @@ __all__ = [
     "handset_spec",
     "random_sample_spec",
     "APIQuery",
+    "AsyncAPIQuery",
     "location_event_counts",
     "meaningful_locations_aggregate",
     "meaningful_locations_between_label_od_matrix",

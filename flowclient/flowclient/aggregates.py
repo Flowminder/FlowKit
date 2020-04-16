@@ -93,9 +93,7 @@ def location_event_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Location event counts query
     """
-    return APIQuery(
-        connection=connection, parameters=location_event_counts_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=location_event_counts_spec(**kwargs))
 
 
 def meaningful_locations_aggregate_spec(
@@ -266,8 +264,8 @@ def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> APIQu
     -----
     Does not return any value below 15.
     """
-    return APIQuery(
-        connection=connection, parameters=meaningful_locations_aggregate_spec(**kwargs)
+    return connection.make_api_query(
+        parameters=meaningful_locations_aggregate_spec(**kwargs)
     )
 
 
@@ -739,9 +737,7 @@ def unique_subscriber_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Unique subscriber counts query
     """
-    return APIQuery(
-        connection=connection, parameters=unique_subscriber_counts_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=unique_subscriber_counts_spec(**kwargs))
 
 
 def location_introversion_spec(
@@ -798,9 +794,7 @@ def location_introversion(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Location introversion query
     """
-    return APIQuery(
-        connection=connection, parameters=location_introversion_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=location_introversion_spec(**kwargs))
 
 
 def total_network_objects_spec(
@@ -857,9 +851,7 @@ def total_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Total network objects query
     """
-    return APIQuery(
-        connection=connection, parameters=total_network_objects_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=total_network_objects_spec(**kwargs))
 
 
 def aggregate_network_objects_spec(
@@ -913,8 +905,8 @@ def aggregate_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Aggregate network objects query
     """
-    return APIQuery(
-        connection=connection, parameters=aggregate_network_objects_spec(**kwargs)
+    return connection.make_api_query(
+        parameters=aggregate_network_objects_spec(**kwargs)
     )
 
 
@@ -1284,9 +1276,7 @@ def joined_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Joined spatial aggregate query
     """
-    return APIQuery(
-        connection=connection, parameters=joined_spatial_aggregate_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=joined_spatial_aggregate_spec(**kwargs))
 
 
 def histogram_aggregate_spec(
@@ -1344,6 +1334,4 @@ def histogram_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Histogram aggregate query
     """
-    return APIQuery(
-        connection=connection, parameters=histogram_aggregate_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=histogram_aggregate_spec(**kwargs))

@@ -5,7 +5,6 @@
 import logging
 import warnings
 import re
-from functools import partial
 
 import jwt
 import pandas as pd
@@ -14,6 +13,7 @@ import time
 from requests import ConnectionError
 from typing import Tuple, Union, Dict, List, Optional
 from tqdm.auto import tqdm
+
 
 logger = logging.getLogger(__name__)
 
@@ -208,6 +208,11 @@ class Connection:
             raise FlowclientConnectionError(
                 f"Something went wrong. API returned with status code {response.status_code}. Error message: '{error_msg}'.{payload_info}"
             )
+
+    def make_api_query(self, parameters: dict) -> "APIQuery":
+        from flowclient.api_query import APIQuery
+
+        return APIQuery(connection=self, parameters=parameters)
 
     def __repr__(self) -> str:
         return f"{self.user}@{self.url} v{self.api_version}"
