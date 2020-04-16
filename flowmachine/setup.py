@@ -62,7 +62,7 @@ setup(
         "flowkit.queries": [
             "top_level_queries = flowmachine.core.server.query_schemas.top_level_queries:top_level_queries",
             "histogrammable_queries = flowmachine.core.server.query_schemas.histogrammable_queries:histogrammable_queries",
-            "joinable_metrics = flowmachine.core.server.query_schemas.joinable_metrics:joinable_metrics",
+            "joinable_queries = flowmachine.core.server.query_schemas.joinable_queries:joinable_queries",
             "flowable_queries = flowmachine.core.server.query_schemas.flowable_queries:flowable_queries",
         ],
     },

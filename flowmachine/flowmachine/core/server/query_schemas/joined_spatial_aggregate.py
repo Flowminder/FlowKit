@@ -31,7 +31,7 @@ __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 class JoinableMetrics(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = get_type_schemas_from_entrypoint("joinable_metrics")
+    type_schemas = get_type_schemas_from_entrypoint("joinable_queries")
 
 
 class JoinedSpatialAggregateExposed(BaseExposedQuery):

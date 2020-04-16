@@ -17,7 +17,7 @@ from flowmachine.core.server.query_schemas.pareto_interactions import (
 )
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 
-joinable_metrics = {
+joinable_queries = {
     "radius_of_gyration": RadiusOfGyrationSchema,
     "unique_location_counts": UniqueLocationCountsSchema,
     "topup_balance": TopUpBalanceSchema,
