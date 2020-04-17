@@ -18,10 +18,10 @@
     "default": {
         "ansible": {
             "hashes": [
-                "sha256:59cf3a0781f89992d1dae5205b07e802dff1db205eebd238de9e503b62b8cbc9"
+                "sha256:7222ce925536a25b2912364e13b03a3e21dbf2f96799ebff304f48509324de7b"
             ],
             "index": "pypi",
-            "version": "==2.9.6"
+            "version": "==2.9.7"
         },
         "cffi": {
             "hashes": [
