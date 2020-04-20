@@ -6,7 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Added subscriber metrics, `ActiveAtReferenceLocation`, `Unmoving`, `UnmovingAtReferenceLocation` and `UniqueLocations`
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.8.0]
+### Added
+- Added subscriber metrics: `ActiveAtReferenceLocation`, `Unmoving`, `UnmovingAtReferenceLocation` and `UniqueLocations`
 - Added location metrics and their `Redacted*` equivalents:
     - `UniqueVisitorCounts`
     - `UnmovingAtReferenceLocationCounts` ([COVID-19 equivalent](https://github.com/Flowminder/COVID-19/issues/8))
@@ -16,12 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `ConsecutiveTripsODMatrix` ([COVID-19 equivalent](https://github.com/Flowminder/COVID-19/issues/9)) 
     
     See https://covid19.flowminder.org for more detail on how [Flowminder](https://flowminder.org) is supporting the global COVID-19 response.
-
-### Changed
-
-### Fixed
-
-### Removed
 
 ## [1.7.0]
 
@@ -682,7 +685,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.7.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.8.0...master
+[1.8.0]: https://github.com/Flowminder/FlowKit/compare/1.7.0...1.8.0
 [1.7.0]: https://github.com/Flowminder/FlowKit/compare/1.6.1...1.7.0
 [1.6.1]: https://github.com/Flowminder/FlowKit/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/Flowminder/FlowKit/compare/1.5.1...1.6.0
