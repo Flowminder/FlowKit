@@ -71,3 +71,5 @@ from .interevent_interval import IntereventInterval
 from .distance_series import DistanceSeries
 from .imputed_distance_series import ImputedDistanceSeries
 from .iterative_median_filter import IterativeMedianFilter
+from .active_at_reference_location import ActiveAtReferenceLocation
+from .unique_locations import UniqueLocations

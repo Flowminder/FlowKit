@@ -6,6 +6,8 @@
 
 from typing import List, Union
 
+from ..subscriber.unique_locations import UniqueLocations
+
 """
 Class for UniqueSubscriberCounts. UniqueSubscriberCounts counts
 the total number of unique subscribers for each location. Each location
@@ -79,21 +81,20 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         hours="all",
         table="all",
     ):
-        """
-
-        """
 
         self.start = start
         self.stop = stop
         self.spatial_unit = spatial_unit
         self.hours = hours
         self.table = table
-        self.ul = SubscriberLocations(
-            start=self.start,
-            stop=self.stop,
-            spatial_unit=self.spatial_unit,
-            hours=self.hours,
-            table=self.table,
+        self.ul = UniqueLocations(
+            SubscriberLocations(
+                start=self.start,
+                stop=self.stop,
+                spatial_unit=self.spatial_unit,
+                hours=self.hours,
+                table=self.table,
+            )
         )
 
         super().__init__()
@@ -112,7 +113,6 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         sql = """
         SELECT {rc}, COUNT(unique_subscribers) AS value FROM 
         (SELECT 
-            DISTINCT
             {rc},
             all_locs.subscriber as unique_subscribers
         FROM ({all_locs}) AS all_locs) AS _

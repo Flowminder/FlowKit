@@ -15,6 +15,7 @@ from typing import List
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
+from .unique_locations import UniqueLocations
 from ..utilities.subscriber_locations import SubscriberLocations
 from .metaclasses import SubscriberFeature
 
@@ -82,15 +83,17 @@ class UniqueLocationCounts(SubscriberFeature):
         subscriber_subset=None,
     ):
 
-        self.ul = SubscriberLocations(
-            start=start,
-            stop=stop,
-            spatial_unit=spatial_unit,
-            hours=hours,
-            table=tables,
-            subscriber_identifier=subscriber_identifier,
-            ignore_nulls=ignore_nulls,
-            subscriber_subset=subscriber_subset,
+        self.ul = UniqueLocations(
+            SubscriberLocations(
+                start=start,
+                stop=stop,
+                spatial_unit=spatial_unit,
+                hours=hours,
+                table=tables,
+                subscriber_identifier=subscriber_identifier,
+                ignore_nulls=ignore_nulls,
+                subscriber_subset=subscriber_subset,
+            )
         )
         super().__init__()
 
@@ -110,8 +113,7 @@ class UniqueLocationCounts(SubscriberFeature):
             subscriber, 
             COUNT(*) as value  
             FROM
-        (SELECT DISTINCT subscriber, {location_columns} 
-          FROM ({self.ul.get_query()}) AS all_locs) AS _
+        ({self.ul.get_query()}) AS _
         GROUP BY subscriber  
         """
 
