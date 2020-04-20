@@ -15,6 +15,12 @@ from .unique_subscriber_counts import UniqueSubscriberCounts
 from .pwo import PopulationWeightedOpportunities
 from .meaningful_locations_aggregate import MeaningfulLocationsAggregate
 from .meaningful_locations_od import MeaningfulLocationsOD
+from .unique_visitor_counts import UniqueVisitorCounts
+from .redacted_unique_vistor_counts import RedactedUniqueVisitorCounts
+from .active_at_reference_location_counts import ActiveAtReferenceLocationCounts
+from .redacted_active_at_reference_location_counts import (
+    RedactedActiveAtReferenceLocationCounts,
+)
 
 
 __all__ = [
@@ -25,4 +31,6 @@ __all__ = [
     "PopulationWeightedOpportunities",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
+    "UniqueVisitorCounts",
+    "ActiveAtReferenceLocationCounts",
 ]

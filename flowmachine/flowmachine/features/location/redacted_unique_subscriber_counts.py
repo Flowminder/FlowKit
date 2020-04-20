@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features import UniqueSubscriberCounts
+from flowmachine.features.location.unique_subscriber_counts import (
+    UniqueSubscriberCounts,
+)
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
-from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
 
 class RedactedUniqueSubscriberCounts(RedactedLocationMetric, GeoDataMixin, Query):

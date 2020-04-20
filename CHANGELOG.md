@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added subscriber metrics, `ActiveAtReferenceLocation`, `Unmoving`, `UnmovingAtReferenceLocation` and `UniqueLocations`
+- Added location metrics and their `Redacted*` equivalents:
+    - `UniqueVisitorCounts`
+    - `UnmovingAtReferenceLocationCounts` ([COVID-19 equivalent](https://github.com/Flowminder/COVID-19/issues/8))
+    - `ActiveAtReferenceLocationCounts`
+    - `UnmovingCount`  ([COVID-19 equivalent](https://github.com/Flowminder/COVID-19/issues/10))
+    - `TripsODMatrix` ([COVID-19 equivalent](https://github.com/Flowminder/COVID-19/blob/c1a4d2009cb0dd2aac1c3cc4b1527fa99f474fca/od_matrix_directed_all_pairs.md))
+    - `ConsecutiveTripsODMatrix` ([COVID-19 equivalent](https://github.com/Flowminder/COVID-19/issues/9)) 
+    
+    See https://covid19.flowminder.org for more detail on how [Flowminder](https://flowminder.org) is supporting the global COVID-19 response.
 
 ### Changed
 

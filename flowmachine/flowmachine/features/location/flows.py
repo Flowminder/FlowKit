@@ -122,10 +122,6 @@ class Flows(FlowLike, Query):
     """
 
     def __init__(self, loc1, loc2):
-        """
-
-        """
-
         if loc1.spatial_unit != loc2.spatial_unit:
             raise InvalidSpatialUnitError(
                 "You cannot compute flows for locations on different spatial units"
