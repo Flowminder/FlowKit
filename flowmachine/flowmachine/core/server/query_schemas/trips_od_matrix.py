@@ -5,24 +5,20 @@
 from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
-from flowmachine.features import UniqueLocationCounts
+from flowmachine.features.location.redacted_trips_od_matrix import RedactedTripsODMatrix
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
+from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
-__all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
+__all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
 
 
-class UniqueLocationCountsExposed(BaseExposedQuery):
+class TripsODMatrixExposed(BaseExposedQuery):
     def __init__(
-        self,
-        *,
-        start_date,
-        end_date,
-        aggregation_unit,
-        subscriber_subset=None,
-        sampling=None
+        self, start_date, end_date, *, aggregation_unit, subscriber_subset=None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -34,25 +30,30 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
     @property
     def _flowmachine_query_obj(self):
         """
-        Return the underlying flowmachine unique_location_counts object.
+        Return the underlying flowmachine object.
 
         Returns
         -------
         Query
         """
-        return UniqueLocationCounts(
-            start=self.start_date,
-            stop=self.end_date,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
-            subscriber_subset=self.subscriber_subset,
+        return RedactedTripsODMatrix(
+            trips=TripsODMatrix(
+                SubscriberLocations(
+                    self.start_date,
+                    self.end_date,
+                    spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                    subscriber_subset=self.subscriber_subset,
+                )
+            )
         )
 
 
-class UniqueLocationCountsSchema(BaseSchema):
-    query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
+class TripsODMatrixSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["trips_od_matrix"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
-    __model__ = UniqueLocationCountsExposed
+    __model__ = TripsODMatrixExposed

@@ -15,6 +15,8 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
     SpatialAggregateSchema,
 )
 from .histogram_aggregate import HistogramAggregateSchema
+from .active_at_reference_location_counts import ActiveAtReferenceLocationCountsSchema
+from .consecutive_trips_od_matrix import ConsecutiveTripsODMatrixSchema
 from .dummy_query import DummyQuerySchema
 from .flows import FlowsSchema
 from .meaningful_locations import (
@@ -27,10 +29,16 @@ from .aggregate_network_objects import AggregateNetworkObjectsSchema
 
 from .geography import GeographySchema
 from .location_event_counts import LocationEventCountsSchema
+from .trips_od_matrix import TripsODMatrixSchema
 from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 from .location_introversion import LocationIntroversionSchema
 from .total_network_objects import TotalNetworkObjectsSchema
 from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
+from .unique_visitor_counts import UniqueVisitorCountsSchema
+from .unmoving_at_reference_location_counts import (
+    UnmovingAtReferenceLocationCountsSchema,
+)
+from .unmoving_counts import UnmovingCountsSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -51,6 +59,12 @@ class FlowmachineQuerySchema(OneOfSchema):
         "spatial_aggregate": SpatialAggregateSchema,
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
         "histogram_aggregate": HistogramAggregateSchema,
+        "active_at_reference_location_counts": ActiveAtReferenceLocationCountsSchema,
+        "unique_visitor_counts": UniqueVisitorCountsSchema,
+        "consecutive_trips_od_matrix": ConsecutiveTripsODMatrixSchema,
+        "unmoving_counts": UnmovingCountsSchema,
+        "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
+        "trips_od_matrix": TripsODMatrixSchema,
     }
 
 

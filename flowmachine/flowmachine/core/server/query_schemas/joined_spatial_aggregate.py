@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load, pre_load, ValidationError
+from marshmallow import fields, pre_load, ValidationError
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -38,6 +38,8 @@ from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
+from .base_schema import BaseSchema
+
 
 class JoinableMetrics(OneOfSchema):
     type_field = "query_kind"
@@ -55,7 +57,33 @@ class JoinableMetrics(OneOfSchema):
     }
 
 
-class JoinedSpatialAggregateSchema(Schema):
+class JoinedSpatialAggregateExposed(BaseExposedQuery):
+    def __init__(self, *, locations, metric, method):
+        # Note: all input parameters need to be defined as attributes on `self`
+        # so that marshmallow can serialise the object correctly.
+        self.locations = locations
+        self.metric = metric
+        self.method = method
+
+    @property
+    def _flowmachine_query_obj(self):
+        """
+        Return the underlying flowmachine object.
+
+        Returns
+        -------
+        Query
+        """
+        locations = self.locations._flowmachine_query_obj
+        metric = self.metric._flowmachine_query_obj
+        return RedactedJoinedSpatialAggregate(
+            joined_spatial_aggregate=JoinedSpatialAggregate(
+                locations=locations, metric=metric, method=self.method
+            )
+        )
+
+
+class JoinedSpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
@@ -89,32 +117,4 @@ class JoinedSpatialAggregateSchema(Schema):
         validate(data["method"])
         return data
 
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return JoinedSpatialAggregateExposed(**params)
-
-
-class JoinedSpatialAggregateExposed(BaseExposedQuery):
-    def __init__(self, *, locations, metric, method):
-        # Note: all input parameters need to be defined as attributes on `self`
-        # so that marshmallow can serialise the object correctly.
-        self.locations = locations
-        self.metric = metric
-        self.method = method
-
-    @property
-    def _flowmachine_query_obj(self):
-        """
-        Return the underlying flowmachine object.
-
-        Returns
-        -------
-        Query
-        """
-        locations = self.locations._flowmachine_query_obj
-        metric = self.metric._flowmachine_query_obj
-        return RedactedJoinedSpatialAggregate(
-            joined_spatial_aggregate=JoinedSpatialAggregate(
-                locations=locations, metric=metric, method=self.method
-            )
-        )
+    __model__ = JoinedSpatialAggregateExposed

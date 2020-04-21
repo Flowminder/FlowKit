@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -10,10 +10,13 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
 from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
 from .daily_location import DailyLocationSchema
 from .modal_location import ModalLocationSchema
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
+
+from .unique_locations import UniqueLocationsSchema
 
 
 class InputToFlowsSchema(OneOfSchema):
@@ -21,18 +24,8 @@ class InputToFlowsSchema(OneOfSchema):
     type_schemas = {
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
+        "unique_locations": UniqueLocationsSchema,
     }
-
-
-class FlowsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["flows"]))
-    from_location = fields.Nested(InputToFlowsSchema, required=True)
-    to_location = fields.Nested(InputToFlowsSchema, required=True)
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return FlowsExposed(**params)
 
 
 class FlowsExposed(BaseExposedQuery):
@@ -54,3 +47,12 @@ class FlowsExposed(BaseExposedQuery):
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
         return RedactedFlows(flows=Flows(loc1, loc2))
+
+
+class FlowsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["flows"]))
+    from_location = fields.Nested(InputToFlowsSchema, required=True)
+    to_location = fields.Nested(InputToFlowsSchema, required=True)
+
+    __model__ = FlowsExposed

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from time import sleep
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.core.dummy_query import DummyQuery
@@ -12,21 +12,7 @@ from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["DummyQuerySchema", "DummyQueryExposed"]
 
-
-class DummyQuerySchema(Schema):
-    """
-    Dummy query useful for testing.
-    """
-
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["dummy_query"]))
-    dummy_param = fields.String(required=True)
-    aggregation_unit = AggregationUnit()
-    dummy_delay = fields.Integer(missing=0, required=False)
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return DummyQueryExposed(**params)
+from .base_schema import BaseSchema
 
 
 class DummyQueryExposed(BaseExposedQuery):
@@ -41,3 +27,17 @@ class DummyQueryExposed(BaseExposedQuery):
     def _flowmachine_query_obj(self):
         sleep(self.dummy_delay)
         return DummyQuery(dummy_param=self.dummy_param)
+
+
+class DummyQuerySchema(BaseSchema):
+    """
+    Dummy query useful for testing.
+    """
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["dummy_query"]))
+    dummy_param = fields.String(required=True)
+    aggregation_unit = AggregationUnit()
+    dummy_delay = fields.Integer(missing=0, required=False)
+
+    __model__ = DummyQueryExposed

@@ -31,6 +31,8 @@ from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["HistogramAggregateSchema", "HistogramAggregateExposed"]
 
+from .base_schema import BaseSchema
+
 
 class HistogrammableMetrics(OneOfSchema):
     type_field = "query_kind"
@@ -71,18 +73,6 @@ class HistogramBins(Schema):
         return params.get("n_bins", params.get("bin_list"))
 
 
-class HistogramAggregateSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["histogram_aggregate"]))
-    metric = fields.Nested(HistogrammableMetrics, required=True)
-    range = fields.Nested(Bounds)
-    bins = fields.Nested(HistogramBins)
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return HistogramAggregateExposed(**params)
-
-
 class HistogramAggregateExposed(BaseExposedQuery):
     def __init__(self, *, metric, bins, range=None):
         # Note: all input parameters need to be defined as attributes on `self`
@@ -102,3 +92,13 @@ class HistogramAggregateExposed(BaseExposedQuery):
         """
         metric = self.metric._flowmachine_query_obj
         return HistogramAggregation(metric=metric, bins=self.bins, range=self.range)
+
+
+class HistogramAggregateSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["histogram_aggregate"]))
+    metric = fields.Nested(HistogrammableMetrics, required=True)
+    range = fields.Nested(Bounds)
+    bins = fields.Nested(HistogramBins)
+
+    __model__ = HistogramAggregateExposed

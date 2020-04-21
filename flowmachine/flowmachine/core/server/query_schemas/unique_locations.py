@@ -5,23 +5,25 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from flowmachine.features import TopUpBalance
-from .custom_fields import Statistic, SubscriberSubset
+from flowmachine.features import SubscriberLocations
+from flowmachine.features.subscriber.unique_locations import UniqueLocations
+from .custom_fields import SubscriberSubset
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
 
-__all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
+__all__ = ["UniqueLocationsSchema", "UniqueLocationsExposed"]
 
 
-class TopUpBalanceExposed(BaseExposedQueryWithSampling):
+class UniqueLocationsExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
-        *,
         start_date,
         end_date,
-        statistic="avg",
+        *,
+        aggregation_unit,
         subscriber_subset=None,
         sampling=None
     ):
@@ -29,32 +31,35 @@ class TopUpBalanceExposed(BaseExposedQueryWithSampling):
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
-        self.statistic = statistic
+        self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
     @property
     def _unsampled_query_obj(self):
         """
-        Return the underlying flowmachine TopUpBalance object.
+        Return the underlying flowmachine unique locations object.
 
         Returns
         -------
         Query
         """
-        return TopUpBalance(
-            start=self.start_date,
-            stop=self.end_date,
-            statistic=self.statistic,
-            subscriber_subset=self.subscriber_subset,
+        return UniqueLocations(
+            SubscriberLocations(
+                self.start_date,
+                self.end_date,
+                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                subscriber_subset=self.subscriber_subset,
+            )
         )
 
 
-class TopUpBalanceSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["topup_balance"]))
+class UniqueLocationsSchema(BaseQueryWithSamplingSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["unique_locations"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
-    statistic = Statistic()
+    aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
-    __model__ = TopUpBalanceExposed
+    __model__ = UniqueLocationsExposed

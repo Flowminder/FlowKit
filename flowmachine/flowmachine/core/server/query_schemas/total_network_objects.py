@@ -2,29 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from flowmachine.features import TotalNetworkObjects
-from flowmachine.features.network.total_network_objects import valid_periods
 from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
 from .custom_fields import TotalBy
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
-
-
-class TotalNetworkObjectsSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["total_network_objects"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    total_by = TotalBy(required=False, missing="day")
-    aggregation_unit = AggregationUnit()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return TotalNetworkObjectsExposed(**params)
 
 
 class TotalNetworkObjectsExposed(BaseExposedQuery):
@@ -51,3 +38,14 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
             spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             total_by=self.total_by,
         )
+
+
+class TotalNetworkObjectsSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["total_network_objects"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    total_by = TotalBy(required=False, missing="day")
+    aggregation_unit = AggregationUnit()
+
+    __model__ = TotalNetworkObjectsExposed

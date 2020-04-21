@@ -1,4 +1,21 @@
 {
+  "ActiveAtReferenceLocationCounts": {
+    "properties": {
+      "query_kind": {
+        "enum": [
+          "active_at_reference_location_counts"
+        ],
+        "type": "string"
+      },
+      "reference_locations": {
+        "$ref": "#/components/schemas/ReferenceLocation"
+      },
+      "unique_locations": {
+        "$ref": "#/components/schemas/UniqueLocations"
+      }
+    },
+    "type": "object"
+  },
   "AggregateNetworkObjects": {
     "properties": {
       "aggregate_by": {
@@ -32,7 +49,7 @@
         "type": "string"
       },
       "total_network_objects": {
-        "$ref": "#/components/schemas/InputToAggregateNetworkObjects"
+        "$ref": "#/components/schemas/TotalNetworkObjects"
       }
     },
     "required": [
@@ -90,6 +107,47 @@
     "required": [
       "lower_bound",
       "upper_bound"
+    ],
+    "type": "object"
+  },
+  "ConsecutiveTripsODMatrix": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "consecutive_trips_od_matrix"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   },
@@ -339,7 +397,9 @@
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
+        "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
         "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
+        "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
@@ -353,13 +413,23 @@
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
-        "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts"
+        "trips_od_matrix": "#/components/schemas/TripsODMatrix",
+        "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts",
+        "unique_visitor_counts": "#/components/schemas/UniqueVisitorCounts",
+        "unmoving_at_reference_location_counts": "#/components/schemas/UnmovingAtReferenceLocationCounts",
+        "unmoving_counts": "#/components/schemas/UnmovingCounts"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
+        "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+      },
+      {
         "$ref": "#/components/schemas/AggregateNetworkObjects"
+      },
+      {
+        "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
       },
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
@@ -401,7 +471,19 @@
         "$ref": "#/components/schemas/TotalNetworkObjects"
       },
       {
+        "$ref": "#/components/schemas/TripsODMatrix"
+      },
+      {
         "$ref": "#/components/schemas/UniqueSubscriberCounts"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueVisitorCounts"
+      },
+      {
+        "$ref": "#/components/schemas/UnmovingAtReferenceLocationCounts"
+      },
+      {
+        "$ref": "#/components/schemas/UnmovingCounts"
       }
     ]
   },
@@ -589,19 +671,6 @@
       }
     ]
   },
-  "InputToAggregateNetworkObjects": {
-    "discriminator": {
-      "mapping": {
-        "total_network_objects": "#/components/schemas/TotalNetworkObjects"
-      },
-      "propertyName": "query_kind"
-    },
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/TotalNetworkObjects"
-      }
-    ]
-  },
   "InputToDisplacement": {
     "discriminator": {
       "mapping": {
@@ -623,7 +692,8 @@
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
+        "modal_location": "#/components/schemas/ModalLocation",
+        "unique_locations": "#/components/schemas/UniqueLocations"
       },
       "propertyName": "query_kind"
     },
@@ -633,6 +703,9 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueLocations"
       }
     ]
   },
@@ -1346,6 +1419,23 @@
       }
     ]
   },
+  "ReferenceLocation": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
+      }
+    ]
+  },
   "SpatialAggregate": {
     "properties": {
       "locations": {
@@ -1592,6 +1682,47 @@
     ],
     "type": "object"
   },
+  "TripsODMatrix": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "trips_od_matrix"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
   "UniqueLocationCounts": {
     "properties": {
       "aggregation_unit": {
@@ -1611,6 +1742,47 @@
       "query_kind": {
         "enum": [
           "unique_location_counts"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
+  "UniqueLocations": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "unique_locations"
         ],
         "type": "string"
       },
@@ -1673,6 +1845,54 @@
       "end_date",
       "start_date"
     ],
+    "type": "object"
+  },
+  "UniqueVisitorCounts": {
+    "properties": {
+      "active_at_reference_location_counts": {
+        "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+      },
+      "query_kind": {
+        "enum": [
+          "unique_visitor_counts"
+        ],
+        "type": "string"
+      },
+      "unique_subscriber_counts": {
+        "$ref": "#/components/schemas/UniqueSubscriberCounts"
+      }
+    },
+    "type": "object"
+  },
+  "UnmovingAtReferenceLocationCounts": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/UniqueLocations"
+      },
+      "query_kind": {
+        "enum": [
+          "unmoving_at_reference_location_counts"
+        ],
+        "type": "string"
+      },
+      "reference_locations": {
+        "$ref": "#/components/schemas/ReferenceLocation"
+      }
+    },
+    "type": "object"
+  },
+  "UnmovingCounts": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/UniqueLocations"
+      },
+      "query_kind": {
+        "enum": [
+          "unmoving_counts"
+        ],
+        "type": "string"
+      }
+    },
     "type": "object"
   }
 }

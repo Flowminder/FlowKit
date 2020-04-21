@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length, Range
+from marshmallow import fields
+from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import NocturnalEvents
 from .custom_fields import SubscriberSubset
@@ -13,21 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
-
-
-class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
-    night_start_hour = fields.Integer(
-        validate=Range(0, 23)
-    )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
-    night_end_hour = fields.Integer(validate=Range(0, 23))
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return NocturnalEventsExposed(**params)
 
 
 class NocturnalEventsExposed(BaseExposedQueryWithSampling):
@@ -64,3 +49,16 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
             hours=self.hours,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
+    query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
+    start = fields.Date(required=True)
+    stop = fields.Date(required=True)
+    night_start_hour = fields.Integer(
+        validate=Range(0, 23)
+    )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
+    night_end_hour = fields.Integer(validate=Range(0, 23))
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = NocturnalEventsExposed

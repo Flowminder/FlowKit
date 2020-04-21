@@ -6,7 +6,6 @@ from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberHandsetCharacteristic
-from flowmachine.core import CustomQuery
 from .custom_fields import SubscriberSubset
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
@@ -14,24 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["HandsetSchema", "HandsetExposed"]
-
-
-class HandsetSchema(BaseQueryWithSamplingSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["handset"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    characteristic = fields.String(
-        validate=OneOf(
-            ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
-        )
-    )
-    method = fields.String(validate=OneOf(["last", "most-common"]))
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return HandsetExposed(**params)
 
 
 class HandsetExposed(BaseExposedQueryWithSampling):
@@ -70,3 +51,19 @@ class HandsetExposed(BaseExposedQueryWithSampling):
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class HandsetSchema(BaseQueryWithSamplingSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["handset"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    characteristic = fields.String(
+        validate=OneOf(
+            ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
+        )
+    )
+    method = fields.String(validate=OneOf(["last", "most-common"]))
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = HandsetExposed

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import RadiusOfGyration
@@ -13,18 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["RadiusOfGyrationSchema", "RadiusOfGyrationExposed"]
-
-
-class RadiusOfGyrationSchema(BaseQueryWithSamplingSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return RadiusOfGyrationExposed(**params)
 
 
 class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
@@ -50,3 +38,13 @@ class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
             stop=self.end_date,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class RadiusOfGyrationSchema(BaseQueryWithSamplingSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = RadiusOfGyrationExposed

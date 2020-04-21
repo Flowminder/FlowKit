@@ -56,5 +56,6 @@ class RedactedUniqueVisitorCounts(GeoDataMixin, Query):
         INNER JOIN
          ({self.unique_subscriber_counts.get_query()}) us
         USING ({location_columns})
+        WHERE us.value - ref.value > 15
         """
         return sql

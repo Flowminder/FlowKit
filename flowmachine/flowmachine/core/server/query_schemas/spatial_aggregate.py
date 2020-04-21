@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -11,6 +11,7 @@ from flowmachine.features.location.redacted_spatial_aggregate import (
 )
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
 from .daily_location import DailyLocationSchema
 from .modal_location import ModalLocationSchema
 
@@ -27,16 +28,6 @@ class InputToSpatialAggregate(OneOfSchema):
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
     }
-
-
-class SpatialAggregateSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["spatial_aggregate"]))
-    locations = fields.Nested(InputToSpatialAggregate, required=True)
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return SpatialAggregateExposed(**params)
 
 
 class SpatialAggregateExposed(BaseExposedQuery):
@@ -58,3 +49,11 @@ class SpatialAggregateExposed(BaseExposedQuery):
         return RedactedSpatialAggregate(
             spatial_aggregate=SpatialAggregate(locations=locations)
         )
+
+
+class SpatialAggregateSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["spatial_aggregate"]))
+    locations = fields.Nested(InputToSpatialAggregate, required=True)
+
+    __model__ = SpatialAggregateExposed

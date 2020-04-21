@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow.validate import OneOf
 
 from flowmachine.features import EventCount
 from .custom_fields import EventTypes, SubscriberSubset
@@ -13,21 +13,6 @@ from .base_query_with_sampling import (
 )
 
 __all__ = ["EventCountSchema", "EventCountExposed"]
-
-
-class EventCountSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["event_count"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
-    direction = fields.String(
-        required=False, validate=OneOf(["in", "out", "both"]), default="both"
-    )  # TODO: use a globally defined enum for this
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return EventCountExposed(**params)
 
 
 class EventCountExposed(BaseExposedQueryWithSampling):
@@ -66,3 +51,16 @@ class EventCountExposed(BaseExposedQueryWithSampling):
             tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
+
+
+class EventCountSchema(BaseQueryWithSamplingSchema):
+    query_kind = fields.String(validate=OneOf(["event_count"]))
+    start = fields.Date(required=True)
+    stop = fields.Date(required=True)
+    direction = fields.String(
+        required=False, validate=OneOf(["in", "out", "both"]), default="both"
+    )  # TODO: use a globally defined enum for this
+    event_types = EventTypes()
+    subscriber_subset = SubscriberSubset()
+
+    __model__ = EventCountExposed

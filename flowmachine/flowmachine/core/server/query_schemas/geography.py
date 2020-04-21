@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, post_load, fields
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import Geography
@@ -11,15 +11,7 @@ from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["GeographySchema", "GeographyExposed"]
 
-
-class GeographySchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["geography"]))
-    aggregation_unit = AggregationUnit()
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return GeographyExposed(**params)
+from .base_schema import BaseSchema
 
 
 class GeographyExposed(BaseExposedQuery):
@@ -47,3 +39,11 @@ class GeographyExposed(BaseExposedQuery):
         # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
         sql = self._flowmachine_query_obj.geojson_query(crs=4326)
         return sql
+
+
+class GeographySchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["geography"]))
+    aggregation_unit = AggregationUnit()
+
+    __model__ = GeographyExposed

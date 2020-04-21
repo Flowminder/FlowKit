@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_introversion import (
@@ -14,20 +14,7 @@ from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
-
-class LocationIntroversionSchema(Schema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["location_introversion"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
-    direction = fields.String(
-        required=False, validate=OneOf(["in", "out", "both"]), default="both"
-    )  # TODO: use a globally defined enum for this
-
-    @post_load
-    def make_query_object(self, params, **kwargs):
-        return LocationIntroversionExposed(**params)
+from .base_schema import BaseSchema
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
@@ -56,3 +43,16 @@ class LocationIntroversionExposed(BaseExposedQuery):
                 direction=self.direction,
             )
         )
+
+
+class LocationIntroversionSchema(BaseSchema):
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["location_introversion"]))
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit()
+    direction = fields.String(
+        required=False, validate=OneOf(["in", "out", "both"]), default="both"
+    )  # TODO: use a globally defined enum for this
+
+    __model__ = LocationIntroversionExposed
