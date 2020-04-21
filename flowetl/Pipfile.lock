@@ -74,10 +74,10 @@
         },
         "cattrs": {
             "hashes": [
-                "sha256:08b2e0a6c93e7475982ca634d025c3182cbf915c27fd124a71b2835c06c9f232",
-                "sha256:3e470caf9bf7bf4dd27af54f05cb522578bf35da03db5ccd21102a60f65fd4ee"
+                "sha256:43cff719f5af6b8a7e1a8d67656ffbf5c5ca2b0469fe9b6adcb2e3a104f16460",
+                "sha256:68fab4822f15354ea63ddbde13bcbc32c9d13ed6cb6e700106fb5a5f2dfa37ed"
             ],
-            "version": "==0.9.1"
+            "version": "==0.9.2"
         },
         "certifi": {
             "hashes": [
@@ -878,10 +878,10 @@
         },
         "cattrs": {
             "hashes": [
-                "sha256:08b2e0a6c93e7475982ca634d025c3182cbf915c27fd124a71b2835c06c9f232",
-                "sha256:3e470caf9bf7bf4dd27af54f05cb522578bf35da03db5ccd21102a60f65fd4ee"
+                "sha256:43cff719f5af6b8a7e1a8d67656ffbf5c5ca2b0469fe9b6adcb2e3a104f16460",
+                "sha256:68fab4822f15354ea63ddbde13bcbc32c9d13ed6cb6e700106fb5a5f2dfa37ed"
             ],
-            "version": "==0.9.1"
+            "version": "==0.9.2"
         },
         "certifi": {
             "hashes": [
