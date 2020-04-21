@@ -64,6 +64,7 @@ setup(
             "histogrammable_queries = flowmachine.core.server.query_schemas.histogrammable_queries:histogrammable_queries",
             "joinable_queries = flowmachine.core.server.query_schemas.joinable_queries:joinable_queries",
             "flowable_queries = flowmachine.core.server.query_schemas.flowable_queries:flowable_queries",
+            "reference_location_queries = flowmachine.core.server.query_schemas.reference_location_queries:reference_location_queries",
         ],
     },
     description="Digestion program for Call Detail Record (CDR) data.",

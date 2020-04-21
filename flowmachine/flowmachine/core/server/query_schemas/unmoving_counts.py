@@ -10,7 +10,7 @@ from flowmachine.features.location.redacted_unmoving_counts import (
 )
 from flowmachine.features.location.unmoving_counts import UnmovingCounts
 from flowmachine.features.subscriber.unmoving import Unmoving
-from . import BaseExposedQuery
+from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .unique_locations import UniqueLocationsSchema
 

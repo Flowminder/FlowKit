@@ -12,7 +12,7 @@ from flowmachine.features.utilities.subscriber_locations import SubscriberLocati
 from flowmachine.features.location.consecutive_trips_od_matrix import (
     ConsecutiveTripsODMatrix,
 )
-from . import BaseExposedQuery
+from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj

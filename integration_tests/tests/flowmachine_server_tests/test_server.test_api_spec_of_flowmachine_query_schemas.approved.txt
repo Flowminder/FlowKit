@@ -256,7 +256,7 @@
         "type": "string"
       },
       "reference_location": {
-        "$ref": "#/components/schemas/InputToDisplacement"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "sampling": {
         "allOf": [
@@ -671,23 +671,6 @@
       }
     ]
   },
-  "InputToDisplacement": {
-    "discriminator": {
-      "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
-      },
-      "propertyName": "query_kind"
-    },
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/DailyLocation"
-      },
-      {
-        "$ref": "#/components/schemas/ModalLocation"
-      }
-    ]
-  },
   "InputToFlows": {
     "discriminator": {
       "mapping": {
@@ -719,23 +702,6 @@
     "oneOf": [
       {
         "$ref": "#/components/schemas/DailyLocation"
-      }
-    ]
-  },
-  "InputToSpatialAggregate": {
-    "discriminator": {
-      "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
-      },
-      "propertyName": "query_kind"
-    },
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/DailyLocation"
-      },
-      {
-        "$ref": "#/components/schemas/ModalLocation"
       }
     ]
   },
@@ -791,7 +757,7 @@
   "JoinedSpatialAggregate": {
     "properties": {
       "locations": {
-        "$ref": "#/components/schemas/InputToSpatialAggregate"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "method": {
         "enum": [
@@ -1439,7 +1405,7 @@
   "SpatialAggregate": {
     "properties": {
       "locations": {
-        "$ref": "#/components/schemas/InputToSpatialAggregate"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "query_kind": {
         "enum": [

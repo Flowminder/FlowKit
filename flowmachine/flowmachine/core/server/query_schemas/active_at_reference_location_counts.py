@@ -15,12 +15,12 @@ from flowmachine.features.location.redacted_active_at_reference_location_counts 
     RedactedActiveAtReferenceLocationCounts,
 )
 
-from . import BaseExposedQuery
-
 __all__ = [
     "ActiveAtReferenceLocationCountsSchema",
     "ActiveAtReferenceLocationCountsExposed",
 ]
+
+from .base_exposed_query import BaseExposedQuery
 
 from .base_schema import BaseSchema
 

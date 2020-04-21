@@ -12,9 +12,6 @@ from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
 
-from flowmachine.core.server.query_schemas.spatial_aggregate import (
-    InputToSpatialAggregate,
-)
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
@@ -23,6 +20,7 @@ from flowmachine.features.location.redacted_joined_spatial_aggregate import (
 )
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
+from .reference_location import ReferenceLocationSchema
 from .util import get_type_schemas_from_entrypoint
 
 
@@ -63,7 +61,7 @@ class JoinedSpatialAggregateExposed(BaseExposedQuery):
 class JoinedSpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
-    locations = fields.Nested(InputToSpatialAggregate, required=True)
+    locations = fields.Nested(ReferenceLocationSchema, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
     method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
 

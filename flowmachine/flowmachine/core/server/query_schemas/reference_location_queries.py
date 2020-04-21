@@ -4,10 +4,8 @@
 
 from flowmachine.core.server.query_schemas.daily_location import DailyLocationSchema
 from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
-from flowmachine.core.server.query_schemas.unique_locations import UniqueLocationsSchema
 
-flowable_queries = {
+reference_location_queries = {
     "daily_location": DailyLocationSchema,
     "modal_location": ModalLocationSchema,
-    "unique_locations": UniqueLocationsSchema,
 }
