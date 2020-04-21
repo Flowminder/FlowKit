@@ -106,6 +106,27 @@ async def test_available_dates_error(http_code):
         await get_available_dates(connection=connection_mock, event_types=["FOOBAR"])
 
 
+@pytest.mark.parametrize(
+    "arg, expected", [(None, dict(DUMMY=1, DUMMY_2=1)), (["DUMMY"], dict(DUMMY=1))]
+)
+@pytest.mark.asyncio
+async def test_available_dates(arg, expected):
+    """
+    Dates should be returned and filtered.
+    """
+    connection_mock = AMock()
+    connection_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=200,
+            json=Mock(return_value=dict(available_dates=dict(DUMMY=1, DUMMY_2=1))),
+        )
+    )
+    assert (
+        await get_available_dates(connection=connection_mock, event_types=arg)
+        == expected
+    )
+
+
 @pytest.mark.asyncio
 async def test_get_result_location_from_id_when_ready():
     """
