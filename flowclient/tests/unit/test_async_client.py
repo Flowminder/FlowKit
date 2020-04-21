@@ -15,6 +15,7 @@ from flowclient.async_client import (
     get_geojson_result_by_query_id,
     run_query,
     get_available_dates,
+    get_result_location_from_id_when_ready,
 )
 from flowclient.errors import FlowclientConnectionError
 
@@ -101,6 +102,25 @@ async def test_available_dates_error(http_code):
         match=f"Could not get available dates. API returned with status code: {http_code}. Reason: MESSAGE",
     ):
         await get_available_dates(connection=connection_mock, event_types=["FOOBAR"])
+
+
+@pytest.mark.asyncio
+async def test_get_result_location_from_id_when_ready():
+    """
+    Any unexpected http code should raise an exception.
+    """
+    connection_mock = AMock()
+    connection_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=303, headers=dict(Location="/api/0/DUMMY_LOCATION")
+        )
+    )
+    assert (
+        await get_result_location_from_id_when_ready(
+            connection=connection_mock, query_id="DUMMY_ID"
+        )
+        == "DUMMY_LOCATION"
+    )
 
 
 @pytest.mark.asyncio
