@@ -10,7 +10,7 @@ from flowclient.errors import FlowclientConnectionError
 
 
 @pytest.mark.parametrize("http_code", [401, 500])
-def test_get_geography_error(http_code):
+def test_available_dates_error(http_code):
     """
     Any unexpected http code should raise an exception.
     """
@@ -20,5 +20,19 @@ def test_get_geography_error(http_code):
     with pytest.raises(
         FlowclientConnectionError,
         match=f"Could not get available dates. API returned with status code: {http_code}. Reason: MESSAGE",
+    ):
+        get_available_dates(connection=connection_mock, event_types=["FOOBAR"])
+
+
+def test_available_dates_error_with_no_info():
+    """
+    Any unexpected http code should raise an exception.
+    """
+    connection_mock = Mock()
+    connection_mock.get_url.return_value.status_code = 401
+    connection_mock.get_url.return_value.json.return_value = {}
+    with pytest.raises(
+        FlowclientConnectionError,
+        match=f"Could not get available dates. API returned with status code: 401.",
     ):
         get_available_dates(connection=connection_mock, event_types=["FOOBAR"])

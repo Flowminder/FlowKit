@@ -13,6 +13,8 @@ from flowclient.async_client import (
     get_status,
     get_json_dataframe,
     get_geojson_result_by_query_id,
+    run_query,
+    get_available_dates,
 )
 from flowclient.errors import FlowclientConnectionError
 
@@ -52,6 +54,69 @@ async def test_query_ready_raises():
     con_mock.get_url = CoroutineMock(return_value=AMock(status_code=999))
     with pytest.raises(FlowclientConnectionError):
         await query_is_ready(connection=con_mock, query_id="foo")
+
+
+@pytest.mark.asyncio
+async def test_run_query_raises():
+    con_mock = AMock()
+    con_mock.post_json = CoroutineMock(
+        return_value=Mock(
+            status_code=500, json=Mock(return_value=dict(msg="DUMMY_ERROR"))
+        )
+    )
+    with pytest.raises(
+        FlowclientConnectionError,
+        match="Error running the query: DUMMY_ERROR. Status code: 500.",
+    ):
+        await run_query(connection=con_mock, query_spec="foo")
+
+
+@pytest.mark.asyncio
+async def test_run_query_raises_with_default_error():
+    con_mock = AMock()
+    con_mock.post_json = CoroutineMock(
+        return_value=Mock(status_code=500, json=Mock(return_value=dict()))
+    )
+    with pytest.raises(
+        FlowclientConnectionError,
+        match="Error running the query: Unknown error. Status code: 500.",
+    ):
+        await run_query(connection=con_mock, query_spec="foo")
+
+
+@pytest.mark.parametrize("http_code", [401, 500])
+@pytest.mark.asyncio
+async def test_available_dates_error(http_code):
+    """
+    Any unexpected http code should raise an exception.
+    """
+    connection_mock = AMock()
+    connection_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=http_code, json=Mock(return_value=dict(msg="MESSAGE"))
+        )
+    )
+    with pytest.raises(
+        FlowclientConnectionError,
+        match=f"Could not get available dates. API returned with status code: {http_code}. Reason: MESSAGE",
+    ):
+        await get_available_dates(connection=connection_mock, event_types=["FOOBAR"])
+
+
+@pytest.mark.asyncio
+async def test_available_dates_error_with_no_info():
+    """
+    Any unexpected http code should raise an exception.
+    """
+    connection_mock = AMock()
+    connection_mock.get_url = CoroutineMock(
+        return_value=Mock(status_code=401, json=Mock(return_value=dict(msg="MESSAGE")))
+    )
+    with pytest.raises(
+        FlowclientConnectionError,
+        match=f"Could not get available dates. API returned with status code: 401.",
+    ):
+        await get_available_dates(connection=connection_mock, event_types=["FOOBAR"])
 
 
 @pytest.mark.asyncio
