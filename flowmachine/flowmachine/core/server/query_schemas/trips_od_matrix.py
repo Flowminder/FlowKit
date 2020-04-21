@@ -18,13 +18,7 @@ __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
 
 class TripsODMatrixExposed(BaseExposedQuery):
     def __init__(
-        self,
-        start_date,
-        end_date,
-        *,
-        aggregation_unit,
-        subscriber_subset=None,
-        sampling=None
+        self, start_date, end_date, *, aggregation_unit, subscriber_subset=None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -32,7 +26,6 @@ class TripsODMatrixExposed(BaseExposedQuery):
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
-        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
