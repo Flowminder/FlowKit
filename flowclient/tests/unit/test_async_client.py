@@ -16,6 +16,8 @@ from flowclient.async_client import (
     run_query,
     get_available_dates,
     get_result_location_from_id_when_ready,
+    get_result,
+    get_geojson_result,
 )
 from flowclient.errors import FlowclientConnectionError
 
@@ -298,3 +300,53 @@ async def test_get_geography_no_msg_error(token):
         await get_geography(
             connection=connection_mock, aggregation_unit="DUMMY_AGGREGATION"
         )
+
+
+@pytest.mark.asyncio
+async def test_get_result():
+    con_mock = AMock()
+    con_mock.post_json = CoroutineMock(
+        return_value=Mock(
+            status_code=202,
+            json=Mock(return_value=dict(msg="DUMMY_ERROR"),),
+            headers=dict(Location="DUMMY"),
+        ),
+    )
+    con_mock.get_url = CoroutineMock(
+        side_effect=[
+            Mock(status_code=303, headers=dict(Location="DUMMY"),),
+            Mock(
+                status_code=200,
+                headers=dict(Location="DUMMY"),
+                json=Mock(return_value=dict(query_result=[{"0": 1}])),
+            ),
+        ]
+    )
+    assert (
+        await get_result(connection=con_mock, query_spec="foo")
+    ).values.tolist() == [[1]]
+
+
+@pytest.mark.asyncio
+async def test_get_geojson_result():
+    con_mock = AMock()
+    con_mock.post_json = CoroutineMock(
+        return_value=Mock(
+            status_code=202,
+            json=Mock(return_value=dict(msg="DUMMY_ERROR"),),
+            headers=dict(Location="DUMMY"),
+        ),
+    )
+    con_mock.get_url = CoroutineMock(
+        side_effect=[
+            Mock(status_code=303, headers=dict(Location="DUMMY"),),
+            Mock(
+                status_code=200,
+                headers=dict(Location="DUMMY"),
+                json=Mock(return_value=dict(query_result=[{"0": 1}])),
+            ),
+        ]
+    )
+    assert (await get_geojson_result(connection=con_mock, query_spec="foo")) == {
+        "query_result": [{"0": 1}]
+    }
