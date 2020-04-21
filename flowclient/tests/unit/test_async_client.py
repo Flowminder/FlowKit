@@ -7,7 +7,13 @@ from asynctest import Mock as AMock, CoroutineMock
 
 import pytest
 
-from flowclient.async_client import query_is_ready, get_geography, get_status
+from flowclient.async_client import (
+    query_is_ready,
+    get_geography,
+    get_status,
+    get_json_dataframe,
+    get_geojson_result_by_query_id,
+)
 from flowclient.errors import FlowclientConnectionError
 
 
@@ -92,6 +98,52 @@ async def test_get_status_raises():
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(return_value=Mock(status_code=500))
     with pytest.raises(FlowclientConnectionError):
+        await get_status(connection=con_mock, query_id="foo")
+
+
+@pytest.mark.asyncio
+async def test_get_json_dataframe_raises():
+    """ Test that get_json_dataframe raises an error. """
+    con_mock = AMock()
+    con_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=500, json=Mock(return_value=dict(msg="DUMMY_ERROR"))
+        )
+    )
+    with pytest.raises(FlowclientConnectionError, match=r".*Reason: DUMMY_ERROR"):
+        await get_json_dataframe(connection=con_mock, location="foo")
+
+
+@pytest.mark.asyncio
+async def test_get_geojson_result_by_query_id_raises(monkeypatch):
+    """ Test that get_geojson_result_by_query_id raises an error. """
+    con_mock = AMock()
+    con_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=500, json=Mock(return_value=dict(msg="DUMMY_ERROR"))
+        )
+    )
+    monkeypatch.setattr(
+        "flowclient.async_client.get_result_location_from_id_when_ready",
+        CoroutineMock(return_value="DUMMY"),
+    )
+    with pytest.raises(FlowclientConnectionError, match=r".*Reason: DUMMY_ERROR"):
+        await get_geojson_result_by_query_id(connection=con_mock, query_id="foo")
+
+
+@pytest.mark.asyncio
+async def test_get_status_raises_without_status():
+    """ Test that get_status raises an error if the status field is absent. """
+    con_mock = AMock()
+    con_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=202,
+            json=Mock(
+                return_value=dict(progress=dict(queued=0, running=0, eligible=0))
+            ),
+        )
+    )
+    with pytest.raises(FlowclientConnectionError, match="No status reported"):
         await get_status(connection=con_mock, query_id="foo")
 
 
