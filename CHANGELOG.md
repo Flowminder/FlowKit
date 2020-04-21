@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added 
 
 ### Changed
+- FlowMachine server now uses [uvloop](https://uvloop.readthedocs.io/) if available in preference to the standard asyncio eventloop
+- The FlowMachine Docker container now uses [uvloop](https://uvloop.readthedocs.io/). Set the `FLOWMACHINE_EVENT_LOOP` environment variable to `asyncio` to use the standard Python event loop.
+- The FlowAPI Docker container now uses [uvloop](https://uvloop.readthedocs.io/). Set the `FLOWAPI_EVENT_LOOP` environment variable to `asyncio` to use the standard Python event loop.
+
 
 ### Fixed
 
