@@ -187,6 +187,20 @@ async def test_get_status_raises():
 
 
 @pytest.mark.asyncio
+async def test_get_json_dataframe():
+    """ Test that get_json_dataframe returns results. """
+    con_mock = AMock()
+    con_mock.get_url = CoroutineMock(
+        return_value=Mock(
+            status_code=200, json=Mock(return_value=dict(query_result=[{"0": 1}]))
+        )
+    )
+    assert (
+        await get_json_dataframe(connection=con_mock, location="foo")
+    ).values.tolist() == [[1]]
+
+
+@pytest.mark.asyncio
 async def test_get_json_dataframe_raises():
     """ Test that get_json_dataframe raises an error. """
     con_mock = AMock()
