@@ -22,4 +22,5 @@ RUN apt-get update && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
+ENV FLOWMACHINE_EVENT_LOOP=uvloop
 CMD ["pipenv", "run", "flowmachine"]

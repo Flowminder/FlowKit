@@ -16,4 +16,5 @@ RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-b
 COPY . /${SOURCE_TREE}/
 RUN pipenv run python setup.py install
 ENV QUART_ENV=production
+ENV FLOWAPI_EVENT_LOOP=uvloop
 CMD ["pipenv", "run", "./start.sh"]

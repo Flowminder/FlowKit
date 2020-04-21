@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
-from concurrent.futures import Executor
 from json import JSONDecodeError
 import traceback
 
@@ -272,13 +271,18 @@ def main():
     if config.debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
 
-    try:
+    if config.event_loop == "uvloop":
+        logger.debug("Trying to load uvloop")
         import uvloop
 
         uvloop.install()
         logger.debug("uvloop available, using instead of default asyncio loop.")
-    except ImportError:
-        logger.debug("uvloop not available, using default asyncio loop.")
+    elif config.event_loop == "asyncio":
+        logger.debug("Using default asyncio loop.")
+    else:
+        raise EnvironmentError(
+            f"'{config.event_loop}' is not a valid event loop setting."
+        )
 
     # Run receive loop which receives zmq messages and sends back replies
     asyncio.run(

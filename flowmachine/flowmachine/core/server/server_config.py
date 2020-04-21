@@ -47,6 +47,8 @@ class FlowmachineServerConfig(NamedTuple):
         Maximum number of seconds to wait for a cache pruning operation to complete.
     server_thread_pool : ThreadPoolExecutor
         Server's threadpool for managing blocking tasks
+    event_loop : str
+        The event loop to use
     """
 
     port: int
@@ -55,6 +57,7 @@ class FlowmachineServerConfig(NamedTuple):
     cache_pruning_frequency: int
     cache_pruning_timeout: int
     server_thread_pool: ThreadPoolExecutor
+    event_loop: str
 
 
 def get_server_config() -> FlowmachineServerConfig:
@@ -76,6 +79,7 @@ def get_server_config() -> FlowmachineServerConfig:
     )
     cache_pruning_timeout = int(os.getenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", 600))
     thread_pool_size = os.getenv("FLOWMACHINE_SERVER_THREADPOOL_SIZE", None)
+    event_loop = os.getenv("FLOWMACHINE_EVENT_LOOP", "uvloop").lower()
     try:
         thread_pool_size = int(thread_pool_size)
     except (TypeError, ValueError):
@@ -88,4 +92,5 @@ def get_server_config() -> FlowmachineServerConfig:
         cache_pruning_frequency=cache_pruning_frequency,
         cache_pruning_timeout=cache_pruning_timeout,
         server_thread_pool=ThreadPoolExecutor(max_workers=thread_pool_size),
+        event_loop=event_loop,
     )
