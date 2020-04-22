@@ -147,7 +147,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: circleci/classic:201808-01
+      image: circleci/classic:latest
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
