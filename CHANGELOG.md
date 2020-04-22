@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added new Flows type query to FlowAPI `unique_locations`, which produces the paired regional connectivity [COVID-19 indicator](https://github.com/Flowminder/COVID-19/blob/master/od_matrix_undirected_all_pairs.md)
 -   Added FlowClient function `unique_locations_spec`, which can be used on either side of a `flows` query
 -   Added FlowClient functions: `unique_visitor_counts`, `active_at_reference_location_counts`, `unmoving_counts`, `unmoving_at_reference_location_counts`, `trips_od_matrix`, and `consecutive_trips_od_matrix`. [#2333](https://github.com/Flowminder/FlowKit/issues/2333)
+-   FlowClient now has an asyncio API. Use `connect_async` instead of `connect` to create an `ASyncConnection`, and `await` methods on `APIQuery` objects. [#2199](https://github.com/Flowminder/FlowKit/issues/2199)
 
 ### Fixed
 -   Fixed FlowMachine server becoming deadlocked under load. [#2390](https://github.com/Flowminder/FlowKit/issues/2390)
