@@ -43,7 +43,11 @@ from flowmachine.core.errors import (
 
 import flowmachine
 from flowmachine.utils import _sleep
-from flowmachine.core.dependency_graph import store_all_unstored_dependencies
+from flowmachine.core.dependency_graph import (
+    store_all_unstored_dependencies,
+    store_queries_in_order,
+    unstored_dependencies_graph,
+)
 
 from flowmachine.core.cache import write_query_to_cache
 
@@ -602,13 +606,11 @@ class Query(metaclass=ABCMeta):
             return plan_time
 
         if store_dependencies:
+            store_queries_in_order(
+                unstored_dependencies_graph(self)
+            )  # Need to ensure we're behind our deps in the queue
 
-            def ddl_ops_func(name: str, schema: Union[str, None] = None) -> List[str]:
-                store_all_unstored_dependencies(self)
-                return self._make_sql(name, schema)
-
-        else:
-            ddl_ops_func = self._make_sql
+        ddl_ops_func = self._make_sql
 
         current_state, changed_to_queue = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
