@@ -685,7 +685,7 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
         Flows query
 
     """
-    return APIQuery(connection=connection, parameters=flows_spec(**kwargs))
+    return connection.make_api_query(parameters=flows_spec(**kwargs))
 
 
 def unique_subscriber_counts_spec(
@@ -944,7 +944,7 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Spatial aggregate query
     """
-    return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
+    return connection.make_api_query(parameters=spatial_aggregate_spec(**kwargs))
 
 
 def consecutive_trips_od_matrix_spec(
