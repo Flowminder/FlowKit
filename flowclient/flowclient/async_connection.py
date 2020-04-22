@@ -84,3 +84,6 @@ class ASyncConnection(flowclient.connection.Connection):
         from flowclient.async_api_query import ASyncAPIQuery
 
         return ASyncAPIQuery(connection=self, parameters=parameters)
+
+    def __repr__(self):
+        return f"{super().__repr__()} (async)"
