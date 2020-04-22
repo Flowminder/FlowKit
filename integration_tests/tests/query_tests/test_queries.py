@@ -5,11 +5,14 @@ from functools import partial
 
 import geojson
 import flowclient
-from flowclient.client import get_result
 
 import pytest
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+)
 @pytest.mark.parametrize(
     "query",
     [
@@ -544,20 +547,28 @@ import pytest
     ],
     ids=lambda val: val.func.__name__,
 )
-def test_run_query(query, universal_access_token, flowapi_url):
+async def test_run_query(connection, query, universal_access_token, flowapi_url):
     """
     Test that queries can be run, and return a QueryResult object.
     """
-    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
-
+    con = connection(url=flowapi_url, token=universal_access_token)
     query(connection=con).get_result()
+
+    try:
+        await query.get_result()
+    except TypeError:
+        query.get_result()
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
     # so we can only check it runs without erroring
 
 
-def test_geo_result(universal_access_token, flowapi_url):
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+)
+async def test_geo_result(connection, universal_access_token, flowapi_url):
     query = flowclient.joined_spatial_aggregate(
-        connection=flowclient.Connection(url=flowapi_url, token=universal_access_token),
+        connection=connection(url=flowapi_url, token=universal_access_token),
         **{
             "locations": flowclient.daily_location_spec(
                 date="2016-01-01", aggregation_unit="admin3", method="last"
@@ -572,10 +583,17 @@ def test_geo_result(universal_access_token, flowapi_url):
         }
     )
 
-    result = query.get_result(format="geojson")
+    try:
+        result = await query.get_result(format="geojson")
+    except TypeError:
+        result = query.get_result(format="geojson")
     assert geojson.GeoJSON(result).is_valid
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+)
 @pytest.mark.parametrize(
     "query_kind, params",
     [
@@ -618,29 +636,43 @@ def test_geo_result(universal_access_token, flowapi_url):
         ),
     ],
 )
-def test_fail_query_incorrect_parameters(
-    query_kind, params, universal_access_token, flowapi_url
+async def test_fail_query_incorrect_parameters(
+    connection, query_kind, params, universal_access_token, flowapi_url
 ):
     """
     Test that queries fail with incorrect parameters.
     """
-    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
+    con = connection(url=flowapi_url, token=universal_access_token)
     query = query_kind(connection=con, **params)
     with pytest.raises(
         flowclient.client.FlowclientConnectionError, match="Must be one of:"
     ):
-        result_dataframe = query.get_result()
+        try:
+            await query.get_result()
+        except TypeError:
+            result_dataframe = query.get_result()
 
 
-def test_get_geography(access_token_builder, flowapi_url):
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+)
+async def test_get_geography(connection, access_token_builder, flowapi_url):
     """
     Test that queries can be run, and return a GeoJSON dict.
     """
-    con = flowclient.Connection(
+    con = connection(
         url=flowapi_url,
         token=access_token_builder(["get_result&geography.aggregation_unit.admin3"]),
     )
-    result_geojson = flowclient.get_geography(connection=con, aggregation_unit="admin3")
+    try:
+        result_geojson = await flowclient.get_geography(
+            connection=con, aggregation_unit="admin3"
+        )
+    except TypeError:
+        result_geojson = flowclient.get_geography(
+            connection=con, aggregation_unit="admin3"
+        )
     assert "FeatureCollection" == result_geojson["type"]
     assert 0 < len(result_geojson["features"])
     feature0 = result_geojson["features"][0]
@@ -651,6 +683,10 @@ def test_get_geography(access_token_builder, flowapi_url):
     assert 0 < len(feature0["geometry"]["coordinates"])
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+)
 @pytest.mark.parametrize(
     "event_types, expected_result",
     [
@@ -711,14 +747,19 @@ def test_get_geography(access_token_builder, flowapi_url):
         ),
     ],
 )
-def test_get_available_dates(
-    event_types, expected_result, access_token_builder, flowapi_url
+async def test_get_available_dates(
+    connection, event_types, expected_result, access_token_builder, flowapi_url
 ):
     """
     Test that queries can be run, and return the expected JSON result.
     """
-    con = flowclient.Connection(
+    con = connection(
         url=flowapi_url, token=access_token_builder(["get_result&available_dates"]),
     )
-    result = flowclient.get_available_dates(connection=con, event_types=event_types)
+    try:
+        result = await flowclient.get_available_dates(
+            connection=con, event_types=event_types
+        )
+    except TypeError:
+        result = flowclient.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result
