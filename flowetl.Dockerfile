@@ -28,7 +28,6 @@ RUN set -eux; \
         rm -rf /var/lib/apt/lists/*
 
 
-COPY ./entrypoint.sh /entrypoint.sh
 
 # Install FlowETL module
 
