@@ -14,7 +14,7 @@ from flowmachine.features.location.consecutive_trips_od_matrix import (
 )
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["ConsecutiveTripsODMatrixSchema", "ConsecutiveTripsODMatrixExposed"]
@@ -55,8 +55,8 @@ class ConsecutiveTripsODMatrixExposed(BaseExposedQuery):
 class ConsecutiveTripsODMatrixSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["consecutive_trips_od_matrix"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 

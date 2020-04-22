@@ -8,7 +8,7 @@ from marshmallow.validate import OneOf
 from flowmachine.features import UniqueLocationCounts
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
@@ -50,8 +50,8 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
 
 class UniqueLocationCountsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 

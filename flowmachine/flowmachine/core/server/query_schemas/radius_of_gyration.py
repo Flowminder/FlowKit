@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import RadiusOfGyration
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -43,8 +43,8 @@ class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
 class RadiusOfGyrationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     subscriber_subset = SubscriberSubset()
 
     __model__ = RadiusOfGyrationExposed

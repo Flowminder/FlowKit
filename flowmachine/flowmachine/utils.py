@@ -46,9 +46,12 @@ def parse_datestring(
                 try:
                     return datetime.datetime.strptime(datestring, "%Y-%m-%d")
                 except ValueError:
-                    raise ValueError(
-                        "{} could not be parsed as as date.".format(datestring)
-                    )
+                    try:
+                        return datetime.datetime.fromisoformat(datestring)
+                    except ValueError:
+                        raise ValueError(
+                            "{} could not be parsed as as date.".format(datestring)
+                        )
 
 
 def list_of_dates(start, stop):

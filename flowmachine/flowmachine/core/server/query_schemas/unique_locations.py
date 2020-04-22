@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberLocations
 from flowmachine.features.subscriber.unique_locations import UniqueLocations
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
@@ -57,8 +57,8 @@ class UniqueLocationsExposed(BaseExposedQueryWithSampling):
 class UniqueLocationsSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_locations"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 

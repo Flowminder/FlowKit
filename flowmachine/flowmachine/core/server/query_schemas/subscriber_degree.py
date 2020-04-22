@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberDegree
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -46,8 +46,8 @@ class SubscriberDegreeExposed(BaseExposedQueryWithSampling):
 
 class SubscriberDegreeSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["subscriber_degree"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
+    start = ISODateTime(required=True)
+    stop = ISODateTime(required=True)
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this

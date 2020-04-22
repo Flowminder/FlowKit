@@ -18,6 +18,7 @@ from ...core import make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
+from ...utils import parse_datestring
 
 
 def locate_subscribers(
@@ -191,15 +192,17 @@ def daily_location(
     # Temporary band-aid; marshmallow deserialises date strings
     # to date objects, so we convert it back here because the
     # lower-level classes still assume we are passing date strings.
-    if isinstance(date, datetime.date):
+    if isinstance(date, datetime.datetime):
+        date = date.strftime("%Y-%m-%d %H:%M:%S")
+    elif isinstance(date, datetime.date):
         date = date.strftime("%Y-%m-%d")
 
     if stop is None:
         # 'cast' the date object as a date
-        d1 = datetime.date(*map(int, date.split("-")))
+        d1 = parse_datestring(date)
         # One day after this
         d2 = d1 + datetime.timedelta(1)
-        stop = d2.strftime("%Y-%m-%d")
+        stop = d2.strftime("%Y-%m-%d %H:%M:%S")
     return locate_subscribers(
         start=date,
         stop=stop,

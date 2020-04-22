@@ -26,7 +26,12 @@ from flowmachine.features.location.redacted_meaningful_locations_od import (
 )
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import SubscriberSubset, TowerHourOfDayScores, TowerDayOfWeekScores
+from .custom_fields import (
+    SubscriberSubset,
+    TowerHourOfDayScores,
+    TowerDayOfWeekScores,
+    ISODateTime,
+)
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = [
@@ -229,8 +234,8 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
 class MeaningfulLocationsAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
@@ -292,8 +297,8 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(BaseSchema):
     query_kind = fields.String(
         validate=OneOf(["meaningful_locations_between_label_od_matrix"])
     )
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit(required=True)
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
@@ -313,10 +318,10 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(BaseSchema):
     query_kind = fields.String(
         validate=OneOf(["meaningful_locations_between_dates_od_matrix"])
     )
-    start_date_a = fields.Date(required=True)
-    end_date_a = fields.Date(required=True)
-    start_date_b = fields.Date(required=True)
-    end_date_b = fields.Date(required=True)
+    start_date_a = ISODateTime(required=True)
+    end_date_a = ISODateTime(required=True)
+    start_date_b = ISODateTime(required=True)
+    end_date_b = ISODateTime(required=True)
     aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(

@@ -15,6 +15,7 @@ from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
 from .base_schema import BaseSchema
+from .custom_fields import ISODateTime
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
@@ -46,8 +47,8 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
 class UniqueSubscriberCountsSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit()
 
     __model__ = UniqueSubscriberCountsExposed

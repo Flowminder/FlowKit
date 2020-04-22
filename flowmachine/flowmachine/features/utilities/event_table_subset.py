@@ -85,9 +85,13 @@ class EventTableSubset(Query):
         # Temporary band-aid; marshmallow deserialises date strings
         # to date objects, so we convert it back here because the
         # lower-level classes still assume we are passing date strings.
-        if isinstance(start, datetime.date):
+        if isinstance(start, datetime.datetime):
+            start = start.strftime("%Y-%m-%d %H:%M:%S")
+        elif isinstance(start, datetime.date):
             start = start.strftime("%Y-%m-%d")
-        if isinstance(stop, datetime.date):
+        if isinstance(stop, datetime.datetime):
+            stop = stop.strftime("%Y-%m-%d %H:%M:%S")
+        elif isinstance(stop, datetime.date):
             stop = stop.strftime("%Y-%m-%d")
 
         if hours != "all" and hour_slices is not None:
@@ -151,6 +155,7 @@ class EventTableSubset(Query):
         )
 
         if self.start == self.stop:
+            print(self.start)
             raise ValueError("Start and stop are the same.")
 
         super().__init__()

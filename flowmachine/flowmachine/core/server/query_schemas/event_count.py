@@ -6,7 +6,7 @@ from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import EventCount
-from .custom_fields import EventTypes, SubscriberSubset
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -55,8 +55,8 @@ class EventCountExposed(BaseExposedQueryWithSampling):
 
 class EventCountSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["event_count"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
+    start = ISODateTime(required=True)
+    stop = ISODateTime(required=True)
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this

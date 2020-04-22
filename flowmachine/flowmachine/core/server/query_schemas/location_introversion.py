@@ -15,6 +15,7 @@ from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
 from .base_schema import BaseSchema
+from .custom_fields import ISODateTime
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
@@ -48,8 +49,8 @@ class LocationIntroversionExposed(BaseExposedQuery):
 class LocationIntroversionSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_introversion"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     aggregation_unit = AggregationUnit()
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"

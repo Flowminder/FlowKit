@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TopUpAmount
-from .custom_fields import SubscriberSubset, Statistic
+from .custom_fields import SubscriberSubset, Statistic, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -46,8 +46,8 @@ class TopUpAmountExposed(BaseExposedQueryWithSampling):
 
 class TopUpAmountSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["topup_amount"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
+    start = ISODateTime(required=True)
+    stop = ISODateTime(required=True)
     statistic = Statistic()
     subscriber_subset = SubscriberSubset()
 
