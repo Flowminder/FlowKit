@@ -16,7 +16,7 @@ pytest-cov = "*"
 tavern = {extras = ["pytest"],version = "*"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 geojson = "*"
-wtforms = "==2.2.1" # Pinned due to incompatibility with current flask-appbuilder used in airflow  @1.10.10
+wtforms = "==2.3.1" # Pinned due to incompatibility with current flask-appbuilder used in airflow  @1.10.10
 
 [requires]
 python_version = "3.7"
