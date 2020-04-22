@@ -441,8 +441,7 @@ def meaningful_locations_between_label_od_matrix(
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=meaningful_locations_between_label_od_matrix_spec(**kwargs),
     )
 
@@ -631,8 +630,7 @@ def meaningful_locations_between_dates_od_matrix(
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=meaningful_locations_between_dates_od_matrix_spec(**kwargs),
     )
 

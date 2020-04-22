@@ -655,9 +655,13 @@ async def test_fail_query_incorrect_parameters(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+    "connection, module",
+    [
+        (flowclient.Connection, flowclient),
+        (flowclient.ASyncConnection, flowclient.async_client),
+    ],
 )
-async def test_get_geography(connection, access_token_builder, flowapi_url):
+async def test_get_geography(connection, module, access_token_builder, flowapi_url):
     """
     Test that queries can be run, and return a GeoJSON dict.
     """
@@ -666,13 +670,11 @@ async def test_get_geography(connection, access_token_builder, flowapi_url):
         token=access_token_builder(["get_result&geography.aggregation_unit.admin3"]),
     )
     try:
-        result_geojson = await flowclient.get_geography(
+        result_geojson = await module.get_geography(
             connection=con, aggregation_unit="admin3"
         )
     except TypeError:
-        result_geojson = flowclient.get_geography(
-            connection=con, aggregation_unit="admin3"
-        )
+        result_geojson = module.get_geography(connection=con, aggregation_unit="admin3")
     assert "FeatureCollection" == result_geojson["type"]
     assert 0 < len(result_geojson["features"])
     feature0 = result_geojson["features"][0]
@@ -685,7 +687,11 @@ async def test_get_geography(connection, access_token_builder, flowapi_url):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "connection", [flowclient.Connection, flowclient.ASyncConnection]
+    "connection, module",
+    [
+        (flowclient.Connection, flowclient),
+        (flowclient.ASyncConnection, flowclient.async_client),
+    ],
 )
 @pytest.mark.parametrize(
     "event_types, expected_result",
@@ -748,7 +754,7 @@ async def test_get_geography(connection, access_token_builder, flowapi_url):
     ],
 )
 async def test_get_available_dates(
-    connection, event_types, expected_result, access_token_builder, flowapi_url
+    connection, module, event_types, expected_result, access_token_builder, flowapi_url
 ):
     """
     Test that queries can be run, and return the expected JSON result.
@@ -757,9 +763,9 @@ async def test_get_available_dates(
         url=flowapi_url, token=access_token_builder(["get_result&available_dates"]),
     )
     try:
-        result = await flowclient.get_available_dates(
+        result = await module.get_available_dates(
             connection=con, event_types=event_types
         )
     except TypeError:
-        result = flowclient.get_available_dates(connection=con, event_types=event_types)
+        result = module.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result
