@@ -172,7 +172,7 @@ jobs:
           name: Upgrade docker
           command: |
             sudo apt update
-            sudo apt upgrade docker-ce
+            sudo apt install docker-ce
       - run:
           name: Install python dependencies
           command: |
