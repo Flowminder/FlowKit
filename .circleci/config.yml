@@ -646,16 +646,15 @@ jobs:
           ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl", "autoflow"]
       component_path:
         type: string
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      image: ubuntu-1604:201903-01
     working_directory: /home/circleci/project/
     steps:
       - checkout:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - setup_remote_docker:
-          version: 18.09.3
+      - run: sudo apt update && apt install docker-ce
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
