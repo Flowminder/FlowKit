@@ -654,7 +654,7 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - run: sudo apt update && apt install docker-ce
+      - run: sudo apt update && sudo apt install docker-ce
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
