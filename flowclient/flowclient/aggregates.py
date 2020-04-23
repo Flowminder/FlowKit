@@ -955,6 +955,282 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
 
 
+def consecutive_trips_od_matrix_spec(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    Retrieves the count of subscriber who made consecutive visits between locations
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        ISO format dates between which to find trips, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve trips for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Consecutive trips od matrix query specification.
+
+    """
+    return dict(
+        query_kind="consecutive_trips_od_matrix",
+        start_date=start_date,
+        end_date=end_date,
+        aggregation_unit=aggregation_unit,
+        subscriber_subset=subscriber_subset,
+    )
+
+
+@merge_args(consecutive_trips_od_matrix_spec)
+def consecutive_trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Retrieves the count of subscriber who made consecutive visits between locations
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    start_date, end_date : str
+        ISO format dates between which to find trips, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve trips for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    APIQuery
+        consecutive_trips_od_matrix query
+    """
+    return APIQuery(
+        connection=connection, parameters=consecutive_trips_od_matrix_spec(**kwargs),
+    )
+
+
+def trips_od_matrix_spec(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    Retrieves the count of subscriber who made visits between locations
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        ISO format dates between which to find trips, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve trips for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        trips od matrix query specification.
+
+    """
+    return dict(
+        query_kind="trips_od_matrix",
+        start_date=start_date,
+        end_date=end_date,
+        aggregation_unit=aggregation_unit,
+        subscriber_subset=subscriber_subset,
+    )
+
+
+@merge_args(trips_od_matrix_spec)
+def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Retrieves the count of subscriber who made visits between locations
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    start_date, end_date : str
+        ISO format dates between which to find trips, e.g. "2016-01-01"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve trips for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    APIQuery
+        trips_od_matrix query
+    """
+    return APIQuery(connection=connection, parameters=trips_od_matrix_spec(**kwargs),)
+
+
+def unmoving_counts_spec(
+    *, unique_locations: Dict[str, Union[str, Dict[str, str]]],
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    A count by location of subscribers who were unmoving at that location.
+
+    Parameters
+    ----------
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    dict
+        Query specification
+
+    """
+    return dict(query_kind="unmoving_counts", locations=unique_locations,)
+
+
+@merge_args(unmoving_counts_spec)
+def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    A count by location of subscribers who were unmoving at that location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    APIQuery
+        unmoving_counts query
+    """
+    return APIQuery(connection=connection, parameters=unmoving_counts_spec(**kwargs),)
+
+
+def unmoving_at_reference_location_counts_spec(
+    *,
+    reference_locations: Dict[str, Union[str, Dict[str, str]]],
+    unique_locations: Dict[str, Union[str, Dict[str, str]]],
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    A count by location of subscribers who were unmoving in their reference location.
+
+    Parameters
+    ----------
+    reference_locations : dict
+        Modal or daily location
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    dict
+        Query specification
+
+    """
+    return dict(
+        query_kind="unmoving_at_reference_location_counts",
+        locations=unique_locations,
+        reference_locations=reference_locations,
+    )
+
+
+@merge_args(unmoving_at_reference_location_counts_spec)
+def unmoving_at_reference_location_counts(
+    *, connection: Connection, **kwargs
+) -> APIQuery:
+    """
+    A count by location of subscribers who were unmoving in their reference location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    reference_locations : dict
+        Modal or daily location
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    APIQuery
+        unmoving_at_reference_location_counts query
+    """
+    return APIQuery(
+        connection=connection,
+        parameters=unmoving_at_reference_location_counts_spec(**kwargs),
+    )
+
+
+def active_at_reference_location_counts_spec(
+    *,
+    reference_locations: Dict[str, Union[str, Dict[str, str]]],
+    unique_locations: Dict[str, Union[str, Dict[str, str]]],
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    A count by location of subscribers who were active in their reference location.
+
+    Parameters
+    ----------
+    reference_locations : dict
+        Modal or daily location
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    dict
+        Query specification
+
+    """
+    return dict(
+        query_kind="active_at_reference_location_counts",
+        unique_locations=unique_locations,
+        reference_locations=reference_locations,
+    )
+
+
+@merge_args(active_at_reference_location_counts_spec)
+def active_at_reference_location_counts(
+    *, connection: Connection, **kwargs
+) -> APIQuery:
+    """
+    A count by location of subscribers who were active in their reference location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    reference_locations : dict
+        Modal or daily location
+    unique_locations : dict
+        unique locations
+
+    Returns
+    -------
+    APIQuery
+        active_at_reference_location_counts query
+    """
+    return APIQuery(
+        connection=connection,
+        parameters=active_at_reference_location_counts_spec(**kwargs),
+    )
+
+
 def joined_spatial_aggregate_spec(
     *,
     locations: Dict[str, Union[str, Dict[str, str]]],
