@@ -10,6 +10,7 @@ from ...core import Query
 from ...core.context import get_db
 from ...core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
+from flowmachine.utils import standardise_date
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -60,8 +61,8 @@ class EventsTablesUnion(Query):
             )
             tables = None
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.columns = columns
         self.tables = self._parse_tables(tables)
         if "*" in columns and len(self.tables) != 1:

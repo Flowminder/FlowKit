@@ -10,6 +10,7 @@ Class for calculating MDS volume statistics.
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
+from flowmachine.utils import standardise_date
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -62,8 +63,8 @@ class MDSVolume(SubscriberFeature):
         hours="all",
         subscriber_subset=None,
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.volume = volume

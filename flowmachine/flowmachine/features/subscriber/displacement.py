@@ -12,7 +12,7 @@ from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.core import Query
-
+from flowmachine.utils import standardise_date
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -96,8 +96,8 @@ class Displacement(SubscriberFeature):
     ):
 
         self.return_subscribers_not_seen = return_subscribers_not_seen
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.spatial_unit = reference_location.spatial_unit
         subscriber_locations = SubscriberLocations(
             self.start,

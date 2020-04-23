@@ -11,6 +11,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
+from flowmachine.utils import standardise_date
 
 valid_stats = {
     "count",
@@ -95,8 +96,8 @@ class TopUpBalance(SubscriberFeature):
         hours="all",
         subscriber_subset=None,
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()

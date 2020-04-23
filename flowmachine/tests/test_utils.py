@@ -35,8 +35,8 @@ def test_time_period_add():
     flowmachine.utils.time_period_add does what it says on the tin.
     """
 
-    assert time_period_add("2016-01-01", 3) == "2016-01-04"
-    assert time_period_add("2017-12-31", 1) == "2018-01-01"
+    assert time_period_add("2016-01-01", 3) == "2016-01-04 00:00:00"
+    assert time_period_add("2017-12-31", 1) == "2018-01-01 00:00:00"
 
 
 def test_time_period_add_other_units():

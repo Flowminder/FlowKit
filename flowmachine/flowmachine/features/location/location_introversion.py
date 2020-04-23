@@ -28,7 +28,7 @@ from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
 from flowmachine.core.join_to_location import location_joined_query
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 
 class LocationIntroversion(GeoDataMixin, Query):
@@ -85,8 +85,8 @@ class LocationIntroversion(GeoDataMixin, Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.table = table
         self.spatial_unit = spatial_unit
         self.direction = Direction(direction)

@@ -224,7 +224,7 @@ def test_cache_content(
                     "subscriber_subset": None,
                 },
             },
-            {"locations": {"date": ["Not a valid date."]}},
+            {"locations": {"date": ["Not a valid datetime."]}},
         ),
         (
             {

@@ -32,7 +32,7 @@ import pandas as pd
 
 from flowmachine.core.query import Query
 from flowmachine.features.subscriber import daily_location
-from flowmachine.utils import list_of_dates
+from flowmachine.utils import list_of_dates, standardise_date
 from flowmachine.features.subscriber import ModalLocation
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import LonLatSpatialUnit
@@ -211,8 +211,8 @@ class PopulationWeightedOpportunities(Query):
             self.departure_rate = departure_rate
         else:
             raise TypeError(f"{departure_rate} must be a float or dataframe")
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         if spatial_unit is None:
             self.spatial_unit = make_spatial_unit("versioned-site")
         else:

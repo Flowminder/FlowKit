@@ -208,7 +208,7 @@
         "type": "string"
       },
       "date": {
-        "format": "date",
+        "format": "date-time",
         "type": "string"
       },
       "method": {

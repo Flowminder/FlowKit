@@ -13,7 +13,7 @@ from flowmachine.features.subscriber.contact_balance import ContactBalance
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 
 class ContactReciprocal(GraphMixin, SubscriberFeature):
@@ -80,8 +80,8 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         subscriber_subset=None,
     ):
         self.tables = tables
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.exclude_self_calls = exclude_self_calls
         self.tables = tables

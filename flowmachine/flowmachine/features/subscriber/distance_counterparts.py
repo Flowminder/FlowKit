@@ -12,7 +12,7 @@ from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.spatial.distance_matrix import DistanceMatrix
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -77,8 +77,8 @@ class DistanceCounterparts(SubscriberFeature):
         exclude_self_calls=True,
     ):
         self.tables = tables
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.direction = Direction(direction)
         self.exclude_self_calls = exclude_self_calls

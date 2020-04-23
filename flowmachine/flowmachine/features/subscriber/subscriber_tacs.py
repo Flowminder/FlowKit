@@ -16,6 +16,7 @@ from typing import List
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core import Table
+from flowmachine.utils import standardise_date
 
 valid_characteristics = {
     "brand",
@@ -123,8 +124,8 @@ class SubscriberTACs(SubscriberFeature):
 
         """
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.table = table
         self.subscriber_identifier = subscriber_identifier
@@ -210,8 +211,8 @@ class SubscriberTAC(SubscriberFeature):
         if subscriber_identifier == "imei":
             warnings.warn("IMEI has a one to one mapping to TAC number.")
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.table = table
         self.subscriber_identifier = subscriber_identifier
@@ -304,8 +305,8 @@ class SubscriberHandsets(SubscriberFeature):
 
         """
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.table = table
         self.subscriber_identifier = subscriber_identifier
@@ -386,8 +387,8 @@ class SubscriberHandset(SubscriberFeature):
 
         """
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.table = table
         self.subscriber_identifier = subscriber_identifier
@@ -526,8 +527,8 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
 
         """
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.table = table
         self.subscriber_identifier = subscriber_identifier

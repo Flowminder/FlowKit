@@ -14,7 +14,7 @@ from flowmachine.core import Query
 from flowmachine.features.utilities import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -84,8 +84,8 @@ class IntereventInterval(SubscriberFeature):
         direction: Union[str, Direction] = Direction.OUT,
     ):
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier

@@ -19,6 +19,7 @@ from ...core import location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
+from flowmachine.utils import standardise_date
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 valid_periods = ["second", "minute", "hour", "day", "month", "year"]
@@ -76,15 +77,11 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.start = (
-            get_db().min_date(table=table).strftime("%Y-%m-%d")
-            if start is None
-            else start
+        self.start = standardise_date(
+            get_db().min_date(table=table) if start is None else start
         )
-        self.stop = (
-            get_db().max_date(table=table).strftime("%Y-%m-%d")
-            if stop is None
-            else stop
+        self.stop = standardise_date(
+            get_db().max_date(table=table) if stop is None else stop
         )
 
         self.table = table.lower()

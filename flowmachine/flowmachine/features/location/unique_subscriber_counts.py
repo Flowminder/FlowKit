@@ -7,6 +7,7 @@
 from typing import List, Union
 
 from ..subscriber.unique_locations import UniqueLocations
+from flowmachine.utils import standardise_date
 
 """
 Class for UniqueSubscriberCounts. UniqueSubscriberCounts counts
@@ -82,8 +83,8 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         table="all",
     ):
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit
         self.hours = hours
         self.table = table

@@ -19,7 +19,7 @@ from flowmachine.features.utilities.subscriber_locations import SubscriberLocati
 from flowmachine.features.subscriber.contact_balance import ContactBalance
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
@@ -130,8 +130,8 @@ class PeriodicEntropy(BaseEntropy):
     ):
 
         self.tables = tables
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)
         self.hours = hours

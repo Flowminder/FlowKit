@@ -16,6 +16,7 @@ from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations
+from flowmachine.utils import standardise_date
 
 
 class FirstLocation(SubscriberFeature):
@@ -82,8 +83,8 @@ class FirstLocation(SubscriberFeature):
                 "Invalid parameter combination: location='any' can only be used with cell spatial unit."
             )
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.location = location
 
         self.ul = SubscriberLocations(

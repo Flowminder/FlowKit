@@ -54,6 +54,31 @@ def parse_datestring(
                         )
 
 
+def standardise_date(
+    date: Union[str, datetime.date, datetime.datetime]
+) -> Union[str, None]:
+    """
+    Turn a date, datetime, or date string into a standardised date string (YYYY-MM-DD HH:MM:SS).
+
+    
+    Parameters
+    ----------
+    date : str, date or datetime
+        Date-like-thing to standardise.
+
+    Returns
+    -------
+    str or None
+       YYYY-MM-DD HH:MM:SS formatted date string or None if input was None.
+    """
+    if date is None:
+        return date
+    try:
+        return date.strftime("%Y-%m-%d %H:%M:%S")
+    except AttributeError:
+        return parse_datestring(date).strftime("%Y-%m-%d %H:%M:%S")
+
+
 def list_of_dates(start, stop):
     """
 
@@ -107,17 +132,11 @@ def time_period_add(date, n, unit="days"):
     --------
 
     >>> time_period_add('2016-01-01', 3)
-    '2016-01-04'
+    '2016-01-04 00:00:00'
     """
     new_date = parse_datestring(date) + datetime.timedelta(**{unit: n})
-    # Now for convenience if the date has no time component then we want to
-    # simply return the date string, i.e. without the time component. Otherwise
-    # we need to return the whole thing.
-    date_string = new_date.strftime("%Y-%m-%d %X")
-    if date_string.endswith("00:00:00"):
-        return date_string.split(" ")[0]
-    else:
-        return date_string
+
+    return standardise_date(new_date)
 
 
 def get_dist_query_string(*, lon1, lat1, lon2, lat2):

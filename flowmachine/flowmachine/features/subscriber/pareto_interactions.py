@@ -16,6 +16,7 @@ from flowmachine.features.subscriber.contact_balance import ContactBalance
 from flowmachine.features.subscriber.subscriber_degree import SubscriberDegree
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import standardise_date
 
 
 class ParetoInteractions(SubscriberFeature):
@@ -78,8 +79,8 @@ class ParetoInteractions(SubscriberFeature):
         subscriber_subset=None,
     ):
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.direction = Direction(direction)
         self.tables = tables

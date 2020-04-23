@@ -16,6 +16,7 @@ from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import SubscriberLocations
+from flowmachine.utils import standardise_date
 
 
 class LastLocation(BaseLocation, Query):
@@ -78,8 +79,8 @@ class LastLocation(BaseLocation, Query):
         subscriber_subset=None,
     ):
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         if spatial_unit is None:
             self.spatial_unit = make_spatial_unit("admin", level=3)
         else:

@@ -15,6 +15,7 @@ from typing import List
 from ..utilities import EventsTablesUnion
 from ...core import Query, location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
+from flowmachine.utils import standardise_date
 
 
 class EventScore(Query):
@@ -146,8 +147,8 @@ class EventScore(Query):
             self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
             self.spatial_unit = spatial_unit
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.subscriber_identifier = subscriber_identifier
         self.sds = location_joined_query(
