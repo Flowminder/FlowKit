@@ -1104,7 +1104,7 @@ def unmoving_counts_spec(
 @merge_args(unmoving_counts_spec)
 def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
     """
-    A count by location of subscribers who were unmoving in their reference location.
+    A count by location of subscribers who were unmoving at that location.
 
     Parameters
     ----------
