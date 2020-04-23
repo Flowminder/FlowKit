@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+-   Fixed FlowMachine server becoming deadlocked under load. [#2390](https://github.com/Flowminder/FlowKit/issues/2390)
 
 ### Removed
 
