@@ -4,6 +4,7 @@
 
 # This file contains custom definitions of marshmallow fields for use
 # by the flowmachine query schemas.
+import datetime
 
 from marshmallow import fields, Schema, validates_schema, ValidationError, post_load
 from marshmallow.validate import Range, Length, OneOf
@@ -173,3 +174,18 @@ class DFSMetric(fields.String):
 
         validate = OneOf(["amount", "commission", "fee", "discount"])
         super().__init__(required=required, validate=validate, **kwargs)
+
+
+class ISODateTime(fields.DateTime):
+    """
+    Like marhsmallow's datetime field, but accepts anything that can be parsed using
+    python's fromisoformat, e.g. "2016-01-01", "2016-01-01T00:00:00", "2016-01-01 00:00:00"
+    """
+
+    DESERIALIZATION_FUNCS = {
+        "iso": datetime.datetime.fromisoformat,
+    }
+
+    DEFAULT_FORMAT = "iso"
+
+    OBJ_TYPE = "datetime"

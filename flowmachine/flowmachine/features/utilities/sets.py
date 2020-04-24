@@ -20,6 +20,8 @@ from numpy import inf
 
 import structlog
 
+from flowmachine.utils import standardise_date
+
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 valid_subscriber_identifiers = ("msisdn", "imei", "imsi")
 
@@ -86,8 +88,8 @@ class UniqueSubscribers(Query):
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.tables = table
         self.subscriber_identifier = subscriber_identifier
@@ -181,8 +183,8 @@ class SubscriberLocationSubset(Query):
 
         from ...features import PerLocationSubscriberCallDurations
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.min_calls = min_calls
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)

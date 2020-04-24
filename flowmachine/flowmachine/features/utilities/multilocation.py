@@ -12,7 +12,7 @@ dailylocations objects, although they can be.
 """
 
 
-from flowmachine.utils import parse_datestring
+from flowmachine.utils import parse_datestring, standardise_date
 
 from ...core import CustomQuery
 
@@ -41,13 +41,13 @@ class MultiLocation:
     def __init__(self, *daily_locations):
         # TODO: check that all the inputs are actually location objects (of an appropriate kind)
 
-        self.start = str(
+        self.start = standardise_date(
             min(
                 parse_datestring(daily_location.start)
                 for daily_location in daily_locations
             )
         )
-        self.stop = str(
+        self.stop = standardise_date(
             max(
                 parse_datestring(daily_location.start)
                 for daily_location in daily_locations

@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Displacement
-from .custom_fields import SubscriberSubset, Statistic
+from .custom_fields import SubscriberSubset, Statistic, ISODateTime
 from .daily_location import DailyLocationSchema
 from .modal_location import ModalLocationSchema
 from .base_query_with_sampling import (
@@ -67,8 +67,8 @@ class DisplacementExposed(BaseExposedQueryWithSampling):
 
 class DisplacementSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["displacement"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
+    start = ISODateTime(required=True)
+    stop = ISODateTime(required=True)
     statistic = Statistic()
     reference_location = fields.Nested(InputToDisplacementSchema, many=False)
     subscriber_subset = SubscriberSubset()

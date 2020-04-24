@@ -17,7 +17,7 @@ from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 
 class TotalLocationEvents(GeoDataMixin, Query):
@@ -61,8 +61,8 @@ class TotalLocationEvents(GeoDataMixin, Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.table = table
         self.spatial_unit = spatial_unit
         self.interval = interval

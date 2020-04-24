@@ -4,6 +4,8 @@
 
 from typing import List
 
+from flowmachine.utils import standardise_date
+
 """
 Classes for determining elementary location elements.
 These are used for creating base objects that are
@@ -94,8 +96,8 @@ class SubscriberLocations(Query):
         subscriber_subset=None,
     ):
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit
         self.hours = hours
         self.table = table

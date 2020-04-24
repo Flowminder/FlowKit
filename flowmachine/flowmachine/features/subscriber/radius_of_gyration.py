@@ -15,6 +15,7 @@ from typing import List
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.core import make_spatial_unit
+from flowmachine.utils import standardise_date
 
 
 class RadiusOfGyration(SubscriberFeature):
@@ -97,8 +98,8 @@ class RadiusOfGyration(SubscriberFeature):
                 f"Unrecognised unit {unit}, use one of {self.allowed_units}"
             )
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.ul = SubscriberLocations(
             self.start,
             self.stop,

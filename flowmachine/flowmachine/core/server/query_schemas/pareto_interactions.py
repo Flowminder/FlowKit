@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import ParetoInteractions
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -46,8 +46,8 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
 
 class ParetoInteractionsSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
-    start = fields.Date(required=True)
-    stop = fields.Date(required=True)
+    start = ISODateTime(required=True)
+    stop = ISODateTime(required=True)
     proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
     subscriber_subset = SubscriberSubset()
 

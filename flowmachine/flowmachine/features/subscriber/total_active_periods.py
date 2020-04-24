@@ -24,7 +24,7 @@ from typing import List, Tuple, Union, Optional
 
 from flowmachine.core import Query
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import time_period_add
+from flowmachine.utils import time_period_add, standardise_date
 from ..utilities.sets import UniqueSubscribers
 
 from functools import reduce
@@ -89,7 +89,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
     ):
-        self.start = start
+        self.start = standardise_date(start)
         self.total_periods = total_periods
         self.period_length = period_length
         if period_unit not in self.allowed_units:

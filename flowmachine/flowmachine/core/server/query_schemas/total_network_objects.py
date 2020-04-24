@@ -8,7 +8,7 @@ from marshmallow.validate import OneOf
 from flowmachine.features import TotalNetworkObjects
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import TotalBy
+from .custom_fields import TotalBy, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
@@ -43,8 +43,8 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
 class TotalNetworkObjectsSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["total_network_objects"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     total_by = TotalBy(required=False, missing="day")
     aggregation_unit = AggregationUnit()
 

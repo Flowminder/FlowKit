@@ -9,6 +9,7 @@ from typing import Union
 from flowmachine.features.subscriber.event_count import EventCount
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.utils import standardise_date
 
 
 class ProportionEventType(SubscriberFeature):
@@ -70,8 +71,8 @@ class ProportionEventType(SubscriberFeature):
         subscriber_subset=None,
         tables="all",
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)
         self.numerator_direction = Direction(numerator_direction)

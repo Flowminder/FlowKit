@@ -11,7 +11,7 @@ from typing import List, Optional, Union, Tuple
 from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
-
+from flowmachine.utils import standardise_date
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
 valid_time_buckets = [
@@ -86,8 +86,8 @@ class DistanceSeries(SubscriberFeature):
                 f"'{statistic}' is not a valid statistic. Use one of {valid_stats}"
             )
         self.statistic = statistic.lower()
-        self.start = subscriber_locations.start
-        self.stop = subscriber_locations.stop
+        self.start = standardise_date(subscriber_locations.start)
+        self.stop = standardise_date(subscriber_locations.stop)
         if isinstance(reference_location, tuple):
             self.reference_location = reference_location
             self.joined = subscriber_locations

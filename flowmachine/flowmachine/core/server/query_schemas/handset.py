@@ -6,7 +6,7 @@ from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberHandsetCharacteristic
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -56,8 +56,8 @@ class HandsetExposed(BaseExposedQueryWithSampling):
 class HandsetSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["handset"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     characteristic = fields.String(
         validate=OneOf(
             ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]

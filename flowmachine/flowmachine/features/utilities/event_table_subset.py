@@ -17,7 +17,7 @@ from ...core.sqlalchemy_utils import (
     make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
 )
-from flowmachine.utils import list_of_dates
+from flowmachine.utils import list_of_dates, standardise_date
 from flowmachine.core.hour_slice import HourSlice, HourInterval
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
@@ -82,14 +82,6 @@ class EventTableSubset(Query):
         subscriber_identifier="msisdn",
     ):
 
-        # Temporary band-aid; marshmallow deserialises date strings
-        # to date objects, so we convert it back here because the
-        # lower-level classes still assume we are passing date strings.
-        if isinstance(start, datetime.date):
-            start = start.strftime("%Y-%m-%d")
-        if isinstance(stop, datetime.date):
-            stop = stop.strftime("%Y-%m-%d")
-
         if hours != "all" and hour_slices is not None:
             raise ValueError(
                 "The arguments `hours` and `hour_slice` are mutually exclusive."
@@ -122,8 +114,8 @@ class EventTableSubset(Query):
         else:
             self.hour_slices = HourSlice(hour_intervals=[])
 
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
@@ -175,7 +167,7 @@ class EventTableSubset(Query):
             d1 = (
                 get_db()
                 .min_date(self.table_ORIG.fully_qualified_table_name.split(".")[1])
-                .strftime("%Y-%m-%d")
+                .strftime("%Y-%m-%d %H:%M:%S")
             )
         else:
             d1 = self.start.split()[0]
@@ -184,7 +176,7 @@ class EventTableSubset(Query):
             d2 = (
                 get_db()
                 .max_date(self.table_ORIG.fully_qualified_table_name.split(".")[1])
-                .strftime("%Y-%m-%d")
+                .strftime("%Y-%m-%d %H:%M:%S")
             )
         else:
             d2 = self.stop.split()[0]
@@ -232,13 +224,13 @@ class EventTableSubset(Query):
         select_stmt = select(sqlalchemy_columns)
 
         if self.start is not None:
-            ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
             select_stmt = select_stmt.where(
-                self.sqlalchemy_table.c.datetime >= ts_start
+                self.sqlalchemy_table.c.datetime >= self.start
             )
         if self.stop is not None:
-            ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
+            select_stmt = select_stmt.where(
+                self.sqlalchemy_table.c.datetime < self.stop
+            )
 
         select_stmt = select_stmt.where(
             self.hour_slices.get_subsetting_condition(self.sqlalchemy_table.c.datetime)

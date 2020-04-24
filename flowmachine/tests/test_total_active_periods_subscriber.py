@@ -35,8 +35,8 @@ def test_multiple_day_periods(get_dataframe):
 
     tap = TotalActivePeriodsSubscriber("2016-01-02", 3, 2)
     df = get_dataframe(tap)
-    starts = ["2016-01-02", "2016-01-04", "2016-01-06"]
-    stops = ["2016-01-04", "2016-01-06", "2016-01-08"]
+    starts = ["2016-01-02 00:00:00", "2016-01-04 00:00:00", "2016-01-06 00:00:00"]
+    stops = ["2016-01-04 00:00:00", "2016-01-06 00:00:00", "2016-01-08 00:00:00"]
     # Check that the start and stop dates are as expected
     assert tap.starts == starts
     assert tap.stops == stops

@@ -14,7 +14,7 @@ from typing import List, Union
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where
+from flowmachine.utils import make_where, standardise_date
 
 
 class SubscriberDegree(SubscriberFeature):
@@ -76,8 +76,8 @@ class SubscriberDegree(SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        self.start = start
-        self.stop = stop
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
         self.hours = hours
         self.direction = Direction(direction)
         self.subscriber_identifier = subscriber_identifier

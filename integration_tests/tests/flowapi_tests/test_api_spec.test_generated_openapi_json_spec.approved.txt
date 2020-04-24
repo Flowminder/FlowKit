@@ -126,7 +126,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -136,7 +136,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -168,7 +168,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "metric": {
@@ -187,7 +187,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           }
         },
@@ -213,7 +213,7 @@
             "type": "string"
           },
           "date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "method": {
@@ -273,7 +273,7 @@
             "nullable": true
           },
           "start": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "statistic": {
@@ -289,7 +289,7 @@
             "type": "string"
           },
           "stop": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -381,11 +381,11 @@
             "nullable": true
           },
           "start": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "stop": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -556,7 +556,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "method": {
@@ -581,7 +581,7 @@
             "nullable": true
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -857,7 +857,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "event_types": {
@@ -889,7 +889,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -931,7 +931,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -941,7 +941,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           }
         },
@@ -966,7 +966,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "label": {
@@ -985,7 +985,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1049,11 +1049,11 @@
             "type": "string"
           },
           "end_date_a": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "end_date_b": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "label": {
@@ -1072,11 +1072,11 @@
             "type": "string"
           },
           "start_date_a": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "start_date_b": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1141,7 +1141,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "label_a": {
@@ -1163,7 +1163,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1276,11 +1276,11 @@
             "nullable": true
           },
           "start": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "stop": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1321,11 +1321,11 @@
             "nullable": true
           },
           "start": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "stop": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1347,7 +1347,7 @@
       "RadiusOfGyration": {
         "properties": {
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1365,7 +1365,7 @@
             "nullable": true
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1501,11 +1501,11 @@
             "nullable": true
           },
           "start": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "stop": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1575,7 +1575,7 @@
             "nullable": true
           },
           "start": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "statistic": {
@@ -1591,7 +1591,7 @@
             "type": "string"
           },
           "stop": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1613,7 +1613,7 @@
       "TopUpBalance": {
         "properties": {
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1631,7 +1631,7 @@
             "nullable": true
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "statistic": {
@@ -1675,7 +1675,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1685,7 +1685,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "total_by": {
@@ -1722,7 +1722,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1732,7 +1732,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1764,7 +1764,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1774,7 +1774,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1806,7 +1806,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1824,7 +1824,7 @@
             "nullable": true
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "subscriber_subset": {
@@ -1856,7 +1856,7 @@
             "type": "string"
           },
           "end_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           },
           "query_kind": {
@@ -1866,7 +1866,7 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
           }
         },

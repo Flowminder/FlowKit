@@ -13,6 +13,21 @@ from flowmachine.utils import *
 from flowmachine.utils import _makesafe
 
 
+@pytest.mark.parametrize(
+    "date, expected",
+    [
+        (None, None),
+        (datetime.date(2016, 1, 1), "2016-01-01 00:00:00"),
+        (datetime.datetime(2016, 1, 1), "2016-01-01 00:00:00"),
+        ("2016-01-01", "2016-01-01 00:00:00"),
+        ("2016-01-01T00:00:00", "2016-01-01 00:00:00"),
+        ("2016-01-01 00:00:00", "2016-01-01 00:00:00"),
+    ],
+)
+def test_standardise_date(date, expected):
+    assert standardise_date(date) == expected
+
+
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
 def test_proj4string(crs, flowmachine_connect):
     """
@@ -35,8 +50,8 @@ def test_time_period_add():
     flowmachine.utils.time_period_add does what it says on the tin.
     """
 
-    assert time_period_add("2016-01-01", 3) == "2016-01-04"
-    assert time_period_add("2017-12-31", 1) == "2018-01-01"
+    assert time_period_add("2016-01-01", 3) == "2016-01-04 00:00:00"
+    assert time_period_add("2017-12-31", 1) == "2018-01-01 00:00:00"
 
 
 def test_time_period_add_other_units():

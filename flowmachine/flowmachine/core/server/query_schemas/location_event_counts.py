@@ -9,7 +9,7 @@ from flowmachine.features import TotalLocationEvents
 from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, SubscriberSubset
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
@@ -62,8 +62,8 @@ class LocationEventCountsExposed(BaseExposedQuery):
 class LocationEventCountsSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_event_counts"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     interval = fields.String(
         required=True, validate=OneOf(TotalLocationEvents.allowed_intervals)
     )
