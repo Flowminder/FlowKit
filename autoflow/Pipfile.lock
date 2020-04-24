@@ -35,7 +35,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "async-generator": {
@@ -207,10 +207,10 @@
         },
         "fsspec": {
             "hashes": [
-                "sha256:2f74d8cb37820480d5802620f819385a162202c7d9dbafcf82bc25e5fade4fd7",
-                "sha256:7ba96c818572afd82c8a1c658ea2bfedcdb3762ed7cf3ddcbb9896a79d1b7d78"
+                "sha256:1b540552c93b47e83c568e87507d6e02993e6d1b30bc7285f2336c81c5014103",
+                "sha256:9f0e3f4915b463b94c5788afa37b89d2c29c696f0d4da7d05f9cb5b17c8c84f7"
             ],
-            "version": "==0.7.2"
+            "version": "==0.7.3"
         },
         "geopandas": {
             "hashes": [
@@ -574,11 +574,11 @@
         },
         "papermill": {
             "hashes": [
-                "sha256:10f86551cd28d09acea1f63b04a61d061ed4c3d3e82aa675b6a593c4451860c6",
-                "sha256:1ff390a2bea5ea1538c1fcb5e2abb08c2a261d4427286905bc803416c72c26b0"
+                "sha256:5e599992317f761c5e0543430402b24faac89292d7770c3e20b520fa2a25f75a",
+                "sha256:8d9c311c122b07fbbfb364c864fc48d8fff2ea7051d6384e0bcb75015b8ebe5b"
             ],
             "index": "pypi",
-            "version": "==2.1.0"
+            "version": "==2.1.1"
         },
         "parso": {
             "hashes": [
@@ -1214,7 +1214,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "attrs": {
@@ -1356,10 +1356,10 @@
         },
         "fsspec": {
             "hashes": [
-                "sha256:2f74d8cb37820480d5802620f819385a162202c7d9dbafcf82bc25e5fade4fd7",
-                "sha256:7ba96c818572afd82c8a1c658ea2bfedcdb3762ed7cf3ddcbb9896a79d1b7d78"
+                "sha256:1b540552c93b47e83c568e87507d6e02993e6d1b30bc7285f2336c81c5014103",
+                "sha256:9f0e3f4915b463b94c5788afa37b89d2c29c696f0d4da7d05f9cb5b17c8c84f7"
             ],
-            "version": "==0.7.2"
+            "version": "==0.7.3"
         },
         "graphviz": {
             "hashes": [
@@ -1464,11 +1464,11 @@
         },
         "jupyterlab": {
             "hashes": [
-                "sha256:6663eed77b10d567499ab998eb71dabb510572f7337ec8efc48ed56cd37f9c5f",
-                "sha256:8c239aababf5baa0b3d36e375fddeb9fd96f3a9a24a8cda098d6a414f5bbdc81"
+                "sha256:2dec7e509ffa3892c67d9ac7c89d7c6a860c151d969d89420d9e20e753b2fb29",
+                "sha256:36948d2a42376e186cb5358076d0c3c49b98dfed006c99d0c98561d0e491c4fa"
             ],
             "index": "pypi",
-            "version": "==2.1.0"
+            "version": "==2.1.1"
         },
         "jupyterlab-server": {
             "hashes": [
