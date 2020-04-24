@@ -1273,6 +1273,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../active_at_reference_location_counts/" title="active_at_reference_location_counts" class="md-nav__link">
+      active_at_reference_location_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../aggregate_network_objects/" title="aggregate_network_objects" class="md-nav__link">
       aggregate_network_objects
     </a>
@@ -1311,6 +1323,30 @@
   <li class="md-nav__item">
     <a href="../base_query_with_sampling/" title="base_query_with_sampling" class="md-nav__link">
       base_query_with_sampling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../base_schema/" title="base_schema" class="md-nav__link">
+      base_schema
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../consecutive_trips_od_matrix/" title="consecutive_trips_od_matrix" class="md-nav__link">
+      consecutive_trips_od_matrix
     </a>
   </li>
 
@@ -1637,6 +1673,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../reference_location/" title="reference_location" class="md-nav__link">
+      reference_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
       spatial_aggregate
     </a>
@@ -1697,6 +1745,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../trips_od_matrix/" title="trips_od_matrix" class="md-nav__link">
+      trips_od_matrix
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../unique_location_counts/" title="unique_location_counts" class="md-nav__link">
       unique_location_counts
     </a>
@@ -1709,8 +1769,56 @@
 
 
   <li class="md-nav__item">
+    <a href="../unique_locations/" title="unique_locations" class="md-nav__link">
+      unique_locations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
       unique_subscriber_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unique_visitor_counts/" title="unique_visitor_counts" class="md-nav__link">
+      unique_visitor_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unmoving_at_reference_location_counts/" title="unmoving_at_reference_location_counts" class="md-nav__link">
+      unmoving_at_reference_location_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unmoving_counts/" title="unmoving_counts" class="md-nav__link">
+      unmoving_counts
     </a>
   </li>
 
@@ -4291,7 +4399,7 @@
 <h2 id="class-flowmachinequeryschema">Class <strong>FlowmachineQuerySchema</strong><a class="headerlink" href="#class-flowmachinequeryschema" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">FlowmachineQuerySchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/flowmachine_query.py#L36">flowmachine/core/server/query_schemas/flowmachine_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/flowmachine_query.py#L44">flowmachine/core/server/query_schemas/flowmachine_query.py</a></p>
 <p>This is a special kind of schema that actually multiplexes other schemas based on object type. When serializing values, it uses get_obj_type() method to get object type name. Then it uses <code>type_schemas</code> name-to-Schema mapping to get schema for that particular object type, serializes object using that schema and adds an extra "type" field with name of object type. Deserialization is reverse.
 Example:      class Foo(object):         def <strong>init</strong>(self, foo):             self.foo = foo      class Bar(object):         def <strong>init</strong>(self, bar):             self.bar = bar      class FooSchema(marshmallow.Schema):         foo = marshmallow.fields.String(required=True)          @marshmallow.post_load         def make_foo(self, data, **kwargs):             return Foo(**data)      class BarSchema(marshmallow.Schema):         bar = marshmallow.fields.Integer(required=True)          @marshmallow.post_load         def make_bar(self, data, **kwargs):             return Bar(**data)      class MyUberSchema(marshmallow.OneOfSchema):         type_schemas = {             'foo': FooSchema,             'bar': BarSchema,         }          def get_obj_type(self, obj):             if isinstance(obj, Foo):                 return 'foo'             elif isinstance(obj, Bar):                 return 'bar'             else:                 raise Exception('Unknown object type: %s' % repr(obj))      MyUberSchema().dump([Foo(foo='hello'), Bar(bar=123)], many=True)     # =&gt; [{'type': 'foo', 'foo': 'hello'}, {'type': 'bar', 'bar': 123}]  You can control type field name added to serialized object representation by setting <code>type_field</code> class property.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
