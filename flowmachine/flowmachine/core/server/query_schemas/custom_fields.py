@@ -177,6 +177,11 @@ class DFSMetric(fields.String):
 
 
 class ISODateTime(fields.DateTime):
+    """
+    Like marhsmallow's datetime field, but accepts anything that can be parsed using
+    python's fromisoformat, e.g. "2016-01-01", "2016-01-01T00:00:00", "2016-01-01 00:00:00"
+    """
+
     DESERIALIZATION_FUNCS = {
         "iso": datetime.datetime.fromisoformat,
     }
