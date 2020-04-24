@@ -3,7 +3,7 @@ FROM python:3.8-slim
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-COPY . /${SOURCE_TREE}/autoflow/
+COPY ./* /${SOURCE_TREE}/
 
 ENV AUTOFLOW_DB_URI="sqlite:////tmp/test.db"
 ENV AUTOFLOW_INPUTS_DIR=/mounts/inputs

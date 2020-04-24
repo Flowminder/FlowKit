@@ -7,7 +7,7 @@ FROM python:3.8-alpine
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-WORKDIR /${SOURCE_TREE}/flowapi
+WORKDIR /${SOURCE_TREE}/
 COPY ./flowapi/Pipfile* ./
 RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-base libffi-dev \
     gcc wget git musl-dev zeromq-dev openssl-dev && \

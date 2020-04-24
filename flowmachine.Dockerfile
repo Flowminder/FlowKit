@@ -7,7 +7,7 @@ FROM python:3.8-slim
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-WORKDIR /${SOURCE_TREE}/flowmachine
+WORKDIR /${SOURCE_TREE}/
 COPY ./flowmachine/Pipfile* ./
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
