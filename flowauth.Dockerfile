@@ -27,7 +27,7 @@ ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/
 COPY flowauth/backend .
-RUN python setup.py bdist_wheel && pip install dist/*.whl && mv backend/uwsgi.ini /app
+RUN python setup.py bdist_wheel && pip install dist/*.whl && mv uwsgi.ini /app
 WORKDIR /app
 
 ENV FLOWAUTH_CACHE_BACKEND FILE
