@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- FlowAuth no longer errors after a period of inactivity due to timed out database connections. [#2382](https://github.com/Flowminder/FlowKit/issues/2382)
 
 ### Removed
 
