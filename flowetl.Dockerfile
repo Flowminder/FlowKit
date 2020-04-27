@@ -36,7 +36,7 @@ ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowetl
 
-COPY ./* /${SOURCE_TREE}/
+COPY . /${SOURCE_TREE}/
 
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git build-essential && \
