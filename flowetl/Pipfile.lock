@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5894535eb166da09991716bac532fc32593a6aa5a683606d4510fd411a4b5750"
+            "sha256": "2b3fa96cffacc1dd522d0e22c23bf6508c3f9122b517cf77cc53cd74d08bdf7b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -200,12 +200,25 @@
             ],
             "version": "==0.3.1.1"
         },
+        "dnspython": {
+            "hashes": [
+                "sha256:36c5e8e38d4369a08b6780b7f27d790a292b2b08eea01607865bf0936c558e01",
+                "sha256:f69c21288a962f4da86e56c4905b49d11aba7938d3d740e80d9e366ee4f1632d"
+            ],
+            "version": "==1.16.0"
+        },
         "docutils": {
             "hashes": [
                 "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af",
                 "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"
             ],
             "version": "==0.16"
+        },
+        "email-validator": {
+            "hashes": [
+                "sha256:e3e6ede1765d7c1e580d2050d834b2689361f7da2d50ce74df6a5968fca7cb13"
+            ],
+            "version": "==1.0.5"
         },
         "flask": {
             "hashes": [
@@ -222,11 +235,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:1905985bb3ed7a0d30b7ebebaea12a282ecaae54145bdb2c34b86d5950ecaa26",
-                "sha256:492917d51ab4cc1bfa51b006c89d0e7d0dacfbfc718a687672a968db44d397de"
+                "sha256:2b9413a678bb773b8ebd8f6a013dc8382fe70dfdcce644237b02ad5630898566",
+                "sha256:856f8f58b77d53e21c5e1e3f02784197d3bc44c391065504acf96c790d262f05"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.2"
+            "version": "==2.3.3"
         },
         "flask-babel": {
             "hashes": [
@@ -458,10 +471,10 @@
         },
         "marshmallow-sqlalchemy": {
             "hashes": [
-                "sha256:9301c6fd197bd97337820ea1417aa1233d0ee3e22748ebd5821799bc841a57e8",
-                "sha256:dde9e20bcb710e9e59f765a38e3d6d17f1b2d6b4320cbdc2cea0f6b57f70d08c"
+                "sha256:3247e41e424146340b03a369f2b7c6f0364477ccedc4e2481e84d5f3a8d3c67f",
+                "sha256:dbbe51d28bb28e7ee2782e51310477f7a2c5a111a301f6dd8e264e11ab820427"
             ],
-            "version": "==0.22.3"
+            "version": "==0.23.0"
         },
         "numpy": {
             "hashes": [
@@ -799,11 +812,10 @@
         },
         "wtforms": {
             "hashes": [
-                "sha256:0cdbac3e7f6878086c334aa25dc5a33869a3954e9d1e015130d65a69309b3b61",
-                "sha256:e3ee092c827582c50877cdbd49e9ce6d2c5c1f6561f849b3b068c1b8029626f1"
+                "sha256:6ff8635f4caeed9f38641d48cfe019d0d3896f41910ab04494143fc027866e1b",
+                "sha256:861a13b3ae521d6700dac3b2771970bd354a63ba7043ecc3a82b5288596a1972"
             ],
-            "index": "pypi",
-            "version": "==2.2.1"
+            "version": "==2.3.1"
         },
         "zipp": {
             "hashes": [
@@ -984,6 +996,13 @@
             ],
             "version": "==0.3.1.1"
         },
+        "dnspython": {
+            "hashes": [
+                "sha256:36c5e8e38d4369a08b6780b7f27d790a292b2b08eea01607865bf0936c558e01",
+                "sha256:f69c21288a962f4da86e56c4905b49d11aba7938d3d740e80d9e366ee4f1632d"
+            ],
+            "version": "==1.16.0"
+        },
         "docker": {
             "hashes": [
                 "sha256:1c2ddb7a047b2599d1faec00889561316c674f7099427b9c51e8cb804114b553",
@@ -998,6 +1017,12 @@
                 "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"
             ],
             "version": "==0.16"
+        },
+        "email-validator": {
+            "hashes": [
+                "sha256:e3e6ede1765d7c1e580d2050d834b2689361f7da2d50ce74df6a5968fca7cb13"
+            ],
+            "version": "==1.0.5"
         },
         "flask": {
             "hashes": [
@@ -1014,11 +1039,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:1905985bb3ed7a0d30b7ebebaea12a282ecaae54145bdb2c34b86d5950ecaa26",
-                "sha256:492917d51ab4cc1bfa51b006c89d0e7d0dacfbfc718a687672a968db44d397de"
+                "sha256:2b9413a678bb773b8ebd8f6a013dc8382fe70dfdcce644237b02ad5630898566",
+                "sha256:856f8f58b77d53e21c5e1e3f02784197d3bc44c391065504acf96c790d262f05"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.2"
+            "version": "==2.3.3"
         },
         "flask-babel": {
             "hashes": [
@@ -1254,10 +1279,10 @@
         },
         "marshmallow-sqlalchemy": {
             "hashes": [
-                "sha256:9301c6fd197bd97337820ea1417aa1233d0ee3e22748ebd5821799bc841a57e8",
-                "sha256:dde9e20bcb710e9e59f765a38e3d6d17f1b2d6b4320cbdc2cea0f6b57f70d08c"
+                "sha256:3247e41e424146340b03a369f2b7c6f0364477ccedc4e2481e84d5f3a8d3c67f",
+                "sha256:dbbe51d28bb28e7ee2782e51310477f7a2c5a111a301f6dd8e264e11ab820427"
             ],
-            "version": "==0.22.3"
+            "version": "==0.23.0"
         },
         "more-itertools": {
             "hashes": [
@@ -1669,11 +1694,10 @@
         },
         "wtforms": {
             "hashes": [
-                "sha256:0cdbac3e7f6878086c334aa25dc5a33869a3954e9d1e015130d65a69309b3b61",
-                "sha256:e3ee092c827582c50877cdbd49e9ce6d2c5c1f6561f849b3b068c1b8029626f1"
+                "sha256:6ff8635f4caeed9f38641d48cfe019d0d3896f41910ab04494143fc027866e1b",
+                "sha256:861a13b3ae521d6700dac3b2771970bd354a63ba7043ecc3a82b5288596a1972"
             ],
-            "index": "pypi",
-            "version": "==2.2.1"
+            "version": "==2.3.1"
         },
         "zipp": {
             "hashes": [
