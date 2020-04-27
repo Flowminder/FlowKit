@@ -7,7 +7,7 @@ name = "pypi"
 black = "==19.10b0" # required by papermill
 pytest = "*"
 pytest-asyncio = "*"
-flowmachine = {editable = true,path = "./../flowmachine"}
+flowmachine = {editable = true,path = "./../flowmachine", extras=['uvloop']}
 flowclient = {editable = true,path = "./../flowclient"}
 flowapi = {editable = true,path = "./../flowapi"}
 autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}

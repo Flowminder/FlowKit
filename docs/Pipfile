@@ -17,7 +17,7 @@ ipykernel = "*"
 geopandas = "*"
 numpydoc = "*"
 click = "*"
-flowmachine = {editable = true,path = "./../flowmachine"}
+flowmachine = {editable = true,path = "./../flowmachine", extras=['uvloop']}
 descartes = "*"
 flowclient = {editable = true,path = "./../flowclient"}
 flowapi = {editable = true,path = "./../flowapi"}
