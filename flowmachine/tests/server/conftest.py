@@ -61,4 +61,5 @@ def server_config():
         cache_pruning_frequency=86400,
         cache_pruning_timeout=600,
         server_thread_pool=ThreadPoolExecutor(),
+        event_loop="asyncio",
     )
