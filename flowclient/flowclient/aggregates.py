@@ -1004,8 +1004,8 @@ def consecutive_trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery
     APIQuery
         consecutive_trips_od_matrix query
     """
-    return APIQuery(
-        connection=connection, parameters=consecutive_trips_od_matrix_spec(**kwargs),
+    return connection.make_api_query(
+        parameters=consecutive_trips_od_matrix_spec(**kwargs),
     )
 
 
@@ -1068,7 +1068,7 @@ def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         trips_od_matrix query
     """
-    return APIQuery(connection=connection, parameters=trips_od_matrix_spec(**kwargs),)
+    return connection.make_api_query(parameters=trips_od_matrix_spec(**kwargs),)
 
 
 def unmoving_counts_spec(
@@ -1108,7 +1108,7 @@ def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         unmoving_counts query
     """
-    return APIQuery(connection=connection, parameters=unmoving_counts_spec(**kwargs),)
+    return connection.make_api_query(parameters=unmoving_counts_spec(**kwargs),)
 
 
 def unmoving_at_reference_location_counts_spec(
@@ -1160,8 +1160,7 @@ def unmoving_at_reference_location_counts(
     APIQuery
         unmoving_at_reference_location_counts query
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=unmoving_at_reference_location_counts_spec(**kwargs),
     )
 
@@ -1215,8 +1214,7 @@ def active_at_reference_location_counts(
     APIQuery
         active_at_reference_location_counts query
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=active_at_reference_location_counts_spec(**kwargs),
     )
 
