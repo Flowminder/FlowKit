@@ -552,12 +552,11 @@ async def test_run_query(connection, query, universal_access_token, flowapi_url)
     Test that queries can be run, and return a QueryResult object.
     """
     con = connection(url=flowapi_url, token=universal_access_token)
-    query(connection=con).get_result()
 
     try:
-        await query.get_result()
+        await query(connection=con).get_result()
     except TypeError:
-        query.get_result()
+        query(connection=con).get_result()
     # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
     # so we can only check it runs without erroring
 
@@ -595,62 +594,47 @@ async def test_geo_result(connection, universal_access_token, flowapi_url):
     "connection", [flowclient.Connection, flowclient.ASyncConnection]
 )
 @pytest.mark.parametrize(
-    "query_kind, params",
+    "query",
     [
-        (
+        partial(
             flowclient.joined_spatial_aggregate,
-            {
-                "locations": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
-                },
-                "metric": {
-                    "query_kind": "topup_balance",
-                    "start_date": "2016-01-01",
-                    "end_date": "2016-01-02",
-                    "statistic": "avg",
-                },
-                "method": "distr",
-            },
+            locations=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="admin3", method="last",
+            ),
+            metric=flowclient.topup_balance_spec(
+                start_date="2016-01-01", end_date="2016-01-02", statistic="avg",
+            ),
+            method="distr",
         ),
-        (
+        partial(
             flowclient.joined_spatial_aggregate,
-            {
-                "locations": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
-                },
-                "metric": {
-                    "query_kind": "handset",
-                    "start_date": "2016-01-01",
-                    "end_date": "2016-01-02",
-                    "characteristic": "hnd_type",
-                    "method": "last",
-                },
-                "method": "avg",
-            },
+            locations=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="admin3", method="last",
+            ),
+            metric=flowclient.handset_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                characteristic="hnd_type",
+                method="last",
+            ),
+            method="avg",
         ),
     ],
 )
 async def test_fail_query_incorrect_parameters(
-    connection, query_kind, params, universal_access_token, flowapi_url
+    connection, query, universal_access_token, flowapi_url
 ):
     """
     Test that queries fail with incorrect parameters.
     """
     con = connection(url=flowapi_url, token=universal_access_token)
-    query = query_kind(connection=con, **params)
     with pytest.raises(
         flowclient.client.FlowclientConnectionError, match="Must be one of:"
     ):
         try:
-            await query.get_result()
+            await query(connection=con).get_result()
         except TypeError:
-            result_dataframe = query.get_result()
+            query(connection=con).get_result()
 
 
 @pytest.mark.asyncio
