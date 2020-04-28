@@ -90,10 +90,10 @@
         },
         "click": {
             "hashes": [
-                "sha256:8a18b4ea89d8820c5d0c7da8a64b2c324b4dabb695804dbfea19b9be9d88c0cc",
-                "sha256:e345d143d80bf5ee7534056164e5e112ea5e22716bbb1ce727941f4c8b471b9a"
+                "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a",
+                "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"
             ],
-            "version": "==7.1.1"
+            "version": "==7.1.2"
         },
         "click-plugins": {
             "hashes": [
@@ -166,10 +166,10 @@
         },
         "distributed": {
             "hashes": [
-                "sha256:5c99b9a672af397e438779230596a774da3a07a4aaf2083ed9e3fc105daf8998",
-                "sha256:d7c2e75988438cb2f2210b331ca3ed9c86a009ab00e1d073ef02a248626f4383"
+                "sha256:170b9cccd0edb8a2e8152b612584787b9f6e223aa0416b011c4cd9cc9071a75c",
+                "sha256:907cfb6c75b4efff5d4ac72b22553803edd13709785743545994872789fea506"
             ],
-            "version": "==2.15.0"
+            "version": "==2.15.1"
         },
         "docker": {
             "hashes": [
@@ -643,11 +643,11 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:168241a501857ec7f878bc5d58b946b9975ca31e337a38f137c8f55638ba768e",
-                "sha256:b22141c61470dd5a9e7b9bb38d719311fec62f62ade996c6f98f6671dae166f3"
+                "sha256:0a1536fb1ff06afd2525692de0905d9a086e21b771f4749f1f8e9929a218fb7e",
+                "sha256:bc7e3d92c45e509b457915e245d51cbd1704778a2e92a3b8981092950380af76"
             ],
             "index": "pypi",
-            "version": "==0.10.4"
+            "version": "==0.10.5"
         },
         "prometheus-client": {
             "hashes": [
@@ -824,10 +824,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:1c557d7d0e871de1f5ccd5833f60fb2550652da6be2693c1e02300743d21500d",
-                "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"
+                "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed",
+                "sha256:c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"
             ],
-            "version": "==2019.3"
+            "version": "==2020.1"
         },
         "pytzdata": {
             "hashes": [
@@ -960,11 +960,11 @@
         },
         "sh": {
             "hashes": [
-                "sha256:ae3258c5249493cebe73cb4e18253a41ed69262484bad36fdb3efcb8ad8870bb",
-                "sha256:b52bf5833ed01c7b5c5fb73a7f71b3d98d48e9b9b8764236237bdc7ecae850fc"
+                "sha256:6f792e45b45d039b423081558904981e8ab49572b0c38009fcc65feaab06bcda",
+                "sha256:97a3d2205e3c6a842d87ebbc9ae93acae5a352b1bc4609b428d0fd5bb9e286a3"
             ],
             "index": "pypi",
-            "version": "==1.12.14"
+            "version": "==1.13.1"
         },
         "shapely": {
             "hashes": [
@@ -1254,10 +1254,10 @@
         },
         "click": {
             "hashes": [
-                "sha256:8a18b4ea89d8820c5d0c7da8a64b2c324b4dabb695804dbfea19b9be9d88c0cc",
-                "sha256:e345d143d80bf5ee7534056164e5e112ea5e22716bbb1ce727941f4c8b471b9a"
+                "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a",
+                "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"
             ],
-            "version": "==7.1.1"
+            "version": "==7.1.2"
         },
         "cloudpickle": {
             "hashes": [
@@ -1335,10 +1335,10 @@
         },
         "distributed": {
             "hashes": [
-                "sha256:5c99b9a672af397e438779230596a774da3a07a4aaf2083ed9e3fc105daf8998",
-                "sha256:d7c2e75988438cb2f2210b331ca3ed9c86a009ab00e1d073ef02a248626f4383"
+                "sha256:170b9cccd0edb8a2e8152b612584787b9f6e223aa0416b011c4cd9cc9071a75c",
+                "sha256:907cfb6c75b4efff5d4ac72b22553803edd13709785743545994872789fea506"
             ],
-            "version": "==2.15.0"
+            "version": "==2.15.1"
         },
         "docker": {
             "hashes": [
@@ -1686,11 +1686,11 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:168241a501857ec7f878bc5d58b946b9975ca31e337a38f137c8f55638ba768e",
-                "sha256:b22141c61470dd5a9e7b9bb38d719311fec62f62ade996c6f98f6671dae166f3"
+                "sha256:0a1536fb1ff06afd2525692de0905d9a086e21b771f4749f1f8e9929a218fb7e",
+                "sha256:bc7e3d92c45e509b457915e245d51cbd1704778a2e92a3b8981092950380af76"
             ],
             "index": "pypi",
-            "version": "==0.10.4"
+            "version": "==0.10.5"
         },
         "prometheus-client": {
             "hashes": [
@@ -1794,10 +1794,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:1c557d7d0e871de1f5ccd5833f60fb2550652da6be2693c1e02300743d21500d",
-                "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"
+                "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed",
+                "sha256:c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"
             ],
-            "version": "==2019.3"
+            "version": "==2020.1"
         },
         "pytzdata": {
             "hashes": [
