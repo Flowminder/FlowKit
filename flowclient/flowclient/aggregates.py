@@ -7,7 +7,7 @@ from typing import Union, Dict, List, Optional, Tuple
 
 from merge_args import merge_args
 
-from flowclient.client import Connection
+from flowclient import Connection
 from flowclient.api_query import APIQuery
 
 
@@ -93,9 +93,7 @@ def location_event_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Location event counts query
     """
-    return APIQuery(
-        connection=connection, parameters=location_event_counts_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=location_event_counts_spec(**kwargs))
 
 
 def meaningful_locations_aggregate_spec(
@@ -266,8 +264,8 @@ def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> APIQu
     -----
     Does not return any value below 15.
     """
-    return APIQuery(
-        connection=connection, parameters=meaningful_locations_aggregate_spec(**kwargs)
+    return connection.make_api_query(
+        parameters=meaningful_locations_aggregate_spec(**kwargs)
     )
 
 
@@ -443,8 +441,7 @@ def meaningful_locations_between_label_od_matrix(
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=meaningful_locations_between_label_od_matrix_spec(**kwargs),
     )
 
@@ -633,8 +630,7 @@ def meaningful_locations_between_dates_od_matrix(
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=meaningful_locations_between_dates_od_matrix_spec(**kwargs),
     )
 
@@ -687,7 +683,7 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
         Flows query
 
     """
-    return APIQuery(connection=connection, parameters=flows_spec(**kwargs))
+    return connection.make_api_query(parameters=flows_spec(**kwargs))
 
 
 def unique_subscriber_counts_spec(
@@ -739,9 +735,7 @@ def unique_subscriber_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Unique subscriber counts query
     """
-    return APIQuery(
-        connection=connection, parameters=unique_subscriber_counts_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=unique_subscriber_counts_spec(**kwargs))
 
 
 def location_introversion_spec(
@@ -798,9 +792,7 @@ def location_introversion(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Location introversion query
     """
-    return APIQuery(
-        connection=connection, parameters=location_introversion_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=location_introversion_spec(**kwargs))
 
 
 def total_network_objects_spec(
@@ -857,9 +849,7 @@ def total_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Total network objects query
     """
-    return APIQuery(
-        connection=connection, parameters=total_network_objects_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=total_network_objects_spec(**kwargs))
 
 
 def aggregate_network_objects_spec(
@@ -913,8 +903,8 @@ def aggregate_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Aggregate network objects query
     """
-    return APIQuery(
-        connection=connection, parameters=aggregate_network_objects_spec(**kwargs)
+    return connection.make_api_query(
+        parameters=aggregate_network_objects_spec(**kwargs)
     )
 
 
@@ -952,7 +942,7 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Spatial aggregate query
     """
-    return APIQuery(connection=connection, parameters=spatial_aggregate_spec(**kwargs))
+    return connection.make_api_query(parameters=spatial_aggregate_spec(**kwargs))
 
 
 def consecutive_trips_od_matrix_spec(
@@ -1014,8 +1004,8 @@ def consecutive_trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery
     APIQuery
         consecutive_trips_od_matrix query
     """
-    return APIQuery(
-        connection=connection, parameters=consecutive_trips_od_matrix_spec(**kwargs),
+    return connection.make_api_query(
+        parameters=consecutive_trips_od_matrix_spec(**kwargs),
     )
 
 
@@ -1078,7 +1068,7 @@ def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         trips_od_matrix query
     """
-    return APIQuery(connection=connection, parameters=trips_od_matrix_spec(**kwargs),)
+    return connection.make_api_query(parameters=trips_od_matrix_spec(**kwargs),)
 
 
 def unmoving_counts_spec(
@@ -1118,7 +1108,7 @@ def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         unmoving_counts query
     """
-    return APIQuery(connection=connection, parameters=unmoving_counts_spec(**kwargs),)
+    return connection.make_api_query(parameters=unmoving_counts_spec(**kwargs),)
 
 
 def unmoving_at_reference_location_counts_spec(
@@ -1170,8 +1160,7 @@ def unmoving_at_reference_location_counts(
     APIQuery
         unmoving_at_reference_location_counts query
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=unmoving_at_reference_location_counts_spec(**kwargs),
     )
 
@@ -1225,8 +1214,7 @@ def active_at_reference_location_counts(
     APIQuery
         active_at_reference_location_counts query
     """
-    return APIQuery(
-        connection=connection,
+    return connection.make_api_query(
         parameters=active_at_reference_location_counts_spec(**kwargs),
     )
 
@@ -1284,9 +1272,7 @@ def joined_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Joined spatial aggregate query
     """
-    return APIQuery(
-        connection=connection, parameters=joined_spatial_aggregate_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=joined_spatial_aggregate_spec(**kwargs))
 
 
 def histogram_aggregate_spec(
@@ -1344,6 +1330,4 @@ def histogram_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         Histogram aggregate query
     """
-    return APIQuery(
-        connection=connection, parameters=histogram_aggregate_spec(**kwargs)
-    )
+    return connection.make_api_query(parameters=histogram_aggregate_spec(**kwargs))

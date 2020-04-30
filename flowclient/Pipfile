@@ -12,7 +12,9 @@ tqdm = "*"
 
 [dev-packages]
 pytest = "*"
-"pytest-cov" = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+asynctest = "*"
 versioneer = "*"
 black = "==19.10b0"
 ipython = "*"

@@ -6,7 +6,7 @@ import jwt
 import pytest
 
 import flowclient
-from flowclient.client import FlowclientConnectionError
+from flowclient.errors import FlowclientConnectionError
 
 
 def test_update_token(session_mock, token):

@@ -5,23 +5,24 @@
 
 from typing import Union, Optional
 
-from flowclient.client import (
+from flowclient.api_query import APIQuery
+from flowclient.async_connection import ASyncConnection
+from flowclient.async_client import (
     run_query,
     get_status,
     get_result_by_query_id,
     get_geojson_result_by_query_id,
     wait_for_query_to_be_ready,
 )
-from flowclient.connection import Connection
 
 
-class APIQuery:
+class ASyncAPIQuery(APIQuery):
     """
     Representation of a FlowKit query.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         Connection to FlowKit server on which to run this query
     parameters : dict
         Parameters that specify the query
@@ -33,14 +34,11 @@ class APIQuery:
     status
     """
 
-    def __init__(self, *, connection: Connection, parameters: dict):
+    def __init__(self, *, connection: ASyncConnection, parameters: dict):
         self._connection = connection
         self.parameters = dict(parameters)
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__module__}.{self.__class__.__name__} object, connection={self.connection}, parameters={self.parameters}>"
-
-    def run(self) -> None:
+    async def run(self) -> None:
         """
         Set this query running in FlowKit
 
@@ -49,25 +47,25 @@ class APIQuery:
         FlowclientConnectionError
             if the query cannot be set running
         """
-        self._query_id = run_query(
+        self._query_id = await run_query(
             connection=self.connection, query_spec=self.parameters
         )
         # TODO: Return a future?
 
     @property
-    def connection(self) -> Connection:
+    def connection(self) -> ASyncConnection:
         """
         Connection that is used for running this query.
 
         Returns
         -------
-        Connection
+        ASyncConnection
             Connection to FlowKit API
         """
         return self._connection
 
     @property
-    def status(self) -> str:
+    async def status(self) -> str:
         """
         Status of this query.
 
@@ -82,9 +80,9 @@ class APIQuery:
         """
         if not hasattr(self, "_query_id"):
             return "not_running"
-        return get_status(connection=self.connection, query_id=self._query_id)
+        return await get_status(connection=self.connection, query_id=self._query_id)
 
-    def get_result(
+    async def get_result(
         self,
         format: str = "pandas",
         poll_interval: int = 1,
@@ -119,7 +117,7 @@ class APIQuery:
 
         # TODO: Cache result internally?
         try:
-            return result_getter(
+            return await result_getter(
                 connection=self.connection,
                 query_id=self._query_id,
                 poll_interval=poll_interval,
@@ -127,15 +125,15 @@ class APIQuery:
             )
         except (AttributeError, FileNotFoundError):
             # TODO: Warn before running?
-            self.run()
-            return result_getter(
+            await self.run()
+            return await result_getter(
                 connection=self.connection,
                 query_id=self._query_id,
                 poll_interval=poll_interval,
                 disable_progress=disable_progress,
             )
 
-    def wait_until_ready(
+    async def wait_until_ready(
         self, poll_interval: int = 1, disable_progress: Optional[bool] = None
     ) -> None:
         """
@@ -157,7 +155,7 @@ class APIQuery:
         """
         if not hasattr(self, "_query_id"):
             raise FileNotFoundError("Query is not running.")
-        wait_for_query_to_be_ready(
+        await wait_for_query_to_be_ready(
             connection=self.connection,
             query_id=self._query_id,
             poll_interval=poll_interval,

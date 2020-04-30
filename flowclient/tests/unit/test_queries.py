@@ -8,12 +8,12 @@ import pytest
 import flowclient
 import flowclient.client
 from flowclient.client import (
-    Connection,
-    FlowclientConnectionError,
     get_result_by_query_id,
     get_result,
     query_is_ready,
 )
+from flowclient.errors import FlowclientConnectionError
+from flowclient import Connection
 
 
 def test_get_result_by_params(monkeypatch, token):

@@ -4,26 +4,27 @@
 
 import logging
 import re
+from asyncio import sleep
 
 import pandas as pd
 import requests
-import time
 from typing import Tuple, Union, List, Optional
 from tqdm.auto import tqdm
 
-from flowclient.connection import Connection
-from flowclient.errors import FlowclientConnectionError
+
+import flowclient.errors
+from flowclient.async_connection import ASyncConnection
 
 logger = logging.getLogger(__name__)
 
 
-def connect(
+async def connect_async(
     *,
     url: str,
     token: str,
     api_version: int = 0,
     ssl_certificate: Union[str, None] = None,
-) -> Connection:
+) -> ASyncConnection:
     """
     Connect to a FlowKit API server and return the resulting Connection object.
 
@@ -41,22 +42,22 @@ def connect(
 
     Returns
     -------
-    Connection
+    ASyncConnection
     """
-    return Connection(
+    return ASyncConnection(
         url=url, token=token, api_version=api_version, ssl_certificate=ssl_certificate
     )
 
 
-def query_is_ready(
-    *, connection: Connection, query_id: str
+async def query_is_ready(
+    *, connection: ASyncConnection, query_id: str
 ) -> Tuple[bool, requests.Response]:
     """
     Check if a query id has results available.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection  to use
     query_id : str
         Identifier of the query to retrieve
@@ -74,7 +75,7 @@ def query_is_ready(
     logger.info(
         f"Polling server on {connection.url}/api/{connection.api_version}/poll/{query_id}"
     )
-    reply = connection.get_url(route=f"poll/{query_id}")
+    reply = await connection.get_url(route=f"poll/{query_id}")
 
     if reply.status_code == 303:
         logger.info(
@@ -89,18 +90,18 @@ def query_is_ready(
         )
         return False, reply
     else:
-        raise FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Something went wrong: {reply}. API returned with status code: {reply.status_code}"
         )
 
 
-def get_status(*, connection: Connection, query_id: str) -> str:
+async def get_status(*, connection: ASyncConnection, query_id: str) -> str:
     """
     Check the status of a query.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection to use
     query_id : str
         Identifier of the query to retrieve
@@ -116,7 +117,7 @@ def get_status(*, connection: Connection, query_id: str) -> str:
         if response does not contain the query status
     """
     try:
-        ready, reply = query_is_ready(connection=connection, query_id=query_id)
+        ready, reply = await query_is_ready(connection=connection, query_id=query_id)
     except FileNotFoundError:
         # Can't distinguish 'known', 'cancelled', 'resetting' and 'awol' from the error,
         # so return generic 'not_running' status.
@@ -128,12 +129,12 @@ def get_status(*, connection: Connection, query_id: str) -> str:
         try:
             return reply.json()["status"]
         except (KeyError, TypeError):
-            raise FlowclientConnectionError(f"No status reported.")
+            raise flowclient.errors.FlowclientConnectionError(f"No status reported.")
 
 
-def wait_for_query_to_be_ready(
+async def wait_for_query_to_be_ready(
     *,
-    connection: Connection,
+    connection: ASyncConnection,
     query_id: str,
     poll_interval: int = 1,
     disable_progress: Optional[bool] = None,
@@ -144,7 +145,7 @@ def wait_for_query_to_be_ready(
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection  to use
     query_id : str
         Identifier of the query to retrieve
@@ -164,7 +165,7 @@ def wait_for_query_to_be_ready(
     FlowclientConnectionError
         If the query has finished running unsuccessfully
     """
-    query_ready, reply = query_is_ready(
+    query_ready, reply = await query_is_ready(
         connection=connection, query_id=query_id
     )  # Poll the server
 
@@ -177,10 +178,10 @@ def wait_for_query_to_be_ready(
         ) as total_bar:
             while not query_ready:
                 logger.info("Waiting before polling again.")
-                time.sleep(
+                await sleep(
                     poll_interval
                 )  # Wait a second, then check if the query is ready again
-                query_ready, reply = query_is_ready(
+                query_ready, reply = await query_is_ready(
                     connection=connection, query_id=query_id
                 )  # Poll the server
                 if query_ready:
@@ -199,9 +200,9 @@ def wait_for_query_to_be_ready(
     return reply
 
 
-def get_result_location_from_id_when_ready(
+async def get_result_location_from_id_when_ready(
     *,
-    connection: Connection,
+    connection: ASyncConnection,
     query_id: str,
     poll_interval: int = 1,
     disable_progress: Optional[bool] = None,
@@ -211,13 +212,13 @@ def get_result_location_from_id_when_ready(
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection  to use
     query_id : str
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
-    disable_progress : bool, default None
+    disable_progress : bool, async default None
         Set to True to disable progress bar display entirely, None to disable on
         non-TTY, or False to always enable
 
@@ -227,7 +228,7 @@ def get_result_location_from_id_when_ready(
         Endpoint to retrieve results from
 
     """
-    reply = wait_for_query_to_be_ready(
+    reply = await wait_for_query_to_be_ready(
         connection=connection,
         query_id=query_id,
         poll_interval=poll_interval,
@@ -242,13 +243,15 @@ def get_result_location_from_id_when_ready(
     )  # strip off the /api/<api_version>/
 
 
-def get_json_dataframe(*, connection: Connection, location: str) -> pd.DataFrame:
+async def get_json_dataframe(
+    *, connection: ASyncConnection, location: str
+) -> pd.DataFrame:
     """
     Get a dataframe from a json source.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection  to use
     location : str
         API enpoint to retrieve json from
@@ -260,14 +263,14 @@ def get_json_dataframe(*, connection: Connection, location: str) -> pd.DataFrame
 
     """
 
-    response = connection.get_url(route=location)
+    response = await connection.get_url(route=location)
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()
@@ -275,9 +278,9 @@ def get_json_dataframe(*, connection: Connection, location: str) -> pd.DataFrame
     return pd.DataFrame.from_records(result["query_result"])
 
 
-def get_geojson_result_by_query_id(
+async def get_geojson_result_by_query_id(
     *,
-    connection: Connection,
+    connection: ASyncConnection,
     query_id: str,
     poll_interval: int = 1,
     disable_progress: Optional[bool] = None,
@@ -287,13 +290,13 @@ def get_geojson_result_by_query_id(
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection  to use
     query_id : str
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
-    disable_progress : bool, default None
+    disable_progress : bool, async default None
         Set to True to disable progress bar display entirely, None to disable on
         non-TTY, or False to always enable
 
@@ -303,28 +306,28 @@ def get_geojson_result_by_query_id(
         geojson
 
     """
-    result_endpoint = get_result_location_from_id_when_ready(
+    result_endpoint = await get_result_location_from_id_when_ready(
         connection=connection,
         query_id=query_id,
         poll_interval=poll_interval,
         disable_progress=disable_progress,
     )
-    response = connection.get_url(route=f"{result_endpoint}.geojson")
+    response = await connection.get_url(route=f"{result_endpoint}.geojson")
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     return response.json()
 
 
-def get_result_by_query_id(
+async def get_result_by_query_id(
     *,
-    connection: Connection,
+    connection: ASyncConnection,
     query_id: str,
     poll_interval: int = 1,
     disable_progress: Optional[bool] = None,
@@ -334,13 +337,13 @@ def get_result_by_query_id(
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection  to use
     query_id : str
         Identifier of the query to retrieve
     poll_interval : int
         Number of seconds to wait between checks for the query being ready
-    disable_progress : bool, default None
+    disable_progress : bool, async default None
         Set to True to disable progress bar display entirely, None to disable on
         non-TTY, or False to always enable
 
@@ -350,18 +353,18 @@ def get_result_by_query_id(
         Dataframe containing the result
 
     """
-    result_endpoint = get_result_location_from_id_when_ready(
+    result_endpoint = await get_result_location_from_id_when_ready(
         connection=connection,
         query_id=query_id,
         poll_interval=poll_interval,
         disable_progress=disable_progress,
     )
-    return get_json_dataframe(connection=connection, location=result_endpoint)
+    return await get_json_dataframe(connection=connection, location=result_endpoint)
 
 
-def get_geojson_result(
+async def get_geojson_result(
     *,
-    connection: Connection,
+    connection: ASyncConnection,
     query_spec: dict,
     disable_progress: Optional[bool] = None,
 ) -> dict:
@@ -370,11 +373,11 @@ def get_geojson_result(
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection to use
     query_spec : dict
         A query specification to run, e.g. `{'kind':'daily_location', 'params':{'date':'2016-01-01'}}`
-    disable_progress : bool, default None
+    disable_progress : bool, async default None
         Set to True to disable progress bar display entirely, None to disable on
         non-TTY, or False to always enable
 
@@ -384,16 +387,16 @@ def get_geojson_result(
        Geojson
 
     """
-    return get_geojson_result_by_query_id(
+    return await get_geojson_result_by_query_id(
         connection=connection,
-        query_id=run_query(connection=connection, query_spec=query_spec),
+        query_id=await run_query(connection=connection, query_spec=query_spec),
         disable_progress=disable_progress,
     )
 
 
-def get_result(
+async def get_result(
     *,
-    connection: Connection,
+    connection: ASyncConnection,
     query_spec: dict,
     disable_progress: Optional[bool] = None,
 ) -> pd.DataFrame:
@@ -402,11 +405,11 @@ def get_result(
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection to use
     query_spec : dict
         A query specification to run, e.g. `{'kind':'daily_location', 'date':'2016-01-01'}`
-    disable_progress : bool, default None
+    disable_progress : bool, async default None
         Set to True to disable progress bar display entirely, None to disable on
         non-TTY, or False to always enable
 
@@ -416,20 +419,20 @@ def get_result(
        Pandas dataframe containing the results
 
     """
-    return get_result_by_query_id(
+    return await get_result_by_query_id(
         connection=connection,
-        query_id=run_query(connection=connection, query_spec=query_spec),
+        query_id=await run_query(connection=connection, query_spec=query_spec),
         disable_progress=disable_progress,
     )
 
 
-def get_geography(*, connection: Connection, aggregation_unit: str) -> dict:
+async def get_geography(*, connection: ASyncConnection, aggregation_unit: str) -> dict:
     """
     Get geography data from the database.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection to use
     aggregation_unit : str
         aggregation unit, e.g. 'admin3'
@@ -443,14 +446,14 @@ def get_geography(*, connection: Connection, aggregation_unit: str) -> dict:
     logger.info(
         f"Getting {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
     )
-    response = connection.get_url(route=f"geography/{aggregation_unit}")
+    response = await connection.get_url(route=f"geography/{aggregation_unit}")
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()
@@ -460,15 +463,15 @@ def get_geography(*, connection: Connection, aggregation_unit: str) -> dict:
     return result
 
 
-def get_available_dates(
-    *, connection: Connection, event_types: Union[None, List[str]] = None
+async def get_available_dates(
+    *, connection: ASyncConnection, event_types: Union[None, List[str]] = None
 ) -> dict:
     """
     Get available dates for different event types from the database.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection to use
     event_types : list of str, optional
         The event types for which to return available dates (for example: ["calls", "sms"]).
@@ -483,14 +486,14 @@ def get_available_dates(
     logger.info(
         f"Getting {connection.url}/api/{connection.api_version}/available_dates"
     )
-    response = connection.get_url(route=f"available_dates")
+    response = await connection.get_url(route=f"available_dates")
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
             more_info = f" Reason: {msg}"
         except KeyError:
             more_info = ""
-        raise FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Could not get available dates. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()["available_dates"]
@@ -501,13 +504,13 @@ def get_available_dates(
         return {k: v for k, v in result.items() if k in event_types}
 
 
-def run_query(*, connection: Connection, query_spec: dict) -> str:
+async def run_query(*, connection: ASyncConnection, query_spec: dict) -> str:
     """
     Run a query of a specified kind with parameters and get the identifier for it.
 
     Parameters
     ----------
-    connection : Connection
+    connection : ASyncConnection
         API connection to use
     query_spec : dict
         Query specification to run
@@ -520,7 +523,7 @@ def run_query(*, connection: Connection, query_spec: dict) -> str:
     logger.info(
         f"Requesting run of {query_spec} at {connection.url}/api/{connection.api_version}"
     )
-    r = connection.post_json(route="run", data=query_spec)
+    r = await connection.post_json(route="run", data=query_spec)
     if r.status_code == 202:
         query_id = r.headers["Location"].split("/").pop()
         logger.info(
@@ -532,6 +535,6 @@ def run_query(*, connection: Connection, query_spec: dict) -> str:
             error = r.json()["msg"]
         except (ValueError, KeyError):
             error = "Unknown error"
-        raise FlowclientConnectionError(
+        raise flowclient.errors.FlowclientConnectionError(
             f"Error running the query: {error}. Status code: {r.status_code}."
         )

@@ -7,7 +7,7 @@ from unittest.mock import Mock
 import pytest
 
 from flowclient.client import query_is_ready
-from flowclient.client import FlowclientConnectionError
+from flowclient.errors import FlowclientConnectionError
 
 
 def test_query_ready_reports_false():

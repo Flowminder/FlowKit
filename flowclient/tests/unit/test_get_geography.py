@@ -6,7 +6,8 @@ from unittest.mock import Mock, MagicMock, call
 
 import pytest
 import flowclient
-from flowclient.client import FlowclientConnectionError, get_geography
+from flowclient.client import get_geography
+from flowclient.errors import FlowclientConnectionError
 
 
 def test_get_geography(token):
