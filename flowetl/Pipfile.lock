@@ -235,11 +235,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:2b9413a678bb773b8ebd8f6a013dc8382fe70dfdcce644237b02ad5630898566",
-                "sha256:856f8f58b77d53e21c5e1e3f02784197d3bc44c391065504acf96c790d262f05"
+                "sha256:14de4244838f010424efe47d63260123189f472527a20f3b3a8ef9acb6fd9a0d",
+                "sha256:4d6f974ff5aa226f11894a447c43fb9c31425bb740e7841a3277a9cbeb9d22b1"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.3"
+            "version": "==2.3.4"
         },
         "flask-babel": {
             "hashes": [
@@ -738,9 +738,9 @@
         },
         "sqlalchemy-utils": {
             "hashes": [
-                "sha256:f268af5bc03597fe7690d60df3e5f1193254a83e07e4686f720f61587ec4493a"
+                "sha256:61dd50924c5805fdc264342b286b43adf24aba2144e064a943826b07e76c2f5a"
             ],
-            "version": "==0.36.3"
+            "version": "==0.36.4"
         },
         "tabulate": {
             "hashes": [
@@ -1039,11 +1039,11 @@
         },
         "flask-appbuilder": {
             "hashes": [
-                "sha256:2b9413a678bb773b8ebd8f6a013dc8382fe70dfdcce644237b02ad5630898566",
-                "sha256:856f8f58b77d53e21c5e1e3f02784197d3bc44c391065504acf96c790d262f05"
+                "sha256:14de4244838f010424efe47d63260123189f472527a20f3b3a8ef9acb6fd9a0d",
+                "sha256:4d6f974ff5aa226f11894a447c43fb9c31425bb740e7841a3277a9cbeb9d22b1"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.3"
+            "version": "==2.3.4"
         },
         "flask-babel": {
             "hashes": [
@@ -1590,9 +1590,9 @@
         },
         "sqlalchemy-utils": {
             "hashes": [
-                "sha256:f268af5bc03597fe7690d60df3e5f1193254a83e07e4686f720f61587ec4493a"
+                "sha256:61dd50924c5805fdc264342b286b43adf24aba2144e064a943826b07e76c2f5a"
             ],
-            "version": "==0.36.3"
+            "version": "==0.36.4"
         },
         "structlog": {
             "hashes": [
