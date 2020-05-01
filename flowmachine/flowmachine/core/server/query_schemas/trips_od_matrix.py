@@ -11,7 +11,7 @@ from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset, ISODateTime
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
 
@@ -41,19 +41,18 @@ class TripsODMatrixExposed(BaseExposedQuery):
                 SubscriberLocations(
                     self.start_date,
                     self.end_date,
-                    spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                    spatial_unit=self.aggregation_unit,
                     subscriber_subset=self.subscriber_subset,
                 )
             )
         )
 
 
-class TripsODMatrixSchema(BaseSchema):
+class TripsODMatrixSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["trips_od_matrix"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
     __model__ = TripsODMatrixExposed

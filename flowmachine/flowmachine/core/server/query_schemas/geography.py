@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import Geography
 from .base_exposed_query import BaseExposedQuery
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["GeographySchema", "GeographyExposed"]
 
@@ -29,7 +29,7 @@ class GeographyExposed(BaseExposedQuery):
         -------
         Query
         """
-        return Geography(get_spatial_unit_obj(self.aggregation_unit))
+        return Geography(self.aggregation_unit)
 
     @property
     def geojson_sql(self):
@@ -41,9 +41,8 @@ class GeographyExposed(BaseExposedQuery):
         return sql
 
 
-class GeographySchema(BaseSchema):
+class GeographySchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["geography"]))
-    aggregation_unit = AggregationUnit()
 
     __model__ = GeographyExposed

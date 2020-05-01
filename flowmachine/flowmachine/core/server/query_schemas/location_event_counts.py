@@ -10,7 +10,7 @@ from flowmachine.features.location.redacted_total_events import RedactedTotalEve
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
 
@@ -53,13 +53,13 @@ class LocationEventCountsExposed(BaseExposedQuery):
                 interval=self.interval,
                 direction=self.direction,
                 table=self.event_types,
-                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                spatial_unit=self.aggregation_unit,
                 subscriber_subset=self.subscriber_subset,
             )
         )
 
 
-class LocationEventCountsSchema(BaseSchema):
+class LocationEventCountsSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_event_counts"]))
     start_date = ISODateTime(required=True)
@@ -71,7 +71,6 @@ class LocationEventCountsSchema(BaseSchema):
         required=True, validate=OneOf(["in", "out", "both"])
     )  # TODO: use a globally defined enum for this
     event_types = EventTypes()
-    aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
     __model__ = LocationEventCountsExposed

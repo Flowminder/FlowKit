@@ -9,7 +9,7 @@ from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import DFSMetric, ISODateTime
-from .aggregation_unit import AggregationUnit
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 
@@ -40,12 +40,11 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
         )
 
 
-class DFSTotalMetricAmountSchema(BaseSchema):
+class DFSTotalMetricAmountSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
     metric = DFSMetric()
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit()
 
     __model__ = DFSTotalMetricAmountExposed

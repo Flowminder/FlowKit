@@ -32,7 +32,7 @@ from .custom_fields import (
     TowerDayOfWeekScores,
     ISODateTime,
 )
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = [
     "MeaningfulLocationsAggregateSchema",
@@ -43,6 +43,8 @@ __all__ = [
     "MeaningfulLocationsBetweenDatesODMatrixExposed",
 ]
 
+from ...spatial_unit import AnySpatialUnit
+
 
 class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
     def __init__(
@@ -50,7 +52,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         *,
         start_date: str,
         end_date: str,
-        aggregation_unit: str,
+        aggregation_unit: AnySpatialUnit,
         label: str,
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
@@ -86,7 +88,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         self.q_meaningful_locations_aggregate = RedactedMeaningfulLocationsAggregate(
             meaningful_locations_aggregate=MeaningfulLocationsAggregate(
                 meaningful_locations=q_meaningful_locations,
-                spatial_unit=get_spatial_unit_obj(aggregation_unit),
+                spatial_unit=aggregation_unit,
             )
         )
 
@@ -108,7 +110,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         *,
         start_date: str,
         end_date: str,
-        aggregation_unit: str,
+        aggregation_unit: AnySpatialUnit,
         label_a: str,
         label_b: str,
         labels: Dict[str, Dict[str, dict]],
@@ -149,7 +151,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
             meaningful_locations_od=MeaningfulLocationsOD(
                 meaningful_locations_a=locs_a,
                 meaningful_locations_b=locs_b,
-                spatial_unit=get_spatial_unit_obj(aggregation_unit),
+                spatial_unit=aggregation_unit,
             )
         )
 
@@ -173,7 +175,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         end_date_a: str,
         start_date_b: str,
         end_date_b: str,
-        aggregation_unit: str,
+        aggregation_unit: AnySpatialUnit,
         label: str,
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
@@ -216,7 +218,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         self.q_meaningful_locations_od = MeaningfulLocationsOD(
             meaningful_locations_a=locs_a,
             meaningful_locations_b=locs_b,
-            spatial_unit=get_spatial_unit_obj(aggregation_unit),
+            spatial_unit=aggregation_unit,
         )
 
     @property
@@ -231,12 +233,11 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         return self.q_meaningful_locations_od
 
 
-class MeaningfulLocationsAggregateSchema(BaseSchema):
+class MeaningfulLocationsAggregateSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
         required=True, keys=fields.String(), values=fields.Dict()
@@ -293,13 +294,12 @@ def _make_meaningful_locations_object(
     return q_meaningful_locations
 
 
-class MeaningfulLocationsBetweenLabelODMatrixSchema(BaseSchema):
+class MeaningfulLocationsBetweenLabelODMatrixSchema(AggregationUnitMixin, BaseSchema):
     query_kind = fields.String(
         validate=OneOf(["meaningful_locations_between_label_od_matrix"])
     )
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit(required=True)
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
     labels = fields.Dict(
@@ -314,7 +314,7 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(BaseSchema):
     __model__ = MeaningfulLocationsBetweenLabelODMatrixExposed
 
 
-class MeaningfulLocationsBetweenDatesODMatrixSchema(BaseSchema):
+class MeaningfulLocationsBetweenDatesODMatrixSchema(AggregationUnitMixin, BaseSchema):
     query_kind = fields.String(
         validate=OneOf(["meaningful_locations_between_dates_od_matrix"])
     )
@@ -322,7 +322,6 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(BaseSchema):
     end_date_a = ISODateTime(required=True)
     start_date_b = ISODateTime(required=True)
     end_date_b = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
         keys=fields.String(), values=fields.Dict()

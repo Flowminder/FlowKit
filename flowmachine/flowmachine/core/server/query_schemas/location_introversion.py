@@ -10,7 +10,7 @@ from flowmachine.features.location.redacted_location_introversion import (
     RedactedLocationIntroversion,
 )
 from .base_exposed_query import BaseExposedQuery
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
@@ -40,18 +40,17 @@ class LocationIntroversionExposed(BaseExposedQuery):
             location_introversion=LocationIntroversion(
                 start=self.start_date,
                 stop=self.end_date,
-                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                spatial_unit=self.aggregation_unit,
                 direction=self.direction,
             )
         )
 
 
-class LocationIntroversionSchema(BaseSchema):
+class LocationIntroversionSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_introversion"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit()
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
