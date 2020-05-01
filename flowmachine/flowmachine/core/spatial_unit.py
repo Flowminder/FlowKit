@@ -368,33 +368,18 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         str
             SQL join clause
         """
-
+        if self._loc_on is None or self._geom_on is None:
+            raise ValueError("No columns specified for join.")
         if hasattr(self, "mapping_table"):
-            if self._loc_on is None:
-                loc_on = (
-                    set(self.mapping_table.columns)
-                    .intersection(self.location_id_columns)
-                    .pop()
-                )
-            else:
-                loc_on = self._loc_on
-            if self._geom_on is None:
-                geom_on = set(self.mapping_table.columns).intersection(
-                    self.geom_table.columns
-                )
-            else:
-                geom_on = self._geom_on
-
             return f"""
                     LEFT JOIN
-                        ({self.mapping_table.get_query()}) AS _ USING ({loc_on})
+                        ({self.mapping_table.get_query()}) AS _ USING ({self._loc_on})
                     LEFT JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
-                    USING ({geom_on})
+                    USING ({self._geom_on})
                     """
         else:
-            if self._loc_on is None or self._geom_on is None:
-                raise ValueError("No columns specified for join.")
+
             return f"""
                     LEFT JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
@@ -524,6 +509,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom_point",
         geom_table_join_on: Optional[str] = None,
+        location_table_join_on: Optional[str] = None,
     ):
         super().__init__(
             geom_table_column_names=geom_table_column_names,
@@ -532,7 +518,9 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             mapping_table=mapping_table,
             geom_column=geom_column,
             geom_table_join_on=geom_table_join_on,
-            location_table_join_on="id" if mapping_table is not None else None,
+            location_table_join_on="id"
+            if mapping_table is not None and location_table_join_on is None
+            else location_table_join_on,
         )
 
     def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
@@ -942,7 +930,7 @@ def make_spatial_unit(
             raise ValueError(
                 "'size' parameter is required for spatial unit of type 'grid'."
             )
-        return GridSpatialUnit(size=size)
+        return GridSpatialUnit(size=size, mapping_table=mapping_table)
     elif spatial_unit_type == "polygon":
         if geom_table is None:
             raise ValueError(
