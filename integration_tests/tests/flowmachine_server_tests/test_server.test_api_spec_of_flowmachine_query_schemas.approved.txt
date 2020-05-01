@@ -126,6 +126,9 @@
         "format": "date-time",
         "type": "string"
       },
+      "mapping_table": {
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "consecutive_trips_od_matrix"
@@ -165,6 +168,9 @@
       },
       "end_date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "mapping_table": {
         "type": "string"
       },
       "metric": {
@@ -209,6 +215,9 @@
       },
       "date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "mapping_table": {
         "type": "string"
       },
       "method": {
@@ -319,6 +328,9 @@
         "type": "integer"
       },
       "dummy_param": {
+        "type": "string"
+      },
+      "mapping_table": {
         "type": "string"
       },
       "query_kind": {
@@ -518,6 +530,9 @@
           "admin3",
           "lon-lat"
         ],
+        "type": "string"
+      },
+      "mapping_table": {
         "type": "string"
       },
       "query_kind": {
@@ -868,6 +883,9 @@
         ],
         "type": "string"
       },
+      "mapping_table": {
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "location_event_counts"
@@ -919,6 +937,9 @@
         "format": "date-time",
         "type": "string"
       },
+      "mapping_table": {
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "location_introversion"
@@ -961,6 +982,9 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "mapping_table": {
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -1047,6 +1071,9 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "mapping_table": {
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -1137,6 +1164,9 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "mapping_table": {
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -1652,6 +1682,9 @@
         "format": "date-time",
         "type": "string"
       },
+      "mapping_table": {
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "total_network_objects"
@@ -1698,6 +1731,9 @@
         "format": "date-time",
         "type": "string"
       },
+      "mapping_table": {
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "trips_od_matrix"
@@ -1739,6 +1775,9 @@
         "format": "date-time",
         "type": "string"
       },
+      "mapping_table": {
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "unique_location_counts"
@@ -1778,6 +1817,9 @@
       },
       "end_date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "mapping_table": {
         "type": "string"
       },
       "query_kind": {
@@ -1827,6 +1869,9 @@
       },
       "end_date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "mapping_table": {
         "type": "string"
       },
       "query_kind": {

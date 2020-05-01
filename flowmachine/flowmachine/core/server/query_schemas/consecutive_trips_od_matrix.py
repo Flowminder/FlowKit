@@ -52,7 +52,7 @@ class ConsecutiveTripsODMatrixExposed(AggregationUnitMixin, BaseExposedQuery):
         )
 
 
-class ConsecutiveTripsODMatrixSchema(BaseSchema):
+class ConsecutiveTripsODMatrixSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["consecutive_trips_od_matrix"]))
     start_date = ISODateTime(required=True)
