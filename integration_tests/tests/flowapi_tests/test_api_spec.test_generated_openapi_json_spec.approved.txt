@@ -129,6 +129,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "mapping_table": {
             "nullable": true,
             "type": "string"
@@ -175,10 +183,6 @@
             "format": "date-time",
             "type": "string"
           },
-          "mapping_table": {
-            "nullable": true,
-            "type": "string"
-          },
           "metric": {
             "enum": [
               "amount",
@@ -222,6 +226,14 @@
           },
           "date": {
             "format": "date-time",
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "mapping_table": {
@@ -338,6 +350,14 @@
             "type": "integer"
           },
           "dummy_param": {
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "mapping_table": {
@@ -544,6 +564,14 @@
               "admin3",
               "lon-lat"
             ],
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "mapping_table": {
@@ -894,6 +922,14 @@
             "nullable": true,
             "type": "array"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "interval": {
             "enum": [
               "day",
@@ -958,6 +994,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "mapping_table": {
             "nullable": true,
             "type": "string"
@@ -995,6 +1039,14 @@
           },
           "end_date": {
             "format": "date-time",
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "label": {
@@ -1088,6 +1140,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "label": {
             "type": "string"
           },
@@ -1178,6 +1238,14 @@
           },
           "end_date": {
             "format": "date-time",
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "label_a": {
@@ -1718,6 +1786,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "mapping_table": {
             "nullable": true,
             "type": "string"
@@ -1769,6 +1845,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "mapping_table": {
             "nullable": true,
             "type": "string"
@@ -1815,6 +1899,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
+            "type": "string"
+          },
           "mapping_table": {
             "nullable": true,
             "type": "string"
@@ -1859,6 +1951,14 @@
           },
           "end_date": {
             "format": "date-time",
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "mapping_table": {
@@ -1913,6 +2013,14 @@
           },
           "end_date": {
             "format": "date-time",
+            "type": "string"
+          },
+          "geom_table": {
+            "nullable": true,
+            "type": "string"
+          },
+          "geom_table_join_column": {
+            "nullable": true,
             "type": "string"
           },
           "mapping_table": {
