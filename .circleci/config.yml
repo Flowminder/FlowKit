@@ -737,6 +737,7 @@ jobs:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
+    parallelism: 3
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
@@ -751,7 +752,8 @@ jobs:
             PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
             --cov=../flowmachine --cov=../flowclient --cov=../flowapi --cov=../autoflow \
             --cov-report xml \
-            --cov-report term
+            --cov-report term \
+            --circleci-parallelize
       - store_test_results:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash) -F integration_tests

@@ -16,6 +16,7 @@ pytest-cov = "*"
 tavern = {extras = ["pytest"],version = "*"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 geojson = "*"
+pytest-circleci-parallelized = "*"
 
 [requires]
 python_version = "3.7"
