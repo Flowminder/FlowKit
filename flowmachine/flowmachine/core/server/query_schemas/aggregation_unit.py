@@ -22,3 +22,5 @@ class AggregationUnitKind(String):
 class AggregationUnitMixin:
     aggregation_unit = AggregationUnitKind()
     mapping_table = String(required=False, allow_none=True)
+    geom_table = String(required=False, allow_none=True)
+    geom_table_join_column = String(required=False, allow_none=True)

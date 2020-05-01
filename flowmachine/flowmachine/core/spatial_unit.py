@@ -319,12 +319,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
                 self.mapping_table = mapping_table
             else:
                 self.mapping_table = Table(name=mapping_table)
-            print(
-                self.mapping_table.column_names,
-                self.location_id_columns,
-                geom_table_join_on,
-                location_table_join_on,
-            )
+
             if location_table_join_on not in self.mapping_table.column_names:
                 raise ValueError(
                     "location_table_join_on not in mapping table's columns."
@@ -845,6 +840,7 @@ def make_spatial_unit(
     geom_table: Optional[Union[Query, str]] = None,
     geom_column: str = "geom",
     mapping_table: Optional[Union[str, Query]] = None,
+    geom_table_join_on: Optional[str] = None,
 ) -> Union[CellSpatialUnit, GeomSpatialUnit]:
     """
     Helper function to create an object representing a spatial unit.
@@ -914,7 +910,11 @@ def make_spatial_unit(
     elif spatial_unit_type == "versioned-site":
         return VersionedSiteSpatialUnit()
     elif spatial_unit_type == "lon-lat":
-        return LonLatSpatialUnit(mapping_table=mapping_table, geom_table=geom_table)
+        return LonLatSpatialUnit(
+            mapping_table=mapping_table,
+            geom_table=geom_table,
+            geom_table_join_on=geom_table_join_on,
+        )
     elif spatial_unit_type == "admin":
         if level is None:
             raise ValueError(

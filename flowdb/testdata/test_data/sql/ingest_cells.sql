@@ -49,5 +49,13 @@ INSERT INTO infrastructure.cells (
             date_of_last_service::date,
             ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS geom_point
         FROM temp_cells;
-    
+
+CREATE TABLE infrastructure.mapping_table_test AS
+    SELECT id, '524 2 05 24' AS admin3pcod from infrastructure.cells;
+
+CREATE TABLE geography.test_cluster AS
+    SELECT 1 as cluster_id, ST_SetSRID(ST_MakePoint(26.66999073,87.85779897), 4326) AS geom_point;
+
+CREATE TABLE geography.test_point_mapping AS
+    SELECT id, 1 as cluster_id FROM infrastructure.cells;
 COMMIT;

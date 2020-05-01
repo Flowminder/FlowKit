@@ -13,12 +13,18 @@ class BaseSchema(Schema):
         # Load any aggregation unit
         aggregation_unit_string = params.pop("aggregation_unit", None)
         mapping_table = params.pop("mapping_table", None)
+        geom_table_join_on = params.pop("geom_table_join_column", None)
+        geom_table = params.pop("geom_table", None)
         if aggregation_unit_string is not None:
             if "admin" in aggregation_unit_string:
                 level = int(aggregation_unit_string[-1])
                 spatial_unit_args = {"spatial_unit_type": "admin", "level": level}
             elif "lon-lat" in aggregation_unit_string:
-                spatial_unit_args = {"spatial_unit_type": "lon-lat"}
+                spatial_unit_args = {
+                    "spatial_unit_type": "lon-lat",
+                    "geom_table": geom_table,
+                    "geom_table_join_on": geom_table_join_on,
+                }
             else:
                 raise NotImplementedError(
                     f"Aggregation units of type '{aggregation_unit_string}' are not supported at this time."
