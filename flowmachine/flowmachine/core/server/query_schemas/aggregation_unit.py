@@ -21,4 +21,4 @@ class AggregationUnitKind(String):
 
 class AggregationUnitMixin:
     aggregation_unit = AggregationUnitKind()
-    mapping_table = String(required=False)
+    mapping_table = String(required=False, allow_none=True)

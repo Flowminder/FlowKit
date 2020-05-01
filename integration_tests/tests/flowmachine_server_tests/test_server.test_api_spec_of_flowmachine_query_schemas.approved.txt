@@ -127,6 +127,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -171,6 +172,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "metric": {
@@ -218,6 +220,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "method": {
@@ -331,6 +334,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -533,6 +537,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -884,6 +889,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -938,6 +944,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -984,6 +991,7 @@
         "type": "object"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1073,6 +1081,7 @@
         "type": "object"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1166,6 +1175,7 @@
         "type": "object"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1683,6 +1693,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1732,6 +1743,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1776,6 +1788,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1820,6 +1833,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1872,6 +1886,7 @@
         "type": "string"
       },
       "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
