@@ -20,6 +20,7 @@ def location_event_counts_spec(
     direction: str = "both",
     event_types: Union[None, List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for a location event counts query aggregated spatially and temporally.
@@ -58,6 +59,7 @@ def location_event_counts_spec(
         "direction": direction,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "mapping_table": mapping_table,
     }
 
 
@@ -108,6 +110,7 @@ def meaningful_locations_aggregate_spec(
     tower_cluster_radius: float = 1.0,
     tower_cluster_call_threshold: int = 0,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
 ) -> dict:
     """
     Return a query specification for a count of meaningful locations at some unit of spatial aggregation.
@@ -189,6 +192,7 @@ def meaningful_locations_aggregate_spec(
         "tower_cluster_radius": tower_cluster_radius,
         "tower_cluster_call_threshold": tower_cluster_call_threshold,
         "subscriber_subset": subscriber_subset,
+        "mapping_table": mapping_table,
     }
 
 
@@ -282,6 +286,7 @@ def meaningful_locations_between_label_od_matrix_spec(
     tower_cluster_radius: float = 1.0,
     tower_cluster_call_threshold: int = 0,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
 ) -> dict:
     """
     Return a query specification for an origin-destination matrix between two meaningful locations at some unit of spatial aggregation.
@@ -364,6 +369,7 @@ def meaningful_locations_between_label_od_matrix_spec(
         "tower_cluster_radius": tower_cluster_radius,
         "tower_cluster_call_threshold": tower_cluster_call_threshold,
         "subscriber_subset": subscriber_subset,
+        "mapping_table": mapping_table,
     }
 
 
@@ -460,6 +466,7 @@ def meaningful_locations_between_dates_od_matrix_spec(
     tower_cluster_radius: float = 1.0,
     tower_cluster_call_threshold: float = 0,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
 ) -> dict:
     """
     Return a query specification for an origin-destination matrix between one meaningful location in two time periods at some unit of spatial
@@ -548,6 +555,7 @@ def meaningful_locations_between_dates_od_matrix_spec(
         "tower_cluster_radius": tower_cluster_radius,
         "tower_cluster_call_threshold": tower_cluster_call_threshold,
         "subscriber_subset": subscriber_subset,
+        "mapping_table": mapping_table,
     }
 
 
@@ -739,7 +747,12 @@ def unique_subscriber_counts(*, connection: Connection, **kwargs) -> APIQuery:
 
 
 def location_introversion_spec(
-    *, start_date: str, end_date: str, aggregation_unit: str, direction: str = "both"
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    direction: str = "both",
+    mapping_table: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for location introversion
@@ -766,6 +779,7 @@ def location_introversion_spec(
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
         "direction": direction,
+        "mapping_table": mapping_table,
     }
 
 
@@ -796,7 +810,12 @@ def location_introversion(*, connection: Connection, **kwargs) -> APIQuery:
 
 
 def total_network_objects_spec(
-    *, start_date: str, end_date: str, aggregation_unit: str, total_by: str = "day"
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    total_by: str = "day",
+    mapping_table: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for total network objects
@@ -823,6 +842,7 @@ def total_network_objects_spec(
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
         "total_by": total_by,
+        "mapping_table": mapping_table,
     }
 
 
@@ -951,6 +971,7 @@ def consecutive_trips_od_matrix_spec(
     end_date: str,
     aggregation_unit: str,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     Retrieves the count of subscriber who made consecutive visits between locations
@@ -978,6 +999,7 @@ def consecutive_trips_od_matrix_spec(
         end_date=end_date,
         aggregation_unit=aggregation_unit,
         subscriber_subset=subscriber_subset,
+        mapping_table=mapping_table,
     )
 
 
@@ -1015,6 +1037,7 @@ def trips_od_matrix_spec(
     end_date: str,
     aggregation_unit: str,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     Retrieves the count of subscriber who made visits between locations
@@ -1042,6 +1065,7 @@ def trips_od_matrix_spec(
         end_date=end_date,
         aggregation_unit=aggregation_unit,
         subscriber_subset=subscriber_subset,
+        mapping_table=mapping_table,
     )
 
 
