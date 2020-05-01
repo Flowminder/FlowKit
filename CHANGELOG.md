@@ -7,15 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- FlowAuth now supports MySQL as a database backend.
-- FlowKit now allows the use of bridge tables to manually specify linkages between cells and geometries. 
 
 ### Changed
 
 ### Fixed
-- FlowAuth no longer errors after a period of inactivity due to timed out database connections. [#2382](https://github.com/Flowminder/FlowKit/issues/2382)
 
 ### Removed
+
+## [1.9.1]
+### Added
+- FlowAuth now supports MySQL as a database backend.
+- FlowKit now allows the use of bridge tables to manually specify linkages between cells and geometries. 
+
+### Fixed
+- FlowAuth no longer errors after a period of inactivity due to timed out database connections. [#2382](https://github.com/Flowminder/FlowKit/issues/2382)
+
 
 ## [1.9.0]
 
@@ -733,7 +739,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.1...master
+[1.9.1]: https://github.com/Flowminder/FlowKit/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/Flowminder/FlowKit/compare/1.8.0...1.9.0
 [1.8.0]: https://github.com/Flowminder/FlowKit/compare/1.7.0...1.8.0
 [1.7.0]: https://github.com/Flowminder/FlowKit/compare/1.6.1...1.7.0
