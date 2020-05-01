@@ -348,3 +348,17 @@ def test_location_subset_clause_return_value(spatial_unit_type, locations, expec
     """
     su = make_spatial_unit(spatial_unit_type)
     assert expected == su.location_subset_clause(locations)
+
+
+def test_admin_mapping_table():
+    sp_unit = make_spatial_unit(
+        "admin",
+        level=3,
+        mapping_table=CustomQuery(
+            "SELECT id, '524 2 05 24' as admin3pcod from infrastructure.cells",
+            column_names=["id", "admin3pcod"],
+        ),
+    )
+
+    assert sp_unit._loc_on == "id"
+    assert sp_unit._geom_on == "admin3pcod"
