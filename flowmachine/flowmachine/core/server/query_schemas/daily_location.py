@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
 from .custom_fields import SubscriberSubset, ISODateTime
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -39,18 +39,17 @@ class DailyLocationExposed(BaseExposedQueryWithSampling):
         """
         return daily_location(
             date=self.date,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+            spatial_unit=self.aggregation_unit,
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
 
 
-class DailyLocationSchema(BaseQueryWithSamplingSchema):
+class DailyLocationSchema(AggregationUnitMixin, BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["daily_location"]))
     date = ISODateTime(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
-    aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
     __model__ = DailyLocationExposed

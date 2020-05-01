@@ -639,6 +639,53 @@ async def test_fail_query_incorrect_parameters(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection,],
+)
+async def test_mapping_table(connection, universal_access_token, flowapi_url):
+    mapping_table = "infrastructure.mapping_table_test"
+    query = flowclient.spatial_aggregate(
+        connection=connection(url=flowapi_url, token=universal_access_token),
+        locations=flowclient.daily_location_spec(
+            date="2016-01-01",
+            aggregation_unit="admin3",
+            method="last",
+            mapping_table=mapping_table,
+        ),
+    )
+    try:
+        result = await query.get_result()
+    except TypeError:
+        result = query.get_result()
+    assert set(result.pcod.tolist()) == {"524 2 05 24"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "connection", [flowclient.Connection, flowclient.ASyncConnection,],
+)
+async def test_point_mapping_table(connection, universal_access_token, flowapi_url):
+    mapping_table = "geography.test_point_mapping"
+    query = flowclient.spatial_aggregate(
+        connection=connection(url=flowapi_url, token=universal_access_token),
+        locations=flowclient.daily_location_spec(
+            date="2016-01-01",
+            aggregation_unit="lon-lat",
+            method="last",
+            mapping_table=mapping_table,
+            geom_table="geography.test_cluster",
+            geom_table_join_column="cluster_id",
+        ),
+    )
+    try:
+        result = await query.get_result()
+    except TypeError:
+        result = query.get_result()
+    assert set(result.lon.tolist()) == pytest.approx({26.669991})
+    assert set(result.lat.tolist()) == pytest.approx({87.85779897})
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
     "connection, module",
     [
         (flowclient.Connection, flowclient),

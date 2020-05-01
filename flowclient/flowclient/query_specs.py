@@ -13,6 +13,9 @@ def unique_locations_spec(
     end_date: str,
     aggregation_unit: str,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
 ) -> dict:
     """
     Subscriber level query which retrieves the unique set of locations visited by each subscriber
@@ -41,6 +44,7 @@ def unique_locations_spec(
         end_date=end_date,
         aggregation_unit=aggregation_unit,
         subscriber_subset=subscriber_subset,
+        mapping_table=mapping_table,
     )
 
 
@@ -50,6 +54,9 @@ def daily_location_spec(
     aggregation_unit: str,
     method: str,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for a daily location query for a date and unit of aggregation.
@@ -80,6 +87,9 @@ def daily_location_spec(
         "aggregation_unit": aggregation_unit,
         "method": method,
         "subscriber_subset": subscriber_subset,
+        "mapping_table": mapping_table,
+        "geom_table": geom_table,
+        "geom_table_join_column": geom_table_join_column,
     }
 
 
@@ -115,6 +125,9 @@ def modal_location_from_dates_spec(
     aggregation_unit: str,
     method: str,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for a modal location query for a date range and unit of aggregation.
@@ -151,6 +164,7 @@ def modal_location_from_dates_spec(
             aggregation_unit=aggregation_unit,
             method=method,
             subscriber_subset=subscriber_subset,
+            mapping_table=mapping_table,
         )
         for date in dates
     ]
@@ -193,6 +207,9 @@ def unique_location_counts_spec(
     end_date: str,
     aggregation_unit: str,
     subscriber_subset: Union[dict, None] = None,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for unique location count
@@ -221,6 +238,9 @@ def unique_location_counts_spec(
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
         "subscriber_subset": subscriber_subset,
+        "mapping_table": mapping_table,
+        "geom_table": geom_table,
+        "geom_table_join_column": geom_table_join_column,
     }
 
 

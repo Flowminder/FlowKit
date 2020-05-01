@@ -126,6 +126,18 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "consecutive_trips_od_matrix"
@@ -209,6 +221,18 @@
       },
       "date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "method": {
@@ -319,6 +343,18 @@
         "type": "integer"
       },
       "dummy_param": {
+        "type": "string"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -518,6 +554,18 @@
           "admin3",
           "lon-lat"
         ],
+        "type": "string"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -860,12 +908,24 @@
         "nullable": true,
         "type": "array"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
       "interval": {
         "enum": [
           "day",
           "hour",
           "min"
         ],
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -919,6 +979,18 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "location_introversion"
@@ -953,6 +1025,14 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
       "label": {
         "type": "string"
       },
@@ -961,6 +1041,10 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -1039,6 +1123,14 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
       "label": {
         "type": "string"
       },
@@ -1047,6 +1139,10 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -1126,6 +1222,14 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
       "label_a": {
         "type": "string"
       },
@@ -1137,6 +1241,10 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -1652,6 +1760,18 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "total_network_objects"
@@ -1698,6 +1818,18 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "trips_od_matrix"
@@ -1739,6 +1871,18 @@
         "format": "date-time",
         "type": "string"
       },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "unique_location_counts"
@@ -1778,6 +1922,18 @@
       },
       "end_date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {
@@ -1827,6 +1983,18 @@
       },
       "end_date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
         "type": "string"
       },
       "query_kind": {

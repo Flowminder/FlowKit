@@ -10,7 +10,7 @@ from flowmachine.features.location.redacted_unique_subscriber_counts import (
     RedactedUniqueSubscriberCounts,
 )
 from .base_exposed_query import BaseExposedQuery
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
@@ -39,16 +39,15 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
             unique_subscriber_counts=UniqueSubscriberCounts(
                 start=self.start_date,
                 stop=self.end_date,
-                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                spatial_unit=self.aggregation_unit,
             )
         )
 
 
-class UniqueSubscriberCountsSchema(BaseSchema):
+class UniqueSubscriberCountsSchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit()
 
     __model__ = UniqueSubscriberCountsExposed

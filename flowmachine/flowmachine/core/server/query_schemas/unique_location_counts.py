@@ -9,7 +9,7 @@ from flowmachine.features import UniqueLocationCounts
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset, ISODateTime
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
 
@@ -43,16 +43,15 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
         return UniqueLocationCounts(
             start=self.start_date,
             stop=self.end_date,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+            spatial_unit=self.aggregation_unit,
             subscriber_subset=self.subscriber_subset,
         )
 
 
-class UniqueLocationCountsSchema(BaseSchema):
+class UniqueLocationCountsSchema(AggregationUnitMixin, BaseSchema):
     query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
-    aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
     __model__ = UniqueLocationCountsExposed
