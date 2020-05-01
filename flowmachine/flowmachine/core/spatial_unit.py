@@ -319,11 +319,17 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
                 self.mapping_table = mapping_table
             else:
                 self.mapping_table = Table(name=mapping_table)
-            if self._loc_on not in self.mapping_table.columns:
+            print(
+                self.mapping_table.column_names,
+                self.location_id_columns,
+                geom_table_join_on,
+                location_table_join_on,
+            )
+            if location_table_join_on not in self.mapping_table.column_names:
                 raise ValueError(
                     "location_table_join_on not in mapping table's columns."
                 )
-            elif self._geom_on not in self.mapping_table.columns:
+            elif geom_table_join_on not in self.mapping_table.column_names:
                 raise ValueError("geom_table_join_on not in mapping table's columns.")
 
         self._geom_on = geom_table_join_on
@@ -362,17 +368,33 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         str
             SQL join clause
         """
-        if self._loc_on is None or self._geom_on is None:
-            raise ValueError("No columns specified for join.")
+
         if hasattr(self, "mapping_table"):
+            if self._loc_on is None:
+                loc_on = (
+                    set(self.mapping_table.columns)
+                    .intersection(self.location_id_columns)
+                    .pop()
+                )
+            else:
+                loc_on = self._loc_on
+            if self._geom_on is None:
+                geom_on = set(self.mapping_table.columns).intersection(
+                    self.geom_table.columns
+                )
+            else:
+                geom_on = self._geom_on
+
             return f"""
-                            LEFT JOIN
-                                ({self.mapping_table.get_query()}) AS _ USING ({self.loc_on})
-                            LEFT JOIN
-                                ({self.geom_table.get_query()}) AS {geom_table_alias}
-                            USING ({self.loc_on})
-                            """
+                    LEFT JOIN
+                        ({self.mapping_table.get_query()}) AS _ USING ({loc_on})
+                    LEFT JOIN
+                        ({self.geom_table.get_query()}) AS {geom_table_alias}
+                    USING ({geom_on})
+                    """
         else:
+            if self._loc_on is None or self._geom_on is None:
+                raise ValueError("No columns specified for join.")
             return f"""
                     LEFT JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
@@ -491,12 +513,6 @@ class LonLatSpatialUnit(GeomSpatialUnit):
     geom_column : str, default "geom_point"
         Name of the column in geom_table that defines the point geometry from
         which longitude and latitude will be extracted.
-    geom_table_join_on : str, optional
-        Name of the column from geom_table to join on.
-        Required if geom_table != connection.location_table.
-    location_table_join_on : str, optional
-        Name of the column from connection.location_table to join on.
-        Required if geom_table != connection.location_table.
     """
 
     def __init__(
@@ -508,7 +524,6 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom_point",
         geom_table_join_on: Optional[str] = None,
-        location_table_join_on: Optional[str] = None,
     ):
         super().__init__(
             geom_table_column_names=geom_table_column_names,
@@ -517,7 +532,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             mapping_table=mapping_table,
             geom_column=geom_column,
             geom_table_join_on=geom_table_join_on,
-            location_table_join_on=location_table_join_on,
+            location_table_join_on="id" if mapping_table is not None else None,
         )
 
     def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
@@ -660,6 +675,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         geom_table: Union[Query, str],
         mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom",
+        geom_table_join_on: Optional[str] = None,
     ):
         if isinstance(geom_table_column_names, str):
             location_id_column_names = get_name_and_alias(geom_table_column_names)[1]
@@ -673,6 +689,8 @@ class PolygonSpatialUnit(GeomSpatialUnit):
             geom_table=geom_table,
             mapping_table=mapping_table,
             geom_column=geom_column,
+            geom_table_join_on=geom_table_join_on,
+            location_table_join_on="id" if mapping_table is not None else None,
         )
 
     def _join_clause(self, loc_table_alias: str, geom_table_alias: str) -> str:
@@ -786,6 +804,7 @@ class AdminSpatialUnit(PolygonSpatialUnit):
             geom_table_column_names=col_name,
             geom_table=table,
             mapping_table=mapping_table,
+            geom_table_join_on=None if mapping_table is None else f"admin{level}pcod",
         )
 
     @property
@@ -804,13 +823,21 @@ class GridSpatialUnit(PolygonSpatialUnit):
         Size of the grid in kilometres
     """
 
-    def __init__(self, *, size: Union[float, int]) -> None:
+    def __init__(
+        self,
+        *,
+        size: Union[float, int],
+        mapping_table: Union[str, Query] = None,
+        location_table_join_on: Optional[str] = None,
+    ) -> None:
         self.grid = Grid(size)
 
         super().__init__(
             geom_table_column_names="grid_id",
             geom_table=self.grid,
             geom_column="geom_square",
+            geom_table_join_on=None if mapping_table is None else "grid_id",
+            mapping_table=mapping_table,
         )
 
     @property
