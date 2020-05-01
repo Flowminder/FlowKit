@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.unique_visitor_counts import UniqueVisitorCounts
@@ -11,7 +11,7 @@ from .base_schema import BaseSchema
 
 from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 
-from . import BaseExposedQuery
+from .base_exposed_query import BaseExposedQuery
 
 __all__ = [
     "UniqueVisitorCountsSchema",

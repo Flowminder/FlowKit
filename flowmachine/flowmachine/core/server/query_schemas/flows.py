@@ -11,21 +11,14 @@ from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
-from .daily_location import DailyLocationSchema
-from .modal_location import ModalLocationSchema
+from .util import get_type_schemas_from_entrypoint
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
-
-from .unique_locations import UniqueLocationsSchema
 
 
 class InputToFlowsSchema(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-        "unique_locations": UniqueLocationsSchema,
-    }
+    type_schemas = get_type_schemas_from_entrypoint("flowable_queries")
 
 
 class FlowsExposed(BaseExposedQuery):

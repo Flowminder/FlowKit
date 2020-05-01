@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import CategoricalMetric
 
 __all__ = ["HandsetSchema", "HandsetExposed"]
 
@@ -53,7 +54,7 @@ class HandsetExposed(BaseExposedQueryWithSampling):
         )
 
 
-class HandsetSchema(BaseQueryWithSamplingSchema):
+class HandsetSchema(CategoricalMetric, BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["handset"]))
     start_date = ISODateTime(required=True)

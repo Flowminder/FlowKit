@@ -8,7 +8,7 @@ from marshmallow.validate import OneOf
 from flowmachine.features.location.redacted_trips_od_matrix import RedactedTripsODMatrix
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.location.trips_od_matrix import TripsODMatrix
-from . import BaseExposedQuery
+from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj

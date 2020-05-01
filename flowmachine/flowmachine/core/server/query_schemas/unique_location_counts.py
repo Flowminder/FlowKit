@@ -2,14 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import UniqueLocationCounts
-from . import BaseExposedQuery
+from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .metric_types import ContinuousMetric
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
 
@@ -48,7 +49,7 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
         )
 
 
-class UniqueLocationCountsSchema(BaseSchema):
+class UniqueLocationCountsSchema(ContinuousMetric, BaseSchema):
     query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)

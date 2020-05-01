@@ -4,7 +4,7 @@
 from asyncio import sleep
 
 import pytest
-from marshmallow import Schema, fields
+from marshmallow import Schema
 
 import flowmachine
 from flowmachine import connections
@@ -13,8 +13,6 @@ from flowmachine.core.context import (
     get_redis,
     get_db,
     redis_connection,
-    context,
-    get_executor,
 )
 from flowmachine.core.query_info_lookup import QueryInfoLookup
 from flowmachine.core.query_state import QueryState, QueryStateMachine
@@ -27,7 +25,9 @@ from flowmachine.core.server.action_handlers import (
     get_action_handler,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
-from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+from flowmachine.core.server.query_schemas.flowmachine_query import (
+    FlowmachineQuerySchema,
+)
 from flowmachine.core.server.zmq_helpers import ZMQReplyStatus
 
 

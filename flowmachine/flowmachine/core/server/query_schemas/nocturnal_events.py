@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import ContinuousMetric
 
 __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
 
@@ -51,7 +52,7 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
         )
 
 
-class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
+class NocturnalEventsSchema(ContinuousMetric, BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
     start = ISODateTime(required=True)
     stop = ISODateTime(required=True)

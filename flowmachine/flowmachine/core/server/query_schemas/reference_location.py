@@ -3,14 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow_oneofschema import OneOfSchema
-
-from flowmachine.core.server.query_schemas.daily_location import DailyLocationSchema
-from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
+from flowmachine.core.server.query_schemas.util import get_type_schemas_from_entrypoint
 
 
 class ReferenceLocationSchema(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-    }
+    type_schemas = get_type_schemas_from_entrypoint("reference_location_queries")

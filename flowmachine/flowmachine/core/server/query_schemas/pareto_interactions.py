@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import ContinuousMetric
 
 __all__ = ["ParetoInteractionsSchema", "ParetoInteractionsExposed"]
 
@@ -44,7 +45,7 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
         )
 
 
-class ParetoInteractionsSchema(BaseQueryWithSamplingSchema):
+class ParetoInteractionsSchema(ContinuousMetric, BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
     start = ISODateTime(required=True)
     stop = ISODateTime(required=True)

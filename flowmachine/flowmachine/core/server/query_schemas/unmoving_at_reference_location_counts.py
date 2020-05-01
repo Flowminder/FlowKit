@@ -14,7 +14,7 @@ from flowmachine.features.location.unmoving_at_reference_location_counts import 
 from flowmachine.features.subscriber.unmoving_at_reference_location import (
     UnmovingAtReferenceLocation,
 )
-from . import BaseExposedQuery
+from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .reference_location import ReferenceLocationSchema
 from .unique_locations import UniqueLocationsSchema

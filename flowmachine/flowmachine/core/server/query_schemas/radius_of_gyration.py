@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import ContinuousMetric
 
 __all__ = ["RadiusOfGyrationSchema", "RadiusOfGyrationExposed"]
 
@@ -40,7 +41,7 @@ class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
         )
 
 
-class RadiusOfGyrationSchema(BaseQueryWithSamplingSchema):
+class RadiusOfGyrationSchema(ContinuousMetric, BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
     start_date = ISODateTime(required=True)

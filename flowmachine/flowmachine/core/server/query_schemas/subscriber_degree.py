@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .metric_types import ContinuousMetric
 
 __all__ = ["SubscriberDegreeSchema", "SubscriberDegreeExposed"]
 
@@ -44,7 +45,7 @@ class SubscriberDegreeExposed(BaseExposedQueryWithSampling):
         )
 
 
-class SubscriberDegreeSchema(BaseQueryWithSamplingSchema):
+class SubscriberDegreeSchema(ContinuousMetric, BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["subscriber_degree"]))
     start = ISODateTime(required=True)
     stop = ISODateTime(required=True)

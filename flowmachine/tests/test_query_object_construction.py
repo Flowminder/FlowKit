@@ -6,7 +6,9 @@ import json
 import pytest
 from marshmallow import ValidationError
 
-from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+from flowmachine.core.server.query_schemas.flowmachine_query import (
+    FlowmachineQuerySchema,
+)
 
 
 def test_construct_query(diff_reporter):
