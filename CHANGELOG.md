@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - FlowAuth now supports MySQL as a database backend.
+- FlowKit now allows the use of bridge tables to manually specify linkages between cells and geometries. 
 
 ### Changed
 
