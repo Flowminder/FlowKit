@@ -259,6 +259,10 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         Can be either the name of a table, with the schema, or a
         flowmachine.Query object.
         Defaults to connection.location_table
+    mapping_table : str or flowmachine.Query, optional
+        Name of a bridge table to geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
     geom_column : str, default "geom"
         Name of the column in geom_table that defines the geometry.
     geom_table_join_on : str, optional
@@ -275,6 +279,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         geom_table_column_names: Union[str, Iterable[str]],
         location_id_column_names: Union[str, Iterable[str]],
         geom_table: Optional[Union[Query, str]] = None,
+        mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom",
         geom_table_join_on: Optional[str] = None,
         location_table_join_on: Optional[str] = None,
@@ -307,6 +312,20 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         else:
             self.geom_table = Table(name=geom_table)
 
+        if mapping_table is not None:
+            # Creating a Table object here means that we don't have to handle
+            # tables and Query objects differently in _make_query and get_geom_query
+            if isinstance(mapping_table, Query):
+                self.mapping_table = mapping_table
+            else:
+                self.mapping_table = Table(name=mapping_table)
+            if self._loc_on not in self.mapping_table.columns:
+                raise ValueError(
+                    "location_table_join_on not in mapping table's columns."
+                )
+            elif self._geom_on not in self.mapping_table.columns:
+                raise ValueError("geom_table_join_on not in mapping table's columns.")
+
         self._geom_on = geom_table_join_on
         self._loc_on = location_table_join_on
 
@@ -337,7 +356,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
             Table alias for the location table.
         geom_table_alias : str
             Table alias for the geography table.
-        
+
         Returns
         -------
         str
@@ -345,11 +364,20 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         """
         if self._loc_on is None or self._geom_on is None:
             raise ValueError("No columns specified for join.")
-        return f"""
-        LEFT JOIN
-            ({self.geom_table.get_query()}) AS {geom_table_alias}
-        ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
-        """
+        if hasattr(self, "mapping_table"):
+            return f"""
+                            LEFT JOIN
+                                ({self.mapping_table.get_query()}) AS _ USING ({self.loc_on})
+                            LEFT JOIN
+                                ({self.geom_table.get_query()}) AS {geom_table_alias}
+                            USING ({self.loc_on})
+                            """
+        else:
+            return f"""
+                    LEFT JOIN
+                        ({self.geom_table.get_query()}) AS {geom_table_alias}
+                    ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
+                    """
 
     def _make_query(self):
         loc_table_alias = "loc_table"
@@ -456,6 +484,10 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         Can be either the name of a table, with the schema, or a
         flowmachine.Query object.
         Defaults to connection.location_table
+    mapping_table : str or flowmachine.Query, optional
+        Name of a bridge table to geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
     geom_column : str, default "geom_point"
         Name of the column in geom_table that defines the point geometry from
         which longitude and latitude will be extracted.
@@ -473,6 +505,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         geom_table_column_names: Union[str, Iterable[str]] = (),
         location_id_column_names: Union[str, Iterable[str]] = (),
         geom_table: Optional[Union[Query, str]] = None,
+        mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom_point",
         geom_table_join_on: Optional[str] = None,
         location_table_join_on: Optional[str] = None,
@@ -481,6 +514,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             geom_table_column_names=geom_table_column_names,
             location_id_column_names=location_id_column_names,
             geom_table=geom_table,
+            mapping_table=mapping_table,
             geom_column=geom_column,
             geom_table_join_on=geom_table_join_on,
             location_table_join_on=location_table_join_on,
@@ -611,6 +645,10 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         Name of the table containing the geography information.
         Can be either the name of a table, with the schema, or a
         flowmachine.Query object.
+    mapping_table : str or flowmachine.Query, optional
+        Name of a bridge table to geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
     geom_column : str, default 'geom'
         Name of the column in geom_table that defines the geography.
     """
@@ -620,6 +658,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         *,
         geom_table_column_names: Union[str, Iterable[str]],
         geom_table: Union[Query, str],
+        mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom",
     ):
         if isinstance(geom_table_column_names, str):
@@ -632,18 +671,22 @@ class PolygonSpatialUnit(GeomSpatialUnit):
             geom_table_column_names=geom_table_column_names,
             location_id_column_names=location_id_column_names,
             geom_table=geom_table,
+            mapping_table=mapping_table,
             geom_column=geom_column,
         )
 
     def _join_clause(self, loc_table_alias: str, geom_table_alias: str) -> str:
-        return f"""
-        INNER JOIN
-            ({self.geom_table.get_query()}) AS {geom_table_alias}
-        ON ST_within(
-            {loc_table_alias}.geom_point::geometry,
-            ST_SetSRID({geom_table_alias}.{self._geom_col}, 4326)::geometry
-        )
-        """
+        if hasattr(self, "mapping_table"):
+            return super()._join_clause(loc_table_alias, geom_table_alias)
+        else:
+            return f"""
+            INNER JOIN
+                ({self.geom_table.get_query()}) AS {geom_table_alias}
+            ON ST_within(
+                {loc_table_alias}.geom_point::geometry,
+                ST_SetSRID({geom_table_alias}.{self._geom_col}, 4326)::geometry
+            )
+            """
 
     @property
     def canonical_name(self) -> str:
@@ -711,10 +754,18 @@ class AdminSpatialUnit(PolygonSpatialUnit):
         identifier of the admin region. By default
         this will be admin*pcod. But you may wish
         to use something else, such as admin3name.
+    mapping_table : str or flowmachine.Query, optional
+        Name of a bridge table to geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
     """
 
     def __init__(
-        self, *, level: int, region_id_column_name: Optional[str] = None
+        self,
+        *,
+        level: int,
+        region_id_column_name: Optional[str] = None,
+        mapping_table: Union[str, Query] = None,
     ) -> None:
 
         # If there is no region_id_column_name passed then we can use the default,
@@ -731,7 +782,11 @@ class AdminSpatialUnit(PolygonSpatialUnit):
         table = f"geography.admin{level}"
         self.level = level
 
-        super().__init__(geom_table_column_names=col_name, geom_table=table)
+        super().__init__(
+            geom_table_column_names=col_name,
+            geom_table=table,
+            mapping_table=mapping_table,
+        )
 
     @property
     def canonical_name(self) -> str:
@@ -774,6 +829,7 @@ def make_spatial_unit(
     size: Union[float, int] = None,
     geom_table: Optional[Union[Query, str]] = None,
     geom_column: str = "geom",
+    mapping_table: Optional[Union[str, Query]] = None,
 ) -> Union[CellSpatialUnit, GeomSpatialUnit]:
     """
     Helper function to create an object representing a spatial unit.
@@ -822,6 +878,10 @@ def make_spatial_unit(
         Name of the table containing the geography information. Can be either
         the name of a table, with the schema, or a flowmachine.Query object.
         Required when spatial_unit_type='polygon'.
+    mapping_table : str or flowmachine.Query, optional
+        Name of a bridge table to geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
     geom_column : str, default 'geom'
         Name of the column in geom_table that defines the geography.
         Required when spatial_unit_type='polygon'.
@@ -839,14 +899,16 @@ def make_spatial_unit(
     elif spatial_unit_type == "versioned-site":
         return VersionedSiteSpatialUnit()
     elif spatial_unit_type == "lon-lat":
-        return LonLatSpatialUnit()
+        return LonLatSpatialUnit(mapping_table=mapping_table, geom_table=geom_table)
     elif spatial_unit_type == "admin":
         if level is None:
             raise ValueError(
                 "'level' parameter is required for spatial unit of type 'admin'."
             )
         return AdminSpatialUnit(
-            level=level, region_id_column_name=region_id_column_name
+            level=level,
+            region_id_column_name=region_id_column_name,
+            mapping_table=mapping_table,
         )
     elif spatial_unit_type == "grid":
         if size is None:
@@ -867,6 +929,7 @@ def make_spatial_unit(
             geom_table_column_names=region_id_column_name,
             geom_table=geom_table,
             geom_column=geom_column,
+            mapping_table=mapping_table,
         )
     else:
         raise ValueError(f"Unrecognised spatial unit type: {spatial_unit_type}.")
