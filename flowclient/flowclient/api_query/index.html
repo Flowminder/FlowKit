@@ -570,8 +570,80 @@
 
 
   <li class="md-nav__item">
+    <a href="../async_api_query/" title="async_api_query" class="md-nav__link">
+      async_api_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../async_client/" title="async_client" class="md-nav__link">
+      async_client
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../async_connection/" title="async_connection" class="md-nav__link">
+      async_connection
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../client/" title="client" class="md-nav__link">
       client
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connection/" title="connection" class="md-nav__link">
+      connection
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../errors/" title="errors" class="md-nav__link">
+      errors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../query_specs/" title="query_specs" class="md-nav__link">
+      query_specs
     </a>
   </li>
 
@@ -4539,15 +4611,15 @@
                 
                 <h1 id="flowclientapi_query">flowclient.api_query<a class="headerlink" href="#flowclientapi_query" title="Permanent link">&para;</a></h1>
 <h2 id="class-apiquery">Class <strong>APIQuery</strong><a class="headerlink" href="#class-apiquery" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">APIQuery</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">APIQuery</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L19">flowclient/api_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L18">flowclient/api_query.py</a></p>
 <p>Representation of a FlowKit query.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h4 id="get_result">get_result<a class="headerlink" href="#get_result" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;pandas&#39;</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ForwardRef</span><span class="p">(</span><span class="s1">&#39;pandas.DataFrame&#39;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">]</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L88">flowclient/api_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L87">flowclient/api_query.py</a></p>
 <p>Get the result of this query, as a pandas DataFrame or GeoJSON dict.</p>
 <h5 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4574,12 +4646,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h4 id="run">run<a class="headerlink" href="#run" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L44">flowclient/api_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L43">flowclient/api_query.py</a></p>
 <p>Set this query running in FlowKit</p>
 <h4 id="wait_until_ready">wait_until_ready<a class="headerlink" href="#wait_until_ready" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">wait_until_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">disable_progress</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L139">flowclient/api_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L138">flowclient/api_query.py</a></p>
 <p>Wait until this query has finished running.</p>
 <h5 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4595,19 +4667,19 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h4 id="connection">connection<a class="headerlink" href="#connection" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">connection</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L58">flowclient/api_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L57">flowclient/api_query.py</a></p>
 <p>Connection that is used for running this query.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
-<p><code>flowclient.client.Connection</code></p>
+<p><code>flowclient.connection.Connection</code></p>
 <p>Connection to FlowKit API</p>
 </li>
 </ul>
 <h4 id="status">status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">status</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L70">flowclient/api_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/api_query.py#L69">flowclient/api_query.py</a></p>
 <p>Status of this query.</p>
 <h5 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4651,13 +4723,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
           </a>
         
         
-          <a href="../client/" title="client" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../async_api_query/" title="async_api_query" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                client
+                async_api_query
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
