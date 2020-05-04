@@ -266,12 +266,16 @@ def reset_cache(
         qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
         tables = trans.execute(qry).fetchall()
 
+    with connection.engine.begin() as trans:
         trans.execute("SELECT setval('cache.cache_touches', 1)")
-        for table in tables:
+    for table in tables:
+        with connection.engine.begin() as trans:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
-        if protect_table_objects:
+    if protect_table_objects:
+        with connection.engine.begin() as trans:
             trans.execute(f"DELETE FROM cache.cached WHERE schema='cache'")
-        else:
+    else:
+        with connection.engine.begin() as trans:
             trans.execute("TRUNCATE cache.cached CASCADE")
     resync_redis_with_cache(connection=connection, redis=redis)
 
