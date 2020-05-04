@@ -11,9 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Added missing bridge table arguments to Several FlowClient methods.
 
 ### Removed
+
+## [1.9.2]
+### Fixed
+- Added missing bridge table arguments to Several FlowClient methods.
 
 ## [1.9.1]
 ### Added
@@ -740,7 +743,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.2...master
+[1.9.2]: https://github.com/Flowminder/FlowKit/compare/1.9.1...1.9.2
 [1.9.1]: https://github.com/Flowminder/FlowKit/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/Flowminder/FlowKit/compare/1.8.0...1.9.0
 [1.8.0]: https://github.com/Flowminder/FlowKit/compare/1.7.0...1.8.0
