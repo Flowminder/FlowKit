@@ -711,7 +711,13 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
 
 
 def unique_subscriber_counts_spec(
-    *, start_date: str, end_date: str, aggregation_unit: str
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
 ) -> dict:
     """
     Return query spec for unique subscriber counts
@@ -735,6 +741,9 @@ def unique_subscriber_counts_spec(
         "start_date": start_date,
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
+        "mapping_table": mapping_table,
+        "geom_table": geom_table,
+        "geom_table_join_column": geom_table_join_column,
     }
 
 
@@ -1026,6 +1035,8 @@ def consecutive_trips_od_matrix_spec(
         aggregation_unit=aggregation_unit,
         subscriber_subset=subscriber_subset,
         mapping_table=mapping_table,
+        geom_table=geom_table,
+        geom_table_join_column=geom_table_join_column,
     )
 
 
@@ -1094,6 +1105,8 @@ def trips_od_matrix_spec(
         aggregation_unit=aggregation_unit,
         subscriber_subset=subscriber_subset,
         mapping_table=mapping_table,
+        geom_table=geom_table,
+        geom_table_join_column=geom_table_join_column,
     )
 
 

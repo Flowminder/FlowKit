@@ -45,6 +45,8 @@ def unique_locations_spec(
         aggregation_unit=aggregation_unit,
         subscriber_subset=subscriber_subset,
         mapping_table=mapping_table,
+        geom_table=geom_table,
+        geom_table_join_column=geom_table_join_column,
     )
 
 
@@ -165,6 +167,8 @@ def modal_location_from_dates_spec(
             method=method,
             subscriber_subset=subscriber_subset,
             mapping_table=mapping_table,
+            geom_table=geom_table,
+            geom_table_join_column=geom_table_join_column,
         )
         for date in dates
     ]
