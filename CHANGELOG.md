@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- Fixed cache shrinking failing when large numbers of tables have been written. [#2462](https://github.com/Flowminder/FlowKit/issues/2462)
 - Fixed FlowAuth's MySQL support.
 
 ### Removed

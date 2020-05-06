@@ -27,7 +27,13 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 import flowmachine
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.context import redis_connection, get_db, get_redis
+from flowmachine.core.context import (
+    redis_connection,
+    get_db,
+    get_redis,
+    get_executor,
+    bind_context,
+)
 from flowmachine.core.init import connections
 from flowmachine.features import EventTableSubset
 
@@ -172,7 +178,13 @@ def mocked_connections(monkeypatch):
     monkeypatch.setattr(
         concurrent.futures.thread.ThreadPoolExecutor, "__init__", tp_mock
     )
+    #  get any existing context
+    connection = get_db()
+    redis = get_redis()
+    tp = get_executor()
     yield logging_mock, connection_mock, redis_mock, tp_mock
+    #  Reset context
+    bind_context(connection, tp, redis)
 
 
 @pytest.fixture

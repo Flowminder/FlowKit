@@ -266,12 +266,16 @@ def reset_cache(
         qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
         tables = trans.execute(qry).fetchall()
 
+    with connection.engine.begin() as trans:
         trans.execute("SELECT setval('cache.cache_touches', 1)")
-        for table in tables:
+    for table in tables:
+        with connection.engine.begin() as trans:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
-        if protect_table_objects:
+    if protect_table_objects:
+        with connection.engine.begin() as trans:
             trans.execute(f"DELETE FROM cache.cached WHERE schema='cache'")
-        else:
+    else:
+        with connection.engine.begin() as trans:
             trans.execute("TRUNCATE cache.cached CASCADE")
     resync_redis_with_cache(connection=connection, redis=redis)
 
@@ -394,7 +398,7 @@ def get_cached_query_objects_ordered_by_score(
     )
     qry = f"""SELECT obj, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE NOT cached.class='Table'
+        WHERE cached.class!='Table' AND cached.class!='GeoTable'
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
@@ -572,7 +576,7 @@ def get_size_of_cache(connection: "Connection") -> int:
     """
     sql = """SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE NOT cached.class='Table'"""
+        WHERE cached.class!='Table' AND cached.class!='GeoTable'"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
