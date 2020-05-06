@@ -24,7 +24,7 @@ from flowauth.models import (
     User,
     db,
 )
-from flowauth.user_settings import generate_backup_codes
+from flowauth.user_settings import generate_backup_codes, md5
 
 TestUser = namedtuple("TestUser", ["id", "username", "password"])
 TestTwoFactorUser = namedtuple(
@@ -180,16 +180,19 @@ def test_data(app, test_admin, test_user, test_group):
             ("DUMMY_ROUTE_A", "DUMMY_ROUTE_B"),
             (f"admin{x}" for x in range(4)),
         ):
+            cap = f"{action}&{cap}.aggregation_unit.{admin_unit}"
             sc_a = ServerCapability(
-                capability=f"{action}&{cap}.aggregation_unit.{admin_unit}",
+                capability=cap,
                 server=dummy_server_a,
+                capability_hash=md5(cap.encode()).hexdigest(),
                 enabled=True,
             )
             scs.append(sc_a)
             db.session.add(sc_a)
             sc_b = ServerCapability(
-                capability=f"{action}&{cap}.aggregation_unit.{admin_unit}",
+                capability=cap,
                 server=dummy_server_b,
+                capability_hash=md5(cap.encode()).hexdigest(),
                 enabled=True,
             )
             scs.append(sc_b)
