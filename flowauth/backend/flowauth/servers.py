@@ -84,7 +84,7 @@ def edit_server_capabilities(server_id):
             cap = ServerCapability(
                 server_id=server_id,
                 capability=cap,
-                capability_hash=md5(cap).hexdigest(),
+                capability_hash=md5(cap.encode()).hexdigest(),
             )
         cap.enabled = enabled
         caps.append(cap)
