@@ -429,10 +429,10 @@
         },
         "semver": {
             "hashes": [
-                "sha256:095c3cba6d5433f21451101463b22cf831fe6996fcc8a603407fd8bea54f116b",
-                "sha256:723be40c74b6468861e0e3dbb80a41fc3b171a2a45bf956c245304773dc06055"
+                "sha256:4ae5f926f2c4c1aa0612f95d4d502c838f41526f0b71e20cc706c28aa9763c47",
+                "sha256:a0fd30b371474a6ffcbb106074187bdacb4e17fbdd80abc9dffebccc420993a2"
             ],
-            "version": "==2.9.1"
+            "version": "==2.10.0"
         },
         "six": {
             "hashes": [

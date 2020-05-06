@@ -120,10 +120,10 @@
         },
         "dogpile.cache": {
             "hashes": [
-                "sha256:a9822f466ec740ed8945ed561a138441d54018f0667aa19df6d1c8f54086b32e"
+                "sha256:bc9dde1ffa5de0179efbcdc73773ef0553921130ad01955422f2932be35c059e"
             ],
             "index": "pypi",
-            "version": "==0.9.1"
+            "version": "==0.9.2"
         },
         "flask": {
             "hashes": [
@@ -577,10 +577,10 @@
         },
         "dogpile.cache": {
             "hashes": [
-                "sha256:a9822f466ec740ed8945ed561a138441d54018f0667aa19df6d1c8f54086b32e"
+                "sha256:bc9dde1ffa5de0179efbcdc73773ef0553921130ad01955422f2932be35c059e"
             ],
             "index": "pypi",
-            "version": "==0.9.1"
+            "version": "==0.9.2"
         },
         "flask": {
             "hashes": [
