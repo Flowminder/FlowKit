@@ -33,8 +33,8 @@ class User(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(), unique=True, nullable=False)
-    _password = db.Column(db.String(), nullable=False)
+    username = db.Column(db.String(75), unique=True, nullable=False)
+    _password = db.Column(db.Text, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     groups = db.relationship(
         "Group",
@@ -179,7 +179,7 @@ class TwoFactorAuth(db.Model):
     )
     user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
     enabled = db.Column(db.Boolean, nullable=False, default=False)
-    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
+    _secret_key = db.Column(db.Text, nullable=False)  # Encrypted in db
     two_factor_backups = db.relationship(
         "TwoFactorBackup", back_populates="auth", cascade="all, delete, delete-orphan"
     )
@@ -315,7 +315,7 @@ class TwoFactorBackup(db.Model):
     auth = db.relationship(
         "TwoFactorAuth", back_populates="two_factor_backups", lazy=True
     )
-    _backup_code = db.Column(db.String(), nullable=False)
+    _backup_code = db.Column(db.String(75), nullable=False)
 
     def verify(self, plaintext: str) -> bool:
         """
@@ -369,7 +369,7 @@ class Token(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), nullable=False)
+    name = db.Column(db.String(75), nullable=False)
     _token = db.Column(db.Text, nullable=False)
     expires = db.Column(db.DateTime, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -432,7 +432,7 @@ class Server(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
+    name = db.Column(db.String(75), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life = db.Column(db.Integer, nullable=False)
     tokens = db.relationship(
@@ -529,7 +529,7 @@ class Group(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
+    name = db.Column(db.String(75), unique=True, nullable=False)
     user_group = db.Column(db.Boolean, default=False)
     server_token_limits = db.relationship(
         "GroupServerTokenLimits",
