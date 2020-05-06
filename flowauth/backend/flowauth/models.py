@@ -317,7 +317,7 @@ class TwoFactorBackup(db.Model):
     auth = db.relationship(
         "TwoFactorAuth", back_populates="two_factor_backups", lazy=True
     )
-    _backup_code = db.Column(db.String(75), nullable=False)
+    _backup_code = db.Column(db.Text, nullable=False)
 
     def verify(self, plaintext: str) -> bool:
         """
