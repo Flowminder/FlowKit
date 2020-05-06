@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from hashlib import md5
+
 from pathlib import Path
 
 import datetime
@@ -33,8 +35,8 @@ class User(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(), unique=True, nullable=False)
-    _password = db.Column(db.String(), nullable=False)
+    username = db.Column(db.String(75), unique=True, nullable=False)
+    _password = db.Column(db.Text, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     groups = db.relationship(
         "Group",
@@ -179,7 +181,7 @@ class TwoFactorAuth(db.Model):
     )
     user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
     enabled = db.Column(db.Boolean, nullable=False, default=False)
-    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
+    _secret_key = db.Column(db.Text, nullable=False)  # Encrypted in db
     two_factor_backups = db.relationship(
         "TwoFactorBackup", back_populates="auth", cascade="all, delete, delete-orphan"
     )
@@ -315,7 +317,7 @@ class TwoFactorBackup(db.Model):
     auth = db.relationship(
         "TwoFactorAuth", back_populates="two_factor_backups", lazy=True
     )
-    _backup_code = db.Column(db.String(), nullable=False)
+    _backup_code = db.Column(db.Text, nullable=False)
 
     def verify(self, plaintext: str) -> bool:
         """
@@ -369,7 +371,7 @@ class Token(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), nullable=False)
+    name = db.Column(db.String(75), nullable=False)
     _token = db.Column(db.Text, nullable=False)
     expires = db.Column(db.DateTime, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -432,7 +434,7 @@ class Server(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
+    name = db.Column(db.String(75), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life = db.Column(db.Integer, nullable=False)
     tokens = db.relationship(
@@ -461,7 +463,8 @@ class ServerCapability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="capabilities", lazy=True)
-    capability = db.Column(db.String, nullable=False)
+    capability = db.Column(db.Text, nullable=False)
+    capability_hash = db.Column(db.String(32), nullable=False)
     enabled = db.Column(db.Boolean, default=False)
     group_uses = db.relationship(
         "GroupServerPermission",
@@ -470,7 +473,7 @@ class ServerCapability(db.Model):
         cascade="all, delete, delete-orphan",
     )
     __table_args__ = (
-        db.UniqueConstraint("server_id", "capability", name="_server_cap_uc"),
+        db.UniqueConstraint("server_id", "capability_hash", name="_server_cap_uc"),
     )  # Enforce only one of each capability per server
 
     def __repr__(self) -> str:
@@ -529,7 +532,7 @@ class Group(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
+    name = db.Column(db.String(75), unique=True, nullable=False)
     user_group = db.Column(db.Boolean, default=False)
     server_token_limits = db.relationship(
         "GroupServerTokenLimits",
@@ -653,7 +656,12 @@ def make_demodata():
     # Add some things that you can do on the servers
     scs = []
     for cap in caps:
-        sc = ServerCapability(capability=cap, server=test_server, enabled=True)
+        sc = ServerCapability(
+            capability=cap,
+            server=test_server,
+            enabled=True,
+            capability_hash=md5(cap.encode()).hexdigest(),
+        )
         scs.append(sc)
         db.session.add(sc)
 

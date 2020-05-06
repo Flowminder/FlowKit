@@ -81,7 +81,11 @@ def edit_server_capabilities(server_id):
                 server_id=server_id, capability=cap
             ).one()
         except NoResultFound:
-            cap = ServerCapability(server_id=server_id, capability=cap)
+            cap = ServerCapability(
+                server_id=server_id,
+                capability=cap,
+                capability_hash=md5(cap.encode()).hexdigest(),
+            )
         cap.enabled = enabled
         caps.append(cap)
     db.session.bulk_save_objects(caps)

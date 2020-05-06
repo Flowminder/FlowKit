@@ -1,3 +1,5 @@
+from hashlib import md5
+
 import datetime
 
 from flowauth.models import (
@@ -29,7 +31,10 @@ def test_disallow_right_on_server_disallows_for_group(app):
         )
         session.add(server)
         server_capability = ServerCapability(
-            server=server, capability="get_result&DUMMY_ROUTE", enabled=True
+            server=server,
+            capability="get_result&DUMMY_ROUTE",
+            enabled=True,
+            capability_hash=md5(b"get_result&DUMMY_ROUTE").hexdigest(),
         )
         session.add(server_capability)
         gsp = GroupServerPermission(
