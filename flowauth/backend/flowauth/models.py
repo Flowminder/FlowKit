@@ -461,7 +461,7 @@ class ServerCapability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="capabilities", lazy=True)
-    capability = db.Column(db.String, nullable=False)
+    capability = db.Column(db.Text, nullable=False)
     enabled = db.Column(db.Boolean, default=False)
     group_uses = db.relationship(
         "GroupServerPermission",
