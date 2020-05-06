@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from hashlib import md5
+
 from pathlib import Path
 
 import datetime
@@ -461,7 +463,8 @@ class ServerCapability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="capabilities", lazy=True)
-    capability = db.Column(db.String(21845), nullable=False)
+    capability = db.Column(db.Text, nullable=False)
+    capability_hash = db.Column(db.String(32), nullable=False)
     enabled = db.Column(db.Boolean, default=False)
     group_uses = db.relationship(
         "GroupServerPermission",
@@ -470,7 +473,7 @@ class ServerCapability(db.Model):
         cascade="all, delete, delete-orphan",
     )
     __table_args__ = (
-        db.UniqueConstraint("server_id", "capability", name="_server_cap_uc"),
+        db.UniqueConstraint("server_id", "capability_hash", name="_server_cap_uc"),
     )  # Enforce only one of each capability per server
 
     def __repr__(self) -> str:
@@ -653,7 +656,12 @@ def make_demodata():
     # Add some things that you can do on the servers
     scs = []
     for cap in caps:
-        sc = ServerCapability(capability=cap, server=test_server, enabled=True)
+        sc = ServerCapability(
+            capability=cap,
+            server=test_server,
+            enabled=True,
+            capability_hash=md5(cap.encode()).hexdigest(),
+        )
         scs.append(sc)
         db.session.add(sc)
 
