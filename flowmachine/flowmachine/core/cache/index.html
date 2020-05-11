@@ -5505,7 +5505,7 @@
 <h2 id="cache_table_exists">cache_table_exists<a class="headerlink" href="#cache_table_exists" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">cache_table_exists</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L742">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L746">flowmachine/core/cache.py</a></p>
 <p>Return True if a cache table for the query with id <code>query_id</code> exist, otherwise return False.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5524,7 +5524,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_cache_half_life">get_cache_half_life<a class="headerlink" href="#get_cache_half_life" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_cache_half_life</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L598">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L602">flowmachine/core/cache.py</a></p>
 <p>Get the current setting for cache half-life.</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5540,7 +5540,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_cache_protected_period">get_cache_protected_period<a class="headerlink" href="#get_cache_protected_period" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_cache_protected_period</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L638">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L642">flowmachine/core/cache.py</a></p>
 <p>Get the current setting for cache protected period.</p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5556,7 +5556,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_cached_query_objects_ordered_by_score">get_cached_query_objects_ordered_by_score<a class="headerlink" href="#get_cached_query_objects_ordered_by_score" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_cached_query_objects_ordered_by_score</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">protected_period</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">ForwardRef</span><span class="p">(</span><span class="s1">&#39;Query&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">]]</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L370">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L374">flowmachine/core/cache.py</a></p>
 <p>Get all cached query objects in ascending cache score order.</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5578,7 +5578,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_compute_time">get_compute_time<a class="headerlink" href="#get_compute_time" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_compute_time</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L688">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L692">flowmachine/core/cache.py</a></p>
 <p>Get the time in seconds that a cached query took to compute.</p>
 <h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5600,7 +5600,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_max_size_of_cache">get_max_size_of_cache<a class="headerlink" href="#get_max_size_of_cache" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_max_size_of_cache</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L580">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L584">flowmachine/core/cache.py</a></p>
 <p>Get the upper limit set in FlowDB for the cache size, in bytes.</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5616,7 +5616,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_query_object_by_id">get_query_object_by_id<a class="headerlink" href="#get_query_object_by_id" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_query_object_by_id</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L346">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L350">flowmachine/core/cache.py</a></p>
 <p>Get a query object from cache by id.</p>
 <h3 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5638,7 +5638,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_score">get_score<a class="headerlink" href="#get_score" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_score</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L715">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L719">flowmachine/core/cache.py</a></p>
 <p>Get the current cache score for a cached query.</p>
 <h3 id="parameters_7">Parameters<a class="headerlink" href="#parameters_7" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5660,7 +5660,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_size_of_cache">get_size_of_cache<a class="headerlink" href="#get_size_of_cache" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_size_of_cache</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L559">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L563">flowmachine/core/cache.py</a></p>
 <p>Get the total size in bytes of all cache tables.</p>
 <h3 id="parameters_8">Parameters<a class="headerlink" href="#parameters_8" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5676,7 +5676,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_size_of_table">get_size_of_table<a class="headerlink" href="#get_size_of_table" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_size_of_table</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">table_schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L530">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L534">flowmachine/core/cache.py</a></p>
 <p>Get the size on disk in bytes of a table in the database.</p>
 <h3 id="parameters_9">Parameters<a class="headerlink" href="#parameters_9" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5702,7 +5702,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="invalidate_cache_by_id">invalidate_cache_by_id<a class="headerlink" href="#invalidate_cache_by_id" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">invalidate_cache_by_id</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">query_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L321">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L325">flowmachine/core/cache.py</a></p>
 <p>Remove a query object from cache by id.</p>
 <h3 id="parameters_10">Parameters<a class="headerlink" href="#parameters_10" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5750,7 +5750,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="resync_redis_with_cache">resync_redis_with_cache<a class="headerlink" href="#resync_redis_with_cache" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">resync_redis_with_cache</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">redis</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L279">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L283">flowmachine/core/cache.py</a></p>
 <p>Reset redis to be in sync with the current contents of the cache.</p>
 <h3 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5772,7 +5772,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="set_cache_half_life">set_cache_half_life<a class="headerlink" href="#set_cache_half_life" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">set_cache_half_life</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">cache_half_life</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L616">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L620">flowmachine/core/cache.py</a></p>
 <p>Set the cache's half-life.</p>
 <h3 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5791,7 +5791,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="set_cache_protected_period">set_cache_protected_period<a class="headerlink" href="#set_cache_protected_period" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">set_cache_protected_period</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">protected_period</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L656">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L660">flowmachine/core/cache.py</a></p>
 <p>Set the cache's half-life.</p>
 <h3 id="parameters_14">Parameters<a class="headerlink" href="#parameters_14" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5806,7 +5806,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="set_max_size_of_cache">set_max_size_of_cache<a class="headerlink" href="#set_max_size_of_cache" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">set_max_size_of_cache</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">cache_size_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L672">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L676">flowmachine/core/cache.py</a></p>
 <p>Set the upper limit set in FlowDB for the cache size, in bytes.</p>
 <h3 id="parameters_15">Parameters<a class="headerlink" href="#parameters_15" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5821,7 +5821,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="shrink_below_size">shrink_below_size<a class="headerlink" href="#shrink_below_size" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">shrink_below_size</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">size_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">protected_period</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L445">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L449">flowmachine/core/cache.py</a></p>
 <p>Remove queries from the cache until it is below a specified size threshold.</p>
 <h3 id="parameters_16">Parameters<a class="headerlink" href="#parameters_16" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5851,7 +5851,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="shrink_one">shrink_one<a class="headerlink" href="#shrink_one" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">shrink_one</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">protected_period</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L405">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L409">flowmachine/core/cache.py</a></p>
 <p>Remove the lowest scoring cached query from cache and return it and size of it in bytes.</p>
 <h3 id="parameters_17">Parameters<a class="headerlink" href="#parameters_17" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5895,7 +5895,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="watch_and_shrink_cache">watch_and_shrink_cache<a class="headerlink" href="#watch_and_shrink_cache" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">watch_and_shrink_cache</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">flowdb_connection</span><span class="p">:</span> <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Executor</span><span class="p">,</span> <span class="n">sleep_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">86400</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span> <span class="n">loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">size_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">protected_period</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L764">flowmachine/core/cache.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/cache.py#L768">flowmachine/core/cache.py</a></p>
 <p>Background task to periodically trigger a shrink of the cache.</p>
 <h3 id="parameters_19">Parameters<a class="headerlink" href="#parameters_19" title="Permanent link">&para;</a></h3>
 <ul>

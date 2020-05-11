@@ -4952,7 +4952,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">column_names</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L74">flowmachine/core/join_to_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L79">flowmachine/core/join_to_location.py</a></p>
 <p>Returns the column names.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4987,7 +4987,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="fully_qualified_table_name">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">fully_qualified_table_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L670">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L64">flowmachine/core/join_to_location.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
 <h5 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5075,7 +5075,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="location_joined_query">location_joined_query<a class="headerlink" href="#location_joined_query" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_joined_query</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">spatial_unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">],</span> <span class="n">time_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L113">flowmachine/core/join_to_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L118">flowmachine/core/join_to_location.py</a></p>
 <p>Helper function which returns JoinToLocation(left_query, spatial_unit, time_col) if spatial_unit has geography information, otherwise returns left_query.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
