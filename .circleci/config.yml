@@ -610,13 +610,11 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql pandoc ruby
             sudo gem install bundler
+            bundle install
       - run:
           name: Install python dependencies
           command: |
             pipenv install --deploy --dev
-      - run:
-          name: Install Ruby gems
-          command: bundle install
       - save_cache:
           key: autoflow-deps-1-{{ checksum "Pipfile.lock" }}
           paths:
@@ -734,6 +732,9 @@ jobs:
           path: test_results
 
   integration_tests:
+    parameters:
+      pytest_selector:
+        type: string
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
@@ -743,15 +744,23 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - restore_cache:
+          key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
       - run: *install_autoflow_deps
+      - run: pipenv install --deploy
+      - save_cache:
+          key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
       - run: *wait_for_flowdb
       - run:
           name: Run integration tests
           command: |
-            PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
+            PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run pytest -sv --junitxml=test_results/pytest/results.xml --durations=10 \
             --cov=../flowmachine --cov=../flowclient --cov=../flowapi --cov=../autoflow \
             --cov-report xml \
-            --cov-report term
+            --cov-report term \
+            -k "<<parameters.pytest_selector>>"
       - store_test_results:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash) -F integration_tests
@@ -1093,6 +1102,9 @@ workflows:
       #            *quickstart_requirements
       #          <<: *run_always_org_context
       - integration_tests:
+          matrix:
+            parameters:
+              pytest_selector: ["query_tests and ASyncConnection", "query_tests and not ASyncConnection", "not query_tests"]
           requires:
             - install_flowmachine_deps
             - build_flowdb_testdata
