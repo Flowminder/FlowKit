@@ -2,7 +2,7 @@ version: 2.1
 
 defaults:
   - &base_docker
-    - image: circleci/python:3.7
+    - image: circleci/python:3.8
       environment:
         FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
@@ -110,7 +110,7 @@ executors:
       FLOWDB_HOST: localhost
       FLOWAPI_IDENTIFIER: TEST_SERVER
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
         environment:
           N_DAYS: <<parameters.num_days>>
