@@ -610,13 +610,11 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql pandoc ruby
             sudo gem install bundler
+            bundle install
       - run:
           name: Install python dependencies
           command: |
             pipenv install --deploy --dev
-      - run:
-          name: Install Ruby gems
-          command: bundle install
       - save_cache:
           key: autoflow-deps-1-{{ checksum "Pipfile.lock" }}
           paths:
