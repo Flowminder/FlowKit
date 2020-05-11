@@ -61,6 +61,11 @@ class JoinToLocation(Query):
         self.time_col = time_col
         super().__init__()
 
+    @property
+    def fully_qualified_table_name(self):
+        self.left.fully_qualified_table_name  # Avoid caching if the joinee shouldn't be
+        return super().fully_qualified_table_name
+
     def __getattr__(self, name):
         # Don't extend this to hidden variables, such as _df
         # and _len

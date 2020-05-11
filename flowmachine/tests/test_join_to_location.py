@@ -24,6 +24,15 @@ def test_join_to_location_column_names(exemplar_spatial_unit_param):
     assert joined.head(0).columns.tolist() == joined.column_names
 
 
+def test_join_to_location_no_cache_if_joinee_no_cache():
+    with pytest.raises(NotImplementedError):
+        table = SubscriberLocations(
+            "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("admin", level=3)
+        )
+        joined = JoinToLocation(table, spatial_unit=make_spatial_unit("admin", level=3))
+        joined.fully_qualified_table_name
+
+
 def test_join_to_location_raises_value_error():
     """
     Test that JoinToLocation raises an InvalidSpatialUnitError if spatial_unit
