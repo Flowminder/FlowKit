@@ -143,6 +143,11 @@ class SubscriberLocations(Query):
                 """
         return sql
 
+    @property
+    def fully_qualified_table_name(self):
+        # Cost of cache creation for subscriber locations outweighs benefits
+        raise NotImplementedError
+
 
 class BaseLocation:
     """
