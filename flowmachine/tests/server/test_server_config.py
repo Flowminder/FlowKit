@@ -66,4 +66,4 @@ def test_get_server_config_defaults(monkeypatch):
     assert config.store_dependencies
     assert config.cache_pruning_timeout == 600
     assert config.cache_pruning_frequency == 86400
-    assert config.server_thread_pool._max_workers == (os.cpu_count() or 1) * 5
+    assert config.server_thread_pool._max_workers == min(32, os.cpu_count() + 4)
