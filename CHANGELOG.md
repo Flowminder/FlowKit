@@ -9,11 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-- `JoinToLocation` is cacheable only if the joined query is also cacheable.
 
 ### Fixed
 
 ### Removed
+
+## [1.9.4]
+## Changed
+- `JoinToLocation` is cacheable only if the joined query is also cacheable.
 
 ## [1.9.3]
 ### Changed
@@ -752,7 +755,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.3...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.4...master
+[1.9.4]: https://github.com/Flowminder/FlowKit/compare/1.9.3...1.9.4
 [1.9.3]: https://github.com/Flowminder/FlowKit/compare/1.9.2...1.9.3
 [1.9.2]: https://github.com/Flowminder/FlowKit/compare/1.9.1...1.9.2
 [1.9.1]: https://github.com/Flowminder/FlowKit/compare/1.9.0...1.9.1
