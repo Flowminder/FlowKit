@@ -744,8 +744,14 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - restore_cache:
+          key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
       - run: *install_autoflow_deps
       - run: pipenv install --deploy
+      - save_cache:
+          key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
       - run: *wait_for_flowdb
       - run:
           name: Run integration tests
