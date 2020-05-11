@@ -53,6 +53,10 @@ defaults:
 executors:
   python_with_flowdb: # Synthetic data generation execution environment
     parameters:
+      python_version:
+        type: enum
+        enum: ["3.7", "3.8"]
+        default: "3.8"
       flowdb_image:
         type: enum
         enum: ["synthetic-data", "testdata"]
@@ -110,7 +114,7 @@ executors:
       FLOWDB_HOST: localhost
       FLOWAPI_IDENTIFIER: TEST_SERVER
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:<<parameters.python_version>>
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
         environment:
           N_DAYS: <<parameters.num_days>>
@@ -440,6 +444,7 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
+      python_version: "3.7"
     working_directory: /home/circleci/project/flowdb
     steps:
       - checkout:
