@@ -456,7 +456,7 @@ jobs:
 
   run_token_generator_tests:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     environment:
       FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowkit_jwt_generator
