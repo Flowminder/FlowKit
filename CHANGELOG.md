@@ -11,10 +11,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Fixed cache shrinking failing when large numbers of tables have been written. [#2462](https://github.com/Flowminder/FlowKit/issues/2462)
-- Fixed FlowAuth's MySQL support.
 
 ### Removed
+
+## [1.9.3]
+### Changed
+- `SubscriberLocations` are no longer cacheable using FlowMachine.
+
+### Fixed
+- Fixed cache shrinking failing when large numbers of tables have been written. [#2462](https://github.com/Flowminder/FlowKit/issues/2462)
+- Fixed FlowAuth's MySQL support.
 
 ## [1.9.2]
 ### Fixed
@@ -745,7 +751,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.2...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.3...master
+[1.9.3]: https://github.com/Flowminder/FlowKit/compare/1.9.2...1.9.3
 [1.9.2]: https://github.com/Flowminder/FlowKit/compare/1.9.1...1.9.2
 [1.9.1]: https://github.com/Flowminder/FlowKit/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/Flowminder/FlowKit/compare/1.8.0...1.9.0
