@@ -46,10 +46,12 @@ setup(
     extras_require={"test": test_requirements},
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
+    python_requires=">=3.6",
     platforms=["MacOS X", "Linux"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.6",
         "Natural Language :: English",
