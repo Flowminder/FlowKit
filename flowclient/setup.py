@@ -38,6 +38,7 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=["flowclient"],
     include_package_data=True,
+    python_requires=">=3.6",
     install_requires=[
         "pandas",
         "requests",
