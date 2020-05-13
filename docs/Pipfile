@@ -35,7 +35,7 @@ jupyterlab = "*"
 flowetl = {editable = true,path = "./../flowetl/flowetl"} # Working around version conflict caused by airflow's aggressive pinning
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
 
 [scripts]
 build = "bash build.sh"

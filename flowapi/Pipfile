@@ -26,4 +26,4 @@ black = "==19.10b0"
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

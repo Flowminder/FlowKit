@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- FlowMachine's docker container now uses Python 3.8
+- FlowAPI's docker container now uses Python 3.8
+- FlowAuth's docker container now uses Python 3.8
+- AutoFlow's docker container now uses Python 3.8
 
 ### Fixed
 

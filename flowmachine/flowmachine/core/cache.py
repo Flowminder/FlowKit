@@ -15,7 +15,7 @@ from functools import partial
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
-from psycopg2 import InternalError
+import psycopg2
 
 from redis import StrictRedis
 import psycopg2
@@ -230,7 +230,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
     """
     try:
         return float(connection.fetch(f"SELECT touch_cache('{query_id}')")[0][0])
-    except (IndexError, InternalError):
+    except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
@@ -822,7 +822,7 @@ async def watch_and_shrink_cache(
                 ),
                 timeout=timeout,
             )
-        except TimeoutError:
+        except (TimeoutError, asyncio.exceptions.TimeoutError):
             logger.error(
                 f"Failed to complete cache shrink within {timeout}s. Trying again in {sleep_time}s."
             )

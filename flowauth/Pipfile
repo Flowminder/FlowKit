@@ -33,7 +33,7 @@ flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"
 
 [scripts]
 build-frontend = "bash start.sh build"
