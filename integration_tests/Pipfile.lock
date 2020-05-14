@@ -59,7 +59,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "approvaltests": {
@@ -711,10 +711,10 @@
         },
         "nbclient": {
             "hashes": [
-                "sha256:193731fd5039061dbd7d6d3f765a2fa59d23012594d68b1798deea9c3eae4a01",
-                "sha256:44dde0356def1d9345908c8f58dc604a434f2fe61c49ac13fac6e2da2ae429de"
+                "sha256:45248aa79f1bd46cda6e7180300c8059fff0b3933c04bbdd2f74393746ff6f83",
+                "sha256:e19f61896e0d2dae49e48ecc96ae60f6504e18aa25d165997953db867c45552c"
             ],
-            "version": "==0.2.0"
+            "version": "==0.3.0"
         },
         "nbconvert": {
             "hashes": [
