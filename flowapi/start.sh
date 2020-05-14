@@ -5,7 +5,7 @@
 
 
 
-if [ -e /run/secrets/cert-flowkit.pem ] && [ -e /run/secrets/key-flowkit.pem ];
+if [ -f /run/secrets/cert-flowkit.pem ] && [ -f /run/secrets/key-flowkit.pem ];
 then
     hypercorn --bind 0.0.0.0:9090 --certfile /run/secrets/cert-flowkit.pem --keyfile /run/secrets/key-flowkit.pem "flowapi.main:create_app()"
 else
