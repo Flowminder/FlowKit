@@ -471,10 +471,10 @@
         },
         "joblib": {
             "hashes": [
-                "sha256:0630eea4f5664c463f23fbf5dcfc54a2bc6168902719fa8e19daf033022786c8",
-                "sha256:bdb4fd9b72915ffb49fde2229ce482dd7ae79d842ed8c2b4c932441495af1403"
+                "sha256:a55f5268c5e402e4a892202089ebda1730db81e82f704d2bee8a6bc499ebc264",
+                "sha256:f8f84dcef519233be4ede1c64fd1f2d48b1e8bbb632d1013ebca75f8b678ee72"
             ],
-            "version": "==0.14.1"
+            "version": "==0.15.0"
         },
         "jsonschema": {
             "hashes": [
@@ -647,11 +647,18 @@
         },
         "mkdocs-material": {
             "hashes": [
-                "sha256:304ce9e489074588376d921373010db964b5d062747d80bf61753156350c817c",
-                "sha256:30f78994f79132453bb30cdf79fc8e392f908d1058b509036ac284339ed7e8e3"
+                "sha256:a50180157d0fb539022f8476e3220e45934610fc1d61f54efa6fe266681cb202",
+                "sha256:e6678eac0aec6f50ed44042d00a985c4256a3148e1a560914a934de956210e6c"
             ],
             "index": "pypi",
-            "version": "==5.0.2"
+            "version": "==5.1.6"
+        },
+        "mkdocs-material-extensions": {
+            "hashes": [
+                "sha256:09569c3694b5acc1e8334c9730e52b4bcde65fc9d613cc20e49af131ef1a9ca0",
+                "sha256:17d7491e189af75700310b7ec33c6c48a22060b8b445001deca040cb60471cde"
+            ],
+            "version": "==1.0"
         },
         "mknotebooks": {
             "hashes": [
@@ -1129,10 +1136,10 @@
         },
         "redis": {
             "hashes": [
-                "sha256:6e9d2722a95d10ddf854596e66516d316d99c6a483e5db3b35c34e1158b2bfa1",
-                "sha256:a5b0e25890d216d8189636742c50ab992e42eea699bcc1b08cc2d6bf3adff52a"
+                "sha256:2ef11f489003f151777c064c5dbc6653dfb9f3eade159bcadc524619fddc2242",
+                "sha256:6d65e84bc58091140081ee9d9c187aab0480097750fac44239307a3bdf0b1251"
             ],
-            "version": "==3.5.1"
+            "version": "==3.5.2"
         },
         "regex": {
             "hashes": [

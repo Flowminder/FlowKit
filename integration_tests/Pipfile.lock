@@ -620,10 +620,10 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:56663fa1d5385c14c6a1236badd166d6dee987a5f64d2b6cc099dadf96eb4f09",
-                "sha256:f12203bf8d94c410ab4b8d66edfde4f8a364892bde1f6747179765559f93d62a"
+                "sha256:c2673233aa21dde264b84349dc2fd1dce5f30ed724a0a00e75426734de5b84ab",
+                "sha256:f88fe96434b1f0f476d54224d59333eba8ca1a203a2695683c1855675c4049a7"
             ],
-            "version": "==3.5.2"
+            "version": "==3.6.0"
         },
         "marshmallow-oneofschema": {
             "hashes": [
@@ -947,10 +947,10 @@
         },
         "prefect": {
             "hashes": [
-                "sha256:5540b22a7c58713ec14105c1e4cf2dbc75ab8ed48665864f2c9b770875ae50e0",
-                "sha256:ac8bad1b8520d1685a18b875455491418870d89216d7a0fd1b5667f0adfbcd22"
+                "sha256:09e024602f06f009bc7a7f248a5c4a3683eeb92b64cd9f94c3a4ef17237b0fdc",
+                "sha256:131a82855378887a753c3bfca5e7a87903d105e114b28c6b074b9f973f30c008"
             ],
-            "version": "==0.10.7"
+            "version": "==0.11.1"
         },
         "priority": {
             "hashes": [
@@ -1303,10 +1303,10 @@
         },
         "redis": {
             "hashes": [
-                "sha256:6e9d2722a95d10ddf854596e66516d316d99c6a483e5db3b35c34e1158b2bfa1",
-                "sha256:a5b0e25890d216d8189636742c50ab992e42eea699bcc1b08cc2d6bf3adff52a"
+                "sha256:2ef11f489003f151777c064c5dbc6653dfb9f3eade159bcadc524619fddc2242",
+                "sha256:6d65e84bc58091140081ee9d9c187aab0480097750fac44239307a3bdf0b1251"
             ],
-            "version": "==3.5.1"
+            "version": "==3.5.2"
         },
         "regex": {
             "hashes": [
