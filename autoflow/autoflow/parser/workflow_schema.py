@@ -53,12 +53,12 @@ class WorkflowSchema(Schema):
             pass
 
     @post_load(pass_many=True)
-    def make_and_store_workflows(self, data, many, **kwargs) -> storage.Memory:
+    def make_and_store_workflows(self, data, many, **kwargs) -> storage.Local:
         """
         Create a prefect flow for each of the provided workflow specifications,
         and return as a prefect 'Memory' storage object.
         """
-        workflow_storage = storage.Memory()
+        workflow_storage = storage.Local()
         if not many:
             data = [data]
         for workflow_spec in data:

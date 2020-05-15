@@ -15,7 +15,7 @@ from autoflow.parser.workflow_config_schema import WorkflowConfigSchema
 from autoflow.sensor import WorkflowConfig
 
 
-def test_workflow_config_schema():
+def test_workflow_config_schema(tmpdir):
     """
     Test that WorkflowConfigSchema loads input data into a WorkflowConfig namedtuple.
     """
@@ -23,7 +23,7 @@ def test_workflow_config_schema():
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges", "DUMMY_PARAM"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     input_dict = dict(
@@ -42,7 +42,7 @@ def test_workflow_config_schema():
     assert workflow_config.date_stencil == DateStencil(input_dict["date_stencil"])
 
 
-def test_workflow_config_schema_defaults():
+def test_workflow_config_schema_defaults(tmpdir):
     """
     Test that WorkflowConfigSchema loads input data if 'parameters',
     'earliest_date' and 'date_stencil' are not specified.
@@ -51,7 +51,7 @@ def test_workflow_config_schema_defaults():
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     input_dict = dict(workflow_name="DUMMY_WORKFLOW")
@@ -91,7 +91,7 @@ def test_workflow_config_schema_invalid_workflow_name():
 
 
 @pytest.mark.parametrize("key", ["reference_date", "date_ranges"])
-def test_workflow_config_schema_invalid_parameter_names(key):
+def test_workflow_config_schema_invalid_parameter_names(key, tmpdir):
     """
     Test that WorkflowConfigSchema raises a ValidationError if the 'parameters'
     dict keys contain 'reference_date' or 'date_ranges'.
@@ -100,7 +100,7 @@ def test_workflow_config_schema_invalid_parameter_names(key):
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     input_dict = dict(workflow_name="DUMMY_WORKFLOW", parameters={key: "DUMMY_VALUE"})
@@ -111,7 +111,7 @@ def test_workflow_config_schema_invalid_parameter_names(key):
     assert "Invalid input." in exc_info.value.messages["parameters"][key]["key"]
 
 
-def test_workflow_config_schema_invalid_earliest_date():
+def test_workflow_config_schema_invalid_earliest_date(tmpdir):
     """
     Test that WorkflowConfigSchema raises a ValidationError if the
     'earliest_date' field is not a date.
@@ -120,7 +120,7 @@ def test_workflow_config_schema_invalid_earliest_date():
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     input_dict = dict(workflow_name="DUMMY_WORKFLOW", earliest_date=datetime.time(11))
@@ -131,7 +131,7 @@ def test_workflow_config_schema_invalid_earliest_date():
     assert "Not a valid date." in exc_info.value.messages["earliest_date"]
 
 
-def test_workflow_config_schema_workflow_not_found():
+def test_workflow_config_schema_workflow_not_found(tmpdir):
     """
     Test that WorkflowConfigSchema raises a ValidationError if the named
     workflow does not exist.
@@ -140,7 +140,7 @@ def test_workflow_config_schema_workflow_not_found():
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     with pytest.raises(ValidationError) as exc_info:
@@ -155,7 +155,7 @@ def test_workflow_config_schema_workflow_not_found():
 
 @pytest.mark.parametrize("missing_parameter", ["reference_date", "date_ranges"])
 def test_workflow_config_schema_workflow_does_not_accept_automatic_parameters(
-    missing_parameter,
+    missing_parameter, tmpdir
 ):
     """
     Test that WorkflowConfigSchema raises a ValidationError if the named
@@ -165,7 +165,7 @@ def test_workflow_config_schema_workflow_does_not_accept_automatic_parameters(
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in {"reference_date", "date_ranges"} - {missing_parameter}:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     with pytest.raises(ValidationError) as exc_info:
@@ -193,7 +193,7 @@ def test_workflow_config_schema_no_context():
     )
 
 
-def test_workflow_config_schema_missing_and_unexpected_parameter_names():
+def test_workflow_config_schema_missing_and_unexpected_parameter_names(tmpdir):
     """
     Test that WorkflowConfigSchema raises a ValidationError if the names of the
     provided parameters are not valid for the named workflow.
@@ -202,7 +202,7 @@ def test_workflow_config_schema_missing_and_unexpected_parameter_names():
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges", "DUMMY_PARAM"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     input_dict = dict(
