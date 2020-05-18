@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - AutoFlow's docker container now uses Python 3.8
 
 ### Fixed
+- FlowAuth will no longer fail to start if there are directories with names the same as the SSL certificate secrets.
 
 ### Removed
 
