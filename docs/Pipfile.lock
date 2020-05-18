@@ -471,10 +471,10 @@
         },
         "joblib": {
             "hashes": [
-                "sha256:a55f5268c5e402e4a892202089ebda1730db81e82f704d2bee8a6bc499ebc264",
-                "sha256:f8f84dcef519233be4ede1c64fd1f2d48b1e8bbb632d1013ebca75f8b678ee72"
+                "sha256:61e49189c84b3c5d99a969d314853f4d1d263316cc694bec17548ebaa9c47b6e",
+                "sha256:6825784ffda353cc8a1be573118085789e5b5d29401856b35b756645ab5aecb5"
             ],
-            "version": "==0.15.0"
+            "version": "==0.15.1"
         },
         "jsonschema": {
             "hashes": [
@@ -647,11 +647,11 @@
         },
         "mkdocs-material": {
             "hashes": [
-                "sha256:a50180157d0fb539022f8476e3220e45934610fc1d61f54efa6fe266681cb202",
-                "sha256:e6678eac0aec6f50ed44042d00a985c4256a3148e1a560914a934de956210e6c"
+                "sha256:61196a0c66513358a423c7dfd9bed87bb08d0250d80a7a4790996d841b63fb8f",
+                "sha256:6d5287d3bc8de97d182fb5b9ea04a31aad1a60b1af6e77f4de16eae057beff24"
             ],
             "index": "pypi",
-            "version": "==5.1.6"
+            "version": "==5.1.7"
         },
         "mkdocs-material-extensions": {
             "hashes": [
@@ -676,10 +676,10 @@
         },
         "more-itertools": {
             "hashes": [
-                "sha256:5dd8bcf33e5f9513ffa06d5ad33d78f31e1931ac9a18f33d37e77a180d393a7c",
-                "sha256:b1ddb932186d8a6ac451e1d95844b382f55e12686d51ca0c68b6f61f2ab7a507"
+                "sha256:558bb897a2232f5e4f8e2399089e35aecb746e1f9191b6584a151647e89267be",
+                "sha256:7818f596b1e87be009031c7653d01acc46ed422e6656b394b0f765ce66ed4982"
             ],
-            "version": "==8.2.0"
+            "version": "==8.3.0"
         },
         "munch": {
             "hashes": [
@@ -1850,10 +1850,10 @@
         },
         "jupyterlab-server": {
             "hashes": [
-                "sha256:17eac20af10167abebbeca72e7e390b9c19a400b8fffa158b5cfdcac344253d4",
-                "sha256:1ac8e5c65b016158854631633a8b342e646ebd3173993f5ee2f953ec06a10ce0"
+                "sha256:224dd7e0555bf9df8d3d3b559c54993b433949e6cd9e17f7477848356dff843f",
+                "sha256:b67b37ad071374e032bb8cfa3cb55832f6db09ca7f86d6d0cd7eed613c748133"
             ],
-            "version": "==1.1.3"
+            "version": "==1.1.4"
         },
         "lazy-object-proxy": {
             "hashes": [
