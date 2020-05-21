@@ -13,6 +13,7 @@ Produces sites, cells, tacs, call, sms and mds data.
 Optionally simulates a 'disaster' where all subscribers must leave a designated admin2 region
 for a period of time.
 """
+from pathlib import Path
 
 import os
 import argparse
@@ -91,6 +92,12 @@ parser.add_argument(
     help="Admin 2 pcode to use as disaster zone.",
 )
 parser.add_argument(
+    "--country",
+    default=False,
+    type=str,
+    help="ISO country code for data to be generated in.",
+)
+parser.add_argument(
     "--disaster-start-date",
     type=datetime.date.fromisoformat,
     help="Date to begin the disaster.",
@@ -148,6 +155,7 @@ if __name__ == "__main__":
             disaster_end_date = datetime.date(2016, 1, 1) + datetime.timedelta(
                 days=num_days
             )
+        country = args.country
 
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
@@ -158,6 +166,84 @@ if __name__ == "__main__":
         )
 
         start_time = datetime.datetime.now()
+
+        # Load geography
+        available_files = list(
+            Path("/docker-entrypoint-initdb.d/data/geo").glob("*[0-9].shp")
+        )
+        logger.info("Found shapefiles", file=available_files)
+        homes_level = 0
+        with engine.begin() as trans:
+            trans.execute("TRUNCATE TABLE geography.geoms CASCADE;")
+            for level in range(4):
+                trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
+        with engine.begin() as trans:
+            with log_duration(job="Load shape data."):
+                for shape_file in available_files:
+                    level = int(shape_file.stem[-1])
+                    homes_level = max(homes_level, level)
+                    with log_duration(
+                        job=f"Loading admin level.", admin_level=level, file=shape_file
+                    ):
+                        trans.execute(
+                            f"""
+                        CREATE SERVER admin{level}_boundaries
+                          FOREIGN DATA WRAPPER ogr_fdw
+                          OPTIONS (
+                            datasource '{shape_file}',
+                            format 'ESRI Shapefile' );
+                        """
+                        )
+                        if level > 0:
+                            trans.execute(
+                                f"""
+                            CREATE FOREIGN TABLE admin{level} (
+                              GID_{level} text,
+                              GID_{level-1}  text,
+                              NAME_{level} text,
+                              geom geometry(MultiPolygon, 4326)
+                            ) SERVER "admin{level}_boundaries"
+                            OPTIONS (layer 'gadm36_{country}_{level}');
+                            """
+                            )
+                            trans.execute(
+                                f"""
+                                INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
+                                  SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, geom,
+                                    json_build_object('parent',GID_{level-1}) as additional_metadata
+                                    FROM admin{level};"""
+                            )
+                        else:
+                            trans.execute(
+                                f"""
+                                CREATE FOREIGN TABLE admin{level} (
+                                  NAME_{level} text,
+                                  geom geometry(MultiPolygon, 4326)
+                                ) SERVER "admin{level}_boundaries"
+                                OPTIONS (layer 'gadm36_{country}_{level}');
+                                """
+                            )
+                            trans.execute(
+                                f"""
+                                INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom)
+                                  SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, geom
+                                    FROM admin{level};"""
+                            )
+
+                        trans.execute(
+                            f"""DROP VIEW IF EXISTS geography.admin{level};"""
+                        )
+                        trans.execute(
+                            f"""
+                        CREATE VIEW geography.admin{level} AS
+                            SELECT row_number() over() as gid,
+                            short_name as admin{level}pcod,
+                            long_name as admin{level}name,
+                            additional_metadata ->> 'parent' as parent_pcod,
+                            geom from geography.geoms where spatial_resolution={level};
+                        """
+                        )
+        homes_level = min(homes_level, 3)  # Admin3 homes at most
 
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
@@ -241,19 +327,19 @@ if __name__ == "__main__":
                 trans.execute(
                     f"""CREATE TABLE homes AS (
                        SELECT h.*, cells FROM
-                       (SELECT '2016-01-01'::date AS home_date, id, admin3pcod AS home_id FROM (
-                       SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM subs
+                       (SELECT '2016-01-01'::date AS home_date, id, admin{homes_level}pcod AS home_id FROM (
+                       SELECT *, floor(random() * (SELECT count(distinct admin{homes_level}pcod) from geography.admin{homes_level} RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM subs
                        ) subscribers
                        LEFT JOIN
-                       (SELECT row_number() over() AS admin_id, admin3pcod FROM 
-                       geography.admin3
+                       (SELECT row_number() over() AS admin_id, admin{homes_level}pcod FROM 
+                       geography.admin{homes_level}
                        RIGHT JOIN
                        tmp_cells ON ST_Within(geom_point, geom)
                        ) geo
                        ON geo.admin_id=subscribers.admin_id) h
                        LEFT JOIN 
-                       (SELECT admin3pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-                       ON admin3pcod=home_id
+                       (SELECT admin{homes_level}pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin{homes_level} ON ST_Within(geom_point, geom) GROUP BY admin{homes_level}pcod) c
+                       ON admin{homes_level}pcod=home_id
                        )
                        """
                 )
@@ -274,22 +360,22 @@ if __name__ == "__main__":
                             f"""INSERT INTO homes
                                                 SELECT h.*, cells FROM
                                                 (SELECT '{date.strftime(
-                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability} OR home_id = ANY((array(SELECT admin3.admin3pcod FROM geography.admin3 WHERE admin2pcod = '{pcode_to_knock_out}')))) THEN admin3pcod ELSE home_id END AS home_id FROM (
-                                                SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom) WHERE admin2pcod!='{pcode_to_knock_out}') + 1)::integer AS admin_id FROM homes
+                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability} OR home_id = ANY((array(SELECT admin{homes_level}.admin{homes_level}pcod FROM geography.admin{homes_level} WHERE parent_pcod = '{pcode_to_knock_out}')))) THEN admin{homes_level}pcod ELSE home_id END AS home_id FROM (
+                                                SELECT *, floor(random() * (SELECT count(distinct admin{homes_level}pcod) from geography.admin{homes_level} RIGHT JOIN tmp_cells on ST_Within(geom_point, geom) WHERE parent_pcod!='{pcode_to_knock_out}') + 1)::integer AS admin_id FROM homes
                                                 WHERE home_date='{(date - datetime.timedelta(days=1)).strftime(
                                 "%Y-%m-%d")}'::date
                                                 ) subscribers
                                                 LEFT JOIN
-                                                (SELECT row_number() over() AS admin_id, admin3pcod FROM 
-                                                geography.admin3
+                                                (SELECT row_number() over() AS admin_id, admin{homes_level}pcod FROM 
+                                                geography.admin{homes_level}
                                                 RIGHT JOIN
                                                 tmp_cells ON ST_Within(geom_point, geom)
-                                                WHERE admin2pcod!='{pcode_to_knock_out}'
+                                                WHERE parent_pcod!='{pcode_to_knock_out}'
                                                 ) geo
                                                 ON geo.admin_id=subscribers.admin_id) h
                                                 LEFT JOIN 
-                                                        (SELECT admin3pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-                                                        ON admin3pcod=home_id
+                                                        (SELECT admin{homes_level}pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin{homes_level} ON ST_Within(geom_point, geom) GROUP BY admin{homes_level}pcod) c
+                                                        ON admin{homes_level}pcod=home_id
                                                 """
                         )
                     else:
@@ -297,20 +383,20 @@ if __name__ == "__main__":
                             f"""INSERT INTO homes
                                 SELECT h.*, cells FROM
                                 (SELECT '{date.strftime(
-                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability}) THEN admin3pcod ELSE home_id END AS home_id FROM (
-                                SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM homes
+                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability}) THEN admin{homes_level}pcod ELSE home_id END AS home_id FROM (
+                                SELECT *, floor(random() * (SELECT count(distinct admin{homes_level}pcod) from geography.admin{homes_level} RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM homes
                                 WHERE home_date='{(date - datetime.timedelta(days=1)).strftime("%Y-%m-%d")}'::date
                                 ) subscribers
                                 LEFT JOIN
-                                (SELECT row_number() over() AS admin_id, admin3pcod FROM 
-                                geography.admin3
+                                (SELECT row_number() over() AS admin_id, admin{homes_level}pcod FROM 
+                                geography.admin{homes_level}
                                 RIGHT JOIN
                                 tmp_cells ON ST_Within(geom_point, geom)
                                 ) geo
                                 ON geo.admin_id=subscribers.admin_id) h
                                 LEFT JOIN 
-                                        (SELECT admin3pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-                                        ON admin3pcod=home_id
+                                        (SELECT admin{homes_level}pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin{homes_level} ON ST_Within(geom_point, geom) GROUP BY admin{homes_level}pcod) c
+                                        ON admin{homes_level}pcod=home_id
                                 """
                         )
             with engine.begin() as trans:
