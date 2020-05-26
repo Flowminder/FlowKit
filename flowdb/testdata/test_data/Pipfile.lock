@@ -39,11 +39,11 @@
         },
         "geoalchemy2": {
             "hashes": [
-                "sha256:4c87177a570ed21307e255f22309e5e0a249e0b8fa9d800b9dc68a70af911074",
-                "sha256:85add5aa337ba697895a41608333088277144fa7ddb5eca2046a3794ade15f42"
+                "sha256:4385da5e24d01ee9d2af8ef0179994745d2a39931a84df04e74ebdb9a49c0c41",
+                "sha256:a5a2444d90ce7f2c6b2d7bd7346c8aed16fd32c3e190e631576a51814e8f7ee9"
             ],
             "index": "pypi",
-            "version": "==0.8.2"
+            "version": "==0.8.3"
         },
         "geojson": {
             "hashes": [
