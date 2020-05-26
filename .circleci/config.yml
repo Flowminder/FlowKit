@@ -167,7 +167,7 @@ jobs:
             pyenv global 3.7.7
       - run:
           name: Install pipenv
-          command: pip install --upgrade pip pipenv
+          command: pip install --upgrade pip pipenv virtualenv
       - run:
           name: Upgrade docker
           command: |
