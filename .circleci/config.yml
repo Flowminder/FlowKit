@@ -147,7 +147,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -647,7 +647,7 @@ jobs:
       component_path:
         type: string
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -701,7 +701,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
