@@ -161,10 +161,10 @@ jobs:
       - restore_cache:
           key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.7"
+          name: "Switch to Python v3.7.7"
           command: |
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.7.7
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -258,10 +258,10 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.7"
+          name: "Switch to Python v3.7.7"
           command: |
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.7.7
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
