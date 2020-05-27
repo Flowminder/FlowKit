@@ -327,23 +327,24 @@ if __name__ == "__main__":
         with log_duration("Assigning subscriber home regions."):
             with engine.begin() as trans:
                 trans.execute(
-                    f"""CREATE TABLE homes AS (
-                       SELECT h.*, cells FROM
-                       (SELECT '2016-01-01'::date AS home_date, id, admin{homes_level}pcod AS home_id FROM (
-                       SELECT *, floor(random() * (SELECT count(distinct admin{homes_level}pcod) from geography.admin{homes_level} RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM subs
-                       ) subscribers
-                       LEFT JOIN
-                       (SELECT row_number() over() AS admin_id, admin{homes_level}pcod FROM 
-                       geography.admin{homes_level}
-                       RIGHT JOIN
-                       tmp_cells ON ST_Within(geom_point, geom)
-                       ) geo
-                       ON geo.admin_id=subscribers.admin_id) h
-                       LEFT JOIN 
-                       (SELECT admin{homes_level}pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin{homes_level} ON ST_Within(geom_point, geom) GROUP BY admin{homes_level}pcod) c
-                       ON admin{homes_level}pcod=home_id
-                       )
-                       """
+                    f"""
+                CREATE TABLE homes AS
+                    SELECT s.id, 
+                        moved_in, 
+                        home_cell, 
+                        random_pick(potential_work_cells) as work_cell 
+                    FROM
+                        (SELECT id, '2016-01-01' as moved_in, floor(1+random()*{num_cells}) as home_cell from subs) s
+                        LEFT JOIN 
+                            (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells, array_agg(tmp2.rid) as potential_work_cells 
+                                FROM tmp_cells 
+                                 LEFT JOIN tmp_cells AS tmp2 ON 
+                                    st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 10000) 
+                                 LEFT JOIN tmp_cells AS tmp3 ON 
+                                    st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
+                                 GROUP BY tmp_cells.rid) AS cells
+                        USING (home_cell);
+                """
                 )
 
             for date in (
@@ -351,54 +352,32 @@ if __name__ == "__main__":
                 for i in range(num_days)
             ):
                 with engine.begin() as trans:
-                    if (
-                        pcode_to_knock_out
-                        and disaster_start_date
-                        and disaster_start_date <= date <= disaster_end_date
-                    ):
-                        trans.execute(
-                            f"""INSERT INTO homes
-                                                SELECT h.*, cells FROM
-                                                (SELECT '{date.strftime(
-                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability} OR home_id = ANY((array(SELECT admin{homes_level}.admin{homes_level}pcod FROM geography.admin{homes_level} WHERE parent_pcod = '{pcode_to_knock_out}')))) THEN admin{homes_level}pcod ELSE home_id END AS home_id FROM (
-                                                SELECT *, floor(random() * (SELECT count(distinct admin{homes_level}pcod) from geography.admin{homes_level} RIGHT JOIN tmp_cells on ST_Within(geom_point, geom) WHERE parent_pcod!='{pcode_to_knock_out}') + 1)::integer AS admin_id FROM homes
-                                                WHERE home_date='{(date - datetime.timedelta(days=1)).strftime(
-                                "%Y-%m-%d")}'::date
-                                                ) subscribers
-                                                LEFT JOIN
-                                                (SELECT row_number() over() AS admin_id, admin{homes_level}pcod FROM 
-                                                geography.admin{homes_level}
-                                                RIGHT JOIN
-                                                tmp_cells ON ST_Within(geom_point, geom)
-                                                WHERE parent_pcod!='{pcode_to_knock_out}'
-                                                ) geo
-                                                ON geo.admin_id=subscribers.admin_id) h
-                                                LEFT JOIN 
-                                                        (SELECT admin{homes_level}pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin{homes_level} ON ST_Within(geom_point, geom) GROUP BY admin{homes_level}pcod) c
-                                                        ON admin{homes_level}pcod=home_id
-                                                """
-                        )
-                    else:
-                        trans.execute(
-                            f"""INSERT INTO homes
-                                SELECT h.*, cells FROM
-                                (SELECT '{date.strftime(
-                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability}) THEN admin{homes_level}pcod ELSE home_id END AS home_id FROM (
-                                SELECT *, floor(random() * (SELECT count(distinct admin{homes_level}pcod) from geography.admin{homes_level} RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM homes
-                                WHERE home_date='{(date - datetime.timedelta(days=1)).strftime("%Y-%m-%d")}'::date
-                                ) subscribers
-                                LEFT JOIN
-                                (SELECT row_number() over() AS admin_id, admin{homes_level}pcod FROM 
-                                geography.admin{homes_level}
-                                RIGHT JOIN
-                                tmp_cells ON ST_Within(geom_point, geom)
-                                ) geo
-                                ON geo.admin_id=subscribers.admin_id) h
-                                LEFT JOIN 
-                                        (SELECT admin{homes_level}pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin{homes_level} ON ST_Within(geom_point, geom) GROUP BY admin{homes_level}pcod) c
-                                        ON admin{homes_level}pcod=home_id
-                                """
-                        )
+                    trans.execute(
+                        f"""
+                        INSERT INTO homes
+                        SELECT s.id, 
+                        moved_in, 
+                        home_cell, 
+                        random_pick(potential_work_cells) as work_cell 
+                        FROM
+                        (SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
+                            FROM subs ORDER BY random() LIMIT random_poisson({num_subscribers*relocation_probability})
+                        UNION
+                        SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
+                            FROM subs
+                        WHERE home_cell <> ANY(select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')
+                        ) s
+                        LEFT JOIN 
+                            (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells, array_agg(tmp2.rid) as potential_work_cells 
+                                FROM tmp_cells 
+                                 LEFT JOIN (select * from tmp_cells WHERE rid = ANY(select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')) AS tmp2 ON 
+                                    st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 10000)
+                                 LEFT JOIN 
+                                 tmp2 as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
+                                 GROUP BY tmp_cells.rid) AS cells
+                        USING (home_cell);
+                    """
+                    )
             with engine.begin() as trans:
                 trans.execute("ANALYZE homes;")
                 trans.execute("CREATE INDEX ON homes (id);")
@@ -445,14 +424,14 @@ if __name__ == "__main__":
                 round(random()*2600)::numeric AS duration,
                 uuid_generate_v4()::text AS id, interactions.*,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
-                    available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
+                    random_pick(available_cells.cells)
                 ELSE
-                     caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
+                     random_pick(caller_homes.cells)
                 END AS caller_cell,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
-                    available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
+                    random_pick(available_cells.cells)
                 ELSE
-                     callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
+                     random_pick(callee_homes.cells)
                 END AS callee_cell
                 FROM 
                 (SELECT floor(random()*{num_subscribers * interactions_multiplier} + 1)::integer AS rid FROM
@@ -495,14 +474,14 @@ if __name__ == "__main__":
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 uuid_generate_v4()::text AS id, interactions.*,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
-                    available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
+                    random_pick(available_cells.cells)
                 ELSE
-                     caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
+                     random_pick(caller_homes.cells)
                 END AS caller_cell,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
-                    available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
+                    random_pick(available_cells.cells)
                 ELSE
-                     callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
+                     random_pick(callee_homes.cells)
                 END AS callee_cell
                 FROM 
                 (SELECT floor(random()*{num_subscribers * interactions_multiplier} + 1)::integer AS rid FROM
@@ -552,9 +531,9 @@ if __name__ == "__main__":
                 round(random() * 100000)::numeric AS volume_upload, 
                 round(random() * 100000)::numeric AS volume_download,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
-                    available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
+                    random_pick(available_cells.cells)
                 ELSE
-                     caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
+                     random_pick(caller_homes.cells)
                 END AS cell
                 FROM (SELECT floor(random()*{num_subscribers} + 1)::integer AS id FROM
                 generate_series(1, {num_mds})) _
