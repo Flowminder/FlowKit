@@ -186,6 +186,9 @@ if __name__ == "__main__":
                         job=f"Loading admin level.", admin_level=level, file=shape_file
                     ):
                         trans.execute(
+                            f"DROP SERVER IF EXISTS admin{level}_boundaries CASCADE;"
+                        )
+                        trans.execute(
                             f"""
                         CREATE SERVER admin{level}_boundaries
                           FOREIGN DATA WRAPPER ogr_fdw
@@ -247,6 +250,8 @@ if __name__ == "__main__":
 
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
+            trans.execute("DROP TABLE IF EXISTS tmp_sites;")
+            trans.execute("TRUNCATE TABLE infrastructure.sites CASCADE;")
             with log_duration(job=f"Generating {num_sites} sites."):
                 trans.execute(
                     f"""CREATE TABLE tmp_sites AS 
@@ -259,6 +264,8 @@ if __name__ == "__main__":
                 )
 
             with log_duration(f"Generating {num_cells} cells."):
+                trans.execute("DROP TABLE IF EXISTS tmp_cells;")
+                trans.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
                 trans.execute(
                     f"""CREATE TABLE tmp_cells as
                     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
@@ -284,6 +291,8 @@ if __name__ == "__main__":
                 )
 
             with log_duration(f"Generating {num_tacs} tacs."):
+                trans.execute("DROP TABLE IF EXISTS tacs;")
+                trans.execute("TRUNCATE TABLE infrastructure.tacs CASCADE;")
                 trans.execute(
                     f"""CREATE TABLE tacs as
                 (SELECT (row_number() over())::numeric(8, 0) AS tac, 
@@ -297,6 +306,7 @@ if __name__ == "__main__":
                 )
 
             with log_duration(f"Generating {num_subscribers} subscribers."):
+                trans.execute("DROP TABLE IF EXISTS subs;")
                 trans.execute(
                     f"""
                 CREATE TABLE subs as
@@ -310,6 +320,7 @@ if __name__ == "__main__":
 
         with log_duration("Generating disaster."):
             with engine.begin() as trans:
+                trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
                     f"""CREATE TABLE available_cells AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
@@ -326,20 +337,19 @@ if __name__ == "__main__":
 
         with log_duration("Assigning subscriber home regions."):
             with engine.begin() as trans:
+                trans.execute("DROP TABLE IF EXISTS homes;")
                 trans.execute(
                     f"""
                 CREATE TABLE homes AS
                     SELECT s.id, 
                         moved_in, 
                         home_cell, 
-                        random_pick(potential_work_cells) as work_cell 
+                        cells 
                     FROM
                         (SELECT id, '2016-01-01' as moved_in, floor(1+random()*{num_cells}) as home_cell from subs) s
                         LEFT JOIN 
-                            (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells, array_agg(tmp2.rid) as potential_work_cells 
-                                FROM tmp_cells 
-                                 LEFT JOIN tmp_cells AS tmp2 ON 
-                                    st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 10000) 
+                            (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells
+                                FROM tmp_cells  
                                  LEFT JOIN tmp_cells AS tmp3 ON 
                                     st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
                                  GROUP BY tmp_cells.rid) AS cells
@@ -351,43 +361,44 @@ if __name__ == "__main__":
                 datetime.date(2016, 1, 2) + datetime.timedelta(days=i)
                 for i in range(num_days)
             ):
+                with log_duration("Assigning subscriber home regions.", day=date):
+                    with engine.begin() as trans:
+                        trans.execute(
+                            f"""
+                            INSERT INTO homes
+                            SELECT s.id, 
+                            moved_in, 
+                            home_cell, 
+                            cells
+                            FROM
+                            (SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
+                                FROM subs ORDER BY random() LIMIT random_poisson({num_subscribers*relocation_probability})
+                            UNION
+                            SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
+                                FROM subs
+                            WHERE home_cell <> ANY(select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')
+                            ) s
+                            LEFT JOIN 
+                                (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells 
+                                    FROM tmp_cells 
+                                     LEFT JOIN 
+                                     tmp2 as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
+                                     GROUP BY tmp_cells.rid) AS cells
+                            USING (home_cell);
+                        """
+                        )
+            with log_duration("Analyzing and indexing subscriber home regions."):
                 with engine.begin() as trans:
-                    trans.execute(
-                        f"""
-                        INSERT INTO homes
-                        SELECT s.id, 
-                        moved_in, 
-                        home_cell, 
-                        random_pick(potential_work_cells) as work_cell 
-                        FROM
-                        (SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
-                            FROM subs ORDER BY random() LIMIT random_poisson({num_subscribers*relocation_probability})
-                        UNION
-                        SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
-                            FROM subs
-                        WHERE home_cell <> ANY(select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')
-                        ) s
-                        LEFT JOIN 
-                            (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells, array_agg(tmp2.rid) as potential_work_cells 
-                                FROM tmp_cells 
-                                 LEFT JOIN (select * from tmp_cells WHERE rid = ANY(select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')) AS tmp2 ON 
-                                    st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 10000)
-                                 LEFT JOIN 
-                                 tmp2 as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
-                                 GROUP BY tmp_cells.rid) AS cells
-                        USING (home_cell);
-                    """
-                    )
-            with engine.begin() as trans:
-                trans.execute("ANALYZE homes;")
-                trans.execute("CREATE INDEX ON homes (id);")
-                trans.execute("CREATE INDEX ON homes (home_date);")
-                trans.execute("CREATE INDEX ON homes (home_date, id);")
+                    trans.execute("ANALYZE homes;")
+                    trans.execute("CREATE INDEX ON homes (id);")
+                    trans.execute("CREATE INDEX ON homes (home_date);")
+                    trans.execute("CREATE INDEX ON homes (home_date, id);")
 
         with log_duration(
             f"Generating {num_subscribers * interactions_multiplier} interaction pairs."
         ):
             with engine.begin() as trans:
+                trans.execute("DROP TABLE IF EXISTS interactions;")
                 trans.execute(
                     f"""CREATE TABLE interactions AS SELECT 
                         row_number() over() AS rid, callee_id, caller_id, caller.msisdn AS caller_msisdn, 
