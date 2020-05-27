@@ -320,12 +320,16 @@ if __name__ == "__main__":
 
         with log_duration("Generating disaster."):
             with engine.begin() as trans:
+                trans.execute("DROP TABLE IF EXISTS bad_cells;")
+                trans.execute(
+                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                )
                 trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
                     f"""CREATE TABLE available_cells AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
                         CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
-                            (array(SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)))
+                            (array(SELECT id FROM bad_cells))
                         ELSE
                             (array(SELECT tmp_cells.id FROM tmp_cells))
                         END AS cells
@@ -336,57 +340,105 @@ if __name__ == "__main__":
                 trans.execute("ANALYZE available_cells;")
 
         with log_duration("Assigning subscriber home regions."):
-            with engine.begin() as trans:
-                trans.execute("DROP TABLE IF EXISTS homes;")
-                trans.execute(
-                    f"""
-                CREATE TABLE homes AS
-                    SELECT s.id, 
-                        moved_in, 
-                        home_cell, 
-                        cells 
-                    FROM
-                        (SELECT id, '2016-01-01' as moved_in, floor(1+random()*{num_cells}) as home_cell from subs) s
-                        LEFT JOIN 
-                            (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells
-                                FROM tmp_cells  
-                                 LEFT JOIN tmp_cells AS tmp3 ON 
-                                    st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
-                                 GROUP BY tmp_cells.rid) AS cells
-                        USING (home_cell);
-                """
-                )
+            with log_duration("Initial homes."):
+                with engine.begin() as trans:
+                    trans.execute("DROP TABLE IF EXISTS homes;")
+                    trans.execute("DROP TABLE IF EXISTS tmp_homes;")
+                    trans.execute(
+                        f"""
+                    CREATE TABLE tmp_homes AS
+                        SELECT s.id, 
+                            moved_in::date, 
+                            home_cell, 
+                            cells 
+                        FROM
+                            (SELECT id, '2016-01-01' as moved_in, floor(1+random()*{num_cells}) as home_cell_id from subs) s
+                            LEFT JOIN 
+                                (SELECT tmp_cells.rid as home_cell_id, tmp_cells.id as home_cell, array_agg(tmp3.id) as cells
+                                    FROM tmp_cells  
+                                     LEFT JOIN tmp_cells AS tmp3 ON 
+                                        st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
+                                     GROUP BY tmp_cells.rid, tmp_cells.id) AS cells
+                            USING (home_cell_id);
+                    """
+                    )
 
             for date in (
                 datetime.date(2016, 1, 2) + datetime.timedelta(days=i)
                 for i in range(num_days)
             ):
-                with log_duration("Assigning subscriber home regions.", day=date):
-                    with engine.begin() as trans:
-                        trans.execute(
-                            f"""
-                            INSERT INTO homes
-                            SELECT s.id, 
-                            moved_in, 
-                            home_cell, 
-                            cells
-                            FROM
-                            (SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
-                                FROM subs ORDER BY random() LIMIT random_poisson({num_subscribers*relocation_probability})
-                            UNION
-                            SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, (select random_pick(cells) from available_cells where day='{date.strftime("%Y-%m-%d")}') as home_cell 
-                                FROM subs
-                            WHERE home_cell <> ANY(select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')
-                            ) s
-                            LEFT JOIN 
-                                (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells 
-                                    FROM tmp_cells 
-                                     LEFT JOIN 
-                                     tmp_cells as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
-                                     GROUP BY tmp_cells.rid) AS cells
-                            USING (home_cell);
-                        """
-                        )
+                if date == disaster_start_date:
+                    with log_duration(
+                        "Assigning subscriber home regions + disaster.", day=date
+                    ):
+                        try:
+                            with engine.begin() as trans:
+                                trans.execute(
+                                    f"""
+                                    WITH subs_to_move_randomly AS (
+                                        SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
+                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell 
+                                        FROM subs ORDER BY random() LIMIT floor(random_poisson({num_subscribers * relocation_probability}))),
+                                    subs_to_rehome AS (
+                                        SELECT s.id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
+                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell
+                                        FROM (SELECT first_value(id) over (partition by id order by moved_in desc) as id, first_value(home_cell) over (partition by id order by moved_in desc) as home_cell from tmp_homes) s
+                                        LEFT JOIN bad_cells ON home_cell=bad_cells.id
+    
+                                    ),
+                                    subs_to_move AS (select * from subs_to_move_randomly union select * from subs_to_rehome)
+                                    INSERT INTO tmp_homes
+                                    SELECT id, 
+                                    moved_in::date, 
+                                    home_cell, 
+                                    cells
+                                    FROM
+                                    subs_to_move
+                                    LEFT JOIN 
+                                        (SELECT tmp_cells.id as home_cell, array_agg(tmp3.id) as cells 
+                                            FROM tmp_cells 
+                                             LEFT JOIN 
+                                             tmp_cells as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
+                                             GROUP BY tmp_cells.id) AS cells
+                                    USING (home_cell);
+                                """
+                                )
+                        except Exception as exc:
+                            print(exc)
+                            exit(0)
+                else:
+                    with log_duration("Assigning subscriber home regions.", day=date):
+                        with engine.begin() as trans:
+                            trans.execute(
+                                f"""
+                                WITH subs_to_move_randomly AS (
+                                    SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
+                                    random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell 
+                                    FROM subs ORDER BY random() LIMIT floor(random_poisson({num_subscribers*relocation_probability})))
+                                INSERT INTO tmp_homes
+                                SELECT id, 
+                                moved_in::date, 
+                                home_cell, 
+                                cells
+                                FROM
+                                subs_to_move_randomly
+                                LEFT JOIN 
+                                    (SELECT tmp_cells.id as home_cell, array_agg(tmp3.id) as cells 
+                                        FROM tmp_cells 
+                                         LEFT JOIN 
+                                         tmp_cells as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
+                                         GROUP BY tmp_cells.id) AS cells
+                                USING (home_cell);
+                            """
+                            )
+            with log_duration("Partitioning homes."):
+                with engine.begin() as trans:
+                    trans.execute(
+                        """CREATE TABLE HOMES AS
+                    SELECT id, daterange(moved_in, lead(moved_in) over (partition by id order by moved_in asc)) as home_date, cells
+                    FROM tmp_homes;
+                    """
+                    )
             with log_duration("Analyzing and indexing subscriber home regions."):
                 with engine.begin() as trans:
                     trans.execute("ANALYZE homes;")
@@ -453,9 +505,9 @@ if __name__ == "__main__":
                 LEFT JOIN available_cells
                 ON day='{table}'::date
                 LEFT JOIN homes AS caller_homes
-                ON caller_homes.home_date='{table}'::date and caller_homes.id=interactions.caller_id
+                ON caller_homes.home_date@>'{table}'::date and caller_homes.id=interactions.caller_id
                 LEFT JOIN homes AS callee_homes
-                ON callee_homes.home_date='{table}'::date and callee_homes.id=interactions.callee_id;
+                ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
                 CREATE TABLE events.calls_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
@@ -503,9 +555,9 @@ if __name__ == "__main__":
                 LEFT JOIN available_cells
                 ON day='{table}'::date
                 LEFT JOIN homes AS caller_homes
-                ON caller_homes.home_date='{table}'::date and caller_homes.id=interactions.caller_id
+                ON caller_homes.home_date@>'{table}'::date and caller_homes.id=interactions.caller_id
                 LEFT JOIN homes AS callee_homes
-                ON callee_homes.home_date='{table}'::date and callee_homes.id=interactions.callee_id;
+                ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
                 CREATE TABLE events.sms_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, NULL::TEXT AS network,
@@ -554,7 +606,7 @@ if __name__ == "__main__":
                 LEFT JOIN available_cells
                 ON day='{table}'::date
                 LEFT JOIN homes AS caller_homes
-                ON caller_homes.home_date='{table}'::date and caller_homes.id=subs.id) _;
+                ON caller_homes.home_date@>'{table}'::date and caller_homes.id=subs.id) _;
                 ALTER TABLE events.mds_{table} ADD CONSTRAINT mds_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
                 ALTER TABLE events.mds_{table} ALTER msisdn SET NOT NULL;
                 ALTER TABLE events.mds_{table} ALTER datetime SET NOT NULL;
