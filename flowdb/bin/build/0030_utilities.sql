@@ -337,24 +337,34 @@ Poisson event generator.
 
 CREATE OR REPLACE FUNCTION random_poisson(
     lambda DOUBLE PRECISION DEFAULT 1.0
-    ) RETURNS DOUBLE PRECISION
+    ) RETURNS INT
       RETURNS NULL ON NULL INPUT AS $$
         DECLARE
+            lambda_left DOUBLE PRECISION;
+            k INT;
+            p DOUBLE PRECISION;
             u DOUBLE PRECISION;
-            x DOUBLE PRECISION;
-            s NUMERIC;
-            p NUMERIC;
         BEGIN
-            u = RANDOM();
-            p = exp(-lambda);
-            x = 0;
-            s = p;
-            WHILE u > s LOOP
-                x = x + 1;
-                p = p*lambda/x;
-                s = s + p;
+            lambda_left = lambda;
+            k = 0;
+            p = 1;
+            LOOP
+                k = k + 1;
+                u = RANDOM();
+                p = p*u;
+                WHILE p < 1 AND lambda_left > 0 LOOP
+                    IF lambda_left > 500 THEN
+                        p = p * exp(500);
+                        lambda_left = lambda_left - 500;
+                    ELSE
+                        p = p*exp(lambda_left);
+                        lambda_left = 0;
+                    END IF;
+                END LOOP;
+                EXIT WHEN p <= 1;
             END LOOP;
-            RETURN x;
+
+            RETURN k - 1;
         END;
     $$ LANGUAGE plpgsql
 SECURITY DEFINER
