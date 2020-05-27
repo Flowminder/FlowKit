@@ -342,8 +342,8 @@ CREATE OR REPLACE FUNCTION random_poisson(
         DECLARE
             u DOUBLE PRECISION;
             x DOUBLE PRECISION;
-            s DOUBLE PRECISION;
-            p DOUBLE PRECISION;
+            s NUMERIC;
+            p NUMERIC;
         BEGIN
             u = RANDOM();
             p = exp(-lambda);
