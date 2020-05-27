@@ -275,6 +275,8 @@ if __name__ == "__main__":
                     limit {num_cells - num_sites}) _) _
                     ;
                     CREATE INDEX ON tmp_cells (rid);
+                    CREATE INDEX ON tmp_cells USING gist(geography(geom_point));
+                    CREATE INDEX ON tmp_cells USING gist(geom_point);
                     """
                 )
                 trans.execute(
@@ -343,9 +345,7 @@ if __name__ == "__main__":
                        )
                        """
                 )
-                trans.execute("CREATE INDEX ON homes (id);")
-                trans.execute("CREATE INDEX ON homes (home_date);")
-                trans.execute("CREATE INDEX ON homes (home_date, id);")
+
             for date in (
                 datetime.date(2016, 1, 2) + datetime.timedelta(days=i)
                 for i in range(num_days)
@@ -401,6 +401,9 @@ if __name__ == "__main__":
                         )
             with engine.begin() as trans:
                 trans.execute("ANALYZE homes;")
+                trans.execute("CREATE INDEX ON homes (id);")
+                trans.execute("CREATE INDEX ON homes (home_date);")
+                trans.execute("CREATE INDEX ON homes (home_date, id);")
 
         with log_duration(
             f"Generating {num_subscribers * interactions_multiplier} interaction pairs."
