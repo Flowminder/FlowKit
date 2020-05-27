@@ -351,7 +351,7 @@ if __name__ == "__main__":
                             (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells
                                 FROM tmp_cells  
                                  LEFT JOIN tmp_cells AS tmp3 ON 
-                                    st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
+                                    st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
                                  GROUP BY tmp_cells.rid) AS cells
                         USING (home_cell);
                 """
@@ -382,7 +382,7 @@ if __name__ == "__main__":
                                 (SELECT tmp_cells.rid as home_cell, array_agg(tmp3.rid) as cells 
                                     FROM tmp_cells 
                                      LEFT JOIN 
-                                     tmp2 as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp2.geom_point::geography, 3000)
+                                     tmp_cells as tmp3 ON st_dwithin(tmp_cells.geom_point::geography, tmp3.geom_point::geography, 3000)
                                      GROUP BY tmp_cells.rid) AS cells
                             USING (home_cell);
                         """
