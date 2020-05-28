@@ -30,7 +30,7 @@ RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list 
 #
 # Install python dependencies
 #
-COPY --chown=postgres flowdb/test_data/Pipfile* /tmp/
+COPY --chown=postgres flowdb/testdata/test_data/Pipfile* /tmp/
 RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three \
     && rm /tmp/Pipfile*
 
