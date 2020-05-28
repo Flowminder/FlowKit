@@ -8,6 +8,15 @@ apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.10"}
 click = "*"
 
 [dev-packages]
+structlog = "*"
+flowetl = {editable = true,path = "./../flowetl"}
+pytest = "*"
+SQLAlchemy = "*"
+"psycopg2-binary" = "*"
+pandas = "*"
+docker = "*"
+versioneer = "*"
+pytest-cov = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
