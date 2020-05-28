@@ -251,7 +251,7 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: circleci/classic:201808-01
+      image: ubuntu-1604:202004-01
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
@@ -318,7 +318,7 @@ jobs:
           command: |
             echo Building testdata version $FLOWDB_VERSION
             echo Tagging as $CIRCLE_SHA1
-            DOCKER_BUILDKIT=1 docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 -f flowdb_testdata.Dockefile .
+            DOCKER_BUILDKIT=1 docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 -f flowdb_testdata.Dockerfile .
       - run:
           name: Push images to Docker cloud
           command: |
