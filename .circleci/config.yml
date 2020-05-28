@@ -711,7 +711,9 @@ jobs:
           key: flowetl-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Set python version
-          command: pyenv global 3.7.0
+          command: |
+            pyenv versions
+            pyenv global 3.7.7
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
