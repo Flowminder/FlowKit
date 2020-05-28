@@ -692,7 +692,7 @@ jobs:
           command: |
             pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=flowetl \
             --cov-report xml \
-            --cov-report term-missing ./unit
+            --cov-report term-missing ./tests/unit
       - store_test_results:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash) -F flowetl_unit_tests
@@ -734,7 +734,7 @@ jobs:
       - run:
           name: run flowetl integration tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./integration
+            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
       - store_test_results:
           path: test_results
 
