@@ -1,13 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import base64
 from datetime import timedelta
 
 import jwt
 
 import pytest
-from flowkit_jwt_generator.jwt import generate_token, squashed_scopes
+from flowkit_jwt_generator.jwt import generate_token, squashed_scopes, decompress_claims
 
 
 @pytest.mark.parametrize(
@@ -51,7 +51,7 @@ def test_token_generator(private_key, public_key):
     )
     decoded = jwt.decode(jwt=token, key=public_key, verify=True, algorithms=["RS256"])
     assert decoded["identity"] == "test"
-    assert decoded["user_claims"] == ["A_CLAIM"]
+    assert decompress_claims(decoded["user_claims"]) == ["A_CLAIM"]
     assert "aud" not in decoded
 
 
@@ -72,4 +72,4 @@ def test_token_generator_with_audience(private_key, public_key):
         audience="test_audience",
     )
     assert decoded["identity"] == "test"
-    assert decoded["user_claims"] == ["A_CLAIM"]
+    assert decompress_claims(decoded["user_claims"]) == ["A_CLAIM"]

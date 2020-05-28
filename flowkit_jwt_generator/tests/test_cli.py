@@ -5,7 +5,7 @@ import os
 import jwt
 from click.testing import CliRunner
 
-from flowkit_jwt_generator.jwt import print_token
+from flowkit_jwt_generator.jwt import print_token, decompress_claims
 
 
 def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
@@ -34,5 +34,5 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
         audience=dummy_flowapi["aud"],
     )
     assert result.exit_code == 0
-    assert decoded["user_claims"] == dummy_flowapi["claims"]
+    assert decompress_claims(decoded["user_claims"]) == dummy_flowapi["claims"]
     assert decoded["aud"] == dummy_flowapi["aud"]

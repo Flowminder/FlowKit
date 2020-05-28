@@ -9,6 +9,7 @@ cryptography = "*"
 click = "*"
 requests = "*"
 pytest = "*"
+simplejson = "*"
 
 [dev-packages]
 versioneer = "*"

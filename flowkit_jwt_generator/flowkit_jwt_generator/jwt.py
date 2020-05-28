@@ -2,10 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import base64
+import gzip
+import io
+
 import binascii
 import datetime
 import uuid
-from itertools import takewhile
+
+import simplejson
 from json import JSONEncoder
 from typing import Iterable, List, Optional, Tuple, Union
 
@@ -18,6 +22,23 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from functools import lru_cache
 
 import jwt
+
+
+def compress_claims(claims):
+    out = io.BytesIO()
+
+    with gzip.open(out, mode="wt") as fo:
+        simplejson.dump(list(squashed_scopes(claims)), fo)
+
+    return base64.encodebytes(out.getvalue()).decode()
+
+
+def decompress_claims(claims):
+    in_ = io.BytesIO()
+    in_.write(base64.decodebytes(claims.encode()))
+    in_.seek(0)
+    with gzip.GzipFile(fileobj=in_, mode="rb") as fo:
+        return simplejson.load(fo)
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because
@@ -220,7 +241,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=list(squashed_scopes(claims)),
+        user_claims=compress_claims(claims),
         identity=username,
         exp=now + lifetime,
     )
