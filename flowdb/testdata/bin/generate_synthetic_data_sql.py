@@ -652,6 +652,15 @@ if __name__ == "__main__":
                     )
                     post_sql.append(
                         (
+                            f"Indexing events.{sub}_{table}",
+                            f"""CREATE INDEX ON events.{sub}_{table}(msisdn);
+                                CREATE INDEX ON events.{sub}_{table}(datetime);
+                                CREATE INDEX ON events.{sub}_{table}(location_id);
+                            """,
+                        )
+                    )
+                    post_sql.append(
+                        (
                             f"Mark events.{sub}_{table} as available in etl.",
                             f"""
                             INSERT INTO etl.etl_records (cdr_type, cdr_date, state, timestamp) VALUES
