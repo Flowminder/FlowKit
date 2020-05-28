@@ -13,3 +13,4 @@
 !flowdb/testdata/bin/generate_synthetic_data*.py
 !flowdb/testdata/test_data/sql/admin*.sql
 !flowdb/testdata/synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson
+!flowdb/testdata/synthetic_data/Pipfile*
