@@ -173,7 +173,7 @@ jobs:
           command: |
             PIPENV_PIPFILE=flowdb/tests/Pipfile pipenv install --deploy --dev
       - save_cache:
-          key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock" }}
+          key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
