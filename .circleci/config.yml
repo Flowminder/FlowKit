@@ -669,8 +669,8 @@ jobs:
 
   run_flowetl_unit_tests:
     docker:
-      - image: circleci/python:3.8
-    working_directory: /home/circleci/project/flowetl/tests
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -703,7 +703,7 @@ jobs:
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
-    working_directory: /home/circleci/project/flowetl/tests
+    working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -711,7 +711,7 @@ jobs:
           key: flowetl-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Set python version
-          command: pyenv global 3.8.2
+          command: pyenv global 3.7.0
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
