@@ -14,10 +14,6 @@
 # Now un-exclude only those folders and files that are needed for building the image:
 #
 !flowetl/flowetl
-!flowetl/setup.py
-!flowetl/MANIFEST.in
-!flowetl/README.md
 !flowetl/entrypoint.sh
 !flowetl/Pipfile
 !flowetl/Pipfile.lock
-!flowetl/versioneer.py
