@@ -7,14 +7,6 @@ name = "pypi"
 psutil = "*"
 
 [dev-packages]
-numpy = "*"
-pytest = "*"
-gitpython = "*"
-docopt = "*"
-pandas = "*"
-tohu = {file = "https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz"}
-"psycopg2-binary" = "*"
-descartes = "*"
 black = "==19.10b0"
 
 [requires]
