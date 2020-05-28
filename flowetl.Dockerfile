@@ -46,7 +46,8 @@ RUN apt-get update && \
         rm -rf /var/lib/apt/lists/*
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
-        python flowetl/setup.py install && \
+        cd flowetl && \
+        python setup.py install && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
