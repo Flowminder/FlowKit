@@ -10,7 +10,7 @@ container.
 
 Produces sites, cells, tacs, call, sms and mds data.
 
-Optionally simulates a 'disaster' where all subscribers must leave a designated admin2 region
+Optionally simulates a 'disaster' where all subscribers must leave a designated region
 for a period of time.
 """
 from pathlib import Path
@@ -322,7 +322,7 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS bad_cells;")
                 trans.execute(
-                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
                 )
                 trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
