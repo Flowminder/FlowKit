@@ -169,11 +169,6 @@ jobs:
           name: Install pipenv
           command: pip install --upgrade pip pipenv virtualenv
       - run:
-          name: Upgrade docker
-          command: |
-            sudo apt update
-            sudo apt install docker-ce
-      - run:
           name: Install python dependencies
           command: |
             PIPENV_PIPFILE=flowdb/tests/Pipfile pipenv install --deploy --dev
