@@ -713,7 +713,7 @@ jobs:
           name: Set python version
           command: |
             pyenv versions
-            pyenv global 3.7.7
+            pyenv global 3.7.0
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
