@@ -50,7 +50,8 @@ RUN apt-get update && \
         python setup.py install && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
-        rm -rf /var/lib/apt/lists/*
+        rm -rf /var/lib/apt/lists/* && \
+        mv /${SOURCE_TREE}/flowetl/entrypoint.sh /
 
 # Deal with old bind mounts to /usr/local/airflow
 
@@ -65,7 +66,7 @@ RUN chmod -R 777 ${AIRFLOW_HOME}
 USER airflow
 
 WORKDIR ${AIRFLOW_HOME}
-ENTRYPOINT ["/${SOURCE_TREE}/flowetl/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 # set default arg for entrypoint
 CMD ["webserver"]
 
