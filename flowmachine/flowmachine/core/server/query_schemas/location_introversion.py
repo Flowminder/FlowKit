@@ -9,6 +9,7 @@ from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_introversion import (
     RedactedLocationIntroversion,
 )
+from .custom_fields import EventTypes
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnitMixin
 
@@ -19,13 +20,16 @@ from .custom_fields import ISODateTime
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit, direction):
+    def __init__(
+        self, *, start_date, end_date, aggregation_unit, direction, event_types
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.direction = direction
+        self.event_types = event_types
 
     @property
     def _flowmachine_query_obj(self):
@@ -42,6 +46,7 @@ class LocationIntroversionExposed(BaseExposedQuery):
                 stop=self.end_date,
                 spatial_unit=self.aggregation_unit,
                 direction=self.direction,
+                table=self.event_types,
             )
         )
 
@@ -54,5 +59,6 @@ class LocationIntroversionSchema(AggregationUnitMixin, BaseSchema):
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
+    event_types = EventTypes()
 
     __model__ = LocationIntroversionExposed

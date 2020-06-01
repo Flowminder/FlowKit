@@ -8,20 +8,23 @@ from marshmallow.validate import OneOf
 from flowmachine.features import TotalNetworkObjects
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import TotalBy, ISODateTime
+from .custom_fields import EventTypes, TotalBy, ISODateTime
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 
 
 class TotalNetworkObjectsExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit, total_by):
+    def __init__(
+        self, *, start_date, end_date, aggregation_unit, total_by, event_types
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.total_by = total_by
+        self.event_types = event_types
 
     @property
     def _flowmachine_query_obj(self):
@@ -37,6 +40,7 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
             stop=self.end_date,
             spatial_unit=self.aggregation_unit,
             total_by=self.total_by,
+            table=self.event_types,
         )
 
 
@@ -46,5 +50,6 @@ class TotalNetworkObjectsSchema(AggregationUnitMixin, BaseSchema):
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
     total_by = TotalBy(required=False, missing="day")
+    event_types = EventTypes()
 
     __model__ = TotalNetworkObjectsExposed

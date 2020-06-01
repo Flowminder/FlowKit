@@ -10,7 +10,7 @@ from flowmachine.features.utilities.subscriber_locations import SubscriberLocati
 from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
@@ -18,13 +18,20 @@ __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
 
 class TripsODMatrixExposed(BaseExposedQuery):
     def __init__(
-        self, start_date, end_date, *, aggregation_unit, subscriber_subset=None,
+        self,
+        start_date,
+        end_date,
+        *,
+        aggregation_unit,
+        event_types,
+        subscriber_subset=None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
 
     @property
@@ -42,6 +49,7 @@ class TripsODMatrixExposed(BaseExposedQuery):
                     self.start_date,
                     self.end_date,
                     spatial_unit=self.aggregation_unit,
+                    table=self.event_types,
                     subscriber_subset=self.subscriber_subset,
                 )
             )
@@ -53,6 +61,7 @@ class TripsODMatrixSchema(AggregationUnitMixin, BaseSchema):
     query_kind = fields.String(validate=OneOf(["trips_od_matrix"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = TripsODMatrixExposed

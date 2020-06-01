@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import RadiusOfGyration
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -16,11 +16,20 @@ __all__ = ["RadiusOfGyrationSchema", "RadiusOfGyrationExposed"]
 
 
 class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
-    def __init__(self, *, start_date, end_date, subscriber_subset=None, sampling=None):
+    def __init__(
+        self,
+        *,
+        start_date,
+        end_date,
+        event_types,
+        subscriber_subset=None,
+        sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
@@ -36,6 +45,7 @@ class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
         return RadiusOfGyration(
             start=self.start_date,
             stop=self.end_date,
+            table=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 
@@ -45,6 +55,7 @@ class RadiusOfGyrationSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = RadiusOfGyrationExposed
