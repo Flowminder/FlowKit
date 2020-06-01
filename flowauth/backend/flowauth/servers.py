@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, request
 
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
+from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
 from .invalid_usage import InvalidUsage
@@ -78,13 +79,11 @@ def edit_server_capabilities(server_id):
     for cap, enabled in json.items():
         try:
             cap = ServerCapability.query.filter_by(
-                server_id=server_id, capability=cap
+                server_id=server_id, capability_hash=func.md5(cap)
             ).one()
         except NoResultFound:
             cap = ServerCapability(
-                server_id=server_id,
-                capability=cap,
-                capability_hash=md5(cap.encode()).hexdigest(),
+                server_id=server_id, capability=cap, capability_hash=func.md5(cap),
             )
         cap.enabled = enabled
         caps.append(cap)
