@@ -84,9 +84,11 @@ class TotalNetworkObjects(GeoDataMixin, Query):
             get_db().max_date(table=table) if stop is None else stop
         )
 
-        self.table = table.lower()
-        if self.table != "all" and not self.table.startswith("events"):
-            self.table = "events.{}".format(self.table)
+        self.table = table
+        if isinstance(self.table, str):
+            self.table = self.table.lower()
+            if self.table != "all" and not self.table.startswith("events"):
+                self.table = "events.{}".format(self.table)
 
         network_object.verify_criterion("is_network_object")
         self.network_object = network_object
