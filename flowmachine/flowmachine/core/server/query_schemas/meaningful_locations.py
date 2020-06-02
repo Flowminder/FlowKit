@@ -54,13 +54,13 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         start_date: str,
         end_date: str,
         aggregation_unit: AnySpatialUnit,
-        event_types: Optional[Union[str, List[str]]],
         label: str,
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
         tower_hour_of_day_scores: List[float],
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
+        event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
@@ -115,7 +115,6 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         start_date: str,
         end_date: str,
         aggregation_unit: AnySpatialUnit,
-        event_types: Optional[Union[str, List[str]]],
         label_a: str,
         label_b: str,
         labels: Dict[str, Dict[str, dict]],
@@ -123,6 +122,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         tower_hour_of_day_scores: List[float],
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
+        event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
@@ -183,13 +183,13 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         start_date_b: str,
         end_date_b: str,
         aggregation_unit: AnySpatialUnit,
-        event_types: Optional[Union[str, List[str]]],
         label: str,
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
         tower_hour_of_day_scores: List[float],
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
+        event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`

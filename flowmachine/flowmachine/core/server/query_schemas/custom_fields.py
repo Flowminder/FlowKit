@@ -35,7 +35,9 @@ class EventTypes(fields.List):
     When deserialised, will be deduped, and prefixed with "events."
     """
 
-    def __init__(self, required=False, validate=None, **kwargs):
+    def __init__(
+        self, required=False, validate=None, allow_none=True, missing=None, **kwargs
+    ):
         if validate is not None:
             raise ValueError(
                 "The EventTypes field provides its own validation "
@@ -46,7 +48,8 @@ class EventTypes(fields.List):
             fields.String(validate=OneOf(["calls", "sms", "mds", "topups"])),
             required=required,
             validate=Length(min=1),
-            allow_none=True,
+            allow_none=allow_none,
+            missing=missing,
             **kwargs,
         )
 
