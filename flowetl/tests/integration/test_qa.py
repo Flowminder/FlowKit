@@ -103,7 +103,7 @@ def test_earliest_timestamp(cdr_type, flowdb_transaction, jinja_env):
     )
     check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
 
-    assert check_result == "2016-01-01 00:01:00"
+    assert str(check_result) == "2016-01-01 00:01:00"
 
 
 @pytest.mark.parametrize("cdr_type", ["calls", "sms", "mds", "topups"])
@@ -119,4 +119,4 @@ def test_latest_timestamp(cdr_type, flowdb_transaction, jinja_env):
     )
     check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
 
-    assert check_result == "2016-01-01 00:02:00"
+    assert str(check_result) == "2016-01-01 00:02:00"
