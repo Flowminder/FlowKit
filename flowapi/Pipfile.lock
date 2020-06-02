@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bed9672ba141d9f982c5d55f16af3b9732afff4787ab3b07cd45b6d1a8aa2bf5"
+            "sha256": "a8773705d44dbebcb0e418c97cbdfbf711ae7a57d72553cbaec5bcd1de0dec35"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -642,6 +642,9 @@
         },
         "flowkit-jwt-generator": {
             "editable": true,
+            "extras": [
+                "pytest"
+            ],
             "path": "./../flowkit_jwt_generator"
         },
         "idna": {

@@ -1087,6 +1087,12 @@ workflows:
           requires:
             - install_flowmachine_deps
           <<: *run_always_org_context
+      - build_python_wheel:
+          name: build_jwt_generator_wheel
+          project_name: flowkit_jwt_generator
+          requires:
+            - install_flowmachine_deps
+          <<: *run_always_org_context
       - run_quickstart_tests:
           name: test_quickstart
           requires: &quickstart_requirements
@@ -1159,6 +1165,11 @@ workflows:
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context
+      - push_wheel:
+          name: push_jwt_generator_wheel
+          project_name: flowkit_jwt_generator
           requires: *retag_requirements
           <<: *tag_and_master_only_org_context
       - build_docs:

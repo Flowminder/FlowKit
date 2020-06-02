@@ -16,7 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI's docker container now uses Python 3.8
 - FlowAuth's docker container now uses Python 3.8
 - AutoFlow's docker container now uses Python 3.8
-- FlowDB's SQL synthetic data generator now uses [GADM 3.6](https://gadm.org) boundaries.  
+- FlowDB's SQL synthetic data generator now uses [GADM 3.6](https://gadm.org) boundaries.
+- FlowAuth and FlowAPI now exchange tokens with compressed claims. [#2625](https://github.com/Flowminder/FlowKit/issues/2625)
 
 ### Fixed
 - FlowAuth will no longer fail to start if there are directories with names the same as the SSL certificate secrets.
