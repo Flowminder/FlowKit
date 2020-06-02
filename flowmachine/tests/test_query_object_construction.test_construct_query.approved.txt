@@ -1,11 +1,15 @@
 {
-  "6353b1246a73d0f70de07ae191a95c8b": {
+  "5e5099f1f762584cc8d6ed360695443c": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "daily_location",
       "date": "2016-01-01",
       "aggregation_unit": "admin3",
       "method": "last",
+      "event_types": [
+        "calls",
+        "sms"
+      ],
       "subscriber_subset": null,
       "sampling": {
         "sampling_method": "bernoulli",
@@ -16,13 +20,14 @@
       }
     }
   },
-  "aa18ff4cc8cd4baf0c3d5c72a75a3cd9": {
+  "7ed1e4e947727ca17e099e172774e908": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "daily_location",
       "date": "2016-01-01",
       "aggregation_unit": "admin3",
       "method": "last",
+      "event_types": null,
       "subscriber_subset": null,
       "sampling": null
     }
@@ -37,7 +42,7 @@
     "event_types": null,
     "subscriber_subset": null
   },
-  "b155478a246bca7fa30094c51cce4faf": {
+  "4d6b6efb7090b7e0ddf69620bc6cfd40": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "modal_location",
@@ -63,7 +68,7 @@
     "query_kind": "geography",
     "aggregation_unit": "admin3"
   },
-  "e3093957d5792d9fca6797eee24758a5": {
+  "ab27899043f9b74e80b0cc54fe7b75d2": {
     "query_kind": "meaningful_locations_aggregate",
     "aggregation_unit": "admin1",
     "start_date": "2016-01-01",
@@ -156,7 +161,7 @@
     "tower_cluster_call_threshold": 0,
     "subscriber_subset": null
   },
-  "82b0a2a1b274aade7de018195eaec86c": {
+  "496a236d337dce47b9a0419c2004163a": {
     "query_kind": "meaningful_locations_between_label_od_matrix",
     "aggregation_unit": "admin1",
     "start_date": "2016-01-01",
@@ -248,9 +253,10 @@
     },
     "tower_cluster_radius": 1.0,
     "tower_cluster_call_threshold": 0,
+    "event_types": null,
     "subscriber_subset": null
   },
-  "9c255f14595818421f0b0a72bc3497b8": {
+  "a2a567fc5936fde732adb6dc241cb63c": {
     "query_kind": "meaningful_locations_between_dates_od_matrix",
     "aggregation_unit": "admin1",
     "start_date_a": "2016-01-01",
@@ -343,6 +349,10 @@
     },
     "tower_cluster_radius": 1.0,
     "tower_cluster_call_threshold": 2,
+    "event_types": [
+      "calls",
+      "sms"
+    ],
     "subscriber_subset": null
   }
 }
