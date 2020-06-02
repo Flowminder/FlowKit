@@ -248,16 +248,46 @@ if __name__ == "__main__":
                         )
         homes_level = min(homes_level, 3)  # Admin3 homes at most
 
+        with engine.begin() as trans:
+            with log_duration(job="Generating population distribution."):
+                trans.execute(
+                    f"""
+                CREATE TABLE population_density AS
+                SELECT pcod as short_name, p_pop, cdf, numrange(cdf::numeric, lead(cdf::numeric) over (order by pcod), '(]') as cdf_range FROM
+                    (SELECT pcod, p_pop, coalesce(sum(p_pop) OVER (ORDER BY pcod ROWS UNBOUNDED PRECEDING EXCLUDE CURRENT ROW), 0) as cdf 
+                    FROM
+                        (SELECT pcod, pop / sum(pop) OVER () as p_pop 
+                        FROM
+                            (SELECT G.admin{homes_level}pcod as pcod, sum((st_summarystats(st_clip(R.rast, ARRAY[1], G.geom::geometry))).sum) as pop 
+                            FROM population AS R, geography.admin{homes_level} AS G WHERE st_intersects(g.geom::geometry, R.rast) 
+                                GROUP BY admin{homes_level}pcod) _) _) _;
+                """
+                )
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
             trans.execute("DROP TABLE IF EXISTS tmp_sites;")
             trans.execute("TRUNCATE TABLE infrastructure.sites CASCADE;")
             with log_duration(job=f"Generating {num_sites} sites."):
                 trans.execute(
-                    f"""CREATE TABLE tmp_sites AS 
+                    f"""
+                CREATE TABLE tmp_sites AS 
                 SELECT row_number() over() AS rid, md5(uuid_generate_v4()::text) AS id, 
                 0 AS version, (date '2015-01-01' + random() * interval '1 year')::date AS date_of_first_service,
-                (p).geom AS geom_point from (SELECT st_dumppoints(ST_GeneratePoints(geom, {num_sites})) AS p from geography.admin0) _;"""
+                (p).geom AS geom_point FROM (SELECT st_dumppoints(ST_GeneratePoints(geom, n_sites::int)) AS p FROM
+                    (
+                    SELECT geom, n_sites FROM (
+                        SELECT short_name, count(*) as n_sites 
+                        FROM population_density 
+                        RIGHT JOIN (
+                            SELECT random()::numeric as p 
+                            FROM generate_series(1, {num_sites})
+                        ) _ 
+                        ON p <@ cdf_range 
+                        GROUP BY short_name
+                    ) _
+                    LEFT JOIN 
+                    geography.geoms USING (short_name)
+                ) as site_counts) _;"""
                 )
                 trans.execute(
                     "INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) SELECT id, version, date_of_first_service, geom_point FROM tmp_sites;"
