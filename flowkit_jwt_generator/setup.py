@@ -31,7 +31,7 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     description="Common test JWT generator for FlowKit.",
     entry_points={
-        "console_scripts": ["generate-jwt = flowkit_jwt_generator.jwt:print_token"],
+        "console_scripts": ["generate-jwt = flowkit_jwt_generator.cli:print_token"],
         "pytest11": ["flowkit_jwt_generator = flowkit_jwt_generator.fixtures"],
     },
     author=__author__,
@@ -42,8 +42,12 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=["flowkit_jwt_generator"],
     include_package_data=True,
-    install_requires=["pyjwt", "cryptography", "click", "requests", "pytest"],
-    extras_require={"test": test_requirements},
+    install_requires=["pyjwt", "cryptography"],
+    extras_require={
+        "test": test_requirements,
+        "pytest": ["pytest", "requests"],
+        "cli": ["click", "requests"],
+    },
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
     python_requires=">=3.6",

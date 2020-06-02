@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added 
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.10.0]
+
 ### Added
 - FlowDB's SQL synthetic data generator can now generate events for any country, not just Nepal.
   
@@ -16,12 +26,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI's docker container now uses Python 3.8
 - FlowAuth's docker container now uses Python 3.8
 - AutoFlow's docker container now uses Python 3.8
-- FlowDB's SQL synthetic data generator now uses [GADM 3.6](https://gadm.org) boundaries.  
+- FlowDB's SQL synthetic data generator now uses [GADM 3.6](https://gadm.org) boundaries.
+- FlowAuth and FlowAPI now exchange tokens with compressed claims. [#2625](https://github.com/Flowminder/FlowKit/issues/2625)
 
 ### Fixed
 - FlowAuth will no longer fail to start if there are directories with names the same as the SSL certificate secrets.
-
-### Removed
 
 ## [1.9.4]
 ## Changed
@@ -764,7 +773,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.9.4...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.10.0...master
+[1.10.0]: https://github.com/Flowminder/FlowKit/compare/1.9.4...1.10.0
 [1.9.4]: https://github.com/Flowminder/FlowKit/compare/1.9.3...1.9.4
 [1.9.3]: https://github.com/Flowminder/FlowKit/compare/1.9.2...1.9.3
 [1.9.2]: https://github.com/Flowminder/FlowKit/compare/1.9.1...1.9.2

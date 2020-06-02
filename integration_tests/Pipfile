@@ -14,7 +14,7 @@ autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
 approvaltests = "*"
 pytest-cov = "*"
 tavern = {extras = ["pytest"],version = "*"}
-flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 geojson = "*"
 
 [requires]
