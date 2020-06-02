@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added 
+- Queries run through FlowAPI can now be run on only a subset of the available CDR types, by supplying an `event_types` parameter. [#2631](https://github.com/Flowminder/FlowKit/issues/2631)
 
 ### Changed
 
