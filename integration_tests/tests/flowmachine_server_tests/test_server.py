@@ -167,7 +167,6 @@ def test_run_modal_location_query(zmq_host, zmq_port):
                         "subscriber_subset": None,
                     },
                 ],
-                "subscriber_subset": None,
             },
         },
         "request_id": "DUMMY_ID",
