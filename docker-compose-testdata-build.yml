@@ -11,5 +11,5 @@ services:
   flowdb:
     image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: flowdb_testdata.Dockerfile

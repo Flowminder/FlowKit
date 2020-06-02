@@ -9,16 +9,4 @@
 #
 # Now un-exclude only those folders and files that are needed for building the image:
 #
-!Pipfile
-!Pipfile.lock
-!frontend/public
-!frontend/src
-!frontend/package-lock.json
-!frontend/package.json
-!backend/uwsgi.ini
-!backend/flowauth
-!backend/README.md
-!backend/setup.cfg
-!backend/MANIFEST.in
-!backend/setup.py
-!backend/versioneer.py
+!flowdb/oracle_fdw/000_create_oracle_fdw_extension.sql

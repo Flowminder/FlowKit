@@ -9,12 +9,13 @@
 #
 # Now un-exclude only those folders and files that are needed for building the image:
 #
-!Pipfile
-!Pipfile.lock
-!flowapi/
-!MANIFEST.in
-!setup.cfg
-!setup.py
-!versioneer.py
-!start.sh
-!README.md
+!flowapi/Pipfile
+!flowapi/Pipfile.lock
+!flowapi/flowapi/
+!flowapi/MANIFEST.in
+!flowapi/setup.cfg
+!flowapi/setup.py
+!flowapi/versioneer.py
+!flowapi/start.sh
+!flowapi/README.md
+!flowkit_jwt_generator/flowkit_jwt_generator/jwt.py

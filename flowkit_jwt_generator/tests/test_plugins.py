@@ -38,6 +38,7 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_by
         f"""
         import jwt
         import os
+        from flowkit_jwt_generator.jwt import decompress_claims
         
         def test_all_access_plugin(universal_access_token):
             decoded = jwt.decode(
@@ -47,7 +48,7 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_by
                 verify=True,
                 algorithms=["RS256"],
             )
-            assert decoded["user_claims"] == {dummy_flowapi["claims"]}
+            assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["claims"]}
     """
     )
 
@@ -82,6 +83,7 @@ def test_plugin_works_with_no_audience(
         f"""
         import jwt
         import os
+        from flowkit_jwt_generator.jwt import decompress_claims
 
         def test_all_access_plugin(universal_access_token):
             decoded = jwt.decode(
@@ -90,7 +92,7 @@ def test_plugin_works_with_no_audience(
                 verify=True,
                 algorithms=["RS256"],
             )
-            assert decoded["user_claims"] == {dummy_flowapi["claims"]}
+            assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["claims"]}
     """
     )
     # run all tests with pytest

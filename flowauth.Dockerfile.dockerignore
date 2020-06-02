@@ -1,0 +1,25 @@
+# This .dockerignore file follows the "whitelisting" approach described here:
+#    https://youknowfordevs.com/2018/12/07/getting-control-of-your-dockerignore-files.html
+
+#
+# First, exclude everything by default:
+#
+*
+
+#
+# Now un-exclude only those folders and files that are needed for building the image:
+#
+!flowauth/Pipfile
+!flowauth/Pipfile.lock
+!flowauth/frontend/public
+!flowauth/frontend/src
+!flowauth/frontend/package-lock.json
+!flowauth/frontend/package.json
+!flowauth/backend/uwsgi.ini
+!flowauth/backend/flowauth
+!flowauth/backend/README.md
+!flowauth/backend/setup.cfg
+!flowauth/backend/MANIFEST.in
+!flowauth/backend/setup.py
+!flowauth/backend/versioneer.py
+!flowkit_jwt_generator/flowkit_jwt_generator/jwt.py

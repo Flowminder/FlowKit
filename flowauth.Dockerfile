@@ -4,14 +4,17 @@
 
 FROM node as builder
 
-COPY frontend /
+COPY flowauth/frontend /
 RUN npm install --production
 RUN PUBLIC_URL=/static npm run-script build
 
-
 FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
-COPY Pipfile .
-COPY Pipfile.lock .
+ARG SOURCE_VERSION=0+unknown
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+WORKDIR /${SOURCE_TREE}/flowauth
+COPY ./flowauth/Pipfile* ./
+
 # Install dependencies required for argon crypto & psycopg2
 RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
     libressl-dev libffi-dev mariadb-connector-c-dev && \
@@ -22,16 +25,12 @@ ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth
 ENV PIPENV_COLORBLIND=1
-WORKDIR /app/static
-COPY --from=builder /build .
-ARG SOURCE_VERSION=0+unknown
-ENV SOURCE_VERSION=${SOURCE_VERSION}
-ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-WORKDIR /${SOURCE_TREE}/flowauth
-COPY backend .
-RUN python setup.py bdist_wheel && pip install dist/*.whl
+
+COPY --from=builder /build /app/static
+
+COPY . /${SOURCE_TREE}/
+RUN cd backend && python setup.py bdist_wheel && pip install dist/*.whl && mv uwsgi.ini /app
 WORKDIR /app
-COPY backend/uwsgi.ini .
 
 ENV FLOWAUTH_CACHE_BACKEND FILE
 ENV FLOWAUTH_CACHE_FILE /dev/shm/flowauth_last_used_cache

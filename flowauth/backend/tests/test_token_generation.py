@@ -7,8 +7,7 @@ from os import environ
 import jwt
 
 import pytest
-from flowauth.token_management import generate_token as flowauth_generate_token
-from flowkit_jwt_generator import generate_token as jwt_generator_generate_token
+from flowauth.jwt import decompress_claims
 from pytest import approx
 
 
@@ -56,9 +55,9 @@ def test_token_generation(client, auth, app, test_user, public_key):
         algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
-    assert ["get_result,run&DUMMY_ROUTE_A.aggregation_unit.admin0"] == decoded_token[
-        "user_claims"
-    ]
+    assert [
+        "get_result,run&DUMMY_ROUTE_A.aggregation_unit.admin0"
+    ] == decompress_claims(decoded_token["user_claims"])
     assert "TEST_USER" == decoded_token["identity"]
     assert approx(expiry.timestamp()) == decoded_token["exp"]
 
@@ -84,38 +83,3 @@ def test_token_rejected_for_expiry(client, auth, app, test_user):
         "message": "Token lifetime too long",
         "bad_field": "expiry",
     } == response.get_json()
-
-
-def test_against_general_generator(app, public_key):
-    """Test that the token generator in FlowAuth and the one in flowkit-jwt-generator produce same results."""
-
-    claims = [
-        "run&daily_location.aggregation_unit.admin3",
-        "run&daily_location.aggregation_unit.admin2",
-    ]
-    flowauth_token = jwt.decode(
-        flowauth_generate_token(
-            username="TEST_USER",
-            private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
-            lifetime=datetime.timedelta(5),
-            flowapi_identifier="TEST_SERVER",
-            claims=claims,
-        ),
-        key=public_key,
-        audience="TEST_SERVER",
-    )
-    generator_token = jwt.decode(
-        jwt_generator_generate_token(
-            username="TEST_USER",
-            private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
-            lifetime=datetime.timedelta(5),
-            flowapi_identifier="TEST_SERVER",
-            claims=claims,
-        ),
-        key=public_key,
-        audience="TEST_SERVER",
-    )
-    assert generator_token["aud"] == flowauth_token["aud"]
-    assert generator_token["user_claims"] == flowauth_token["user_claims"]
-    assert generator_token["identity"] == flowauth_token["identity"]
-    assert generator_token.keys() == flowauth_token.keys()

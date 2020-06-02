@@ -11,5 +11,5 @@ services:
   flowdb:
     image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile.synthetic_data
+      context: .
+      dockerfile: flowdb_synthetic_data.Dockerfile
