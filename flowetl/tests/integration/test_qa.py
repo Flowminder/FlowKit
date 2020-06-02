@@ -88,3 +88,35 @@ def test_count_msisdns(cdr_type, flowdb_transaction, jinja_env):
     check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
 
     assert check_result == 1
+
+
+@pytest.mark.parametrize("cdr_type", ["calls", "sms", "mds", "topups"])
+def test_earliest_timestamp(cdr_type, flowdb_transaction, jinja_env):
+    create_sql = f"""CREATE TABLE IF NOT EXISTS events.{cdr_type}_20160101 (LIKE events.{cdr_type});"""
+    insert_sql = f"""INSERT INTO events.{cdr_type}_20160101(datetime, msisdn, location_id) VALUES 
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', '{"B" * 64}'), 
+            ('2016-01-01 00:02:00'::timestamptz, '{"A" * 64}', '{"B" * 64}')"""
+    flowdb_transaction.execute(create_sql)
+    flowdb_transaction.execute(insert_sql)
+    check_sql = jinja_env.get_template("earliest_timestamp.sql").render(
+        cdr_type=cdr_type, final_table=f"events.{cdr_type}_20160101"
+    )
+    check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
+
+    assert check_result == "2016-01-01 00:01:00"
+
+
+@pytest.mark.parametrize("cdr_type", ["calls", "sms", "mds", "topups"])
+def test_latest_timestamp(cdr_type, flowdb_transaction, jinja_env):
+    create_sql = f"""CREATE TABLE IF NOT EXISTS events.{cdr_type}_20160101 (LIKE events.{cdr_type});"""
+    insert_sql = f"""INSERT INTO events.{cdr_type}_20160101(datetime, msisdn, location_id) VALUES 
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', '{"B" * 64}'), 
+            ('2016-01-01 00:02:00'::timestamptz, '{"A" * 64}', '{"B" * 64}')"""
+    flowdb_transaction.execute(create_sql)
+    flowdb_transaction.execute(insert_sql)
+    check_sql = jinja_env.get_template("latest_timestamp.sql").render(
+        cdr_type=cdr_type, final_table=f"events.{cdr_type}_20160101"
+    )
+    check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
+
+    assert check_result == "2016-01-01 00:02:00"
