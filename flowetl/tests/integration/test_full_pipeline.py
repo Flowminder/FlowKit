@@ -105,7 +105,7 @@ def test_file_pipeline(
 
     # Check qa checks
 
-    qa_check_query = "SELECT count(*)=5 from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
+    qa_check_query = "SELECT count(*)=7 from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
     assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0]
 
 
