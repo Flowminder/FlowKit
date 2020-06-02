@@ -6,7 +6,6 @@ from marshmallow import fields
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
-from .custom_fields import SubscriberSubset
 from .daily_location import DailyLocationSchema
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
@@ -20,11 +19,10 @@ class InputToModalLocationSchema(OneOfSchema):
 
 
 class ModalLocationExposed(BaseExposedQueryWithSampling):
-    def __init__(self, locations, *, subscriber_subset=None, sampling=None):
+    def __init__(self, locations, *, sampling=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
-        self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
     @property
@@ -48,6 +46,5 @@ class ModalLocationSchema(BaseQueryWithSamplingSchema):
     locations = fields.Nested(
         InputToModalLocationSchema, many=True, validate=Length(min=1)
     )
-    subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = ModalLocationExposed
