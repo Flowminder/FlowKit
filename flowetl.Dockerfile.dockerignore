@@ -1,0 +1,19 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# This .dockerignore file follows the "whitelisting" approach described here:
+#    https://youknowfordevs.com/2018/12/07/getting-control-of-your-dockerignore-files.html
+
+#
+# First, exclude everything by default:
+#
+
+*
+
+#
+# Now un-exclude only those folders and files that are needed for building the image:
+#
+!flowetl/flowetl
+!flowetl/entrypoint.sh
+!flowetl/Pipfile
+!flowetl/Pipfile.lock

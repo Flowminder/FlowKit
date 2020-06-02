@@ -126,7 +126,7 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 #
 # We'll also install useful postgres extensions distributed via PGXN.
 #
-COPY ./Pipfile* /tmp/
+COPY ./flowdb/Pipfile* /tmp/
 RUN apt-get update \
         && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev  \
         && pip3 install pgxnclient \
@@ -155,14 +155,14 @@ ENV LOCATION_TABLE=infrastructure.cells
 #
 #  Copy file spinup build scripts to be execed.
 #
-COPY --chown=postgres ./bin/build/* /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./flowdb/bin/build/* /docker-entrypoint-initdb.d/
 
 #
 #  Add local data to PostgreSQL data ingestion
 #  directory. Files in that directory will be
 #  ingested by PostgreSQL on build-time.
 #
-ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
+ADD --chown=postgres ./flowdb/data/* /docker-entrypoint-initdb.d/data/csv/
 # Need to make postgres owner
 RUN chown -R postgres /docker-entrypoint-initdb.d
 

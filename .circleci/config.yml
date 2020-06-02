@@ -147,7 +147,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: circleci/classic:201808-01
+      image: ubuntu-1604:202004-01
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -159,23 +159,23 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock"}}
+          key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.7"
+          name: "Switch to Python v3.8.2"
           command: |
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.8.2
       - run:
           name: Install pipenv
-          command: pip install --upgrade pip pipenv
+          command: pip install --upgrade pip pipenv virtualenv
       - run:
           name: Install python dependencies
           command: |
-            PIPENV_PIPFILE=flowdb/Pipfile pipenv install --deploy --dev
+            PIPENV_PIPFILE=flowdb/tests/Pipfile pipenv install --deploy --dev
       - save_cache:
-          key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock" }}
+          key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock" }}
           paths:
-            - /home/circleci/.local/share/virtualenvs/flowdb-NgQ6vyXW
+            - /home/circleci/.local/share/virtualenvs/
       - run:
           name: Set additional environment variables
           command: |
@@ -194,8 +194,8 @@ jobs:
             docker pull flowminder/flowdb:latest && export BUILD_CACHE_TAG=latest || true
             docker pull flowminder/flowdb:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
             echo Using cache from $BUILD_CACHE_TAG
-            docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
-              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 flowdb
+            DOCKER_BUILDKIT=1 docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
+              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 -f flowdb.Dockerfile .
       - run:
           name: Test that not providing a superuser password causes the container to exit
           command: |
@@ -225,9 +225,9 @@ jobs:
       - run:
           name: Run tests
           command: |
-            cd flowdb
-            pipenv run pytest --junit-xml=test_results/pytest/results.xml \
-            --ignore=tests/test_synthetic_data.py --ignore=tests/test_oracle_fdw.py
+            cd flowdb/tests
+            pipenv run pytest --junit-xml=../test_results/pytest/results.xml \
+            --ignore=test_synthetic_data.py --ignore=test_oracle_fdw.py
       - store_test_results:
           path: flowdb/test_results
       - run:
@@ -246,22 +246,22 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: circleci/classic:201808-01
+      image: ubuntu-1604:202004-01
     environment: *flowdb_env
-    working_directory: /home/circleci/project/flowdb
+    working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.7"
+          name: "Switch to Python v3.8.2"
           command: |
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.8.2
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
       - restore_cache:
-          key: flowdb-deps-1-{{ checksum "Pipfile.lock"}}
+          key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -269,8 +269,8 @@ jobs:
           command: |
             echo Building oracle_fdw version $FLOWDB_VERSION
             echo Tagging as oracle-$CIRCLE_SHA1
-            docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb:oracle-$CIRCLE_SHA1 oracle_fdw
+            DOCKER_BUILDKIT=1 docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
+              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb:oracle-$CIRCLE_SHA1 -f flowdb_oracle_fdw.Dockerfile .
       - run:
           name: Launch flowdb
           command: |
@@ -284,8 +284,11 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results.xml \
-            tests/test_oracle_fdw.py
+            cd flowdb/tests
+            pipenv run pytest --junit-xml=../test_results/pytest/results.xml \
+            test_oracle_fdw.py
+      - store_test_results:
+          path: flowdb/test_results
       - run:
           name: FlowDB-oracle Docker logs
           command: docker logs flowdb_oracle
@@ -294,12 +297,12 @@ jobs:
   build_flowdb_testdata:
     docker:
       - image: circleci/python:3.7
-    working_directory: /home/circleci/project/flowdb/testdata
+    working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker:
-          version: 18.09.3
+          version: 19.03.8
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -310,7 +313,7 @@ jobs:
           command: |
             echo Building testdata version $FLOWDB_VERSION
             echo Tagging as $CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 .
+            DOCKER_BUILDKIT=1 docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 -f flowdb_testdata.Dockerfile .
       - run:
           name: Push images to Docker cloud
           command: |
@@ -319,12 +322,12 @@ jobs:
   build_flowdb_synthdata:
     docker:
       - image: circleci/python:3.7
-    working_directory: /home/circleci/project/flowdb/testdata
+    working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker:
-          version: 18.09.3
+          version: 19.03.8
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -335,8 +338,8 @@ jobs:
           command: |
             echo Building flowdb-synthetic-data version $FLOWDB_VERSION
             echo Tagging as $CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
-                -f Dockerfile.synthetic_data .
+            DOCKER_BUILDKIT=1 docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
+                -f flowdb_synthetic_data.Dockerfile .
       - run:
           name: Test that a data generator must be set for synth data
           command: |
@@ -444,8 +447,8 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
-      python_version: "3.7"
-    working_directory: /home/circleci/project/flowdb
+      python_version: "3.8"
+    working_directory: /home/circleci/project/flowdb/tests
     steps:
       - checkout:
           path: /home/circleci/project/
@@ -455,7 +458,7 @@ jobs:
       - run: *wait_for_flowdb
       - run:
           name: Run tests
-          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data.py
+          command: pipenv run pytest --junit-xml=../../test_results/pytest/results.xml test_synthetic_data.py
       - store_test_results:
           path: test_results
 
@@ -641,16 +644,15 @@ jobs:
           ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl", "autoflow"]
       component_path:
         type: string
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      image: ubuntu-1604:202004-01
     working_directory: /home/circleci/project/
     steps:
       - checkout:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - setup_remote_docker:
-          version: 18.09.3
+      - run: sudo apt update && sudo apt install docker-ce
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
@@ -659,7 +661,7 @@ jobs:
           command: |
             echo "Tagging as $CIRCLE_SHA1"
             export SOURCE_VERSION=$(git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g)
-            docker build --build-arg SOURCE_VERSION=$SOURCE_VERSION -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
+            DOCKER_BUILDKIT=1 docker build --build-arg SOURCE_VERSION=$SOURCE_VERSION -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 -f <<parameters.component_path>>.Dockerfile .
       - run:
           name: Push images to Docker cloud
           command: |
@@ -709,7 +711,9 @@ jobs:
           key: flowetl-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Set python version
-          command: pyenv global 3.7.0
+          command: |
+            pyenv versions
+            pyenv global 3.7.0
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -1021,7 +1025,7 @@ workflows:
       - build_docker_image:
           name: build_examples
           component: flowkit-examples
-          component_path: .
+          component_path: examples
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowetl

@@ -30,7 +30,7 @@ RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list 
 #
 # Install python dependencies
 #
-COPY --chown=postgres ./test_data/Pipfile* /tmp/
+COPY --chown=postgres flowdb/testdata/test_data/Pipfile* /tmp/
 RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three \
     && rm /tmp/Pipfile*
 
@@ -41,12 +41,10 @@ RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three
 RUN mkdir -p \
     /docker-entrypoint-initdb.d/sql/testdata/ \
     /docker-entrypoint-initdb.d/py/testdata/
-COPY --chown=postgres bin/9900_ingest_test_data.sh /docker-entrypoint-initdb.d/
-COPY --chown=postgres bin/9900_run_synthetic_dfs_data_generation_script.sh /docker-entrypoint-initdb.d/
-COPY --chown=postgres bin/9910_migrate_test_data.sql /docker-entrypoint-initdb.d/
-ADD --chown=postgres ./test_data/sql/* /docker-entrypoint-initdb.d/sql/testdata/
-ADD --chown=postgres ./test_data/py/* /docker-entrypoint-initdb.d/py/testdata/
-ADD --chown=postgres ./test_data/data/ /docker-entrypoint-initdb.d/data/
-COPY  --chown=postgres ./test_data/data/*.csv /docker-entrypoint-initdb.d/data/csv/
+COPY --chown=postgres flowdb/testdata/bin/* /docker-entrypoint-initdb.d/
+ADD --chown=postgres flowdb/testdata/test_data/sql/* /docker-entrypoint-initdb.d/sql/testdata/
+ADD --chown=postgres flowdb/testdata/test_data/py/* /docker-entrypoint-initdb.d/py/testdata/
+ADD --chown=postgres flowdb/testdata/test_data/data/ /docker-entrypoint-initdb.d/data/
+COPY  --chown=postgres flowdb/testdata/test_data/data/*.csv /docker-entrypoint-initdb.d/data/csv/
 # Need to make postgres owner of any subdirectories
 RUN chown -R postgres /docker-entrypoint-initdb.d
