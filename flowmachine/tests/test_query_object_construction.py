@@ -21,6 +21,7 @@ def test_construct_query(diff_reporter):
                 "date": "2016-01-01",
                 "aggregation_unit": "admin3",
                 "method": "last",
+                "event_types": ["calls", "sms"],
                 "subscriber_subset": None,
                 "sampling": {
                     "sampling_method": "bernoulli",
@@ -48,6 +49,7 @@ def test_construct_query(diff_reporter):
                 "date": "2016-01-01",
                 "aggregation_unit": "admin3",
                 "method": "last",
+                "event_types": None,
                 "subscriber_subset": None,
                 "sampling": None,
             },
@@ -202,6 +204,7 @@ def test_construct_query(diff_reporter):
             },
             "tower_cluster_radius": 1.0,
             "tower_cluster_call_threshold": 0,
+            "event_types": None,
             "subscriber_subset": None,
         },
         {
@@ -263,6 +266,7 @@ def test_construct_query(diff_reporter):
             },
             "tower_cluster_radius": 1.0,
             "tower_cluster_call_threshold": 2,
+            "event_types": ["calls", "sms"],
             "subscriber_subset": None,
         },
     ]
