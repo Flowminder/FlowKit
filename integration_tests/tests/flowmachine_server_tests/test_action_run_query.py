@@ -83,6 +83,7 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 date="2016-01-01",
                 method="last",
                 spatial_unit=make_spatial_unit("admin", level=3),
+                table=None,
                 subscriber_subset=None,
             )
         )
@@ -175,6 +176,7 @@ def test_cache_content(
                 date="2016-01-01",
                 method="last",
                 spatial_unit=make_spatial_unit("admin", level=3),
+                table=None,
                 subscriber_subset=None,
             )
         )
