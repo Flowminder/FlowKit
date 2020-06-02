@@ -129,6 +129,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -228,6 +243,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -279,6 +309,21 @@
       },
       "Displacement": {
         "properties": {
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "query_kind": {
             "enum": [
               "displacement"
@@ -389,6 +434,7 @@
             "type": "string"
           },
           "event_types": {
+            "default": null,
             "items": {
               "enum": [
                 "calls",
@@ -606,6 +652,21 @@
           "end_date": {
             "format": "date-time",
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "method": {
             "enum": [
@@ -909,6 +970,7 @@
             "type": "string"
           },
           "event_types": {
+            "default": null,
             "items": {
               "enum": [
                 "calls",
@@ -994,6 +1056,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -1040,6 +1117,21 @@
           "end_date": {
             "format": "date-time",
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "geom_table": {
             "nullable": true,
@@ -1140,6 +1232,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -1239,6 +1346,21 @@
           "end_date": {
             "format": "date-time",
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "geom_table": {
             "nullable": true,
@@ -1344,19 +1466,27 @@
               }
             ],
             "nullable": true
-          },
-          "subscriber_subset": {
-            "enum": [
-              null
-            ],
-            "nullable": true,
-            "type": "string"
           }
         },
         "type": "object"
       },
       "NocturnalEvents": {
         "properties": {
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "night_end_hour": {
             "format": "int32",
             "maximum": 23,
@@ -1408,6 +1538,21 @@
       },
       "ParetoInteractions": {
         "properties": {
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "proportion": {
             "format": "float",
             "maximum": 1.0,
@@ -1457,6 +1602,21 @@
           "end_date": {
             "format": "date-time",
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "query_kind": {
             "enum": [
@@ -1593,6 +1753,21 @@
               "out"
             ],
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "query_kind": {
             "enum": [
@@ -1786,6 +1961,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -1845,6 +2035,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -1899,6 +2104,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
           "geom_table": {
             "nullable": true,
             "type": "string"
@@ -1952,6 +2172,21 @@
           "end_date": {
             "format": "date-time",
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "geom_table": {
             "nullable": true,
@@ -2014,6 +2249,21 @@
           "end_date": {
             "format": "date-time",
             "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
           },
           "geom_table": {
             "nullable": true,
