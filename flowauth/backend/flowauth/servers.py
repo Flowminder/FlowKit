@@ -5,7 +5,6 @@ from flask import Blueprint, jsonify, request
 
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
-from sqlalchemy.orm.exc import NoResultFound
 
 from .invalid_usage import InvalidUsage
 from .models import *
@@ -70,24 +69,27 @@ def edit_server_capabilities(server_id):
     server_obj = Server.query.filter_by(id=server_id).first_or_404()
     json = request.get_json()
 
-    to_remove = (x for x in server_obj.capabilities if x.capability not in json)
+    to_remove = []
+    caps = []
+    for x in server_obj.capabilities:
+        try:
+            x.enabled = json.pop(x.capability)
+            caps.append(x)
+        except KeyError:
+            to_remove.append(x)
     current_app.logger.debug(
         "Editing capabilities for server", server_id=server_obj, new_permissions=json
     )
-    caps = []
-    for cap, enabled in json.items():
-        try:
-            cap = ServerCapability.query.filter_by(
-                server_id=server_id, capability=cap
-            ).one()
-        except NoResultFound:
-            cap = ServerCapability(
-                server_id=server_id,
-                capability=cap,
-                capability_hash=md5(cap.encode()).hexdigest(),
-            )
-        cap.enabled = enabled
-        caps.append(cap)
+
+    caps += [
+        ServerCapability(
+            server_id=server_id,
+            capability=cap,
+            capability_hash=md5(cap.encode()).hexdigest(),
+            enabled=enabled,
+        )
+        for cap, enabled in json.items()
+    ]
     db.session.bulk_save_objects(caps)
 
     for cap in to_remove:
