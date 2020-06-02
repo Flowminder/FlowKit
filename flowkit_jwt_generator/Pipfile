@@ -14,7 +14,7 @@ simplejson = "*"
 [dev-packages]
 versioneer = "*"
 pytest-cov = "*"
-flowkit-jwt-generator = {editable = true,path = "."}
+flowkit-jwt-generator = {editable = true,path = ".", extras=["pytest", "cli"]}
 black = "==19.10b0"
 
 [requires]
