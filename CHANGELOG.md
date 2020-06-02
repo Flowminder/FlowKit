@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added 
+- FlowETL now includes QA checks for the earliest and latest timestamps in the ingested data. [#2627](https://github.com/Flowminder/FlowKit/issues/2627)
 
 ### Changed
 
