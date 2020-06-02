@@ -22,3 +22,4 @@
 !flowauth/backend/MANIFEST.in
 !flowauth/backend/setup.py
 !flowauth/backend/versioneer.py
+!flowkit_jwt_generator/flowkit_jwt_generator/jwt.py

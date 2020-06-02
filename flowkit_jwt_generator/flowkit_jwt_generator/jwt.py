@@ -9,12 +9,19 @@ import binascii
 import datetime
 import uuid
 
-import simplejson
-from json import JSONEncoder
+try:
+    import simplejson as json
+    from simplejson import JSONEncoder
+except ImportError:
+    try:
+        import rapidjson as json
+        from rapidjson import JSONEncoder
+    except ImportError:
+        import json
+        from json import JSONEncoder
+
 from typing import Iterable, List, Optional, Tuple, Union
 
-import click
-import requests
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
@@ -28,7 +35,7 @@ def compress_claims(claims):
     out = io.BytesIO()
 
     with gzip.open(out, mode="wt") as fo:
-        simplejson.dump(list(squashed_scopes(claims)), fo)
+        json.dump(list(squashed_scopes(claims)), fo)
 
     return base64.encodebytes(out.getvalue()).decode()
 
@@ -38,7 +45,7 @@ def decompress_claims(claims):
     in_.write(base64.decodebytes(claims.encode()))
     in_.seek(0)
     with gzip.GzipFile(fileobj=in_, mode="rb") as fo:
-        return simplejson.load(fo)
+        return json.load(fo)
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because
@@ -207,6 +214,7 @@ def generate_token(
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
     claims: List[str],
+    compress: bool = True,
 ) -> str:
     """
 
@@ -223,6 +231,8 @@ def generate_token(
         List of claims this token will contain
     flowapi_identifier : str, optional
         Optionally provide a string to identify the audience of the token
+    compress : bool
+        Set to False to disable compressing claims with gzip.
 
     Examples
     --------
@@ -241,7 +251,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=compress_claims(claims),
+        user_claims=compress_claims(claims) if compress else claims,
         identity=username,
         exp=now + lifetime,
     )
@@ -268,6 +278,8 @@ def get_security_schemes_from_api_spec(flowapi_url: str) -> dict:
         The security schemes section
 
     """
+    import requests
+
     return requests.get(f"{flowapi_url}/api/0/spec/openapi.json").json()["components"][
         "securitySchemes"
     ]
@@ -308,42 +320,3 @@ def get_audience_from_flowapi(flowapi_url: str) -> str:
 
     """
     return get_security_schemes_from_api_spec(flowapi_url)["token"]["x-audience"]
-
-
-@click.command()
-@click.option("--username", type=str, required=True, help="Username this token is for.")
-@click.option(
-    "--private-key",
-    type=str,
-    envvar="PRIVATE_JWT_SIGNING_KEY",
-    required=True,
-    help="RSA private key, optionally base64 encoded.",
-)
-@click.option(
-    "--lifetime", type=int, required=True, help="Lifetime in days of this token."
-)
-@click.option(
-    "--flowapi-url",
-    "-u",
-    type=str,
-    required=True,
-    help="URL of the FlowAPI server to grant access to.",
-)
-def print_token(username, private_key, lifetime, flowapi_url):
-    """
-    Generate a JWT token for access to FlowAPI.
-
-    For example:
-
-    \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 -u http://localhost:9090
-    """
-    click.echo(
-        generate_token(
-            flowapi_identifier=get_audience_from_flowapi(flowapi_url=flowapi_url),
-            username=username,
-            private_key=load_private_key(private_key),
-            lifetime=datetime.timedelta(days=lifetime),
-            claims=get_all_claims_from_flowapi(flowapi_url=flowapi_url),
-        )
-    )

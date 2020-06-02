@@ -18,3 +18,4 @@
 !flowapi/versioneer.py
 !flowapi/start.sh
 !flowapi/README.md
+!flowkit_jwt_generator/flowkit_jwt_generator/jwt.py

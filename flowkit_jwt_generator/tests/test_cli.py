@@ -5,7 +5,8 @@ import os
 import jwt
 from click.testing import CliRunner
 
-from flowkit_jwt_generator.jwt import print_token, decompress_claims
+from flowkit_jwt_generator.jwt import decompress_claims
+from flowkit_jwt_generator.cli import print_token
 
 
 def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
