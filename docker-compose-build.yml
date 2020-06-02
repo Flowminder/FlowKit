@@ -12,42 +12,42 @@ services:
   flowdb:
     image: flowminder/flowdb:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowdb/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: flowdb.Dockerfile
 
   flowmachine:
     image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowmachine
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: flowmachine.Dockerfile
 
   worked_examples:
     container_name: worked_examples
     image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: examples.Dockerfile
 
   flowapi:
     image: flowminder/flowapi:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowapi
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: flowapi.Dockerfile
 
   flowauth:
     image: flowminder/flowauth:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowauth
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: flowauth.Dockerfile
 
   flowetl:
     image: flowminder/flowetl:${CONTAINER_TAG:-latest}
     build:
-      context: ./flowetl
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: flowetl.Dockerfile
 
   autoflow:
     image: flowminder/autoflow:${CONTAINER_TAG:-latest}
     build:
-      context: ./autoflow
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: autoflow.Dockerfile

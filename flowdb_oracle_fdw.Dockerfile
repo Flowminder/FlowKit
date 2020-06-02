@@ -59,4 +59,4 @@ RUN apt-get update \
             && apt-get remove -y build-essential \
             && apt purge -y --auto-remove \
             && rm -rf /var/lib/apt/lists/*
-COPY ./000_create_oracle_fdw_extension.sql /docker-entrypoint-initdb.d/
+COPY flowdb/oracle_fdw/000_create_oracle_fdw_extension.sql /docker-entrypoint-initdb.d/

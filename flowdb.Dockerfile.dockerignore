@@ -1,0 +1,15 @@
+# This .dockerignore file follows the "whitelisting" approach described here:
+#    https://youknowfordevs.com/2018/12/07/getting-control-of-your-dockerignore-files.html
+
+#
+# First, exclude everything by default:
+#
+*
+
+#
+# Now un-exclude only those folders and files that are needed for building the image:
+#
+!flowdb/Pipfile
+!flowdb/Pipfile.lock
+!flowdb/bin/build/
+!flowdb/data/
