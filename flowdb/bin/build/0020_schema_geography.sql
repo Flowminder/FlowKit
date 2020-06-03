@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS geography.geoms (
 );
 SELECT AddGeometryColumn('geography','geoms','geom','4326','MULTIPOLYGON',2);
 CREATE INDEX "geography_geom_gist" ON "geography"."geoms" USING GIST ("geom");
+CREATE INDEX "geography_geog_gist" ON "geography"."geoms" USING GIST (geography(geom));
 CREATE INDEX ON geography.geoms(geo_kind_id);
 CREATE INDEX ON geography.geoms(spatial_resolution);
 

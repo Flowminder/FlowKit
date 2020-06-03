@@ -328,3 +328,60 @@ $$
 $$ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, pg_temp;
+
+/*
+
+Poisson event generator.
+
+*/
+
+CREATE OR REPLACE FUNCTION random_poisson(
+    lambda DOUBLE PRECISION DEFAULT 1.0
+    ) RETURNS INT
+      RETURNS NULL ON NULL INPUT AS $$
+        DECLARE
+            lambda_left DOUBLE PRECISION;
+            k INT;
+            p DOUBLE PRECISION;
+            u DOUBLE PRECISION;
+        BEGIN
+            lambda_left = lambda;
+            k = 0;
+            p = 1;
+            LOOP
+                k = k + 1;
+                u = RANDOM();
+                p = p*u;
+                WHILE p < 1 AND lambda_left > 0 LOOP
+                    IF lambda_left > 500 THEN
+                        p = p * exp(500);
+                        lambda_left = lambda_left - 500;
+                    ELSE
+                        p = p*exp(lambda_left);
+                        lambda_left = 0;
+                    END IF;
+                END LOOP;
+                EXIT WHEN p <= 1;
+            END LOOP;
+
+            RETURN k - 1;
+        END;
+    $$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;
+
+/* Random pick from array */
+
+CREATE OR REPLACE FUNCTION random_pick( a anyarray, OUT x anyelement )
+  RETURNS anyelement AS
+$func$
+BEGIN
+  IF a = '{}' THEN
+    x := NULL::TEXT;
+  ELSE
+    WHILE x IS NULL LOOP
+      x := a[floor(array_lower(a, 1) + (random()*( array_upper(a, 1) -  array_lower(a, 1)+1) ) )::int];
+    END LOOP;
+  END IF;
+END
+$func$ LANGUAGE plpgsql VOLATILE RETURNS NULL ON NULL INPUT;
