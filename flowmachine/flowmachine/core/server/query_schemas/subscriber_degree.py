@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberDegree
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -17,13 +17,21 @@ __all__ = ["SubscriberDegreeSchema", "SubscriberDegreeExposed"]
 
 class SubscriberDegreeExposed(BaseExposedQueryWithSampling):
     def __init__(
-        self, *, start, stop, direction, subscriber_subset=None, sampling=None
+        self,
+        *,
+        start,
+        stop,
+        direction,
+        event_types,
+        subscriber_subset=None,
+        sampling=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
         self.direction = direction
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
@@ -40,6 +48,7 @@ class SubscriberDegreeExposed(BaseExposedQueryWithSampling):
             start=self.start,
             stop=self.stop,
             direction=self.direction,
+            tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 
@@ -51,6 +60,7 @@ class SubscriberDegreeSchema(BaseQueryWithSamplingSchema):
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = SubscriberDegreeExposed

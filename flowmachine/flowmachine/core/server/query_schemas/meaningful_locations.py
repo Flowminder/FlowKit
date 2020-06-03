@@ -4,7 +4,7 @@
 
 from marshmallow import fields
 from marshmallow.validate import OneOf
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Optional
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
@@ -27,6 +27,7 @@ from flowmachine.features.location.redacted_meaningful_locations_od import (
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import (
+    EventTypes,
     SubscriberSubset,
     TowerHourOfDayScores,
     TowerDayOfWeekScores,
@@ -59,6 +60,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         tower_hour_of_day_scores: List[float],
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
+        event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
@@ -66,6 +68,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.label = label
         self.labels = labels
         self.tower_day_of_week_scores = tower_day_of_week_scores
@@ -79,6 +82,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
             labels=labels,
             start_date=start_date,
             end_date=end_date,
+            event_types=event_types,
             subscriber_subset=subscriber_subset,
             tower_cluster_call_threshold=tower_cluster_call_threshold,
             tower_cluster_radius=tower_cluster_radius,
@@ -118,6 +122,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         tower_hour_of_day_scores: List[float],
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
+        event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
@@ -125,6 +130,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.label_a = label_a
         self.label_b = label_b
         self.labels = labels
@@ -138,6 +144,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
             labels=labels,
             start_date=start_date,
             end_date=end_date,
+            event_types=event_types,
             subscriber_subset=subscriber_subset,
             tower_cluster_call_threshold=tower_cluster_call_threshold,
             tower_cluster_radius=tower_cluster_radius,
@@ -182,6 +189,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         tower_hour_of_day_scores: List[float],
         tower_cluster_radius: float = 1.0,
         tower_cluster_call_threshold: int = 0,
+        event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
@@ -191,6 +199,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         self.end_date_a = end_date_a
         self.end_date_b = end_date_b
         self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.label = label
         self.labels = labels
         self.tower_day_of_week_scores = tower_day_of_week_scores
@@ -202,6 +211,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         common_params = dict(
             labels=labels,
             label=label,
+            event_types=event_types,
             subscriber_subset=subscriber_subset,
             tower_cluster_call_threshold=tower_cluster_call_threshold,
             tower_cluster_radius=tower_cluster_radius,
@@ -246,6 +256,7 @@ class MeaningfulLocationsAggregateSchema(AggregationUnitMixin, BaseSchema):
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = MeaningfulLocationsAggregateExposed
@@ -257,6 +268,7 @@ def _make_meaningful_locations_object(
     end_date,
     label,
     labels,
+    event_types,
     subscriber_subset,
     tower_cluster_call_threshold,
     tower_cluster_radius,
@@ -269,6 +281,7 @@ def _make_meaningful_locations_object(
         spatial_unit=make_spatial_unit(
             "versioned-site"
         ),  # note this 'spatial_unit' is not the same as the exposed parameter 'aggregation_unit'
+        table=event_types,
         subscriber_subset=subscriber_subset,
     )
     q_call_days = CallDays(subscriber_locations=q_subscriber_locations)
@@ -286,6 +299,7 @@ def _make_meaningful_locations_object(
         spatial_unit=make_spatial_unit(
             "versioned-site"
         ),  # note this 'spatial_unit' is not the same as the exposed parameter 'aggregation_unit'
+        table=event_types,
         subscriber_subset=subscriber_subset,
     )
     q_meaningful_locations = MeaningfulLocations(
@@ -309,6 +323,7 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(AggregationUnitMixin, BaseSc
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = MeaningfulLocationsBetweenLabelODMatrixExposed
@@ -330,6 +345,7 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(AggregationUnitMixin, BaseSc
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = MeaningfulLocationsBetweenDatesODMatrixExposed

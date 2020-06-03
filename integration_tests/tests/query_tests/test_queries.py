@@ -28,6 +28,7 @@ import pytest
                 date="2016-01-01",
                 aggregation_unit="admin3",
                 method="most-common",
+                event_types=["calls", "sms"],
                 subscriber_subset=None,
             ),
         ),
@@ -36,6 +37,13 @@ import pytest
             start_date="2016-01-01",
             end_date="2016-01-02",
             aggregation_unit="admin3",
+        ),
+        partial(
+            flowclient.unique_subscriber_counts,
+            start_date="2016-01-01",
+            end_date="2016-01-02",
+            aggregation_unit="admin3",
+            event_types=["calls", "sms"],
         ),
         partial(
             flowclient.total_network_objects,
@@ -49,6 +57,7 @@ import pytest
             end_date="2016-01-02",
             aggregation_unit="admin3",
             total_by="day",
+            event_types=["calls", "sms"],
         ),
         partial(
             flowclient.location_introversion,
@@ -62,6 +71,7 @@ import pytest
             end_date="2016-01-02",
             aggregation_unit="admin3",
             direction="in",
+            event_types=["calls", "sms"],
         ),
         partial(
             flowclient.aggregate_network_objects,
@@ -85,10 +95,12 @@ import pytest
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last"
+                date="2016-01-01", aggregation_unit="admin3", method="last",
             ),
             metric=flowclient.radius_of_gyration_spec(
-                start_date="2016-01-01", end_date="2016-01-02"
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -97,7 +109,10 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.nocturnal_events_spec(
-                start="2016-01-01", stop="2016-01-02", hours=(20, 4)
+                start="2016-01-01",
+                stop="2016-01-02",
+                hours=(20, 4),
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -106,7 +121,10 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.subscriber_degree_spec(
-                start="2016-01-01", stop="2016-01-02", direction="both"
+                start="2016-01-01",
+                stop="2016-01-02",
+                direction="both",
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -118,6 +136,7 @@ import pytest
                 start_date="2016-01-01",
                 end_date="2016-01-02",
                 aggregation_unit="admin3",
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -153,6 +172,7 @@ import pytest
                 reference_location=flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="lon-lat", method="last"
                 ),
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -161,7 +181,10 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.pareto_interactions_spec(
-                start="2016-01-01", stop="2016-01-02", proportion="0.8"
+                start="2016-01-01",
+                stop="2016-01-02",
+                proportion="0.8",
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -171,6 +194,16 @@ import pytest
                 end_date="2016-01-03",
                 aggregation_unit="admin3",
                 method="last",
+            ),
+        ),
+        partial(
+            flowclient.spatial_aggregate,
+            locations=flowclient.modal_location_from_dates_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-03",
+                aggregation_unit="admin3",
+                method="last",
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -206,6 +239,7 @@ import pytest
                 start_date="2016-01-01",
                 end_date="2016-01-04",
                 aggregation_unit="admin3",
+                event_types=["calls", "sms"],
             ),
         ),
         partial(
@@ -301,6 +335,61 @@ import pytest
             ),
         ),
         partial(
+            flowclient.meaningful_locations_aggregate,
+            start_date="2016-01-01",
+            end_date="2016-01-02",
+            aggregation_unit="admin1",
+            label="unknown",
+            tower_hour_of_day_scores=[
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                -1,
+                -1,
+            ],
+            tower_day_of_week_scores=dict(
+                monday=1,
+                tuesday=1,
+                wednesday=1,
+                thursday=0,
+                friday=-1,
+                saturday=-1,
+                sunday=-1,
+            ),
+            labels=dict(
+                evening=dict(
+                    type="Polygon",
+                    coordinates=[
+                        [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
+                    ],
+                ),
+                day=dict(
+                    type="Polygon",
+                    coordinates=[[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
+                ),
+            ),
+            event_types=["calls", "sms"],
+        ),
+        partial(
             flowclient.meaningful_locations_between_label_od_matrix,
             start_date="2016-01-01",
             end_date="2016-01-02",
@@ -354,6 +443,7 @@ import pytest
                     coordinates=[[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
                 ),
             ),
+            event_types=["calls", "sms"],
         ),
         partial(
             flowclient.location_event_counts,
@@ -430,6 +520,7 @@ import pytest
                     coordinates=[[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
                 ),
             ),
+            event_types=["calls", "sms"],
         ),
         partial(
             flowclient.joined_spatial_aggregate,
@@ -472,6 +563,7 @@ import pytest
                 end_date="2016-01-02",
                 characteristic="brand",
                 method="last",
+                event_types=["calls", "sms"],
             ),
             method="distr",
         ),
@@ -539,10 +631,24 @@ import pytest
             aggregation_unit="admin3",
         ),
         partial(
+            flowclient.consecutive_trips_od_matrix,
+            start_date="2016-01-01",
+            end_date="2016-01-03",
+            aggregation_unit="admin3",
+            event_types=["calls", "sms"],
+        ),
+        partial(
             flowclient.trips_od_matrix,
             start_date="2016-01-01",
             end_date="2016-01-03",
             aggregation_unit="admin3",
+        ),
+        partial(
+            flowclient.trips_od_matrix,
+            start_date="2016-01-01",
+            end_date="2016-01-03",
+            aggregation_unit="admin3",
+            event_types=["calls", "sms"],
         ),
     ],
     ids=lambda val: val.func.__name__,

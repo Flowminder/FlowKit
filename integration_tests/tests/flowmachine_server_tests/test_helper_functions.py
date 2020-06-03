@@ -43,6 +43,7 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
                 date="2016-01-01",
                 method="last",
                 spatial_unit=make_spatial_unit("admin", level=3),
+                table=None,
                 subscriber_subset=None,
             )
         )

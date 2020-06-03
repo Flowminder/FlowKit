@@ -18,7 +18,7 @@ def location_event_counts_spec(
     aggregation_unit: str,
     count_interval: str,
     direction: str = "both",
-    event_types: Union[None, List[str]] = None,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
@@ -40,8 +40,9 @@ def location_event_counts_spec(
         Can be one of "day", "hour" or "minute".
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
-    event_types : None or list of {"calls", "sms", "mds"}, default None
-        Optionally, include only a subset of events. Can be one of "calls", "sms" or "mds"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -87,8 +88,9 @@ def location_event_counts(*, connection: Connection, **kwargs) -> APIQuery:
         Can be one of "day", "hour" or "minute".
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
-    event_types : None or list of {"calls", "sms", "mds"}, default None
-        Optionally, include only a subset of events. Can be one of "calls", "sms" or "mds"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -113,6 +115,7 @@ def meaningful_locations_aggregate_spec(
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
     tower_cluster_call_threshold: int = 0,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
@@ -167,6 +170,9 @@ def meaningful_locations_aggregate_spec(
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -197,6 +203,7 @@ def meaningful_locations_aggregate_spec(
         "tower_hour_of_day_scores": tower_hour_of_day_scores,
         "tower_cluster_radius": tower_cluster_radius,
         "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "event_types": event_types,
         "subscriber_subset": subscriber_subset,
         "mapping_table": mapping_table,
         "geom_table": geom_table,
@@ -257,6 +264,9 @@ def meaningful_locations_aggregate(*, connection: Connection, **kwargs) -> APIQu
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -293,6 +303,7 @@ def meaningful_locations_between_label_od_matrix_spec(
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
     tower_cluster_call_threshold: int = 0,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
@@ -347,6 +358,9 @@ def meaningful_locations_between_label_od_matrix_spec(
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -378,6 +392,7 @@ def meaningful_locations_between_label_od_matrix_spec(
         "tower_hour_of_day_scores": tower_hour_of_day_scores,
         "tower_cluster_radius": tower_cluster_radius,
         "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "event_types": event_types,
         "subscriber_subset": subscriber_subset,
         "mapping_table": mapping_table,
         "geom_table": geom_table,
@@ -440,6 +455,9 @@ def meaningful_locations_between_label_od_matrix(
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -477,6 +495,7 @@ def meaningful_locations_between_dates_od_matrix_spec(
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
     tower_cluster_call_threshold: float = 0,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
@@ -536,6 +555,9 @@ def meaningful_locations_between_dates_od_matrix_spec(
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -568,6 +590,7 @@ def meaningful_locations_between_dates_od_matrix_spec(
         "tower_hour_of_day_scores": tower_hour_of_day_scores,
         "tower_cluster_radius": tower_cluster_radius,
         "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "event_types": event_types,
         "subscriber_subset": subscriber_subset,
         "mapping_table": mapping_table,
         "geom_table": geom_table,
@@ -635,6 +658,9 @@ def meaningful_locations_between_dates_od_matrix(
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -718,6 +744,7 @@ def unique_subscriber_counts_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    event_types: Optional[List[str]] = None,
 ) -> dict:
     """
     Return query spec for unique subscriber counts
@@ -730,6 +757,9 @@ def unique_subscriber_counts_spec(
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
 
     Returns
     -------
@@ -744,6 +774,7 @@ def unique_subscriber_counts_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
+        "event_types": event_types,
     }
 
 
@@ -762,6 +793,9 @@ def unique_subscriber_counts(*, connection: Connection, **kwargs) -> APIQuery:
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
 
     Returns
     -------
@@ -780,6 +814,7 @@ def location_introversion_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    event_types: Optional[List[str]] = None,
 ) -> dict:
     """
     Return query spec for location introversion
@@ -794,6 +829,9 @@ def location_introversion_spec(
         Unit of aggregation, e.g. "admin3"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts can be one of "in", "out" or "both"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
 
     Returns
     -------
@@ -809,6 +847,7 @@ def location_introversion_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
+        "event_types": event_types,
     }
 
 
@@ -829,6 +868,9 @@ def location_introversion(*, connection: Connection, **kwargs) -> APIQuery:
         Unit of aggregation, e.g. "admin3"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts can be one of "in", "out" or "both"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
 
     Returns
     -------
@@ -847,6 +889,7 @@ def total_network_objects_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    event_types: Optional[List[str]] = None,
 ) -> dict:
     """
     Return query spec for total network objects
@@ -861,6 +904,9 @@ def total_network_objects_spec(
         Unit of aggregation, e.g. "admin3"
     total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by one of "second", "minute", "hour", "day", "month" or "year"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     
     Returns
     -------
@@ -876,6 +922,7 @@ def total_network_objects_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
+        "event_types": event_types,
     }
 
 
@@ -896,6 +943,9 @@ def total_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
         Unit of aggregation, e.g. "admin3"
     total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by one of "second", "minute", "hour", "day", "month" or "year"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     
     Returns
     -------
@@ -1003,6 +1053,7 @@ def consecutive_trips_od_matrix_spec(
     start_date: str,
     end_date: str,
     aggregation_unit: str,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
@@ -1017,6 +1068,9 @@ def consecutive_trips_od_matrix_spec(
         ISO format dates between which to find trips, e.g. "2016-01-01"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -1033,6 +1087,7 @@ def consecutive_trips_od_matrix_spec(
         start_date=start_date,
         end_date=end_date,
         aggregation_unit=aggregation_unit,
+        event_types=event_types,
         subscriber_subset=subscriber_subset,
         mapping_table=mapping_table,
         geom_table=geom_table,
@@ -1053,6 +1108,9 @@ def consecutive_trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery
         ISO format dates between which to find trips, e.g. "2016-01-01"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -1073,6 +1131,7 @@ def trips_od_matrix_spec(
     start_date: str,
     end_date: str,
     aggregation_unit: str,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
@@ -1087,6 +1146,9 @@ def trips_od_matrix_spec(
         ISO format dates between which to find trips, e.g. "2016-01-01"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -1103,6 +1165,7 @@ def trips_od_matrix_spec(
         start_date=start_date,
         end_date=end_date,
         aggregation_unit=aggregation_unit,
+        event_types=event_types,
         subscriber_subset=subscriber_subset,
         mapping_table=mapping_table,
         geom_table=geom_table,
@@ -1123,6 +1186,9 @@ def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
         ISO format dates between which to find trips, e.g. "2016-01-01"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a

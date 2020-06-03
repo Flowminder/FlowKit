@@ -8,7 +8,7 @@ from marshmallow.validate import OneOf
 from flowmachine.features import UniqueLocationCounts
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
@@ -21,6 +21,7 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
         start_date,
         end_date,
         aggregation_unit,
+        event_types,
         subscriber_subset=None,
         sampling=None
     ):
@@ -29,6 +30,7 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
 
     @property
@@ -44,6 +46,7 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
             start=self.start_date,
             stop=self.end_date,
             spatial_unit=self.aggregation_unit,
+            tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 
@@ -52,6 +55,7 @@ class UniqueLocationCountsSchema(AggregationUnitMixin, BaseSchema):
     query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = UniqueLocationCountsExposed

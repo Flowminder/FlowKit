@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
@@ -18,13 +18,21 @@ __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
 class DailyLocationExposed(BaseExposedQueryWithSampling):
     def __init__(
-        self, date, *, method, aggregation_unit, subscriber_subset=None, sampling=None
+        self,
+        date,
+        *,
+        method,
+        aggregation_unit,
+        event_types,
+        subscriber_subset=None,
+        sampling=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.date = date
         self.method = method
         self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
@@ -41,6 +49,7 @@ class DailyLocationExposed(BaseExposedQueryWithSampling):
             date=self.date,
             spatial_unit=self.aggregation_unit,
             method=self.method,
+            table=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 
@@ -50,6 +59,7 @@ class DailyLocationSchema(AggregationUnitMixin, BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["daily_location"]))
     date = ISODateTime(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = DailyLocationExposed

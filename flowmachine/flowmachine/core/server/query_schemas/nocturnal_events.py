@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import NocturnalEvents
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -23,6 +23,7 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
         stop,
         night_start_hour,
         night_end_hour,
+        event_types,
         subscriber_subset=None,
         sampling=None
     ):
@@ -31,6 +32,7 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
         self.start = start
         self.stop = stop
         self.hours = (night_start_hour, night_end_hour)
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
@@ -47,6 +49,7 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
             start=self.start,
             stop=self.stop,
             hours=self.hours,
+            tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 
@@ -59,6 +62,7 @@ class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
         validate=Range(0, 23)
     )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
     night_end_hour = fields.Integer(validate=Range(0, 23))
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = NocturnalEventsExposed

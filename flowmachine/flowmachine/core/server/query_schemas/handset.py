@@ -6,7 +6,7 @@ from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberHandsetCharacteristic
-from .custom_fields import SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -23,6 +23,7 @@ class HandsetExposed(BaseExposedQueryWithSampling):
         end_date,
         method,
         characteristic,
+        event_types,
         subscriber_subset=None,
         sampling=None
     ):
@@ -32,6 +33,7 @@ class HandsetExposed(BaseExposedQueryWithSampling):
         self.end_date = end_date
         self.method = method
         self.characteristic = characteristic
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
@@ -49,6 +51,7 @@ class HandsetExposed(BaseExposedQueryWithSampling):
             stop=self.end_date,
             characteristic=self.characteristic,
             method=self.method,
+            table=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 
@@ -64,6 +67,7 @@ class HandsetSchema(BaseQueryWithSamplingSchema):
         )
     )
     method = fields.String(validate=OneOf(["last", "most-common"]))
+    event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
 
     __model__ = HandsetExposed
