@@ -352,14 +352,18 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS bad_cells;")
                 trans.execute(
-                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                )
+                trans.execute("DROP TABLE IF EXISTS good_cells;")
+                trans.execute(
+                    f"CREATE TABLE good_cells AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
                 )
                 trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
                     f"""CREATE TABLE available_cells AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
                         CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
-                            (array(SELECT id FROM bad_cells))
+                            (array(SELECT id FROM good_cells))
                         ELSE
                             (array(SELECT tmp_cells.id FROM tmp_cells))
                         END AS cells
@@ -464,7 +468,7 @@ if __name__ == "__main__":
             with log_duration("Partitioning homes."):
                 with engine.begin() as trans:
                     trans.execute(
-                        """CREATE TABLE HOMES AS
+                        """CREATE TABLE homes AS
                     SELECT id, daterange(moved_in, lead(moved_in) over (partition by id order by moved_in asc)) as home_date, cells
                     FROM tmp_homes;
                     """
