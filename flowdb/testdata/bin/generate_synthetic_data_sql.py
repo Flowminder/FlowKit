@@ -161,8 +161,12 @@ if __name__ == "__main__":
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
             echo=False,
             strategy="threadlocal",
-            pool_size=cpu_count(),
+            pool_size=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
             pool_timeout=None,
+        )
+        logger.info(
+            "Connected.",
+            num_connections=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
         )
 
         start_time = datetime.datetime.now()
@@ -212,7 +216,7 @@ if __name__ == "__main__":
                             trans.execute(
                                 f"""
                                 INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
-                                  SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, geom,
+                                  SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom,
                                     json_build_object('parent',GID_{level-1}) as additional_metadata
                                     FROM admin{level};"""
                             )
@@ -229,7 +233,7 @@ if __name__ == "__main__":
                             trans.execute(
                                 f"""
                                 INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom)
-                                  SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, geom
+                                  SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom
                                     FROM admin{level};"""
                             )
 
@@ -248,21 +252,6 @@ if __name__ == "__main__":
                         )
         homes_level = min(homes_level, 3)  # Admin3 homes at most
 
-        with engine.begin() as trans:
-            with log_duration(job="Generating population distribution."):
-                trans.execute(
-                    f"""
-                CREATE TABLE population_density AS
-                SELECT pcod as short_name, p_pop, cdf, numrange(cdf::numeric, lead(cdf::numeric) over (order by pcod), '(]') as cdf_range FROM
-                    (SELECT pcod, p_pop, coalesce(sum(p_pop) OVER (ORDER BY pcod ROWS UNBOUNDED PRECEDING EXCLUDE CURRENT ROW), 0) as cdf 
-                    FROM
-                        (SELECT pcod, pop / sum(pop) OVER () as p_pop 
-                        FROM
-                            (SELECT G.admin{homes_level}pcod as pcod, sum((st_summarystats(st_clip(R.rast, ARRAY[1], G.geom::geometry))).sum) as pop 
-                            FROM population AS R, geography.admin{homes_level} AS G WHERE st_intersects(g.geom::geometry, R.rast) 
-                                GROUP BY admin{homes_level}pcod) _) _) _;
-                """
-                )
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
             trans.execute("DROP TABLE IF EXISTS tmp_sites;")
@@ -736,10 +725,14 @@ if __name__ == "__main__":
                     except ResourceClosedError:
                         pass  # Nothing to do here
 
-        with ThreadPoolExecutor(cpu_count()) as tp:
+        with ThreadPoolExecutor(
+            min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
+        ) as tp:
             list(tp.map(do_exec, event_creation_sql))
             list(tp.map(do_exec, post_sql))
         for s in attach_sql + cleanup_sql:
             do_exec(s)
-        with ThreadPoolExecutor(cpu_count()) as tp:
+        with ThreadPoolExecutor(
+            min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
+        ) as tp:
             list(tp.map(do_exec, post_attach_sql))
