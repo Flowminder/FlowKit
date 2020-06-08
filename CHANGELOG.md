@@ -7,15 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added 
-- Queries run through FlowAPI can now be run on only a subset of the available CDR types, by supplying an `event_types` parameter. [#2631](https://github.com/Flowminder/FlowKit/issues/2631)
-- FlowETL now includes QA checks for the earliest and latest timestamps in the ingested data. [#2627](https://github.com/Flowminder/FlowKit/issues/2627)
 
 ### Changed
 
 ### Fixed
-- The FlowETL 'count_duplicates' QA check now correctly counts the number of duplicate rows. [#2651](https://github.com/Flowminder/FlowKit/issues/2651)
 
 ### Removed
+
+## [1.11.0]
+
+### Added 
+- Queries run through FlowAPI can now be run on only a subset of the available CDR types, by supplying an `event_types` parameter. [#2631](https://github.com/Flowminder/FlowKit/issues/2631)
+- FlowETL now includes QA checks for the earliest and latest timestamps in the ingested data. [#2627](https://github.com/Flowminder/FlowKit/issues/2627)
+
+### Fixed
+- The FlowETL 'count_duplicates' QA check now correctly counts the number of duplicate rows. [#2651](https://github.com/Flowminder/FlowKit/issues/2651)
 
 ## [1.10.0]
 
@@ -776,7 +782,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.10.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.11.0...master
+[1.11.0]: https://github.com/Flowminder/FlowKit/compare/1.10.0...1.11.0
 [1.10.0]: https://github.com/Flowminder/FlowKit/compare/1.9.4...1.10.0
 [1.9.4]: https://github.com/Flowminder/FlowKit/compare/1.9.3...1.9.4
 [1.9.3]: https://github.com/Flowminder/FlowKit/compare/1.9.2...1.9.3
