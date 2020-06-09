@@ -8,13 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added 
 
-- FlowDB's SQL synthetic data generator now uses the [WorldPop project](https://www.worldpop.org)'s [2016 population raster](https://www.worldpop.org/doi/10.5258/SOTON/WP00647) for the country chosen as the basis for generating data.
-
 ### Changed
 
 ### Fixed
 
 ### Removed
+
+## [1.11.1]
+
+### Added 
+
+- FlowDB's SQL synthetic data generator now uses the [WorldPop project](https://www.worldpop.org)'s [2016 population raster](https://www.worldpop.org/doi/10.5258/SOTON/WP00647) for the country chosen as the basis for generating data.
 
 ## [1.11.0]
 
@@ -784,7 +788,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.11.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.11.1...master
+[1.11.1]: https://github.com/Flowminder/FlowKit/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/Flowminder/FlowKit/compare/1.10.0...1.11.0
 [1.10.0]: https://github.com/Flowminder/FlowKit/compare/1.9.4...1.10.0
 [1.9.4]: https://github.com/Flowminder/FlowKit/compare/1.9.3...1.9.4
