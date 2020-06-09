@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.3">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.a2408e81.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.6e35a1a6.min.css">
       
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.a46bcfb3.min.css">
       
@@ -5194,9 +5194,9 @@
                 
                 <h1 id="flowclientquery_specs">flowclient.query_specs<a class="headerlink" href="#flowclientquery_specs" title="Permanent link">&para;</a></h1>
 <h2 id="daily_location_spec">daily_location_spec<a class="headerlink" href="#daily_location_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">daily_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">daily_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L53">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L58">flowclient/query_specs.py</a></p>
 <p>Return query spec for a daily location query for a date and unit of aggregation. Must be passed to <code>spatial_aggregate</code> to retrieve a result from the aggregates API.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5213,6 +5213,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>Method to use for daily location, one of 'last' or 'most-common'</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to retrieve daily locations for. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5225,9 +5229,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="displacement_spec">displacement_spec<a class="headerlink" href="#displacement_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">displacement_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reference_location</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">displacement_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reference_location</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L404">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L437">flowclient/query_specs.py</a></p>
 <p>Return query spec for displacement</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5245,6 +5249,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 <li>
 <p><code>reference_location</code>: <code>typing.Dict[str, str]</code></p>
+<p>Query specification for the locations (daily or modal location) from which to calculate displacement.</p>
+</li>
+<li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
 </li>
 <li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
@@ -5261,7 +5270,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="event_count_spec">event_count_spec<a class="headerlink" href="#event_count_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">event_count_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L362">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L395">flowclient/query_specs.py</a></p>
 <p>Return query spec for event count</p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5279,7 +5288,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 <li>
 <p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
-<p>The event types to include in the count (for example: ["calls", "sms"]). If None, include all event types in the count.</p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
 </li>
 <li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
@@ -5294,9 +5303,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="handset_spec">handset_spec<a class="headerlink" href="#handset_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">handset_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">characteristic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hnd_type&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">handset_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">characteristic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hnd_type&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L522">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L570">flowclient/query_specs.py</a></p>
 <p>Return query spec for handset</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5317,6 +5326,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>Method for choosing a handset to associate with subscriber.</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to include in event counts. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5329,9 +5342,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="modal_location_from_dates_spec">modal_location_from_dates_spec<a class="headerlink" href="#modal_location_from_dates_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">modal_location_from_dates_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">modal_location_from_dates_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L123">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L133">flowclient/query_specs.py</a></p>
 <p>Return query spec for a modal location query for a date range and unit of aggregation. Must be passed to <code>spatial_aggregate</code> to retrieve a result from the aggregates API.</p>
 <h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5352,6 +5365,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>Method to use for daily locations, one of 'last' or 'most-common'</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to retrieve modal locations for. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5366,7 +5383,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="modal_location_spec">modal_location_spec<a class="headerlink" href="#modal_location_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">modal_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">locations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L98">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L108">flowclient/query_specs.py</a></p>
 <p>Return query spec for a modal location query for a list of locations. Must be passed to <code>spatial_aggregate</code> to retrieve a result from the aggregates API.</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5383,9 +5400,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="nocturnal_events_spec">nocturnal_events_spec<a class="headerlink" href="#nocturnal_events_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">nocturnal_events_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">nocturnal_events_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L482">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L526">flowclient/query_specs.py</a></p>
 <p>Return query spec for nocturnal events</p>
 <h3 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5402,6 +5419,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>Tuple defining beginning and end of night</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to include in event counts. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5414,9 +5435,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="pareto_interactions_spec">pareto_interactions_spec<a class="headerlink" href="#pareto_interactions_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">pareto_interactions_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">proportion</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">pareto_interactions_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">proportion</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L445">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L484">flowclient/query_specs.py</a></p>
 <p>Return query spec for pareto interactions</p>
 <h3 id="parameters_7">Parameters<a class="headerlink" href="#parameters_7" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5433,6 +5454,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>proportion to track below</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to include in result. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5445,9 +5470,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="radius_of_gyration_spec">radius_of_gyration_spec<a class="headerlink" href="#radius_of_gyration_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">radius_of_gyration_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">radius_of_gyration_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L178">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L193">flowclient/query_specs.py</a></p>
 <p>Return query spec for radius of gyration</p>
 <h3 id="parameters_8">Parameters<a class="headerlink" href="#parameters_8" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5458,6 +5483,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <li>
 <p><code>end_date</code>: <code>str</code></p>
 <p>ISO format date of the day <em>after</em> the final date of the count, e.g. "2016-01-08"</p>
+</li>
+<li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
 </li>
 <li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
@@ -5474,7 +5503,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="random_sample_spec">random_sample_spec<a class="headerlink" href="#random_sample_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">random_sample_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;random_ids&#39;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L563">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L616">flowclient/query_specs.py</a></p>
 <p>Return spec for a random sample from a query result.</p>
 <h3 id="parameters_9">Parameters<a class="headerlink" href="#parameters_9" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5511,9 +5540,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="subscriber_degree_spec">subscriber_degree_spec<a class="headerlink" href="#subscriber_degree_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">subscriber_degree_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">subscriber_degree_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L288">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L316">flowclient/query_specs.py</a></p>
 <p>Return query spec for subscriber degree</p>
 <h3 id="parameters_10">Parameters<a class="headerlink" href="#parameters_10" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5530,6 +5559,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to include in event counts. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5544,7 +5577,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="topup_amount_spec">topup_amount_spec<a class="headerlink" href="#topup_amount_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">topup_amount_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L325">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L358">flowclient/query_specs.py</a></p>
 <p>Return query spec for topup amount</p>
 <h3 id="parameters_11">Parameters<a class="headerlink" href="#parameters_11" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5575,7 +5608,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="topup_balance_spec">topup_balance_spec<a class="headerlink" href="#topup_balance_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">topup_balance_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">statistic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L251">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L279">flowclient/query_specs.py</a></p>
 <p>Return query spec for top-up balance.</p>
 <h3 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5604,9 +5637,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="unique_location_counts_spec">unique_location_counts_spec<a class="headerlink" href="#unique_location_counts_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">unique_location_counts_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">unique_location_counts_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L208">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L231">flowclient/query_specs.py</a></p>
 <p>Return query spec for unique location count</p>
 <h3 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5623,6 +5656,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <p>Unit of aggregation, e.g. "admin3"</p>
 </li>
 <li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
+</li>
+<li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
 <p>Subset of subscribers to include in event counts. Must be None (= all subscribers) or a dictionary with the specification of a subset query.</p>
 </li>
@@ -5635,7 +5672,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 </li>
 </ul>
 <h2 id="unique_locations_spec">unique_locations_spec<a class="headerlink" href="#unique_locations_spec" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">unique_locations_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">unique_locations_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L10">flowclient/query_specs.py</a></p>
 <p>Subscriber level query which retrieves the unique set of locations visited by each subscriber in the time period.</p>
@@ -5651,6 +5688,10 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <li>
 <p><code>aggregation_unit</code>: <code>str</code></p>
 <p>Unit of aggregation, e.g. "admin3"</p>
+</li>
+<li>
+<p><code>event_types</code>: <code>typing.Union[typing.List[str], NoneType]</code>, default <code>None</code></p>
+<p>Optionally, include only a subset of event types (for example: ["calls", "sms"]). If None, include all event types in the query.</p>
 </li>
 <li>
 <p><code>subscriber_subset</code>: <code>typing.Union[dict, NoneType]</code>, default <code>None</code></p>
@@ -5755,14 +5796,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
     </div>
     
       <script src="../../../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../../../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: "../../..",
           features: ["tabs"],
           search: Object.assign({
-            worker: "../../../assets/javascripts/worker/search.27c6a5e6.min.js"
+            worker: "../../../assets/javascripts/worker/search.c03f0417.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

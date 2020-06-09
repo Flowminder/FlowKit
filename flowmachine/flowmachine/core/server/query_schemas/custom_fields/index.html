@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.3">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.a2408e81.min.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.6e35a1a6.min.css">
       
         <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.a46bcfb3.min.css">
       
@@ -5238,7 +5238,7 @@
 <h2 id="class-aggregateby">Class <strong>AggregateBy</strong><a class="headerlink" href="#class-aggregateby" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">AggregateBy</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L73">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L76">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a period type, e.g. "day"</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5294,7 +5294,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-dfsmetric">Class <strong>DFSMetric</strong><a class="headerlink" href="#class-dfsmetric" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">DFSMetric</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L163">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L166">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a DFS metric (for example: "amount", "commission", "fee", "discount")</p>
 <h2 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5317,7 +5317,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L404">marshmallow/fields.py</a></p>
 <p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a container field (e.g. <code>List</code>). Return <code>None</code> for unbound fields.</p>
 <h2 id="class-eventtypes">Class <strong>EventTypes</strong><a class="headerlink" href="#class-eventtypes" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">EventTypes</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">EventTypes</span><span class="p">(</span>
+    <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L31">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
@@ -5345,7 +5347,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-isodatetime">Class <strong>ISODateTime</strong><a class="headerlink" href="#class-isodatetime" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">ISODateTime</span><span class="p">(</span><span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L179">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L182">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>Like marhsmallow's datetime field, but accepts anything that can be parsed using python's fromisoformat, e.g. "2016-01-01", "2016-01-01T00:00:00", "2016-01-01 00:00:00"</p>
 <h2 id="attributes_4">Attributes<a class="headerlink" href="#attributes_4" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5370,7 +5372,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-statistic">Class <strong>Statistic</strong><a class="headerlink" href="#class-statistic" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">Statistic</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L91">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L94">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a statistic type, e.g. "median"</p>
 <h2 id="attributes_5">Attributes<a class="headerlink" href="#attributes_5" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5395,7 +5397,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-subscribersubset">Class <strong>SubscriberSubset</strong><a class="headerlink" href="#class-subscribersubset" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">SubscriberSubset</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L109">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L112">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>Represents a subscriber subset. This can either be a string representing a query_id or <code>None</code>, meaning "all subscribers".</p>
 <h2 id="attributes_6">Attributes<a class="headerlink" href="#attributes_6" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5420,7 +5422,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-totalby">Class <strong>TotalBy</strong><a class="headerlink" href="#class-totalby" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">TotalBy</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L61">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L64">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A string representing a period type, e.g. "day"</p>
 <h2 id="attributes_7">Attributes<a class="headerlink" href="#attributes_7" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5445,7 +5447,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-towerdayofweekscores">Class <strong>TowerDayOfWeekScores</strong><a class="headerlink" href="#class-towerdayofweekscores" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">TowerDayOfWeekScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L140">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L143">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].</p>
 <h2 id="attributes_8">Attributes<a class="headerlink" href="#attributes_8" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5470,7 +5472,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-towerhourofdayscores">Class <strong>TowerHourOfDayScores</strong><a class="headerlink" href="#class-towerhourofdayscores" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">TowerHourOfDayScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L127">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L130">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
 <p>A list of length 24 containing numerical scores in the range [-1.0, +1.0],</p>
 <h2 id="attributes_9">Attributes<a class="headerlink" href="#attributes_9" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5583,14 +5585,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
     </div>
     
       <script src="../../../../../../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../../../../../../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../../../../assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: "../../../../../..",
           features: ["tabs"],
           search: Object.assign({
-            worker: "../../../../../../assets/javascripts/worker/search.27c6a5e6.min.js"
+            worker: "../../../../../../assets/javascripts/worker/search.c03f0417.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

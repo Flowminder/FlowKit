@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.3">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.a2408e81.min.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.6e35a1a6.min.css">
       
         <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.a46bcfb3.min.css">
       
@@ -4618,7 +4618,7 @@
                 
                 <h1 id="flowmachinecoreserverquery_schemasdaily_location">flowmachine.core.server.query_schemas.daily_location<a class="headerlink" href="#flowmachinecoreserverquery_schemasdaily_location" title="Permanent link">&para;</a></h1>
 <h2 id="class-dailylocationexposed">Class <strong>DailyLocationExposed</strong><a class="headerlink" href="#class-dailylocationexposed" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">DailyLocationExposed</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">DailyLocationExposed</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">,</span> <span class="n">event_types</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/daily_location.py#L19">flowmachine/core/server/query_schemas/daily_location.py</a></p>
 <p>Base class for exposed flowmachine queries.
@@ -4648,7 +4648,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="_unsampled_query_obj">_unsampled_query_obj<a class="headerlink" href="#_unsampled_query_obj" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">_unsampled_query_obj</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/daily_location.py#L31">flowmachine/core/server/query_schemas/daily_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/daily_location.py#L39">flowmachine/core/server/query_schemas/daily_location.py</a></p>
 <p>Return the underlying flowmachine daily_location object.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -4661,7 +4661,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-dailylocationschema">Class <strong>DailyLocationSchema</strong><a class="headerlink" href="#class-dailylocationschema" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">DailyLocationSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/daily_location.py#L48">flowmachine/core/server/query_schemas/daily_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/daily_location.py#L57">flowmachine/core/server/query_schemas/daily_location.py</a></p>
 <p>Base schema class with which to define custom schemas.
 Example usage:  .. code-block:: python      import datetime as dt     from dataclasses import dataclass      from marshmallow import Schema, fields      @dataclass     class Album:         title: str         release_date: dt.date      class AlbumSchema(Schema):         title = fields.Str()         release_date = fields.Date()      album = Album("Beggars Banquet", dt.date(1968, 12, 6))     schema = AlbumSchema()     data = schema.dump(album)     data  # {'release_date': '1968-12-06', 'title': 'Beggars Banquet'}  :param only: Whitelist of the declared fields to select when     instantiating the Schema. If None, all fields are used. Nested fields     can be represented with dot delimiters. :param exclude: Blacklist of the declared fields to exclude     when instantiating the Schema. If a field appears in both <code>only</code> and     <code>exclude</code>, it is not used. Nested fields can be represented with dot     delimiters. :param many: Should be set to <code>True</code> if <code>obj</code> is a collection     so that the object will be serialized to a list. :param context: Optional context passed to :class:<code>fields.Method</code> and     :class:<code>fields.Function</code> fields. :param load_only: Fields to skip during serialization (write-only fields) :param dump_only: Fields to skip during deserialization (read-only fields) :param partial: Whether to ignore missing fields and not require     any fields declared. Propagates down to <code>Nested</code> fields as well. If     its value is an iterable, only missing fields listed in that iterable     will be ignored. Use dot delimiters to specify nested fields. :param unknown: Whether to exclude, include, or raise an error for unknown     fields in the data. Use <code>EXCLUDE</code>, <code>INCLUDE</code> or <code>RAISE</code>.  .. versionchanged:: 3.0.0     <code>prefix</code> parameter removed.  .. versionchanged:: 2.0.0     <code>__validators__</code>, <code>__preprocessors__</code>, and <code>__data_handlers__</code> are removed in favor of     <code>marshmallow.decorators.validates_schema</code>,     <code>marshmallow.decorators.pre_load</code> and <code>marshmallow.decorators.post_dump</code>.     <code>__accessor__</code> and <code>__error_handler__</code> are deprecated. Implement the     <code>handle_error</code> and <code>get_attribute</code> methods instead.</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
@@ -4773,14 +4773,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
     </div>
     
       <script src="../../../../../../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../../../../../../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../../../../assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: "../../../../../..",
           features: ["tabs"],
           search: Object.assign({
-            worker: "../../../../../../assets/javascripts/worker/search.27c6a5e6.min.js"
+            worker: "../../../../../../assets/javascripts/worker/search.c03f0417.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
