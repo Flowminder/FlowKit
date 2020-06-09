@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added 
 
+- FlowDB's SQL synthetic data generator now uses the [WorldPop project](https://www.worldpop.org)'s [2016 population raster](https://www.worldpop.org/doi/10.5258/SOTON/WP00647) for the country chosen as the basis for generating data.
+
 ### Changed
 
 ### Fixed

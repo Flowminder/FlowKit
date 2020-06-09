@@ -161,8 +161,12 @@ if __name__ == "__main__":
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
             echo=False,
             strategy="threadlocal",
-            pool_size=cpu_count(),
+            pool_size=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
             pool_timeout=None,
+        )
+        logger.info(
+            "Connected.",
+            num_connections=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
         )
 
         start_time = datetime.datetime.now()
@@ -212,7 +216,7 @@ if __name__ == "__main__":
                             trans.execute(
                                 f"""
                                 INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
-                                  SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, geom,
+                                  SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom,
                                     json_build_object('parent',GID_{level-1}) as additional_metadata
                                     FROM admin{level};"""
                             )
@@ -229,7 +233,7 @@ if __name__ == "__main__":
                             trans.execute(
                                 f"""
                                 INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom)
-                                  SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, geom
+                                  SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom
                                     FROM admin{level};"""
                             )
 
@@ -254,10 +258,25 @@ if __name__ == "__main__":
             trans.execute("TRUNCATE TABLE infrastructure.sites CASCADE;")
             with log_duration(job=f"Generating {num_sites} sites."):
                 trans.execute(
-                    f"""CREATE TABLE tmp_sites AS 
+                    f"""
+                CREATE TABLE tmp_sites AS 
                 SELECT row_number() over() AS rid, md5(uuid_generate_v4()::text) AS id, 
                 0 AS version, (date '2015-01-01' + random() * interval '1 year')::date AS date_of_first_service,
-                (p).geom AS geom_point from (SELECT st_dumppoints(ST_GeneratePoints(geom, {num_sites})) AS p from geography.admin0) _;"""
+                (p).geom AS geom_point FROM (SELECT st_dumppoints(ST_GeneratePoints(geom, n_sites::int)) AS p FROM
+                    (
+                    SELECT geom, n_sites FROM (
+                        SELECT short_name, count(*) as n_sites 
+                        FROM population_density 
+                        RIGHT JOIN (
+                            SELECT random()::numeric as p 
+                            FROM generate_series(1, {num_sites})
+                        ) _ 
+                        ON p <@ cdf_range 
+                        GROUP BY short_name
+                    ) _
+                    LEFT JOIN 
+                    geography.geoms USING (short_name)
+                ) as site_counts) _;"""
                 )
                 trans.execute(
                     "INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) SELECT id, version, date_of_first_service, geom_point FROM tmp_sites;"
@@ -322,14 +341,18 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS bad_cells;")
                 trans.execute(
-                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                )
+                trans.execute("DROP TABLE IF EXISTS good_cells;")
+                trans.execute(
+                    f"CREATE TABLE good_cells AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
                 )
                 trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
                     f"""CREATE TABLE available_cells AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
                         CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
-                            (array(SELECT id FROM bad_cells))
+                            (array(SELECT id FROM good_cells))
                         ELSE
                             (array(SELECT tmp_cells.id FROM tmp_cells))
                         END AS cells
@@ -434,7 +457,7 @@ if __name__ == "__main__":
             with log_duration("Partitioning homes."):
                 with engine.begin() as trans:
                     trans.execute(
-                        """CREATE TABLE HOMES AS
+                        """CREATE TABLE homes AS
                     SELECT id, daterange(moved_in, lead(moved_in) over (partition by id order by moved_in asc)) as home_date, cells
                     FROM tmp_homes;
                     """
@@ -702,10 +725,14 @@ if __name__ == "__main__":
                     except ResourceClosedError:
                         pass  # Nothing to do here
 
-        with ThreadPoolExecutor(cpu_count()) as tp:
+        with ThreadPoolExecutor(
+            min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
+        ) as tp:
             list(tp.map(do_exec, event_creation_sql))
             list(tp.map(do_exec, post_sql))
         for s in attach_sql + cleanup_sql:
             do_exec(s)
-        with ThreadPoolExecutor(cpu_count()) as tp:
+        with ThreadPoolExecutor(
+            min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
+        ) as tp:
             list(tp.map(do_exec, post_attach_sql))

@@ -37,6 +37,7 @@ RUN apt-get update \
         postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
         postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
         postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
+        postgis=$POSTGIS_VERSION \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
