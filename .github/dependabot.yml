@@ -1,0 +1,154 @@
+version: 2
+updates:
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+- package-ecosystem: bundler
+  directory: "/autoflow"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/flowauth/frontend"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowAuth
+- package-ecosystem: pip
+  directory: "/integration_tests"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - tests
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+- package-ecosystem: pip
+  directory: "/docs"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - docs
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+- package-ecosystem: pip
+  directory: "/flowkit_jwt_generator"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+- package-ecosystem: pip
+  directory: "/flowclient"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowClient
+- package-ecosystem: pip
+  directory: "/flowauth"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowAuth
+- package-ecosystem: pip
+  directory: "/flowdb/testdata/synthetic_data"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowDB
+- package-ecosystem: pip
+  directory: "/flowdb"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowDB
+- package-ecosystem: pip
+  directory: "/deployment"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+- package-ecosystem: pip
+  directory: "/flowetl"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowETL
+- package-ecosystem: pip
+  directory: "/flowapi"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowAPI
+- package-ecosystem: pip
+  directory: "/flowmachine"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowMachine
