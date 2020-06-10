@@ -25,7 +25,7 @@ dag = create_dag(
     extract_sql="extract_sms.sql",
     indexes=["msisdn_counterpart", "location_id", "datetime", "tac"],
     cluster_field="msisdn",
-    filename="/mounts/files/{{ params.cdr_type }}_{{ ds_nodash }}.csv",
+    filename="/mounts/files/{{ params.cdr_type.upper() }}_{{ ds_nodash }}.csv",
     fields={"msisdn": "TEXT", "event_time": "TIMESTAMPTZ", "cell_id": "TEXT",},
     null="Undefined",
 )
