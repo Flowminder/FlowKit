@@ -89,6 +89,17 @@ updates:
   labels:
   - FlowAuth
 - package-ecosystem: pip
+  directory: "/flowdb/test_data"
+  schedule:
+    interval: daily
+    time: '04:00'
+    timezone: Europe/London
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  labels:
+  - FlowDB
+- package-ecosystem: pip
   directory: "/flowdb/testdata/synthetic_data"
   schedule:
     interval: daily
