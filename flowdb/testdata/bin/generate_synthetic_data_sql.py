@@ -373,7 +373,7 @@ if __name__ == "__main__":
                     trans.execute("DROP TABLE IF EXISTS tmp_homes;")
                     trans.execute(
                         f"""
-                    CREATE UNLOGGED TABLE tmp_homes  WITH (autovacuum_enabled=f) AS
+                    CREATE UNLOGGED TABLE tmp_homes WITH (autovacuum_enabled=f) AS
                         SELECT s.id, 
                             moved_in::date, 
                             home_cell, 
