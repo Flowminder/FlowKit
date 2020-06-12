@@ -263,7 +263,7 @@ if __name__ == "__main__":
             with log_duration(job=f"Generating {num_sites} sites."):
                 trans.execute(
                     f"""
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) tmp_sites AS 
+                CREATE UNLOGGED TABLE tmp_sites  WITH (autovacuum_enabled=f) AS 
                 SELECT row_number() over() AS rid, md5(uuid_generate_v4()::text) AS id, 
                 0 AS version, (date '2015-01-01' + random() * interval '1 year')::date AS date_of_first_service,
                 (p).geom AS geom_point FROM (SELECT st_dumppoints(ST_GeneratePoints(geom, n_sites::int)) AS p FROM
@@ -290,7 +290,7 @@ if __name__ == "__main__":
                 trans.execute("DROP TABLE IF EXISTS tmp_cells;")
                 trans.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
                 trans.execute(
-                    f"""CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) tmp_cells as
+                    f"""CREATE UNLOGGED TABLE tmp_cells  WITH (autovacuum_enabled=f) as
                     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
                     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
                     union all
@@ -317,7 +317,7 @@ if __name__ == "__main__":
                 trans.execute("DROP TABLE IF EXISTS tacs;")
                 trans.execute("TRUNCATE TABLE infrastructure.tacs CASCADE;")
                 trans.execute(
-                    f"""CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) tacs as
+                    f"""CREATE UNLOGGED TABLE tacs  WITH (autovacuum_enabled=f) as
                 (SELECT (row_number() over())::numeric(8, 0) AS tac, 
                 (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] AS brand, 
                 uuid_generate_v4()::text AS model, 
@@ -332,7 +332,7 @@ if __name__ == "__main__":
                 trans.execute("DROP TABLE IF EXISTS subs;")
                 trans.execute(
                     f"""
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) subs as
+                CREATE UNLOGGED TABLE subs  WITH (autovacuum_enabled=f) as
                 (SELECT row_number() over() AS id, md5(uuid_generate_v4()::text) AS msisdn, md5(uuid_generate_v4()::text) AS imei, 
                 md5(uuid_generate_v4()::text) AS imsi, floor(random() * {num_tacs} + 1)::numeric(8, 0) AS tac 
                 FROM generate_series(1, {num_subscribers}));
@@ -345,15 +345,15 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS bad_cells;")
                 trans.execute(
-                    f"CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                    f"CREATE UNLOGGED TABLE bad_cells  WITH (autovacuum_enabled=f) AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
                 )
                 trans.execute("DROP TABLE IF EXISTS good_cells;")
                 trans.execute(
-                    f"CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) good_cells AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
+                    f"CREATE UNLOGGED TABLE good_cells  WITH (autovacuum_enabled=f) AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
                 )
                 trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
-                    f"""CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) available_cells AS 
+                    f"""CREATE UNLOGGED TABLE available_cells  WITH (autovacuum_enabled=f) AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
                         CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
                             (array(SELECT id FROM good_cells))
@@ -373,7 +373,7 @@ if __name__ == "__main__":
                     trans.execute("DROP TABLE IF EXISTS tmp_homes;")
                     trans.execute(
                         f"""
-                    CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) tmp_homes AS
+                    CREATE UNLOGGED TABLE tmp_homes  WITH (autovacuum_enabled=f) AS
                         SELECT s.id, 
                             moved_in::date, 
                             home_cell, 
@@ -461,7 +461,7 @@ if __name__ == "__main__":
             with log_duration("Partitioning homes."):
                 with engine.begin() as trans:
                     trans.execute(
-                        """CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) homes AS
+                        """CREATE UNLOGGED TABLE homes  WITH (autovacuum_enabled=f) AS
                     SELECT id, daterange(moved_in, lead(moved_in) over (partition by id order by moved_in asc)) as home_date, cells
                     FROM tmp_homes;
                     """
@@ -479,7 +479,7 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS interactions;")
                 trans.execute(
-                    f"""CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) interactions AS SELECT 
+                    f"""CREATE UNLOGGED TABLE interactions  WITH (autovacuum_enabled=f) AS SELECT 
                         row_number() over() AS rid, callee_id, caller_id, caller.msisdn AS caller_msisdn, 
                             caller.tac AS caller_tac, caller.imsi AS caller_imsi, caller.imei AS caller_imei, 
                             callee.msisdn AS callee_msisdn, callee.tac AS callee_tac, 
@@ -510,7 +510,7 @@ if __name__ == "__main__":
                         f"Generating {num_calls} call events for {date}",
                         f"""
                 DROP TABLE IF EXISTS call_evts_{table};
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) call_evts_{table} AS
+                CREATE UNLOGGED TABLE call_evts_  WITH (autovacuum_enabled=f){table} AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 round(random()*2600)::numeric AS duration,
                 uuid_generate_v4()::text AS id, interactions.*,
@@ -538,7 +538,7 @@ if __name__ == "__main__":
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
                 DROP TABLE IF EXISTS events.calls_{table};
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) events.calls_{table} AS 
+                CREATE UNLOGGED TABLE events  WITH (autovacuum_enabled=f).calls_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
@@ -563,7 +563,7 @@ if __name__ == "__main__":
                         f"Generating {num_sms} sms events for {date}",
                         f"""
                 DROP TABLE IF EXISTS sms_evts_{table};
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) sms_evts_{table} AS
+                CREATE UNLOGGED TABLE sms_evts_  WITH (autovacuum_enabled=f){table} AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 uuid_generate_v4()::text AS id, interactions.*,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
@@ -590,7 +590,7 @@ if __name__ == "__main__":
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
                 DROP TABLE IF EXISTS events.sms_{table};
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) events.sms_{table} AS 
+                CREATE UNLOGGED TABLE events  WITH (autovacuum_enabled=f).sms_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
@@ -615,7 +615,7 @@ if __name__ == "__main__":
                         f"Generating {num_mds} mds events for {date}",
                         f"""
                 DROP TABLE IF EXISTS events.mds_{table};
-                CREATE TABLE UNLOGGED WITH (autovacuum_enabled=f) events.mds_{table} AS
+                CREATE UNLOGGED TABLE events  WITH (autovacuum_enabled=f).mds_{table} AS
                 SELECT uuid_generate_v4()::text AS id, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS datetime, 
                 round(random() * 260)::numeric AS duration, volume_upload + volume_download AS volume_total, volume_upload,
                 volume_download, msisdn, cell AS location_id, imsi, imei, tac, 
