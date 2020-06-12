@@ -540,7 +540,7 @@ if __name__ == "__main__":
                 DROP TABLE IF EXISTS events.calls_{table};
                 CREATE TABLE events.calls_{table}  WITH (autovacuum_enabled=f) AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
-                caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cel::TEXT AS location_id,
+                caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell::TEXT AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
                 NULL::NUMERIC AS country_code
                 FROM call_evts_{table}
