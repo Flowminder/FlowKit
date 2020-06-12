@@ -464,10 +464,10 @@ if __name__ == "__main__":
                     )
             with log_duration("Analyzing and indexing subscriber home regions."):
                 with engine.begin() as trans:
-                    trans.execute("ANALYZE homes;")
                     trans.execute("CREATE INDEX ON homes (id);")
-                    trans.execute("CREATE INDEX ON homes (home_date);")
+                    trans.execute("CREATE INDEX ON homes USING GIST(home_date);")
                     trans.execute("CREATE INDEX ON homes (home_date, id);")
+                    trans.execute("ANALYZE homes;")
 
         with log_duration(
             f"Generating {num_subscribers * interactions_multiplier} interaction pairs."
@@ -669,17 +669,17 @@ if __name__ == "__main__":
                         )
                     post_sql.append(
                         (
-                            f"Analyzing events.{sub}_{table}",
-                            f"ANALYZE events.{sub}_{table};",
-                        )
-                    )
-                    post_sql.append(
-                        (
                             f"Indexing events.{sub}_{table}",
                             f"""CREATE INDEX ON events.{sub}_{table}(msisdn);
                                 CREATE INDEX ON events.{sub}_{table}(datetime);
                                 CREATE INDEX ON events.{sub}_{table}(location_id);
                             """,
+                        )
+                    )
+                    post_sql.append(
+                        (
+                            f"Analyzing events.{sub}_{table}",
+                            f"ANALYZE events.{sub}_{table};",
                         )
                     )
                     post_sql.append(
