@@ -179,8 +179,12 @@ if __name__ == "__main__":
         homes_level = 0
         with engine.begin() as trans:
             trans.execute("TRUNCATE TABLE geography.geoms CASCADE;")
-            for level in range(4):
-                trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
+        for level in range(4):
+            with engine.begin() as trans:
+                try:
+                    trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
+                except Exception as exc:
+                    logger.error("Couldn't drop geo table.", level=level, exc=exc)
         with engine.begin() as trans:
             with log_duration(job="Load shape data."):
                 for shape_file in available_files:
@@ -505,6 +509,7 @@ if __name__ == "__main__":
                     (
                         f"Generating {num_calls} call events for {date}",
                         f"""
+                DROP TABLE IF EXISTS call_evts_{table};
                 CREATE TABLE call_evts_{table} AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 round(random()*2600)::numeric AS duration,
@@ -532,6 +537,7 @@ if __name__ == "__main__":
                 LEFT JOIN homes AS callee_homes
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
+                DROP TABLE IF EXISTS events.calls_{table};
                 CREATE TABLE events.calls_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
@@ -556,6 +562,7 @@ if __name__ == "__main__":
                     (
                         f"Generating {num_sms} sms events for {date}",
                         f"""
+                DROP TABLE IF EXISTS sms_evts_{table};
                 CREATE TABLE sms_evts_{table} AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 uuid_generate_v4()::text AS id, interactions.*,
@@ -582,6 +589,7 @@ if __name__ == "__main__":
                 LEFT JOIN homes AS callee_homes
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
+                DROP TABLE IF EXISTS events.sms_{table};
                 CREATE TABLE events.sms_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
@@ -606,6 +614,7 @@ if __name__ == "__main__":
                     (
                         f"Generating {num_mds} mds events for {date}",
                         f"""
+                DROP TABLE IF EXISTS events.mds_{table};
                 CREATE TABLE events.mds_{table} AS
                 SELECT uuid_generate_v4()::text AS id, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS datetime, 
                 round(random() * 260)::numeric AS duration, volume_upload + volume_download AS volume_total, volume_upload,
