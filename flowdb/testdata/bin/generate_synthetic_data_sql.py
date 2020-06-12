@@ -641,6 +641,9 @@ if __name__ == "__main__":
         attach_sql = []
         post_attach_sql = []
         cleanup_sql = []
+        cluster_sql = []
+        index_sql = []
+        analyze_sql = []
         for sub in ("calls", "sms", "mds"):
             if getattr(args, f"n_{sub}") > 0:
                 for date in (
@@ -661,13 +664,13 @@ if __name__ == "__main__":
                         )
                     )
                     if args.cluster:
-                        post_sql.append(
+                        cluster_sql.append(
                             (
                                 f"Clustering events.{sub}_{table}.",
                                 f"CLUSTER events.{sub}_{table} USING {sub}_{table}_msisdn_idx;",
                             )
                         )
-                    post_sql.append(
+                    index_sql.append(
                         (
                             f"Indexing events.{sub}_{table}",
                             f"""CREATE INDEX ON events.{sub}_{table}(msisdn);
@@ -676,7 +679,7 @@ if __name__ == "__main__":
                             """,
                         )
                     )
-                    post_sql.append(
+                    analyze_sql.append(
                         (
                             f"Analyzing events.{sub}_{table}",
                             f"ANALYZE events.{sub}_{table};",
@@ -729,6 +732,9 @@ if __name__ == "__main__":
             min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
         ) as tp:
             list(tp.map(do_exec, event_creation_sql))
+            list(tp.map(do_exec, cluster_sql))
+            list(tp.map(do_exec, index_sql))
+            list(tp.map(do_exec, analyze_sql))
             list(tp.map(do_exec, post_sql))
         for s in attach_sql + cleanup_sql:
             do_exec(s)
