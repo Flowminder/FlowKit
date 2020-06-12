@@ -510,7 +510,7 @@ if __name__ == "__main__":
                         f"Generating {num_calls} call events for {date}",
                         f"""
                 DROP TABLE IF EXISTS call_evts_{table};
-                CREATE UNLOGGED TABLE call_evts_  WITH (autovacuum_enabled=f){table} AS
+                CREATE UNLOGGED TABLE call_evts_{table}  WITH (autovacuum_enabled=f) AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 round(random()*2600)::numeric AS duration,
                 uuid_generate_v4()::text AS id, interactions.*,
@@ -538,7 +538,7 @@ if __name__ == "__main__":
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
                 DROP TABLE IF EXISTS events.calls_{table};
-                CREATE UNLOGGED TABLE events  WITH (autovacuum_enabled=f).calls_{table} AS 
+                CREATE UNLOGGED TABLE events.calls_{table}  WITH (autovacuum_enabled=f) AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
@@ -563,7 +563,7 @@ if __name__ == "__main__":
                         f"Generating {num_sms} sms events for {date}",
                         f"""
                 DROP TABLE IF EXISTS sms_evts_{table};
-                CREATE UNLOGGED TABLE sms_evts_  WITH (autovacuum_enabled=f){table} AS
+                CREATE UNLOGGED TABLE sms_evts_{table} WITH (autovacuum_enabled=f) AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 uuid_generate_v4()::text AS id, interactions.*,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
@@ -590,7 +590,7 @@ if __name__ == "__main__":
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
                 DROP TABLE IF EXISTS events.sms_{table};
-                CREATE UNLOGGED TABLE events  WITH (autovacuum_enabled=f).sms_{table} AS 
+                CREATE UNLOGGED TABLE events.sms_{table} WITH (autovacuum_enabled=f) AS 
                 SELECT id, true AS outgoing, start_time AS datetime, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
@@ -615,7 +615,7 @@ if __name__ == "__main__":
                         f"Generating {num_mds} mds events for {date}",
                         f"""
                 DROP TABLE IF EXISTS events.mds_{table};
-                CREATE UNLOGGED TABLE events  WITH (autovacuum_enabled=f).mds_{table} AS
+                CREATE UNLOGGED TABLE events.mds_{table} WITH (autovacuum_enabled=f) AS
                 SELECT uuid_generate_v4()::text AS id, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS datetime, 
                 round(random() * 260)::numeric AS duration, volume_upload + volume_download AS volume_total, volume_upload,
                 volume_download, msisdn, cell AS location_id, imsi, imei, tac, 
