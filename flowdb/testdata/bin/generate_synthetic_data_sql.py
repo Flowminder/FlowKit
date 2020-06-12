@@ -736,6 +736,9 @@ if __name__ == "__main__":
                         logger.info(f"SQL result", job=msg, result=res.fetchall())
                     except ResourceClosedError:
                         pass  # Nothing to do here
+                    except Exception as exc:
+                        logger.error("Hit an issue.", exc=exc)
+                        raise exc
 
         with ThreadPoolExecutor(
             min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
