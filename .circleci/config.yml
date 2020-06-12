@@ -140,6 +140,7 @@ executors:
           MAX_WORKERS_PER_GATHER: 2
           SHARED_BUFFERS_SIZE: "1GB"
           EFFECTIVE_CACHE_SIZE: "1GB"
+          STATS_TARGET: 100
       - image: bitnami/redis:latest
         environment:
           REDIS_PASSWORD: "fm_redis"
