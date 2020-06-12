@@ -292,7 +292,7 @@ if __name__ == "__main__":
                 trans.execute(
                     f"""CREATE UNLOGGED TABLE tmp_cells  WITH (autovacuum_enabled=f) as
                     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
-                    (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
+                    (SELECT md5(uuid_generate_v4()::text)::char(32) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
                     union all
                     SELECT * from 
                     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from
