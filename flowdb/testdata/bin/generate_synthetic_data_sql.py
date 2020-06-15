@@ -179,8 +179,12 @@ if __name__ == "__main__":
         homes_level = 0
         with engine.begin() as trans:
             trans.execute("TRUNCATE TABLE geography.geoms CASCADE;")
-            for level in range(4):
-                trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
+        for level in range(4):
+            with engine.begin() as trans:
+                try:
+                    trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
+                except Exception as exc:
+                    logger.error("Couldn't drop geo table.", level=level, exc=exc)
         with engine.begin() as trans:
             with log_duration(job="Load shape data."):
                 for shape_file in available_files:
@@ -259,7 +263,7 @@ if __name__ == "__main__":
             with log_duration(job=f"Generating {num_sites} sites."):
                 trans.execute(
                     f"""
-                CREATE TABLE tmp_sites AS 
+                CREATE UNLOGGED TABLE tmp_sites  WITH (autovacuum_enabled=f) AS 
                 SELECT row_number() over() AS rid, md5(uuid_generate_v4()::text) AS id, 
                 0 AS version, (date '2015-01-01' + random() * interval '1 year')::date AS date_of_first_service,
                 (p).geom AS geom_point FROM (SELECT st_dumppoints(ST_GeneratePoints(geom, n_sites::int)) AS p FROM
@@ -286,9 +290,9 @@ if __name__ == "__main__":
                 trans.execute("DROP TABLE IF EXISTS tmp_cells;")
                 trans.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
                 trans.execute(
-                    f"""CREATE TABLE tmp_cells as
+                    f"""CREATE UNLOGGED TABLE tmp_cells  WITH (autovacuum_enabled=f) as
                     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
-                    (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
+                    (SELECT md5(uuid_generate_v4()::text)::char(32) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
                     union all
                     SELECT * from 
                     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from
@@ -313,7 +317,7 @@ if __name__ == "__main__":
                 trans.execute("DROP TABLE IF EXISTS tacs;")
                 trans.execute("TRUNCATE TABLE infrastructure.tacs CASCADE;")
                 trans.execute(
-                    f"""CREATE TABLE tacs as
+                    f"""CREATE UNLOGGED TABLE tacs  WITH (autovacuum_enabled=f) as
                 (SELECT (row_number() over())::numeric(8, 0) AS tac, 
                 (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] AS brand, 
                 uuid_generate_v4()::text AS model, 
@@ -328,7 +332,7 @@ if __name__ == "__main__":
                 trans.execute("DROP TABLE IF EXISTS subs;")
                 trans.execute(
                     f"""
-                CREATE TABLE subs as
+                CREATE UNLOGGED TABLE subs  WITH (autovacuum_enabled=f) as
                 (SELECT row_number() over() AS id, md5(uuid_generate_v4()::text) AS msisdn, md5(uuid_generate_v4()::text) AS imei, 
                 md5(uuid_generate_v4()::text) AS imsi, floor(random() * {num_tacs} + 1)::numeric(8, 0) AS tac 
                 FROM generate_series(1, {num_subscribers}));
@@ -341,15 +345,15 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS bad_cells;")
                 trans.execute(
-                    f"CREATE TABLE bad_cells AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
+                    f"CREATE UNLOGGED TABLE bad_cells  WITH (autovacuum_enabled=f) AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
                 )
                 trans.execute("DROP TABLE IF EXISTS good_cells;")
                 trans.execute(
-                    f"CREATE TABLE good_cells AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
+                    f"CREATE UNLOGGED TABLE good_cells  WITH (autovacuum_enabled=f) AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
                 )
                 trans.execute("DROP TABLE IF EXISTS available_cells;")
                 trans.execute(
-                    f"""CREATE TABLE available_cells AS 
+                    f"""CREATE UNLOGGED TABLE available_cells  WITH (autovacuum_enabled=f) AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
                         CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
                             (array(SELECT id FROM good_cells))
@@ -369,7 +373,7 @@ if __name__ == "__main__":
                     trans.execute("DROP TABLE IF EXISTS tmp_homes;")
                     trans.execute(
                         f"""
-                    CREATE TABLE tmp_homes AS
+                    CREATE UNLOGGED TABLE tmp_homes WITH (autovacuum_enabled=f) AS
                         SELECT s.id, 
                             moved_in::date, 
                             home_cell, 
@@ -400,13 +404,13 @@ if __name__ == "__main__":
                                     f"""
                                     WITH subs_to_move_randomly AS (
                                         SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
-                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell 
+                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell 
                                         FROM subs ORDER BY random() LIMIT floor(random_poisson({num_subscribers * relocation_probability}))),
                                     subs_to_rehome AS (
                                         SELECT s.id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
-                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell
+                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell
                                         FROM (SELECT first_value(id) over (partition by id order by moved_in desc) as id, first_value(home_cell) over (partition by id order by moved_in desc) as home_cell from tmp_homes) s
-                                        LEFT JOIN bad_cells ON home_cell=bad_cells.id
+                                        INNER JOIN bad_cells ON home_cell=bad_cells.id
     
                                     ),
                                     subs_to_move AS (select * from subs_to_move_randomly union select * from subs_to_rehome)
@@ -436,7 +440,7 @@ if __name__ == "__main__":
                                 f"""
                                 WITH subs_to_move_randomly AS (
                                     SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
-                                    random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell 
+                                    random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell 
                                     FROM subs ORDER BY random() LIMIT floor(random_poisson({num_subscribers*relocation_probability})))
                                 INSERT INTO tmp_homes
                                 SELECT id, 
@@ -457,17 +461,17 @@ if __name__ == "__main__":
             with log_duration("Partitioning homes."):
                 with engine.begin() as trans:
                     trans.execute(
-                        """CREATE TABLE homes AS
+                        """CREATE UNLOGGED TABLE homes  WITH (autovacuum_enabled=f) AS
                     SELECT id, daterange(moved_in, lead(moved_in) over (partition by id order by moved_in asc)) as home_date, cells
                     FROM tmp_homes;
                     """
                     )
             with log_duration("Analyzing and indexing subscriber home regions."):
                 with engine.begin() as trans:
-                    trans.execute("ANALYZE homes;")
                     trans.execute("CREATE INDEX ON homes (id);")
-                    trans.execute("CREATE INDEX ON homes (home_date);")
+                    trans.execute("CREATE INDEX ON homes USING GIST(home_date);")
                     trans.execute("CREATE INDEX ON homes (home_date, id);")
+                    trans.execute("ANALYZE homes;")
 
         with log_duration(
             f"Generating {num_subscribers * interactions_multiplier} interaction pairs."
@@ -475,7 +479,7 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("DROP TABLE IF EXISTS interactions;")
                 trans.execute(
-                    f"""CREATE TABLE interactions AS SELECT 
+                    f"""CREATE UNLOGGED TABLE interactions  WITH (autovacuum_enabled=f) AS SELECT 
                         row_number() over() AS rid, callee_id, caller_id, caller.msisdn AS caller_msisdn, 
                             caller.tac AS caller_tac, caller.imsi AS caller_imsi, caller.imei AS caller_imei, 
                             callee.msisdn AS callee_msisdn, callee.tac AS callee_tac, 
@@ -505,7 +509,8 @@ if __name__ == "__main__":
                     (
                         f"Generating {num_calls} call events for {date}",
                         f"""
-                CREATE TABLE call_evts_{table} AS
+                DROP TABLE IF EXISTS call_evts_{table};
+                CREATE UNLOGGED TABLE call_evts_{table}  WITH (autovacuum_enabled=f) AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 round(random()*2600)::numeric AS duration,
                 uuid_generate_v4()::text AS id, interactions.*,
@@ -532,15 +537,16 @@ if __name__ == "__main__":
                 LEFT JOIN homes AS callee_homes
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
-                CREATE TABLE events.calls_{table} AS 
+                DROP TABLE IF EXISTS events.calls_{table};
+                CREATE TABLE events.calls_{table}  WITH (autovacuum_enabled=f) AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
-                caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
+                caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell::TEXT AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
                 NULL::NUMERIC AS country_code
                 FROM call_evts_{table}
                 UNION ALL 
                 SELECT id, false AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
-                callee_msisdn AS msisdn, caller_msisdn AS msisdn_counterpart, callee_cell AS location_id,
+                callee_msisdn AS msisdn, caller_msisdn AS msisdn_counterpart, callee_cell::TEXT AS location_id,
                 callee_imsi AS imsi, callee_imei AS imei, callee_tac AS tac, NULL::NUMERIC AS operator_code,
                 NULL::NUMERIC AS country_code
                 FROM call_evts_{table};
@@ -556,7 +562,8 @@ if __name__ == "__main__":
                     (
                         f"Generating {num_sms} sms events for {date}",
                         f"""
-                CREATE TABLE sms_evts_{table} AS
+                DROP TABLE IF EXISTS sms_evts_{table};
+                CREATE UNLOGGED TABLE sms_evts_{table} WITH (autovacuum_enabled=f) AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 uuid_generate_v4()::text AS id, interactions.*,
                 CASE WHEN (random() > {1 - out_of_area_probability}) THEN
@@ -582,15 +589,16 @@ if __name__ == "__main__":
                 LEFT JOIN homes AS callee_homes
                 ON callee_homes.home_date@>'{table}'::date and callee_homes.id=interactions.callee_id;
     
-                CREATE TABLE events.sms_{table} AS 
+                DROP TABLE IF EXISTS events.sms_{table};
+                CREATE TABLE events.sms_{table} WITH (autovacuum_enabled=f) AS 
                 SELECT id, true AS outgoing, start_time AS datetime, NULL::TEXT AS network,
-                caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
+                caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell::TEXT AS location_id,
                 caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
                 NULL::NUMERIC AS country_code
                 FROM sms_evts_{table}
                 UNION ALL 
                 SELECT id, false AS outgoing, start_time AS datetime, NULL::TEXT AS network,
-                callee_msisdn AS msisdn, caller_msisdn AS msisdn_counterpart, callee_cell AS location_id,
+                callee_msisdn AS msisdn, caller_msisdn AS msisdn_counterpart, callee_cell::TEXT AS location_id,
                 callee_imsi AS imsi, callee_imei AS imei, callee_tac AS tac, NULL::NUMERIC AS operator_code,
                 NULL::NUMERIC AS country_code
                 FROM sms_evts_{table};
@@ -606,10 +614,11 @@ if __name__ == "__main__":
                     (
                         f"Generating {num_mds} mds events for {date}",
                         f"""
-                CREATE TABLE events.mds_{table} AS
+                DROP TABLE IF EXISTS events.mds_{table};
+                CREATE TABLE events.mds_{table} WITH (autovacuum_enabled=f) AS
                 SELECT uuid_generate_v4()::text AS id, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS datetime, 
                 round(random() * 260)::numeric AS duration, volume_upload + volume_download AS volume_total, volume_upload,
-                volume_download, msisdn, cell AS location_id, imsi, imei, tac, 
+                volume_download, msisdn, cell::TEXT AS location_id, imsi, imei, tac, 
                 NULL::NUMERIC AS operator_code, NULL::NUMERIC AS country_code
                 FROM
                 (SELECT
@@ -641,6 +650,9 @@ if __name__ == "__main__":
         attach_sql = []
         post_attach_sql = []
         cleanup_sql = []
+        cluster_sql = []
+        index_sql = []
+        analyze_sql = []
         for sub in ("calls", "sms", "mds"):
             if getattr(args, f"n_{sub}") > 0:
                 for date in (
@@ -661,25 +673,25 @@ if __name__ == "__main__":
                         )
                     )
                     if args.cluster:
-                        post_sql.append(
+                        cluster_sql.append(
                             (
                                 f"Clustering events.{sub}_{table}.",
                                 f"CLUSTER events.{sub}_{table} USING {sub}_{table}_msisdn_idx;",
                             )
                         )
-                    post_sql.append(
-                        (
-                            f"Analyzing events.{sub}_{table}",
-                            f"ANALYZE events.{sub}_{table};",
-                        )
-                    )
-                    post_sql.append(
+                    index_sql.append(
                         (
                             f"Indexing events.{sub}_{table}",
                             f"""CREATE INDEX ON events.{sub}_{table}(msisdn);
                                 CREATE INDEX ON events.{sub}_{table}(datetime);
                                 CREATE INDEX ON events.{sub}_{table}(location_id);
                             """,
+                        )
+                    )
+                    analyze_sql.append(
+                        (
+                            f"Analyzing events.{sub}_{table}",
+                            f"ANALYZE events.{sub}_{table};",
                         )
                     )
                     post_sql.append(
@@ -724,11 +736,17 @@ if __name__ == "__main__":
                         logger.info(f"SQL result", job=msg, result=res.fetchall())
                     except ResourceClosedError:
                         pass  # Nothing to do here
+                    except Exception as exc:
+                        logger.error("Hit an issue.", exc=exc)
+                        raise exc
 
         with ThreadPoolExecutor(
             min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
         ) as tp:
             list(tp.map(do_exec, event_creation_sql))
+            list(tp.map(do_exec, cluster_sql))
+            list(tp.map(do_exec, index_sql))
+            list(tp.map(do_exec, analyze_sql))
             list(tp.map(do_exec, post_sql))
         for s in attach_sql + cleanup_sql:
             do_exec(s)
