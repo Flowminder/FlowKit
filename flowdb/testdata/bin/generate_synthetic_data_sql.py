@@ -404,11 +404,11 @@ if __name__ == "__main__":
                                     f"""
                                     WITH subs_to_move_randomly AS (
                                         SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
-                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell 
+                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell 
                                         FROM subs ORDER BY random() LIMIT floor(random_poisson({num_subscribers * relocation_probability}))),
                                     subs_to_rehome AS (
                                         SELECT s.id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
-                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell
+                                        random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell
                                         FROM (SELECT first_value(id) over (partition by id order by moved_in desc) as id, first_value(home_cell) over (partition by id order by moved_in desc) as home_cell from tmp_homes) s
                                         LEFT JOIN bad_cells ON home_cell=bad_cells.id
     
@@ -440,7 +440,7 @@ if __name__ == "__main__":
                                 f"""
                                 WITH subs_to_move_randomly AS (
                                     SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
-                                    random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::text[]) as home_cell 
+                                    random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell 
                                     FROM subs ORDER BY random() LIMIT floor(random_poisson({num_subscribers*relocation_probability})))
                                 INSERT INTO tmp_homes
                                 SELECT id, 
