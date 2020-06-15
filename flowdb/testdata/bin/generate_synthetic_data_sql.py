@@ -410,7 +410,7 @@ if __name__ == "__main__":
                                         SELECT s.id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
                                         random_pick((select cells from available_cells where day='{date.strftime("%Y-%m-%d")}')::char(32)[]) as home_cell
                                         FROM (SELECT first_value(id) over (partition by id order by moved_in desc) as id, first_value(home_cell) over (partition by id order by moved_in desc) as home_cell from tmp_homes) s
-                                        LEFT JOIN bad_cells ON home_cell=bad_cells.id
+                                        INNER JOIN bad_cells ON home_cell=bad_cells.id
     
                                     ),
                                     subs_to_move AS (select * from subs_to_move_randomly union select * from subs_to_rehome)
