@@ -410,6 +410,7 @@ jobs:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
+      num_days: 7
     working_directory: /home/circleci/project/flowmachine
     steps:
       - checkout:
