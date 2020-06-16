@@ -77,6 +77,7 @@ def test_dfs_total_transaction_commission(get_dataframe):
     )
     df = get_dataframe(q)
     result = df.to_csv(index=False).strip()
+    print(df)
     result_expected = textwrap.dedent(
         """
         date,pcod,value
