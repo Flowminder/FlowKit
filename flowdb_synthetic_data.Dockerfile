@@ -37,11 +37,12 @@ RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three
 #   Add synthetic data to the ingestion directory.
 #
 RUN mkdir -p /docker-entrypoint-initdb.d/sql/syntheticdata/ && \
-    mkdir -p /opt/synthetic_data/
+    mkdir -p /opt/synthetic_data/ && /docker-entrypoint-initdb.d/py/testdata/
 
 COPY --chown=postgres flowdb/testdata/bin/9900_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
 COPY --chown=postgres flowdb/testdata/bin/9800_population_density.sql.gz /docker-entrypoint-initdb.d/
 COPY --chown=postgres flowdb/testdata/bin/9910_run_synthetic_dfs_data_generation_script.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres flowdb/testdata/test_data/py/* /docker-entrypoint-initdb.d/py/testdata/
 
 COPY --chown=postgres flowdb/testdata/bin/generate_synthetic_data*.py /opt/synthetic_data/
 ADD --chown=postgres flowdb/testdata/test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
