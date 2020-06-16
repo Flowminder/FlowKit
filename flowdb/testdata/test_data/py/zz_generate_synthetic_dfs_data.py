@@ -6,7 +6,6 @@
 import os
 import pandas as pd
 from functools import partial
-from geoalchemy2 import Geometry, func
 from io import StringIO
 from sqlalchemy import create_engine, select, Column, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -110,18 +109,9 @@ class Cells(Base):
     cell_id = Column("id", Text, primary_key=True)
     version = Column("version", Text, primary_key=True)
     site_id = Column(Text)
-    geom_point = Column(Geometry("POINT"))
 
 
-select_stmt = select(
-    [
-        Cells.cell_id.label("cell_id"),
-        Cells.version,
-        Cells.site_id,
-        func.ST_X(Cells.geom_point).label("lon"),
-        func.ST_Y(Cells.geom_point).label("lat"),
-    ]
-)
+select_stmt = select([Cells.cell_id.label("cell_id"), Cells.version, Cells.site_id])
 df_cells = pd.read_sql(select_stmt, engine)
 
 # Pick only the latest version for each cell
