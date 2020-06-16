@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from itertools import chain
 
 import os
 import pandas as pd
@@ -87,9 +88,11 @@ subscribers = pd.read_sql(
     engine,
 )
 # Add extra subscribers if necessary
-subscribers = pd.concat(
-    subscribers,
-    SubscriberGenerator().generate(num_subscribers - len(subscribers), seed=11111),
+subscribers = list(
+    chain(
+        subscribers.itertuples(index=False, name="Subscriber"),
+        SubscriberGenerator().generate(num_subscribers - len(subscribers), seed=11111),
+    )
 )
 print("Done.")
 
