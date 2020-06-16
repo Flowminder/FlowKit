@@ -2,6 +2,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
+
 from itertools import chain
 
 import os
@@ -20,10 +22,12 @@ from tohu import (
     Timestamp,
 )
 
-num_subscribers = 1000
-num_transactions_per_date = 3000
+num_subscribers = int(os.getenv("NUM_DFS_SUBSCRIBERS", "1000"))
+num_transactions_per_date = int(os.getenv("NUM_DFS_TRANSACTIONS", "3000"))
 start_date = "2016-01-01"
-end_date = "2016-01-07"
+end_date = datetime.date(2016, 1, 1) + datetime.timedelta(
+    days=int(os.getenv("N_DAYS", "7"))
+)
 dfs_schema = "dfs"
 
 # Note: at this stage of the postgres startup process we connect
