@@ -81,8 +81,12 @@ class SubscriberGenerator(CustomGenerator):
     tac = DigitString(length=5)
 
 
-print(f"Generating {num_subscribers} subscribers... ", flush=True, end="")
-subscribers = SubscriberGenerator().generate(num_subscribers, seed=11111)
+print(f"Extracting {num_subscribers} subscribers... ", flush=True, end="")
+# subscribers = SubscriberGenerator().generate(num_subscribers, seed=11111)
+subscribers = pd.read_sql(
+    f"SELECT msisdn, imei, imsi, tac FROM events.calls group by msisdn, imei, imsi, tac LIMIT {num_subscribers}",
+    engine,
+)
 print("Done.")
 
 
