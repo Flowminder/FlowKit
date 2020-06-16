@@ -11,7 +11,7 @@
 # building the flowdb_testdata image:
 #
 !flowdb/testdata/bin/9900_ingest_test_data.sh
-!flowdb/testdata/bin/9900_run_synthetic_dfs_data_generation_script.sh
+!flowdb/testdata/bin/9910_run_synthetic_dfs_data_generation_script.sh
 !flowdb/testdata/bin/9910_migrate_test_data.sql
 !flowdb/testdata/test_data/Pipfile
 !flowdb/testdata/test_data/Pipfile.lock
