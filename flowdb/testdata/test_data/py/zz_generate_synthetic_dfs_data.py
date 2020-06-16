@@ -87,6 +87,11 @@ subscribers = pd.read_sql(
     f"SELECT msisdn, imei, imsi, tac FROM events.calls group by msisdn, imei, imsi, tac LIMIT {num_subscribers}",
     engine,
 )
+# Add extra subscribers if necessary
+subscribers = pd.concat(
+    subscribers,
+    SubscriberGenerator().generate(num_subscribers - len(subscribers), seed=11111),
+)
 print("Done.")
 
 
