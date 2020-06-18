@@ -6,8 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Added 
-- The issuer name can now be set for FlowAuth's 2factor authentication using the `FLOWAUTH_TWO_FACTOR_ISSUER` environment variable. 
+### Added
+
+-   The issuer name can now be set for FlowAuth's 2factor authentication using the `FLOWAUTH_TWO_FACTOR_ISSUER` environment variable.
+-   FlowAPI's internal port can now be set using the `FLOWAPI_PORT` environment variable, but continues to default to `9090`. [#2723](https://github.com/Flowminder/FlowKit/issues/2723)
+-   FlowETL's default port can now be set using the `FLOWETL_PORT` environment variable, but continues to default to `8080`. [#2724](https://github.com/Flowminder/FlowKit/issues/2724)
 
 ### Changed
 - Test and synthetic DFS data now uses the same pool of subscribers as CDR data. [#2713](https://github.com/Flowminder/FlowKit/issues/2713)
@@ -20,61 +23,75 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [1.11.1]
 
-### Added 
+### Added
 
-- FlowDB's SQL synthetic data generator now uses the [WorldPop project](https://www.worldpop.org)'s [2016 population raster](https://www.worldpop.org/doi/10.5258/SOTON/WP00647) for the country chosen as the basis for generating data.
+-   FlowDB's SQL synthetic data generator now uses the [WorldPop project](https://www.worldpop.org)'s [2016 population raster](https://www.worldpop.org/doi/10.5258/SOTON/WP00647) for the country chosen as the basis for generating data.
 
 ## [1.11.0]
 
-### Added 
-- Queries run through FlowAPI can now be run on only a subset of the available CDR types, by supplying an `event_types` parameter. [#2631](https://github.com/Flowminder/FlowKit/issues/2631)
-- FlowETL now includes QA checks for the earliest and latest timestamps in the ingested data. [#2627](https://github.com/Flowminder/FlowKit/issues/2627)
+### Added
+
+-   Queries run through FlowAPI can now be run on only a subset of the available CDR types, by supplying an `event_types` parameter. [#2631](https://github.com/Flowminder/FlowKit/issues/2631)
+-   FlowETL now includes QA checks for the earliest and latest timestamps in the ingested data. [#2627](https://github.com/Flowminder/FlowKit/issues/2627)
 
 ### Fixed
-- The FlowETL 'count_duplicates' QA check now correctly counts the number of duplicate rows. [#2651](https://github.com/Flowminder/FlowKit/issues/2651)
+
+-   The FlowETL 'count_duplicates' QA check now correctly counts the number of duplicate rows. [#2651](https://github.com/Flowminder/FlowKit/issues/2651)
 
 ## [1.10.0]
 
 ### Added
-- FlowDB's SQL synthetic data generator can now generate events for any country, not just Nepal.
-  
-  To generate synthetic data for a different country, supply the `COUNTRY` environment variable when starting the container, and a valid GADM GID code for the region to simulate a disaster. 
+
+-   FlowDB's SQL synthetic data generator can now generate events for any country, not just Nepal.
+
+    To generate synthetic data for a different country, supply the `COUNTRY` environment variable when starting the container, and a valid GADM GID code for the region to simulate a disaster.
 
 ### Changed
-- FlowMachine's docker container now uses Python 3.8
-- FlowAPI's docker container now uses Python 3.8
-- FlowAuth's docker container now uses Python 3.8
-- AutoFlow's docker container now uses Python 3.8
-- FlowDB's SQL synthetic data generator now uses [GADM 3.6](https://gadm.org) boundaries.
-- FlowAuth and FlowAPI now exchange tokens with compressed claims. [#2625](https://github.com/Flowminder/FlowKit/issues/2625)
+
+-   FlowMachine's docker container now uses Python 3.8
+-   FlowAPI's docker container now uses Python 3.8
+-   FlowAuth's docker container now uses Python 3.8
+-   AutoFlow's docker container now uses Python 3.8
+-   FlowDB's SQL synthetic data generator now uses [GADM 3.6](https://gadm.org) boundaries.
+-   FlowAuth and FlowAPI now exchange tokens with compressed claims. [#2625](https://github.com/Flowminder/FlowKit/issues/2625)
 
 ### Fixed
-- FlowAuth will no longer fail to start if there are directories with names the same as the SSL certificate secrets.
+
+-   FlowAuth will no longer fail to start if there are directories with names the same as the SSL certificate secrets.
 
 ## [1.9.4]
+
 ## Changed
-- `JoinToLocation` is cacheable only if the joined query is also cacheable.
+
+-   `JoinToLocation` is cacheable only if the joined query is also cacheable.
 
 ## [1.9.3]
+
 ### Changed
-- `SubscriberLocations` are no longer cacheable using FlowMachine.
+
+-   `SubscriberLocations` are no longer cacheable using FlowMachine.
 
 ### Fixed
-- Fixed cache shrinking failing when large numbers of tables have been written. [#2462](https://github.com/Flowminder/FlowKit/issues/2462)
-- Fixed FlowAuth's MySQL support.
+
+-   Fixed cache shrinking failing when large numbers of tables have been written. [#2462](https://github.com/Flowminder/FlowKit/issues/2462)
+-   Fixed FlowAuth's MySQL support.
 
 ## [1.9.2]
+
 ### Fixed
-- Added missing bridge table arguments to Several FlowClient methods.
+
+-   Added missing bridge table arguments to Several FlowClient methods.
 
 ## [1.9.1]
+
 ### Added
-- FlowAuth now supports MySQL as a database backend.
-- FlowKit now allows the use of bridge tables to manually specify linkages between cells and geometries. 
+
+-   FlowAuth now supports MySQL as a database backend.
+-   FlowKit now allows the use of bridge tables to manually specify linkages between cells and geometries.
 
 ### Fixed
-- FlowAuth no longer errors after a period of inactivity due to timed out database connections. [#2382](https://github.com/Flowminder/FlowKit/issues/2382)
 
+-   FlowAuth no longer errors after a period of inactivity due to timed out database connections. [#2382](https://github.com/Flowminder/FlowKit/issues/2382)
 
 ## [1.9.0]
 
@@ -87,6 +104,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   FlowClient now has an asyncio API. Use `connect_async` instead of `connect` to create an `ASyncConnection`, and `await` methods on `APIQuery` objects. [#2199](https://github.com/Flowminder/FlowKit/issues/2199)
 
 ### Fixed
+
 -   Fixed FlowMachine server becoming deadlocked under load. [#2390](https://github.com/Flowminder/FlowKit/issues/2390)
 
 ## [1.8.0]
