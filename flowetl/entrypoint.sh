@@ -126,7 +126,7 @@ case "$1" in
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &
     fi
-    exec airflow webserver
+    exec airflow webserver -p ${FLOWETL_PORT}
     ;;
   worker|scheduler)
     # To give the webserver time to run initdb.

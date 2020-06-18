@@ -68,6 +68,9 @@ USER airflow
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 # set default arg for entrypoint
+EXPOSE 80
+ENV FLOWETL_PORT=8080
+
 CMD ["webserver"]
 
 
