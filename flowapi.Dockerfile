@@ -19,4 +19,5 @@ ENV QUART_ENV=production
 ENV FLOWAPI_PORT=9090
 EXPOSE 80
 EXPOSE 443
+EXPOSE 9090
 CMD ["pipenv", "run", "./start.sh"]
