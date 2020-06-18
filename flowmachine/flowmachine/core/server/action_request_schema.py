@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import rapidjson
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf
 from collections import namedtuple
@@ -19,6 +19,9 @@ class ActionRequest(Schema):
     action = fields.String(required=True, validate=OneOf(ACTION_HANDLERS.keys()))
     request_id = fields.String(required=True)
     params = fields.Dict(required=False, missing={})
+
+    class Meta:
+        json_module = rapidjson
 
     @post_load
     def make_action(self, data, **kwargs):
