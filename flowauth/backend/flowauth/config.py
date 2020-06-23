@@ -111,6 +111,7 @@ def get_config():
             RESET_DB=True if getenv("RESET_FLOWAUTH_DB") is not None else False,
             DB_IS_SET_UP=Event(),
             CACHE_BACKEND=get_cache_backend(),
+            FLOWAUTH_TWO_FACTOR_ISSUER=getenv("FLOWAUTH_TWO_FACTOR_ISSUER", "FlowAuth"),
         )
     except KeyError as e:
         raise UndefinedConfigOption(
