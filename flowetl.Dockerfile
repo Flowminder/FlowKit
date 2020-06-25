@@ -65,7 +65,7 @@ RUN chmod -R 777 ${AIRFLOW_HOME}
 RUN  apt-get update && \
         apt-get install -y --no-install-recommends authbind && \
         touch /etc/authbind/byport/80  && \
-        chmod 500 /etc/authbind/byport/80 && \
+        chmod 777 /etc/authbind/byport/80 && \
         chown airflow /etc/authbind/byport/80 && \
         rm -rf /var/lib/apt/lists/*
 

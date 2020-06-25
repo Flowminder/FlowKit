@@ -9,6 +9,9 @@ set -euo pipefail
 # Used to fake a user and group when passed to docker and does not already exist
 # https://cwrap.org/nss_wrapper.html
 
+chown $(id -u) /etc/authbind/byport/80
+chmod 500 /etc/authbind/byport/80
+
 # allow the container to be started with `--user`
 if [ "$1" = 'webserver' ] && [ "$(id -u)" = '0' ]; then
 	  chown -R airflow "$AIRFLOW_HOME"
@@ -27,7 +30,6 @@ if ! getent passwd "$(id -u)" &> /dev/null && [ -e /usr/lib/libnss_wrapper.so ];
     export NSS_WRAPPER_GROUP="$(mktemp)"
 		echo "airflow:x:$(id -u):$(id -g):Airflow:$HOME:/bin/false" > "$NSS_WRAPPER_PASSWD"
 		echo "airflow:x:$(id -g):" > "$NSS_WRAPPER_GROUP"
-    chown $(id -u) /etc/authbind/byport/80
 fi
 
 
