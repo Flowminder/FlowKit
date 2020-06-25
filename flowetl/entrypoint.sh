@@ -27,6 +27,7 @@ if ! getent passwd "$(id -u)" &> /dev/null && [ -e /usr/lib/libnss_wrapper.so ];
     export NSS_WRAPPER_GROUP="$(mktemp)"
 		echo "airflow:x:$(id -u):$(id -g):Airflow:$HOME:/bin/false" > "$NSS_WRAPPER_PASSWD"
 		echo "airflow:x:$(id -g):" > "$NSS_WRAPPER_GROUP"
+    chown $(id -u) /etc/authbind/byport/80
 fi
 
 
