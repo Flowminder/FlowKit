@@ -25,7 +25,7 @@ pull_request_rules:
       - conflict
     actions:
       comment:
-        message: @dependabot rebase
+        message: "@dependabot rebase"
   - name: Delete branch after merge
     actions:
       delete_head_branch: {}
