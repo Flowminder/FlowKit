@@ -37,6 +37,7 @@ setup(
         "papermill >= 1.2.1",
         "pendulum",
         "prefect ==0.10.7",  # Pinned pending updating for removal of storage.Memory
+        "distributed ==2.20.0",  # Pinned because prefect is pinned"
         "pyyaml",
         "sh",
         "sqlalchemy",

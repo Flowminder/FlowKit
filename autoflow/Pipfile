@@ -17,6 +17,7 @@ nteract-scrapbook = "*"
 pandas = "*"
 papermill = ">=1.2.1"
 pendulum = "*"
+distributed = "==2.20.0" # Pinned because prefect is pinned
 prefect = "==0.10.7"
 psycopg2-binary = "*"
 pyyaml = "*"
@@ -28,7 +29,8 @@ nbformat = "*"
 [dev-packages]
 ipywidgets = "*"
 jupyterlab = "*"
-prefect = {extras = ["viz"]}
+distributed = "==2.20.0" # Pinned because prefect is pinned
+prefect = {version="==0.10.7", extras = ["viz"]}
 pytest = "*"
 pytest-cov = "*"
 sqlalchemy-utils = "*"
