@@ -17,6 +17,7 @@ nteract-scrapbook = "*"
 pandas = "*"
 papermill = ">=1.2.1"
 pendulum = "*"
+distributed = "==2.19.0" # Pinned because prefect is pinned
 prefect = "==0.10.7"
 psycopg2-binary = "*"
 pyyaml = "*"
@@ -28,11 +29,12 @@ nbformat = "*"
 [dev-packages]
 ipywidgets = "*"
 jupyterlab = "*"
-prefect = {extras = ["viz"]}
+distributed = "==2.19.0" # Pinned because prefect is pinned
+prefect = {version="==0.10.7", extras = ["viz"]}
 pytest = "*"
 pytest-cov = "*"
 sqlalchemy-utils = "*"
 testing-postgresql = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.8.3" # https://bugs.python.org/issue41295 prefect is broken on 3.8.4

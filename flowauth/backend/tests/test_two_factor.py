@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from itsdangerous import TimestampSigner
-from tests.conftest import get_two_factor_code
 import pytest
 from flowauth.invalid_usage import Unauthorized
 from flowauth.models import User, db
@@ -32,7 +31,7 @@ def test_two_factor_enabled_but_not_confirmed(client, auth, test_user):
         assert db_user.two_factor_auth is None
 
 
-def test_two_factor_confirmed(app, client, auth, test_user):
+def test_two_factor_confirmed(app, client, auth, test_user, get_two_factor_code):
     """Test that confirming two factor enables it."""
     uid, username, password = test_user
     # Log in first

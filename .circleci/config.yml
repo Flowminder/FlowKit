@@ -55,7 +55,7 @@ executors:
     parameters:
       python_version:
         type: enum
-        enum: ["3.7", "3.8"]
+        enum: ["3.7", "3.8", "3.8.3"]
         default: "3.8"
       flowdb_image:
         type: enum
@@ -606,7 +606,7 @@ jobs:
 
   run_autoflow_tests:
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.8.3
     working_directory: /home/circleci/project/autoflow
     steps:
       - checkout:
@@ -748,6 +748,7 @@ jobs:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
+      python_version: "3.8.3"
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
