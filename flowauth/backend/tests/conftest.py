@@ -113,7 +113,7 @@ def get_two_factor_code():
 
 
 @pytest.fixture
-def test_two_factor_auth_user(app):
+def test_two_factor_auth_user(app, get_two_factor_code):
     with app.app_context():
         user = User(username="TEST_FACTOR_USER", password="TEST_USER_PASSWORD")
         ug = Group(name="TEST_FACTOR_USER", user_group=True, members=[user])
