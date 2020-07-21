@@ -98,12 +98,18 @@ def test_user(app):
         return TestUser(user.id, user.username, "TEST_USER_PASSWORD")
 
 
-def get_two_factor_code(secret):
-    totp = pyotp.totp.TOTP(secret)
-    time_remaining = totp.interval - datetime.datetime.now().timestamp() % totp.interval
-    if time_remaining < 1:
-        sleep(2)
-    return totp.now()
+@pytest.fixture
+def get_two_factor_code():
+    def now(secret):
+        totp = pyotp.totp.TOTP(secret)
+        time_remaining = (
+            totp.interval - datetime.datetime.now().timestamp() % totp.interval
+        )
+        if time_remaining < 1:
+            sleep(2)
+        return totp.now()
+
+    return now
 
 
 @pytest.fixture
