@@ -94,6 +94,7 @@ def create_dag(
     quote: str = '"',
     escape: str = '"',
     encoding: Optional[str] = None,
+    **kwargs,
 ) -> "DAG":
     """
     Create an ETL DAG that will load data from files, or a table within the database.
@@ -195,6 +196,7 @@ def create_dag(
         "conn_id": "flowdb",
         "start_date": start_date,
         "end_date": end_date,
+        **kwargs,
     }
 
     macros = dict(**additional_macros)

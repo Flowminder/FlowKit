@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The issuer name can now be set for FlowAuth's 2factor authentication using the `FLOWAUTH_TWO_FACTOR_ISSUER` environment variable. 
 
 ### Changed
+- Test and synthetic DFS data now uses the same pool of subscribers as CDR data. [#2713](https://github.com/Flowminder/FlowKit/issues/2713)
+  
+  With thanks to [JIPS](https://www.jips.org) for supporting this work.
 
 ### Fixed
 
