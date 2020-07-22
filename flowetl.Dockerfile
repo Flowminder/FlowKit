@@ -62,12 +62,22 @@ RUN ln -s /opt/airflow /usr/local/airflow
 #
 # When possible, this will get changed to 700 at runtime (uid 0)
 RUN chmod -R 777 ${AIRFLOW_HOME}
+RUN  apt-get update && \
+        apt-get install -y --no-install-recommends authbind && \
+        touch /etc/authbind/byport/80  && \
+        chmod 777 /etc/authbind/byport/80 && \
+        chown airflow /etc/authbind/byport/80 && \
+        rm -rf /var/lib/apt/lists/*
 
 USER airflow
 
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 # set default arg for entrypoint
+EXPOSE 80
+EXPOSE 8080
+ENV FLOWETL_PORT=8080
+
 CMD ["webserver"]
 
 
