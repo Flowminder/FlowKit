@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added 
+- The issuer name can now be set for FlowAuth's 2factor authentication using the `FLOWAUTH_TWO_FACTOR_ISSUER` environment variable. 
 
 ### Changed
 

@@ -71,7 +71,8 @@ def enable_two_factor():
     """
     secret = pyotp.random_base32()
     provisioning_url = pyotp.totp.TOTP(secret).provisioning_uri(
-        current_user.username, issuer_name="FlowAuth"
+        current_user.username,
+        issuer_name=current_app.config["FLOWAUTH_TWO_FACTOR_ISSUER"],
     )
     signed_secret = TimestampSigner(current_app.config["SECRET_KEY"]).sign(secret)
     backup_codes = generate_backup_codes()
@@ -83,7 +84,7 @@ def enable_two_factor():
             {
                 "provisioning_url": provisioning_url,
                 "secret": signed_secret.decode(),
-                "issuer": "FlowAuth",
+                "issuer": current_app.config["FLOWAUTH_TWO_FACTOR_ISSUER"],
                 "backup_codes": backup_codes,
                 "backup_codes_signature": serialised_codes,
             }
