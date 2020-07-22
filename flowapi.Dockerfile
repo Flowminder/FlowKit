@@ -16,4 +16,8 @@ RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-b
 COPY . /${SOURCE_TREE}/
 RUN pipenv run python setup.py install
 ENV QUART_ENV=production
+ENV FLOWAPI_PORT=9090
+EXPOSE 80
+EXPOSE 443
+EXPOSE 9090
 CMD ["pipenv", "run", "./start.sh"]

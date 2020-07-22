@@ -48,3 +48,5 @@ ADD --chown=postgres flowdb/testdata/test_data/data/ /docker-entrypoint-initdb.d
 COPY  --chown=postgres flowdb/testdata/test_data/data/*.csv /docker-entrypoint-initdb.d/data/csv/
 # Need to make postgres owner of any subdirectories
 RUN chown -R postgres /docker-entrypoint-initdb.d
+# Explicitly set number of days of dfs data to match test data
+ENV N_DAYS=7

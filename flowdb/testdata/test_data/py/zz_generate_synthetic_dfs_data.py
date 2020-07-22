@@ -2,11 +2,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
+
+from itertools import chain
 
 import os
 import pandas as pd
 from functools import partial
-from geoalchemy2 import Geometry, func
 from io import StringIO
 from sqlalchemy import create_engine, select, Column, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,10 +22,12 @@ from tohu import (
     Timestamp,
 )
 
-num_subscribers = 1000
-num_transactions_per_date = 3000
+num_subscribers = int(os.getenv("NUM_DFS_SUBSCRIBERS", "1000"))
+num_transactions_per_date = int(os.getenv("NUM_DFS_TRANSACTIONS", "3000"))
 start_date = "2016-01-01"
-end_date = "2016-01-07"
+end_date = datetime.date(2016, 1, 1) + datetime.timedelta(
+    days=int(os.getenv("N_DAYS", "7"))
+)
 dfs_schema = "dfs"
 
 # Note: at this stage of the postgres startup process we connect
@@ -81,8 +85,19 @@ class SubscriberGenerator(CustomGenerator):
     tac = DigitString(length=5)
 
 
-print(f"Generating {num_subscribers} subscribers... ", flush=True, end="")
-subscribers = SubscriberGenerator().generate(num_subscribers, seed=11111)
+print(f"Extracting {num_subscribers} subscribers... ", flush=True, end="")
+# subscribers = SubscriberGenerator().generate(num_subscribers, seed=11111)
+subscribers = pd.read_sql(
+    f"SELECT msisdn, imei, imsi, tac FROM events.calls group by msisdn, imei, imsi, tac LIMIT {num_subscribers}",
+    engine,
+)
+# Add extra subscribers if necessary
+subscribers = list(
+    chain(
+        subscribers.itertuples(index=False, name="Subscriber"),
+        SubscriberGenerator().generate(num_subscribers - len(subscribers), seed=11111),
+    )
+)
 print("Done.")
 
 
@@ -101,18 +116,9 @@ class Cells(Base):
     cell_id = Column("id", Text, primary_key=True)
     version = Column("version", Text, primary_key=True)
     site_id = Column(Text)
-    geom_point = Column(Geometry("POINT"))
 
 
-select_stmt = select(
-    [
-        Cells.cell_id.label("cell_id"),
-        Cells.version,
-        Cells.site_id,
-        func.ST_X(Cells.geom_point).label("lon"),
-        func.ST_Y(Cells.geom_point).label("lat"),
-    ]
-)
+select_stmt = select([Cells.cell_id.label("cell_id"), Cells.version, Cells.site_id])
 df_cells = pd.read_sql(select_stmt, engine)
 
 # Pick only the latest version for each cell
