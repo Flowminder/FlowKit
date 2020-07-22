@@ -225,7 +225,7 @@ def edit_group_servers(group_id):
         to_remove = []
         for cap in GroupServerPermission.query.filter(
             GroupServerPermission.group_id == group.id
-        ).filter(GroupServerPermission.server_capability.server_id == server_obj.id):
+        ).filter(GroupServerPermission.server_capability.has(server_id=server_obj.id)):
             try:
                 server["rights"].remove(cap.server_capability.capability)
             except KeyError:
