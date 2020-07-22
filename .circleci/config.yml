@@ -294,6 +294,13 @@ jobs:
           name: FlowDB-oracle Docker logs
           command: docker logs flowdb_oracle
           when: on_fail
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowdb-oracle:${CIRCLE_SHA1}
 
   build_flowdb_testdata:
     docker:
