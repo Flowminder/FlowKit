@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- When creating a file-based DAG using `create_dag`, you can now use the slower, table based method of checking whether the file is being written. [#2857](https://github.com/Flowminder/FlowKit/issues/2857)
 
 ### Fixed
 

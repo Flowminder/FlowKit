@@ -94,6 +94,7 @@ def create_dag(
     quote: str = '"',
     escape: str = '"',
     encoding: Optional[str] = None,
+    use_file_flux_sensor: bool = True,
     **kwargs,
 ) -> "DAG":
     """
@@ -161,6 +162,10 @@ def create_dag(
         When loading from files, you may specify the escape character
     encoding : str or None
         Optionally specify file encoding when loading from files.
+    use_file_flux_sensor : bool, default True
+        When set to True, uses a check on the last modification time of the file to determine
+        whether the file is in flux.  Set to False to perform a slower check based on the
+        number of rows in the mounted table.
 
     Returns
     -------
@@ -243,7 +248,7 @@ def create_dag(
             poke_interval=data_present_poke_interval,
             timeout=data_present_timeout,
         )
-        if filename is not None:
+        if filename is not None and use_file_flux_sensor:
             check_not_in_flux = FileFluxSensor(
                 task_id="check_not_in_flux",
                 filename=filename,
