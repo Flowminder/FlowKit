@@ -189,6 +189,7 @@ def edit_group_servers(group_id):
     revised_limits = []
 
     for server in servers:
+        server["rights"] = set(server["rights"])
         server_obj = Server.query.filter(Server.id == server["id"]).first_or_404()
         # Create limits
         limits = GroupServerTokenLimits.query.filter(
@@ -219,39 +220,34 @@ def edit_group_servers(group_id):
         revised_limits.append(limits)
         db.session.add(limits)
         # Create permissions
-        to_remove = [
-            gsp
-            for gsp in GroupServerPermission.query.filter(
-                GroupServerPermission.group_id == group.id
-            )
-            if gsp.server_capability.server_id == server_obj.id
-            and gsp.server_capability.capability not in server["rights"]
-        ]
+
+        to_add = []
+        to_remove = []
+        for cap in GroupServerPermission.query.filter(
+            GroupServerPermission.group_id == group.id
+        ).filter(GroupServerPermission.server_capability.has(server_id=server_obj.id)):
+            try:
+                server["rights"].remove(cap.server_capability.capability)
+            except KeyError:
+                to_remove.append(cap)
         for right in server["rights"]:
             cap = ServerCapability.query.filter(
                 ServerCapability.capability == right,
                 ServerCapability.server_id == server_obj.id,
+                ServerCapability.enabled,
             ).first()
-            if cap is None or not cap.enabled:
+            if cap is None:
                 raise InvalidUsage(f"{right} not enabled for this server.")
 
-            existing = GroupServerPermission.query.filter(
-                GroupServerPermission.server_capability_id == cap.id,
-                GroupServerPermission.group_id == group.id,
-            ).first()
-            if existing is None:
-
-                gsp = GroupServerPermission(
-                    group_id=group.id, server_capability_id=cap.id
-                )
-                current_app.logger.debug(
-                    "Added permission.",
-                    server_capability_id=gsp.server_capability_id,
-                    group_id=group.id,
-                    server_id=server_obj.id,
-                )
-                db.session.add(gsp)
-
+            gsp = GroupServerPermission(group_id=group.id, server_capability_id=cap.id)
+            current_app.logger.debug(
+                "Added permission.",
+                server_capability_id=gsp.server_capability_id,
+                group_id=group.id,
+                server_id=server_obj.id,
+            )
+            to_add.append(gsp)
+        db.session.bulk_save_objects(to_add)
         # clean up
         for gsp in to_remove:
             current_app.logger.debug(
