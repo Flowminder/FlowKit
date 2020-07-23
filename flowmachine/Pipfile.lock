@@ -380,14 +380,6 @@
             ],
             "version": "==1.4.4"
         },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "sys_platform == 'darwin'",
-            "version": "==0.1.0"
-        },
         "approvaltests": {
             "hashes": [
                 "sha256:c5044df0182487fde0d0e69b7f7391c03c7ca6da3493a25965aa17b7cd8185fc"
@@ -579,10 +571,10 @@
         },
         "identify": {
             "hashes": [
-                "sha256:06b4373546ae55eaaefdac54f006951dbd968fe2912846c00e565b09cfaed101",
-                "sha256:5519601b70c831011fb425ffd214101df7639ba3980f24dc283f7675b19127b3"
+                "sha256:110ed090fec6bce1aabe3c72d9258a9de82207adeaa5a05cd75c635880312f9a",
+                "sha256:ccd88716b890ecbe10920659450a635d2d25de499b9a638525a48b48261d989b"
             ],
-            "version": "==1.4.24"
+            "version": "==1.4.25"
         },
         "ipdb": {
             "hashes": [
@@ -593,11 +585,11 @@
         },
         "ipykernel": {
             "hashes": [
-                "sha256:09bac6473a593f61a3ae036035b81a2d30457ff157163562796560516a2f67d8",
-                "sha256:d718d5f717e0818329d371313f99aabba1bf4ca13f1e9f80cc3c5f866ee8a9ad"
+                "sha256:9b2652af1607986a1b231c62302d070bc0534f564c393a5d9d130db9abbbe89d",
+                "sha256:d6fbba26dba3cebd411382bc484f7bc2caa98427ae0ddb4ab37fe8bfeb5c7dd3"
             ],
             "index": "pypi",
-            "version": "==5.3.3"
+            "version": "==5.3.4"
         },
         "ipython": {
             "hashes": [
