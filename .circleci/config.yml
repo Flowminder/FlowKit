@@ -1150,6 +1150,7 @@ workflows:
             - run_flowmachine_tests
             - run_autoflow_tests
             - build_autoflow
+            - build_flowdb_oracle
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
