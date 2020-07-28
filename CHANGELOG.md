@@ -9,11 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-- When creating a file-based DAG using `create_dag`, you can now use the slower, table based method of checking whether the file is being written. [#2857](https://github.com/Flowminder/FlowKit/issues/2857)
 
 ### Fixed
 
 ### Removed
+
+## [1.13.0]
+
+### Changed
+- When creating a file-based DAG using `create_dag`, you can now use the slower, table based method of checking whether the file is being written. [#2857](https://github.com/Flowminder/FlowKit/issues/2857)
 
 ## [1.12.0]
 
@@ -821,7 +825,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.12.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.13.0...master
+[1.13.0]: https://github.com/Flowminder/FlowKit/compare/1.12.1...1.13.0
 [1.12.0]: https://github.com/Flowminder/FlowKit/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/Flowminder/FlowKit/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/Flowminder/FlowKit/compare/1.10.0...1.11.0
