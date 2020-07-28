@@ -35,7 +35,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "async-generator": {
@@ -1282,7 +1282,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "attrs": {
@@ -1528,11 +1528,11 @@
         },
         "jupyterlab": {
             "hashes": [
-                "sha256:61030750b9ff3adecf89e296b936d7c745c4834f9b7df33da5edde7a130a3f95",
-                "sha256:c76f27475374b11634ee1616da14d3dd22be04bc604057858ae878df20e40f7e"
+                "sha256:8aa9bc4b5020e7b9ec6e006d516d48bddf7d2528680af65840464ee722d59db3",
+                "sha256:d0d743ea75b8eee20a18b96ccef24f76ee009bafb2617f3f330698fe3a00026e"
             ],
             "index": "pypi",
-            "version": "==2.2.0"
+            "version": "==2.2.2"
         },
         "jupyterlab-server": {
             "hashes": [

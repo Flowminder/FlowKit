@@ -766,11 +766,11 @@
         },
         "openapi-spec-validator": {
             "hashes": [
-                "sha256:0caacd9829e9e3051e830165367bf58d436d9487b29a09220fa7edb9f47ff81b",
-                "sha256:d4da8aef72bf5be40cf0df444abd20009a41baf9048a8e03750c07a934f1bdd8",
-                "sha256:e489c7a273284bc78277ac22791482e8058d323b4a265015e9fcddf6a8045bcd"
+                "sha256:6dd75e50c94f1bb454d0e374a56418e7e06a07affb2c7f1df88564c5d728dac3",
+                "sha256:79381a69b33423ee400ae1624a461dae7725e450e2e306e32f2dd8d16a4d85cb",
+                "sha256:ec1b01a00e20955a527358886991ae34b4b791b253027ee9f7df5f84b59d91c7"
             ],
-            "version": "==0.2.8"
+            "version": "==0.2.9"
         },
         "packaging": {
             "hashes": [
@@ -1871,11 +1871,11 @@
         },
         "jupyterlab": {
             "hashes": [
-                "sha256:61030750b9ff3adecf89e296b936d7c745c4834f9b7df33da5edde7a130a3f95",
-                "sha256:c76f27475374b11634ee1616da14d3dd22be04bc604057858ae878df20e40f7e"
+                "sha256:8aa9bc4b5020e7b9ec6e006d516d48bddf7d2528680af65840464ee722d59db3",
+                "sha256:d0d743ea75b8eee20a18b96ccef24f76ee009bafb2617f3f330698fe3a00026e"
             ],
             "index": "pypi",
-            "version": "==2.2.0"
+            "version": "==2.2.2"
         },
         "jupyterlab-server": {
             "hashes": [
