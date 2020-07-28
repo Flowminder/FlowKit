@@ -269,15 +269,15 @@ jobs:
           name: Build oracle_fdw image
           command: |
             echo Building oracle_fdw version $FLOWDB_VERSION
-            echo Tagging as oracle-$CIRCLE_SHA1
+            echo Tagging as flowdb-oracle:$CIRCLE_SHA1
             DOCKER_BUILDKIT=1 docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb:oracle-$CIRCLE_SHA1 -f flowdb_oracle_fdw.Dockerfile .
+              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-oracle:$CIRCLE_SHA1 -f flowdb_oracle_fdw.Dockerfile .
       - run:
           name: Launch flowdb
           command: |
             docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
             -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-             --detach flowminder/flowdb:oracle-$CIRCLE_SHA1
+             --detach flowminder/flowdb-oracle:$CIRCLE_SHA1
             echo "Waiting for flowdb with oracle_fdw to be ready.."
             docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
             docker ps -a
@@ -294,6 +294,13 @@ jobs:
           name: FlowDB-oracle Docker logs
           command: docker logs flowdb_oracle
           when: on_fail
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowdb-oracle:${CIRCLE_SHA1}
 
   build_flowdb_testdata:
     docker:
@@ -969,7 +976,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl autoflow; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-oracle flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl autoflow; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -1143,6 +1150,7 @@ workflows:
             - run_flowmachine_tests
             - run_autoflow_tests
             - build_autoflow
+            - build_flowdb_oracle
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
