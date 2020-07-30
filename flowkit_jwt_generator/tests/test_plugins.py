@@ -16,7 +16,7 @@ def test_plugin_errors_with_missing_env_var(testdir, monkeypatch):
     monkeypatch.delenv("PRIVATE_JWT_SIGNING_KEY")
     result = testdir.runpytest()
 
-    result.assert_outcomes(error=1)
+    result.assert_outcomes(errors=1)
 
 
 def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_bytes):
