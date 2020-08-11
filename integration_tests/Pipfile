@@ -18,7 +18,7 @@ flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", ex
 geojson = "*"
 
 [requires]
-python_version = "3.8.3" # https://bugs.python.org/issue41295 prefect is broken on 3.8.4
+python_version = "3.8.5"
 
 [dev-packages]
 
