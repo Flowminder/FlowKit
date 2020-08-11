@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from datetime import date, datetime
+from datetime import datetime
 
 import pytest
 from flowmachine.features import DistanceSeries, daily_location, SubscriberLocations
@@ -69,8 +69,12 @@ def test_returns_expected_values_fixed_point(
             statistic=stat,
         )
     ).set_index(["subscriber", "datetime"])
-    assert df.loc[(sub_a_id, date(2016, 1, 1))].value == pytest.approx(sub_a_expected)
-    assert df.loc[(sub_b_id, date(2016, 1, 6))].value == pytest.approx(sub_b_expected)
+    assert df.loc[(sub_a_id, datetime(2016, 1, 1))].value == pytest.approx(
+        sub_a_expected
+    )
+    assert df.loc[(sub_b_id, datetime(2016, 1, 6))].value == pytest.approx(
+        sub_b_expected
+    )
 
 
 def test_no_cast_for_below_day(get_dataframe):
