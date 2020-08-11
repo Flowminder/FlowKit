@@ -35,8 +35,12 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
             statistic=stat,
         )
     ).set_index(["subscriber", "datetime"])
-    assert df.loc[(sub_a_id, date(2016, 1, 1))].value == pytest.approx(sub_a_expected)
-    assert df.loc[(sub_b_id, date(2016, 1, 6))].value == pytest.approx(sub_b_expected)
+    assert df.loc[(sub_a_id, datetime(2016, 1, 1))].value == pytest.approx(
+        sub_a_expected
+    )
+    assert df.loc[(sub_b_id, datetime(2016, 1, 6))].value == pytest.approx(
+        sub_b_expected
+    )
 
 
 @pytest.mark.parametrize(
