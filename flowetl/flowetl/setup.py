@@ -3,9 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import io
+import os
+import sys
 
 from setuptools import find_packages, setup
 
+sys.path.append(
+    os.path.dirname(__file__)
+)  # Workaround for https://github.com/warner/python-versioneer/issues/192
 import versioneer
 
 with io.open("README.md", "rt", encoding="utf8") as f:
