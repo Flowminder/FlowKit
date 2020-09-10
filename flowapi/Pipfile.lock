@@ -311,9 +311,9 @@
         },
         "pyrsistent": {
             "hashes": [
-                "sha256:28669905fe725965daa16184933676547c5bb40a5153055a8dee2a4bd7933ad3"
+                "sha256:27515d2d5db0629c7dadf6fbe76973eb56f098c1b01d36de42eb69220d2c19e4"
             ],
-            "version": "==0.16.0"
+            "version": "==0.17.2"
         },
         "python-rapidjson": {
             "hashes": [
@@ -403,11 +403,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:b0b5148ab57b775ed173ed9e9897f3b13d2f54e39cfadf4a396f442ec96bb57f",
-                "sha256:b2a8cf0cf1b0129cd981ece9ae304ad977d1dcaec92952303bd1852508717d44"
+                "sha256:9c634e4c1e4b21b824003c676de1583581258c72b0ac4d2ba747db846e97ff56",
+                "sha256:d885d782edd9d5dcfd2c4a56e020db3b82493d4c3950f91c221b7d88d239ac93"
             ],
             "index": "pypi",
-            "version": "==0.13.0"
+            "version": "==0.13.1"
         },
         "quart-jwt-extended": {
             "extras": [
