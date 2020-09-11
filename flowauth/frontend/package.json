@@ -33,7 +33,7 @@
     "husky": "^4.2.5",
     "otp-cli": "^0.2.0",
     "prettier": "^2.1.0",
-    "pretty-quick": "^3.0.0"
+    "pretty-quick": "^3.0.2"
   },
   "browserslist": [
     ">0.2%",
