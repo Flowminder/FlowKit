@@ -69,6 +69,7 @@ class _TotalLocationEvents(GeoDataMixin, Query):
         self.spatial_unit = spatial_unit
         self.interval = interval
         self.direction = Direction(direction)
+        self.hours = hours
 
         if self.interval not in self.allowed_intervals:
             raise ValueError(
@@ -163,7 +164,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
             'out', 'in' or 'both'.
         """
 
-    allowed_intervals = {"day", "hour", "min"}
+    allowed_intervals = _TotalLocationEvents.allowed_intervals
 
     def __init__(
         self,
@@ -195,18 +196,11 @@ class TotalLocationEvents(GeoDataMixin, Query):
                 )
             )
 
-        self.time_cols = ["(datetime::date)::text AS date"]
+        self.time_cols = ["date"]
         if self.interval == "hour" or self.interval == "min":
-            self.time_cols.append("extract(hour FROM datetime) AS hour")
+            self.time_cols.append("hour")
         if self.interval == "min":
-            self.time_cols.append("extract(minute FROM datetime) AS min")
-
-        events_tables_union_cols = ["location_id", "datetime", subscriber_identifier]
-        # if we need to filter on outgoing/incoming calls, we will also fetch this
-        # column. Don't fetch it if it is not needed for both efficiency and the
-        # possibility that we might want to do pass another data type which does not
-        # have this information.
-        events_tables_union_cols += self.direction.required_columns
+            self.time_cols.append("min")
 
         self.unioned = reduce(
             lambda x, y: x.union(x),
@@ -229,11 +223,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            self.spatial_unit.location_id_columns
-            + [x.split(" AS ")[1] for x in self.time_cols]
-            + ["value"]
-        )
+        return self.spatial_unit.location_id_columns + self.time_cols + ["value"]
 
     def _make_query(self):
         return self.unioned.get_query()
