@@ -36,3 +36,8 @@ class Union(Query):
         return """({}) UNION {} ({})""".format(
             self.top.get_query(), "ALL" if self.all else "", self.bottom.get_query()
         )
+
+    @property
+    def fully_qualified_table_name(self):
+        # Cost of cache creation for a union outweighs benefits
+        raise NotImplementedError
