@@ -61,7 +61,7 @@ class Preflight:
     def preflight(self):
         errors = []
         for dependency in [*self.dependencies, self]:
-            for hook in resolve_hooks(dependency)["preflight"]:
+            for hook in resolve_hooks(dependency.__class__)["preflight"]:
                 try:
                     hook()
                 except Exception as e:
