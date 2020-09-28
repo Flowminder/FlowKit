@@ -12,7 +12,8 @@ from typing import Union, List, Iterable, Optional
 
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
-from flowmachine.core import Query, Table, preflight
+from flowmachine.core import Query, Table
+from flowmachine.core.preflight import pre_flight
 from flowmachine.core.context import get_db
 from flowmachine.core.grid import Grid
 
@@ -709,7 +710,7 @@ class VersionedCellSpatialUnit(LonLatSpatialUnit):
             geom_table="infrastructure.cells",
         )
 
-    @preflight
+    @pre_flight
     def check_cells_available(self):
         if get_db().location_table != "infrastructure.cells":
             raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
