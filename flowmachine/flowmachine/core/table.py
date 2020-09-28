@@ -103,7 +103,7 @@ class Table(Query):
         if (
             self.columns is None or self.columns == []
         ):  # No columns specified, setting them from the database
-            columns = db_columns
+            self.columns = db_columns
         else:
             self.parent_table = Table(
                 schema=self.schema, name=self.name
