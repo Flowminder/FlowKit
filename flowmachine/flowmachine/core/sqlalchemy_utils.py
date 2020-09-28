@@ -58,7 +58,7 @@ def get_sql_string(sqlalchemy_query):
     return sql
 
 
-def get_string_representation(sqlalchemy_expr, engine=None):
+def get_string_representation(sqlalchemy_expr):
     """
     Return a string containing a SQL fragment which is compiled from the given sqlalchemy expression.
 
@@ -68,7 +68,11 @@ def get_string_representation(sqlalchemy_expr, engine=None):
         String representation of the sqlalchemy expression.
     """
     # assert isinstance(sqlalchemy_expr, ColumnElement)
-    return str(sqlalchemy_expr.compile(engine, compile_kwargs={"literal_binds": True}))
+    return str(
+        sqlalchemy_expr.compile(
+            dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
+        )
+    )
 
 
 def get_query_result_as_dataframe(query, *, engine):

@@ -19,7 +19,6 @@ from concurrent.futures import Future
 import structlog
 from typing import List, Union
 
-import psycopg2
 import pandas as pd
 
 from hashlib import md5
@@ -33,7 +32,11 @@ from flowmachine.core.context import (
     get_redis,
     submit_to_executor,
 )
-from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryResetFailedException,
+    QueryErroredException,
+)
+from flowmachine.core.preflight import resolve_hooks, Preflight
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
@@ -46,7 +49,6 @@ from flowmachine.core.errors import (
 import flowmachine
 from flowmachine.utils import _sleep
 from flowmachine.core.dependency_graph import (
-    store_all_unstored_dependencies,
     store_queries_in_order,
     unstored_dependencies_graph,
 )
@@ -61,7 +63,7 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 MAX_POSTGRES_NAME_LENGTH = 63
 
 
-class Query(metaclass=ABCMeta):
+class Query(Preflight, metaclass=ABCMeta):
     """
     The core base class of the flowmachine module. This should handle
     all input and output methods for our sql queries, so that

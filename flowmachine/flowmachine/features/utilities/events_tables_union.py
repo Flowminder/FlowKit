@@ -83,7 +83,7 @@ class EventsTablesUnion(Query):
 
     def _parse_tables(self, tables):
         if tables is None:
-            return [f"events.{t}" for t in get_db().subscriber_tables]
+            return [f"events.{t}" for t in ("sms", "calls", "mds", "topups")]
         elif isinstance(tables, str):
             return [tables]
         else:

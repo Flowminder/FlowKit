@@ -12,7 +12,7 @@ from typing import Union, List, Iterable, Optional
 
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
-from . import Query, Table
+from . import Query, Table, preflight
 from .context import get_db
 from .grid import Grid
 
@@ -306,7 +306,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if geom_table is None:
             # Creating a Table object here means that we don't have to handle
             # tables and Query objects differently in _make_query and get_geom_query
-            self.geom_table = Table(name=get_db().location_table)
+            self.geom_table = Table(name="infrastructure.cells")
         elif isinstance(geom_table, Query):
             self.geom_table = geom_table
         else:
@@ -701,14 +701,17 @@ class VersionedCellSpatialUnit(LonLatSpatialUnit):
     """
 
     def __init__(self) -> None:
-        if get_db().location_table != "infrastructure.cells":
-            raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
         super().__init__(
             geom_table_column_names=["version"],
             location_id_column_names=["location_id", "version"],
             geom_table="infrastructure.cells",
         )
+
+    @preflight
+    def check_cells_available(self):
+        if get_db().location_table != "infrastructure.cells":
+            raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
     @property
     def canonical_name(self) -> str:
