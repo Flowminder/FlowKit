@@ -84,40 +84,42 @@ class Table(Query):
         if not self.is_stored:
             raise ValueError("{} is not a known table.".format(self.fqn))
 
+        # Record provided columns to ensure that query_id differs with different columns
+        if isinstance(columns, str):  # Wrap strings in a list
+            columns = [columns]
+        self.columns = columns
+        super().__init__()
+
+    def preflight(self):
         # Get actual columns of this table from the database
         db_columns = list(
             zip(
                 *get_db().fetch(
                     f"""SELECT column_name from INFORMATION_SCHEMA.COLUMNS
-             WHERE table_name = '{self.name}' AND table_schema='{self.schema}'"""
+                     WHERE table_name = '{self.name}' AND table_schema='{self.schema}'"""
                 )
             )
         )[0]
         if (
-            columns is None or columns == []
+            self.columns is None or self.columns == []
         ):  # No columns specified, setting them from the database
             columns = db_columns
         else:
             self.parent_table = Table(
                 schema=self.schema, name=self.name
             )  # Point to the full table
-            if isinstance(columns, str):  # Wrap strings in a list
-                columns = [columns]
+
             logger.debug(
                 "Checking provided columns against db columns.",
                 provided=columns,
                 db_columns=db_columns,
             )
-            if not set(columns).issubset(db_columns):
+            if not set(self.columns).issubset(db_columns):
                 raise ValueError(
                     "{} are not columns of {}".format(
-                        set(columns).difference(db_columns), self.fqn
+                        set(self.columns).difference(db_columns), self.fqn
                     )
                 )
-
-        # Record provided columns to ensure that query_id differs with different columns
-        self.columns = columns
-        super().__init__()
         # Table is immediately in a 'finished executing' state
         q_state_machine = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id

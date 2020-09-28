@@ -77,12 +77,8 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.start = standardise_date(
-            get_db().min_date(table=table) if start is None else start
-        )
-        self.stop = standardise_date(
-            get_db().max_date(table=table) if stop is None else stop
-        )
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
 
         self.table = table
         if isinstance(self.table, str):

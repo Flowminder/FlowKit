@@ -150,8 +150,13 @@ class EventTableSubset(Query):
 
         super().__init__()
 
+    def preflight(self):
         # This needs to happen after the parent classes init method has been
         # called as it relies upon the connection object existing
+        self.sqlalchemy_table = get_sqlalchemy_table_definition(
+            self.table_ORIG.fully_qualified_table_name,
+            engine=get_db().engine,
+        )
         self._check_dates()
 
     @property
