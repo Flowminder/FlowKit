@@ -52,6 +52,7 @@ class BaseExposedQuery(metaclass=ABCMeta):
             Query ID that can be used to check the query state.
         """
         q = self._flowmachine_query_obj
+        q.preflight()
 
         q.store(store_dependencies=store_dependencies)
         query_id = q.query_id

@@ -83,8 +83,8 @@ class EventsTablesUnion(Query):
 
     def _parse_tables(self, tables):
         if tables is None:
-            return [f"events.{t}" for t in get_db().subscriber_tables]
-        elif isinstance(tables, str) and len(tables) > 0:
+            return [f"events.{t}" for t in ("sms", "calls", "mds", "topups")]
+        elif isinstance(tables, str):
             return [tables]
         elif isinstance(tables, str):
             raise ValueError("Empty table name.")
