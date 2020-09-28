@@ -263,6 +263,7 @@ class Query(Preflight, metaclass=ABCMeta):
             SQL query string.
 
         """
+        self.preflight()
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
