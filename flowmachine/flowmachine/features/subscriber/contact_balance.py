@@ -76,14 +76,17 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        self.tables = tables
+        self.tables = (
+            ["events.calls", "events.sms"]
+            if tables.lower() == "all" or tables is None
+            else tables
+        )
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
         self.direction = Direction(direction)
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
-        self.tables = tables
 
         column_list = [
             self.subscriber_identifier,

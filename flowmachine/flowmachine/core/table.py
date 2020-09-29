@@ -12,6 +12,7 @@ from typing import List
 from flowmachine.core.query_state import QueryStateMachine
 from .context import get_db, get_redis
 from .errors import NotConnectedError
+from .preflight import pre_flight
 from .query import Query
 from .subset import subset_factory
 from .cache import write_cache_metadata
@@ -75,16 +76,24 @@ class Table(Query):
         self.fqn = "{}.{}".format(schema, name) if schema else name
         if "." not in self.fqn:
             raise ValueError("{} is not a valid table.".format(self.fqn))
-        if not self.is_stored:
-            raise ValueError("{} is not a known table.".format(self.fqn))
 
         # Record provided columns to ensure that query_id differs with different columns
         if isinstance(columns, str):  # Wrap strings in a list
             columns = [columns]
         self.columns = columns
+        if self.columns is not None and len(self.columns) > 0:
+            self.parent_table = Table(
+                schema=self.schema, name=self.name
+            )  # Point to the full table
         super().__init__()
 
-    def preflight(self):
+    @pre_flight
+    def check_exists(self):
+        if not self.is_stored:
+            raise ValueError("{} is not a known table.".format(self.fqn))
+
+    @pre_flight
+    def check_columns(self):
         # Get actual columns of this table from the database
         db_columns = list(
             zip(
@@ -99,9 +108,6 @@ class Table(Query):
         ):  # No columns specified, setting them from the database
             self.columns = db_columns
         else:
-            self.parent_table = Table(
-                schema=self.schema, name=self.name
-            )  # Point to the full table
 
             logger.debug(
                 "Checking provided columns against db columns.",
@@ -114,6 +120,9 @@ class Table(Query):
                         set(self.columns).difference(db_columns), self.fqn
                     )
                 )
+
+    @pre_flight
+    def ff_state_machine(self):
         # Table is immediately in a 'finished executing' state
         q_state_machine = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
