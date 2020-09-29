@@ -7,7 +7,7 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-from typing import List
+from typing import List, Optional
 
 from flowmachine.core.query_state import QueryStateMachine
 from .context import get_db, get_redis
@@ -61,7 +61,7 @@ class Table(Query):
 
     """
 
-    def __init__(self, name=None, schema=None, columns=None):
+    def __init__(self, name=None, schema=None, columns: Optional[List[str]] = None):
         if "." in name:
             extracted_schema, name = name.split(".")
             if schema is not None:

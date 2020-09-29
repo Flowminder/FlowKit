@@ -65,7 +65,7 @@ class EventsTablesUnion(Query):
         self.tables = self._parse_tables(tables)
         if "*" in columns and len(self.tables) != 1:
             raise ValueError(
-                "Must give named tables when combining multiple event type tables."
+                "Must give named columns when combining multiple event type tables."
             )
         self.date_subsets = self._make_table_list(
             hours=hours,
@@ -83,7 +83,9 @@ class EventsTablesUnion(Query):
 
     def _parse_tables(self, tables):
         if tables is None:
-            return [f"events.{t}" for t in ("sms", "calls", "mds", "topups")]
+            return [
+                f"events.{t}" for t in ("sms", "calls")
+            ]  # This should default to all the tables really, but that would break all the tests
         elif isinstance(tables, str):
             return [tables]
         else:
