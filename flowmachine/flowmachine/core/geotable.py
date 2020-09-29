@@ -9,6 +9,7 @@ Simple utility class that represents tables with geometry.
 
 from . import Table
 from .mixins import GeoDataMixin
+from .preflight import pre_flight
 
 
 class GeoTable(GeoDataMixin, Table):
@@ -52,13 +53,18 @@ class GeoTable(GeoDataMixin, Table):
         self.geom_column = geom_column
         self.gid_column = gid_column
         super().__init__(name=name, schema=schema, columns=columns)
-        if geom_column not in self.column_names:
+
+    @pre_flight
+    def check_geom_column_present(self):
+        if self.geom_column not in self.column_names:
             raise ValueError(
-                "geom_column: {} is not a column in this table.".format(geom_column)
+                "geom_column: {} is not a column in this table.".format(
+                    self.geom_column
+                )
             )
-        if gid_column is not None and gid_column not in self.column_names:
+        if self.gid_column is not None and self.gid_column not in self.column_names:
             raise ValueError(
-                "gid_column: {} is not a column in this table.".format(gid_column)
+                "gid_column: {} is not a column in this table.".format(self.gid_column)
             )
 
     def _geo_augmented_query(self):
