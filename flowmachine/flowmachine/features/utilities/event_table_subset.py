@@ -12,6 +12,7 @@ from typing import List, Optional, Tuple
 from ...core import Query, Table
 from ...core.context import get_db
 from ...core.errors import MissingDateError
+from ...core.preflight import pre_flight
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
@@ -150,19 +151,20 @@ class EventTableSubset(Query):
 
         super().__init__()
 
-    def preflight(self):
+    @pre_flight
+    def create_table_def(self):
         # This needs to happen after the parent classes init method has been
         # called as it relies upon the connection object existing
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
             self.table_ORIG.fully_qualified_table_name,
             engine=get_db().engine,
         )
-        self._check_dates()
 
     @property
     def column_names(self) -> List[str]:
         return [c.split(" AS ")[-1] for c in self.columns]
 
+    @pre_flight
     def _check_dates(self):
         # Handle the logic for dealing with missing dates.
         # If there are no dates present, then we raise an error
