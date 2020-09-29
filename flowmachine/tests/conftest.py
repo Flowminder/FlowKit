@@ -149,7 +149,7 @@ def skip_datecheck(request, monkeypatch):
     """
     run_date_checks = request.node.get_closest_marker("check_available_dates", False)
     if not run_date_checks:
-        monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
+        monkeypatch.setattr(EventTableSubset, "check_dates", lambda x: True)
 
 
 @pytest.fixture(autouse=True)
