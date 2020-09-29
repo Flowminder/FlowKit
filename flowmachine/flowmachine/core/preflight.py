@@ -4,18 +4,20 @@ from functools import wraps
 
 import typing
 
+import networkx as nx
+
+from flowmachine.core.dependency_graph import (
+    calculate_dependency_graph,
+    get_dependency_links,
+    _assemble_dependency_graph,
+)
 from flowmachine.core.errors.flowmachine_errors import QueryErroredException
 
 
 def pre_flight(method):
     method.__hooks__ = getattr(method, "__hooks__", {})
     method.__hooks__["pre_flight"] = method
-
-    @wraps(method)
-    def _impl(self):
-        return method(self)
-
-    return _impl
+    return method
 
 
 def resolve_hooks(cls) -> typing.Dict[str, typing.List[typing.Callable]]:
@@ -45,7 +47,7 @@ def resolve_hooks(cls) -> typing.Dict[str, typing.List[typing.Callable]]:
             continue
 
         try:
-            hook_config = attr.__hook__
+            hook_config = attr.__hooks__
         except AttributeError:
             pass
         else:
@@ -60,12 +62,20 @@ def resolve_hooks(cls) -> typing.Dict[str, typing.List[typing.Callable]]:
 class Preflight:
     def preflight(self):
         errors = []
-        for dependency in [*self.dependencies, self]:
-            for hook in resolve_hooks(dependency.__class__)["preflight"]:
+        dep_graph = _assemble_dependency_graph(
+            dependencies=get_dependency_links(self),
+            attrs_func=lambda x: dict(query=x),
+        )
+        deps = [dep_graph.nodes[id]["query"] for id in nx.topological_sort(dep_graph)][
+            ::-1
+        ]
+
+        for dependency in deps:
+            for hook in resolve_hooks(dependency.__class__)["pre_flight"]:
                 try:
-                    hook()
+                    getattr(dependency, hook)()
                 except Exception as e:
-                    errors.append(e)
+                    errors.append((dependency, e))
         if len(errors) > 0:
             raise QueryErroredException(
                 f"Pre-flight failed for '{self.query_id}'. Errors: {errors}"
