@@ -371,7 +371,8 @@ class Query(Preflight, metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
+            q_string = self.get_query()
+            Q = f"SELECT {self.column_names_as_string_list} FROM ({q_string}) h LIMIT {n};"
             con = get_db().engine
             with con.begin() as trans:
                 df = pd.read_sql_query(Q, con=trans)
