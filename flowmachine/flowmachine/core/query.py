@@ -547,8 +547,9 @@ class Query(Preflight, metaclass=ABCMeta):
             logger.info("Table already exists")
             return []
 
+        q_string = self._make_query()
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-        (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
+        (SELECT {self.column_names_as_string_list} FROM ({q_string}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
