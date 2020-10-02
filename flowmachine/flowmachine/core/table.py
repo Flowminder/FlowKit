@@ -10,12 +10,11 @@ database.
 from typing import List, Iterable, Optional
 
 from flowmachine.core.query_state import QueryStateMachine
-from .context import get_db, get_redis
-from .errors import NotConnectedError
-from .preflight import pre_flight
-from .query import Query
-from .subset import subset_factory
-from .cache import write_cache_metadata
+from flowmachine.core.context import get_db, get_redis
+from flowmachine.core.preflight import pre_flight
+from flowmachine.core.query import Query
+from flowmachine.core.subset import subset_factory
+from flowmachine.core.cache import write_cache_metadata
 
 import structlog
 
@@ -87,10 +86,8 @@ class Table(Query):
         if isinstance(columns, str):  # Wrap strings in a list
             columns = [columns]
         self.columns = columns
-        if self.columns is not None and len(self.columns) > 0:
-            self.parent_table = Table(
-                schema=self.schema, name=self.name
-            )  # Point to the full table
+        if self.columns is None or len(self.columns) == 0:
+            raise ValueError("No columns requested.")
         super().__init__()
 
     @pre_flight
@@ -109,23 +106,16 @@ class Table(Query):
                 )
             )
         )[0]
-        if (
-            self.columns is None or self.columns == []
-        ):  # No columns specified, setting them from the database
-            self.columns = db_columns
-        else:
 
-            logger.debug(
-                "Checking provided columns against db columns.",
-                provided=columns,
-                db_columns=db_columns,
+        logger.debug(
+            "Checking provided columns against db columns.",
+            provided=columns,
+            db_columns=db_columns,
+        )
+        if not set(self.columns).issubset(db_columns):
+            raise ValueError(
+                f"{set(self.columns).difference(db_columns)} are not columns of {self.fqn}"
             )
-            if not set(self.columns).issubset(db_columns):
-                raise ValueError(
-                    "{} are not columns of {}".format(
-                        set(self.columns).difference(db_columns), self.fqn
-                    )
-                )
 
     @pre_flight
     def ff_state_machine(self):

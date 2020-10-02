@@ -10,12 +10,12 @@ import pytest
 @pytest.mark.parametrize(
     "numerator, numerator_direction, msisdn, want",
     [
-        ("events.calls", "both", "AgB6KR3Levd9Z1vJ", 0.351_852),
-        ("events.calls", "in", "AgB6KR3Levd9Z1vJ", 0.203_703_703_7),
-        ("events.sms", "both", "7ra3xZakjEqB1Al5", 0.362_069),
-        ("events.mds", "both", "QrAlXqDbXDkNJe3E", 0.236_363_63),
-        ("events.topups", "both", "bKZLwjrMQG7z468y", 0.183_098_5),
-        (["events.calls", "events.sms"], "both", "AgB6KR3Levd9Z1vJ", 0.648_148_1),
+        ("calls", "both", "AgB6KR3Levd9Z1vJ", 0.351_852),
+        ("calls", "in", "AgB6KR3Levd9Z1vJ", 0.203_703_703_7),
+        ("sms", "both", "7ra3xZakjEqB1Al5", 0.362_069),
+        ("mds", "both", "QrAlXqDbXDkNJe3E", 0.236_363_63),
+        ("topups", "both", "bKZLwjrMQG7z468y", 0.183_098_5),
+        (["calls", "sms"], "both", "AgB6KR3Levd9Z1vJ", 0.648_148_1),
     ],
 )
 def test_proportion_event_type(
@@ -30,11 +30,11 @@ def test_proportion_event_type(
         numerator,
         numerator_direction=numerator_direction,
         tables=[
-            "events.calls",
-            "events.sms",
-            "events.mds",
-            "events.topups",
-            "events.forwards",
+            "calls",
+            "sms",
+            "mds",
+            "topups",
+            "forwards",
         ],
     )
     df = get_dataframe(query).set_index("subscriber")

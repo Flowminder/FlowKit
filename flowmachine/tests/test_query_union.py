@@ -10,7 +10,9 @@ from flowmachine.core.union import Union
 
 def test_union_column_names():
     """Test that Union's column_names property is accurate"""
-    union = Table("events.calls_20160101").union(Table("events.calls_20160102"))
+    union = Table("events.calls_20160101", columns=["id"]).union(
+        Table("events.calls_20160102"), columns=["id"]
+    )
     assert union.head(0).columns.tolist() == union.column_names
 
 
@@ -18,7 +20,7 @@ def test_union_all(get_dataframe):
     """
     Test default union behaviour keeps duplicates.
     """
-    q1 = Table(schema="events", name="calls")
+    q1 = Table(schema="events", name="calls", columns=["id"])
     union_all = q1.union(q1)
     union_all_df = get_dataframe(union_all)
     single_id = union_all_df[union_all_df.id == "5wNJA-PdRJ4-jxEdG-yOXpZ"]
@@ -29,7 +31,7 @@ def test_union(get_dataframe):
     """
     Test union with all set to false dedupes.
     """
-    q1 = Table(schema="events", name="calls")
+    q1 = Table(schema="events", name="calls", columns=["id"])
     union = q1.union(q1, all=False)
     union_df = get_dataframe(union)
     single_id = union_df[union_df.id == "5wNJA-PdRJ4-jxEdG-yOXpZ"]

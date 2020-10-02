@@ -29,6 +29,7 @@ from flowmachine.core.errors.flowmachine_errors import (
 from flowmachine.core.query_state import QueryStateMachine, QueryEvent
 from flowmachine import __version__
 
+
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
@@ -495,6 +496,9 @@ def get_cached_query_objects_ordered_by_score(
         Returns a list of cached Query objects with their on disk sizes
 
     """
+    from flowmachine.core.events_table import events_table_map
+    from flowmachine.core.infrastructure_table import infrastructure_table_map
+
     protected_period_clause = (
         (f" AND NOW()-created > INTERVAL '{protected_period} seconds'")
         if protected_period is not None
@@ -502,7 +506,7 @@ def get_cached_query_objects_ordered_by_score(
     )
     qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE cached.class!='Table' AND cached.class!='GeoTable'
+        WHERE NOT (cached.class=ANY(ARRAY{['Table', 'GeoTable', *[cls.__name__ for cls in events_table_map.values()], *[cls.__name__ for cls in infrastructure_table_map.values()]]}))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """

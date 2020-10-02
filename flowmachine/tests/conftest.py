@@ -25,7 +25,7 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 )
 
 import flowmachine
-from flowmachine.core import make_spatial_unit
+from flowmachine.core import make_spatial_unit, Table
 from flowmachine.core.cache import reset_cache
 from flowmachine.core.context import (
     redis_connection,
@@ -103,12 +103,12 @@ def json_log(caplog):
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "admin3pcod",
-            "geom_table": "geography.admin3",
+            "geom_table": Table("geography.admin3", columns=["geom", "admin3pcod"]),
         },
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "id AS site_id",
-            "geom_table": "infrastructure.sites",
+            "geom_table": Table("infrastructure.sites", columns=["geom_point", "id"]),
             "geom_column": "geom_point",
         },
     ],

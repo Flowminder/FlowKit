@@ -17,7 +17,7 @@ def test_computes_expected_clipping_values(get_dataframe):
     RasterStatistics() returns correct values when clipping vector and raster layers.
     """
     G = "admin2pcod"
-    vector = Table(schema="geography", name="admin2")
+    vector = Table(schema="geography", name="admin2", columns=["admin3pcod", "geom"])
     r = RasterStatistics(
         raster="population.small_nepal_raster", vector=vector, grouping_element=G
     )
@@ -43,7 +43,7 @@ def test_raises_notimplemented_when_wrong_statistic_requested():
     RasterStatistics() raises NotImplementedError if wrong statistic requested.
     """
     G = "admin2pcod"
-    vector = Table(schema="geography", name="admin2")
+    vector = Table(schema="geography", name="admin2", columns=["admin2pcod", "geom"])
     with pytest.raises(NotImplementedError):
         r = RasterStatistics(
             raster="population.small_nepal_raster",
@@ -58,7 +58,7 @@ def test_raises_valueerror_when_grouping_element_not_provided():
     RasterStatistics() raises ValueError when `grouping_element` not provided.
     """
     G = None
-    vector = Table(schema="geography", name="admin2")
+    vector = Table(schema="geography", name="admin2", columns=["admin2pcod", "geom"])
     with pytest.raises(ValueError):
         r = RasterStatistics(
             "population.small_nepal_raster", vector=vector, grouping_element=None
@@ -79,7 +79,7 @@ def test_raster_statistics_column_names_vector(get_dataframe):
     Test that column_names property matches head(0) for RasterStatistics
     when vector is not None
     """
-    vector = Table(schema="geography", name="admin2")
+    vector = Table(schema="geography", name="admin2", columns=["admin2pcod", "geom"])
     r = RasterStatistics(
         raster="population.small_nepal_raster",
         vector=vector,

@@ -65,7 +65,7 @@ class TopUpAmount(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = Statistic(statistic.lower())
-        self.tables = "events.topups"
+        self.tables = "topups"
 
         column_list = [self.subscriber_identifier, "recharge_amount"]
 
