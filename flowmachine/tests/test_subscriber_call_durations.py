@@ -4,7 +4,7 @@
 
 import pytest
 
-from flowmachine.core import make_spatial_unit
+from flowmachine.core import make_spatial_unit, Table
 from flowmachine.features.subscriber.subscriber_call_durations import *
 
 
@@ -48,7 +48,9 @@ def test_polygon_tables(get_dataframe):
         "2016-01-01",
         "2016-01-07",
         spatial_unit=make_spatial_unit(
-            "polygon", geom_table="geography.admin3", region_id_column_name="admin3name"
+            "polygon",
+            geom_table=Table("geography.admin3", columns=["geom", "admin3name"]),
+            region_id_column_name="admin3name",
         ),
     )
     df = get_dataframe(per_location_durations)
@@ -67,7 +69,9 @@ def test_polygon_tables(get_dataframe):
         "2016-01-01",
         "2016-01-07",
         spatial_unit=make_spatial_unit(
-            "polygon", geom_table="geography.admin3", region_id_column_name="admin3name"
+            "polygon",
+            geom_table=Table("geography.admin3", columns=["geom", "admin3name"]),
+            region_id_column_name="admin3name",
         ),
     )
 

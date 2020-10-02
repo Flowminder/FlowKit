@@ -69,7 +69,7 @@ class MDSVolume(SubscriberFeature):
         self.hours = hours
         self.volume = volume
         self.statistic = statistic.lower()
-        self.tables = "events.mds"
+        self.tables = "mds"
 
         if self.statistic not in valid_stats:
             raise ValueError(

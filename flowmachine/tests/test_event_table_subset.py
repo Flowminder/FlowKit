@@ -53,9 +53,11 @@ def test_error_on_all_missing():
     Date subsetter should error when all dates are missing.
     """
     with pytest.raises(MissingDateError):
-        EventTableSubset(start="2016-05-01", stop="2016-05-02")
+        EventTableSubset(start="2016-05-01", stop="2016-05-02").preflight()
     with pytest.raises(MissingDateError):
-        EventTableSubset(start="2016-05-01", stop="2016-05-02", table="events.topups")
+        EventTableSubset(
+            start="2016-05-01", stop="2016-05-02", table="topups"
+        ).preflight()
 
 
 def test_handles_mins(get_dataframe):

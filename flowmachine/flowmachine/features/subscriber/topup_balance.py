@@ -101,7 +101,7 @@ class TopUpBalance(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()
-        self.tables = "events.topups"
+        self.tables = "topups"
 
         if self.statistic not in valid_stats:
             raise ValueError(

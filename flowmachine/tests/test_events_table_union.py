@@ -8,12 +8,12 @@ from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 
 
 @pytest.mark.parametrize(
-    "columns", [["msisdn"], ["*"], ["id", "msisdn"]], ids=lambda x: f"{x}"
+    "columns", [["msisdn"], ["id", "msisdn"]], ids=lambda x: f"{x}"
 )
 def test_events_tables_union_column_names(columns):
     """Test that EventsTableUnion column_names property is accurate."""
     etu = EventsTablesUnion(
-        "2016-01-01", "2016-01-02", columns=columns, tables=["events.calls"]
+        "2016-01-01", "2016-01-02", columns=columns, tables=["calls"]
     )
     assert etu.head(0).columns.tolist() == etu.column_names
 
@@ -25,7 +25,7 @@ def test_events_table_union_subscriber_ident_substitutions(ident):
         "2016-01-01",
         "2016-01-02",
         columns=[ident],
-        tables=["events.calls"],
+        tables=["calls"],
         subscriber_identifier=ident,
     )
     assert "subscriber" == etu.head(0).columns[0]
@@ -57,7 +57,7 @@ def test_get_only_sms(get_length):
         "2016-01-01",
         "2016-01-02",
         columns=["msisdn", "msisdn_counterpart", "datetime"],
-        tables="events.sms",
+        tables="sms",
     )
     assert get_length(etu) == 1246
 
@@ -71,6 +71,6 @@ def test_get_list_of_tables(get_length):
         "2016-01-01",
         "2016-01-02",
         columns=["msisdn", "msisdn_counterpart", "datetime"],
-        tables=["events.calls", "events.sms"],
+        tables=["calls", "sms"],
     )
     assert get_length(etu) == 2500

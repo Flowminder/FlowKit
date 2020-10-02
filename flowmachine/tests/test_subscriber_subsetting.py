@@ -22,12 +22,12 @@ from flowmachine.utils import list_of_dates
 
 
 @pytest.mark.parametrize(
-    "columns", [["msisdn"], ["*"], ["id", "msisdn"]], ids=lambda x: f"{x}"
+    "columns", [["msisdn"], None, ["id", "msisdn"]], ids=lambda x: f"{x}"
 )
 def test_events_table_subset_column_names(columns):
     """Test that EventTableSubset column_names property is accurate."""
     etu = EventTableSubset(
-        start="2016-01-01", stop="2016-01-02", columns=columns, table="events.calls"
+        start="2016-01-01", stop="2016-01-02", columns=columns, table="calls"
     )
     assert etu.head(0).columns.tolist() == etu.column_names
 
@@ -39,7 +39,7 @@ def test_events_table_subscriber_ident_substitutions(ident):
         start="2016-01-01",
         stop="2016-01-02",
         columns=[ident],
-        table="events.calls",
+        table="calls",
         subscriber_identifier=ident,
     )
     assert "subscriber" == etu.head(0).columns[0]
@@ -73,7 +73,7 @@ def subscriber_list_table(subscriber_list, flowmachine_connect):
             formatted_subscribers
         )
         engine.execute(sql)
-    subs_table = Table("subscriber_list")
+    subs_table = Table("subscriber_list", columns=["subscriber"])
     yield subs_table
     subs_table.invalidate_db_cache(drop=True)
 

@@ -109,7 +109,8 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     """
     Touching a cache record for a table should update access count and last accessed but not touch score, or counter.
     """
-    table = Table("events.calls_20160101")
+    table = Table("events.calls_20160101", columns=["id"])
+    table.preflight()
     get_db().engine.execute(
         f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.query_id
     )  # Compute time for tables is zero, so set to 1 to avoid zeroing out

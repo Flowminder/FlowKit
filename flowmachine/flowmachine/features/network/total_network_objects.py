@@ -83,8 +83,6 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         self.table = table
         if isinstance(self.table, str):
             self.table = self.table.lower()
-            if self.table != "all" and not self.table.startswith("events"):
-                self.table = "events.{}".format(self.table)
 
         network_object.verify_criterion("is_network_object")
         self.network_object = network_object

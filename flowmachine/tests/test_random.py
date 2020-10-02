@@ -290,7 +290,7 @@ def test_pickling():
     ss1 = UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
         size=10, sampling_method="system_rows"
     )
-    ss2 = Table("events.calls").random_sample(
+    ss2 = Table("events.calls", columns=["id"]).random_sample(
         size=10, sampling_method="bernoulli", seed=0.73
     )
     for ss in [ss1, ss2]:

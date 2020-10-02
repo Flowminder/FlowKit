@@ -94,7 +94,7 @@ class SubscriberCallDurations(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables="events.calls",
+            tables="calls",
             columns=column_list,
             hours=hours,
             subscriber_subset=subscriber_subset,
@@ -199,7 +199,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
             EventsTablesUnion(
                 self.start,
                 self.stop,
-                tables="events.calls",
+                tables="calls",
                 columns=column_list,
                 hours=hours,
                 subscriber_subset=subscriber_subset,
@@ -295,7 +295,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables="events.calls",
+            tables="calls",
             columns=column_list,
             hours=hours,
             subscriber_subset=subscriber_subset,
@@ -402,7 +402,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
             EventsTablesUnion(
                 self.start,
                 self.stop,
-                tables="events.calls",
+                tables="calls",
                 columns=column_list,
                 hours=hours,
                 subscriber_subset=subscriber_subset,
