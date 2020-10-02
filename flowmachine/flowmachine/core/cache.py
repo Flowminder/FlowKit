@@ -475,6 +475,18 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
+def _get_protected_classes():
+    from flowmachine.core.events_table import events_table_map
+    from flowmachine.core.infrastructure_table import infrastructure_table_map
+
+    return [
+        "Table",
+        "GeoTable",
+        *[cls.__name__ for cls in events_table_map.values()],
+        *[cls.__name__ for cls in infrastructure_table_map.values()],
+    ]
+
+
 def get_cached_query_objects_ordered_by_score(
     connection: "Connection",
     protected_period: Optional[int] = None,
@@ -496,8 +508,6 @@ def get_cached_query_objects_ordered_by_score(
         Returns a list of cached Query objects with their on disk sizes
 
     """
-    from flowmachine.core.events_table import events_table_map
-    from flowmachine.core.infrastructure_table import infrastructure_table_map
 
     protected_period_clause = (
         (f" AND NOW()-created > INTERVAL '{protected_period} seconds'")
@@ -506,7 +516,7 @@ def get_cached_query_objects_ordered_by_score(
     )
     qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE NOT (cached.class=ANY(ARRAY{['Table', 'GeoTable', *[cls.__name__ for cls in events_table_map.values()], *[cls.__name__ for cls in infrastructure_table_map.values()]]}))
+        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
@@ -686,9 +696,9 @@ def get_size_of_cache(connection: "Connection") -> int:
         Number of bytes in total used by cache tables
 
     """
-    sql = """SELECT sum(table_size(tablename, schema)) as total_bytes 
+    sql = f"""SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE cached.class!='Table' AND cached.class!='GeoTable'"""
+        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
