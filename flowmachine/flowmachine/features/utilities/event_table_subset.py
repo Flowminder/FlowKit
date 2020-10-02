@@ -149,16 +149,6 @@ class EventTableSubset(Query):
 
         super().__init__()
 
-    @pre_flight
-    def create_table_def(self):
-        logger.debug("Creating sql alchemy table.")
-        # This needs to happen after the parent classes init method has been
-        # called as it relies upon the connection object existing
-        self.sqlalchemy_table = get_sqlalchemy_table_definition(
-            self.table_ORIG.fully_qualified_table_name,
-            engine=get_db().engine,
-        )
-
     @property
     def column_names(self) -> List[str]:
         return [c.split(" AS ")[-1] for c in self.columns]
@@ -224,25 +214,25 @@ class EventTableSubset(Query):
             )
 
     def _make_query_with_sqlalchemy(self):
+        sqlalchemy_table = get_sqlalchemy_table_definition(
+            self.table_ORIG.fully_qualified_table_name,
+            engine=get_db().engine,
+        )
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_table, column_str
+                sqlalchemy_table, column_str
             )
             for column_str in self.columns
         ]
         select_stmt = select(*sqlalchemy_columns)
 
         if self.start is not None:
-            select_stmt = select_stmt.where(
-                self.sqlalchemy_table.c.datetime >= self.start
-            )
+            select_stmt = select_stmt.where(sqlalchemy_table.c.datetime >= self.start)
         if self.stop is not None:
-            select_stmt = select_stmt.where(
-                self.sqlalchemy_table.c.datetime < self.stop
-            )
+            select_stmt = select_stmt.where(sqlalchemy_table.c.datetime < self.stop)
 
         select_stmt = select_stmt.where(
-            self.hour_slices.get_subsetting_condition(self.sqlalchemy_table.c.datetime)
+            self.hour_slices.get_subsetting_condition(sqlalchemy_table.c.datetime)
         )
         select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
             select_stmt, subscriber_identifier=self.subscriber_identifier

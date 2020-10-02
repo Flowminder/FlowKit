@@ -526,6 +526,7 @@ def test_cache_reset_protects_tables(flowmachine_connect):
     """
     # Regression test for https://github.com/Flowminder/FlowKit/issues/832
     dl_query = daily_location(date="2016-01-03", method="last")
+    dl_query.preflight()
     reset_cache(get_db(), get_redis())
     for dep in dl_query._get_stored_dependencies():
         assert dep.query_id in [x.query_id for x in Query.get_stored()]
