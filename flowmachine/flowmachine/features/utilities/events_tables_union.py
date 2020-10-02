@@ -1,10 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 
 import structlog
 import warnings
-from typing import List, Optional, Tuple
+from typing import List, Union, Optional
 
 from ...core import Query
 from ...core.context import get_db
@@ -43,8 +44,8 @@ class EventsTablesUnion(Query):
 
     def __init__(
         self,
-        start,
-        stop,
+        start: Union[str, datetime.date, datetime.datetime],
+        stop: Union[str, datetime.date, datetime.datetime],
         *,
         columns,
         tables=None,

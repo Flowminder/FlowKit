@@ -3,18 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import datetime
-import pandas as pd
 import warnings
 from sqlalchemy import select
 from typing import List, Optional, Tuple
 
-from ...core import Query, Table
-from ...core.context import get_db
-from ...core.errors import MissingDateError
-from ...core.events_table import events_table_map
-from ...core.preflight import pre_flight
-from ...core.sqlalchemy_utils import (
+from flowmachine.core.query import Query
+from flowmachine.core.context import get_db
+from flowmachine.core.errors import MissingDateError
+from flowmachine.core.events_table import events_table_map
+from flowmachine.core.preflight import pre_flight
+from flowmachine.core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
@@ -34,14 +32,10 @@ class EventTableSubset(Query):
 
     Parameters
     ----------
-    start : str, default None
-        iso format date range for the beginning of the time frame, e.g.
-        2016-01-01 or 2016-01-01 14:03:01. If None, it will use the
-        earliest date seen in the `events.calls` table.
-    stop : str, default None
-        As above. If None, it will use the latest date seen in the
-        `events.calls` table.
-    hours : tuple of ints, default None
+    start, stop : str
+        iso format date range for the beginning and end of the time frame, e.g.
+        2016-01-01 or 2016-01-01 14:03:01.
+    hours : tuple of ints, default 'None'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -74,8 +68,8 @@ class EventTableSubset(Query):
     def __init__(
         self,
         *,
-        start=None,
-        stop=None,
+        start,
+        stop,
         hours: Optional[Tuple[int, int]] = None,
         hour_slices=None,
         table="calls",
@@ -160,34 +154,15 @@ class EventTableSubset(Query):
         # If there are no dates present, then we raise an error
         # if some are present, but some are missing we raise a
         # warning.
-        # If the subscriber does not pass a start or stop date, then we take
-        # the min/max date in the events.calls table
-        if self.start is None:
-            d1 = (
-                get_db()
-                .min_date(self.table_ORIG.fully_qualified_table_name.split(".")[1])
-                .strftime("%Y-%m-%d %H:%M:%S")
-            )
-        else:
-            d1 = self.start.split()[0]
-
-        if self.stop is None:
-            d2 = (
-                get_db()
-                .max_date(self.table_ORIG.fully_qualified_table_name.split(".")[1])
-                .strftime("%Y-%m-%d %H:%M:%S")
-            )
-        else:
-            d2 = self.stop.split()[0]
+        d1 = self.start.split()[0]
+        d2 = self.stop.split()[0]
 
         all_dates = list_of_dates(d1, d2)
         # Slightly annoying feature, but if the subscriber passes a date such as '2016-01-02'
         # this will be interpreted as midnight, so we don't want to include this in our
         # calculations. Check for this here, an if this is the case pop the final element
         # of the list
-        if (self.stop is not None) and (
-            len(self.stop) == 10 or self.stop.endswith("00:00:00")
-        ):
+        if len(self.stop) == 10 or self.stop.endswith("00:00:00"):
             all_dates.pop(-1)
         # This will be a true false list for whether each of the dates
         # is present in the database
@@ -213,7 +188,7 @@ class EventTableSubset(Query):
                 stacklevel=2,
             )
 
-    def _make_query_with_sqlalchemy(self):
+    def _make_query(self):
         sqlalchemy_table = get_sqlalchemy_table_definition(
             self.table_ORIG.fully_qualified_table_name,
             engine=get_db().engine,
@@ -239,8 +214,6 @@ class EventTableSubset(Query):
         )
 
         return get_sql_string(select_stmt)
-
-    _make_query = _make_query_with_sqlalchemy
 
     @property
     def fully_qualified_table_name(self):
