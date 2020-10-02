@@ -145,7 +145,9 @@ def test_invalidate_cache_multi(flowmachine_connect):
     assert not cache_table_exists(get_db(), dl1.query_id)
     assert not cache_table_exists(get_db(), hl1.query_id)
     has_deps = bool(get_db().fetch("SELECT * FROM cache.dependencies"))
-    assert has_deps  # the remaining dependencies are due to underlying Table objects
+    assert (
+        not has_deps
+    )  # the remaining dependencies are due to underlying Table objects
 
 
 def test_invalidate_cache_midchain(flowmachine_connect):
