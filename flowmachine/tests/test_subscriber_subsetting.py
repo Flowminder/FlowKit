@@ -74,8 +74,10 @@ def subscriber_list_table(subscriber_list, flowmachine_connect):
         )
         engine.execute(sql)
     subs_table = Table("subscriber_list", columns=["subscriber"])
-    yield subs_table
-    subs_table.invalidate_db_cache(drop=True)
+    try:
+        yield subs_table
+    finally:
+        subs_table.invalidate_db_cache(drop=True)
 
 
 def test_cdrs_can_be_subset_by_table(

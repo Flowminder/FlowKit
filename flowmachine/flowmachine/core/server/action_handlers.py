@@ -39,6 +39,7 @@ from .zmq_helpers import ZMQReply
 __all__ = ["perform_action"]
 
 from ..dependency_graph import query_progress
+from ..errors.flowmachine_errors import PreFlightFailedException
 
 
 async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
@@ -87,6 +88,18 @@ async def action_handler__run_query(
     """
     try:
         query_obj = FlowmachineQuerySchema().load(action_params)
+        query_obj.preflight()  # Note that we probably want to remove this call to allow getting qid faster
+    except PreFlightFailedException as exc:
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
+        )
+        return ZMQReply(
+            status="error",
+            msg=error_msg,
+            payload={"params": action_params, "orig_error_msg": orig_error_msg},
+        )
     except TypeError as exc:
         # We need to catch TypeError here, otherwise they propagate up to
         # perform_action() and result in a very misleading error message.

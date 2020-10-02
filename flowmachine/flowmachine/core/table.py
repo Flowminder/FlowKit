@@ -138,7 +138,6 @@ class Table(Query):
         return "SELECT {cols} FROM {fqn}".format(fqn=self.fqn, cols=cols)
 
     def get_query(self):
-        self.preflight()
         with get_db().engine.begin():
             get_db().engine.execute(
                 "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(

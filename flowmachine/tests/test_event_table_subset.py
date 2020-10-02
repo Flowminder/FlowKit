@@ -11,6 +11,7 @@ import pytz
 from datetime import datetime
 
 from flowmachine.core.errors import MissingDateError
+from flowmachine.core.errors.flowmachine_errors import PreFlightFailedException
 from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
 
@@ -44,7 +45,7 @@ def test_warns_on_missing():
     """
     message = "115 of 122 calendar dates missing. Earliest date is 2016-01-01, latest is 2016-01-07"
     with pytest.warns(UserWarning, match=message):
-        EventTableSubset(start="2016-01-01", stop="2016-05-02")
+        EventTableSubset(start="2016-01-01", stop="2016-05-02").preflight()
 
 
 @pytest.mark.check_available_dates
@@ -52,12 +53,8 @@ def test_error_on_all_missing():
     """
     Date subsetter should error when all dates are missing.
     """
-    with pytest.raises(MissingDateError):
+    with pytest.raises(PreFlightFailedException) as exc:
         EventTableSubset(start="2016-05-01", stop="2016-05-02").preflight()
-    with pytest.raises(MissingDateError):
-        EventTableSubset(
-            start="2016-05-01", stop="2016-05-02", table="topups"
-        ).preflight()
 
 
 def test_handles_mins(get_dataframe):

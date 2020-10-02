@@ -17,7 +17,7 @@ def test_computes_expected_clipping_values(get_dataframe):
     RasterStatistics() returns correct values when clipping vector and raster layers.
     """
     G = "admin2pcod"
-    vector = Table(schema="geography", name="admin2", columns=["admin3pcod", "geom"])
+    vector = Table(schema="geography", name="admin2", columns=["admin2pcod", "geom"])
     r = RasterStatistics(
         raster="population.small_nepal_raster", vector=vector, grouping_element=G
     )

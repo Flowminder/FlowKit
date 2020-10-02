@@ -102,6 +102,7 @@ def write_query_to_cache(
     if this_thread_is_owner:
         logger.debug(f"In charge of executing '{query.query_id}'.")
         try:
+            query.preflight()
             query_ddl_ops = ddl_ops_func(name, schema)
         except Exception as exc:
             q_state_machine.raise_error()
