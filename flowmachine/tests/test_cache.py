@@ -27,6 +27,7 @@ def test_table_records_removed(flowmachine_connect):
     dl.store().result()
     assert dl.is_stored
     table = dl.get_table()
+    table.preflight()
     assert cache_table_exists(get_db(), table.query_id)
 
     dl.invalidate_db_cache()
