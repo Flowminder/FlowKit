@@ -77,6 +77,7 @@ def test_touch_cache_record_for_query(flowmachine_connect):
     """
     Touching a cache record for a query should update access count, last accessed, & counter.
     """
+    initial_touches = get_db().fetch("SELECT nextval('cache.cache_touches');")[0][0]
     table = daily_location("2016-01-01").store().result()
 
     assert (
@@ -96,7 +97,10 @@ def test_touch_cache_record_for_query(flowmachine_connect):
         )[0][0]
     )
     # Two cache touches should have been recorded
-    assert 4 == get_db().fetch("SELECT nextval('cache.cache_touches');")[0][0]
+    assert (
+        initial_touches + 2
+        == get_db().fetch("SELECT nextval('cache.cache_touches');")[0][0]
+    )
     assert (
         accessed_at
         < get_db().fetch(

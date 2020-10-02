@@ -12,7 +12,10 @@ from flowmachine.core.dependency_graph import (
     get_dependency_links,
     _assemble_dependency_graph,
 )
-from flowmachine.core.errors.flowmachine_errors import QueryErroredException
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryErroredException,
+    PreFlightFailedException,
+)
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -64,6 +67,7 @@ def resolve_hooks(cls) -> typing.Dict[str, typing.List[typing.Callable]]:
 
 class Preflight:
     def preflight(self):
+        logger.debug("Starting pre-flight checks.", query=str(self))
         errors = dict()
         dep_graph = _assemble_dependency_graph(
             dependencies=get_dependency_links(self),
@@ -75,14 +79,21 @@ class Preflight:
 
         for dependency in deps:
             for hook in resolve_hooks(dependency.__class__)["pre_flight"]:
+                logger.debug(
+                    "Running hook",
+                    query=str(self),
+                    hook=hook,
+                    dependency=str(dependency),
+                )
                 try:
                     getattr(dependency, hook)()
                 except Exception as e:
-                    errors.setdefault(dependency.query_id, []).append(e)
+                    errors.setdefault(str(dependency), []).append(e)
         if len(errors) > 0:
             logger.debug(
-                "Pre-flight failed.", query=self, query_id=self.query_id, errors=errors
+                "Pre-flight failed.",
+                query=str(self),
+                query_id=self.query_id,
+                errors=errors,
             )
-            raise QueryErroredException(
-                f"Pre-flight failed for '{self.query_id}'. Errors: {errors}"
-            )
+            raise PreFlightFailedException(self.query_id, errors)

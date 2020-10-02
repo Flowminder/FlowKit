@@ -3,7 +3,10 @@ import pickle
 import pytest
 
 from flowmachine.core import Table
-from flowmachine.core.errors.flowmachine_errors import QueryErroredException
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryErroredException,
+    PreFlightFailedException,
+)
 
 
 @pytest.mark.parametrize("columns", [["msisdn", "id"]])
@@ -38,7 +41,7 @@ def test_table_init(args):
     ],
 )
 def test_table_preflight(args):
-    with pytest.raises(QueryErroredException):
+    with pytest.raises(PreFlightFailedException):
         Table(**args).preflight()
 
 
@@ -87,16 +90,10 @@ def test_get_table_is_self():
 
 def test_dependencies():
     """
-    Check that a table without explicit columns has no other queries as a dependency,
-    and a table with explicit columns has its parent table as a dependency.
+    Check that a table has no other queries as a dependency.
     """
     t1 = Table("events.calls", columns=["id"])
     assert t1.dependencies == set()
-
-    t2 = Table("events.calls", columns=["id"])
-    assert len(t2.dependencies) == 1
-    t2_parent = t2.dependencies.pop()
-    assert "057addedac04dbeb1dcbbb6b524b43f0" == t2_parent.query_id
 
 
 def test_subset():

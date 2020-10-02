@@ -124,7 +124,7 @@ def test_daily_location_4_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        table="events.calls",
+        table="calls",
         hours=(22, 6),
         subscriber_subset=subset_query,
     )
@@ -142,7 +142,7 @@ def test_daily_location_4_df(get_dataframe, diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        table="events.calls",
+        table="calls",
         hours=(22, 6),
         subscriber_subset=subset_query,
     )

@@ -27,7 +27,6 @@ def test_table_records_removed(flowmachine_connect):
     dl.store().result()
     assert dl.is_stored
     table = dl.get_table()
-    table.preflight()
     assert cache_table_exists(get_db(), table.query_id)
 
     dl.invalidate_db_cache()
@@ -40,6 +39,7 @@ def test_do_cache_simple(flowmachine_connect):
 
     """
     dl1 = daily_location("2016-01-01")
+    dl1.preflight()
     with get_db().engine.begin() as trans:
         write_cache_metadata(trans, dl1)
     assert cache_table_exists(get_db(), dl1.query_id)
@@ -52,6 +52,7 @@ def test_do_cache_multi(flowmachine_connect):
     """
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1.preflight()
     with get_db().engine.begin() as trans:
         write_cache_metadata(trans, hl1)
 
@@ -66,6 +67,7 @@ def test_do_cache_nested(flowmachine_connect):
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
+    flow.preflight()
     with get_db().engine.begin() as trans:
         write_cache_metadata(trans, flow)
 
