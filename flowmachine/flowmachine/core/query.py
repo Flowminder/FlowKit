@@ -263,7 +263,6 @@ class Query(Preflight, metaclass=ABCMeta):
             SQL query string.
 
         """
-        self.preflight()
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
@@ -389,9 +388,11 @@ class Query(Preflight, metaclass=ABCMeta):
             The stored version of this Query as a Table object
         """
         if self.is_stored:
-            return flowmachine.core.Table(
+            table = flowmachine.core.Table(
                 self.fully_qualified_table_name, columns=self.column_names
             )
+            table.preflight()
+            return table
         else:
             raise ValueError(f"{self} not stored on this connection.")
 

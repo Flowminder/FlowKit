@@ -6,6 +6,7 @@ import pytest
 
 from flowmachine.core.errors import MissingDateError
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.errors.flowmachine_errors import PreFlightFailedException
 from flowmachine.features import daily_location, MostFrequentLocation
 
 
@@ -77,5 +78,7 @@ def test_daily_locs_errors():
     daily_location() errors when we ask for a date that does not exist.
     """
 
-    with pytest.raises(MissingDateError):
+    with pytest.raises(PreFlightFailedException) as exc:
         daily_location("2016-01-31").preflight()
+    with pytest.raises(MissingDateError):
+        raise exc.value.errors[str(daily_location("2016-01-31"))][0]
