@@ -210,9 +210,7 @@ def test_daily_location_6_sql(diff_reporter):
         """,
         ["subscriber"],
     )
-    dl = daily_location(
-        "2016-01-03", table="events.calls", subscriber_subset=subset_query
-    )
+    dl = daily_location("2016-01-03", table="calls", subscriber_subset=subset_query)
     sql = pretty_sql(dl.get_query())
     diff_reporter(sql)
 
@@ -229,9 +227,7 @@ def test_daily_location_6_df(get_dataframe, diff_reporter):
         """,
         ["outgoing", "datetime", "duration", "subscriber"],
     )
-    dl = daily_location(
-        "2016-01-03", table="events.calls", subscriber_subset=subset_query
-    )
+    dl = daily_location("2016-01-03", table="calls", subscriber_subset=subset_query)
     df = get_dataframe(dl)
     diff_reporter(df.to_csv())
 

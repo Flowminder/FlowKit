@@ -388,9 +388,12 @@ class Query(Preflight, metaclass=ABCMeta):
         flowmachine.core.Table
             The stored version of this Query as a Table object
         """
-        return flowmachine.core.Table(
-            self.fully_qualified_table_name, columns=self.column_names
-        )
+        if self.is_stored:
+            return flowmachine.core.Table(
+                self.fully_qualified_table_name, columns=self.column_names
+            )
+        else:
+            raise ValueError(f"{self} not stored on this connection.")
 
     def union(self, *other: "Query", all: bool = True):
         """

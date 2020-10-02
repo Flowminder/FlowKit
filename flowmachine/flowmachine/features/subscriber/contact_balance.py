@@ -77,9 +77,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         subscriber_subset=None,
     ):
         self.tables = (
-            ["events.calls", "events.sms"]
-            if tables.lower() == "all" or tables is None
-            else tables
+            ["calls", "sms"] if tables.lower() == "all" or tables is None else tables
         )
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)

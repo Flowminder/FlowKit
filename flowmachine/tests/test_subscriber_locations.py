@@ -4,7 +4,7 @@
 
 import pytest
 
-from flowmachine.core import make_spatial_unit
+from flowmachine.core import make_spatial_unit, Table
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
@@ -31,7 +31,9 @@ def test_can_get_pcods(get_dataframe):
         "2016-01-01 13:30:30",
         "2016-01-02 16:25:00",
         spatial_unit=make_spatial_unit(
-            "polygon", region_id_column_name="admin3pcod", geom_table="geography.admin3"
+            "polygon",
+            region_id_column_name="admin3pcod",
+            geom_table=Table("geography.admin3", columns=["admin3pcod", "geom"]),
         ),
     )
     df = get_dataframe(subscriber_pcod)

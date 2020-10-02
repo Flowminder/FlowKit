@@ -78,4 +78,4 @@ def test_daily_locs_errors():
     """
 
     with pytest.raises(MissingDateError):
-        daily_location("2016-01-31")
+        daily_location("2016-01-31").preflight()

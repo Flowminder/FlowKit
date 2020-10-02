@@ -5,6 +5,7 @@ from functools import wraps
 import typing
 
 import networkx as nx
+import structlog
 
 from flowmachine.core.dependency_graph import (
     calculate_dependency_graph,
@@ -12,6 +13,8 @@ from flowmachine.core.dependency_graph import (
     _assemble_dependency_graph,
 )
 from flowmachine.core.errors.flowmachine_errors import QueryErroredException
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 def pre_flight(method):
@@ -61,7 +64,7 @@ def resolve_hooks(cls) -> typing.Dict[str, typing.List[typing.Callable]]:
 
 class Preflight:
     def preflight(self):
-        errors = []
+        errors = dict()
         dep_graph = _assemble_dependency_graph(
             dependencies=get_dependency_links(self),
             attrs_func=lambda x: dict(query=x),
@@ -75,8 +78,11 @@ class Preflight:
                 try:
                     getattr(dependency, hook)()
                 except Exception as e:
-                    errors.append((dependency, e))
+                    errors.setdefault(dependency.query_id, []).append(e)
         if len(errors) > 0:
+            logger.debug(
+                "Pre-flight failed.", query=self, query_id=self.query_id, errors=errors
+            )
             raise QueryErroredException(
                 f"Pre-flight failed for '{self.query_id}'. Errors: {errors}"
             )

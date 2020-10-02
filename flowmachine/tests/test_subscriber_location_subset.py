@@ -28,7 +28,7 @@ def test_subscribers_make_atleast_one_call_in_admin0():
     sls = SubscriberLocationSubset(
         start, stop, min_calls=1, spatial_unit=make_spatial_unit("admin", level=0)
     )
-    us = UniqueSubscribers(start, stop, table="events.calls")
+    us = UniqueSubscribers(start, stop, table="calls")
 
     sls_subs = set(sls.get_dataframe()["subscriber"])
     us_subs = set(us.get_dataframe()["subscriber"])
@@ -43,9 +43,9 @@ def test_subscribers_who_make_atleast_3_calls_in_central_development_region():
     within Central Development admin1 region.
     """
     start, stop = "2016-01-01", "2016-01-07"
-    regions = Table("admin2", "geography").subset(
-        "admin1name", ["Central Development Region"]
-    )
+    regions = Table(
+        "admin2", "geography", columns=["admin1name", "admin2pcod", "geom"]
+    ).subset("admin1name", ["Central Development Region"])
 
     sls = SubscriberLocationSubset(
         start,

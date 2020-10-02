@@ -12,6 +12,7 @@ from typing import List, Optional, Tuple
 from ...core import Query, Table
 from ...core.context import get_db
 from ...core.errors import MissingDateError
+from ...core.events_table import events_table_map
 from ...core.preflight import pre_flight
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
@@ -77,9 +78,9 @@ class EventTableSubset(Query):
         stop=None,
         hours: Optional[Tuple[int, int]] = None,
         hour_slices=None,
-        table="events.calls",
+        table="calls",
         subscriber_subset=None,
-        columns=["*"],
+        columns=None,
         subscriber_identifier="msisdn",
     ):
         if hours == "all":
@@ -122,12 +123,9 @@ class EventTableSubset(Query):
         self.hours = hours
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
-        if columns == ["*"]:
-            self.table_ORIG = Table(table)
-            columns = self.table_ORIG.column_names
-        else:
-            self.table_ORIG = Table(table, columns=columns)
-        self.columns = set(columns)
+        self.table_ORIG = events_table_map[table](columns=columns)
+
+        self.columns = set(self.table_ORIG.column_names)
         try:
             self.columns.remove(subscriber_identifier)
             self.columns.add(f"{subscriber_identifier} AS subscriber")

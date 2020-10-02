@@ -13,7 +13,7 @@ def test_geotable_bad_params():
 
 def test_geotable():
     """Test that geotable will work with an obviously geographic table."""
-    t = GeoTable("geography.admin3")
+    t = GeoTable("geography.admin3", columns=["geom", "admin3pcod", "admin0name"])
     feature = t.to_geojson()["features"][0]
     assert feature["properties"]["admin0name"] == "Nepal"
 
@@ -36,8 +36,7 @@ def test_geotable_uses_supplied_gid():
     assert feature["id"] == "Sindhupalchok"
 
 
-@pytest.mark.parametrize("columns", [None, ["gid", "geom"]])
-def test_geotable_column_names(columns):
+def test_geotable_column_names():
     """Test that column_names property matches head(0) for geotables"""
-    t = GeoTable("geography.admin3", columns=columns)
+    t = GeoTable("geography.admin3", columns=["gid", "geom"])
     assert t.head(0).columns.tolist() == t.column_names

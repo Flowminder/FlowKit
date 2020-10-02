@@ -23,13 +23,13 @@ def test_all_above_threshold(get_dataframe):
             "2016-01-02",
             spatial_unit=make_spatial_unit("cell"),
             interval="day",
-            table=["events.calls"],
+            table=["calls"],
         )
     )
     us = get_dataframe(
         RedactedUniqueSubscriberCounts(
             unique_subscriber_counts=UniqueSubscriberCounts(
-                "2016-01-01", "2016-01-02", table=["events.calls"]
+                "2016-01-01", "2016-01-02", table=["calls"]
             )
         )
     )
