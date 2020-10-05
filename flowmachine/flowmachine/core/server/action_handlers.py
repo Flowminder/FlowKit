@@ -81,7 +81,6 @@ async def action_handler__get_query_schemas(
 def _load_query_object(params: dict) -> "BaseExposedQuery":
     try:
         query_obj = FlowmachineQuerySchema().load(params)
-        query_obj = FlowmachineQuerySchema().load(action_params)
         query_obj.preflight()  # Note that we probably want to remove this call to allow getting qid faster
     except PreFlightFailedException as exc:
         orig_error_msg = exc.args[0]
@@ -211,6 +210,18 @@ async def action_handler__run_query(
                         store_dependencies=config.store_dependencies,
                     ),
                 ),
+            )
+        except PreFlightFailedException as exc:
+            orig_error_msg = exc.args[0]
+            error_msg = f"Preflight failed for {exc.query_id}."
+            return ZMQReply(
+                status="error",
+                msg=error_msg,
+                payload={
+                    "params": action_params,
+                    "orig_error_msg": orig_error_msg,
+                    "errors": exc.errors,
+                },
             )
         except Exception as e:
             return ZMQReply(
