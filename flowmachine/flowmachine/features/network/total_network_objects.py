@@ -10,8 +10,8 @@ at the network level.
 
 
 """
-
-from typing import List, Optional
+import datetime
+from typing import List, Optional, Union
 
 from ...core.context import get_db
 from ...core.mixins import GeoDataMixin
@@ -66,8 +66,8 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     def __init__(
         self,
-        start=None,
-        stop=None,
+        start: Union[str, datetime.date, datetime.datetime],
+        stop: Union[str, datetime.date, datetime.datetime],
         *,
         table="all",
         total_by="day",

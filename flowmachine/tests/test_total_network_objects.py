@@ -135,6 +135,8 @@ def test_median_returns_correct_values(get_dataframe):
     """
     instance = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
+            start="2016-01-01",
+            stop="2016-01-08",
             table="calls",
             total_by="hour",
             network_object=make_spatial_unit("versioned-site"),
