@@ -4,7 +4,7 @@
 
 from marshmallow import Schema, post_load
 
-from flowmachine.core import make_spatial_unit
+from flowmachine.core import make_spatial_unit, Table
 
 
 class BaseSchema(Schema):
@@ -22,7 +22,7 @@ class BaseSchema(Schema):
             elif "lon-lat" in aggregation_unit_string:
                 spatial_unit_args = {
                     "spatial_unit_type": "lon-lat",
-                    "geom_table": geom_table,
+                    "geom_table": Table(geom_table),
                     "geom_table_join_on": geom_table_join_on,
                 }
             else:
