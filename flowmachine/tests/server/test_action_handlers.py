@@ -182,7 +182,7 @@ async def test_run_query_error_handled(dummy_redis, server_config):
     )
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.msg.rstrip() == "Preflight failed for 992b9767d40a3fe477f3cf642d94f36c."
-    assert len(msg.errors) == 3
+    assert len(msg.payload["errors"]) == 3
 
 
 @pytest.mark.parametrize("bad_unit", ["NOT_A_VALID_UNIT", "admin4"])
