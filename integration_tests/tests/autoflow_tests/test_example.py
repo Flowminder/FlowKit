@@ -9,6 +9,7 @@ import shutil
 from sqlalchemy import create_engine
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
+from pathlib import Path
 
 
 def test_autoflow_example(monkeypatch, tmp_path, flowapi_url, universal_access_token):
@@ -19,8 +20,13 @@ def test_autoflow_example(monkeypatch, tmp_path, flowapi_url, universal_access_t
     config_dir = tmp_path / "config"
     inputs_dir = tmp_path / "inputs"
     outputs_dir = tmp_path / "outputs"
-    shutil.copytree("../autoflow/config", config_dir)
-    shutil.copytree("../autoflow/examples/inputs", inputs_dir)
+    shutil.copytree(
+        Path(__file__).parent.parent.parent.parent / "autoflow" / "config", config_dir
+    )
+    shutil.copytree(
+        Path(__file__).parent.parent.parent.parent / "autoflow" / "examples" / "inputs",
+        inputs_dir,
+    )
     outputs_dir.mkdir()
     # Database URI
     db_uri = f"sqlite:///{str(tmp_path/'test.db')}"
