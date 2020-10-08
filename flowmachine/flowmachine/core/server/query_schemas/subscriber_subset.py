@@ -10,6 +10,7 @@ from typing import Union
 
 from marshmallow import ValidationError, fields
 from marshmallow.validate import Validator
+from marshmallow.utils import missing
 
 from flowmachine.core.context import get_redis
 from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
@@ -22,7 +23,7 @@ class NoneOrQuery(Validator):
     def __call__(self, value) -> Union[None, str]:
         from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 
-        if value is not None:
+        if (value is not None) and (value is not missing):
             try:
                 (
                     FlowmachineQuerySchema()
@@ -61,7 +62,7 @@ class SubscriberSubset(fields.String):
         from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 
         table_name = super().deserialize(value, attr, data, **kwargs)
-        if table_name is None:
+        if (table_name is missing) or (table_name is None):
             return table_name
         else:
             return (
