@@ -9,7 +9,8 @@ from flowmachine.features import TotalLocationEvents
 from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, ISODateTime
+from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]

@@ -14,7 +14,8 @@ from flowmachine.features.location.consecutive_trips_od_matrix import (
 )
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, ISODateTime
+from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["ConsecutiveTripsODMatrixSchema", "ConsecutiveTripsODMatrixExposed"]
