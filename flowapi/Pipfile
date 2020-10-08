@@ -22,7 +22,7 @@ pytest = "*"
 pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
-black = "==19.10b0"
+black = "==20.8b1"
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 
 [requires]

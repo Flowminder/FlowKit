@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 mkdocs = "*"
-black = "==19.10b0"
+black = "==20.8b1"
 jupyter-client = "*"
 nbconvert = "*"
 pygments = "*"

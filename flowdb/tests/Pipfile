@@ -14,7 +14,7 @@ pandas = "*"
 tohu = {file = "https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz"}
 "psycopg2-binary" = "*"
 descartes = "*"
-black = "==19.10b0"
+black = "==20.8b1"
 
 [requires]
 python_version = "3.8"
