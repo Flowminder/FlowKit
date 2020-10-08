@@ -21,7 +21,9 @@ __all__ = [
 
 class UniqueVisitorCountsExposed(BaseExposedQuery):
     def __init__(
-        self, active_at_reference_location_counts, unique_subscriber_counts,
+        self,
+        active_at_reference_location_counts,
+        unique_subscriber_counts,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.

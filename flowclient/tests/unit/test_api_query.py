@@ -86,7 +86,15 @@ def test_wait_until_ready(monkeypatch):
             }
         )
     )
-    ready_mock = Mock(side_effect=[(False, reply_mock,), (True, reply_mock),])
+    ready_mock = Mock(
+        side_effect=[
+            (
+                False,
+                reply_mock,
+            ),
+            (True, reply_mock),
+        ]
+    )
     monkeypatch.setattr("flowclient.client.query_is_ready", ready_mock)
     connection_mock = Mock()
     connection_mock.post_json.return_value = Mock(

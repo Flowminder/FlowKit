@@ -217,7 +217,7 @@ class Table(Query):
         Helper function for store, optionally drops this table, and (by default) any
         cached tables that depend on it, as well as removing them from
         the cache metadata table.
-        
+
         Parameters
         ------
         name : str

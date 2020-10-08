@@ -260,7 +260,9 @@ def edit_group_servers(group_id):
     for limit in existing_limits:
         if limit not in revised_limits:
             current_app.logger.debug(
-                "Removed limit.", group_id=limit.group.id, server=limit.server.id,
+                "Removed limit.",
+                group_id=limit.group.id,
+                server=limit.server.id,
             )
             db.session.delete(limit)
     db.session.commit()

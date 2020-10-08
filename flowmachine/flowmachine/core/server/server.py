@@ -274,7 +274,8 @@ def main():
 
     # Run receive loop which receives zmq messages and sends back replies
     asyncio.run(
-        recv(config=config), debug=config.debug_mode,
+        recv(config=config),
+        debug=config.debug_mode,
     )  # note: asyncio.run() requires Python 3.7+
 
 

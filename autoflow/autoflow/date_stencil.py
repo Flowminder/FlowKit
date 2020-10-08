@@ -102,7 +102,7 @@ class DateStencil:
         -------
         pendulum.Date
             reference_date + offset (if offset is an integer), or offset (if offset is a date).
-        
+
         Raises
         ------
         TypeError
@@ -137,12 +137,12 @@ class DateStencil:
         ----------
         reference_date : date
             Date to calculate offsets relative to.
-        
+
         Returns
         -------
         list of tuple (pendulum.Date, pendulum.Date)
             List of pairs of date objects, each representing a date interval.
-        
+
         Raises
         ------
         InvalidDateIntervalError
@@ -194,12 +194,12 @@ class DateStencil:
             Date to calculate offsets relative to.
         available_dates : iterable of date
             Set of available dates
-        
+
         Returns
         -------
         bool
             True if all dates are available, False otherwise.
-        
+
         Notes
         -----
 

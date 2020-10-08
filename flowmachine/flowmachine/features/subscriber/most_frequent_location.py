@@ -76,10 +76,7 @@ class MostFrequentLocation(BaseLocation, Query):
         ignore_nulls=True,
         subscriber_subset=None,
     ):
-        """
-
-
-        """
+        """"""
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)

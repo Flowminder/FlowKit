@@ -7,11 +7,13 @@ def request_context_processor(logger, method_name, event_dict) -> dict:
     Pre-processor for structlog which injects details about the current request and user,
     if any.
 
-     """
+    """
     if has_request_context():
         try:
             user = dict(
-                username=g.user.username, id=g.user.id, is_admin=g.user.is_admin,
+                username=g.user.username,
+                id=g.user.id,
+                is_admin=g.user.is_admin,
             )
         except AttributeError as exc:
             user = None

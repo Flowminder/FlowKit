@@ -102,7 +102,10 @@ def dict_and_list_key_function(
 
 @functools.singledispatch
 def valid_tree_walks(
-    tree, *, paths: Optional[Iterable[str]] = None, depth: int = 1,
+    tree,
+    *,
+    paths: Optional[Iterable[str]] = None,
+    depth: int = 1,
 ) -> Union[tuple, list]:
     """
 
@@ -127,7 +130,10 @@ def valid_tree_walks(
 
 @valid_tree_walks.register
 def _(
-    tree: list, *, paths: Optional[Iterable[str]] = None, depth: int = 1,
+    tree: list,
+    *,
+    paths: Optional[Iterable[str]] = None,
+    depth: int = 1,
 ) -> Union[tuple, list]:
     if paths is None:
         paths = tuple()
@@ -140,7 +146,10 @@ def _(
 
 @valid_tree_walks.register
 def _(
-    tree: dict, *, paths: Optional[Iterable[str]] = None, depth: int = 1,
+    tree: dict,
+    *,
+    paths: Optional[Iterable[str]] = None,
+    depth: int = 1,
 ) -> Union[tuple, list]:
     even_depth = depth % 2 == 0
     if paths is None:
@@ -154,7 +163,10 @@ def _(
         yield from product(
             *(
                 valid_tree_walks(v, paths=(*paths, k), depth=depth + 1)
-                for k, v in sorted(tree.items(), key=dict_and_list_key_function,)
+                for k, v in sorted(
+                    tree.items(),
+                    key=dict_and_list_key_function,
+                )
             )
         )
 

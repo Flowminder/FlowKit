@@ -25,7 +25,7 @@ class JoinToLocation(Query):
     string representing a query object, to some geographical level.
     This can be simply the site with a version, a lon-lat value, an
     admin region, a gridded map, or any arbitrary polygon. This
-    will return everything in the original query, plus an additional 
+    will return everything in the original query, plus an additional
     column or columns representing the spatial region that the infrastructure
     element lies within.
 

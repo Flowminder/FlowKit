@@ -29,9 +29,7 @@ class Grid(GeoDataMixin, Query):
     """
 
     def __init__(self, size, geom="geography.admin0"):
-        """
-
-        """
+        """"""
 
         self.geom = geom
         self.size = size

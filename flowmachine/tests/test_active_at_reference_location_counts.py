@@ -13,20 +13,23 @@ from flowmachine.features.subscriber.unique_locations import UniqueLocations
 
 
 def test_active_at_reference_location_counts_column_names(get_column_names_from_run):
-    assert get_column_names_from_run(
-        ActiveAtReferenceLocationCounts(
-            ActiveAtReferenceLocation(
-                subscriber_locations=UniqueLocations(
-                    SubscriberLocations(
-                        "2016-01-01",
-                        "2016-01-02",
-                        spatial_unit=make_spatial_unit("admin", level=3),
-                    )
-                ),
-                reference_locations=daily_location("2016-01-03"),
+    assert (
+        get_column_names_from_run(
+            ActiveAtReferenceLocationCounts(
+                ActiveAtReferenceLocation(
+                    subscriber_locations=UniqueLocations(
+                        SubscriberLocations(
+                            "2016-01-01",
+                            "2016-01-02",
+                            spatial_unit=make_spatial_unit("admin", level=3),
+                        )
+                    ),
+                    reference_locations=daily_location("2016-01-03"),
+                )
             )
         )
-    ) == ["pcod", "value"]
+        == ["pcod", "value"]
+    )
 
 
 def test_active_at_reference_location_counts(get_dataframe):

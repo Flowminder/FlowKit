@@ -22,7 +22,7 @@ from ..utilities.multilocation import MultiLocation
 class DayTrajectories(MultiLocation, BaseLocation, Query):
     """
     Class that defines day-dated trajectories (list of time-sorted DailyLocations per subscriber).
-    
+
     Examples
     --------
     >>> dt = DayTrajectories(

@@ -54,10 +54,7 @@ class Join(Query):
         left_append="",
         right_append="",
     ):
-        """
-
-
-        """
+        """"""
 
         self.left = left
         self.right = right

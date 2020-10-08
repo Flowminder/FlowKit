@@ -73,7 +73,8 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
                 for method, op in operations.items():
                     op["operationId"] = f"{rule.endpoint}.{method}"
                 spec.path(
-                    path=rule.rule, operations=operations,
+                    path=rule.rule,
+                    operations=operations,
                 )
         except Exception as e:
             pass  # Don't include in API

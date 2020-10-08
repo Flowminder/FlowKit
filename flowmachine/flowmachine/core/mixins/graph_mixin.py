@@ -23,8 +23,8 @@ class GraphMixin:
         """
         By default, the leftmost column will be used as the source, the next
         leftmost as the target, and any other columns will become edge attributes.
-        Both or neither of source and target should be provided. 
-        
+        Both or neither of source and target should be provided.
+
         The default is to return a directed graph.
 
         Parameters

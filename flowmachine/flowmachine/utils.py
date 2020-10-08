@@ -60,7 +60,7 @@ def standardise_date(
     """
     Turn a date, datetime, or date string into a standardised date string (YYYY-MM-DD HH:MM:SS).
 
-    
+
     Parameters
     ----------
     date : str, date or datetime

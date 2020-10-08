@@ -28,7 +28,11 @@ from asynctest import CoroutineMock
             b'{"type":"FeatureCollection", "features":[{"key":"value1"}, {"key":"value2"}]}',
             "geojson",
         ),
-        (".csv", b"key\r\nvalue1\r\nvalue2\r\n", "csv",),
+        (
+            ".csv",
+            b"key\r\nvalue1\r\nvalue2\r\n",
+            "csv",
+        ),
     ],
 )
 @pytest.mark.asyncio

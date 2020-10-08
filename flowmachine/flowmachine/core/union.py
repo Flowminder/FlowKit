@@ -19,10 +19,7 @@ class Union(Query):
     """
 
     def __init__(self, top, bottom, all=True):
-        """
-
-
-        """
+        """"""
 
         self.top = top
         self.bottom = bottom

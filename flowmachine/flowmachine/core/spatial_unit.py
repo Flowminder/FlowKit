@@ -49,7 +49,7 @@ class SpatialUnitMixin(metaclass=ABCMeta):
         """
         Get the canonical name for this type of spatial unit, to allow checking access rights
         in FlowAPI.
-        
+
         Returns
         -------
         str
@@ -111,7 +111,7 @@ class SpatialUnitMixin(metaclass=ABCMeta):
         negate : bool, default False
             If True, negate the criterion check (i.e. raise an error if
             criterion is met).
-        
+
         Raises
         ------
         InvalidSpatialUnitError
@@ -165,12 +165,12 @@ class SpatialUnitMixin(metaclass=ABCMeta):
         check_column_names : bool, default True
             If True, check that all dict keys can be found in
             self.location_id_columns.
-        
+
         Returns
         -------
         str
             SQL where clause.
-        
+
         See also
         --------
         LonLatSpatialUnit.location_subset_clause
@@ -566,12 +566,12 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         check_column_names : bool, default True
             If True, check that all dict keys can be found in
             self.location_id_columns.
-        
+
         Returns
         -------
         str
             SQL where clause.
-        
+
         See also
         --------
         SpatialUnitMixin.location_subset_clause
@@ -896,7 +896,7 @@ def make_spatial_unit(
     geom_column : str, default 'geom'
         Name of the column in geom_table that defines the geography.
         Required when spatial_unit_type='polygon'.
-    
+
     Returns
     -------
     flowmachine.core.spatial_unit.*SpatialUnit

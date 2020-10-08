@@ -101,7 +101,15 @@ async def test_wait_until_ready(monkeypatch):
             }
         )
     )
-    ready_mock = CoroutineMock(side_effect=[(False, reply_mock,), (True, reply_mock),])
+    ready_mock = CoroutineMock(
+        side_effect=[
+            (
+                False,
+                reply_mock,
+            ),
+            (True, reply_mock),
+        ]
+    )
     monkeypatch.setattr("flowclient.async_client.query_is_ready", ready_mock)
     connection_mock = AMock()
     connection_mock.post_json = CoroutineMock(

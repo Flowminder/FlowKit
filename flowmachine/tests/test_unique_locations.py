@@ -7,15 +7,18 @@ from flowmachine.features.subscriber.unique_locations import UniqueLocations
 
 
 def test_unique_locations_column_names(get_column_names_from_run):
-    assert get_column_names_from_run(
-        UniqueLocations(
-            SubscriberLocations(
-                "2016-01-01",
-                "2016-01-02",
-                spatial_unit=make_spatial_unit("admin", level=3),
+    assert (
+        get_column_names_from_run(
+            UniqueLocations(
+                SubscriberLocations(
+                    "2016-01-01",
+                    "2016-01-02",
+                    spatial_unit=make_spatial_unit("admin", level=3),
+                )
             )
         )
-    ) == ["subscriber", "pcod"]
+        == ["subscriber", "pcod"]
+    )
 
 
 def test_unique_locations(get_dataframe):

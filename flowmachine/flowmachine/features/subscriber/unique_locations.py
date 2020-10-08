@@ -37,7 +37,8 @@ class UniqueLocations(SubscriberFeature):
     """
 
     def __init__(
-        self, subscriber_locations: SubscriberLocations,
+        self,
+        subscriber_locations: SubscriberLocations,
     ):
 
         self.spatial_unit = subscriber_locations.spatial_unit

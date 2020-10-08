@@ -19,7 +19,9 @@ import pytest
         partial(
             flowclient.spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
         ),
         partial(
@@ -86,16 +88,21 @@ import pytest
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             metric=flowclient.radius_of_gyration_spec(
-                start_date="2016-01-01", end_date="2016-01-02",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
             ),
         ),
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             metric=flowclient.radius_of_gyration_spec(
                 start_date="2016-01-01",
@@ -211,10 +218,14 @@ import pytest
             locations=flowclient.modal_location_spec(
                 locations=[
                     flowclient.daily_location_spec(
-                        date="2016-01-01", aggregation_unit="admin3", method="last",
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="last",
                     ),
                     flowclient.daily_location_spec(
-                        date="2016-01-02", aggregation_unit="admin3", method="last",
+                        date="2016-01-02",
+                        aggregation_unit="admin3",
+                        method="last",
                     ),
                 ],
             ),
@@ -222,7 +233,9 @@ import pytest
         partial(
             flowclient.flows,
             from_location=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             to_location=flowclient.unique_locations_spec(
                 start_date="2016-01-01",
@@ -233,7 +246,9 @@ import pytest
         partial(
             flowclient.flows,
             to_location=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             from_location=flowclient.unique_locations_spec(
                 start_date="2016-01-01",
@@ -258,10 +273,14 @@ import pytest
         partial(
             flowclient.flows,
             from_location=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             to_location=flowclient.daily_location_spec(
-                date="2016-01-04", aggregation_unit="admin3", method="last",
+                date="2016-01-04",
+                aggregation_unit="admin3",
+                method="last",
             ),
         ),
         partial(
@@ -269,15 +288,21 @@ import pytest
             from_location=flowclient.modal_location_spec(
                 locations=[
                     flowclient.daily_location_spec(
-                        date="2016-01-01", aggregation_unit="admin3", method="last",
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="last",
                     ),
                     flowclient.daily_location_spec(
-                        date="2016-01-02", aggregation_unit="admin3", method="last",
+                        date="2016-01-02",
+                        aggregation_unit="admin3",
+                        method="last",
                     ),
                 ],
             ),
             to_location=flowclient.daily_location_spec(
-                date="2016-01-04", aggregation_unit="admin3", method="last",
+                date="2016-01-04",
+                aggregation_unit="admin3",
+                method="last",
             ),
         ),
         partial(
@@ -525,10 +550,14 @@ import pytest
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             metric=flowclient.topup_balance_spec(
-                start_date="2016-01-01", end_date="2016-01-02", statistic="avg",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                statistic="avg",
             ),
         ),
         partial(
@@ -543,7 +572,9 @@ import pytest
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             metric=flowclient.handset_spec(
                 start_date="2016-01-01",
@@ -571,7 +602,9 @@ import pytest
             flowclient.spatial_aggregate,
             locations=flowclient.random_sample_spec(
                 query=flowclient.daily_location_spec(
-                    date="2016-01-01", aggregation_unit="admin3", method="most-common",
+                    date="2016-01-01",
+                    aggregation_unit="admin3",
+                    method="most-common",
                 ),
                 size=10,
                 seed=0.5,
@@ -581,7 +614,9 @@ import pytest
             flowclient.spatial_aggregate,
             locations=flowclient.random_sample_spec(
                 query=flowclient.daily_location_spec(
-                    date="2016-01-01", aggregation_unit="admin3", method="most-common",
+                    date="2016-01-01",
+                    aggregation_unit="admin3",
+                    method="most-common",
                 ),
                 sampling_method="bernoulli",
                 fraction=0.5,
@@ -597,7 +632,9 @@ import pytest
         partial(
             flowclient.active_at_reference_location_counts,
             reference_locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="most-common",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="most-common",
             ),
             unique_locations=flowclient.unique_locations_spec(
                 start_date="2016-01-01",
@@ -608,7 +645,9 @@ import pytest
         partial(
             flowclient.unmoving_at_reference_location_counts,
             reference_locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="most-common",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="most-common",
             ),
             unique_locations=flowclient.unique_locations_spec(
                 start_date="2016-01-01",
@@ -705,17 +744,23 @@ async def test_geo_result(connection, universal_access_token, flowapi_url):
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             metric=flowclient.topup_balance_spec(
-                start_date="2016-01-01", end_date="2016-01-02", statistic="avg",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                statistic="avg",
             ),
             method="distr",
         ),
         partial(
             flowclient.joined_spatial_aggregate,
             locations=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last",
+                date="2016-01-01",
+                aggregation_unit="admin3",
+                method="last",
             ),
             metric=flowclient.handset_spec(
                 start_date="2016-01-01",
@@ -745,7 +790,11 @@ async def test_fail_query_incorrect_parameters(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "connection", [flowclient.Connection, flowclient.ASyncConnection,],
+    "connection",
+    [
+        flowclient.Connection,
+        flowclient.ASyncConnection,
+    ],
 )
 async def test_mapping_table(connection, universal_access_token, flowapi_url):
     mapping_table = "infrastructure.mapping_table_test"
@@ -767,7 +816,11 @@ async def test_mapping_table(connection, universal_access_token, flowapi_url):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "connection", [flowclient.Connection, flowclient.ASyncConnection,],
+    "connection",
+    [
+        flowclient.Connection,
+        flowclient.ASyncConnection,
+    ],
 )
 async def test_point_mapping_table(connection, universal_access_token, flowapi_url):
     mapping_table = "geography.test_point_mapping"
@@ -897,7 +950,8 @@ async def test_get_available_dates(
     Test that queries can be run, and return the expected JSON result.
     """
     con = connection(
-        url=flowapi_url, token=access_token_builder(["get_result&available_dates"]),
+        url=flowapi_url,
+        token=access_token_builder(["get_result&available_dates"]),
     )
     try:
         result = await module.get_available_dates(

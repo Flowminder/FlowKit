@@ -266,7 +266,7 @@ def generate_token(
 def get_security_schemes_from_api_spec(flowapi_url: str) -> dict:
     """
     Get the security schemes section of an api spec from a flowapi server.
-    
+
     Parameters
     ----------
     flowapi_url : str

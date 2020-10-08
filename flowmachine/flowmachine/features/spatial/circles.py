@@ -21,9 +21,9 @@ from ..raster import RasterStatistics
 class Circle:
     """
     This is a simple class for storing information about the location and
-    extent of a circle - this could represent the extent of a city. It is to be used in conjuction 
+    extent of a circle - this could represent the extent of a city. It is to be used in conjuction
     with the Circle class in order to for a set of geometries that represent the circles in question.
-    
+
     Parameters
     ----------
     lon, lat : int
@@ -32,11 +32,11 @@ class Circle:
         The radius in meters to use as the extent of the circle
     names : str
         An ID string for the circle
-    
+
     Examples
     --------
     >>> c = Circle(2, 3, 4, 'bob')
-    
+
     >>> c
     Circle(2, 3, 4,'bob')
     """
@@ -59,12 +59,12 @@ class CircleGeometries(GeoDataMixin, Query):
     This class will form the required geometries for a set of circles defined by
     an iterable of Circle objects. This class is used by CircleRasterPops which calculates
     population based on a raster.
-    
+
     Parameters
     ----------
     circles : iterable of Circle
         The circular regions for which geometries are required
-        
+
     Examples
     --------
     >>> cl = Circle(2, 3, 4, 'bob')
