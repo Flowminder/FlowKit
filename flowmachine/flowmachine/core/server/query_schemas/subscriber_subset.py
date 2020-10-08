@@ -30,8 +30,8 @@ class NoneOrQuery(Validator):
                     .load(QueryInfoLookup(get_redis()).get_query_params(value))
                     ._flowmachine_query_obj
                 )
-            except UnkownQueryIdError as exc:
-                raise ValidationError(exc.msg)
+            except UnkownQueryIdError:
+                raise ValidationError("Must be None or a valid query id.")
         return value
 
 
@@ -57,7 +57,7 @@ class SubscriberSubset(fields.String):
         value: typing.Any,
         attr: str = None,
         data: typing.Mapping[str, typing.Any] = None,
-        **kwargs
+        **kwargs,
     ) -> Union[None, Table]:
         from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 

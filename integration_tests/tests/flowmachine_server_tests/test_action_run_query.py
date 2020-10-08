@@ -271,7 +271,7 @@ def test_cache_content(
                     "subscriber_subset": "virtually_all_subscribers",
                 },
             },
-            {"locations": {"subscriber_subset": ["Must be one of: None."]}},
+            {"locations": {"subscriber_subset": ["Must be None or a valid query id."]}},
         ),
     ],
 )
@@ -293,8 +293,7 @@ def test_run_query_with_wrong_parameters(
 
 
 def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
-    """
-    """
+    """"""
     msg = {
         "foo": "bar",
         "params": {
