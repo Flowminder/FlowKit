@@ -13,7 +13,6 @@ from marshmallow.validate import Validator
 
 from flowmachine.core.context import get_redis
 from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
-from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 from flowmachine.core.table import Table
 
 
@@ -21,6 +20,8 @@ class NoneOrQuery(Validator):
     """Validator which fails if ``value`` is not the id of a real query, or is not None`."""
 
     def __call__(self, value) -> Union[None, str]:
+        from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+
         if value is not None:
             try:
                 (
@@ -57,6 +58,8 @@ class SubscriberSubset(fields.String):
         data: typing.Mapping[str, typing.Any] = None,
         **kwargs
     ) -> Union[None, Table]:
+        from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+
         table_name = super().deserialize(value, attr, data, **kwargs)
         if table_name is None:
             return table_name
