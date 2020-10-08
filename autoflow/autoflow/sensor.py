@@ -56,13 +56,13 @@ def get_available_dates(
 ) -> List[pendulum.Date]:
     """
     Task to return a union of the dates for which data is available in FlowDB for the specified set of CDR types.
-    
+
     Parameters
     ----------
     cdr_types : list of str, optional
         Subset of CDR types for which to find available dates.
         If not provided, the union of available dates for all CDR types will be returned.
-    
+
     Returns
     -------
     list of pendulum.Date
@@ -110,14 +110,14 @@ def filter_dates(
     workflow_config.date_stencil are available.
     If workflow_config.earliest_date is None, date stencil availability will be
     checked for all available dates.
-    
+
     Parameters
     ----------
     available_dates : list of date
         List of dates to filter
     workflow_config : WorkflowConfig
         Workflow config with attributes 'earliest_date' and 'date_stencil'
-    
+
     Returns
     -------
     list of date
@@ -279,10 +279,10 @@ def run_workflow(parametrised_workflow: Tuple[Flow, Dict[str, Any]]) -> None:
     ----------
     parametrised_workflow : tuple (prefect.Flow, dict)
         Workflow to run, and parameters to run it with.
-    
+
     Notes
     -----
-    
+
     The workflow will run once, starting immediately. If the workflow has a
     schedule, the schedule will be ignored.
     """

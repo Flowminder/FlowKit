@@ -148,7 +148,7 @@ class _viewshedSlopes(Query):
 
 class _computeArea(Query):
     """
-    Private class for providing flowmachine Query() 
+    Private class for providing flowmachine Query()
     object used for calculating the metric area
     of a LocationArea() instance.
 
@@ -205,40 +205,40 @@ class LocationArea(GeoDataMixin, Query):
     will be implemented in the future.
 
     This class implements the Viewshed algorithm as proposed
-    by 
+    by
 
-        Franklin, W.R., C.K. Ray, and S. Mehta, 1994. "Geometric 
-            Algorithms for Siting of Air Defense Missile 
+        Franklin, W.R., C.K. Ray, and S. Mehta, 1994. "Geometric
+            Algorithms for Siting of Air Defense Missile
             Batteries", Technical Report DAAL03-86-D-0001,
             Battelle, Columbus Division, Columbus, Ohio, 129 p.
-    
+
     Parameters
     ----------
     point_collection : str or list, default 'sites'
         A point collection with longitude and latitudes.
         This parameter can fetch a table in the database (if a
-        str is passed) or a list collection of tuples. 
+        str is passed) or a list collection of tuples.
 
     location_identifier : str, default 'id'
         Location identifier from the point table to use. This
         identifier must be unique to each location.
-    
+
     geometry_identifier : str, default 'geom_point'
-        Geometry column to use in computations. If 
+        Geometry column to use in computations. If
         calling a table from the database the column must
         have type `GEOMETRY` or `GEOGRAPHY`.
-    
+
     date : str, default None
         If using infrastructure.* tables (`sites` or `cells`)
         then a date is needed to determine which version
         of locations to use (because infrastructure elements
         may change locations). If no date is provided,
         the current date is used.
-        
+
     method : str, default 'voronois'
         Method to use to compute polygons. The method can
         be one of the following:
-        
+
             * 'voronois':           Computes a Voronoi tessellation.
             * 'radius-voronois':    Calculates a Voronoi tessellation
                                     that is clipped based on a generated
@@ -249,11 +249,11 @@ class LocationArea(GeoDataMixin, Query):
                                     collection.
             * 'radio-propagation':  Computes radio propagation polygons
                                     from point collection (not implemented).
-    
+
     radius : int, default 35
         Radius of buffer area around circle to generate
         in Km. Default value is 35km.
-        
+
     envelope_table : str, default 'geography.admin0'
         Table to use for keeping all geometries within a
         certain envelope. This is generally used to keep
@@ -263,7 +263,7 @@ class LocationArea(GeoDataMixin, Query):
 
     dem : str, default 'elevation.nasa_srtm1'
         Digital elevation model table. The default table is `nasa_srtm1`.
-    
+
     band : int, default 1
         Band number identifier used to fetch data from the DEM.
         The default is `1` for this parameter, and rarely changes.
@@ -402,14 +402,14 @@ class LocationArea(GeoDataMixin, Query):
         """
         Protected method for generating SQL that
         returns an envelope table.
-        
+
         Parameters
         ----------
         statement : str
             SQL statement of a resulting geography table.
-            The geometries from this table will be 
+            The geometries from this table will be
             clipped to a specified envelope.
-        
+
         columns : list
             List with the list of columns from the
             prepared table. The last columns must
@@ -421,7 +421,7 @@ class LocationArea(GeoDataMixin, Query):
         str
             SQL string that clips inside geometries using
             an envelope geometry.
-            
+
         """
         identity_columns_statement = """
         {}
@@ -591,7 +591,7 @@ class LocationArea(GeoDataMixin, Query):
     def __radio_propagation(self):
         """
         Protected method for generating SQL that generates
-        areas that represent radio coverage based on a 
+        areas that represent radio coverage based on a
         specified radio propagation model.
         """
         pass

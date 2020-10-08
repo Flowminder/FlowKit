@@ -49,9 +49,7 @@ class GroupValues(Query):
     """
 
     def __init__(self, group, value, start, stop, **kwargs):
-        """
-
-        """
+        """"""
 
         if type(group) is str:
             self.groups = [group]
@@ -96,7 +94,7 @@ class GroupValues(Query):
         """
         Maps a function to each of the returned arrays, and
         returns an iterator over the results.
-        
+
         Examples
         --------
         >>> def highest_min(date_list):

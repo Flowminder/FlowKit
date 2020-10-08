@@ -36,7 +36,7 @@ def test_massive_geojson():
 
         References
         ----------
-        
+
         https://dba.stackexchange.com/a/22571
         """
 
@@ -97,7 +97,7 @@ def test_geo_augmented_query_raises_error():
 
 def test_correct_geojson():
     """
-    Check that the geojson actually contains the right features. 
+    Check that the geojson actually contains the right features.
     """
     js = (
         daily_location(

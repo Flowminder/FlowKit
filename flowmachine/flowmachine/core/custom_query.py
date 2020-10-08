@@ -24,7 +24,7 @@ class CustomQuery(Query):
         An sql query string
     column_names : list of str or set of str
         The column names to return
-    
+
     Examples
     --------
 

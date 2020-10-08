@@ -35,7 +35,7 @@ def get_output_filename(input_filename: str, tag: str = "") -> str:
         Input filename
     tag : str, optional
         A tag to append to the file stem
-    
+
     Returns
     -------
     str
@@ -56,7 +56,7 @@ def get_params_hash(parameters: Dict[str, Any]) -> str:
     ----------
     parameters : dict
         Dictionary of parameters to use for creating the hash.
-    
+
     Returns
     -------
     str
@@ -75,7 +75,7 @@ def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
     ----------
     db_uri : str
         Database URI
-    
+
     Returns
     -------
     Session
@@ -97,7 +97,7 @@ def session_scope(db_uri: str) -> Iterator["sqlalchemy.orm.session.Session"]:
     ----------
     db_uri : str
         Database URI
-    
+
     Yields
     ------
     Session
@@ -123,7 +123,7 @@ def make_json_serialisable(obj: Any) -> Union[dict, list, str, int, float, bool,
     ----------
     obj : any
         Object to be converted.
-    
+
     Returns
     -------
     dict, list, str, int, float, bool or None
@@ -145,7 +145,7 @@ def get_additional_parameter_names_for_notebooks(
         Dictionary of dictionaries describing notebook tasks.
     reserved_parameter_names : set of str, optional
         Names of parameters used within workflow.
-    
+
     Returns
     -------
     set of str
@@ -179,13 +179,13 @@ def sort_notebooks(
     ----------
     notebooks : dict
         Dictionary of dictionaries describing notebook tasks.
-    
+
     Returns
     -------
     OrderedDict
         Ordered dict of notebook task dicts, ordered so that no notebook depends on another
         notebook that comes after it.
-    
+
     Raises
     ------
     ValueError

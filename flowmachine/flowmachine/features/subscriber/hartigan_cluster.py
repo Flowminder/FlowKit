@@ -110,8 +110,7 @@ class HartiganCluster(BaseCluster):
         buffer: float = 0,
         call_threshold: int = 0,
     ):
-        """
-        """
+        """"""
 
         self.calldays = calldays
         try:

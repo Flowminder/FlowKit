@@ -31,7 +31,9 @@ from .unique_locations import UniqueLocationsSchema
 
 class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
     def __init__(
-        self, unique_locations, reference_locations,
+        self,
+        unique_locations,
+        reference_locations,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.

@@ -35,7 +35,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
     Breaks a time span into distinct time periods (currently integer number
     of days). For each subscriber counts the total number of time periods in
     which each subscriber was seen.
-    
+
     For instance we might ask for a month worth of data, break down our
     month into 10 3 day chunks, and ask for each subscriber how many of these
     three day chunks each subscriber was present in the data in.
@@ -61,10 +61,10 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         subscriber_identifier (typically, msisdn), to limit results to.
     kwargs
         passed to flowmachine.UniqueSubscribers
-    
+
     Examples
     --------
-    
+
     >>> TotalActivePeriods('2016-01-01', 10, 3).get_dataframe()
         subscriber     total_periods
         subscriberA       10

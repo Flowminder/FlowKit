@@ -217,7 +217,8 @@ def create_dag(
     ) as dag:
         if staging_view_sql is not None and source_table is not None:
             create_staging_view = CreateStagingViewOperator(
-                task_id="create_staging_view", sql=staging_view_sql,
+                task_id="create_staging_view",
+                sql=staging_view_sql,
             )
             extract = ExtractFromViewOperator(
                 task_id="extract", sql=extract_sql, pool="postgres_etl"
@@ -270,15 +271,21 @@ def create_dag(
             task_id="add_constraints", pool="postgres_etl"
         )
         add_indexes = CreateIndexesOperator(
-            task_id="add_indexes", index_columns=indexes, pool="postgres_etl",
+            task_id="add_indexes",
+            index_columns=indexes,
+            pool="postgres_etl",
         )
         attach = AttachOperator(task_id="attach")
         analyze = AnalyzeOperator(
-            task_id="analyze", target="{{ extract_table }}", pool="postgres_etl",
+            task_id="analyze",
+            target="{{ extract_table }}",
+            pool="postgres_etl",
         )
         latest_only = LatestOnlyOperator(task_id="analyze_parent_only_for_new")
         analyze_parent = AnalyzeOperator(
-            task_id="analyze_parent", target="{{ parent_table }}", pool="postgres_etl",
+            task_id="analyze_parent",
+            target="{{ parent_table }}",
+            pool="postgres_etl",
         )
         update_records = UpdateETLTableOperator(task_id="update_records")
 

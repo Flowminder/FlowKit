@@ -28,7 +28,7 @@ simplejson = "*"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-black = "==19.10b0"
+black = "==20.8b1"
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 

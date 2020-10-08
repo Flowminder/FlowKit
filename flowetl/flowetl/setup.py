@@ -21,7 +21,9 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     url="http://github.com/Flowminder/FlowKit",
-    entry_points={"console_scripts": ["install-to-dag-folder=flowetl.cli:main"],},
+    entry_points={
+        "console_scripts": ["install-to-dag-folder=flowetl.cli:main"],
+    },
     license="MPLv2",
     maintainer="Flowminder",
     maintainer_email="flowkit@flowminder.org",

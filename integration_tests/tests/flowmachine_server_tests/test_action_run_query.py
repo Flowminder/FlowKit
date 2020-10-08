@@ -293,8 +293,7 @@ def test_run_query_with_wrong_parameters(
 
 
 def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
-    """
-    """
+    """"""
     msg = {
         "foo": "bar",
         "params": {

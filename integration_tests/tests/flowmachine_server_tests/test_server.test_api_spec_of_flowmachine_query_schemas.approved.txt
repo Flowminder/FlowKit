@@ -65,7 +65,6 @@
         "type": "boolean"
       },
       "fraction": {
-        "format": "float",
         "maximum": 1.0,
         "minimum": 0.0,
         "nullable": true,
@@ -78,11 +77,9 @@
         "type": "string"
       },
       "seed": {
-        "format": "float",
         "type": "number"
       },
       "size": {
-        "format": "int32",
         "minimum": 1,
         "nullable": true,
         "type": "integer"
@@ -96,11 +93,9 @@
   "Bounds": {
     "properties": {
       "lower_bound": {
-        "format": "float",
         "type": "number"
       },
       "upper_bound": {
-        "format": "float",
         "type": "number"
       }
     },
@@ -384,7 +379,6 @@
       },
       "dummy_delay": {
         "default": 0,
-        "format": "int32",
         "type": "integer"
       },
       "dummy_param": {
@@ -723,13 +717,11 @@
     "properties": {
       "bin_list": {
         "items": {
-          "format": "float",
           "type": "number"
         },
         "type": "array"
       },
       "n_bins": {
-        "format": "int32",
         "type": "integer"
       }
     },
@@ -1156,16 +1148,13 @@
         "type": "string"
       },
       "tower_cluster_call_threshold": {
-        "format": "int32",
         "type": "integer"
       },
       "tower_cluster_radius": {
-        "format": "float",
         "type": "number"
       },
       "tower_day_of_week_scores": {
         "additionalProperties": {
-          "format": "float",
           "maximum": 1.0,
           "minimum": -1.0,
           "type": "number"
@@ -1174,7 +1163,6 @@
       },
       "tower_hour_of_day_scores": {
         "items": {
-          "format": "float",
           "maximum": 1.0,
           "minimum": -1.0,
           "type": "number"
@@ -1273,16 +1261,13 @@
         "type": "string"
       },
       "tower_cluster_call_threshold": {
-        "format": "int32",
         "type": "integer"
       },
       "tower_cluster_radius": {
-        "format": "float",
         "type": "number"
       },
       "tower_day_of_week_scores": {
         "additionalProperties": {
-          "format": "float",
           "maximum": 1.0,
           "minimum": -1.0,
           "type": "number"
@@ -1291,7 +1276,6 @@
       },
       "tower_hour_of_day_scores": {
         "items": {
-          "format": "float",
           "maximum": 1.0,
           "minimum": -1.0,
           "type": "number"
@@ -1386,16 +1370,13 @@
         "type": "string"
       },
       "tower_cluster_call_threshold": {
-        "format": "int32",
         "type": "integer"
       },
       "tower_cluster_radius": {
-        "format": "float",
         "type": "number"
       },
       "tower_day_of_week_scores": {
         "additionalProperties": {
-          "format": "float",
           "maximum": 1.0,
           "minimum": -1.0,
           "type": "number"
@@ -1404,7 +1385,6 @@
       },
       "tower_hour_of_day_scores": {
         "items": {
-          "format": "float",
           "maximum": 1.0,
           "minimum": -1.0,
           "type": "number"
@@ -1469,13 +1449,11 @@
         "type": "array"
       },
       "night_end_hour": {
-        "format": "int32",
         "maximum": 23,
         "minimum": 0,
         "type": "integer"
       },
       "night_start_hour": {
-        "format": "int32",
         "maximum": 23,
         "minimum": 0,
         "type": "integer"
@@ -1534,7 +1512,6 @@
         "type": "array"
       },
       "proportion": {
-        "format": "float",
         "maximum": 1.0,
         "minimum": 0.0,
         "type": "number"
@@ -1636,7 +1613,6 @@
         "type": "boolean"
       },
       "fraction": {
-        "format": "float",
         "maximum": 1.0,
         "minimum": 0.0,
         "nullable": true,
@@ -1649,13 +1625,11 @@
         "type": "string"
       },
       "seed": {
-        "format": "float",
         "maximum": 1.0,
         "minimum": -1.0,
         "type": "number"
       },
       "size": {
-        "format": "int32",
         "minimum": 1,
         "nullable": true,
         "type": "integer"
@@ -1789,7 +1763,6 @@
         "type": "boolean"
       },
       "fraction": {
-        "format": "float",
         "maximum": 1.0,
         "minimum": 0.0,
         "nullable": true,
@@ -1802,11 +1775,9 @@
         "type": "string"
       },
       "seed": {
-        "format": "float",
         "type": "number"
       },
       "size": {
-        "format": "int32",
         "minimum": 1,
         "nullable": true,
         "type": "integer"

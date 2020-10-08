@@ -86,7 +86,7 @@ class RandomSampler:
         ----------
         query : Query
             FlowMachine Query object to be sampled
-        
+
         Returns
         -------
         Random

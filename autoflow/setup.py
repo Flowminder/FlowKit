@@ -32,7 +32,7 @@ setup(
         "marshmallow >= 3.0.0",
         "networkx",
         "nteract-scrapbook",
-        "nbconvert",
+        "nbconvert>6.0.0",
         "nbformat",
         "papermill >= 1.2.1",
         "pendulum",

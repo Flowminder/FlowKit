@@ -399,9 +399,9 @@ class Query(metaclass=ABCMeta):
     def union(self, other, all=True):
         """
         Returns a Query representing a the union of the two queries.
-        This is simply the two tables concatenated. By passing the 
+        This is simply the two tables concatenated. By passing the
         argument all as true the duplicates are also removed.
-        
+
         Parameters
         ----------
         other : Query

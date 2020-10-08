@@ -253,7 +253,7 @@ def test_random_sample(get_dataframe):
 
 def test_is_subclass():
     """
-    Test that a random sample is an instance of the sampled thing. 
+    Test that a random sample is an instance of the sampled thing.
     """
     qur = UniqueSubscribers(start="2016-01-01", stop="2016-01-04")
     sample = qur.random_sample(
@@ -275,7 +275,7 @@ def test_gets_parent_attributes():
 
 def test_gets_mixins():
     """
-    Test that a random sample gets applicable mixins. 
+    Test that a random sample gets applicable mixins.
     """
     dl1 = daily_location("2016-01-01")
     dl2 = daily_location("2016-01-02")

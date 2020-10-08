@@ -40,7 +40,7 @@ class GeoDataMixin:
         Creates a version of this query augmented with a geom column,
         and a gid column, performing any aggregation necessary to do
         this sensibly.
-        
+
         Returns
         ------
         str
@@ -67,12 +67,12 @@ class GeoDataMixin:
         """
         Create a query which will transform each row into a geojson
         feature.
-        
+
         Parameters
         ----------
         crs : int or str
-            Optionally give an integer srid, or valid proj4 string to transform output to 
-        
+            Optionally give an integer srid, or valid proj4 string to transform output to
+
         Returns
         -------
         str
@@ -101,7 +101,7 @@ class GeoDataMixin:
     def to_geojson_file(self, filename, crs=None):
         """
         Export this query to a GeoJson FeatureCollection file.
-        
+
         Parameters
         ----------
         filename : str
@@ -118,7 +118,7 @@ class GeoDataMixin:
         ----------
         crs : int or str
             Optionally give an integer srid, or valid proj4 string to transform output to
-        
+
         Returns
         -------
         str
@@ -160,7 +160,7 @@ class GeoDataMixin:
         ----------
         crs : int or str
             Optionally give an integer srid, or valid proj4 string to transform output to
-        
+
         Returns
         -------
         dict

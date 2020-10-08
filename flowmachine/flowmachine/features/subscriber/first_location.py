@@ -73,10 +73,7 @@ class FirstLocation(SubscriberFeature):
         ignore_nulls=True,
         subscriber_subset=None,
     ):
-        """
-
-
-        """
+        """"""
 
         if location == "any" and spatial_unit != make_spatial_unit("cell"):
             raise ValueError(

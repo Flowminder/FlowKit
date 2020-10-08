@@ -20,8 +20,14 @@ def test_dags_present():
     """
     from airflow.models import DagBag
 
-    assert set(DagBag(dag_folder=dag_folder, include_examples=False,).dag_ids) == set(
-        ["remote_table_dag", "filesystem_dag"]
+    assert (
+        set(
+            DagBag(
+                dag_folder=dag_folder,
+                include_examples=False,
+            ).dag_ids
+        )
+        == set(["remote_table_dag", "filesystem_dag"])
     )
 
 
@@ -84,5 +90,8 @@ def test_correct_tasks(airflow_local_setup, dag_name, expected_task_list):
     """
     from airflow.models import DagBag
 
-    dag = DagBag(dag_folder=dag_folder, include_examples=False,).dags[dag_name]
+    dag = DagBag(
+        dag_folder=dag_folder,
+        include_examples=False,
+    ).dags[dag_name]
     assert set(dag.task_ids) == expected_task_list

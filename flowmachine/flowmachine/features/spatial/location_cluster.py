@@ -229,14 +229,14 @@ class LocationCluster(GeoDataMixin, Query):
         """
         Private method for wrapping an SQL string
         into another SQL string that filters NULL
-        elements. 
+        elements.
 
         Parameters
         ----------
         query: str
             SQL query to be wrapped. The query
             must contain the column `cluster_id`.
-        
+
         Returns
         -------
         sql: str
@@ -353,7 +353,7 @@ class LocationCluster(GeoDataMixin, Query):
             SQL string that returns a point statement.
             This string must contain the column specified
             by the parameter `location_identifier`.
-        
+
         Returns
         -------
         str

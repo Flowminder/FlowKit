@@ -13,38 +13,38 @@ from .mixins import GeoDataMixin
 
 class GeoTable(GeoDataMixin, Table):
     """
-        Provides an interface to get a representation of a table
-        with geographic information.
+    Provides an interface to get a representation of a table
+    with geographic information.
 
-        Parameters
-        ----------
-        name : str
-            Name of the table, may be fully qualified
-        schema : str, optional, default None
-            Optional if name is fully qualified
-        columns : str, optional, default None
-            Optional list of columns
-        geom_column : str, optional, default "geom"
-            Name of the column containing geometry
-        gid_column : str, optional, default None
-            Name of the column containing a gid, if set to None
-            gid will be row numbers unless a gid column is present.
+    Parameters
+    ----------
+    name : str
+        Name of the table, may be fully qualified
+    schema : str, optional, default None
+        Optional if name is fully qualified
+    columns : str, optional, default None
+        Optional list of columns
+    geom_column : str, optional, default "geom"
+        Name of the column containing geometry
+    gid_column : str, optional, default None
+        Name of the column containing a gid, if set to None
+        gid will be row numbers unless a gid column is present.
 
-        Examples
-        --------
-        >>> t = GeoTable(name="admin3", schema="geography")
-        >>> t.to_geojson()['features'][0]
-         ..
-          'type': 'MultiPolygon'},
-         'id': 1,
-         'properties': {'admin0name': 'Nepal',
-          'admin0pcod': 'NP',
-          'admin1name': 'Central Development Region',
-          'admin1pcod': '524 2',
-          'admin2name': 'Bagmati',
-          'admin2pcod': '524 2 05',
+    Examples
+    --------
+    >>> t = GeoTable(name="admin3", schema="geography")
+    >>> t.to_geojson()['features'][0]
+     ..
+      'type': 'MultiPolygon'},
+     'id': 1,
+     'properties': {'admin0name': 'Nepal',
+      'admin0pcod': 'NP',
+      'admin1name': 'Central Development Region',
+      'admin1pcod': '524 2',
+      'admin2name': 'Bagmati',
+      'admin2pcod': '524 2 05',
 
-        """
+    """
 
     def __init__(
         self, name=None, schema=None, columns=None, geom_column="geom", gid_column=None
