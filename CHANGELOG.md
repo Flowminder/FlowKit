@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- `get_cached_query_objects_ordered_by_score` is now a generator. [#3116](https://github.com/Flowminder/FlowKit/issues/3116)
 
 ### Fixed
 - FlowAPI now correctly logs all query run, poll, and retrieval requests for matching with FlowMachine. [#3071](https://github.com/Flowminder/FlowKit/issues/3071)
