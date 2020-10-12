@@ -198,6 +198,7 @@ def write_cache_metadata(
                     psycopg2.Binary(self_storage),
                 ),
             )
+            logger.debug("Touching cache.", query_id=query.query_id, query=str(query))
             con.execute("SELECT touch_cache(%s);", query.query_id)
 
             if not in_cache:
@@ -229,6 +230,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         The new cache score
     """
     try:
+        logger.debug("Touching cache.", query_id=query_id)
         return float(connection.fetch(f"SELECT touch_cache('{query_id}')")[0][0])
     except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
