@@ -124,11 +124,17 @@ class Table(Query):
             get_redis(), self.query_id, get_db().conn_id
         )
         if not q_state_machine.is_completed:
-            q_state_machine.enqueue()
-            q_state_machine.execute()
-            with get_db().engine.begin() as trans:
-                write_cache_metadata(trans, self, compute_time=0)
-            q_state_machine.finish()
+            _, succeeded = q_state_machine.enqueue()
+            if succeeded:
+                _, succeeded = q_state_machine.execute()
+                if succeeded:
+                    with get_db().engine.begin() as trans:
+                        write_cache_metadata(trans, self, compute_time=0)
+                    state, succeeded = q_state_machine.finish()
+                    if not succeeded:
+                        raise RuntimeError(
+                            f"Couldn't fast forward state machine for table {self}. State is: {state}"
+                        )
 
     def __format__(self, fmt):
         return f"<Table: '{self.schema}.{self.name}', query_id: '{self.query_id}'>"
