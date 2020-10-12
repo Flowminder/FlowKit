@@ -88,7 +88,7 @@ class Preflight:
                 try:
                     getattr(dependency, hook)()
                 except Exception as e:
-                    errors.setdefault(str(dependency), []).append(e)
+                    errors.setdefault(str(dependency), list()).append(e)
         if len(errors) > 0:
             logger.debug(
                 "Pre-flight failed.",

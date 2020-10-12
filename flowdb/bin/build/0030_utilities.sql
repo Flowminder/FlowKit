@@ -243,7 +243,7 @@ $$
   DECLARE score float;
   BEGIN
   UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1,
-        cache_score_multiplier = CASE WHEN class='Table' THEN 0 ELSE
+        cache_score_multiplier = CASE WHEN class=ANY(ARRAY['Table', 'GeoTable', 'CallsTable', 'SmsTable', 'MdsTable', 'TopupsTable', 'ForwardsTable', 'TacsTable', 'CellsTable', 'SitesTable']) THEN 0 ELSE
           cache_score_multiplier+POWER(1 + ln(2) / cache_half_life(), nextval('cache.cache_touches') - 2)
         END
         WHERE query_id=cached_query_id
