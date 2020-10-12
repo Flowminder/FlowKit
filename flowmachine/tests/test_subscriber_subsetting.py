@@ -74,6 +74,7 @@ def subscriber_list_table(subscriber_list, flowmachine_connect):
         )
         engine.execute(sql)
     subs_table = Table("subscriber_list", columns=["subscriber"])
+    subs_table.preflight()
     try:
         yield subs_table
     finally:

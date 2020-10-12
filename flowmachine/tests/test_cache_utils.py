@@ -425,10 +425,12 @@ def flowmachine_connect_with_cache_settings_reset(flowmachine_connect):
     max_cache_size = get_max_size_of_cache(get_db())
     cache_half_life = get_cache_half_life(get_db())
     cache_protect_period = get_cache_protected_period(get_db())
-    yield
-    set_max_size_of_cache(get_db(), max_cache_size)
-    set_cache_half_life(get_db(), cache_half_life)
-    set_cache_protected_period(get_db(), cache_protect_period)
+    try:
+        yield
+    finally:
+        set_max_size_of_cache(get_db(), max_cache_size)
+        set_cache_half_life(get_db(), cache_half_life)
+        set_cache_protected_period(get_db(), cache_protect_period)
 
 
 def test_get_set_cache_size_limit(flowmachine_connect_with_cache_settings_reset):
