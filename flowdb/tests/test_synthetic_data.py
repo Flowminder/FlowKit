@@ -74,7 +74,7 @@ def test_correct_cell_indexes(cursor):
 
 def test_correct_site_indexes(cursor):
     """Sites table should have four indexes - id, primary key
-     and spatial ones on geom_point and geom_polygon.
+    and spatial ones on geom_point and geom_polygon.
     """
     expected_indexes = [
         {

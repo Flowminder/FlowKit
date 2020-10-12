@@ -46,7 +46,7 @@ class DistanceSeries(SubscriberFeature):
         The set of home locations from which to calculate distance at each sighting, or a tuple
         of lon-lat in WS84 projection.
     statistic : str
-        the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
+        the statistic to calculate one of 'sum', 'avg', 'max', 'min',
         'median', 'stddev' or 'variance'
     time_bucket : {"second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"}, default "day"
         Time bucket to calculate the statistic over.

@@ -20,26 +20,26 @@ def fixed_sql_operator_with_params(
     *, class_name: str, sql: str, params: List[str], is_sensor: bool = False
 ) -> Type:
     """
-        Manufactor a new operator which will run a fixed sql template with some
-        values as parameters
+    Manufactor a new operator which will run a fixed sql template with some
+    values as parameters
 
-        Parameters
-        ----------
-        class_name : str
-            Name of the operator class
-        sql : str
-            Fixed sql string (will be templated)
-        params : list of str
-            A list of named parameters the operator should accept at instantiation
-        is_sensor : bool, default False
-            Set to True if this is a sensor
+    Parameters
+    ----------
+    class_name : str
+        Name of the operator class
+    sql : str
+        Fixed sql string (will be templated)
+    params : list of str
+        A list of named parameters the operator should accept at instantiation
+    is_sensor : bool, default False
+        Set to True if this is a sensor
 
-        Returns
-        -------
-        Type
-            New operator class
+    Returns
+    -------
+    Type
+        New operator class
 
-        """
+    """
     from flowetl.mixins.fixed_sql_mixin import FixedSQLMixin
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 

@@ -225,7 +225,9 @@ def test_shrink_to_size_removes_queries(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
-        get_db(), get_size_of_cache(get_db()) - 1, protected_period=-1,
+        get_db(),
+        get_size_of_cache(get_db()) - 1,
+        protected_period=-1,
     )
     assert 1 == len(removed_queries)
     assert not dl.is_stored

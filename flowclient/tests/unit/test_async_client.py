@@ -329,13 +329,18 @@ async def test_get_result():
     con_mock.post_json = CoroutineMock(
         return_value=Mock(
             status_code=202,
-            json=Mock(return_value=dict(msg="DUMMY_ERROR"),),
+            json=Mock(
+                return_value=dict(msg="DUMMY_ERROR"),
+            ),
             headers=dict(Location="DUMMY"),
         ),
     )
     con_mock.get_url = CoroutineMock(
         side_effect=[
-            Mock(status_code=303, headers=dict(Location="DUMMY"),),
+            Mock(
+                status_code=303,
+                headers=dict(Location="DUMMY"),
+            ),
             Mock(
                 status_code=200,
                 headers=dict(Location="DUMMY"),
@@ -354,13 +359,18 @@ async def test_get_geojson_result():
     con_mock.post_json = CoroutineMock(
         return_value=Mock(
             status_code=202,
-            json=Mock(return_value=dict(msg="DUMMY_ERROR"),),
+            json=Mock(
+                return_value=dict(msg="DUMMY_ERROR"),
+            ),
             headers=dict(Location="DUMMY"),
         ),
     )
     con_mock.get_url = CoroutineMock(
         side_effect=[
-            Mock(status_code=303, headers=dict(Location="DUMMY"),),
+            Mock(
+                status_code=303,
+                headers=dict(Location="DUMMY"),
+            ),
             Mock(
                 status_code=200,
                 headers=dict(Location="DUMMY"),

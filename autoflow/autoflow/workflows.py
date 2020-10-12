@@ -70,7 +70,7 @@ def papermill_execute_notebook(
 ) -> str:
     """
     Task to execute a notebook using Papermill.
-    
+
     Parameters
     ----------
     input_filename : str
@@ -81,7 +81,7 @@ def papermill_execute_notebook(
         Parameters to pass to the notebook
     **kwargs
         Additional keyword arguments to pass to papermill.execute_notebook
-    
+
     Returns
     -------
     str
@@ -121,7 +121,7 @@ def convert_notebook_to_pdf(
 ) -> str:
     """
     Task to convert a notebook to PDF, via asciidoc (without executing the notebook).
-    
+
     Parameters
     ----------
     notebook_path : str
@@ -132,7 +132,7 @@ def convert_notebook_to_pdf(
     asciidoc_template : str, optional
         Filename of a non-default template to use when exporting to asciidoc
         (assumed to be in the inputs directory)
-    
+
     Returns
     -------
     str
@@ -187,7 +187,7 @@ def make_notebooks_workflow(
     notebooks : OrderedDict
         Ordered dictionary of dictionaries describing notebook tasks.
         Each should have keys 'filename' and 'parameters', and optionally 'output'.
-    
+
     Returns
     -------
     prefect.Flow

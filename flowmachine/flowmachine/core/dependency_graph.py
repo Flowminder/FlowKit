@@ -66,7 +66,7 @@ def _assemble_dependency_graph(
         Dependencies between query objects.
     attrs_func : function
         Function that returns a dict of node attributes for a query object.
-    
+
     Returns
     -------
     networkx.DiGraph
@@ -209,7 +209,7 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
     ----------
     query_obj : Query
         Query object to produce a dependency graph for.
-    
+
     Returns
     -------
     networkx.DiGraph
@@ -328,7 +328,7 @@ def store_queries_in_order(dependency_graph: nx.DiGraph) -> Dict[str, "Future"]:
     ----------
     dependency_graph : networkx.DiGraph
         Dependency graph of query objects to be stored
-    
+
     Returns
     -------
     dict
@@ -354,7 +354,7 @@ def store_all_unstored_dependencies(query_obj: "Query") -> None:
     ----------
     query_obj : Query
         Query object whose dependencies will be stored.
-    
+
     Notes
     -----
     This function stores only the unstored dependencies of a query, and not the

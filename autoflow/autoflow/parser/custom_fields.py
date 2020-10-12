@@ -33,7 +33,7 @@ class ScheduleField(fields.String):
         Schedule
             Prefect CronSchedule to run a flow according to the schedule
             defined by the input string.
-        
+
         Raises
         ------
         ValidationError

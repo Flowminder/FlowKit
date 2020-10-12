@@ -103,7 +103,10 @@ async def run_query():
         )
     else:
         return (
-            {"status": "Error", "msg": f"Unexpected reply status: {reply['status']}",},
+            {
+                "status": "Error",
+                "msg": f"Unexpected reply status: {reply['status']}",
+            },
             500,
         )
 

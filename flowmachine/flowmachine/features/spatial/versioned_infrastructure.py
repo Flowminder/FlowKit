@@ -46,12 +46,12 @@ class VersionedInfrastructure(Query):
             Which table to collection versioned information from.
             Only the tables infrastructure.sites and infrastructure.cells
             are supported.
-        
+
         date: str, default None
             The date to collect a valid version from. This date
             must be formatted using ISO standards (2016-01-13).
             If no date is passed the current date will be used.
-        
+
         """
         if table not in ("sites", "cells"):
             raise ValueError(

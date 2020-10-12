@@ -154,7 +154,7 @@ class Connection:
         name : str
             Name of the table
         schema : str, default None
-            Check only this schema, if none look for the table in 
+            Check only this schema, if none look for the table in
             any schema
 
         Returns

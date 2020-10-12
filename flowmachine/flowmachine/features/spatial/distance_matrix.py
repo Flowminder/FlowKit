@@ -45,9 +45,9 @@ class _GeomDistanceMatrix(Query):
 
 class DistanceMatrix(GraphMixin, Query):
     """
-    Calculates the complete distance matrix between a 
-    location set. This is useful for the further 
-    computation of distance travelled, area of influence, 
+    Calculates the complete distance matrix between a
+    location set. This is useful for the further
+    computation of distance travelled, area of influence,
     and other features.
 
     Distance is returned in km.

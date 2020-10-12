@@ -22,8 +22,8 @@ class Displacement(SubscriberFeature):
     Calculates  statistics of a subscribers displacement from
     their home location.
 
-    Class representing the displacement from their home location 
-    for all subscribers within a certain time frame. This will 
+    Class representing the displacement from their home location
+    for all subscribers within a certain time frame. This will
     return displacement from home for all subscribers in ModalLocation.
     If a user with a home location makes no calls between start and stop
     then a NaN value will be returned.
@@ -40,7 +40,7 @@ class Displacement(SubscriberFeature):
         If not given then ModalLocation Query wil be created over period
         start -> stop.
     statistic : str
-        the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
+        the statistic to calculate one of 'sum', 'avg', 'max', 'min',
         'median', 'stddev' or 'variance'
     unit : {'km', 'm'}, default 'km'
         Unit with which to express the answers, currently the choices

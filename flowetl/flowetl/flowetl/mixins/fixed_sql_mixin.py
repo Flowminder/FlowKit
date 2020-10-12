@@ -40,5 +40,7 @@ def fixed_sql_operator(*, class_name: str, sql: str, is_sensor: bool = False) ->
         from airflow.operators.postgres_operator import PostgresOperator as op_base
 
     return type(
-        class_name, (TableNameMacrosMixin, FixedSQLMixin, op_base), dict(fixed_sql=sql),
+        class_name,
+        (TableNameMacrosMixin, FixedSQLMixin, op_base),
+        dict(fixed_sql=sql),
     )

@@ -17,7 +17,8 @@ from flowmachine.features.location.unique_visitor_counts import UniqueVisitorCou
 
 class RedactedUniqueVisitorCounts(GeoDataMixin, Query):
     def __init__(
-        self, unique_visitor_counts: UniqueVisitorCounts,
+        self,
+        unique_visitor_counts: UniqueVisitorCounts,
     ):
         """
         A count by location of how many unique visitors each location had.

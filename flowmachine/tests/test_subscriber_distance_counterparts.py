@@ -22,7 +22,7 @@ def distance_matrix(get_dataframe):
 
 @pytest.fixture()
 def distance_counterparts_wanted(get_dataframe, distance_matrix):
-    """ Returns the wanted  dataframe with the distance from subscriber and
+    """Returns the wanted  dataframe with the distance from subscriber and
     counterpart for each event. It uses pandas, instead of flowmachine, to
     conduct the required calculations and to arrive at the expected results.
     """

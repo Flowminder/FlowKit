@@ -27,7 +27,11 @@ dag = create_dag(
     cluster_field="msisdn",
     program="zcat",
     filename="/files/{{ params.cdr_type }}_{{ ds_nodash }}.csv.gz",
-    fields={"msisdn": "TEXT", "cell_id": "TEXT", "event_time": "TIMESTAMPTZ",},
+    fields={
+        "msisdn": "TEXT",
+        "cell_id": "TEXT",
+        "event_time": "TIMESTAMPTZ",
+    },
     null="Undefined",
 )
 

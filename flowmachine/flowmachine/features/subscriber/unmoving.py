@@ -35,7 +35,8 @@ class Unmoving(SubscriberFeature):
     """
 
     def __init__(
-        self, locations: UniqueLocations,
+        self,
+        locations: UniqueLocations,
     ):
         self.locations = locations
         self.spatial_unit = locations.spatial_unit

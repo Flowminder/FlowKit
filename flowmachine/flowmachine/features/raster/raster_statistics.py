@@ -33,7 +33,7 @@ class RasterStatistics(Query):
         Vector layer to use in case of clipping
         and grouping operations. If this option
         is provided, the parameters `vector_property`
-        and `grouping_element` need to be provided. 
+        and `grouping_element` need to be provided.
         This can also be a Query object which returns a
         geometry column.
 

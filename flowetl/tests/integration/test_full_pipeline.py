@@ -7,7 +7,10 @@ import pandas as pd
 
 
 def test_file_pipeline(
-    run_dag, dag_status, task_status, flowdb_transaction,
+    run_dag,
+    dag_status,
+    task_status,
+    flowdb_transaction,
 ):
     """
     Test full run of file pipeline, and ensure that:
@@ -110,7 +113,10 @@ def test_file_pipeline(
 
 
 def test_file_pipeline_bad_file(
-    run_dag, dag_status, task_status, flowdb_transaction,
+    run_dag,
+    dag_status,
+    task_status,
+    flowdb_transaction,
 ):
     """
     Test fail for bad data file.

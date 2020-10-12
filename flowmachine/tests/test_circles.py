@@ -135,7 +135,7 @@ def test_circle_string_rep():
 
 def test_circle_loc_creation():
     """
-    Test that point attribute gets made correctly. Not sure whether I need to test this 
+    Test that point attribute gets made correctly. Not sure whether I need to test this
     class since it basicly just wraps up saome data...?
     """
     cl = Circle(lon=lons[0], lat=lats[0], radius=radii[0], name=names[0])
@@ -154,7 +154,7 @@ def test_circle_geometries():
 
 def test_rastersum(get_dataframe):
     """
-    Test that CircleRasterSum returns correct data 
+    Test that CircleRasterSum returns correct data
     """
     c_locs = [Circle(84.038, 28.309, 500, "test")]
     geoms = CircleGeometries(c_locs)

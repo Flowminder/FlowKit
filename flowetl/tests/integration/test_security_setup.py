@@ -7,7 +7,8 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "env_var_to_remove", ["AIRFLOW__CORE__SQL_ALCHEMY_CONN"],
+    "env_var_to_remove",
+    ["AIRFLOW__CORE__SQL_ALCHEMY_CONN"],
 )
 def test_required_env_var(env_var_to_remove, docker_client, container_tag):
     """

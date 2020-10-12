@@ -38,7 +38,7 @@ def parse_workflows_yaml(
         Name of yaml input file
     inputs_dir : Path
         Directory in which input files should be found
-    
+
     Returns
     -------
     workflows : list of Flow

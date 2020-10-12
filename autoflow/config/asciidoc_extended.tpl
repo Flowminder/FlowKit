@@ -1,4 +1,4 @@
-{% extends 'asciidoc.tpl' %}
+{% extends 'asciidoc/index.asciidoc.j2' %}
 
 {% block header %}
 :imagesdir: {{ resources['output_files_dir'] }}

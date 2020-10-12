@@ -10,18 +10,21 @@ from flowmachine.features.subscriber.unique_locations import UniqueLocations
 
 
 def test_active_at_reference_location_column_names(get_column_names_from_run):
-    assert get_column_names_from_run(
-        ActiveAtReferenceLocation(
-            subscriber_locations=UniqueLocations(
-                SubscriberLocations(
-                    "2016-01-01",
-                    "2016-01-02",
-                    spatial_unit=make_spatial_unit("admin", level=3),
-                )
-            ),
-            reference_locations=daily_location("2016-01-03"),
+    assert (
+        get_column_names_from_run(
+            ActiveAtReferenceLocation(
+                subscriber_locations=UniqueLocations(
+                    SubscriberLocations(
+                        "2016-01-01",
+                        "2016-01-02",
+                        spatial_unit=make_spatial_unit("admin", level=3),
+                    )
+                ),
+                reference_locations=daily_location("2016-01-03"),
+            )
         )
-    ) == ["subscriber", "value"]
+        == ["subscriber", "value"]
+    )
 
 
 def test_active_at_reference_location(get_dataframe):

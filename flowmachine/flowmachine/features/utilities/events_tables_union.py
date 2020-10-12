@@ -52,9 +52,7 @@ class EventsTablesUnion(Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        """
-
-        """
+        """"""
         if isinstance(tables, str) and tables.lower() == "all":
             logger.warn(
                 "EventsTablesUnion will soon stop accepting the argument tables='all'. Use tables=None instead."

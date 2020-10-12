@@ -120,9 +120,7 @@ class SubscriberTACs(SubscriberFeature):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        """
-
-        """
+        """"""
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
@@ -204,9 +202,7 @@ class SubscriberTAC(SubscriberFeature):
         subscriber_identifier="msisdn",
         method="most-common",
     ):
-        """
-
-        """
+        """"""
 
         if subscriber_identifier == "imei":
             warnings.warn("IMEI has a one to one mapping to TAC number.")
@@ -301,9 +297,7 @@ class SubscriberHandsets(SubscriberFeature):
         subscriber_identifier="msisdn",
         subscriber_subset=None,
     ):
-        """
-
-        """
+        """"""
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
@@ -383,9 +377,7 @@ class SubscriberHandset(SubscriberFeature):
         method="most-common",
         subscriber_subset=None,
     ):
-        """
-
-        """
+        """"""
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
@@ -523,9 +515,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
         method="most-common",
         subscriber_subset=None,
     ):
-        """
-
-        """
+        """"""
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)

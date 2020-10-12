@@ -35,18 +35,18 @@ def subset_factory(parent_class):
 
     class Subset(parent_class):
         """
-            Subsets one of the columns to a specified subset of values
+        Subsets one of the columns to a specified subset of values
 
-            It may be the case that you wish to subset by another Query
-            object, in this case it is better to use the Query join method.
+        It may be the case that you wish to subset by another Query
+        object, in this case it is better to use the Query join method.
 
-            Parameters
-            ----------
-            col : str
-                Name of the column to subset, e.g. subscriber, cell etc.
-            subset : list
-                List of values to subset to
-            """
+        Parameters
+        ----------
+        col : str
+            Name of the column to subset, e.g. subscriber, cell etc.
+        subset : list
+            List of values to subset to
+        """
 
         def __init__(self, parent, col, subsetby):
             self.parent = parent
@@ -110,20 +110,20 @@ def subset_numbers_factory(parent_class):
 
     class NumericSubset(parent_class):
         """
-            Subsets one of the columns to a specified range of numerical values.
+        Subsets one of the columns to a specified range of numerical values.
 
-            It may be the case that you wish to subset by another Query
-            object, in this case it is better to use the Query join method.
+        It may be the case that you wish to subset by another Query
+        object, in this case it is better to use the Query join method.
 
-            Parameters
-            ----------
-            col : str
-                Name of the column to subset, should contain numbers
-            low : float
-                Lower bound of interval to subset on
-            high : float
-                Upper bound of interval to subset on
-            """
+        Parameters
+        ----------
+        col : str
+            Name of the column to subset, should contain numbers
+        low : float
+            Lower bound of interval to subset on
+        high : float
+            Upper bound of interval to subset on
+        """
 
         def __init__(self, parent, col, low, high):
             self.parent = parent

@@ -139,7 +139,8 @@ class EventTableSubset(Query):
         self.columns = sorted(self.columns)
 
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
-            self.table_ORIG.fully_qualified_table_name, engine=get_db().engine,
+            self.table_ORIG.fully_qualified_table_name,
+            engine=get_db().engine,
         )
 
         if self.start == self.stop:

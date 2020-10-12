@@ -124,11 +124,11 @@ class RandomSystemRows(RandomBase):
         Whether to estimate the number of rows in the table using
         information contained in the `pg_class` or whether to perform an
         actual count in the number of rows.
-    
+
     See Also
     --------
     flowmachine.core.random.random_factory
-    
+
     Notes
     -----
     The 'system_rows' sampling method does not support parent tables which have
@@ -252,11 +252,11 @@ class RandomTablesample(SeedableRandom):
         actual count in the number of rows.
     seed : float, optional
         Optionally provide a seed for repeatable random samples.
-    
+
     See Also
     --------
     flowmachine.core.random.random_factory
-    
+
     Notes
     -----
     Random samples may only be stored if a seed is supplied.
@@ -346,11 +346,11 @@ class RandomIDs(SeedableRandom):
     seed : float, optional
         Optionally provide a seed for repeatable random samples.
         For the 'random_ids' method, seed must be between -/+1.
-    
+
     See Also
     --------
     flowmachine.core.random.random_factory
-    
+
     Notes
     -----
     Random samples may only be stored if a seed is supplied.
@@ -435,12 +435,12 @@ def random_factory(parent_class: Type[Query], sampling_method: str = "random_ids
             relation. This sampling method is slower and is not guaranteed to
             generate a sample of the specified size, but an approximation.
         'random_ids': samples rows by randomly sampling the row number.
-    
+
     Returns
     -------
     class
         A class which gets a random sample from the result of a query.
-    
+
     Examples
     --------
         >>> query = UniqueSubscribers("2016-01-01", "2016-01-31")
