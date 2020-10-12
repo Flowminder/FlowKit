@@ -156,11 +156,11 @@
         },
         "passlib": {
             "hashes": [
-                "sha256:0fe8b86a900b2885fed00cf5e96f040c7abd61496d65dec4c814e462f8499d8a",
-                "sha256:a203263a2dbb97f3103603c780dce7a7253722951c717b424ed8cd7c72587ae1"
+                "sha256:aa6bca462b8d8bda89c70b382f0c298a20b5560af6cbfa2dce410c0a2fb669f1",
+                "sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04"
             ],
             "index": "pypi",
-            "version": "==1.7.3"
+            "version": "==1.7.4"
         },
         "pycparser": {
             "hashes": [
