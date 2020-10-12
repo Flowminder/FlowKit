@@ -14,19 +14,7 @@ FROM (SELECT times_visited.subscriber,
                                l.subscriber,
                                l.location_id,
                                sites.pcod
-                        FROM (SELECT events.sms.datetime,
-                                     events.sms.imei AS subscriber,
-                                     events.sms.location_id
-                              FROM events.sms
-                              WHERE (events.sms.datetime >= '2016-01-04 00:00:00')
-                                AND (events.sms.datetime < '2016-01-05 00:00:00')
-                                AND (to_char(events.sms.datetime, 'HH24:MI') >= '03:00')
-                                AND (to_char(events.sms.datetime, 'HH24:MI') < '09:00')
-                                AND events.sms.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
-
-                              UNION ALL
-
-                              SELECT events.calls.datetime,
+                        FROM (SELECT events.calls.datetime,
                                      events.calls.imei AS subscriber,
                                      events.calls.location_id
                               FROM events.calls
@@ -34,7 +22,19 @@ FROM (SELECT times_visited.subscriber,
                                 AND (events.calls.datetime < '2016-01-05 00:00:00')
                                 AND (to_char(events.calls.datetime, 'HH24:MI') >= '03:00')
                                 AND (to_char(events.calls.datetime, 'HH24:MI') < '09:00')
-                                AND events.calls.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS l
+                                AND events.calls.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
+
+                              UNION ALL
+
+                              SELECT events.sms.datetime,
+                                     events.sms.imei AS subscriber,
+                                     events.sms.location_id
+                              FROM events.sms
+                              WHERE (events.sms.datetime >= '2016-01-04 00:00:00')
+                                AND (events.sms.datetime < '2016-01-05 00:00:00')
+                                AND (to_char(events.sms.datetime, 'HH24:MI') >= '03:00')
+                                AND (to_char(events.sms.datetime, 'HH24:MI') < '09:00')
+                                AND events.sms.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS l
                              INNER JOIN (SELECT loc_table.id AS location_id,
                                                 loc_table.date_of_first_service,
                                                 loc_table.date_of_last_service,

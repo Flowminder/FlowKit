@@ -11,14 +11,14 @@ FROM (SELECT subscriber_locs.subscriber,
             FROM (SELECT tbl.datetime,
                          tbl.location_id,
                          tbl.subscriber
-                  FROM (SELECT events.sms.datetime AS datetime,
-                               events.sms.location_id AS location_id,
-                               events.sms.msisdn AS subscriber
-                        FROM events.sms
-                        WHERE (events.sms.datetime >= '2016-01-05 00:00:00')
-                          AND (events.sms.datetime < '2016-01-06 00:00:00')
-                          AND ((   (to_char(events.sms.datetime, 'HH24:MI') < '05:00')
-                                OR (to_char(events.sms.datetime, 'HH24:MI') >= '23:00')))) AS tbl
+                  FROM (SELECT events.calls.datetime AS datetime,
+                               events.calls.location_id AS location_id,
+                               events.calls.msisdn AS subscriber
+                        FROM events.calls
+                        WHERE (events.calls.datetime >= '2016-01-05 00:00:00')
+                          AND (events.calls.datetime < '2016-01-06 00:00:00')
+                          AND ((   (to_char(events.calls.datetime, 'HH24:MI') < '05:00')
+                                OR (to_char(events.calls.datetime, 'HH24:MI') >= '23:00')))) AS tbl
                        INNER JOIN (SELECT DISTINCT msisdn AS subscriber
                                    FROM events.calls
                                    WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subset_query ON tbl.subscriber = subset_query.subscriber
@@ -28,14 +28,14 @@ FROM (SELECT subscriber_locs.subscriber,
                   SELECT tbl.datetime,
                          tbl.location_id,
                          tbl.subscriber
-                  FROM (SELECT events.calls.datetime AS datetime,
-                               events.calls.location_id AS location_id,
-                               events.calls.msisdn AS subscriber
-                        FROM events.calls
-                        WHERE (events.calls.datetime >= '2016-01-05 00:00:00')
-                          AND (events.calls.datetime < '2016-01-06 00:00:00')
-                          AND ((   (to_char(events.calls.datetime, 'HH24:MI') < '05:00')
-                                OR (to_char(events.calls.datetime, 'HH24:MI') >= '23:00')))) AS tbl
+                  FROM (SELECT events.sms.datetime AS datetime,
+                               events.sms.location_id AS location_id,
+                               events.sms.msisdn AS subscriber
+                        FROM events.sms
+                        WHERE (events.sms.datetime >= '2016-01-05 00:00:00')
+                          AND (events.sms.datetime < '2016-01-06 00:00:00')
+                          AND ((   (to_char(events.sms.datetime, 'HH24:MI') < '05:00')
+                                OR (to_char(events.sms.datetime, 'HH24:MI') >= '23:00')))) AS tbl
                        INNER JOIN (SELECT DISTINCT msisdn AS subscriber
                                    FROM events.calls
                                    WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subset_query ON tbl.subscriber = subset_query.subscriber) AS foo
