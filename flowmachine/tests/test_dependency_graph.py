@@ -52,18 +52,18 @@ def test_print_dependency_tree():
           - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
              - <Table: 'geography.admin3', query_id: 'xxxxx'>
           - <Query of type: SubscriberLocations, query_id: 'xxxxx'>
+             - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
+                - <Table: 'geography.admin3', query_id: 'xxxxx'>
              - <Query of type: JoinToLocation, query_id: 'xxxxx'>
                 - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
                    - <Table: 'geography.admin3', query_id: 'xxxxx'>
-                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
-                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
-                      - <Table: 'events.calls', query_id: 'xxxxx'>
                 - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
                    - <Query of type: EventTableSubset, query_id: 'xxxxx'>
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
+                      - <Table: 'events.calls', query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.sms', query_id: 'xxxxx'>
-             - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
-                - <Table: 'geography.admin3', query_id: 'xxxxx'>
         """
     )
 
