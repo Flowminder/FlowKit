@@ -10,7 +10,8 @@ from flowmachine.features.utilities.subscriber_locations import SubscriberLocati
 from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 from . import BaseExposedQuery
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, ISODateTime
+from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]

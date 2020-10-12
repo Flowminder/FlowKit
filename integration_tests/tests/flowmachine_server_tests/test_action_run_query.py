@@ -271,7 +271,7 @@ def test_cache_content(
                     "subscriber_subset": "virtually_all_subscribers",
                 },
             },
-            {"locations": {"subscriber_subset": ["Must be one of: None."]}},
+            {"locations": {"subscriber_subset": ["Must be None or a valid query id."]}},
         ),
     ],
 )

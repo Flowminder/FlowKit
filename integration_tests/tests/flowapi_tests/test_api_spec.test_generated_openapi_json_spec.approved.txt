@@ -162,9 +162,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -287,9 +284,6 @@
             "nullable": true
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -357,9 +351,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -465,9 +456,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -688,9 +676,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1007,9 +992,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1157,9 +1139,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           },
@@ -1271,9 +1250,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           },
@@ -1381,9 +1357,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           },
@@ -1500,9 +1473,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1559,9 +1529,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1614,9 +1581,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1766,9 +1730,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1849,9 +1810,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -1901,9 +1859,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -2044,9 +1999,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -2113,9 +2065,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
@@ -2190,9 +2139,6 @@
             "type": "string"
           },
           "subscriber_subset": {
-            "enum": [
-              null
-            ],
             "nullable": true,
             "type": "string"
           }
