@@ -15,7 +15,7 @@ def test_events_tables_union_1_sql(diff_reporter):
     etu = EventsTablesUnion(
         start="2016-01-02",
         stop="2016-01-03",
-        tables=["events.calls"],
+        tables=["calls"],
         columns=[
             "datetime",
             "duration",
@@ -38,7 +38,7 @@ def test_events_tables_union_1_df(diff_reporter, get_dataframe):
     etu = EventsTablesUnion(
         start="2016-01-02",
         stop="2016-01-03",
-        tables=["events.calls"],
+        tables=["calls"],
         columns=[
             "datetime",
             "duration",
@@ -62,7 +62,7 @@ def test_events_tables_union_2_sql(diff_reporter):
         start="2016-01-03",
         stop="2016-01-05",
         hours=(7, 13),
-        tables=["events.calls"],
+        tables=["calls"],
         columns=[
             "datetime",
             "duration",
@@ -86,7 +86,7 @@ def test_events_tables_union_2_df(diff_reporter, get_dataframe):
         start="2016-01-03",
         stop="2016-01-05",
         hours=(7, 13),
-        tables=["events.calls"],
+        tables=["calls"],
         columns=[
             "datetime",
             "duration",
@@ -110,7 +110,7 @@ def test_events_tables_union_3_sql(diff_reporter):
         start="2016-01-02",
         stop="2016-01-04",
         hours=(21, 5),
-        tables=["events.calls"],
+        tables=["calls"],
         columns=[
             "datetime",
             "duration",
@@ -134,7 +134,7 @@ def test_events_tables_union_3_df(diff_reporter, get_dataframe):
         start="2016-01-02",
         stop="2016-01-04",
         hours=(21, 5),
-        tables=["events.calls"],
+        tables=["calls"],
         columns=[
             "datetime",
             "duration",
