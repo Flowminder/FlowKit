@@ -278,6 +278,7 @@ def write_cache_metadata(
                 logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
                 pass
 
+<<<<<<< HEAD
         cache_record_insert = """
         INSERT INTO cache.cached 
         (query_id, version, query, created, access_count, last_accessed, compute_time, 
@@ -309,6 +310,39 @@ def write_cache_metadata(
             logger.debug(f"{query.fully_qualified_table_name} added to cache.")
         else:
             logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
+=======
+        with con.begin():
+            cache_record_insert = """
+            INSERT INTO cache.cached 
+            (query_id, version, query, created, access_count, last_accessed, compute_time, 
+            cache_score_multiplier, class, schema, tablename, obj) 
+            VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+             ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
+            con.execute(
+                cache_record_insert,
+                (
+                    query.query_id,
+                    __version__,
+                    query._make_query(),
+                    compute_time,
+                    query.__class__.__name__,
+                    *query.fully_qualified_table_name.split("."),
+                    psycopg2.Binary(self_storage),
+                ),
+            )
+            logger.debug("Touching cache.", query_id=query.query_id, query=str(query))
+            con.execute("SELECT touch_cache(%s);", query.query_id)
+
+            if not in_cache:
+                for dep in query._get_stored_dependencies(exclude_self=True):
+                    con.execute(
+                        "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
+                        (query.query_id, dep.query_id),
+                    )
+                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
+            else:
+                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
+>>>>>>> 5b45f1582 (Match cache half life)
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 
@@ -329,12 +363,17 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         The new cache score
     """
     try:
+<<<<<<< HEAD
         with connection.engine.begin() as trans:
             return float(
                 trans.exec_driver_sql(f"SELECT touch_cache('{query_id}')").fetchall()[
                     0
                 ][0]
             )
+=======
+        logger.debug("Touching cache.", query_id=query_id)
+        return float(connection.fetch(f"SELECT touch_cache('{query_id}')")[0][0])
+>>>>>>> 5b45f1582 (Match cache half life)
     except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
