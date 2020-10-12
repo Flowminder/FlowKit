@@ -404,7 +404,7 @@ def get_cached_query_objects_ordered_by_score(
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
     cache_queries = connection.fetch(qry)
-    return ((pickle.loads(obj), table_size) for obj, table_size in cache_queries)
+    yield from ((pickle.loads(obj), table_size) for obj, table_size in cache_queries)
 
 
 def shrink_one(
