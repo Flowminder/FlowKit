@@ -85,8 +85,8 @@ class EventsTablesUnion(Query):
     def _parse_tables(self, tables):
         if tables is None:
             return (
-                "sms",
                 "calls",
+                "sms",
             )  # This should default to all the tables really, but that would break all the tests
         elif isinstance(tables, str):
             return [tables]
