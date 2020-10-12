@@ -91,7 +91,7 @@ class EventsTablesUnion(Query):
         elif isinstance(tables, str):
             return [tables]
         else:
-            return tables
+            return sorted(tables)
 
     def _make_table_list(self, *, hours, subscriber_subset, subscriber_identifier):
         """
