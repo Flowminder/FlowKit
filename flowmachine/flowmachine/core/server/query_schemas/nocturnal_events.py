@@ -6,7 +6,8 @@ from marshmallow import fields
 from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import NocturnalEvents
-from .custom_fields import EventTypes, SubscriberSubset, ISODateTime
+from .custom_fields import EventTypes, ISODateTime
+from .subscriber_subset import SubscriberSubset
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,

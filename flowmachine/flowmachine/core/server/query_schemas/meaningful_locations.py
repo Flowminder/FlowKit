@@ -28,11 +28,11 @@ from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .custom_fields import (
     EventTypes,
-    SubscriberSubset,
     TowerHourOfDayScores,
     TowerDayOfWeekScores,
     ISODateTime,
 )
+from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = [

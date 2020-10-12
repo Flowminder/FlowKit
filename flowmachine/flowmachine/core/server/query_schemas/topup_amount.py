@@ -6,7 +6,8 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TopUpAmount
-from .custom_fields import SubscriberSubset, Statistic, ISODateTime
+from .custom_fields import Statistic, ISODateTime
+from .subscriber_subset import SubscriberSubset
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,

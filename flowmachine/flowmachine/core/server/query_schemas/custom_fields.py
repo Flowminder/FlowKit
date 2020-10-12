@@ -109,24 +109,6 @@ class Statistic(fields.String):
         super().__init__(required=required, validate=validate, **kwargs)
 
 
-class SubscriberSubset(fields.String):
-    """
-    Represents a subscriber subset. This can either be a string representing
-    a query_id or `None`, meaning "all subscribers".
-    """
-
-    def __init__(self, required=False, allow_none=True, validate=None, **kwargs):
-        if validate is not None:
-            raise ValueError(
-                "The SubscriberSubset field provides its own validation "
-                "and thus does not accept a the 'validate' argument."
-            )
-
-        super().__init__(
-            required=required, allow_none=allow_none, validate=OneOf([None]), **kwargs
-        )
-
-
 class TowerHourOfDayScores(fields.List):
     """
     A list of length 24 containing numerical scores in the range [-1.0, +1.0],
