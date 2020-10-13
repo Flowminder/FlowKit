@@ -201,7 +201,7 @@ def test_shrink_one(flowmachine_connect):
     get_db().engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
-    removed_query, table_size = shrink_one(get_db(), protected_period=-1)
+    removed_query, table_size = next(shrink_one(get_db(), protected_period=-1))
     assert dl.query_id == removed_query.query_id
     assert not dl.is_stored
     assert dl_aggregate.is_stored
@@ -296,7 +296,7 @@ def test_shrink_one(flowmachine_connect):
     get_db().engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
-    removed_query, table_size = shrink_one(get_db(), protected_period=-1)
+    removed_query, table_size = next(shrink_one(get_db(), protected_period=-1))
     assert dl.query_id == removed_query.query_id
     assert not dl.is_stored
     assert dl_aggregate.is_stored
@@ -309,8 +309,9 @@ def test_size_of_cache(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     total_cache_size = get_size_of_cache(get_db())
-    removed_query, table_size_a = shrink_one(get_db(), protected_period=-1)
-    removed_query, table_size_b = shrink_one(get_db(), protected_period=-1)
+    shrink_it = shrink_one(get_db(), protected_period=-1)
+    removed_query, table_size_a = next(shrink_it)
+    removed_query, table_size_b = next(shrink_it)
     assert total_cache_size == table_size_a + table_size_b
     assert 0 == get_size_of_cache(get_db())
 

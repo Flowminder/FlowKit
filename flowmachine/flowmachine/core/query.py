@@ -8,6 +8,8 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
+from functools import partial
+
 import rapidjson as json
 import pickle
 import weakref
@@ -819,20 +821,32 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
+        log = partial(
+            logger.debug, query_id=self.query_id, action="invalidate_db_cache"
+        )
         q_state_machine = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
         )
+        log("Resetting state machine.")
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
+            log("Reset state machine.")
             con = get_db().engine
             try:
+                log("Getting table reference.")
                 table_reference_to_this_query = self.get_table()
                 if table_reference_to_this_query is not self:
+                    log("Invalidating table reference cache.")
                     table_reference_to_this_query.invalidate_db_cache(
                         cascade=cascade, drop=drop
                     )  # Remove any Table pointing as this query
             except (ValueError, NotImplementedError) as e:
+                log("Query not stored - no table..")
                 pass  # This cache record isn't actually stored
+            try:
+                log = partial(log, table_name=self.fully_qualified_table_name)
+            except NotImplementedError:
+                pass  # Not a storable by default table
             try:
                 deps = get_db().fetch(
                     """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
@@ -845,49 +859,38 @@ class Query(metaclass=ABCMeta):
                     con.execute(
                         "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
                     )
-                    logger.debug(
-                        "Deleted cache record for {}.".format(
-                            self.fully_qualified_table_name
-                        )
-                    )
+                    log("Deleted cache record.")
                     if drop:
                         con.execute(
                             "DROP TABLE IF EXISTS {}".format(
                                 self.fully_qualified_table_name
                             )
                         )
-                        logger.debug(
-                            "Dropped cache for for {}.".format(
-                                self.fully_qualified_table_name
-                            )
-                        )
+                        log("Dropped cache table.")
 
                 if cascade:
                     for rec in deps:
                         dep = pickle.loads(rec[0])
-                        logger.debug(
-                            "Cascading to {} from cache record for {}.".format(
-                                dep.fully_qualified_table_name,
-                                self.fully_qualified_table_name,
-                            )
+                        log(
+                            "Cascading to dependent.",
+                            dependency=dep.fully_qualified_table_name,
                         )
                         dep.invalidate_db_cache()
                 else:
-                    logger.debug("Not cascading to dependents.")
+                    log("Not cascading to dependents.")
             except NotImplementedError:
                 logger.info("Table has no standard name.")
+            # Outside of cache schema table
             if schema is not None:
                 full_name = "{}.{}".format(schema, name)
             else:
                 full_name = name
-            logger.debug("Dropping {}".format(full_name))
+            log("Dropping table outside cache schema.", table_name=full_name)
             with con.begin():
                 con.execute("DROP TABLE IF EXISTS {}".format(full_name))
             q_state_machine.finish_resetting()
         elif q_state_machine.is_resetting:
-            logger.debug(
-                f"Query '{self.query_id}' is being reset from elsewhere, waiting for reset to finish."
-            )
+            log("Query is being reset from elsewhere, waiting for reset to finish.")
             while q_state_machine.is_resetting:
                 _sleep(1)
         if not q_state_machine.is_known:

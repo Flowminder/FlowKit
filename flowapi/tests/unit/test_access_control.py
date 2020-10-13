@@ -226,10 +226,13 @@ async def test_access_logs_gets(
     access_logs = app.log_capture().access
     assert 3 == len(access_logs)  # One access log, two query logs
     assert "CLAIMS_VERIFICATION_FAILED" == access_logs[2]["event"]
-    assert "test" == access_logs[0]["user"]
-    assert "test" == access_logs[1]["user"]
-    assert "test" == access_logs[2]["user"]
-    assert access_logs[0]["request_id"] == access_logs[1]["request_id"]
+    assert "test" == access_logs[0]["request"]["user"]
+    assert "test" == access_logs[1]["request"]["user"]
+    assert "test" == access_logs[2]["request"]["user"]
+    assert (
+        access_logs[0]["request"]["request_id"]
+        == access_logs[1]["request"]["request_id"]
+    )
 
 
 @pytest.mark.asyncio
@@ -253,7 +256,9 @@ async def test_access_logs_post(
     assert 3 == len(log_lines)  # One access log, two query logs
     assert log_lines[2]["json_payload"]["query_kind"] == query_kind
     assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
-    assert "test" == log_lines[0]["user"]
-    assert "test" == log_lines[1]["user"]
-    assert "test" == log_lines[2]["user"]
-    assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
+    assert "test" == log_lines[0]["request"]["user"]
+    assert "test" == log_lines[1]["request"]["user"]
+    assert "test" == log_lines[2]["request"]["user"]
+    assert (
+        log_lines[0]["request"]["request_id"] == log_lines[1]["request"]["request_id"]
+    )

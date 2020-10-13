@@ -22,7 +22,7 @@ from zmq.asyncio import Context
 import flowmachine
 from flowmachine.core import Query, Connection
 from flowmachine.core.cache import watch_and_shrink_cache
-from flowmachine.core.context import get_db, get_executor
+from flowmachine.core.context import get_db, get_executor, action_request_context
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -70,26 +70,23 @@ async def get_reply_for_message(
                 status="error", msg=error_msg, payload=validation_error_messages
             )
 
-        query_run_log.info(
-            f"Attempting to perform action: '{action_request.action}'",
-            request_id=action_request.request_id,
-            action=action_request.action,
-            params=action_request.params,
-        )
+        with action_request_context(action_request):
+            query_run_log.info(
+                f"Attempting to perform action: '{action_request.action}'",
+                params=action_request.params,
+            )
 
-        reply = await perform_action(
-            action_request.action, action_request.params, config=config
-        )
+            reply = await perform_action(
+                action_request.action, action_request.params, config=config
+            )
 
-        query_run_log.info(
-            f"Action completed with status: '{reply.status}'",
-            request_id=action_request.request_id,
-            action=action_request.action,
-            params=action_request.params,
-            reply_status=reply.status,
-            reply_msg=reply.msg,
-            reply_payload=reply.payload,
-        )
+            query_run_log.info(
+                f"Action completed with status: '{reply.status}'",
+                params=action_request.params,
+                reply_status=reply.status,
+                reply_msg=reply.msg,
+                reply_payload=reply.payload,
+            )
     except FlowmachineServerError as exc:
         logger.error(
             f"Caught Flowmachine server error while getting reply for ZMQ message: {exc.error_msg}"

@@ -1,12 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from functools import partial
+
 import rapidjson
 
 import uuid
 import sys
 
-from quart import Quart, request, current_app
+from quart import Quart, request, current_app, has_request_context
 import asyncpg
 import logging
 import zmq
@@ -17,7 +19,7 @@ from flowapi.jwt_auth_callbacks import register_logging_callbacks
 from flowapi.query_endpoints import blueprint as query_endpoints_blueprint
 from flowapi.geography import blueprint as geography_blueprint
 from flowapi.api_spec import blueprint as spec_blueprint
-from quart_jwt_extended import JWTManager
+from quart_jwt_extended import JWTManager, get_jwt_identity
 
 import structlog
 
@@ -28,8 +30,26 @@ root_logger = logging.getLogger("flowapi")
 root_logger.setLevel(logging.DEBUG)
 
 
+def add_request_data(_, __, event_dict):
+    """
+    Processor which adds request data to log entries if available in this context.
+    """
+    if has_request_context():
+        event_dict = dict(
+            **event_dict,
+            request=dict(
+                request_id=getattr(request, "request_id", None),
+                path=request.path,
+                src_ip=request.headers.get("Remote-Addr"),
+                user=str(get_jwt_identity()),
+            ),
+        )
+    return event_dict
+
+
 structlog.configure(
     processors=[
+        add_request_data,
         structlog.stdlib.filter_by_level,
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,

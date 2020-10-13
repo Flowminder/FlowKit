@@ -37,6 +37,6 @@ async def test_query_run_logged(json_log, server_config):
     log_lines = json_log()
     print(reply)
     log_lines = log_lines.out
-    assert log_lines[0]["request_id"] == "DUMMY_API_REQUEST_ID"
-    assert log_lines[0]["action"] == "run_query"
+    assert log_lines[0]["action_request"]["request_id"] == "DUMMY_API_REQUEST_ID"
+    assert log_lines[0]["action_request"]["action"] == "run_query"
     assert log_lines[0]["logger"] == "flowmachine.query_run_log"

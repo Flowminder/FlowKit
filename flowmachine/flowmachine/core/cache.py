@@ -15,8 +15,6 @@ from functools import partial
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
-import psycopg2
-
 from redis import StrictRedis
 import psycopg2
 from sqlalchemy.engine import Engine
@@ -426,27 +424,32 @@ def shrink_one(
         the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
         completely.
 
-    Returns
+    Yields
     -------
     tuple of "Query", int
         The "Query" object that was removed from cache and the size of it
     """
-    obj_to_remove, obj_size = next(
-        get_cached_query_objects_ordered_by_score(
-            connection, protected_period=protected_period
+    for obj_to_remove, obj_size in get_cached_query_objects_ordered_by_score(
+        connection, protected_period=protected_period
+    ):
+        logger.info(
+            "Remove cache record.",
+            dry_run=dry_run,
+            query_id=obj_to_remove.query_id,
+            table=obj_to_remove.fully_qualified_table_name,
+            table_size=obj_size,
         )
-    )
 
-    logger.info(
-        f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.query_id} of type {obj_to_remove.__class__}"
-    )
-    logger.info(
-        f"Table {obj_to_remove.fully_qualified_table_name} ({obj_size} bytes) {'would' if dry_run else 'will'} be removed."
-    )
-
-    if not dry_run:
-        obj_to_remove.invalidate_db_cache(cascade=False, drop=True)
-    return obj_to_remove, obj_size
+        if not dry_run:
+            obj_to_remove.invalidate_db_cache(cascade=False, drop=True)
+            logger.info(
+                "Removed cache record.",
+                dry_run=dry_run,
+                query_id=obj_to_remove.query_id,
+                table=obj_to_remove.fully_qualified_table_name,
+                table_size=obj_size,
+            )
+        yield obj_to_remove, obj_size
 
 
 def shrink_below_size(
@@ -492,25 +495,23 @@ def shrink_below_size(
         )
 
         def dry_run_shrink(connection, protected_period):
-            obj, obj_size = cached_queries.__next__()
-            logger.info(
-                f"Would remove cache record for {obj.query_id} of type {obj.__class__}"
-            )
-            logger.info(
-                f"Table {obj.fully_qualified_table_name} ({obj_size} bytes) would be removed."
-            )
-            return obj, obj_size
+            for obj, obj_size in cached_queries:
+                logger.info(
+                    f"Would remove cache record for {obj.query_id} of type {obj.__class__}"
+                )
+                logger.info(
+                    f"Table {obj.fully_qualified_table_name} ({obj_size} bytes) would be removed."
+                )
+                yield obj, obj_size
 
-        shrink = dry_run_shrink
+        shrink = dry_run_shrink(connection, protected_period=protected_period)
     else:
-        shrink = shrink_one
+        shrink = shrink_one(connection, protected_period=protected_period)
 
     current_cache_size = initial_cache_size
     try:
         while current_cache_size > size_threshold:
-            obj_removed, cache_reduction = shrink(
-                connection, protected_period=protected_period
-            )
+            obj_removed, cache_reduction = next(shrink)
             removed.append(obj_removed)
             current_cache_size -= cache_reduction
         logger.info(
@@ -521,7 +522,7 @@ def shrink_below_size(
             current_cache_size=current_cache_size,
             size_threshold=size_threshold,
         )
-    except IndexError:
+    except StopIteration:
         logger.info(
             "Unable to shrink cache. No cache items eligible to be removed.",
             dry_run=dry_run,
