@@ -96,7 +96,7 @@ def test_error_with_no_df():
     dq = DummyQuery("DUMMY")
     dummy = DummyModel(dq, [1], {1: 1})
     with pytest.raises(ValueError):
-        ModelResult(dummy, run_args=[2]).store().result()
+        ModelResult(dummy, run_args=[3]).store().result()
 
 
 def test_make_query_stores():

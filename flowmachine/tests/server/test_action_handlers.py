@@ -181,7 +181,7 @@ async def test_run_query_error_handled(dummy_redis, server_config):
         ),
     )
     assert msg.status == ZMQReplyStatus.ERROR
-    assert msg.msg.rstrip() == "Preflight failed for 992b9767d40a3fe477f3cf642d94f36c."
+    assert msg.msg.rstrip() == "Preflight failed for d2e36b1c951a96b3a03c31c8531e8bbe."
     assert len(msg.payload["errors"]) == 3
 
 
