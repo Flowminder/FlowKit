@@ -22,7 +22,9 @@ class BaseSchema(Schema):
             elif "lon-lat" in aggregation_unit_string:
                 spatial_unit_args = {
                     "spatial_unit_type": "lon-lat",
-                    "geom_table": Table(geom_table),
+                    "geom_table": Table(
+                        geom_table, columns=[geom_table_join_on, "geom_point"]
+                    ),
                     "geom_table_join_on": geom_table_join_on,
                 }
             else:
