@@ -14,6 +14,7 @@
 # action handler and also gracefully handles any potential errors.
 #
 import asyncio
+import structlog
 from contextvars import copy_context
 from functools import partial
 import json
@@ -40,6 +41,9 @@ __all__ = ["perform_action"]
 
 from ..dependency_graph import query_progress
 from ..errors.flowmachine_errors import PreFlightFailedException
+import traceback
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
@@ -98,6 +102,11 @@ def _load_query_object(params: dict) -> "BaseExposedQuery":
         error_msg = (
             f"Internal flowmachine server error: could not create query object using query schema. "
             f"The original error was: '{orig_error_msg}'"
+        )
+        raise QueryLoadError(
+            error_msg,
+            params,
+            orig_error_msg=orig_error_msg,
         )
         raise QueryLoadError(
             error_msg,
@@ -221,11 +230,12 @@ async def action_handler__run_query(
                     "errors": exc.errors,
                 },
             )
-        except Exception as e:
+        except Exception as exc:
+            logger.debug(str(exc), exception=exc, traceback=traceback.format_exc())
             return ZMQReply(
                 status="error",
                 msg="Unable to create query object.",
-                payload={"exception": str(e)},
+                payload={"exception": str(exc)},
             )
 
         # Register the query as "known" (so that we can later look up the query kind
