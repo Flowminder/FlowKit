@@ -186,7 +186,7 @@ def action_request_context(action: NamedTuple):
     try:
         yield
     finally:
-        action_request.reset(token=action_request_token)
+        action_request.reset(action_request_token)
 
 
 @contextmanager
