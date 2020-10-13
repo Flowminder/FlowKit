@@ -374,7 +374,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
 def get_cached_query_objects_ordered_by_score(
     connection: "Connection",
     protected_period: Optional[int] = None,
-) -> List[Tuple["Query", int]]:
+) -> Tuple["Query", int]:
     """
     Get all cached query objects in ascending cache score order.
 
@@ -386,9 +386,9 @@ def get_cached_query_objects_ordered_by_score(
         the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
         completely.
 
-    Returns
+    Yields
     -------
-    list of tuples
+    tuples
         Returns a list of cached Query objects with their on disk sizes
 
     """
@@ -404,7 +404,7 @@ def get_cached_query_objects_ordered_by_score(
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
     cache_queries = connection.fetch(qry)
-    return [(pickle.loads(obj), table_size) for obj, table_size in cache_queries]
+    yield from ((pickle.loads(obj), table_size) for obj, table_size in cache_queries)
 
 
 def shrink_one(
@@ -431,9 +431,11 @@ def shrink_one(
     tuple of "Query", int
         The "Query" object that was removed from cache and the size of it
     """
-    obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(
-        connection, protected_period=protected_period
-    )[0]
+    obj_to_remove, obj_size = next(
+        get_cached_query_objects_ordered_by_score(
+            connection, protected_period=protected_period
+        )
+    )
 
     logger.info(
         f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.query_id} of type {obj_to_remove.__class__}"
@@ -485,10 +487,8 @@ def shrink_below_size(
     )
 
     if dry_run:
-        cached_queries = iter(
-            get_cached_query_objects_ordered_by_score(
-                connection, protected_period=protected_period
-            )
+        cached_queries = get_cached_query_objects_ordered_by_score(
+            connection, protected_period=protected_period
         )
 
         def dry_run_shrink(connection, protected_period):

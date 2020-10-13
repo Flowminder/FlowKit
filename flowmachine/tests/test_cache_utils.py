@@ -159,8 +159,8 @@ def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
     table = dl.get_table()
 
     # Should prefer the larger, but slower to calculate and more used dl over the aggregation
-    cached_queries = get_cached_query_objects_ordered_by_score(
-        get_db(), protected_period=-1
+    cached_queries = list(
+        get_cached_query_objects_ordered_by_score(get_db(), protected_period=-1)
     )
     assert 2 == len(cached_queries)
     assert dl_agg.query_id == cached_queries[0][0].query_id
@@ -176,15 +176,15 @@ def test_get_cached_query_objects_protected_period(flowmachine_connect):
     dl_agg = dl.aggregate().store().result()
     table = dl.get_table()
 
-    cached_queries = get_cached_query_objects_ordered_by_score(
-        get_db(), protected_period=-1
+    cached_queries = list(
+        get_cached_query_objects_ordered_by_score(get_db(), protected_period=-1)
     )
     assert 2 == len(cached_queries)
     assert dl_agg.query_id == cached_queries[0][0].query_id
     assert dl.query_id == cached_queries[1][0].query_id
     assert 2 == len(cached_queries[0])
-    cached_queries = get_cached_query_objects_ordered_by_score(
-        get_db(), protected_period=10
+    cached_queries = list(
+        get_cached_query_objects_ordered_by_score(get_db(), protected_period=10)
     )
     assert 0 == len(cached_queries)
 
