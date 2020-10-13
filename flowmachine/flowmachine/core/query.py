@@ -843,7 +843,10 @@ class Query(metaclass=ABCMeta):
             except (ValueError, NotImplementedError) as e:
                 log("Query not stored - no table..")
                 pass  # This cache record isn't actually stored
-            log = partial(log, table_name=self.fully_qualified_table_name)
+            try:
+                log = partial(log, table_name=self.fully_qualified_table_name)
+            except NotImplementedError:
+                pass  # Not a storable by default table
             try:
                 deps = get_db().fetch(
                     """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
@@ -881,9 +884,7 @@ class Query(metaclass=ABCMeta):
             if schema is not None:
                 full_name = "{}.{}".format(schema, name)
             else:
-                full_name = (
-                    name if name is not None else self.fully_qualified_table_name
-                )
+                full_name = name
             log("Dropping table outside cache schema.", table_name=full_name)
             with con.begin():
                 con.execute("DROP TABLE IF EXISTS {}".format(full_name))

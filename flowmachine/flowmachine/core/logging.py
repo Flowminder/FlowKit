@@ -6,10 +6,26 @@ import logging
 import rapidjson
 import structlog
 import sys
+from flowmachine.core.context import get_action_request
 
 __all__ = ["init_logging", "set_log_level"]
 
 FLOWKIT_LOGGERS_HAVE_BEEN_INITIALISED = False
+
+
+def action_request_processor(_, __, event_dict):
+    try:
+        action_request = get_action_request()
+        event_dict = dict(
+            **event_dict,
+            action_request=dict(
+                request_id=action_request.request_id,
+                action=action_request.action,
+            ),
+        )
+    except LookupError:
+        pass
+    return event_dict
 
 
 def init_logging():
@@ -43,6 +59,7 @@ def init_logging():
         processors=[
             structlog.stdlib.filter_by_level,
             structlog.stdlib.add_logger_name,
+            action_request_processor,
             structlog.stdlib.add_log_level,
             structlog.stdlib.PositionalArgumentsFormatter(),
             structlog.processors.TimeStamper(fmt="iso"),

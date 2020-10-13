@@ -10,7 +10,7 @@ managing queries.
 from contextvars import ContextVar, copy_context
 from concurrent.futures import Executor, Future
 from contextlib import contextmanager
-from typing import Callable
+from typing import Callable, NamedTuple
 
 from redis import StrictRedis
 
@@ -30,6 +30,10 @@ try:
     executor
 except NameError:
     executor = ContextVar("executor")
+try:
+    action_request
+except NameError:
+    action_request = ContextVar("action_request")
 
 _jupyter_context = (
     dict()
@@ -46,6 +50,17 @@ try:
         _is_notebook = False  # Other type (?)
 except NameError:
     _is_notebook = False  # Probably standard Python interpreter
+
+
+def get_action_request() -> NamedTuple:
+    """
+    Get the current action request if there is one.
+
+    Returns
+    -------
+    NamedTuple
+    """
+    return action_request.get()
 
 
 def get_db() -> Connection:
@@ -163,6 +178,15 @@ def bind_context(
         db.set(connection)
         executor.set(executor_pool)
         redis_connection.set(redis_conn)
+
+
+@contextmanager
+def action_request_context(action: NamedTuple):
+    action_request_token = action_request.set(action)
+    try:
+        yield
+    finally:
+        action_request.reset(token=action_request_token)
 
 
 @contextmanager
