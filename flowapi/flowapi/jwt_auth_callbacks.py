@@ -59,11 +59,8 @@ async def expired_token_callback(expired_token: Dict[str, Any]) -> Response:
 
     current_app.access_logger.error(
         "EXPIRED_TOKEN",
-        route=request.path,
-        request_id=request.request_id,
         identity=expired_token["identity"],
         expired_token=expired_token,
-        src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
 
@@ -81,10 +78,6 @@ async def claims_verification_failed_callback() -> Tuple[Dict[str, str], int]:
     """
     current_app.access_logger.error(
         "CLAIMS_VERIFICATION_FAILED",
-        route=request.path,
-        request_id=request.request_id,
-        user=str(get_jwt_identity()),
-        src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
     return {"msg": "User claims verification failed"}, 403
@@ -108,10 +101,7 @@ async def invalid_token_callback(error_string) -> Response:
     current_app.access_logger.error(
         "INVALID_TOKEN",
         error_string=error_string,
-        route=request.path,
-        request_id=request.request_id,
         user=str(get_jwt_identity()),
-        src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
     return default_invalid_token_callback(error_string)
@@ -128,10 +118,6 @@ async def revoked_token_callback() -> Response:
     """
     current_app.access_logger.error(
         "REVOKED_TOKEN",
-        route=request.path,
-        request_id=request.request_id,
-        user=str(get_jwt_identity()),
-        src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
     return default_revoked_token_callback()
@@ -149,10 +135,6 @@ async def unauthorized_callback(error_string) -> Response:
     current_app.access_logger.error(
         "UNAUTHORISED",
         error_string=error_string,
-        route=request.path,
-        request_id=request.request_id,
-        user=str(get_jwt_identity()),
-        src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
     return default_unauthorized_callback(error_string)

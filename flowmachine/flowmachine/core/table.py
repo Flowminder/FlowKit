@@ -98,7 +98,9 @@ class Table(Query):
             if isinstance(columns, str):  # Wrap strings in a list
                 columns = [columns]
             logger.debug(
-                f"Checking provided columns {columns} against db columns {db_columns}"
+                "Checking provided columns against db columns.",
+                provided=columns,
+                db_columns=db_columns,
             )
             if not set(columns).issubset(db_columns):
                 raise ValueError(

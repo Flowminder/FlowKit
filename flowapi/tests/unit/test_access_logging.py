@@ -34,7 +34,7 @@ async def test_invalid_token(app):
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "INVALID_TOKEN"
-        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["request"]["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
@@ -72,7 +72,7 @@ async def test_expired_token(app):
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "EXPIRED_TOKEN"
-        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["request"]["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
@@ -95,7 +95,7 @@ async def test_claims_verify_fail(app):
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "CLAIMS_VERIFICATION_FAILED"
-        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["request"]["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
@@ -118,4 +118,4 @@ async def test_revoked_token(app):
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "REVOKED_TOKEN"
-        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["request"]["request_id"] == "DUMMY_REQUEST_ID"
