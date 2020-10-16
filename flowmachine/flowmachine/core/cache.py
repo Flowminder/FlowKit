@@ -544,7 +544,7 @@ def get_cached_query_objects_ordered_by_score(
     )
     qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))
+        WHERE NOT (cached.class=ANY(array_agg((SELECT object_class FROM cache.zero_cache))))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
@@ -726,7 +726,7 @@ def get_size_of_cache(connection: "Connection") -> int:
     """
     sql = f"""SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE NOT (cached.class=ANY(array_agg((SELECT object_class FROM cache.cache.zero_cache))))"""
+        WHERE NOT (cached.class=ANY(array_agg((SELECT object_class FROM cache.zero_cache))))"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
