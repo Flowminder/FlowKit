@@ -12,7 +12,8 @@ from marshmallow import ValidationError, fields
 from marshmallow.validate import Validator
 from marshmallow.utils import missing
 
-from flowmachine.core.context import get_redis
+from flowmachine.core.cache import cache_table_exists, get_query_object_by_id
+from flowmachine.core.context import get_redis, get_db
 from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
 from flowmachine.core.table import Table
 
@@ -32,6 +33,9 @@ class NoneOrQuery(Validator):
                 )
             except UnkownQueryIdError:
                 raise ValidationError("Must be None or a valid query id.")
+            except ValidationError:
+                if not cache_table_exists(get_db(), value):
+                    raise ValidationError("Must be None or a valid query id.")
         return value
 
 
@@ -65,8 +69,11 @@ class SubscriberSubset(fields.String):
         if (table_name is missing) or (table_name is None):
             return table_name
         else:
-            return (
-                FlowmachineQuerySchema()
-                .load(QueryInfoLookup(get_redis()).get_query_params(value))
-                ._flowmachine_query_obj
-            )
+            try:
+                return (
+                    FlowmachineQuerySchema()
+                    .load(QueryInfoLookup(get_redis()).get_query_params(value))
+                    ._flowmachine_query_obj
+                )
+            except ValidationError:
+                return get_query_object_by_id(get_db(), value)
