@@ -17,11 +17,19 @@ __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
 from .base_schema import BaseSchema
 from .custom_fields import ISODateTime
+from .subscriber_subset import SubscriberSubset
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
     def __init__(
-        self, *, start_date, end_date, aggregation_unit, direction, event_types
+        self,
+        *,
+        start_date,
+        end_date,
+        aggregation_unit,
+        direction,
+        event_types,
+        subscriber_subset=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -30,6 +38,7 @@ class LocationIntroversionExposed(BaseExposedQuery):
         self.aggregation_unit = aggregation_unit
         self.direction = direction
         self.event_types = event_types
+        self.subscriber_subset = subscriber_subset
 
     @property
     def _flowmachine_query_obj(self):
@@ -47,6 +56,7 @@ class LocationIntroversionExposed(BaseExposedQuery):
                 spatial_unit=self.aggregation_unit,
                 direction=self.direction,
                 table=self.event_types,
+                subscriber_subset=self.subscriber_subset,
             )
         )
 
@@ -60,5 +70,6 @@ class LocationIntroversionSchema(AggregationUnitMixin, BaseSchema):
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
     event_types = EventTypes()
+    subscriber_subset = SubscriberSubset()
 
     __model__ = LocationIntroversionExposed
