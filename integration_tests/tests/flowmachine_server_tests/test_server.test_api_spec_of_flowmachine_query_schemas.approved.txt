@@ -1051,6 +1051,10 @@
       "start_date": {
         "format": "date-time",
         "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
       }
     },
     "required": [
@@ -1898,6 +1902,10 @@
         "format": "date-time",
         "type": "string"
       },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
       "total_by": {
         "default": "day",
         "enum": [
@@ -2172,6 +2180,10 @@
       },
       "start_date": {
         "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
         "type": "string"
       }
     },
