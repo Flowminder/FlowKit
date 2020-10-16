@@ -515,18 +515,6 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def _get_protected_classes():
-    from flowmachine.core.events_table import events_table_map
-    from flowmachine.core.infrastructure_table import infrastructure_table_map
-
-    return [
-        "Table",
-        "GeoTable",
-        *[cls.__name__ for cls in events_table_map.values()],
-        *[cls.__name__ for cls in infrastructure_table_map.values()],
-    ]
-
-
 def get_cached_query_objects_ordered_by_score(
     connection: "Connection",
     protected_period: Optional[int] = None,
@@ -738,7 +726,7 @@ def get_size_of_cache(connection: "Connection") -> int:
     """
     sql = f"""SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))"""
+        WHERE NOT (cached.class=ANY(array_agg((SELECT object_class FROM cache.cache.zero_cache))))"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
