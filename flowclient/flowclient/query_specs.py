@@ -13,7 +13,7 @@ def unique_locations_spec(
     end_date: str,
     aggregation_unit: str,
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
@@ -61,7 +61,7 @@ def daily_location_spec(
     aggregation_unit: str,
     method: str,
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
@@ -137,7 +137,7 @@ def modal_location_from_dates_spec(
     aggregation_unit: str,
     method: str,
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
@@ -161,8 +161,8 @@ def modal_location_from_dates_spec(
         If None, include all event types in the query.
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
-        (= all subscribers) or a dictionary with the specification of a
-        subset query.
+        (= all subscribers), a dictionary with the specification of a
+        subset query, or a string which is a valid query id.
 
     Returns
     -------
@@ -195,7 +195,7 @@ def radius_of_gyration_spec(
     start_date: str,
     end_date: str,
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for radius of gyration
@@ -234,7 +234,7 @@ def unique_location_counts_spec(
     end_date: str,
     aggregation_unit: str,
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
@@ -281,7 +281,7 @@ def topup_balance_spec(
     start_date: str,
     end_date: str,
     statistic: str,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for top-up balance.
@@ -319,7 +319,7 @@ def subscriber_degree_spec(
     stop: str,
     direction: str = "both",
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for subscriber degree
@@ -360,7 +360,7 @@ def topup_amount_spec(
     start: str,
     stop: str,
     statistic: str,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for topup amount
@@ -398,7 +398,7 @@ def event_count_spec(
     stop: str,
     direction: str = "both",
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for event count
@@ -441,7 +441,7 @@ def displacement_spec(
     statistic: str,
     reference_location: Dict[str, str],
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for displacement
@@ -487,7 +487,7 @@ def pareto_interactions_spec(
     stop: str,
     proportion: float,
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for pareto interactions
@@ -529,7 +529,7 @@ def nocturnal_events_spec(
     stop: str,
     hours: Tuple[int, int],
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for nocturnal events
@@ -574,7 +574,7 @@ def handset_spec(
     characteristic: str = "hnd_type",
     method: str = "last",
     event_types: Optional[List[str]] = None,
-    subscriber_subset: Union[dict, None] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
 ) -> dict:
     """
     Return query spec for handset

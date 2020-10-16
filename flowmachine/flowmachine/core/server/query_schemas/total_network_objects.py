@@ -13,10 +13,19 @@ from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 
+from .subscriber_subset import SubscriberSubset
+
 
 class TotalNetworkObjectsExposed(BaseExposedQuery):
     def __init__(
-        self, *, start_date, end_date, aggregation_unit, total_by, event_types
+        self,
+        *,
+        start_date,
+        end_date,
+        aggregation_unit,
+        total_by,
+        event_types,
+        subscriber_subset=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -25,6 +34,7 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
         self.aggregation_unit = aggregation_unit
         self.total_by = total_by
         self.event_types = event_types
+        self.subscriber_subset = subscriber_subset
 
     @property
     def _flowmachine_query_obj(self):
@@ -41,6 +51,7 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
             spatial_unit=self.aggregation_unit,
             total_by=self.total_by,
             table=self.event_types,
+            subscriber_subset=self.subscriber_subset,
         )
 
 
@@ -51,5 +62,6 @@ class TotalNetworkObjectsSchema(AggregationUnitMixin, BaseSchema):
     end_date = ISODateTime(required=True)
     total_by = TotalBy(required=False, missing="day")
     event_types = EventTypes()
+    subscriber_subset = SubscriberSubset()
 
     __model__ = TotalNetworkObjectsExposed

@@ -81,6 +81,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         table="all",
+        subscriber_subset=None,
     ):
 
         self.start = standardise_date(start)
@@ -95,6 +96,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
                 spatial_unit=self.spatial_unit,
                 hours=self.hours,
                 table=self.table,
+                subscriber_subset=subscriber_subset,
             )
         )
 

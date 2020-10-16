@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Previously run, or currently running queries can now be referenced as a subscriber subset via FlowAPI. [#1009](https://github.com/Flowminder/FlowKit/issues/1009)
+- total_network_objects, location_introversion, and unique_subscriber_counts now also accept subscriber subsets.
 
 ### Changed
 - `get_cached_query_objects_ordered_by_score` is now a generator. [#3116](https://github.com/Flowminder/FlowKit/issues/3116)

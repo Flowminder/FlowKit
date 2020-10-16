@@ -16,16 +16,26 @@ __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
 from .base_schema import BaseSchema
 from .custom_fields import EventTypes, ISODateTime
+from .subscriber_subset import SubscriberSubset
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit, event_types):
+    def __init__(
+        self,
+        *,
+        start_date,
+        end_date,
+        aggregation_unit,
+        event_types,
+        subscriber_subset=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.event_types = event_types
+        self.subscriber_subset = subscriber_subset
 
     @property
     def _flowmachine_query_obj(self):
@@ -42,6 +52,7 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
                 stop=self.end_date,
                 spatial_unit=self.aggregation_unit,
                 table=self.event_types,
+                subscriber_subset=self.subscriber_subset,
             )
         )
 
@@ -52,5 +63,6 @@ class UniqueSubscriberCountsSchema(AggregationUnitMixin, BaseSchema):
     start_date = ISODateTime(required=True)
     end_date = ISODateTime(required=True)
     event_types = EventTypes()
+    subscriber_subset = SubscriberSubset()
 
     __model__ = UniqueSubscriberCountsExposed
