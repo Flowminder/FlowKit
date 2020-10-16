@@ -32,10 +32,9 @@ class NoneOrQuery(Validator):
                     ._flowmachine_query_obj
                 )
             except UnkownQueryIdError:
-                raise ValidationError("Must be None or a valid query id.")
-            except ValidationError:
                 if not cache_table_exists(get_db(), value):
                     raise ValidationError("Must be None or a valid query id.")
+
         return value
 
 
@@ -75,5 +74,5 @@ class SubscriberSubset(fields.String):
                     .load(QueryInfoLookup(get_redis()).get_query_params(value))
                     ._flowmachine_query_obj
                 )
-            except ValidationError:
+            except UnkownQueryIdError:
                 return get_query_object_by_id(get_db(), value)
