@@ -82,7 +82,7 @@ async def connect_logger():
     logger = root_logger.getChild("access")
     logger.setLevel(logging.INFO)
     ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(log_level)
+    ch.setLevel(logging.INFO)
     logger.addHandler(ch)
     # Debug logger. Quart doesn't allow us to override current_app.logger, but won't use it by default.
     current_app.access_logger = structlog.wrap_logger(logger)
@@ -91,7 +91,7 @@ async def connect_logger():
     logger = root_logger.getChild("query")
     logger.setLevel(logging.INFO)
     ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(log_level)
+    ch.setLevel(logging.INFO)
     logger.addHandler(ch)
     current_app.query_run_logger = structlog.wrap_logger(logger)
 
