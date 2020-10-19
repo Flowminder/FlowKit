@@ -26,7 +26,7 @@ mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 mapboxgl = "*"
-markdown = "==3.3.0" # Working around version conflict caused by airflow's aggressive pinning
+markdown = "==3.3.1" # Working around version conflict caused by airflow's aggressive pinning
 chroma-py = "==0.1.0.dev1"
 ipywidgets = "*"
 
