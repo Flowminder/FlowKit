@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - FlowAPI now correctly logs all query run, poll, and retrieval requests for matching with FlowMachine. [#3071](https://github.com/Flowminder/FlowKit/issues/3071)
+- Links in the installation docs are now generated correctly. [#3152](https://github.com/Flowminder/FlowKit/issues/3152)
 
 ### Removed
 
