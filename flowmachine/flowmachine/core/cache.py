@@ -542,9 +542,11 @@ def get_cached_query_objects_ordered_by_score(
         if protected_period is not None
         else " AND NOW()-created > (cache_protected_period()*INTERVAL '1 seconds')"
     )
-    qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
+    qry = f"""
+        WITH no_score AS (SELECT array_agg(object_class) as classes FROM cache.zero_cache)
+        SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE NOT (cached.class=ANY(array_agg((SELECT object_class FROM cache.zero_cache))))
+        WHERE NOT (cached.class=ANY(classes))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
