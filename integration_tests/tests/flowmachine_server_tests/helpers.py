@@ -6,6 +6,8 @@ from sqlalchemy import inspect
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 
+internal_tables = sorted(["cache_config", "cached", "dependencies", "zero_cache"])
+
 
 def poll_until_done(port, query_id, max_tries=100):
     """
@@ -39,10 +41,8 @@ def get_cache_tables(fm_conn, exclude_internal_tables=True):
     insp = inspect(fm_conn.engine)
     cache_tables = insp.get_table_names(schema="cache")
     if exclude_internal_tables:
-        cache_tables.remove("cached")
-        cache_tables.remove("dependencies")
-        cache_tables.remove("cache_config")
-        cache_tables.remove("zero_cache")
+        for table in internal_tables:
+            cache_tables.remove(table)
     return sorted(cache_tables)
 
 
@@ -58,7 +58,7 @@ def cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=True):
     cache_tables = sorted(insp.get_table_names(schema="cache"))
 
     # Check that there are no cached tables except the flowdb-internal ones
-    if cache_tables != ["cache_config", "cached", "dependencies"]:
+    if cache_tables != internal_tables:
         return False
 
     if check_internal_tables_are_empty:
