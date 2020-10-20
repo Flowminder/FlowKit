@@ -546,7 +546,7 @@ def get_cached_query_objects_ordered_by_score(
         WITH no_score AS (SELECT array_agg(object_class) as classes FROM cache.zero_cache)
         SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE NOT (cached.class=ANY((SELECT classes FROM no_score)))
+        WHERE NOT (cached.class=ANY((SELECT classes FROM no_score)::TEXT[]))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
