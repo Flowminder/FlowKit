@@ -730,7 +730,7 @@ def get_size_of_cache(connection: "Connection") -> int:
         WITH no_score AS (SELECT array_agg(object_class) as classes FROM cache.zero_cache) 
         SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE NOT (cached.class=ANY((SELECT classes FROM no_score)::TEXT[])"""
+        WHERE NOT (cached.class=ANY((SELECT classes FROM no_score)::TEXT[]))"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
