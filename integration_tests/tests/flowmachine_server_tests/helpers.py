@@ -42,6 +42,7 @@ def get_cache_tables(fm_conn, exclude_internal_tables=True):
         cache_tables.remove("cached")
         cache_tables.remove("dependencies")
         cache_tables.remove("cache_config")
+        cache_tables.remove("zero_cache")
     return sorted(cache_tables)
 
 
