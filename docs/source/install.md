@@ -15,7 +15,7 @@ In addition, running FlowClient requires:
 
 - `Python >= 3.6`
 
-There are additional requirements for a [development setup](developer/dev_environment_setup.md), and we strongly recommend reviewing the [administrator section](administrator) in detail if you are planning to deploy FlowKit in production.
+There are additional requirements for a [development setup](developer/dev_environment_setup.md), and we strongly recommend reviewing the [administrator section](administrator/index.md) in detail if you are planning to deploy FlowKit in production.
 
 <a name="quickinstall">
 
