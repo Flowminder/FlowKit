@@ -13,10 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - `get_cached_query_objects_ordered_by_score` is now a generator. [#3116](https://github.com/Flowminder/FlowKit/issues/3116)
 - Queries should no longer require communication with the database during `__init__`, any checks that require database access must now be implemented as a method of the class and use the `@pre_flight` decorator
+- When specifying tables in Flowmachine, the `events.` prefix is no longer required.
 
 ### Fixed
 
 ### Removed
+- `Table` no longer automatically infers columns from the database, they must be specified. 
 
 ## [1.14.4]
 ### Fixed
