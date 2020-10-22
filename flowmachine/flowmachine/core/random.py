@@ -9,6 +9,7 @@ import random
 from typing import List, Optional, Dict, Any, Union, Type, Tuple
 from abc import ABCMeta, abstractmethod
 
+from . import preflight
 from .query import Query
 from .table import Table
 
@@ -145,17 +146,19 @@ class RandomSystemRows(RandomBase):
         fraction: Optional[float] = None,
         estimate_count: bool = False,
     ):
+        super().__init__(
+            query=query, size=size, fraction=fraction, estimate_count=estimate_count
+        )
+
+    @preflight
+    def check_not_inherited(self):
         # Raise a value error if the query is a table, and has children, as the
         # method relies on it not having children.
-        if isinstance(query, Table) and query.has_children():
+        if isinstance(self.query, Table) and self.query.has_children():
             raise ValueError(
                 "It is not possible to use the 'system_rows' method in tables with inheritance "
                 + "as it selects a random sample for each child table and not for the set as a whole."
             )
-
-        super().__init__(
-            query=query, size=size, fraction=fraction, estimate_count=estimate_count
-        )
 
     def _make_query(self) -> str:
         # TABLESAMPLE only works on tables, so silently store this query
