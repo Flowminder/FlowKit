@@ -53,9 +53,6 @@ class GeoTable(GeoDataMixin, Table):
         self.geom_column = geom_column
         self.gid_column = gid_column
         super().__init__(name=name, schema=schema, columns=columns)
-
-    @pre_flight
-    def check_geom_column_present(self):
         if self.geom_column not in self.column_names:
             raise ValueError(
                 "geom_column: {} is not a column in this table.".format(
