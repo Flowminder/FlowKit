@@ -7,8 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added a new `@pre_flight` decorator which `Query` subclasses may use to indicate a method should be run to confirm the query is runnable
+- Added a new `preflight()` method to query, which calls all applicable pre-flight check methods for the query
 
 ### Changed
+- `get_cached_query_objects_ordered_by_score` is now a generator. [#3116](https://github.com/Flowminder/FlowKit/issues/3116)
+- Queries should no longer require communication with the database during `__init__`, any checks that require database access must now be implemented as a method of the class and use the `@pre_flight` decorator
 
 ### Fixed
 
