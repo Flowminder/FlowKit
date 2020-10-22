@@ -176,6 +176,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 #### Added
 - `inflows` and `outflows` exposed via API endpoint + added to flowclient [#2029](https://github.com/Flowminder/FlowKit/issues/2029), [#4866](https://github.com/Flowminder/FlowKit/issues/4866)
+- Added a new `@pre_flight` decorator which `Query` subclasses may use to indicate a method should be run to confirm the query is runnable
+- Added a new `preflight()` method to query, which calls all applicable pre-flight check methods for the query
 
 ### Changed
 - __Action Needed__ Airflow updated to version 2.3.3; **backup flowetl_db before applying update** [#4940](https://github.com/Flowminder/FlowKit/pull/4940)
@@ -186,6 +188,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowDB now always creates a role named `flowmachine.`
 - Flowmachine will set the state of a query being stored to cancelled if interrupted while the store is running.
 - Flowmachine now supports sqlalchemy >=1.4 [#5140](https://github.com/Flowminder/FlowKit/issues/5140)
+- `get_cached_query_objects_ordered_by_score` is now a generator. [#3116](https://github.com/Flowminder/FlowKit/issues/3116)
+- Queries should no longer require communication with the database during `__init__`, any checks that require database access must now be implemented as a method of the class and use the `@pre_flight` decorator
 
 ### Fixed
 - Flowmachine now makes the built in `flowmachine` role owner of cache tables as a post-action when a query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
