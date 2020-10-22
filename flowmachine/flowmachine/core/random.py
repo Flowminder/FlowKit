@@ -6,10 +6,10 @@
 Classes to select random samples from queries or tables.
 """
 import random
-from typing import List, Optional, Dict, Any, Union, Type, Tuple
+from typing import List, Optional, Dict, Any, Type, Tuple
 from abc import ABCMeta, abstractmethod
 
-from . import preflight
+from .preflight import pre_flight
 from .query import Query
 from .table import Table
 
@@ -150,7 +150,7 @@ class RandomSystemRows(RandomBase):
             query=query, size=size, fraction=fraction, estimate_count=estimate_count
         )
 
-    @preflight
+    @pre_flight
     def check_not_inherited(self):
         # Raise a value error if the query is a table, and has children, as the
         # method relies on it not having children.
