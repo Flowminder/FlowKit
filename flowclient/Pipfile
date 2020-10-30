@@ -17,6 +17,7 @@ pytest-cov = "*"
 asynctest = "*"
 versioneer = "*"
 black = "==20.8b1"
+respx = "*"
 ipython = "*"
 ipdb = "*"
 

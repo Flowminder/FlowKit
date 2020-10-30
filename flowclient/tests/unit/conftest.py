@@ -6,12 +6,18 @@ from unittest.mock import Mock
 import httpx
 import jwt
 import pytest
+import respx
 
 import flowclient
 
 
 @pytest.fixture
-def session_mock(monkeypatch):
+def dummy_api_url():
+    return "https://DUMMY_API"
+
+
+@pytest.fixture
+def session_mock(dummy_api_url):
     """
     Fixture which replaces the client's `_get_session` method with a mock,
     returning a mocked session object. Yields the session mock for use in
@@ -22,13 +28,20 @@ def session_mock(monkeypatch):
     unittests.Mock
 
     """
-    mock = Mock()
-    mock.return_value.headers = {}
-    monkeypatch.setattr(httpx, "Client", mock)
-    monkeypatch.setattr(httpx, "AsyncClient", mock)
-    yield mock.return_value
+    with respx.mock(base_url=f"{dummy_api_url}/api/0") as respx_mock:
+        yield respx_mock
 
 
 @pytest.fixture
 def token():
     return jwt.encode({"identity": "bar"}, "secret")
+
+
+@pytest.fixture
+def flowclient_connection(session_mock, dummy_api_url, token):
+    yield flowclient.connect(url=dummy_api_url, token=token)
+
+
+@pytest.fixture
+def async_flowclient_connection(session_mock, dummy_api_url, token):
+    yield flowclient.connect_async(url=dummy_api_url, token=token)
