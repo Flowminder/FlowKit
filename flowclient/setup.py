@@ -48,7 +48,7 @@ setup(
         "tqdm",
         "ipywidgets",
     ],
-    extras_require={"test": test_requirements},
+    extras_require={"test": test_requirements, "http2": ["httpx[http2]"]},
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
     platforms=["MacOS X", "Linux"],

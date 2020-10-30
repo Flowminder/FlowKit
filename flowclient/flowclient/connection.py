@@ -9,6 +9,13 @@ import httpx
 import jwt
 from httpx import RequestError
 
+try:
+    import h2
+
+    http2 = True
+except ImportError:
+    http2 = False
+
 from flowclient.errors import FlowclientConnectionError
 
 logger = logging.getLogger(__name__)
@@ -62,7 +69,7 @@ class Connection:
         self.url = url
         self.api_version = api_version
         self.session = httpx.Client(
-            base_url=f"{self.url}/api/{self.api_version}/", timeout=None
+            base_url=f"{self.url}/api/{self.api_version}/", timeout=None, http2=http2
         )
         if ssl_certificate is not None:
             self.session.verify = ssl_certificate
