@@ -200,10 +200,10 @@ class ASyncConnection:
                 f"Something went wrong. API returned with status code {response.status_code}. Error message: '{error_msg}'.{payload_info}"
             )
 
-    def make_api_query(self, parameters: dict) -> "APIQuery":
-        from flowclient.api_query import APIQuery
+    def make_api_query(self, parameters: dict) -> "AsyncAPIQuery":
+        from flowclient.async_api_query import ASyncAPIQuery
 
-        return APIQuery(connection=self, parameters=parameters)
+        return ASyncAPIQuery(connection=self, parameters=parameters)
 
     def __repr__(self) -> str:
         return f"{self.user}@{self.url} v{self.api_version}"
