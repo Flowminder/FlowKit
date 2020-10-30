@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from unittest.mock import Mock
+from asynctest import CoroutineMock
 
 import pytest
 
@@ -12,7 +12,8 @@ from flowclient import ASyncConnection
 @pytest.mark.asyncio
 async def test_get_url(monkeypatch, token):
     monkeypatch.setattr(
-        "flowclient.connection.Connection.get_url", Mock(return_value="DUMMY_RETURN")
+        "flowclient.async_connection.ASyncConnection.get_url",
+        CoroutineMock(return_value="DUMMY_RETURN"),
     )
     con = ASyncConnection(url="DUMMY_URL", token=token)
     assert await con.get_url(route="DUMMY_ROUTE", data="DUMMY_DATA")
@@ -21,7 +22,8 @@ async def test_get_url(monkeypatch, token):
 @pytest.mark.asyncio
 async def test_post_json(monkeypatch, token):
     monkeypatch.setattr(
-        "flowclient.connection.Connection.post_json", Mock(return_value="DUMMY_RETURN")
+        "flowclient.async_connection.ASyncConnection.post_json",
+        CoroutineMock(return_value="DUMMY_RETURN"),
     )
     con = ASyncConnection(url="DUMMY_URL", token=token)
     assert await con.post_json(route="DUMMY_ROUTE", data="DUMMY_DATA")

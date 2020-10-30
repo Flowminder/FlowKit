@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from requests import ConnectionError
+from httpx import RequestError
 
 import flowclient
 from flowclient.errors import FlowclientConnectionError
@@ -23,7 +23,7 @@ def test_post_json_good_statuses(status_code, session_mock, token):
 
 def test_post_json_reraises(session_mock, token):
     """post_json should reraise anything raised by requests."""
-    session_mock.post.side_effect = ConnectionError("DUMMY_MESSAGE")
+    session_mock.post.side_effect = RequestError("DUMMY_MESSAGE", request=None)
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(FlowclientConnectionError, match="DUMMY_MESSAGE"):
         connection.post_json(route="DUMMY_ROUTE", data={})

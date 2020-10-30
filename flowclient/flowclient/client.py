@@ -5,8 +5,8 @@
 import logging
 import re
 
+import httpx
 import pandas as pd
-import requests
 import time
 from typing import Tuple, Union, List, Optional
 from tqdm.auto import tqdm
@@ -50,7 +50,7 @@ def connect(
 
 def query_is_ready(
     *, connection: Connection, query_id: str
-) -> Tuple[bool, requests.Response]:
+) -> Tuple[bool, httpx.Response]:
     """
     Check if a query id has results available.
 
@@ -137,7 +137,7 @@ def wait_for_query_to_be_ready(
     query_id: str,
     poll_interval: int = 1,
     disable_progress: Optional[bool] = None,
-) -> requests.Response:
+) -> httpx.Response:
     """
     Wait until a query id has finished running, and if it finished successfully
     return the reply from flowapi.

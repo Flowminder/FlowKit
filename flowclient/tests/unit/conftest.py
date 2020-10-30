@@ -3,9 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from unittest.mock import Mock
 
+import httpx
 import jwt
 import pytest
-import requests
 
 import flowclient
 
@@ -24,7 +24,8 @@ def session_mock(monkeypatch):
     """
     mock = Mock()
     mock.return_value.headers = {}
-    monkeypatch.setattr(requests, "Session", mock)
+    monkeypatch.setattr(httpx, "Client", mock)
+    monkeypatch.setattr(httpx, "AsyncClient", mock)
     yield mock.return_value
 
 
