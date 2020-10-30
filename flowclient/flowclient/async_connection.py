@@ -61,7 +61,9 @@ class ASyncConnection:
             )
         self.url = url
         self.api_version = api_version
-        self.session = httpx.AsyncClient(base_url=f"{self.url}/api/{self.api_version}/")
+        self.session = httpx.AsyncClient(
+            base_url=f"{self.url}/api/{self.api_version}/", timeout=None
+        )
         if ssl_certificate is not None:
             self.session.verify = ssl_certificate
         self.update_token(token=token)

@@ -61,7 +61,9 @@ class Connection:
             )
         self.url = url
         self.api_version = api_version
-        self.session = httpx.Client()
+        self.session = httpx.Client(
+            base_url=f"{self.url}/api/{self.api_version}/", timeout=None
+        )
         if ssl_certificate is not None:
             self.session.verify = ssl_certificate
         self.update_token(token=token)
@@ -107,7 +109,7 @@ class Connection:
         try:
             response = self.session.request(
                 "GET",
-                f"{self.url}/api/{self.api_version}/{route}",
+                route,
                 allow_redirects=False,
                 json=data,
             )
@@ -160,9 +162,7 @@ class Connection:
         """
         logger.debug(f"Posting {data} to {self.url}/api/{self.api_version}/{route}")
         try:
-            response = self.session.post(
-                f"{self.url}/api/{self.api_version}/{route}", json=data
-            )
+            response = self.session.post(route, json=data)
         except RequestError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
             logger.info(error_msg)
