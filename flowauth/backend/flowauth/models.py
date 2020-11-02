@@ -211,7 +211,9 @@ class TwoFactorAuth(db.Model):
         current_app.logger.debug(
             "Verifying 2factor code", code=code, secret_key=self.decrypted_secret_key
         )
-        is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(code)
+        is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(
+            code, valid_window=current_app.config["TWO_FACTOR_VALID_WINDOW"]
+        )
         if is_valid:
             if (
                 current_app.config["CACHE_BACKEND"].get(
