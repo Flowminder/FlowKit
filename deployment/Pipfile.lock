@@ -25,10 +25,10 @@
         },
         "ansible-base": {
             "hashes": [
-                "sha256:c79fe108e13b286bad21734208624aaef9dabb49bb4211b13bc96d88829e22ab"
+                "sha256:35a208726b10fecbcf00c263ae4572b48f505b5796fb77a85c3e9c1036ea5e4f"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
-            "version": "==2.10.2"
+            "version": "==2.10.3"
         },
         "cffi": {
             "hashes": [
