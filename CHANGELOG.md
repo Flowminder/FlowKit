@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+## [1.14.1]
+
+### Fixed
+- Docs displaying None where they shouldn't
+
 ## [1.14.0]
 
 ### Added
@@ -840,7 +845,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.1...master
+[1.14.1]: https://github.com/Flowminder/FlowKit/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/Flowminder/FlowKit/compare/1.13.0...1.14.0
 [1.13.0]: https://github.com/Flowminder/FlowKit/compare/1.12.1...1.13.0
 [1.12.0]: https://github.com/Flowminder/FlowKit/compare/1.11.1...1.12.0
