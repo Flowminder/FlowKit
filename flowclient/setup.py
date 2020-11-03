@@ -23,7 +23,13 @@ __email__ = "flowkit@flowminder.org"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-test_requirements = ["pytest>=5.4.0", "pytest-cov", "asynctest", "pytest-asyncio"]
+test_requirements = [
+    "pytest>=5.4.0",
+    "pytest-cov",
+    "asynctest",
+    "pytest-asyncio",
+    "respx",
+]
 
 setup(
     name="flowclient",
