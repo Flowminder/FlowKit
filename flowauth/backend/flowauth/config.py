@@ -112,6 +112,7 @@ def get_config():
             DB_IS_SET_UP=Event(),
             CACHE_BACKEND=get_cache_backend(),
             FLOWAUTH_TWO_FACTOR_ISSUER=getenv("FLOWAUTH_TWO_FACTOR_ISSUER", "FlowAuth"),
+            TWO_FACTOR_VALID_WINDOW=int(getenv("TWO_FACTOR_VALID_WINDOW", 0)),
         )
     except KeyError as e:
         raise UndefinedConfigOption(
