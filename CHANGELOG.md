@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.14.0]
+
+### Added
 - Previously run, or currently running queries can now be referenced as a subscriber subset via FlowAPI. [#1009](https://github.com/Flowminder/FlowKit/issues/1009)
 - total_network_objects, location_introversion, and unique_subscriber_counts now also accept subscriber subsets.
 - The validity window for FlowAuth 2factor codes can now be configured using the `TWO_FACTOR_VALID_WINDOW` env variable. [#3203](https://github.com/Flowminder/FlowKit/issues/3203)
@@ -18,8 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - FlowAPI now correctly logs all query run, poll, and retrieval requests for matching with FlowMachine. [#3071](https://github.com/Flowminder/FlowKit/issues/3071)
 - Links in the installation docs are now generated correctly. [#3152](https://github.com/Flowminder/FlowKit/issues/3152)
-
-### Removed
 
 ## [1.13.0]
 
@@ -832,7 +840,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.13.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.0...master
+[1.14.0]: https://github.com/Flowminder/FlowKit/compare/1.13.0...1.14.0
 [1.13.0]: https://github.com/Flowminder/FlowKit/compare/1.12.1...1.13.0
 [1.12.0]: https://github.com/Flowminder/FlowKit/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/Flowminder/FlowKit/compare/1.11.0...1.11.1
