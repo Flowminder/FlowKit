@@ -25,7 +25,7 @@ flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 mktheapidocs = "*"
 mknotebooks = "*"
 mapboxgl = "*"
-markdown = "==3.3.2" # Working around version conflict caused by airflow's aggressive pinning
+markdown = "==3.3.3" # Working around version conflict caused by airflow's aggressive pinning
 chroma-py = "==0.1.0.dev1"
 ipywidgets = "*"
 
