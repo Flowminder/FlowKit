@@ -23,7 +23,13 @@ __email__ = "flowkit@flowminder.org"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-test_requirements = ["pytest>=5.4.0", "pytest-cov", "asynctest", "pytest-asyncio"]
+test_requirements = [
+    "pytest>=5.4.0",
+    "pytest-cov",
+    "asynctest",
+    "pytest-asyncio",
+    "respx",
+]
 
 setup(
     name="flowclient",
@@ -41,14 +47,14 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "pandas",
-        "requests",
+        "httpx",
         "pyjwt",
         "ujson",
         "merge-args",
         "tqdm",
         "ipywidgets",
     ],
-    extras_require={"test": test_requirements},
+    extras_require={"test": test_requirements, "http2": ["httpx[http2]"]},
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
     platforms=["MacOS X", "Linux"],

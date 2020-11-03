@@ -18,7 +18,7 @@ def test_update_token(session_mock, token):
     connection.update_token(new_token)
     assert connection.user == "NEW_IDENTITY"
     assert connection.token == new_token
-    assert session_mock.headers["Authorization"] == f"Bearer {new_token}"
+    assert connection.session.headers["authorization"] == f"Bearer {new_token}"
 
 
 @pytest.mark.parametrize("new_token", ["NOT_A_TOKEN", jwt.encode({}, "secret")])

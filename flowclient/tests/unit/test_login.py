@@ -38,8 +38,8 @@ def test_login(token):
     assert token == c.token
     assert "bar" == c.user
     assert "Authorization" in c.session.headers
-    assert isinstance(
-        c.session.verify, Mock
+    assert False == getattr(
+        c.session, "verify", False
     )  # Shouldn't be set if no ssl_certificate passed
 
 

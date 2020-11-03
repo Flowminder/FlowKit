@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
+httpx = "*"
 pandas = "*"
 pyjwt = "*"
 merge-args = "*"
@@ -17,6 +17,7 @@ pytest-cov = "*"
 asynctest = "*"
 versioneer = "*"
 black = "==20.8b1"
+respx = "*"
 ipython = "*"
 ipdb = "*"
 

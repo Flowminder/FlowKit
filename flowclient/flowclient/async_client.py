@@ -6,8 +6,8 @@ import logging
 import re
 from asyncio import sleep
 
+import httpx
 import pandas as pd
-import requests
 from typing import Tuple, Union, List, Optional
 from tqdm.auto import tqdm
 
@@ -51,7 +51,7 @@ async def connect_async(
 
 async def query_is_ready(
     *, connection: ASyncConnection, query_id: str
-) -> Tuple[bool, requests.Response]:
+) -> Tuple[bool, httpx.Response]:
     """
     Check if a query id has results available.
 
@@ -138,7 +138,7 @@ async def wait_for_query_to_be_ready(
     query_id: str,
     poll_interval: int = 1,
     disable_progress: Optional[bool] = None,
-) -> requests.Response:
+) -> httpx.Response:
     """
     Wait until a query id has finished running, and if it finished successfully
     return the reply from flowapi.
