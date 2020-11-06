@@ -11,7 +11,7 @@
     "generate-password": "^1.5.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-qr-svg": "^2.2.2",
+    "react-qr-svg": "^2.3.0",
     "react-scripts": "^3.4.4",
     "rsuite": "^4.8.4",
     "zxcvbn": "^4.4.2",
