@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- Reinstated tabs navigation in the docs [#3238](https://github.com/Flowminder/FlowKit/issues/3238)
 
 ### Removed
 
