@@ -17,6 +17,11 @@ def dummy_api_url():
 
 
 @pytest.fixture
+def dummy_route(dummy_api_url):
+    return f"{dummy_api_url}/api/0/DUMMY_ROUTE"
+
+
+@pytest.fixture
 def session_mock(dummy_api_url):
     """
     Fixture which replaces the client's `_get_session` method with a mock,
@@ -38,10 +43,10 @@ def token():
 
 
 @pytest.fixture
-def flowclient_connection(session_mock, dummy_api_url, token):
+def flowclient_connection(session_mock, dummy_route, dummy_api_url, token):
     yield flowclient.connect(url=dummy_api_url, token=token)
 
 
 @pytest.fixture
-def async_flowclient_connection(session_mock, dummy_api_url, token):
+def async_flowclient_connection(session_mock, dummy_route, dummy_api_url, token):
     yield flowclient.connect_async(url=dummy_api_url, token=token)
