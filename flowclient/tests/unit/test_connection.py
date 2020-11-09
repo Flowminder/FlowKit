@@ -9,7 +9,7 @@ import flowclient
 from flowclient.errors import FlowclientConnectionError
 
 
-def test_update_token(session_mock, token):
+def test_update_token(session_mock, dummy_route, token):
     """
     Test that update_token updates all attributes appropriately.
     """
@@ -22,7 +22,7 @@ def test_update_token(session_mock, token):
 
 
 @pytest.mark.parametrize("new_token", ["NOT_A_TOKEN", jwt.encode({}, "secret")])
-def test_update_token_raises(session_mock, token, new_token):
+def test_update_token_raises(session_mock, dummy_route, token, new_token):
     """
     Test that update_token raises an error if the token is not valid or does not contain an identity.
     """
