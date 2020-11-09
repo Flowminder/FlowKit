@@ -10,9 +10,9 @@ from flowclient import ASyncConnection
 
 
 @pytest.mark.asyncio
-async def test_get_url(session_mock, async_flowclient_connection):
+async def test_get_url(session_mock, dummy_route, async_flowclient_connection):
 
-    session_mock.add("GET", "DUMMY_ROUTE", content="DUMMY_RETURN")
+    session_mock.add("GET", dummy_route, content="DUMMY_RETURN")
     assert (
         b"DUMMY_RETURN"
         == (
@@ -24,8 +24,8 @@ async def test_get_url(session_mock, async_flowclient_connection):
 
 
 @pytest.mark.asyncio
-async def test_post_json(session_mock, async_flowclient_connection):
-    session_mock.post("DUMMY_ROUTE", content="DUMMY_RETURN", status_code=202)
+async def test_post_json(session_mock, dummy_route, async_flowclient_connection):
+    session_mock.post(dummy_route, content="DUMMY_RETURN", status_code=202)
     assert (
         b"DUMMY_RETURN"
         == (
