@@ -58,7 +58,7 @@ files before each commit.
 
 To install the pre-commit hook run:
 ```bash
-$ pre-commit install
+pre-commit install
 ```
 If you ever want to uninstall the hook you can do this by running `pipenv run pre-commit uninstall`.
 
@@ -67,8 +67,8 @@ included in the `flowmachine` pipenv environment, so if you don't want to instal
 can run it as follows (it will still be installed and available for all FlowKit components, not just
 flowmachine).
 ```bash
-$ cd flowmachine/
-$ pipenv run pre-commit install
+cd flowmachine/
+pipenv run pre-commit install
 ```
 
 Note that if you run `git commit` and any files are modified by the re-formatting, the pre-commit hook will abort
@@ -118,7 +118,7 @@ To use a specific diff reporter, you should create files named `reporters.json` 
 For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
 components by running:
 ```bash
-$ make up
+make up
 ```
 
 This will use the specifications in `docker-compose.yml` to spin up development versions of `flowdb_testdata`,
@@ -157,28 +157,28 @@ debuggers to step through the code then it is easier to start the relevant compo
 
 To do this, first start the components which you want to run inside the dockerised environment, e.g. via:
 ```bash
-$ make flowmachine_testdata-up flowauth-up
+make flowmachine_testdata-up flowauth-up
 ```
 
 Next, run one or more of the following commands (in separate terminals) to start up the remaining components.
 
 #### Flowmachine
 ```bash
-$ cd flowmachine/
-$ pipenv run watchmedo auto-restart --recursive --patterns="*.py" --directory="." pipenv run flowmachine
+cd flowmachine/
+pipenv run watchmedo auto-restart --recursive --patterns="*.py" --directory="." pipenv run flowmachine
 ```
 
 #### FlowAPI
 ```bash
-$ cd flowapi/
-$ pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "app.main:create_app()"
+cd flowapi/
+pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "app.main:create_app()"
 ```
 
 #### FlowAuth
 
 ```bash
-$ cd flowauth/
-$ pipenv run start-all
+cd flowauth/
+pipenv run start-all
 ```
 
 !!! warning
@@ -194,15 +194,15 @@ successfully and are wired up correctly so that they can talk to each other.
 
 You can run the integration tests as follows. If these pass, this is a good indication that everything is set up correctly.
 ```bash
-$ cd integration_tests
-$ pipenv install  # only needed once to install dependencies
-$ pipenv run pytest
+cd integration_tests
+pipenv install  # only needed once to install dependencies
+pipenv run pytest
 ```
 
 ### FlowDB
 
 ```
-$ psql "postgresql://flowdb:flowflow@localhost:9000/flowdb" -c "SELECT flowdb_version()"
+psql "postgresql://flowdb:flowflow@localhost:9000/flowdb" -c "SELECT flowdb_version()"
 ```
 The output should be similar to this:
 ```
@@ -216,7 +216,7 @@ The output should be similar to this:
 
 From within the `flowmachine/` folder, run the following command to send an example message to the Flowmachine server via ZeroMQ.
 ```
-$ pipenv run python -c "from flowmachine.core.server.utils import FM_EXAMPLE_MESSAGE, send_message_and_receive_reply; print(send_message_and_receive_reply(FM_EXAMPLE_MESSAGE))"
+pipenv run python -c "from flowmachine.core.server.utils import FM_EXAMPLE_MESSAGE, send_message_and_receive_reply; print(send_message_and_receive_reply(FM_EXAMPLE_MESSAGE))"
 ```
 Expected output:
 ```
@@ -232,7 +232,7 @@ variable `TOKEN`.
 
 Then run the following command to submit a daily location calculation to FlowKit via the API:
 ```
-$ curl -v -X POST http://localhost:9090/api/0/run \
+curl -v -X POST http://localhost:9090/api/0/run \
   -H "Authorization: Bearer ${TOKEN}" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
