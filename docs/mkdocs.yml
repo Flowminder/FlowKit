@@ -79,7 +79,7 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: en
   features:
-    - tabs
+    - navigation.tabs
   palette:
     accent: "#095798"
     primary: "#2977B8"
