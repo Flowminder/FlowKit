@@ -11,11 +11,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+
+### Removed
+
+## [1.14.2]
+
+### Fixed
 - Reinstated tabs navigation in the docs [#3238](https://github.com/Flowminder/FlowKit/issues/3238)
 - Removed `$` from code snippets in developer docs [#3224](https://github.com/Flowminder/FlowKit/issues/3224)
 - FlowETL now randomly generates a secret ley to secure sessions with the web interface if one is not explicitly provided using `AIRFLOW__WEBSERVER__SECRET_KEY`. [#3244](https://github.com/Flowminder/FlowKit/issues/3244)
-
-### Removed
 
 ## [1.14.1]
 
@@ -848,7 +852,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.1...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.2...master
+[1.14.2]: https://github.com/Flowminder/FlowKit/compare/1.14.1...1.14.2
 [1.14.1]: https://github.com/Flowminder/FlowKit/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/Flowminder/FlowKit/compare/1.13.0...1.14.0
 [1.13.0]: https://github.com/Flowminder/FlowKit/compare/1.12.1...1.13.0
