@@ -28,12 +28,10 @@ mapboxgl = "*"
 markdown = "==3.3.3" # Working around version conflict caused by airflow's aggressive pinning
 chroma-py = "==0.1.0.dev1"
 ipywidgets = "*"
+flowetl = {editable = true,path = "./../flowetl/flowetl"}
 
 
 [dev-packages]
-flowetl = {editable = true,path = "./../flowetl/flowetl"} # Working around version conflict caused by airflow's aggressive pinning
-marshmallow-sqlalchemy = "==0.23.1" # Working around version conflict caused by airflow's aggressive pinning
-cattrs = "==1.0.0" # Working around version conflict caused by airflow's aggressive pinning
 jupyterlab = "*"
 
 [requires]
