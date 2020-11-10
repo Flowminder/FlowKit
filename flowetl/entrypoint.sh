@@ -67,6 +67,7 @@ TRY_LOOP="20"
 : "${AIRFLOW_HOME:="/opt/airflow"}"
 : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
 : "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
+: "${AIRFLOW__WEBSERVER__SECRET_KEY:=${AIRFLOW__WEBSERVER__SECRET_KEY:=$(python -c "import os; print(os.urandom(16))")}}"
 
 export \
   AIRFLOW_HOME \
