@@ -63,12 +63,15 @@ class EventsTablesUnion(Query):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.columns = columns
-        self.tables = self._parse_tables(tables)
+        self.tables = _parse_tables(tables)
         if "*" in columns and len(self.tables) != 1:
             raise ValueError(
                 "Must give named columns when combining multiple event type tables."
             )
-        self.date_subsets = self._make_table_list(
+        self.date_subsets = _make_table_list(
+            tables=self.tables,
+            start=self.start,
+            stop=self.stop,
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
@@ -82,43 +85,6 @@ class EventsTablesUnion(Query):
             0
         ].column_names  # Use in preference to self.columns which might be ["*"]
 
-    def _parse_tables(self, tables):
-        if tables is None:
-            return (
-                "calls",
-                "sms",
-            )  # This should default to all the tables really, but that would break all the tests
-        elif isinstance(tables, str):
-            return [tables]
-        else:
-            return sorted(tables)
-
-    def _make_table_list(self, *, hours, subscriber_subset, subscriber_identifier):
-        """
-        Makes a list of EventTableSubset queries.
-        """
-
-        date_subsets = []
-        for table in self.tables:
-            try:
-                sql = EventTableSubset(
-                    start=self.start,
-                    stop=self.stop,
-                    table=table,
-                    columns=self.columns,
-                    hours=hours,
-                    subscriber_subset=subscriber_subset,
-                    subscriber_identifier=subscriber_identifier,
-                )
-                date_subsets.append(sql)
-            except MissingDateError:
-                warnings.warn(
-                    f"No data in {table} for {self.start}–{self.stop}", stacklevel=2
-                )
-        if not date_subsets:
-            raise MissingDateError(self.start, self.stop)
-        return date_subsets
-
     def _make_query(self):
 
         # Get the list of tables, select the relevant columns and union
@@ -131,3 +97,44 @@ class EventsTablesUnion(Query):
     def fully_qualified_table_name(self):
         # EventTableSubset are a simple select from events, and should not be cached
         raise NotImplementedError
+
+
+def _parse_tables(tables):
+    if tables is None:
+        return (
+            "calls",
+            "sms",
+        )  # This should default to all the tables really, but that would break all the tests
+    elif isinstance(tables, str):
+        return [tables]
+    elif len(tables) == 0:
+        raise ValueError("Tables must be a list of tables, or None.")
+    else:
+        return sorted(tables)
+
+
+def _make_table_list(
+    *, tables, start, stop, columns, hours, subscriber_subset, subscriber_identifier
+):
+    """
+    Makes a list of EventTableSubset queries.
+    """
+
+    date_subsets = []
+    for table in tables:
+        try:
+            sql = EventTableSubset(
+                start=start,
+                stop=stop,
+                table=table,
+                columns=columns,
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
+            )
+            date_subsets.append(sql)
+        except MissingDateError:
+            warnings.warn(f"No data in {table} for {start}–{stop}", stacklevel=2)
+    if not date_subsets:
+        raise MissingDateError(start, stop)
+    return date_subsets
