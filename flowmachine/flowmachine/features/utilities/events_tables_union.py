@@ -5,10 +5,9 @@ import datetime
 
 import structlog
 import warnings
-from typing import List, Union, Optional
+from typing import List, Union
 
 from ...core import Query
-from ...core.context import get_db
 from ...core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
 from flowmachine.utils import standardise_date
@@ -72,6 +71,7 @@ class EventsTablesUnion(Query):
             tables=self.tables,
             start=self.start,
             stop=self.stop,
+            columns=columns,
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
