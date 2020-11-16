@@ -20,6 +20,7 @@ black = "==20.8b1"
 respx = "*"
 ipython = "*"
 ipdb = "*"
+flowclient = {editable = true, extras = ["test"], path = "."}
 
 [requires]
 python_version = "3.8"
