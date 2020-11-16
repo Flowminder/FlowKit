@@ -28,7 +28,7 @@ test_requirements = [
     "pytest-cov",
     "asynctest",
     "pytest-asyncio",
-    "respx",
+    "respx==0.15.1",
 ]
 
 setup(
