@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- Fixed FlowETL not using the randomly generated secret key to secure sessions with the web interface if one is not explicitly provided using `AIRFLOW__WEBSERVER__SECRET_KEY`. [#3244](https://github.com/Flowminder/FlowKit/issues/3244) 
 
 ### Removed
 
@@ -19,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Reinstated tabs navigation in the docs [#3238](https://github.com/Flowminder/FlowKit/issues/3238)
 - Removed `$` from code snippets in developer docs [#3224](https://github.com/Flowminder/FlowKit/issues/3224)
-- FlowETL now randomly generates a secret ley to secure sessions with the web interface if one is not explicitly provided using `AIRFLOW__WEBSERVER__SECRET_KEY`. [#3244](https://github.com/Flowminder/FlowKit/issues/3244)
+- FlowETL now randomly generates a secret key to secure sessions with the web interface if one is not explicitly provided using `AIRFLOW__WEBSERVER__SECRET_KEY`. [#3244](https://github.com/Flowminder/FlowKit/issues/3244)
 
 ## [1.14.1]
 
