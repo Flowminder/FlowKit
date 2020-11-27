@@ -80,11 +80,11 @@
         },
         "faker": {
             "hashes": [
-                "sha256:6afc461ab3f779c9c16e299fc731d775e39ea7e8e063b3053ee359ae198a15ca",
-                "sha256:ce1c38823eb0f927567cde5bf2e7c8ca565c7a70316139342050ce2ca74b4026"
+                "sha256:5398268e1d751ffdb3ed36b8a790ed98659200599b368eec38a02eed15bce997",
+                "sha256:d4183b8f57316de3be27cd6c3b40e9f9343d27c95c96179f027316c58c2c239e"
             ],
             "markers": "python_version >= '3.5'",
-            "version": "==4.14.2"
+            "version": "==4.17.1"
         },
         "geojson": {
             "hashes": [
@@ -554,11 +554,11 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:9ad44aaf0fc3697c06f6e05c7cf025dd66bc7bcb7613c66d85f4464c47ac8fad",
-                "sha256:ef54779f1c09f346b2b5a8e5c61f96fbcb639929e640e59f8cf810794f406432"
+                "sha256:5c0d04e06ccc0da1bd3fa5ae4550effcce42fcad947b4a6cafa77bdc9b09ff22",
+                "sha256:9e7b8ab0ecbdbf0595adadd5f0ebbb9e69010e0bd48bbb0c15e550bf2a5292df"
             ],
-            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==4.51.0"
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==4.54.0"
         },
         "typed-ast": {
             "hashes": [
