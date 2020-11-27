@@ -148,7 +148,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202010-01
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -162,10 +162,10 @@ jobs:
       - restore_cache:
           key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.8.2"
+          name: "Switch to Python v3.8.5"
           command: |
             pyenv versions
-            pyenv global 3.8.2
+            pyenv global 3.8.5
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv virtualenv
@@ -247,17 +247,17 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202010-01
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.8.2"
+          name: "Switch to Python v3.8.5"
           command: |
             pyenv versions
-            pyenv global 3.8.2
+            pyenv global 3.8.5
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -654,7 +654,7 @@ jobs:
       component_path:
         type: string
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202010-01
     working_directory: /home/circleci/project/
     steps:
       - checkout:
