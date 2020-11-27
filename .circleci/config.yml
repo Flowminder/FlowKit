@@ -678,7 +678,7 @@ jobs:
 
   run_flowetl_unit_tests:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
@@ -722,7 +722,7 @@ jobs:
           name: Set python version
           command: |
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.8.5
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
