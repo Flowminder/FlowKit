@@ -708,7 +708,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
