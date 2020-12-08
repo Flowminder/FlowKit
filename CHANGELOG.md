@@ -11,9 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Fixed FlowClient ignoring custom SSL certificates [#3344](https://github.com/Flowminder/FlowKit/issues/3344)
 
 ### Removed
+
+## [1.14.4]
+### Fixed
+- Fixed FlowClient ignoring custom SSL certificates [#3344](https://github.com/Flowminder/FlowKit/issues/3344)
 
 ## [1.14.3]
 
@@ -858,7 +861,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.3...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.4...master
+[1.14.4]: https://github.com/Flowminder/FlowKit/compare/1.14.3...1.14.4
 [1.14.3]: https://github.com/Flowminder/FlowKit/compare/1.14.2...1.14.3
 [1.14.2]: https://github.com/Flowminder/FlowKit/compare/1.14.1...1.14.2
 [1.14.1]: https://github.com/Flowminder/FlowKit/compare/1.14.0...1.14.1
