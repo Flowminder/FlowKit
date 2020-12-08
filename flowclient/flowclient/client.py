@@ -22,7 +22,7 @@ def connect(
     url: str,
     token: str,
     api_version: int = 0,
-    ssl_certificate: Union[str, None] = None,
+    ssl_certificate: Union[str, bool] = True,
 ) -> Connection:
     """
     Connect to a FlowKit API server and return the resulting Connection object.
@@ -35,9 +35,9 @@ def connect(
         JSON Web Token for this API server
     api_version : int, default 0
         Version of the API to connect to
-    ssl_certificate: str or None
-        Provide a path to an ssl certificate to use, or None to use
-        default root certificates.
+    ssl_certificate: str or bool
+        Provide a path to an ssl certificate to use, True to use
+        default root certificates, or False to disable ssl verification.
 
     Returns
     -------
