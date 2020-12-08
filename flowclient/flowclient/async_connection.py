@@ -44,9 +44,9 @@ class ASyncConnection:
         JSON Web Token for this API server
     api_version : int, default 0
         Version of the API to connect to
-    ssl_certificate: str or None
-        Provide a path to an ssl certificate to use, or None to use
-        default root certificates.
+    ssl_certificate: str or bool
+        Provide a path to an ssl certificate to use, True to use
+        default root certificates, or False to disable ssl verification.
     """
 
     url: str
@@ -60,7 +60,7 @@ class ASyncConnection:
         url: str,
         token: str,
         api_version: int = 0,
-        ssl_certificate: Union[str, None] = None,
+        ssl_certificate: Union[str, bool] = True,
     ) -> None:
         if not url.lower().startswith("https://"):
             warnings.warn(
@@ -69,10 +69,11 @@ class ASyncConnection:
         self.url = url
         self.api_version = api_version
         self.session = httpx.AsyncClient(
-            base_url=f"{self.url}/api/{self.api_version}/", timeout=None, http2=http2
+            base_url=f"{self.url}/api/{self.api_version}/",
+            timeout=None,
+            http2=http2,
+            verify=ssl_certificate,
         )
-        if ssl_certificate is not None:
-            self.session.verify = ssl_certificate
         self.update_token(token=token)
 
     def update_token(self, token: str) -> None:
