@@ -547,7 +547,7 @@ jobs:
 
   run_flowauth_end_to_end_tests:
     docker:
-      - image: cypress/base:8
+      - image: cypress/base:10
       - image: flowminder/flowauth:$CIRCLE_SHA1
         environment:
           DB_URI: postgres://flowauth:{}@localhost:5432/flowauth
