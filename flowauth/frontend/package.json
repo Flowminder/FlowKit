@@ -13,7 +13,7 @@
     "react-dom": "^16.14.0",
     "react-qr-svg": "^2.3.0",
     "react-scripts": "^4.0.0",
-    "rsuite": "^4.8.4",
+    "rsuite": "^4.8.6",
     "zxcvbn": "^4.4.2",
     "classnames": "^2.2.6"
   },
