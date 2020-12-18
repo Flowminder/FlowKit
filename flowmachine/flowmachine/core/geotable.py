@@ -6,10 +6,10 @@
 """
 Simple utility class that represents tables with geometry.
 """
+from typing import Optional, List
 
 from . import Table
 from .mixins import GeoDataMixin
-from .preflight import pre_flight
 
 
 class GeoTable(GeoDataMixin, Table):
@@ -48,21 +48,25 @@ class GeoTable(GeoDataMixin, Table):
     """
 
     def __init__(
-        self, name=None, schema=None, columns=None, geom_column="geom", gid_column=None
+        self,
+        name: str,
+        *,
+        schema: Optional[str] = None,
+        columns: List[str],
+        geom_column: str = "geom",
+        gid_column: Optional[str] = None,
     ):
         self.geom_column = geom_column
         self.gid_column = gid_column
-        super().__init__(name=name, schema=schema, columns=columns)
         if self.geom_column not in self.column_names:
             raise ValueError(
-                "geom_column: {} is not a column in this table.".format(
-                    self.geom_column
-                )
+                f"geom_column: {self.geom_column} is not a column in this table."
             )
         if self.gid_column is not None and self.gid_column not in self.column_names:
             raise ValueError(
-                "gid_column: {} is not a column in this table.".format(self.gid_column)
+                f"gid_column: {self.gid_column} is not a column in this table."
             )
+        super().__init__(name=name, schema=schema, columns=columns)
 
     def _geo_augmented_query(self):
         if self.gid_column is None:
