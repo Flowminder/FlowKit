@@ -39,7 +39,7 @@ class Table(Query):
     Examples
     --------
 
-    >>> t = Table(name="calls", schema="events")
+    >>> t = Table(name="calls", schema="events", olumns=["id", "outgoing", "datetime", "duration"])
     >>> t.head()
                                 id outgoing                  datetime  duration  \
     0  5wNJA-PdRJ4-jxEdG-yOXpZ     True 2016-01-01 22:38:06+00:00    3393.0
@@ -63,7 +63,8 @@ class Table(Query):
 
     def __init__(
         self,
-        name: Optional[str] = None,
+        name: str,
+        *,
         schema: Optional[str] = None,
         columns: Optional[Iterable[str]] = None,
     ):
@@ -78,9 +79,7 @@ class Table(Query):
 
         self.name = name
         self.schema = schema
-        self.fqn = "{}.{}".format(schema, name) if schema else name
-        if "." not in self.fqn:
-            raise ValueError("{} is not a valid table.".format(self.fqn))
+        self.fqn = f"{schema}.{name}" if schema else name
 
         # Record provided columns to ensure that query_id differs with different columns
         if isinstance(columns, str):  # Wrap strings in a list
@@ -93,7 +92,7 @@ class Table(Query):
     @pre_flight
     def check_exists(self):
         if not self.is_stored:
-            raise ValueError("{} is not a known table.".format(self.fqn))
+            raise ValueError(f"{self.fqn} is not a known table.")
 
     @pre_flight
     def check_columns(self):
@@ -124,17 +123,17 @@ class Table(Query):
             get_redis(), self.query_id, get_db().conn_id
         )
         if not q_state_machine.is_completed:
-            _, succeeded = q_state_machine.enqueue()
+            state, succeeded = q_state_machine.enqueue()
             if succeeded:
-                _, succeeded = q_state_machine.execute()
+                state, succeeded = q_state_machine.execute()
                 if succeeded:
                     with get_db().engine.begin() as trans:
                         write_cache_metadata(trans, self, compute_time=0)
                     state, succeeded = q_state_machine.finish()
-                    if not succeeded:
-                        raise RuntimeError(
-                            f"Couldn't fast forward state machine for table {self}. State is: {state}"
-                        )
+            if not succeeded:
+                raise RuntimeError(
+                    f"Couldn't fast forward state machine for table {self}. State is: {state}"
+                )
 
     def __format__(self, fmt):
         return f"<Table: '{self.schema}.{self.name}', query_id: '{self.query_id}'>"
