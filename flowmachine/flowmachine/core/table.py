@@ -109,7 +109,7 @@ class Table(Query):
 
         logger.debug(
             "Checking provided columns against db columns.",
-            provided=columns,
+            provided=self.columns,
             db_columns=db_columns,
         )
         if not set(self.columns).issubset(db_columns):
