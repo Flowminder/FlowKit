@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 httpx = "*"
 pandas = "*"
-pyjwt = "*"
+pyjwt = "<2.0.0"
 merge-args = "*"
 tqdm = "*"
 
