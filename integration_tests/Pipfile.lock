@@ -1581,10 +1581,10 @@
                 "asymmetric_crypto"
             ],
             "hashes": [
-                "sha256:afee377aa36ed4cbdfb77c877a27594c5a4a4690c1adb6a77587e64b3cc803e0"
+                "sha256:82647a7b8585a1038dfaa0539a85581a82f38bb64bc4014486e7235317e87421"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==0.0.2"
+            "version": "==0.0.3"
         },
         "redis": {
             "hashes": [
