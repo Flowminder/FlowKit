@@ -4,11 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.12"}
-attrs = "==19.3.0" # Pinned pending airflow upgrade from 1.10.12
-cattrs = "==1.0" # Pinned pending airflow upgrade from 1.10.12
-marshmallow-enum = "==1.5.1" # Pinned pending airflow upgrade from 1.10.12
-marshmallow-sqlalchemy = "==0.23.1" # Pinned pending airflow upgrade from 1.10.12
+apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.14"}
 click = "*"
 
 [dev-packages]
@@ -23,4 +19,4 @@ versioneer = "*"
 pytest-cov = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

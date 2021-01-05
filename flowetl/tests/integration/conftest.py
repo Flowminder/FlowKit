@@ -435,9 +435,9 @@ def airflow_local_setup(airflow_home):
     }
     env = {**os.environ, **extra_env}
 
-    from airflow.bin.cli import initdb
+    from airflow.utils.db import initdb
 
-    initdb([])
+    initdb()
 
     with open(airflow_home / "scheduler.log", "w") as fout:
         with Popen(
