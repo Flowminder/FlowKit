@@ -708,7 +708,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
@@ -717,12 +717,12 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - restore_cache:
-          key: flowetl-deps-1-{{ checksum "Pipfile.lock"}}
+          key: flowetl-deps-2-{{ checksum "Pipfile.lock"}}
       - run:
           name: Set python version
           command: |
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.7.7
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv

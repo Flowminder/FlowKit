@@ -48,7 +48,7 @@ setup(
     install_requires=[
         "pandas",
         "httpx",
-        "pyjwt",
+        "pyjwt<2.0.0",
         "ujson",
         "merge-args",
         "tqdm",

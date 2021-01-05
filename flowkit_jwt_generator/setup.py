@@ -42,7 +42,7 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=["flowkit_jwt_generator"],
     include_package_data=True,
-    install_requires=["pyjwt", "cryptography"],
+    install_requires=["pyjwt < 2.0.0", "cryptography"],
     extras_require={
         "test": test_requirements,
         "pytest": ["pytest", "requests"],
