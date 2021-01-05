@@ -72,6 +72,8 @@ RUN  apt-get update && \
 USER airflow
 
 WORKDIR ${AIRFLOW_HOME}
+# Fix airflow hitting troubles when running getpass.getuser()
+ENV USER airflow
 ENTRYPOINT ["/entrypoint.sh"]
 # set default arg for entrypoint
 EXPOSE 80
