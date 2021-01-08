@@ -117,7 +117,7 @@ if __name__ == "__main__":
         )
         with engine.begin():
             available_dates = [
-                datetime.date.fromisoformat(dt)
+                dt.date()
                 for dt, *_ in engine.execute(
                     "SELECT DISTINCT cdr_date FROM etl.etl_records;"
                 ).fetchall()
@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
         with engine.begin():
             available_dates = [
-                (datetime.date.fromisoformat(dt), typ)
+                (dt.date(), typ)
                 for dt, typ, *_ in engine.execute(
                     "SELECT DISTINCT cdr_date, cdr_type FROM etl.etl_records;"
                 ).fetchall()
