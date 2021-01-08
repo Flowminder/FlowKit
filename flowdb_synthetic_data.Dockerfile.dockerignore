@@ -12,6 +12,8 @@
 !flowdb/testdata/bin/9900_ingest_synthetic_data.sh
 !flowdb/testdata/bin/9800_population_density.sql.gz
 !flowdb/testdata/bin/generate_synthetic_data*.py
+!flowdb/testdata/bin/9910_migrate_test_data.sh
+!flowdb/testdata/bin/migrate_synth_data.py
 !flowdb/testdata/test_data/sql/admin*.sql
 !flowdb/testdata/synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson
 !flowdb/testdata/synthetic_data/Pipfile*
