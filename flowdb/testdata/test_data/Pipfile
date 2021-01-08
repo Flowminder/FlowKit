@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 tohu = "*"
+sqlalchemy = "*"
+"psycopg2-binary" = "*"
+structlog = "*"
 "geoalchemy2" = "*"
 
 [dev-packages]

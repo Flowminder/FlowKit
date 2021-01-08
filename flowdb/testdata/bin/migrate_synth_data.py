@@ -1,158 +1,173 @@
-/*
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at http://mozilla.org/MPL/2.0/.
-*/
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-BEGIN;
-/* Populate subscribers */
+# !/usr/bin/env python
 
-INSERT INTO interactions.subscriber (msisdn, imei, imsi, tac)
+"""
+Small script for generating arbitrary volumes of CDR call data inside the flowdb
+container.
+
+Produces sites, cells, tacs, call, sms and mds data.
+
+Optionally simulates a 'disaster' where all subscribers must leave a designated region
+for a period of time.
+"""
+import os
+import datetime
+from concurrent.futures import wait
+from concurrent.futures.thread import ThreadPoolExecutor
+from contextlib import contextmanager
+from multiprocessing import cpu_count
+
+import sqlalchemy as sqlalchemy
+from sqlalchemy.exc import ResourceClosedError
+
+import structlog
+import json
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(serializer=json.dumps),
+    ]
+)
+logger = structlog.get_logger(__name__)
+
+
+@contextmanager
+def log_duration(job: str, **kwargs):
+    """
+    Small context handler that logs the duration of the with block.
+
+    Parameters
+    ----------
+    job: str
+        Description of what is being run, will be shown under the "job" key in log
+    kwargs: dict
+        Any kwargs will be shown in the log as "key":"value"
+    """
+    start_time = datetime.datetime.now()
+    logger.info("Started", job=job, **kwargs)
+    yield
+    logger.info(
+        "Finished", job=job, runtime=str(datetime.datetime.now() - start_time), **kwargs
+    )
+
+
+def do_exec(args):
+    msg, sql, engine = args
+    with log_duration(msg):
+        with engine.begin() as trans:
+            res = trans.execute(sql)
+            try:
+                logger.info(f"SQL result", job=msg, result=res.fetchall())
+            except ResourceClosedError:
+                pass  # Nothing to do here
+            except Exception as exc:
+                logger.error("Hit an issue.", exc=exc)
+                raise exc
+
+
+if __name__ == "__main__":
+    with log_duration("Migrating synthetic data."):
+        engine = sqlalchemy.create_engine(
+            f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
+            echo=False,
+            strategy="threadlocal",
+            pool_size=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
+            pool_timeout=None,
+        )
+        logger.info(
+            "Connected.",
+            num_connections=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
+        )
+    with ThreadPoolExecutor(
+        min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count())))
+    ) as tp:
+        subscribers_fut = tp.submit(
+            do_exec,
+            (
+                """INSERT INTO interactions.subscriber (msisdn, imei, imsi, tac)
   SELECT msisdn, imei, imsi, tac FROM events.calls group by msisdn, imei, imsi, tac
   UNION
   SELECT msisdn, imei, imsi, tac FROM events.sms group by msisdn, imei, imsi, tac
   UNION
   SELECT msisdn, imei, imsi, tac FROM events.mds group by msisdn, imei, imsi, tac
   UNION
-  SELECT msisdn, imei, imsi, tac FROM events.topups group by msisdn, imei, imsi, tac;
-
-/* Populate locations */
-
-INSERT INTO interactions.locations (site_id, cell_id, position)
+  SELECT msisdn, imei, imsi, tac FROM events.topups group by msisdn, imei, imsi, tac;""",
+                "Populating subscribers.",
+                engine,
+            ),
+        )
+        locations_fut = tp.submit(
+            do_exec,
+            (
+                """INSERT INTO interactions.locations (site_id, cell_id, position)
     SELECT sites.site_id as site_id, cells.cell_id AS cell_id, cells.geom_point as position FROM
     infrastructure.cells LEFT JOIN
     infrastructure.sites ON
-        cells.site_id=sites.id AND cells.version=sites.version;
+        cells.site_id=sites.id AND cells.version=sites.version;""",
+                "Populating locations.",
+                engine,
+            ),
+        )
+        with engine.begin():
+            available_dates = [
+                datetime.date.fromisoformat(dt)
+                for dt, *_ in engine.execute(
+                    "SELECT DISTINCT cdr_date FROM etl.etl_records;"
+                ).fetchall()
+            ]
+        init_futures = [locations_fut, subscribers_fut]
+        for dt in available_dates:
+            init_futures.append(
+                tp.submit(
+                    do_exec,
+                    (
+                        f"""CREATE TABLE interactions.events_supertable_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt}) TO ({dt + datetime.timedelta(days=1)});""",
+                        f"Adding events partition for {dt}.",
+                        engine,
+                    ),
+                )
+            )
+            init_futures.append(
+                tp.submit(
+                    do_exec,
+                    (
+                        f"""CREATE TABLE interactions.subscriber_sightings_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.subscriber_sightings FOR VALUES FROM ({dt}) TO ({dt + datetime.timedelta(days=1)});""",
+                        f"Adding sightings partition for {dt}.",
+                        engine,
+                    ),
+                )
+            )
 
-/* Create a view mapping location ids to cell ids */
-
-CREATE VIEW cell_id_mapping AS (
-    SELECT * FROM
-    interactions.locations
-        LEFT JOIN (
-            SELECT cell_id, id as mno_cell_id, daterange(date_of_first_service, date_of_last_service, '[]') as valid_period FROM
-            infrastructure.cells) c
-        USING (cell_id)
-);
-
-/* Create partitions on the events tables */
-
-CREATE TABLE interactions.events_supertable_20160101 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160101) TO (20160102);
-
-CREATE TABLE interactions.events_supertable_20160102 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160102) TO (20160103);
-
-CREATE TABLE interactions.events_supertable_20160103 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160103) TO (20160104);
-
-CREATE TABLE interactions.events_supertable_20160104 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160104) TO (20160105);
-
-CREATE TABLE interactions.events_supertable_20160105 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160105) TO (20160106);
-
-CREATE TABLE interactions.events_supertable_20160106 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160106) TO (20160107);
-
-CREATE TABLE interactions.events_supertable_20160107 PARTITION OF interactions.event_supertable
-    FOR VALUES FROM (20160107) TO (20160108);
-
-/* Calls */
-
-CREATE TABLE interactions.calls_20160101 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160101) TO (20160102);
-
-CREATE TABLE interactions.calls_20160102 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160102) TO (20160103);
-
-CREATE TABLE interactions.calls_20160103 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160103) TO (20160104);
-
-CREATE TABLE interactions.calls_20160104 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160104) TO (20160105);
-
-CREATE TABLE interactions.calls_20160105 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160105) TO (20160106);
-
-CREATE TABLE interactions.calls_20160106 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160106) TO (20160107);
-
-CREATE TABLE interactions.calls_20160107 PARTITION OF interactions.calls
-    FOR VALUES FROM (20160107) TO (20160108);
-
-/* sms */
-
-CREATE TABLE interactions.sms_20160101 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160101) TO (20160102);
-
-CREATE TABLE interactions.sms_20160102 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160102) TO (20160103);
-
-CREATE TABLE interactions.sms_20160103 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160103) TO (20160104);
-
-CREATE TABLE interactions.sms_20160104 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160104) TO (20160105);
-
-CREATE TABLE interactions.sms_20160105 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160105) TO (20160106);
-
-CREATE TABLE interactions.sms_20160106 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160106) TO (20160107);
-
-CREATE TABLE interactions.sms_20160107 PARTITION OF interactions.sms
-    FOR VALUES FROM (20160107) TO (20160108);
-
-/* mds */
-
-CREATE TABLE interactions.mds_20160101 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160101) TO (20160102);
-
-CREATE TABLE interactions.mds_20160102 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160102) TO (20160103);
-
-CREATE TABLE interactions.mds_20160103 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160103) TO (20160104);
-
-CREATE TABLE interactions.mds_20160104 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160104) TO (20160105);
-
-CREATE TABLE interactions.mds_20160105 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160105) TO (20160106);
-
-CREATE TABLE interactions.mds_20160106 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160106) TO (20160107);
-
-CREATE TABLE interactions.mds_20160107 PARTITION OF interactions.mds
-    FOR VALUES FROM (20160107) TO (20160108);
-
-/* topup */
-
-CREATE TABLE interactions.topup_20160101 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160101) TO (20160102);
-
-CREATE TABLE interactions.topup_20160102 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160102) TO (20160103);
-
-CREATE TABLE interactions.topup_20160103 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160103) TO (20160104);
-
-CREATE TABLE interactions.topup_20160104 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160104) TO (20160105);
-
-CREATE TABLE interactions.topup_20160105 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160105) TO (20160106);
-
-CREATE TABLE interactions.topup_20160106 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160106) TO (20160107);
-
-CREATE TABLE interactions.topup_20160107 PARTITION OF interactions.topup
-    FOR VALUES FROM (20160107) TO (20160108);
-
-/* Populate calls */
-
-WITH event_data AS (SELECT
+        with engine.begin():
+            available_dates = [
+                (datetime.date.fromisoformat(dt), typ)
+                for dt, typ, *_ in engine.execute(
+                    "SELECT DISTINCT cdr_date, cdr_type FROM etl.etl_records;"
+                ).fetchall()
+            ]
+        for dt, typ in available_dates:
+            init_futures.append(
+                tp.submit(
+                    do_exec,
+                    (
+                        f"""CREATE TABLE interactions.{typ}_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.{typ} FOR VALUES FROM ({dt}) TO ({dt + datetime.timedelta(days=1)});""",
+                        f"Adding event subtype partition for {dt}.",
+                        engine,
+                    ),
+                )
+            )
+        wait(init_futures)
+        calls_fut = tp.submit(
+            do_exec,
+            (
+                """WITH event_data AS (SELECT
            caller_ident.subscriber_id,
            caller_loc.location_id,
            time_dim_id,
@@ -196,11 +211,15 @@ WITH event_data AS (SELECT
     RETURNING *)
 
 INSERT INTO interactions.calls (event_id, date_dim_id, called_subscriber_id, called_party_location_id, calling_party_msisdn, called_party_msisdn, duration)
-    SELECT event_id, date_dim_id, called_subscriber_id, called_party_location_id, calling_party_msisdn, called_party_msisdn, duration FROM call_data NATURAL JOIN event_data;
-
-/* Populate sms */
-
-WITH event_data AS (SELECT caller_ident.subscriber_id,
+    SELECT event_id, date_dim_id, called_subscriber_id, called_party_location_id, calling_party_msisdn, called_party_msisdn, duration FROM call_data NATURAL JOIN event_data;""",
+                "Populating calls.",
+                engine,
+            ),
+        )
+    sms_fut = tp.submit(
+        do_exec,
+        (
+            """WITH event_data AS (SELECT caller_ident.subscriber_id,
            caller_loc.location_id,
            time_dim_id as time_dim_id,
            date_dim_id as date_dim_id,
@@ -241,12 +260,15 @@ WITH event_data AS (SELECT caller_ident.subscriber_id,
     RETURNING *)
 
 INSERT INTO interactions.sms (event_id, date_dim_id, called_subscriber_id, called_party_location_id, calling_party_msisdn, called_party_msisdn)
-    SELECT event_id, date_dim_id, called_subscriber_id, called_party_location_id, calling_party_msisdn, called_party_msisdn FROM sms_data NATURAL JOIN event_data;
-
-/* Populate topup */
-
-
-WITH event_data AS (SELECT caller_ident.subscriber_id,
+    SELECT event_id, date_dim_id, called_subscriber_id, called_party_location_id, calling_party_msisdn, called_party_msisdn FROM sms_data NATURAL JOIN event_data;""",
+            "Populating sms.",
+            engine,
+        ),
+    )
+    topup_fut = tp.submit(
+        do_exec,
+        (
+            """WITH event_data AS (SELECT caller_ident.subscriber_id,
            caller_loc.location_id,
            time_dim_id,
            date_dim_id,
@@ -281,12 +303,15 @@ WITH event_data AS (SELECT caller_ident.subscriber_id,
     RETURNING *)
 
 INSERT INTO interactions.topup (event_id, date_dim_id, recharge_amount, airtime_fee, tax_and_fee, pre_event_balance, post_event_balance)
-    SELECT event_id, date_dim_id, recharge_amount, airtime_fee, tax_and_fee, pre_event_balance, post_event_balance FROM topup_data NATURAL JOIN event_data;
-
-/* Populate mds */
-
-
-WITH event_data AS (SELECT caller_ident.subscriber_id,
+    SELECT event_id, date_dim_id, recharge_amount, airtime_fee, tax_and_fee, pre_event_balance, post_event_balance FROM topup_data NATURAL JOIN event_data;""",
+            "Populating topups",
+            engine,
+        ),
+    )
+    mds_fut = tp.submit(
+        do_exec,
+        (
+            """WITH event_data AS (SELECT caller_ident.subscriber_id,
                             caller_loc.location_id,
                             time_dim_id,
                             date_dim_id,
@@ -322,11 +347,15 @@ INSERT INTO interactions.mds (event_id, date_dim_id, data_volume_total, data_vol
             duration)
     SELECT event_id, date_dim_id, data_volume_total, data_volume_up,
             data_volume_down,
-            duration FROM mds_data NATURAL JOIN event_data;
-
-/* Populate geoms from the existing admin units */
-
-INSERT INTO geography.geoms (short_name, long_name, geo_kind_id, spatial_resolution, geom)
+            duration FROM mds_data NATURAL JOIN event_data;""",
+            "Populating mds.",
+            engine,
+        ),
+    )
+    geoms_fut = tp.submit(
+        do_exec,
+        (
+            """INSERT INTO geography.geoms (short_name, long_name, geo_kind_id, spatial_resolution, geom)
     SELECT admin3pcod as short_name, admin3name as long_name, 1 as geo_kind_id, 3 as spatial_resolution, geom
         FROM geography.admin3;
 
@@ -345,45 +374,49 @@ INSERT INTO geography.geoms (short_name, long_name, geo_kind_id, spatial_resolut
 INSERT INTO geography.geoms (short_name, long_name, geo_kind_id, spatial_resolution, geom)
     SELECT district_c as short_name, district_n as long_name, 1 as geo_kind_id, 2 as spatial_resolution, geom
         FROM public.gambia_admin2;
-
-/* Populate the geobridge */
-
 INSERT INTO geography.geo_bridge (location_id, gid, valid_from, valid_to, linkage_method_id)
     SELECT locations.location_id, geoms.gid, '-Infinity'::date as valid_from, 'Infinity'::date as valid_to, 1 as linkage_method_id from interactions.locations LEFT JOIN geography.geoms ON ST_Intersects(position, geom);
-
-
-/* Populate subscriber sightings */
-
-CREATE TABLE interactions.subscriber_sightings_20160101 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160101) TO (20160102);
-
-CREATE TABLE interactions.subscriber_sightings_20160102 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160102) TO (20160103);
-
-CREATE TABLE interactions.subscriber_sightings_20160103 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160103) TO (20160104);
-
-CREATE TABLE interactions.subscriber_sightings_20160104 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160104) TO (20160105);
-
-CREATE TABLE interactions.subscriber_sightings_20160105 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160105) TO (20160106);
-
-CREATE TABLE interactions.subscriber_sightings_20160106 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160106) TO (20160107);
-
-CREATE TABLE interactions.subscriber_sightings_20160107 PARTITION OF interactions.subscriber_sightings
-    FOR VALUES FROM (20160107) TO (20160108);
-
-INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
-    SELECT event_id, subscriber_id, location_id, time_dim_id, date_dim_id, event_timestamp FROM interactions.event_supertable;
-
-INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
+        """,
+            "Populating geoms",
+            engine,
+        ),
+    )
+    wait([mds_fut, topup_fut, calls_fut, sms_fut, geoms_fut])
+    sightings_futures = [
+        tp.submit(
+            do_exec,
+            (
+                """INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
+    SELECT event_id, subscriber_id, location_id, time_dim_id, date_dim_id, event_timestamp FROM interactions.event_supertable;""",
+                "Populating sightings from supertable",
+                engine,
+            ),
+        )
+    ]
+    sightings_futures = [
+        *sightings_futures,
+        tp.submit(
+            do_exec,
+            (
+                """INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
     SELECT event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp
-        FROM interactions.event_supertable NATURAL JOIN interactions.calls;
-
-INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
+        FROM interactions.event_supertable NATURAL JOIN interactions.calls;""",
+                "Populating sightings from call counterparties",
+                engine,
+            ),
+        ),
+    ]
+    sightings_futures = [
+        *sightings_futures,
+        tp.submit(
+            do_exec,
+            (
+                """INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
     SELECT event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp
-        FROM interactions.event_supertable NATURAL JOIN interactions.sms;
-
-COMMIT;
+        FROM interactions.event_supertable NATURAL JOIN interactions.sms;""",
+                "Populating sightings from sms counterparties",
+                engine,
+            ),
+        ),
+    ]
+    wait(sightings_futures)
