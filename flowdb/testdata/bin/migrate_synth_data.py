@@ -374,9 +374,6 @@ INSERT INTO interactions.calls (event_id, date_dim_id, called_subscriber_id, cal
         SELECT admin0pcod as short_name, admin0name as long_name, 1 as geo_kind_id, 0 as spatial_resolution, geom
             FROM geography.admin0;
     
-    INSERT INTO geography.geoms (short_name, long_name, geo_kind_id, spatial_resolution, geom)
-        SELECT district_c as short_name, district_n as long_name, 1 as geo_kind_id, 2 as spatial_resolution, geom
-            FROM public.gambia_admin2;
     INSERT INTO geography.geo_bridge (location_id, gid, valid_from, valid_to, linkage_method_id)
         SELECT locations.location_id, geoms.gid, '-Infinity'::date as valid_from, 'Infinity'::date as valid_to, 1 as linkage_method_id from interactions.locations LEFT JOIN geography.geoms ON ST_Intersects(position, geom);
             """,
