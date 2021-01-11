@@ -128,7 +128,7 @@ if __name__ == "__main__":
                 tp.submit(
                     do_exec,
                     (
-                        f"""CREATE TABLE interactions.events_supertable_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt}) TO ({dt + datetime.timedelta(days=1)});""",
+                        f"""CREATE TABLE interactions.events_supertable_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
                         f"Adding events partition for {dt}.",
                         engine,
                     ),
@@ -138,7 +138,7 @@ if __name__ == "__main__":
                 tp.submit(
                     do_exec,
                     (
-                        f"""CREATE TABLE interactions.subscriber_sightings_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.subscriber_sightings FOR VALUES FROM ('{dt}') TO ('{dt + datetime.timedelta(days=1)}');""",
+                        f"""CREATE TABLE interactions.subscriber_sightings_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.subscriber_sightings FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
                         f"Adding sightings partition for {dt}.",
                         engine,
                     ),
@@ -157,7 +157,7 @@ if __name__ == "__main__":
                 tp.submit(
                     do_exec,
                     (
-                        f"""CREATE TABLE interactions.{typ}_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.{typ} FOR VALUES FROM ('{dt}') TO ('{dt + datetime.timedelta(days=1)}');""",
+                        f"""CREATE TABLE interactions.{typ}_{dt.strftime("%Y_%m_%d")} PARTITION OF interactions.{typ} FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
                         f"Adding event subtype partition for {dt}.",
                         engine,
                     ),
