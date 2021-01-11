@@ -59,7 +59,7 @@ def log_duration(job: str, **kwargs):
 
 
 def do_exec(args):
-    msg, sql, engine = args
+    sql, msg, engine = args
     with log_duration(msg):
         with engine.begin() as trans:
             res = trans.execute(sql)
