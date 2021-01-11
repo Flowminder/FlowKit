@@ -387,6 +387,10 @@ def flowetl_container(
                 "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
             )
             logger.info(airflow_logs)
+    except TimeoutError as exc:
+        raise TimeoutError(
+            f"Flowetl container did not start properly. This may be due to missing config settings or syntax errors in one of its task. Logs: {container.logs()}"
+        )
     finally:
         container.kill()
         container.remove()
@@ -435,9 +439,9 @@ def airflow_local_setup(airflow_home):
     }
     env = {**os.environ, **extra_env}
 
-    from airflow.bin.cli import initdb
+    from airflow.utils.db import initdb
 
-    initdb([])
+    initdb()
 
     with open(airflow_home / "scheduler.log", "w") as fout:
         with Popen(
