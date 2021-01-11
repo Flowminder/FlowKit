@@ -155,6 +155,17 @@ if __name__ == "__main__":
                     "SELECT DISTINCT cdr_date, cdr_type FROM etl.etl_records;"
                 ).fetchall()
             ]
+        with engine.begin():
+            engine.execute(
+                """CREATE VIEW cell_id_mapping AS (
+    SELECT * FROM
+    interactions.locations
+        LEFT JOIN (
+            SELECT cell_id, id as mno_cell_id, daterange(date_of_first_service, date_of_last_service, '[]') as valid_period FROM
+            infrastructure.cells) c
+        USING (cell_id)
+);"""
+            )
         init_futures = [
             tp.submit(
                 do_exec,
