@@ -163,7 +163,7 @@ if __name__ == "__main__":
                     ),
                 )
             )
-        wait(init_futures)
+        [fut.result() for fut in wait(init_futures)]
         calls_fut = tp.submit(
             do_exec,
             (
@@ -381,7 +381,10 @@ INSERT INTO interactions.calls (event_id, date_dim_id, called_subscriber_id, cal
                 engine,
             ),
         )
-        wait([mds_fut, topup_fut, calls_fut, sms_fut, geoms_fut])
+        [
+            fut.result()
+            for fut in wait([mds_fut, topup_fut, calls_fut, sms_fut, geoms_fut])
+        ]
         sightings_futures = [
             tp.submit(
                 do_exec,
@@ -419,4 +422,4 @@ INSERT INTO interactions.calls (event_id, date_dim_id, called_subscriber_id, cal
                 ),
             ),
         ]
-        wait(sightings_futures)
+        [fut.result() for fut in wait(sightings_futures)]
