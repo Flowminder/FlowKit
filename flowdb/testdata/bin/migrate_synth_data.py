@@ -123,27 +123,31 @@ if __name__ == "__main__":
                 ).fetchall()
             ]
         init_futures = [locations_fut, subscribers_fut]
-        partitions_sql = []
-        for dt in available_dates:
-            partitions_sql = [
-                *partitions_sql,
-                f"""CREATE TABLE interactions.events_supertable_{dt.strftime("%Y%m%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
-                f"""CREATE TABLE interactions.subscriber_sightings_{dt.strftime("%Y%m%d")} PARTITION OF interactions.subscriber_sightings FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
-            ]
+        [fut.result() for fut in wait(init_futures).done]
         init_futures = [
-            *init_futures,
             tp.submit(
                 do_exec,
                 (
-                    "\n".join(
-                        partitions_sql,
-                        "Adding partitions for events and sighting.",
-                        engine,
-                    )
+                    f"""CREATE TABLE interactions.events_supertable_{dt.strftime("%Y%m%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
+                    f"Adding events partition for {dt}.",
+                    engine,
                 ),
-            ),
+            )
+            for dt in available_dates
         ]
-
+        [fut.result() for fut in wait(init_futures).done]
+        init_futures = [
+            tp.submit(
+                do_exec,
+                (
+                    f"""CREATE TABLE interactions.subscriber_sightings_{dt.strftime("%Y%m%d")} PARTITION OF interactions.subscriber_sightings FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
+                    f"Adding sightings partition for {dt}.",
+                    engine,
+                ),
+            )
+            for dt in available_dates
+        ]
+        [fut.result() for fut in wait(init_futures).done]
         with engine.begin():
             available_dates = [
                 (dt, typ)
@@ -151,22 +155,16 @@ if __name__ == "__main__":
                     "SELECT DISTINCT cdr_date, cdr_type FROM etl.etl_records;"
                 ).fetchall()
             ]
-        partitions_sql = [
-            f"""CREATE TABLE interactions.{typ}_{dt.strftime("%Y%m%d")} PARTITION OF interactions.{typ} FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});"""
-            for dt, typ in available_dates
-        ]
         init_futures = [
-            *init_futures,
             tp.submit(
                 do_exec,
                 (
-                    "\n".join(
-                        partitions_sql,
-                        "Adding partitions for event metadata.",
-                        engine,
-                    )
+                    f"""CREATE TABLE interactions.{typ}_{dt.strftime("%Y%m%d")} PARTITION OF interactions.{typ} FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
+                    f"Adding event subtype partition for {dt}.",
+                    engine,
                 ),
-            ),
+            )
+            for dt, typ in available_dates
         ]
         [fut.result() for fut in wait(init_futures).done]
         calls_fut = tp.submit(
