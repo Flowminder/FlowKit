@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         [fut.result() for fut in wait(init_futures).done]
         with engine.begin():
-            available_dates = [
+            available_dates_and_types = [
                 (dt, typ)
                 for dt, typ, *_ in engine.execute(
                     "SELECT DISTINCT cdr_date, cdr_type FROM etl.etl_records;"
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                     engine,
                 ),
             )
-            for dt, typ in available_dates
+            for dt, typ in available_dates_and_types
         ]
         [fut.result() for fut in wait(init_futures).done]
         calls_fut = tp.submit(
