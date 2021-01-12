@@ -119,11 +119,12 @@ if __name__ == "__main__":
             available_dates = [
                 dt
                 for dt, *_ in engine.execute(
-                    "SELECT DISTINCT cdr_date FROM etl.etl_records;"
+                    "select cdr_date from etl.etl_records group by cdr_date;"
                 ).fetchall()
             ]
         init_futures = [locations_fut, subscribers_fut]
         [fut.result() for fut in wait(init_futures).done]
+
         init_futures = [
             tp.submit(
                 do_exec,
@@ -136,17 +137,7 @@ if __name__ == "__main__":
             for dt in available_dates
         ]
         [fut.result() for fut in wait(init_futures).done]
-        init_futures = [
-            tp.submit(
-                do_exec,
-                (
-                    f"""CREATE TABLE interactions.subscriber_sightings_{dt.strftime("%Y%m%d")} PARTITION OF interactions.subscriber_sightings FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
-                    f"Adding sightings partition for {dt}.",
-                    engine,
-                ),
-            )
-            for dt in available_dates
-        ]
+
         [fut.result() for fut in wait(init_futures).done]
         with engine.begin():
             available_dates = [
@@ -396,41 +387,38 @@ INSERT INTO interactions.calls (event_id, date_dim_id, called_subscriber_id, cal
             fut.result()
             for fut in wait([mds_fut, topup_fut, calls_fut, sms_fut, geoms_fut]).done
         ]
-        sightings_futures = [
-            tp.submit(
-                do_exec,
-                (
-                    """INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
-        SELECT event_id, subscriber_id, location_id, time_dim_id, date_dim_id, event_timestamp FROM interactions.event_supertable;""",
-                    "Populating sightings from supertable",
-                    engine,
-                ),
+        sightings_futures = []
+        for dt in available_dates:
+            table_name_date = dt.strftime("%Y%m%d")
+            table_name = f"subscriber_sightings_{table_name_date}"
+            table_d_id_start = dt.strftime("%Y%m%d")
+            table_d_id_end = (dt + datetime.timedelta(days=1)).strftime("%Y%m%d")
+            sightings_futures.append(
+                tp.submit(
+                    do_exec,
+                    (
+                        f"""CREATE TABLE interactions.{table_name} AS
+            SELECT nextval('interactions.subscriber_sightings_sighting_id_seq'::regclass) as sighting_id, event_id, subscriber_id, location_id, time_dim_id, date_dim_id, event_timestamp as sighting_timestamp FROM interactions.event_supertable_{table_name_date}
+            UNION
+            SELECT nextval('interactions.subscriber_sightings_sighting_id_seq'::regclass) as sighting_id, event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp as sighting_timestamp
+                FROM interactions.event_supertable_{table_name_date} NATURAL JOIN interactions.calls_{table_name_date}
+            UNION
+            SELECT nextval('interactions.subscriber_sightings_sighting_id_seq'::regclass) as sighting_id, event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp as sighting_timestamp
+            FROM interactions.event_supertable_{table_name_date} NATURAL JOIN interactions.sms_{table_name_date};
+            ALTER TABLE interactions.{table_name} ADD CONSTRAINT d_{table_name} CHECK (date_dim_id >= {table_d_id_start} AND date_dim_id < {table_d_id_end});
+            ALTER TABLE interactions.{table_name} ADD CONSTRAINT {table_name}_date_dim_id_fkey FOREIGN KEY (date_dim_id) REFERENCES d_date(date_dim_id);
+            ALTER TABLE interactions.{table_name} ADD CONSTRAINT {table_name}_event_id_date_dim_id_fkey FOREIGN KEY (event_id, date_dim_id) REFERENCES interactions.event_supertable(event_id, date_dim_id);
+            ALTER TABLE interactions.{table_name} ADD CONSTRAINT {table_name}_location_id_fkey FOREIGN KEY (location_id) REFERENCES interactions.locations(location_id);
+            ALTER TABLE interactions.{table_name} ADD CONSTRAINT {table_name}_time_dim_id_fkey FOREIGN KEY (time_dim_id) REFERENCES d_time(time_dim_id);
+            ALTER TABLE interactions.{table_name} ADD CONSTRAINT {table_name}_pkey PRIMARY KEY(sighting_id, date_dim_id);
+            ALTER TABLE interactions.{table_name} ALTER COLUMN date_dim_id SET NOT NULL;
+            ALTER TABLE interactions.{table_name} ALTER COLUMN sighting_timestamp SET NOT NULL;
+            ALTER TABLE interactions.{table_name} ALTER COLUMN SET DEFAULT nextval('interactions.subscriber_sightings_sighting_id_seq'::regclass);
+            ALTER TABLE interactions.subscriber_sightings ATTACH PARTITION interactions.{table_name} FOR VALUES FROM ({table_d_id_start}) TO ({table_d_id_end});""",
+                        f"Populate sightings for {dt}.",
+                        engine,
+                    ),
+                )
             )
-        ]
-        sightings_futures = [
-            *sightings_futures,
-            tp.submit(
-                do_exec,
-                (
-                    """INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
-        SELECT event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp
-            FROM interactions.event_supertable NATURAL JOIN interactions.calls;""",
-                    "Populating sightings from call counterparties",
-                    engine,
-                ),
-            ),
-        ]
-        sightings_futures = [
-            *sightings_futures,
-            tp.submit(
-                do_exec,
-                (
-                    """INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
-        SELECT event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp
-            FROM interactions.event_supertable NATURAL JOIN interactions.sms;""",
-                    "Populating sightings from sms counterparties",
-                    engine,
-                ),
-            ),
-        ]
+
         [fut.result() for fut in wait(sightings_futures).done]
