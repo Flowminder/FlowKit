@@ -129,7 +129,7 @@ if __name__ == "__main__":
             tp.submit(
                 do_exec,
                 (
-                    f"""CREATE TABLE interactions.events_supertable_{dt.strftime("%Y%m%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
+                    f"""CREATE TABLE interactions.event_supertable_{dt.strftime("%Y%m%d")} PARTITION OF interactions.event_supertable FOR VALUES FROM ({dt.strftime("%Y%m%d")}) TO ({(dt + datetime.timedelta(days=1)).strftime("%Y%m%d")});""",
                     f"Adding events partition for {dt}.",
                     engine,
                 ),
@@ -413,7 +413,7 @@ INSERT INTO interactions.calls (event_id, date_dim_id, called_subscriber_id, cal
             ALTER TABLE interactions.{table_name} ADD CONSTRAINT {table_name}_pkey PRIMARY KEY(sighting_id, date_dim_id);
             ALTER TABLE interactions.{table_name} ALTER COLUMN date_dim_id SET NOT NULL;
             ALTER TABLE interactions.{table_name} ALTER COLUMN sighting_timestamp SET NOT NULL;
-            ALTER TABLE interactions.{table_name} ALTER COLUMN sighting_id SET DEFAULT nextval('interactions.subscriber_sightings_sighting_id_seq'::regclass);
+            ALTER TABLE interactions.{table_name} ALTER COLUMN sighting_idx SET DEFAULT nextval('interactions.subscriber_sightings_sighting_id_seq'::regclass);
             ALTER TABLE interactions.subscriber_sightings ATTACH PARTITION interactions.{table_name} FOR VALUES FROM ({table_d_id_start}) TO ({table_d_id_end});""",
                         f"Populate sightings for {dt}.",
                         engine,
