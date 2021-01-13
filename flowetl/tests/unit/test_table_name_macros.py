@@ -26,5 +26,6 @@ def test_macros():
         final_table="events.TEST_TYPE_DATE_STAMP",
         extract_table="etl.extract_TEST_TYPE_DATE_STAMP",
         staging_table="etl.stg_TEST_TYPE_DATE_STAMP",
+        cdr_type="TEST_TYPE",
         **test_context,
     )
