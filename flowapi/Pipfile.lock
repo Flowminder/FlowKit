@@ -195,11 +195,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:81c69dd84a87b8e8b3ebf06ef5dd92836a8238f0ac65ded3d86befb8ba9acfeb",
-                "sha256:e3f317d6d64d15ce589f49e4f5057947259fa35332d169e62cb060e9997189e4"
+                "sha256:5ba1e719c521080abd698ff5781a2331e34ef50fc1c89a50960538115a896a9a",
+                "sha256:8007c10f81566920f8ae12c0e26e146f94ca70506da964b5a727ad610aa1d821"
             ],
             "index": "pypi",
-            "version": "==0.11.1"
+            "version": "==0.11.2"
         },
         "hyperframe": {
             "hashes": [
@@ -325,7 +325,7 @@
             "hashes": [
                 "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==0.17.3"
         },
         "python-rapidjson": {
