@@ -11,9 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- FlowETL QA checks with template sections conditional on the `cdr_type` argument now render correctly. [#3479](https://github.com/Flowminder/FlowKit/issues/3479)
 
 ### Removed
+
+## [1.14.5]
+### Fixed
+- FlowETL QA checks with template sections conditional on the `cdr_type` argument now render correctly. [#3479](https://github.com/Flowminder/FlowKit/issues/3479)
 
 ## [1.14.4]
 ### Fixed
@@ -862,7 +865,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.4...master
+
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.5...master
+[1.14.5]: https://github.com/Flowminder/FlowKit/compare/1.14.4...1.14.5
 [1.14.4]: https://github.com/Flowminder/FlowKit/compare/1.14.3...1.14.4
 [1.14.3]: https://github.com/Flowminder/FlowKit/compare/1.14.2...1.14.3
 [1.14.2]: https://github.com/Flowminder/FlowKit/compare/1.14.1...1.14.2
