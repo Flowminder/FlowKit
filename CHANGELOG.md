@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- FlowETL QA checks with template sections conditional on the `cdr_type` argument now render correctly. [#3479](https://github.com/Flowminder/FlowKit/issues/3479)
 
 ### Removed
 

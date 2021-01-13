@@ -34,6 +34,7 @@ class TableNameMacrosMixin:
             final_table=final_table,
             extract_table=extract_table,
             staging_table=staging_table,
+            cdr_type=cdr_type,
             **context,
         )
         super().render_template_fields(context, jinja_env=jinja_env)
