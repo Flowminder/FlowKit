@@ -97,6 +97,23 @@ def test_additional_checks_collected_in_subdirs(tmpdir):
     assert len(check_operators) > len(qa_checks)
 
 
+def test_additional_checks_collected_if_specified(tmpdir):
+    from airflow import DAG
+    from flowetl.util import get_qa_checks
+
+    Path(tmpdir / "qa_checks").mkdir(parents=True)
+    Path(tmpdir / "qa_checks" / "DUMMY_CHECK.sql").touch()
+    check_operators = get_qa_checks(
+        dag=DAG(
+            "DUMMY_DAG",
+            start_date=datetime.now(),
+        ),
+        additional_qa_check_paths=[str(tmpdir)],
+    )
+
+    assert len(check_operators) > len(qa_checks)
+
+
 def test_module_path_added_to_dag_template_locations():
     from airflow import DAG
     from flowetl.util import get_qa_checks

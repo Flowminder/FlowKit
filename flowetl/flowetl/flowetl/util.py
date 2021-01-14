@@ -9,11 +9,16 @@ from typing import Callable, Dict, Iterable, List, Optional, Union
 from pendulum import Interval
 
 
-def get_qa_checks(*, dag: Optional["DAG"] = None) -> List["QACheckOperator"]:
+def get_qa_checks(
+    *,
+    dag: Optional["DAG"] = None,
+    additional_qa_check_paths: Optional[List[str]] = None,
+) -> List["QACheckOperator"]:
     """
     Create from .sql files a list of QACheckOperators which are applicable for this dag.
-    Adds all the 'default' checks from this package (see the qa_checks module), and any
-    found under <dag_folder>/qa_checks or additionally added template search paths.
+    Adds all the 'default' checks from this package (see the qa_checks module), any
+    found under <dag_folder>/qa_checks or additionally added template search paths, and any found
+    under additional_qa_check_paths.
 
     CDR type-specific QA checks found under qa_checks/<cdr_type> will also be added if
     they match the CDR type set for the dag.
@@ -22,6 +27,8 @@ def get_qa_checks(*, dag: Optional["DAG"] = None) -> List["QACheckOperator"]:
     ----------
     dag : DAG
         The DAG to add operators to. May be None, if called within a DAG context manager.
+    additional_qa_check_paths : list of str
+        Additional fully qualified paths to search for qa checks
 
     Returns
     -------
@@ -37,6 +44,7 @@ def get_qa_checks(*, dag: Optional["DAG"] = None) -> List["QACheckOperator"]:
     # Add the default QA checks to the template path
     default_checks = Path(__file__).parent / "qa_checks"
     dag.template_searchpath = [
+        *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
         settings.DAGS_FOLDER,
         str(default_checks),
@@ -96,6 +104,7 @@ def create_dag(
     escape: str = '"',
     encoding: Optional[str] = None,
     use_file_flux_sensor: bool = True,
+    additional_qa_check_paths: Optional[List[str]] = None,
     **kwargs,
 ) -> "DAG":
     """
@@ -167,6 +176,8 @@ def create_dag(
         When set to True, uses a check on the last modification time of the file to determine
         whether the file is in flux.  Set to False to perform a slower check based on the
         number of rows in the mounted table.
+    additional_qa_check_paths : list of str
+        Additional fully qualified paths to search for qa checks
 
     Returns
     -------
@@ -303,6 +314,9 @@ def create_dag(
             add_constraints,
             add_indexes,
         ] >> analyze >> attach >> latest_only >> analyze_parent
-        attach >> [update_records, *get_qa_checks()]
+        attach >> [
+            update_records,
+            *get_qa_checks(additional_qa_check_paths=additional_qa_check_paths),
+        ]
     globals()[dag_id] = dag
     return dag

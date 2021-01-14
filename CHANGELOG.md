@@ -7,10 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- A list of additional paths to FlowETL QA checks can now be supplied to `create_dag` and `get_qa_checks`. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
 
 ### Changed
 
 ### Fixed
+- Additional FlowETL QA checks in the dags folder are now picked up. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
 
 ### Removed
 
