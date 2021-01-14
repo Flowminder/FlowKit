@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import os
 
 from datetime import datetime
 from pathlib import Path
@@ -56,6 +57,18 @@ def test_additional_checks_collected(tmpdir):
     check_operators = get_qa_checks(
         dag=DAG("DUMMY_DAG", start_date=datetime.now(), template_searchpath=str(tmpdir))
     )
+
+    assert len(check_operators) > len(qa_checks)
+
+
+def test_additional_checks_collected_from_home():
+    from airflow import DAG, settings
+    from flowetl.util import get_qa_checks
+
+    checks_folder = Path(settings.DAGS_FOLDER) / "qa_checks"
+    checks_folder.mkdir(parents=True)
+    (checks_folder / "DUMMY_CHECK.sql").touch()
+    check_operators = get_qa_checks(dag=DAG("DUMMY_DAG", start_date=datetime.now()))
 
     assert len(check_operators) > len(qa_checks)
 
