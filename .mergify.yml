@@ -5,7 +5,6 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - label=ready-to-merge
       - status-success=run_build_pipeline
-      - status-success=Travis CI - Pull Request
     actions:
       merge:
         method: merge
@@ -13,7 +12,6 @@ pull_request_rules:
   - name: automatic merge for Dependabot pull requests on master
     conditions:
       - author=dependabot[bot]
-      - status-success=Travis CI - Pull Request
       - status-success=run_build_pipeline
       - base=master
     actions:
