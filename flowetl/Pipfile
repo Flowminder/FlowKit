@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.14"}
 click = "*"
+apache-airflow-upgrade-check = "*"
 
 [dev-packages]
 structlog = "*"
