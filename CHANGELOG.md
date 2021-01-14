@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - A list of additional paths to FlowETL QA checks can now be supplied to `create_dag` and `get_qa_checks`. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
+- FlowETL docker container now includes the upgrade check script for Airflow 2.0.0.
 
 ### Changed
 
