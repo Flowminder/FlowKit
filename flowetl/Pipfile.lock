@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "fd227d41990af6bb5e525cbe6229f23e54ce36ca5bbb33b7e7fe84fbe97601ad"
+            "sha256": "faa92b601e61c6229e1fa29ca323336410e27b5aa78b00101991ac98208e1f9a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -35,6 +35,14 @@
             ],
             "index": "pypi",
             "version": "==1.10.14"
+        },
+        "apache-airflow-upgrade-check": {
+            "hashes": [
+                "sha256:8b99a12b07e6a7129fe5f60dd7c45e0700e130e56eb007d6155e7a50566af4c8",
+                "sha256:f7546d156ab1c112e521fb6739e2319fb5812d31c1501b0c3beeaf6cbd0a2758"
+            ],
+            "index": "pypi",
+            "version": "==1.1.0"
         },
         "apispec": {
             "extras": [
