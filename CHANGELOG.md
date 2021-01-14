@@ -7,15 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- A list of additional paths to FlowETL QA checks can now be supplied to `create_dag` and `get_qa_checks`. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
-- FlowETL docker container now includes the upgrade check script for Airflow 2.0.0.
 
 ### Changed
 
 ### Fixed
-- Additional FlowETL QA checks in the dags folder are now picked up. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
 
 ### Removed
+
+## [1.14.6]
+
+### Added
+- A list of additional paths to FlowETL QA checks can now be supplied to `create_dag` and `get_qa_checks`. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
+- FlowETL docker container now includes the upgrade check script for Airflow 2.0.0.
+
+### Fixed
+- Additional FlowETL QA checks in the dags folder are now picked up. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
+
 
 ## [1.14.5]
 ### Fixed
@@ -869,7 +876,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added Python 3.6 support for FlowClient
 
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.5...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.6...master
+[1.14.6]: https://github.com/Flowminder/FlowKit/compare/1.14.5...1.14.6
 [1.14.5]: https://github.com/Flowminder/FlowKit/compare/1.14.4...1.14.5
 [1.14.4]: https://github.com/Flowminder/FlowKit/compare/1.14.3...1.14.4
 [1.14.3]: https://github.com/Flowminder/FlowKit/compare/1.14.2...1.14.3
