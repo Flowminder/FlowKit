@@ -38,6 +38,7 @@ def get_qa_checks(*, dag: Optional["DAG"] = None) -> List["QACheckOperator"]:
     default_checks = Path(__file__).parent / "qa_checks"
     dag.template_searchpath = [
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
+        settings.DAGS_FOLDER,
         str(default_checks),
     ]
     jinja_env = dag.get_template_env()
