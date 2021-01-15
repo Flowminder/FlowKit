@@ -9,7 +9,7 @@
     "@material-ui/pickers": "^3.2.10",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
-    "generate-password": "^1.5.1",
+    "generate-password": "^1.6.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-qr-svg": "^2.3.0",
