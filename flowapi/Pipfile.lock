@@ -128,10 +128,10 @@
         },
         "chardet": {
             "hashes": [
-                "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae",
-                "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
+                "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa",
+                "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"
             ],
-            "version": "==3.0.4"
+            "version": "==4.0.0"
         },
         "click": {
             "hashes": [
@@ -282,11 +282,11 @@
                 "osv"
             ],
             "hashes": [
-                "sha256:195a2df808548a333c4076f00269370eee927287afd238bb3d4c78db45ccb444",
-                "sha256:f7e98b0f7e8ef0dd581c40d8a3e869e15e74b08026b862c3212447f8aa2426a7"
+                "sha256:3d5d8d25721f50922a30f6d49734f92da524b12286956a961e7f5f1f4a61f6eb",
+                "sha256:b7b4f13c1a2b4fd25e848898e839cd2b3c16c842c736ed2a6a6b4f252e44ae99"
             ],
             "index": "pypi",
-            "version": "==0.20.0"
+            "version": "==0.20.1"
         },
         "priority": {
             "hashes": [
