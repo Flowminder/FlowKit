@@ -97,3 +97,71 @@ def test_cluster_set_when_field_given():
         cluster_field="DUMMY_FIELD",
     )
     assert "cluster" in dag.task_dict
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        dict(staging_view_sql="DUMMY STAGING SQL", source_table="DUMMY_SOURCE_TABLE"),
+        dict(filename="DUMMY FILE PATTERN", fields=dict(DUMMY_FIELD="DUMMY_TYPE")),
+    ],
+)
+def test_flux_check_can_be_disabled(args):
+    dag = create_dag(
+        dag_id="TEST",
+        cdr_type="TEST",
+        start_date=datetime.now(),
+        extract_sql="DUMMY SQL",
+        use_flux_sensor=False,
+        **args
+    )
+    assert "check_not_in_flux" not in dag.task_dict
+
+
+@pytest.mark.parametrize(
+    "use_flux_sensor, expected_flux_sensor_type",
+    [("file", "FileFluxSensor"), ("table", "TableFluxSensor")],
+)
+def test_choose_flux_sensor_type(use_flux_sensor, expected_flux_sensor_type):
+    dag = create_dag(
+        dag_id="TEST",
+        cdr_type="TEST",
+        start_date=datetime.now(),
+        extract_sql="DUMMY SQL",
+        filename="DUMMY FILE PATTERN",
+        fields=dict(DUMMY_FIELD="DUMMY_TYPE"),
+        use_flux_sensor=use_flux_sensor,
+    )
+    assert (
+        dag.task_dict["check_not_in_flux"].__class__.__name__
+        == expected_flux_sensor_type
+    )
+
+
+def test_invalid_flux_sensor_error():
+    with pytest.raises(
+        ValueError, match="File flux sensor can only be used when loading from a file.",
+    ):
+        dag = create_dag(
+            dag_id="TEST",
+            cdr_type="TEST",
+            start_date=datetime.now(),
+            extract_sql="DUMMY SQL",
+            staging_view_sql="DUMMY STAGING SQL",
+            source_table="DUMMY_SOURCE_TABLE",
+            use_flux_sensor="file",
+        )
+
+
+def test_use_file_flux_sensor_deprecated():
+    with pytest.deprecated_call():
+        dag = create_dag(
+            dag_id="TEST",
+            cdr_type="TEST",
+            start_date=datetime.now(),
+            extract_sql="DUMMY SQL",
+            filename="DUMMY FILE PATTERN",
+            fields=dict(DUMMY_FIELD="DUMMY_TYPE"),
+            use_file_flux_sensor=False,
+        )
+    assert dag.task_dict["check_not_in_flux"].__class__.__name__ == "TableFluxSensor"
