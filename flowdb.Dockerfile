@@ -17,7 +17,7 @@ FROM postgres:12@sha256:b871ab27bc5660a0a7fcc73c8b42a96b1ca16ee0823a136779629da2
 
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=3.1.0+dfsg-1.pgdg100+1
+ARG POSTGIS_VERSION=3.1.1+dfsg-1.pgdg100+1
 ARG PGROUTING_VERSION=3.1.0-2.pgdg100+1
 ARG PG_MEDIAN_UTILS_VERSION=0.0.7
 ARG OGR_FDW_VERSION=1.0.12-2.pgdg100+1
@@ -89,18 +89,18 @@ RUN apt-get update \
 # TDS_FDW
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+        apt-get install -y --no-install-recommends \
         libsybdb5 freetds-dev freetds-common gnupg gcc wget && \
-    wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
-    tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
-    rm v${TDS_FDW_VERSION}.tar.gz && \
-    cd tds_fdw-${TDS_FDW_VERSION}/ && \
-    make USE_PGXS=1 && \
-    make USE_PGXS=1 install && \
-    cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
-    apt-get remove -y gnupg gcc && \
-    apt purge -y --auto-remove  &&\
-    rm -rf /var/lib/apt/lists/*
+        wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
+        tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
+        rm v${TDS_FDW_VERSION}.tar.gz && \
+        cd tds_fdw-${TDS_FDW_VERSION}/ && \
+        make USE_PGXS=1 && \
+        make USE_PGXS=1 install && \
+        cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
+        apt-get remove -y gnupg gcc && \
+        apt purge -y --auto-remove  &&\
+        rm -rf /var/lib/apt/lists/*
 
 
 
