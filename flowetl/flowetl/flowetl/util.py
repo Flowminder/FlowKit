@@ -87,6 +87,45 @@ def get_qa_checks(
     ]
 
 
+def choose_flux_sensor(
+    use_flux_sensor: Union[bool, str], is_file_dag: bool
+) -> FluxSensorType:
+    """
+    Choose which flux sensor to use.
+
+    Parameters
+    ----------
+    use_flux_sensor : bool or str
+        Options:
+
+        - 'file': check the last modification time of the file,
+        - 'table': check the number of rows in the source table,
+        - True: use 'file' flux sensor when extracting from a file, or 'table' flux sensor when extracting from a table within the database,
+        - False: skip the flux check entirely.
+
+    is_file_dag : bool
+        True if loading from a file, or False if extracting from a table within the database
+
+    Returns
+    -------
+    FluxSensorType
+        Type of flux check to use
+    """
+    if isinstance(use_flux_sensor, str):
+        flux_sensor_type = FluxSensorType(use_flux_sensor)
+    elif use_flux_sensor:
+        flux_sensor_type = (
+            FluxSensorType("file") if is_file_dag else FluxSensorType("table")
+        )
+    else:
+        flux_sensor_type = FluxSensorType("no_check")
+
+    if flux_sensor_type == FluxSensorType.FILE and not is_file_dag:
+        raise ValueError("File flux sensor can only be used when loading from a file.")
+
+    return flux_sensor_type
+
+
 def create_dag(
     *,
     dag_id: str,
@@ -222,25 +261,13 @@ def create_dag(
     from flowetl.sensors.table_flux_sensor import TableFluxSensor
 
     # Choose flux sensor
-    if isinstance(use_flux_sensor, str):
-        flux_sensor_type = FluxSensorType(use_flux_sensor)
-    elif use_flux_sensor:
-        if use_file_flux_sensor is not None:
-            flux_sensor_type = FluxSensorType(
-                "file" if use_file_flux_sensor else "table"
-            )
-            warnings.warn(
-                f"The 'use_file_flux_sensor' argument is deprecated. Set use_flux_sensor='{flux_sensor_type.value}' instead.",
-                DeprecationWarning,
-            )
-        elif filename is not None:
-            flux_sensor_type = FluxSensorType("file")
-        else:
-            flux_sensor_type = FluxSensorType("table")
-    else:
-        flux_sensor_type = FluxSensorType("no_check")
-    if filename is None and flux_sensor_type == FluxSensorType.FILE:
-        raise ValueError("File flux sensor can only be used when loading from a file.")
+    if use_file_flux_sensor is not None:
+        message = "The 'use_file_flux_sensor' argument is deprecated."
+        if use_flux_sensor == True:
+            use_flux_sensor = "file" if use_file_flux_sensor else "table"
+            message = f"{message} Set use_flux_sensor='{use_flux_sensor}' instead."
+        warnings.warn(message, DeprecationWarning)
+    flux_sensor_type = choose_flux_sensor(use_flux_sensor, filename is not None)
 
     args = {
         "owner": "airflow",
