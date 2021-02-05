@@ -107,6 +107,9 @@ def test_cluster_set_when_field_given():
     ],
 )
 def test_flux_check_can_be_disabled(args):
+    """
+    Flux check task is not present when use_flux_sensor=True
+    """
     dag = create_dag(
         dag_id="TEST",
         cdr_type="TEST",
@@ -123,6 +126,9 @@ def test_flux_check_can_be_disabled(args):
     [("file", "FileFluxSensor"), ("table", "TableFluxSensor")],
 )
 def test_choose_flux_sensor_type(use_flux_sensor, expected_flux_sensor_type):
+    """
+    Type of flux check is set according to the 'use_flux_check' argument
+    """
     dag = create_dag(
         dag_id="TEST",
         cdr_type="TEST",
@@ -139,6 +145,9 @@ def test_choose_flux_sensor_type(use_flux_sensor, expected_flux_sensor_type):
 
 
 def test_invalid_flux_sensor_error():
+    """
+    Attempting to use file flux sensor when not extracting from a file raises an error
+    """
     with pytest.raises(
         ValueError, match="File flux sensor can only be used when loading from a file.",
     ):
@@ -154,7 +163,12 @@ def test_invalid_flux_sensor_error():
 
 
 def test_use_file_flux_sensor_deprecated():
-    with pytest.deprecated_call():
+    """
+    Setting 'use_file_flux_sensor=False' produces deprecation warning and uses TableFluxSensor
+    """
+    with pytest.deprecated_call(
+        match="The 'use_file_flux_sensor' argument is deprecated. Set use_flux_sensor='table' instead."
+    ):
         dag = create_dag(
             dag_id="TEST",
             cdr_type="TEST",

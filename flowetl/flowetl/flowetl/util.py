@@ -226,12 +226,13 @@ def create_dag(
         flux_sensor_type = FluxSensorType(use_flux_sensor)
     elif use_flux_sensor:
         if use_file_flux_sensor is not None:
-            flux_sensor_type_string = "file" if use_file_flux_sensor else "table"
+            flux_sensor_type = FluxSensorType(
+                "file" if use_file_flux_sensor else "table"
+            )
             warnings.warn(
-                f"The 'use_file_flux_sensor' argument is deprecated. Set use_flux_sensor='{flux_sensor_type_string}' instead.",
+                f"The 'use_file_flux_sensor' argument is deprecated. Set use_flux_sensor='{flux_sensor_type.value}' instead.",
                 DeprecationWarning,
             )
-            flux_sensor_type = FluxSensorType(flux_sensor_type_string)
         elif filename is not None:
             flux_sensor_type = FluxSensorType("file")
         else:
