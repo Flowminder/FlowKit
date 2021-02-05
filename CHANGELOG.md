@@ -7,8 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowETL flux check can be turned off by setting `use_flux_check=False` in `create_dag`. [#3603](https://github.com/Flowminder/FlowKit/issues/3603)
 
 ### Changed
+- The `use_file_flux_check` argument to `create_dag` is deprecated. To use the table-based flux check in a file-based DAG, set `use_flux_check='table'`.
 
 ### Fixed
 
