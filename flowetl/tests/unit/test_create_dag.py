@@ -149,7 +149,8 @@ def test_invalid_flux_sensor_error():
     Attempting to use file flux sensor when not extracting from a file raises an error
     """
     with pytest.raises(
-        ValueError, match="File flux sensor can only be used when loading from a file.",
+        ValueError,
+        match="File flux sensor can only be used when loading from a file.",
     ):
         dag = create_dag(
             dag_id="TEST",
