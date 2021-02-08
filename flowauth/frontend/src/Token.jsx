@@ -47,13 +47,23 @@ class Token extends React.Component {
   render() {
     const { name, expiry, token, classes } = this.props;
     const { isOpen, copySuccess } = this.state;
+    const isExpired = Date.parse(expiry) < Date.parse(new Date());
     return (
       <React.Fragment>
         <Grid item xs={2}>
-          <Typography component="p">{name}</Typography>
+          <Typography component="p" className={isExpired ? "expired" : ""}>
+            {name}{" "}
+            {isExpired ? (
+              <span title="This token has expired">&nbsp;⏰</span>
+            ) : (
+              ""
+            )}
+          </Typography>
         </Grid>
         <Grid item xs={3}>
-          <Typography component="p">{expiry}</Typography>
+          <Typography component="p" className={isExpired ? "expired" : ""}>
+            {expiry}
+          </Typography>
         </Grid>
         <Grid item xs={7}>
           <Tooltip title={copySuccess} placement="bottom">

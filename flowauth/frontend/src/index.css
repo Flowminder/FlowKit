@@ -7,3 +7,12 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+p.expired {
+  font-style: italic;
+  color: #ccc;
+}
+
+p.expired span {
+  font-style: normal;
+}
