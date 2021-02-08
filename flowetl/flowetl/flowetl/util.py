@@ -2,11 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import warnings
+
 from datetime import datetime, timedelta
+from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
 from pendulum import Interval
+
+
+class FluxSensorType(Enum):
+    """
+    Valid flux sensor types
+    """
+
+    FILE: str = "file"
+    TABLE: str = "table"
+    NOCHECK: str = "no_check"
 
 
 def get_qa_checks(
@@ -74,6 +87,45 @@ def get_qa_checks(
     ]
 
 
+def choose_flux_sensor(
+    use_flux_sensor: Union[bool, str], is_file_dag: bool
+) -> FluxSensorType:
+    """
+    Choose which flux sensor to use.
+
+    Parameters
+    ----------
+    use_flux_sensor : bool or str
+        Options:
+
+        - 'file': check the last modification time of the file,
+        - 'table': check the number of rows in the source table,
+        - True: use 'file' flux sensor when extracting from a file, or 'table' flux sensor when extracting from a table within the database,
+        - False: skip the flux check entirely.
+
+    is_file_dag : bool
+        True if loading from a file, or False if extracting from a table within the database
+
+    Returns
+    -------
+    FluxSensorType
+        Type of flux check to use
+    """
+    if isinstance(use_flux_sensor, str):
+        flux_sensor_type = FluxSensorType(use_flux_sensor)
+    elif use_flux_sensor:
+        flux_sensor_type = (
+            FluxSensorType("file") if is_file_dag else FluxSensorType("table")
+        )
+    else:
+        flux_sensor_type = FluxSensorType("no_check")
+
+    if flux_sensor_type == FluxSensorType.FILE and not is_file_dag:
+        raise ValueError("File flux sensor can only be used when loading from a file.")
+
+    return flux_sensor_type
+
+
 def create_dag(
     *,
     dag_id: str,
@@ -90,6 +142,7 @@ def create_dag(
     flux_check_poke_interval: int = 60,
     flux_check_wait_interval: int = 60,
     flux_check_timeout: int = 60 * 60 * 24 * 7,
+    use_flux_sensor: Union[bool, str] = True,
     source_table: Optional[str] = None,
     staging_view_sql: Optional[str] = None,
     cluster_field: Optional[str] = None,
@@ -103,8 +156,8 @@ def create_dag(
     quote: str = '"',
     escape: str = '"',
     encoding: Optional[str] = None,
-    use_file_flux_sensor: bool = True,
     additional_qa_check_paths: Optional[List[str]] = None,
+    use_file_flux_sensor: None = None,
     **kwargs,
 ) -> "DAG":
     """
@@ -142,6 +195,12 @@ def create_dag(
         Number of seconds to monitor data when checking for flux
     flux_check_timeout : int, default 604800
         Maximum number of seconds to keep checking before failing
+    use_flux_sensor : bool or str, default True
+        Set to 'file' to use a check on the last modification time of the file to determine
+        whether the file is in flux (only available when loading data from a file). Set to 'table'
+        to perform a slower check based on the number of rows in the mounted table, or set to False
+        to skip the flux check entirely. Default (True) is to use 'file' flux sensor when extracting from a file,
+        or 'table' flux sensor when extracting from a table within the database.
     source_table : str or None
         If extracting from a table within the database (e.g. when using a FDW to connect to another db),
         the schema qualified name of the table.
@@ -172,10 +231,6 @@ def create_dag(
         When loading from files, you may specify the escape character
     encoding : str or None
         Optionally specify file encoding when loading from files.
-    use_file_flux_sensor : bool, default True
-        When set to True, uses a check on the last modification time of the file to determine
-        whether the file is in flux.  Set to False to perform a slower check based on the
-        number of rows in the mounted table.
     additional_qa_check_paths : list of str
         Additional fully qualified paths to search for qa checks
 
@@ -205,6 +260,15 @@ def create_dag(
     from flowetl.sensors.file_flux_sensor import FileFluxSensor
     from flowetl.sensors.table_flux_sensor import TableFluxSensor
 
+    # Choose flux sensor
+    if use_file_flux_sensor is not None:
+        message = "The 'use_file_flux_sensor' argument is deprecated."
+        if use_flux_sensor == True:
+            use_flux_sensor = "file" if use_file_flux_sensor else "table"
+            message = f"{message} Set use_flux_sensor='{use_flux_sensor}' instead."
+        warnings.warn(message, DeprecationWarning)
+    flux_sensor_type = choose_flux_sensor(use_flux_sensor, filename is not None)
+
     args = {
         "owner": "airflow",
         "retries": retries,
@@ -229,8 +293,7 @@ def create_dag(
     ) as dag:
         if staging_view_sql is not None and source_table is not None:
             create_staging_view = CreateStagingViewOperator(
-                task_id="create_staging_view",
-                sql=staging_view_sql,
+                task_id="create_staging_view", sql=staging_view_sql
             )
             extract = ExtractFromViewOperator(
                 task_id="extract", sql=extract_sql, pool="postgres_etl"
@@ -261,7 +324,10 @@ def create_dag(
             poke_interval=data_present_poke_interval,
             timeout=data_present_timeout,
         )
-        if filename is not None and use_file_flux_sensor:
+
+        create_staging_view >> check_not_empty
+
+        if flux_sensor_type == FluxSensorType.FILE:
             check_not_in_flux = FileFluxSensor(
                 task_id="check_not_in_flux",
                 filename=filename,
@@ -270,7 +336,8 @@ def create_dag(
                 flux_check_interval=flux_check_wait_interval,
                 timeout=flux_check_timeout,
             )
-        else:
+            check_not_empty >> check_not_in_flux >> extract
+        elif flux_sensor_type == FluxSensorType.TABLE:
             check_not_in_flux = TableFluxSensor(
                 task_id="check_not_in_flux",
                 mode="reschedule",
@@ -278,30 +345,26 @@ def create_dag(
                 flux_check_interval=flux_check_wait_interval,
                 timeout=flux_check_timeout,
             )
+            check_not_empty >> check_not_in_flux >> extract
+        else:
+            check_not_empty >> extract
 
         add_constraints = AddConstraintsOperator(
             task_id="add_constraints", pool="postgres_etl"
         )
         add_indexes = CreateIndexesOperator(
-            task_id="add_indexes",
-            index_columns=indexes,
-            pool="postgres_etl",
+            task_id="add_indexes", index_columns=indexes, pool="postgres_etl"
         )
         attach = AttachOperator(task_id="attach")
         analyze = AnalyzeOperator(
-            task_id="analyze",
-            target="{{ extract_table }}",
-            pool="postgres_etl",
+            task_id="analyze", target="{{ extract_table }}", pool="postgres_etl"
         )
         latest_only = LatestOnlyOperator(task_id="analyze_parent_only_for_new")
         analyze_parent = AnalyzeOperator(
-            task_id="analyze_parent",
-            target="{{ parent_table }}",
-            pool="postgres_etl",
+            task_id="analyze_parent", target="{{ parent_table }}", pool="postgres_etl"
         )
         update_records = UpdateETLTableOperator(task_id="update_records")
 
-        create_staging_view >> check_not_empty >> check_not_in_flux >> extract
         from_stage = extract
 
         if cluster_field is not None:
