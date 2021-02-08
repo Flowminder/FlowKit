@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Improvements to token display in FlowAuth
+
+### Added
 - FlowETL flux check can be turned off by setting `use_flux_sensor=False` in `create_dag`. [#3603](https://github.com/Flowminder/FlowKit/issues/3603)
 
 ### Changed
