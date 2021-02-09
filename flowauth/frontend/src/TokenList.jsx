@@ -25,6 +25,7 @@ class TokenList extends React.Component {
   componentDidMount() {
     getMyTokensForServer(this.props.serverID)
       .then((tokens) => {
+        tokens.sort((a, b) => Date.parse(b.expires) - Date.parse(a.expires));
         this.setState({ tokens: tokens });
       })
       .catch((err) => {

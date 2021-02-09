@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - The `use_file_flux_sensor` argument to `create_dag` is deprecated. To use the table-based flux check in a file-based DAG, set `use_flux_sensor='table'`.
+- Improvements to token display in FlowAuth. [#2812](https://github.com/Flowminder/FlowKit/issues/2812)
 
 ### Fixed
 
