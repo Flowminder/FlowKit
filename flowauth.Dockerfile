@@ -19,6 +19,7 @@ COPY ./flowauth/Pipfile* ./
 # Install dependencies required for argon crypto & psycopg2
 RUN apk update && apk add --no-cache curl && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -q -y && \
+    source $HOME/.cargo/env && \
     apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
     libressl-dev libffi-dev mariadb-connector-c-dev && \
     pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
