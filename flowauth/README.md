@@ -4,7 +4,7 @@ Documentation for FlowAuth can be found in the main [FlowKit documentation](http
 
 ## Dev install
 
-You need MySQL client installed on your host machine before you can run the FlowAuth frontend locally.
+You need MySQL client installed on your host machine before you can run the FlowAuth backend locally.
 
 On Mac:
 
