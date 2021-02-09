@@ -17,10 +17,13 @@ WORKDIR /${SOURCE_TREE}/flowauth
 COPY ./flowauth/Pipfile* ./
 
 # Install dependencies required for argon crypto & psycopg2
-RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
+RUN apk update && apk add --no-cache curl && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -q -y && \
+    apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
     libressl-dev libffi-dev mariadb-connector-c-dev && \
     pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
-    apk del build-dependencies && \
+    apk del build-dependencies curl && \
+    ~/.cargo/bin/rustup self uninstall -y &&\
     apk add --no-cache libpq mariadb-connector-c # Required for psycopg2 & mysqlclient
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
