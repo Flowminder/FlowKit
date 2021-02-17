@@ -551,10 +551,13 @@ class Group(db.Model):
 
     def rights(self, server: Server) -> List[str]:
         return [
-            perm.server_capability.capability
-            for perm in self.server_permissions
-            if perm.server_capability.server.id == server.id
-            and perm.server_capability.enabled
+            x.server_capability.capability
+            for x in (
+                GroupServerPermission.query.filter_by(group=self)
+                .join(ServerCapability)
+                .filter_by(server=server, enabled=True)
+                .all()
+            )
         ]
 
     def __repr__(self) -> str:
