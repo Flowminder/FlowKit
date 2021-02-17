@@ -7,15 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.5.0]
+
+### Added
 - FlowETL flux check can be turned off by setting `use_flux_sensor=False` in `create_dag`. [#3603](https://github.com/Flowminder/FlowKit/issues/3603)
 
 ### Changed
 - The `use_file_flux_sensor` argument to `create_dag` is deprecated. To use the table-based flux check in a file-based DAG, set `use_flux_sensor='table'`.
 - Improvements to token display in FlowAuth. [#2812](https://github.com/Flowminder/FlowKit/issues/2812)
-
-### Fixed
-
-### Removed
 
 ## [1.14.6]
 
@@ -879,7 +885,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added Python 3.6 support for FlowClient
 
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.14.6...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.15.0...master
+[1.15.0]: https://github.com/Flowminder/FlowKit/compare/1.14.6...1.15.0
 [1.14.6]: https://github.com/Flowminder/FlowKit/compare/1.14.5...1.14.6
 [1.14.5]: https://github.com/Flowminder/FlowKit/compare/1.14.4...1.14.5
 [1.14.4]: https://github.com/Flowminder/FlowKit/compare/1.14.3...1.14.4
