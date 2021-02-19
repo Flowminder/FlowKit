@@ -37,6 +37,7 @@ TestGroup = namedtuple("TestGroup", ["id", "name"])
 def app(tmpdir):
     """Per test app"""
     db_path = tmpdir / "db.db"
+    print(f"DB path: {db_path}")
 
     app = create_app(
         {
