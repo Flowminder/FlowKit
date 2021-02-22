@@ -55,6 +55,58 @@ def unique_locations_spec(
     )
 
 
+def most_frequent_location_spec(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    hours: Optional[Tuple[int, int]] = None,
+    event_types: Optional[List[str]] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
+) -> dict:
+    """
+    Subscriber level query which retrieves the location most frequently visited by each subscriber
+    in the time period.
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        ISO format dates between which to get locations, e.g. "2016-01-01"
+    hours : tuple of int
+        Hours of the day to include locations from 0-24.
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Most frequent location query specification.
+
+    """
+    return dict(
+        query_kind="most_frequent_location",
+        start_date=start_date,
+        end_date=end_date,
+        hours=hours,
+        aggregation_unit=aggregation_unit,
+        event_types=event_types,
+        subscriber_subset=subscriber_subset,
+        mapping_table=mapping_table,
+        geom_table=geom_table,
+        geom_table_join_column=geom_table_join_column,
+    )
+
+
 def daily_location_spec(
     *,
     date: str,
