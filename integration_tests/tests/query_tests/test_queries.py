@@ -18,6 +18,23 @@ import pytest
     [
         partial(
             flowclient.spatial_aggregate,
+            locations=flowclient.most_frequent_location_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                aggregation_unit="admin3",
+            ),
+        ),
+        partial(
+            flowclient.spatial_aggregate,
+            locations=flowclient.most_frequent_location_spec(
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                hours=(0, 1),
+                aggregation_unit="admin3",
+            ),
+        ),
+        partial(
+            flowclient.spatial_aggregate,
             locations=flowclient.daily_location_spec(
                 date="2016-01-01",
                 aggregation_unit="admin3",
