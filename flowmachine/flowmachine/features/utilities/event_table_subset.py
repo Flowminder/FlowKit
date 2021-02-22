@@ -81,12 +81,14 @@ class EventTableSubset(Query):
         columns=["*"],
         subscriber_identifier="msisdn",
     ):
+        if hours == "all":
+            hours = None
 
-        if hours != "all" and hour_slices is not None:
+        if hours is not None and hour_slices is not None:
             raise ValueError(
                 "The arguments `hours` and `hour_slice` are mutually exclusive."
             )
-        if hours != "all":
+        if hours is not None:
             assert (
                 isinstance(hours, tuple)
                 and len(hours) == 2

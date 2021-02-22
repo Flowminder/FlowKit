@@ -37,16 +37,10 @@ class MostFrequentLocation(BaseLocation, Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    method : str, default 'last'
-        The method by which to calculate the location of the subscriber.
-        This can be either 'most-common' or last. 'most-common' is
-        simply the modal location of the subscribers, whereas 'lsat' is
-        the location of the subscriber at the time of the final call in
-        the data.
     table : str, default 'all'
         schema qualified name of the table which the analysis is
         based upon. If 'all' it will use all tables that contain
-        location data, specified in flowmachine.yml.
+        location data.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -109,35 +103,31 @@ class MostFrequentLocation(BaseLocation, Query):
         Default query method implemented in the
         metaclass Query().
         """
-        subscriber_query = "{} ORDER BY time".format(self.subscriber_locs.get_query())
+        subscriber_query = f"{self.subscriber_locs.get_query()} ORDER BY time"
 
         relevant_columns = ", ".join(self.spatial_unit.location_id_columns)
 
         # Create a table which has the total times each subscriber visited
         # each location
-        times_visited = """
+        times_visited = f"""
         SELECT 
             subscriber_locs.subscriber, 
-            {rc}, 
+            {relevant_columns}, 
             count(*) AS total
-        FROM ({subscriber_locs}) AS subscriber_locs
-        GROUP BY subscriber_locs.subscriber, {rc}
-        """.format(
-            subscriber_locs=subscriber_query, rc=relevant_columns
-        )
+        FROM ({subscriber_query}) AS subscriber_locs
+        GROUP BY subscriber_locs.subscriber, {relevant_columns}
+        """
 
-        sql = """
+        sql = f"""
         SELECT 
             ranked.subscriber, 
-            {rc}
+            {relevant_columns}
         FROM
-             (SELECT times_visited.subscriber, {rc},
+             (SELECT times_visited.subscriber, {relevant_columns},
              row_number() OVER (PARTITION BY times_visited.subscriber
               ORDER BY total DESC) AS rank
              FROM ({times_visited}) AS times_visited) AS ranked
         WHERE rank = 1
-        """.format(
-            times_visited=times_visited, rc=relevant_columns
-        )
+        """
 
         return sql

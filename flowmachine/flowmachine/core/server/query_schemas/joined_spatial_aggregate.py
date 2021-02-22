@@ -24,9 +24,7 @@ from flowmachine.core.server.query_schemas.pareto_interactions import (
     ParetoInteractionsSchema,
 )
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
-from flowmachine.core.server.query_schemas.spatial_aggregate import (
-    InputToSpatialAggregate,
-)
+
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
@@ -39,6 +37,7 @@ from .base_exposed_query import BaseExposedQuery
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 from .base_schema import BaseSchema
+from .reference_location import ReferenceLocationSchema
 
 
 class JoinableMetrics(OneOfSchema):
@@ -86,7 +85,7 @@ class JoinedSpatialAggregateExposed(BaseExposedQuery):
 class JoinedSpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
-    locations = fields.Nested(InputToSpatialAggregate, required=True)
+    locations = fields.Nested(ReferenceLocationSchema, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
     method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
 

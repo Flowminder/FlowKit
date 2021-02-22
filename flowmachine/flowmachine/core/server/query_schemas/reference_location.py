@@ -6,6 +6,9 @@ from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas.daily_location import DailyLocationSchema
 from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
+from flowmachine.core.server.query_schemas.most_frequent_location import (
+    MostFrequentLocationSchema,
+)
 
 
 class ReferenceLocationSchema(OneOfSchema):
@@ -13,4 +16,5 @@ class ReferenceLocationSchema(OneOfSchema):
     type_schemas = {
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
+        "most_frequent_location": MostFrequentLocationSchema,
     }
