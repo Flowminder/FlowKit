@@ -70,11 +70,13 @@ class MostFrequentLocationSchema(AggregationUnitMixin, BaseQueryWithSamplingSche
         validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
         required=False,
         missing=None,
+        allow_none=True,
     )
     end_hour = fields.Integer(
         validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
         required=False,
         missing=None,
+        allow_none=True,
     )
     event_types = EventTypes()
     subscriber_subset = SubscriberSubset()

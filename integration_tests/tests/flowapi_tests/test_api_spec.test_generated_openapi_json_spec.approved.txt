@@ -1426,9 +1426,15 @@
             ],
             "type": "string"
           },
+          "end_date": {
+            "format": "date-time",
+            "type": "string"
+          },
           "end_hour": {
+            "default": null,
             "maximum": 24,
             "minimum": 0,
+            "nullable": true,
             "type": "integer"
           },
           "event_types": {
@@ -1472,18 +1478,16 @@
             ],
             "nullable": true
           },
-          "start": {
+          "start_date": {
             "format": "date-time",
             "type": "string"
           },
           "start_hour": {
+            "default": null,
             "maximum": 24,
             "minimum": 0,
+            "nullable": true,
             "type": "integer"
-          },
-          "stop": {
-            "format": "date-time",
-            "type": "string"
           },
           "subscriber_subset": {
             "nullable": true,
@@ -1492,9 +1496,9 @@
         },
         "required": [
           "aggregation_unit",
+          "end_date",
           "query_kind",
-          "start",
-          "stop"
+          "start_date"
         ],
         "type": "object"
       },
