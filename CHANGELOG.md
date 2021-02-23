@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Most frequent locations is now available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
 
 ### Changed
 
