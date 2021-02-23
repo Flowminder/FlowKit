@@ -14,9 +14,14 @@ from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
+
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, ISODateTime
-from .subscriber_subset import SubscriberSubset
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
@@ -27,7 +32,8 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
         end_date,
         aggregation_unit,
         event_types,
-        subscriber_subset=None
+        subscriber_subset=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -36,6 +42,7 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
         self.aggregation_unit = aggregation_unit
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
+        self.hours = hours
 
     @property
     def _flowmachine_query_obj(self):
@@ -53,16 +60,20 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
                 spatial_unit=self.aggregation_unit,
                 table=self.event_types,
                 subscriber_subset=self.subscriber_subset,
+                hours=self.hours,
             )
         )
 
 
-class UniqueSubscriberCountsSchema(AggregationUnitMixin, BaseSchema):
+class UniqueSubscriberCountsSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    AggregationUnitMixin,
+    BaseSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = UniqueSubscriberCountsExposed

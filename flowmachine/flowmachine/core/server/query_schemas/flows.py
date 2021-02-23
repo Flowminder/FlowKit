@@ -16,6 +16,8 @@ from .modal_location import ModalLocationSchema
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
+from .most_frequent_location import MostFrequentLocationSchema
+
 from .unique_locations import UniqueLocationsSchema
 
 
@@ -25,6 +27,7 @@ class InputToFlowsSchema(OneOfSchema):
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
         "unique_locations": UniqueLocationsSchema,
+        "most_frequent_location": MostFrequentLocationSchema,
     }
 
 

@@ -6,19 +6,26 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TopUpAmount
-from .custom_fields import Statistic, ISODateTime
-from .subscriber_subset import SubscriberSubset
+from .custom_fields import Statistic
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .field_mixins import HoursField, StartAndEndField, SubscriberSubsetField
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
 
 class TopUpAmountExposed(BaseExposedQueryWithSampling):
     def __init__(
-        self, *, start, stop, statistic, subscriber_subset=None, sampling=None
+        self,
+        *,
+        start,
+        stop,
+        statistic,
+        subscriber_subset=None,
+        sampling=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -27,6 +34,7 @@ class TopUpAmountExposed(BaseExposedQueryWithSampling):
         self.statistic = statistic
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
+        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
@@ -42,14 +50,14 @@ class TopUpAmountExposed(BaseExposedQueryWithSampling):
             stop=self.stop,
             statistic=self.statistic,
             subscriber_subset=self.subscriber_subset,
+            hours=self.hours,
         )
 
 
-class TopUpAmountSchema(BaseQueryWithSamplingSchema):
+class TopUpAmountSchema(
+    StartAndEndField, SubscriberSubsetField, HoursField, BaseQueryWithSamplingSchema
+):
     query_kind = fields.String(validate=OneOf(["topup_amount"]))
-    start = ISODateTime(required=True)
-    stop = ISODateTime(required=True)
     statistic = Statistic()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = TopUpAmountExposed

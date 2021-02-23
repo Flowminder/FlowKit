@@ -2,16 +2,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validate
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
-from .custom_fields import EventTypes, ISODateTime
-from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+)
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
 )
 
 __all__ = ["MostFrequentLocationSchema", "MostFrequentLocationExposed"]
@@ -27,16 +31,13 @@ class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
         event_types,
         subscriber_subset=None,
         sampling=None,
-        start_hour=None,
-        end_hour=None
+        hours=None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start_date
         self.stop = end_date
-        self.hours = (
-            None if start_hour is None or end_hour is None else (start_hour, end_hour)
-        )
+        self.hours = hours
         self.aggregation_unit = aggregation_unit
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
@@ -61,24 +62,15 @@ class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
         )
 
 
-class MostFrequentLocationSchema(AggregationUnitMixin, BaseQueryWithSamplingSchema):
+class MostFrequentLocationSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    AggregationUnitMixin,
+    BaseQueryWithSamplingSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["most_frequent_location"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
-    start_hour = fields.Integer(
-        validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
-        required=False,
-        missing=None,
-        allow_none=True,
-    )
-    end_hour = fields.Integer(
-        validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
-        required=False,
-        missing=None,
-        allow_none=True,
-    )
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = MostFrequentLocationExposed

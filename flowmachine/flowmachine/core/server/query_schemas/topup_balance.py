@@ -12,6 +12,12 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
 
 __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
@@ -24,7 +30,8 @@ class TopUpBalanceExposed(BaseExposedQueryWithSampling):
         end_date,
         statistic="avg",
         subscriber_subset=None,
-        sampling=None
+        sampling=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -33,6 +40,7 @@ class TopUpBalanceExposed(BaseExposedQueryWithSampling):
         self.statistic = statistic
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
+        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
@@ -48,14 +56,17 @@ class TopUpBalanceExposed(BaseExposedQueryWithSampling):
             stop=self.end_date,
             statistic=self.statistic,
             subscriber_subset=self.subscriber_subset,
+            hours=self.hours,
         )
 
 
-class TopUpBalanceSchema(BaseQueryWithSamplingSchema):
+class TopUpBalanceSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    BaseQueryWithSamplingSchema,
+):
     query_kind = fields.String(validate=OneOf(["topup_balance"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
-    statistic = Statistic()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = TopUpBalanceExposed

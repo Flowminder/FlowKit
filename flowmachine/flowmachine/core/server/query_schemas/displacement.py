@@ -7,7 +7,8 @@ from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Displacement
-from .custom_fields import EventTypes, Statistic, ISODateTime
+from .custom_fields import EventTypes, Statistic, ISODateTime, Hours
+from .reference_location import ReferenceLocationSchema
 from .subscriber_subset import SubscriberSubset
 from .daily_location import DailyLocationSchema
 from .modal_location import ModalLocationSchema
@@ -15,17 +16,14 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
-
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
 
 __all__ = ["DisplacementSchema", "DisplacementExposed"]
-
-
-class InputToDisplacementSchema(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-    }
 
 
 class DisplacementExposed(BaseExposedQueryWithSampling):
@@ -38,7 +36,8 @@ class DisplacementExposed(BaseExposedQueryWithSampling):
         reference_location,
         event_types,
         subscriber_subset=None,
-        sampling=None
+        sampling=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -49,6 +48,7 @@ class DisplacementExposed(BaseExposedQueryWithSampling):
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
+        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
@@ -66,16 +66,19 @@ class DisplacementExposed(BaseExposedQueryWithSampling):
             reference_location=self.reference_location._flowmachine_query_obj,
             table=self.event_types,
             subscriber_subset=self.subscriber_subset,
+            hours=self.hours,
         )
 
 
-class DisplacementSchema(BaseQueryWithSamplingSchema):
+class DisplacementSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    BaseQueryWithSamplingSchema,
+):
     query_kind = fields.String(validate=OneOf(["displacement"]))
-    start = ISODateTime(required=True)
-    stop = ISODateTime(required=True)
     statistic = Statistic()
-    reference_location = fields.Nested(InputToDisplacementSchema, many=False)
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
+    reference_location = fields.Nested(ReferenceLocationSchema, many=False)
 
     __model__ = DisplacementExposed
