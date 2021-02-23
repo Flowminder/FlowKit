@@ -60,7 +60,8 @@ def most_frequent_location_spec(
     start_date: str,
     end_date: str,
     aggregation_unit: str,
-    hours: Optional[Tuple[int, int]] = None,
+    start_hour: Optional[int] = None,
+    end_hour: Optional[int] = None,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
     mapping_table: Optional[str] = None,
@@ -75,7 +76,7 @@ def most_frequent_location_spec(
     ----------
     start_date, end_date : str
         ISO format dates between which to get locations, e.g. "2016-01-01"
-    hours : tuple of int
+    start_hour, end_hour : int
         Hours of the day to include locations from 0-24.
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
@@ -97,7 +98,8 @@ def most_frequent_location_spec(
         query_kind="most_frequent_location",
         start_date=start_date,
         end_date=end_date,
-        hours=hours,
+        start_hour=start_hour,
+        end_hour=end_hour,
         aggregation_unit=aggregation_unit,
         event_types=event_types,
         subscriber_subset=subscriber_subset,

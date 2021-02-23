@@ -29,7 +29,8 @@ import pytest
             locations=flowclient.most_frequent_location_spec(
                 start_date="2016-01-01",
                 end_date="2016-01-02",
-                hours=(0, 1),
+                start_hour=0,
+                end_hour=1,
                 aggregation_unit="admin3",
             ),
         ),

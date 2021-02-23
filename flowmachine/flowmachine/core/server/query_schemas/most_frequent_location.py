@@ -27,13 +27,16 @@ class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
         event_types,
         subscriber_subset=None,
         sampling=None,
-        hours=None
+        start_hour=None,
+        end_hour=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
-        self.hours = hours
+        self.hours = (
+            None if start_hour is None or end_hour is None else (start_hour, end_hour)
+        )
         self.aggregation_unit = aggregation_unit
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
@@ -63,19 +66,13 @@ class MostFrequentLocationSchema(AggregationUnitMixin, BaseQueryWithSamplingSche
     query_kind = fields.String(validate=OneOf(["most_frequent_location"]))
     start = ISODateTime(required=True)
     stop = ISODateTime(required=True)
-    hours = fields.Tuple(
-        (
-            fields.Integer(
-                validate=validate.Range(
-                    min=0, max=24, min_inclusive=True, max_inclusive=True
-                )
-            ),
-            fields.Integer(
-                validate=validate.Range(
-                    min=0, max=24, min_inclusive=True, max_inclusive=True
-                )
-            ),
-        ),
+    start_hour = fields.Integer(
+        validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
+        required=False,
+        default=None,
+    )
+    end_hour = fields.Integer(
+        validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
         required=False,
         default=None,
     )

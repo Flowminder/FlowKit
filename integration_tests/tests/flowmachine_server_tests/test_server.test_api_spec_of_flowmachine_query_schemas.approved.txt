@@ -475,6 +475,7 @@
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
+        "most_frequent_location": "#/components/schemas/MostFrequentLocation",
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "trips_od_matrix": "#/components/schemas/TripsODMatrix",
@@ -527,6 +528,9 @@
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/MostFrequentLocation"
       },
       {
         "$ref": "#/components/schemas/SpatialAggregate"
@@ -808,23 +812,6 @@
       }
     ]
   },
-  "InputToSpatialAggregate": {
-    "discriminator": {
-      "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
-      },
-      "propertyName": "query_kind"
-    },
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/DailyLocation"
-      },
-      {
-        "$ref": "#/components/schemas/ModalLocation"
-      }
-    ]
-  },
   "JoinableMetrics": {
     "discriminator": {
       "mapping": {
@@ -877,7 +864,7 @@
   "JoinedSpatialAggregate": {
     "properties": {
       "locations": {
-        "$ref": "#/components/schemas/InputToSpatialAggregate"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "method": {
         "enum": [
@@ -1408,6 +1395,89 @@
     },
     "type": "object"
   },
+  "MostFrequentLocation": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "type": "string"
+      },
+      "end_hour": {
+        "maximum": 24,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "most_frequent_location"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "start": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "start_hour": {
+        "maximum": 24,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "stop": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "start",
+      "stop"
+    ],
+    "type": "object"
+  },
   "NocturnalEvents": {
     "properties": {
       "event_types": {
@@ -1633,7 +1703,8 @@
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
+        "modal_location": "#/components/schemas/ModalLocation",
+        "most_frequent_location": "#/components/schemas/MostFrequentLocation"
       },
       "propertyName": "query_kind"
     },
@@ -1643,13 +1714,16 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MostFrequentLocation"
       }
     ]
   },
   "SpatialAggregate": {
     "properties": {
       "locations": {
-        "$ref": "#/components/schemas/InputToSpatialAggregate"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "query_kind": {
         "enum": [
