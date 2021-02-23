@@ -29,8 +29,7 @@ import pytest
             locations=flowclient.most_frequent_location_spec(
                 start_date="2016-01-01",
                 end_date="2016-01-02",
-                start_hour=0,
-                end_hour=1,
+                hours=(0, 1),
                 aggregation_unit="admin3",
             ),
         ),
@@ -134,8 +133,8 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.nocturnal_events_spec(
-                start="2016-01-01",
-                stop="2016-01-02",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
                 hours=(20, 4),
                 event_types=["calls", "sms"],
             ),
@@ -146,8 +145,8 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.subscriber_degree_spec(
-                start="2016-01-01",
-                stop="2016-01-02",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
                 direction="both",
                 event_types=["calls", "sms"],
             ),
@@ -170,7 +169,7 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.topup_amount_spec(
-                start="2016-01-01", stop="2016-01-02", statistic="avg"
+                start_date="2016-01-01", end_date="2016-01-02", statistic="avg"
             ),
         ),
         partial(
@@ -179,8 +178,8 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.event_count_spec(
-                start="2016-01-01",
-                stop="2016-01-02",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
                 direction="both",
                 event_types=["sms", "calls"],
             ),
@@ -191,8 +190,8 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.displacement_spec(
-                start="2016-01-01",
-                stop="2016-01-02",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
                 statistic="avg",
                 reference_location=flowclient.daily_location_spec(
                     date="2016-01-01", aggregation_unit="lon-lat", method="last"
@@ -206,8 +205,8 @@ import pytest
                 date="2016-01-01", aggregation_unit="admin3", method="last"
             ),
             metric=flowclient.pareto_interactions_spec(
-                start="2016-01-01",
-                stop="2016-01-02",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
                 proportion="0.8",
                 event_types=["calls", "sms"],
             ),
@@ -644,7 +643,9 @@ import pytest
         ),
         partial(
             flowclient.histogram_aggregate,
-            metric=flowclient.event_count_spec(start="2016-01-01", stop="2016-01-02"),
+            metric=flowclient.event_count_spec(
+                start_date="2016-01-01", end_date="2016-01-02"
+            ),
             bins=5,
         ),
         partial(
