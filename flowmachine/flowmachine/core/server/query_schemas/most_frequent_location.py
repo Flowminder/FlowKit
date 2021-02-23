@@ -20,8 +20,8 @@ __all__ = ["MostFrequentLocationSchema", "MostFrequentLocationExposed"]
 class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
-        start,
-        stop,
+        start_date,
+        end_date,
         *,
         aggregation_unit,
         event_types,
@@ -32,8 +32,8 @@ class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start = start
-        self.stop = stop
+        self.start = start_date
+        self.stop = end_date
         self.hours = (
             None if start_hour is None or end_hour is None else (start_hour, end_hour)
         )
@@ -64,17 +64,17 @@ class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
 class MostFrequentLocationSchema(AggregationUnitMixin, BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["most_frequent_location"]))
-    start = ISODateTime(required=True)
-    stop = ISODateTime(required=True)
+    start_date = ISODateTime(required=True)
+    end_date = ISODateTime(required=True)
     start_hour = fields.Integer(
         validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
         required=False,
-        default=None,
+        missing=None,
     )
     end_hour = fields.Integer(
         validate=validate.Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
         required=False,
-        default=None,
+        missing=None,
     )
     event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
