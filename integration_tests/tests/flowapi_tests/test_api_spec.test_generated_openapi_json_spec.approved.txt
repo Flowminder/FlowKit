@@ -2019,21 +2019,6 @@
             "format": "date-time",
             "type": "string"
           },
-          "event_types": {
-            "default": null,
-            "items": {
-              "enum": [
-                "calls",
-                "mds",
-                "sms",
-                "topups"
-              ],
-              "type": "string"
-            },
-            "minItems": 1,
-            "nullable": true,
-            "type": "array"
-          },
           "hours": {
             "allOf": [
               {

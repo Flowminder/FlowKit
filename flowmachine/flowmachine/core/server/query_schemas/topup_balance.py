@@ -62,7 +62,6 @@ class TopUpBalanceExposed(BaseExposedQueryWithSampling):
 
 class TopUpBalanceSchema(
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
     HoursField,
     BaseQueryWithSamplingSchema,
