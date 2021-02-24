@@ -10,7 +10,7 @@ can be calculated in `km` or `m`.
 
 
 """
-from typing import List
+from typing import List, Optional, Tuple
 
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations
@@ -41,7 +41,7 @@ class RadiusOfGyration(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -85,7 +85,7 @@ class RadiusOfGyration(SubscriberFeature):
         start,
         stop,
         unit="km",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,

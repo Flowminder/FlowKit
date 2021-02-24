@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import Union
+from typing import Union, Optional, Tuple
 
 from flowmachine.features.subscriber.event_count import EventCount
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
@@ -67,7 +67,7 @@ class ProportionEventType(SubscriberFeature):
         numerator_direction: Union[str, Direction] = Direction.BOTH,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         tables="all",
     ):

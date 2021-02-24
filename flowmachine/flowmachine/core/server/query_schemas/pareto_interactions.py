@@ -6,11 +6,15 @@ from marshmallow import fields
 from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import ParetoInteractions
-from .custom_fields import EventTypes, ISODateTime
-from .subscriber_subset import SubscriberSubset
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+)
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
 )
 
 __all__ = ["ParetoInteractionsSchema", "ParetoInteractionsExposed"]
@@ -20,21 +24,23 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
         *,
-        start,
-        stop,
+        start_date,
+        end_date,
         proportion,
         event_types,
         subscriber_subset=None,
-        sampling=None
+        sampling=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start = start
-        self.stop = stop
+        self.start = start_date
+        self.stop = end_date
         self.proportion = proportion
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
+        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
@@ -51,15 +57,18 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
             proportion=self.proportion,
             tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
+            hours=self.hours,
         )
 
 
-class ParetoInteractionsSchema(BaseQueryWithSamplingSchema):
+class ParetoInteractionsSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    BaseQueryWithSamplingSchema,
+):
     query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
-    start = ISODateTime(required=True)
-    stop = ISODateTime(required=True)
     proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = ParetoInteractionsExposed

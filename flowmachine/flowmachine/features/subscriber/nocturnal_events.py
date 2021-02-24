@@ -11,7 +11,7 @@ hour definitions can be specified.
 
 
 """
-from typing import Union
+from typing import Union, Tuple
 
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
@@ -63,7 +63,7 @@ class NocturnalEvents(SubscriberFeature):
         self,
         start,
         stop,
-        hours=(20, 4),
+        hours: Tuple[int, int] = (20, 4),
         *,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,

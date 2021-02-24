@@ -6,7 +6,7 @@
 """
 Classes for searching and dealing with reciprocal contacts.
 """
-from typing import Union
+from typing import Union, Optional, Tuple
 
 from flowmachine.core.mixins.graph_mixin import GraphMixin
 from flowmachine.features.subscriber.contact_balance import ContactBalance
@@ -74,7 +74,7 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         tables="all",
         exclude_self_calls=True,
         subscriber_subset=None,
@@ -265,7 +265,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         *,
         direction: Union[str, Direction] = Direction.OUT,
         subscriber_identifier="msisdn",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         tables="all",
         exclude_self_calls=True,

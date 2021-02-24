@@ -9,7 +9,7 @@ have done over a certain time period.
 
 
 """
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
@@ -69,7 +69,7 @@ class SubscriberDegree(SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         tables="all",
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,

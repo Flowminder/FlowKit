@@ -78,6 +78,7 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "unmoving_counts",
                 "unmoving_at_reference_location_counts",
                 "trips_od_matrix",
+                "most_frequent_location",
             ]
         },
     }
@@ -126,6 +127,7 @@ def test_run_daily_location_query(zmq_host, zmq_port):
                 spatial_unit=make_spatial_unit("admin", level=3),
                 table=None,
                 subscriber_subset=None,
+                hours=None,
             )
         )
     )
@@ -183,6 +185,7 @@ def test_run_modal_location_query(zmq_host, zmq_port):
                     spatial_unit=make_spatial_unit("admin", level=3),
                     table=None,
                     subscriber_subset=None,
+                    hours=None,
                 ),
                 daily_location(
                     date="2016-01-02",
@@ -190,6 +193,7 @@ def test_run_modal_location_query(zmq_host, zmq_port):
                     spatial_unit=make_spatial_unit("admin", level=3),
                     table=None,
                     subscriber_subset=None,
+                    hours=None,
                 ),
             )
         )

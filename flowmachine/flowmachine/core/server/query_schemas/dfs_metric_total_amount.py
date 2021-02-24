@@ -7,6 +7,7 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
+from .field_mixins import StartAndEndField
 from .base_schema import BaseSchema
 from .custom_fields import DFSMetric, ISODateTime
 from .aggregation_unit import AggregationUnitKind
@@ -44,12 +45,10 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
         )
 
 
-class DFSTotalMetricAmountSchema(BaseSchema):
+class DFSTotalMetricAmountSchema(StartAndEndField, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
     metric = DFSMetric()
     aggregation_unit = AggregationUnitKind()
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
 
     __model__ = DFSTotalMetricAmountExposed

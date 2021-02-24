@@ -45,7 +45,7 @@ class Displacement(SubscriberFeature):
     unit : {'km', 'm'}, default 'km'
         Unit with which to express the answers, currently the choices
         are kilometres ('km') or metres ('m')
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include

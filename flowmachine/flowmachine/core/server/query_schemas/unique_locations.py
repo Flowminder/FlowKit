@@ -14,6 +14,12 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
 
 __all__ = ["UniqueLocationsSchema", "UniqueLocationsExposed"]
 
@@ -27,7 +33,8 @@ class UniqueLocationsExposed(BaseExposedQueryWithSampling):
         aggregation_unit,
         event_types,
         subscriber_subset=None,
-        sampling=None
+        sampling=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -37,6 +44,7 @@ class UniqueLocationsExposed(BaseExposedQueryWithSampling):
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
+        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
@@ -54,16 +62,20 @@ class UniqueLocationsExposed(BaseExposedQueryWithSampling):
                 spatial_unit=self.aggregation_unit,
                 table=self.event_types,
                 subscriber_subset=self.subscriber_subset,
+                hours=self.hours,
             )
         )
 
 
-class UniqueLocationsSchema(AggregationUnitMixin, BaseQueryWithSamplingSchema):
+class UniqueLocationsSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    AggregationUnitMixin,
+    BaseQueryWithSamplingSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_locations"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = UniqueLocationsExposed

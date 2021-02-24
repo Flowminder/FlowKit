@@ -7,8 +7,14 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import TotalNetworkObjects
 from .base_exposed_query import BaseExposedQuery
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, TotalBy, ISODateTime
+from .custom_fields import TotalBy
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
@@ -25,7 +31,8 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
         aggregation_unit,
         total_by,
         event_types,
-        subscriber_subset=None
+        subscriber_subset=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -35,6 +42,7 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
         self.total_by = total_by
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
+        self.hours = hours
 
     @property
     def _flowmachine_query_obj(self):
@@ -52,16 +60,20 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
             total_by=self.total_by,
             table=self.event_types,
             subscriber_subset=self.subscriber_subset,
+            hours=self.hours,
         )
 
 
-class TotalNetworkObjectsSchema(AggregationUnitMixin, BaseSchema):
+class TotalNetworkObjectsSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    AggregationUnitMixin,
+    BaseSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["total_network_objects"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
     total_by = TotalBy(required=False, missing="day")
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = TotalNetworkObjectsExposed

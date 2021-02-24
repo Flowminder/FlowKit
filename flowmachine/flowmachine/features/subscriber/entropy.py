@@ -9,8 +9,7 @@ period.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Union
-
+from typing import List, Union, Optional, Tuple
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
@@ -124,7 +123,7 @@ class PeriodicEntropy(BaseEntropy):
         *,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         tables="all",
     ):
@@ -256,7 +255,7 @@ class LocationEntropy(BaseEntropy):
         *,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         subscriber_identifier="msisdn",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         tables="all",
         ignore_nulls=True,
@@ -352,7 +351,7 @@ class ContactEntropy(BaseEntropy):
         *,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         tables="all",
         exclude_self_calls=True,

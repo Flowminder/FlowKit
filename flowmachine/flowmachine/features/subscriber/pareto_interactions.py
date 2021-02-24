@@ -10,7 +10,7 @@ that fraction of their contacts who account for 80% of their interactions.
 
 
 """
-from typing import List, Union
+from typing import List, Union, Tuple, Optional
 
 from flowmachine.features.subscriber.contact_balance import ContactBalance
 from flowmachine.features.subscriber.subscriber_degree import SubscriberDegree
@@ -74,7 +74,7 @@ class ParetoInteractions(SubscriberFeature):
         direction: Union[str, Direction] = Direction.BOTH,
         tables="all",
         subscriber_identifier="msisdn",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         exclude_self_calls=False,
         subscriber_subset=None,
     ):

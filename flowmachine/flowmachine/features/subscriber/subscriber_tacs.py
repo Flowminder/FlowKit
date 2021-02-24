@@ -11,7 +11,7 @@ a subscriber.
 
 """
 import warnings
-from typing import List
+from typing import List, Optional, Tuple
 
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
@@ -115,7 +115,7 @@ class SubscriberTACs(SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
@@ -196,7 +196,7 @@ class SubscriberTAC(SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
@@ -292,7 +292,7 @@ class SubscriberHandsets(SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         subscriber_subset=None,
@@ -371,7 +371,7 @@ class SubscriberHandset(SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         method="most-common",
@@ -509,7 +509,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
         start,
         stop,
         characteristic,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         method="most-common",

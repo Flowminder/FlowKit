@@ -23,6 +23,7 @@ def location_event_counts_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for a location event counts query aggregated spatially and temporally.
@@ -47,6 +48,8 @@ def location_event_counts_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -65,6 +68,9 @@ def location_event_counts_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
@@ -95,6 +101,8 @@ def location_event_counts(*, connection: Connection, **kwargs) -> APIQuery:
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -746,6 +754,7 @@ def unique_subscriber_counts_spec(
     geom_table_join_column: Optional[str] = None,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for unique subscriber counts
@@ -765,6 +774,8 @@ def unique_subscriber_counts_spec(
         Subset of subscribers to retrieve values for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -781,6 +792,9 @@ def unique_subscriber_counts_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
@@ -806,6 +820,8 @@ def unique_subscriber_counts(*, connection: Connection, **kwargs) -> APIQuery:
         Subset of subscribers to retrieve values for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -826,6 +842,7 @@ def location_introversion_spec(
     geom_table_join_column: Optional[str] = None,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for location introversion
@@ -847,6 +864,8 @@ def location_introversion_spec(
         Subset of subscribers to retrieve values for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -864,6 +883,9 @@ def location_introversion_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
@@ -891,6 +913,8 @@ def location_introversion(*, connection: Connection, **kwargs) -> APIQuery:
         Subset of subscribers to retrieve values for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -911,6 +935,7 @@ def total_network_objects_spec(
     geom_table_join_column: Optional[str] = None,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for total network objects
@@ -932,6 +957,8 @@ def total_network_objects_spec(
         Subset of subscribers to retrieve values for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -949,6 +976,9 @@ def total_network_objects_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
@@ -976,6 +1006,8 @@ def total_network_objects(*, connection: Connection, **kwargs) -> APIQuery:
         Subset of subscribers to retrieve values for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -1088,6 +1120,7 @@ def consecutive_trips_od_matrix_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     Retrieves the count of subscriber who made consecutive visits between locations
@@ -1105,6 +1138,8 @@ def consecutive_trips_od_matrix_spec(
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -1122,6 +1157,7 @@ def consecutive_trips_od_matrix_spec(
         mapping_table=mapping_table,
         geom_table=geom_table,
         geom_table_join_column=geom_table_join_column,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
     )
 
 
@@ -1145,6 +1181,8 @@ def consecutive_trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -1166,6 +1204,7 @@ def trips_od_matrix_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     Retrieves the count of subscriber who made visits between locations
@@ -1183,6 +1222,8 @@ def trips_od_matrix_spec(
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -1200,6 +1241,7 @@ def trips_od_matrix_spec(
         mapping_table=mapping_table,
         geom_table=geom_table,
         geom_table_join_column=geom_table_join_column,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
     )
 
 
@@ -1223,6 +1265,8 @@ def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
         Subset of subscribers to retrieve trips for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------

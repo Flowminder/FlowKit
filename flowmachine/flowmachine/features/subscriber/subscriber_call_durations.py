@@ -10,7 +10,7 @@ Total and per-counterpart call durations for subscribers.
 
 """
 import warnings
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 from flowmachine.core import location_joined_query
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
@@ -70,7 +70,7 @@ class SubscriberCallDurations(SubscriberFeature):
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.OUT,
         statistic="sum",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
         self.start = standardise_date(start)
@@ -168,7 +168,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         direction: Union[str, Direction] = Direction.OUT,
         statistic="sum",
         spatial_unit: Optional[AnySpatialUnit] = None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
         self.start = standardise_date(start)
@@ -270,7 +270,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         *,
         subscriber_identifier="msisdn",
         statistic="sum",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
         self.start = standardise_date(start)
@@ -371,7 +371,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         subscriber_identifier="msisdn",
         statistic="sum",
         spatial_unit: Optional[AnySpatialUnit] = None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
         self.start = standardise_date(start)

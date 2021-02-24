@@ -6,6 +6,7 @@
 """
 Class for calculating top-up recharge amount statistics.
 """
+from typing import Optional, Tuple
 
 import warnings
 
@@ -58,7 +59,7 @@ class TopUpAmount(SubscriberFeature):
         statistic="avg",
         *,
         subscriber_identifier="msisdn",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
         self.start = standardise_date(start)

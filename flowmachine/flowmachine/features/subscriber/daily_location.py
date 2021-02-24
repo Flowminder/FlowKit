@@ -12,7 +12,7 @@ representing where an subscriber is on a given day.
 
 """
 import datetime
-from typing import Optional
+from typing import Optional, Tuple
 
 from ...core import make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
@@ -25,7 +25,7 @@ def locate_subscribers(
     start,
     stop,
     spatial_unit: Optional[AnySpatialUnit] = None,
-    hours="all",
+    hours: Optional[Tuple[int, int]] = None,
     method="last",
     table="all",
     subscriber_identifier="msisdn",
@@ -48,7 +48,7 @@ def locate_subscribers(
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -134,7 +134,7 @@ def daily_location(
     stop=None,
     *,
     spatial_unit: Optional[AnySpatialUnit] = None,
-    hours="all",
+    hours: Optional[Tuple[int, int]] = None,
     method="last",
     table="all",
     subscriber_identifier="msisdn",
@@ -155,7 +155,7 @@ def daily_location(
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include

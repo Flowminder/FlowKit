@@ -11,7 +11,7 @@ it visited
 
 
 """
-from typing import List
+from typing import List, Optional, Tuple
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
@@ -36,7 +36,7 @@ class UniqueLocationCounts(SubscriberFeature):
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -76,7 +76,7 @@ class UniqueLocationCounts(SubscriberFeature):
         stop,
         *,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         tables="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,

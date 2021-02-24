@@ -6,11 +6,17 @@ from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberHandsetCharacteristic
-from .custom_fields import EventTypes, ISODateTime
+from .custom_fields import EventTypes, ISODateTime, Hours
 from .subscriber_subset import SubscriberSubset
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+)
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
 )
 
 __all__ = ["HandsetSchema", "HandsetExposed"]
@@ -26,7 +32,8 @@ class HandsetExposed(BaseExposedQueryWithSampling):
         characteristic,
         event_types,
         subscriber_subset=None,
-        sampling=None
+        sampling=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -37,6 +44,7 @@ class HandsetExposed(BaseExposedQueryWithSampling):
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
+        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
@@ -54,21 +62,24 @@ class HandsetExposed(BaseExposedQueryWithSampling):
             method=self.method,
             table=self.event_types,
             subscriber_subset=self.subscriber_subset,
+            hours=self.hours,
         )
 
 
-class HandsetSchema(BaseQueryWithSamplingSchema):
+class HandsetSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    BaseQueryWithSamplingSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["handset"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
     characteristic = fields.String(
         validate=OneOf(
             ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
         )
     )
     method = fields.String(validate=OneOf(["last", "most-common"]))
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = HandsetExposed

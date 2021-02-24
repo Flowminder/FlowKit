@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from ..subscriber.unique_locations import UniqueLocations
 from flowmachine.utils import standardise_date
@@ -42,7 +42,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -79,7 +79,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         start,
         stop,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_subset=None,
     ):

@@ -18,16 +18,9 @@ from .modal_location import ModalLocationSchema
 __all__ = [
     "SpatialAggregateSchema",
     "SpatialAggregateExposed",
-    "InputToSpatialAggregate",
 ]
 
-
-class InputToSpatialAggregate(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-    }
+from .reference_location import ReferenceLocationSchema
 
 
 class SpatialAggregateExposed(BaseExposedQuery):
@@ -54,6 +47,6 @@ class SpatialAggregateExposed(BaseExposedQuery):
 class SpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["spatial_aggregate"]))
-    locations = fields.Nested(InputToSpatialAggregate, required=True)
+    locations = fields.Nested(ReferenceLocationSchema, required=True)
 
     __model__ = SpatialAggregateExposed

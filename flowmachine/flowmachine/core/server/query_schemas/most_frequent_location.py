@@ -5,9 +5,8 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from flowmachine.features import TopUpBalance
-from .custom_fields import Statistic, ISODateTime
-from .subscriber_subset import SubscriberSubset
+from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
+from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -19,54 +18,59 @@ from .field_mixins import (
     SubscriberSubsetField,
 )
 
-__all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
+__all__ = ["MostFrequentLocationSchema", "MostFrequentLocationExposed"]
 
 
-class TopUpBalanceExposed(BaseExposedQueryWithSampling):
+class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
-        *,
         start_date,
         end_date,
-        statistic="avg",
+        *,
+        aggregation_unit,
+        event_types,
         subscriber_subset=None,
         sampling=None,
-        hours=None
+        hours=None,
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start_date = start_date
-        self.end_date = end_date
-        self.statistic = statistic
+        self.start = start_date
+        self.stop = end_date
+        self.hours = hours
+        self.aggregation_unit = aggregation_unit
+        self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
-        self.hours = hours
 
     @property
     def _unsampled_query_obj(self):
         """
-        Return the underlying flowmachine TopUpBalance object.
+        Return the underlying flowmachine daily_location object.
 
         Returns
         -------
         Query
         """
-        return TopUpBalance(
-            start=self.start_date,
-            stop=self.end_date,
-            statistic=self.statistic,
-            subscriber_subset=self.subscriber_subset,
+        return MostFrequentLocation(
+            start=self.start,
+            stop=self.stop,
             hours=self.hours,
+            spatial_unit=self.aggregation_unit,
+            table=self.event_types,
+            subscriber_subset=self.subscriber_subset,
         )
 
 
-class TopUpBalanceSchema(
+class MostFrequentLocationSchema(
     StartAndEndField,
+    EventTypesField,
     SubscriberSubsetField,
     HoursField,
+    AggregationUnitMixin,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["topup_balance"]))
-    statistic = Statistic()
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf(["most_frequent_location"]))
 
-    __model__ = TopUpBalanceExposed
+    __model__ = MostFrequentLocationExposed

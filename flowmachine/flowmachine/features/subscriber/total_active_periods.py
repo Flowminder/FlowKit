@@ -50,9 +50,6 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         Total number of days per period.
     period_unit : {'days', 'hours', 'minutes'} default 'days'
         Split this time frame into hours or days etc.
-    order : bool
-        If `True` the resulting DataFrame will be order
-        by the `total_periods` column in descending order.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -84,7 +81,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         total_periods: int,
         period_length: int = 1,
         period_unit: str = "days",
-        hours: Union[str, Tuple[int, int]] = "all",
+        hours: Optional[Tuple[int, int]] = None,
         table: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
@@ -159,20 +156,20 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "active_periods", "inactive_periods"]
+        return ["subscriber", "value", "inactive_periods"]
 
     def _make_query(self):
 
         sql = """
             SELECT
                 ul.subscriber,
-                count(*) AS active_periods,
+                count(*) AS value,
                 {total_periods} - count(*) AS inactive_periods
             FROM
                 ({unique_subscribers_table}) AS ul
             GROUP BY
                 ul.subscriber
-            ORDER BY active_periods DESC
+            ORDER BY value DESC
               """.format(
             unique_subscribers_table=self.unique_subscribers_table.get_query(),
             total_periods=self.total_periods,

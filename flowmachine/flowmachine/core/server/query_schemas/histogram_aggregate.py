@@ -32,6 +32,7 @@ from .base_exposed_query import BaseExposedQuery
 __all__ = ["HistogramAggregateSchema", "HistogramAggregateExposed"]
 
 from .base_schema import BaseSchema
+from .total_active_periods import TotalActivePeriodsSchema
 
 
 class HistogrammableMetrics(OneOfSchema):
@@ -46,6 +47,7 @@ class HistogrammableMetrics(OneOfSchema):
         "pareto_interactions": ParetoInteractionsSchema,
         "nocturnal_events": NocturnalEventsSchema,
         "displacement": DisplacementSchema,
+        "total_active_periods": TotalActivePeriodsSchema,
     }
 
 
