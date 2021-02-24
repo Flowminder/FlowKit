@@ -2020,6 +2020,18 @@
         "format": "date-time",
         "type": "string"
       },
+      "statistic": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
+        "type": "string"
+      },
       "subscriber_subset": {
         "nullable": true,
         "type": "string"
@@ -2027,7 +2039,8 @@
     },
     "required": [
       "end_date",
-      "start_date"
+      "start_date",
+      "statistic"
     ],
     "type": "object"
   },
