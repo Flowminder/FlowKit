@@ -169,7 +169,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
                 ({unique_subscribers_table}) AS ul
             GROUP BY
                 ul.subscriber
-            ORDER BY active_periods DESC
+            ORDER BY value DESC
               """.format(
             unique_subscribers_table=self.unique_subscribers_table.get_query(),
             total_periods=self.total_periods,
