@@ -44,6 +44,7 @@ def test_get_sql(zmq_port, zmq_host):
                 spatial_unit=make_spatial_unit("admin", level=3),
                 table=None,
                 subscriber_subset=None,
+                hours=None,
             )
         )
     )

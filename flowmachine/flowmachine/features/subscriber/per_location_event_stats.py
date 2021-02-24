@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import Union, Optional, Tuple
 
 from flowmachine.core import location_joined_query
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
@@ -70,7 +70,7 @@ class PerLocationEventStats(SubscriberFeature):
         statistic="avg",
         *,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         tables="all",
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,

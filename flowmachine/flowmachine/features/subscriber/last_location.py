@@ -10,7 +10,7 @@ at during a specified time period.
 
 
 """
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
@@ -34,7 +34,7 @@ class LastLocation(BaseLocation, Query):
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
         docstring ofmake_spatial_unit for more information.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -71,7 +71,7 @@ class LastLocation(BaseLocation, Query):
         start,
         stop,
         spatial_unit: Optional[AnySpatialUnit] = None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         *,

@@ -38,7 +38,7 @@ class UniqueSubscribers(Query):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -83,7 +83,7 @@ class UniqueSubscribers(Query):
         start: str,
         stop: str,
         *,
-        hours: Union[str, Tuple[int, int]] = "all",
+        hours: Optional[Tuple[int, int]] = None,
         table: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
@@ -143,7 +143,7 @@ class SubscriberLocationSubset(Query):
         minimum number of calls a user must have made within a
     direction : {'in', 'out', 'both'} or Direction, default Direction.BOTH
         Whether to consider calls made, received, or both. Defaults to 'both'.
-    hours : 2-tuple of floats, default 'all'
+    hours : 2-tuple of floats, default None
         Restrict the analysis to only a certain set
         of hours within each day.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
@@ -177,7 +177,7 @@ class SubscriberLocationSubset(Query):
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,
         spatial_unit: Optional[AnySpatialUnit] = None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
 

@@ -24,8 +24,8 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
         *,
-        start,
-        stop,
+        start_date,
+        end_date,
         night_start_hour,
         night_end_hour,
         event_types,
@@ -34,8 +34,8 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start = start
-        self.stop = stop
+        self.start = start_date
+        self.stop = end_date
         self.hours = (night_start_hour, night_end_hour)
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset

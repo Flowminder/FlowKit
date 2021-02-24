@@ -6,7 +6,7 @@
 """
 Calculate metrics related with distance between caller and her/his counterparts.
 """
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.spatial.distance_matrix import DistanceMatrix
@@ -70,7 +70,7 @@ class DistanceCounterparts(SubscriberFeature):
         stop,
         statistic="avg",
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         tables="all",
         direction: Union[str, Direction] = Direction.BOTH,
         subscriber_subset=None,

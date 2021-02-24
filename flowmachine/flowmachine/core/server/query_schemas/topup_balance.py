@@ -68,5 +68,6 @@ class TopUpBalanceSchema(
     BaseQueryWithSamplingSchema,
 ):
     query_kind = fields.String(validate=OneOf(["topup_balance"]))
+    statistic = Statistic()
 
     __model__ = TopUpBalanceExposed

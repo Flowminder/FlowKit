@@ -7,7 +7,7 @@ import datetime
 import pandas as pd
 import warnings
 from sqlalchemy import select
-from typing import List
+from typing import List, Optional, Tuple
 
 from ...core import Query, Table
 from ...core.context import get_db
@@ -39,7 +39,7 @@ class EventTableSubset(Query):
     stop : str, default None
         As above. If None, it will use the latest date seen in the
         `events.calls` table.
-    hours : tuple of ints, default 'all'
+    hours : tuple of ints, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
@@ -74,7 +74,7 @@ class EventTableSubset(Query):
         *,
         start=None,
         stop=None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         hour_slices=None,
         table="events.calls",
         subscriber_subset=None,

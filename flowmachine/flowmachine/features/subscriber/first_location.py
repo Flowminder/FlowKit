@@ -10,7 +10,7 @@ is seen within a specified time period.
 
 
 """
-from typing import List
+from typing import List, Optional, Tuple
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
@@ -67,7 +67,7 @@ class FirstLocation(SubscriberFeature):
         *,
         location,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,

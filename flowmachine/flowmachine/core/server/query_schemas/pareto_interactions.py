@@ -24,8 +24,8 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
         *,
-        start,
-        stop,
+        start_date,
+        end_date,
         proportion,
         event_types,
         subscriber_subset=None,
@@ -34,8 +34,8 @@ class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start = start
-        self.stop = stop
+        self.start = start_date
+        self.stop = end_date
         self.proportion = proportion
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset

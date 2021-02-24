@@ -46,6 +46,7 @@ from .query_specs import (
     random_sample_spec,
     unique_locations_spec,
     most_frequent_location_spec,
+    total_active_periods_spec,
 )
 from . import aggregates
 from .aggregates import (

@@ -9,7 +9,7 @@ the most frequently.
 
 
 """
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
@@ -63,7 +63,7 @@ class MostFrequentLocation(BaseLocation, Query):
         start,
         stop,
         spatial_unit: Optional[AnySpatialUnit] = None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         table="all",
         subscriber_identifier="msisdn",
         *,

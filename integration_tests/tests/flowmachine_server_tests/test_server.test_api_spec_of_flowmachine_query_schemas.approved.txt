@@ -772,6 +772,7 @@
         "subscriber_degree": "#/components/schemas/SubscriberDegree",
         "topup_amount": "#/components/schemas/TopUpAmount",
         "topup_balance": "#/components/schemas/TopUpBalance",
+        "total_active_periods": "#/components/schemas/TotalActivePeriods",
         "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
@@ -800,6 +801,9 @@
       },
       {
         "$ref": "#/components/schemas/TopUpBalance"
+      },
+      {
+        "$ref": "#/components/schemas/TotalActivePeriods"
       },
       {
         "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -875,6 +879,7 @@
         "subscriber_degree": "#/components/schemas/SubscriberDegree",
         "topup_amount": "#/components/schemas/TopUpAmount",
         "topup_balance": "#/components/schemas/TopUpBalance",
+        "total_active_periods": "#/components/schemas/TotalActivePeriods",
         "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
@@ -906,6 +911,9 @@
       },
       {
         "$ref": "#/components/schemas/TopUpBalance"
+      },
+      {
+        "$ref": "#/components/schemas/TotalActivePeriods"
       },
       {
         "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -2035,6 +2043,69 @@
     "required": [
       "end_date",
       "start_date"
+    ],
+    "type": "object"
+  },
+  "TotalActivePeriods": {
+    "properties": {
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "period_length": {
+        "default": 1,
+        "type": "integer"
+      },
+      "period_unit": {
+        "default": "days",
+        "enum": [
+          "days",
+          "hours",
+          "minutes"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "total_active_periods"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
+      "total_periods": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "start_date",
+      "total_periods"
     ],
     "type": "object"
   },

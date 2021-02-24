@@ -300,6 +300,56 @@ def radius_of_gyration_spec(
     }
 
 
+def total_active_periods_spec(
+    *,
+    start_date: str,
+    total_periods: int,
+    period_unit: str = "days",
+    period_length: int = 1,
+    event_types: Optional[List[str]] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
+) -> dict:
+    """
+    Return query spec for radius of gyration
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    total_periods : int
+        Total number of periods to break your time span into
+    period_length : int, default 1
+        Total number of days per period.
+    period_unit : {'days', 'hours', 'minutes'} default 'days'
+        Split this time frame into hours or days etc.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    hours : tuple of int
+        Hours of the day to include
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return dict(
+        query_kind="total_active_periods",
+        total_periods=total_periods,
+        period_length=period_length,
+        period_unit=period_unit,
+        start_date=start_date,
+        event_types=event_types,
+        subscriber_subset=subscriber_subset,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
+    )
+
+
 def unique_location_counts_spec(
     *,
     start_date: str,

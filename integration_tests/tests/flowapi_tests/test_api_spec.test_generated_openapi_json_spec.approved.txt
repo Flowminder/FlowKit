@@ -785,6 +785,7 @@
             "subscriber_degree": "#/components/schemas/SubscriberDegree",
             "topup_amount": "#/components/schemas/TopUpAmount",
             "topup_balance": "#/components/schemas/TopUpBalance",
+            "total_active_periods": "#/components/schemas/TotalActivePeriods",
             "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
           },
           "propertyName": "query_kind"
@@ -813,6 +814,9 @@
           },
           {
             "$ref": "#/components/schemas/TopUpBalance"
+          },
+          {
+            "$ref": "#/components/schemas/TotalActivePeriods"
           },
           {
             "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -888,6 +892,7 @@
             "subscriber_degree": "#/components/schemas/SubscriberDegree",
             "topup_amount": "#/components/schemas/TopUpAmount",
             "topup_balance": "#/components/schemas/TopUpBalance",
+            "total_active_periods": "#/components/schemas/TotalActivePeriods",
             "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
           },
           "propertyName": "query_kind"
@@ -919,6 +924,9 @@
           },
           {
             "$ref": "#/components/schemas/TopUpBalance"
+          },
+          {
+            "$ref": "#/components/schemas/TotalActivePeriods"
           },
           {
             "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -2065,6 +2073,70 @@
         ],
         "type": "object"
       },
+      "TotalActivePeriods": {
+        "properties": {
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          },
+          "period_length": {
+            "default": 1,
+            "type": "integer"
+          },
+          "period_unit": {
+            "default": "days",
+            "enum": [
+              "days",
+              "hours",
+              "minutes"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "total_active_periods"
+            ],
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "nullable": true,
+            "type": "string"
+          },
+          "total_periods": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start_date",
+          "total_periods"
+        ],
+        "type": "object"
+      },
       "TotalNetworkObjects": {
         "properties": {
           "aggregation_unit": {
@@ -3039,6 +3111,7 @@
           "get_result&histogram_aggregate.metric.subscriber_degree",
           "get_result&histogram_aggregate.metric.topup_amount",
           "get_result&histogram_aggregate.metric.topup_balance",
+          "get_result&histogram_aggregate.metric.total_active_periods",
           "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin0",
           "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin1",
           "get_result&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin2",
@@ -3389,6 +3462,21 @@
           "get_result&joined_spatial_aggregate.metric.topup_balance&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin2",
           "get_result&joined_spatial_aggregate.metric.topup_balance&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin3",
           "get_result&joined_spatial_aggregate.metric.topup_balance&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.lon-lat",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin3",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.lon-lat",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin0",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin1",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin2",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin3",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.lon-lat",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin0",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin1",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin2",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin3",
+          "get_result&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.lon-lat",
           "get_result&joined_spatial_aggregate.metric.unique_location_counts.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
           "get_result&joined_spatial_aggregate.metric.unique_location_counts.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
           "get_result&joined_spatial_aggregate.metric.unique_location_counts.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
@@ -4501,6 +4589,7 @@
           "run&histogram_aggregate.metric.subscriber_degree",
           "run&histogram_aggregate.metric.topup_amount",
           "run&histogram_aggregate.metric.topup_balance",
+          "run&histogram_aggregate.metric.total_active_periods",
           "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin0",
           "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin1",
           "run&histogram_aggregate.metric.unique_location_counts.aggregation_unit.admin2",
@@ -4851,6 +4940,21 @@
           "run&joined_spatial_aggregate.metric.topup_balance&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin2",
           "run&joined_spatial_aggregate.metric.topup_balance&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin3",
           "run&joined_spatial_aggregate.metric.topup_balance&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.lon-lat",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin3",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.daily_location.aggregation_unit.lon-lat",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin0",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin1",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin2",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.admin3",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.modal_location.locations.daily_location.aggregation_unit.lon-lat",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin0",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin1",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin2",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.admin3",
+          "run&joined_spatial_aggregate.metric.total_active_periods&joined_spatial_aggregate.locations.most_frequent_location.aggregation_unit.lon-lat",
           "run&joined_spatial_aggregate.metric.unique_location_counts.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
           "run&joined_spatial_aggregate.metric.unique_location_counts.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
           "run&joined_spatial_aggregate.metric.unique_location_counts.aggregation_unit.admin0&joined_spatial_aggregate.locations.daily_location.aggregation_unit.admin2",

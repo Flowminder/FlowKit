@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
@@ -61,7 +61,7 @@ class EventCount(SubscriberFeature):
         *,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         tables="all",
     ):

@@ -38,6 +38,7 @@ __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 from .base_schema import BaseSchema
 from .reference_location import ReferenceLocationSchema
+from .total_active_periods import TotalActivePeriodsSchema
 
 
 class JoinableMetrics(OneOfSchema):
@@ -53,6 +54,7 @@ class JoinableMetrics(OneOfSchema):
         "pareto_interactions": ParetoInteractionsSchema,
         "nocturnal_events": NocturnalEventsSchema,
         "displacement": DisplacementSchema,
+        "total_active_periods": TotalActivePeriodsSchema,
     }
 
 
@@ -101,6 +103,7 @@ class JoinedSpatialAggregateSchema(BaseSchema):
             "nocturnal_events",
             "pareto_interactions",
             "displacement",
+            "total_active_periods",
         ]
         categorical_metrics = ["handset"]
         if data["metric"]["query_kind"] in continuous_metrics:

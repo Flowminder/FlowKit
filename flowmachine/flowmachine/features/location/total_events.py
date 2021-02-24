@@ -9,7 +9,7 @@ Calculates the number of events at a location
 during a specified time period.
 """
 
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from flowmachine.core.query import Query
 from flowmachine.core.join_to_location import location_joined_query
@@ -57,7 +57,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         interval: str = "hour",
         direction: Union[str, Direction] = Direction.BOTH,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
