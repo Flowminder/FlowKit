@@ -8,8 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Most frequent locations is now available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
+- Total active periods is now available via FlowAPI.
+- Made hour of day slicing available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
 
 ### Changed
+- Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
 
 ### Fixed
 
