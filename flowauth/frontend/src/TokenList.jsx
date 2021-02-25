@@ -22,7 +22,8 @@ const styles = (theme) => ({
 
 class TokenList extends React.Component {
   state = { tokens: [] };
-  componentDidMount() {
+
+  updateTokenList = () => {
     getMyTokensForServer(this.props.serverID)
       .then((tokens) => {
         tokens.sort((a, b) => Date.parse(b.expires) - Date.parse(a.expires));
@@ -31,6 +32,15 @@ class TokenList extends React.Component {
       .catch((err) => {
         this.setState({ hasError: true, error: err });
       });
+  };
+  componentDidMount() {
+    this.updateTokenList();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.serverID !== prevProps.serverID) {
+      this.updateTokenList();
+    }
   }
   render() {
     const { classes, nickName, editAction } = this.props;

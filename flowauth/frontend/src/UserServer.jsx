@@ -30,6 +30,12 @@ class UserServer extends React.Component {
     });
   };
 
+  componentDidUpdate(prevProps) {
+    if (this.props.serverID !== prevProps.serverID) {
+      this.setState({ editing: false });
+    }
+  }
+
   getBody = () => {
     if (this.state.editing) {
       return (

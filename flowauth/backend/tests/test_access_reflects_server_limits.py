@@ -74,6 +74,11 @@ def test_token_time_limits_reflect_server_limits(app):
             latest_end=datetime.datetime(2020, 1, 1),
             server=server,
         )
+        db.session.add(user)
+        db.session.add(user_group)
+        db.session.add(server)
+        db.session.add(token_limits)
+        db.session.commit()
         limits = user.token_limits(server)
         assert 2880 == limits["longest_life"]
         assert datetime.datetime(2020, 1, 1) == limits["latest_end"]
