@@ -7,6 +7,7 @@ from pathlib import Path
 
 import datetime
 from itertools import chain
+from sqlalchemy import func
 from typing import Dict, List, Union
 
 from flask import current_app
@@ -105,7 +106,18 @@ class User(db.Model):
         """
 
         return sorted(
-            set(chain.from_iterable(group.rights(server) for group in self.groups))
+            val
+            for val, *_ in db.session.query(ServerCapability.capability)
+            .select_from(GroupServerPermission)
+            .join(
+                group_memberships,
+                group_memberships.c.group_id == GroupServerPermission.group_id,
+            )
+            .filter(group_memberships.c.user_id == self.id)
+            .join(ServerCapability)
+            .filter_by(server=server, enabled=True)
+            .distinct()
+            .all()
         )
 
     def latest_token_expiry(self, server: "Server") -> datetime.datetime:
@@ -140,16 +152,24 @@ class User(db.Model):
         dict
             Dict {"latest_end": datetime, "longest_life":int}
         """
-        latest, longest = zip(
-            *[
-                (limit.latest_end, limit.longest_life)
-                for limit in server.group_token_limits
-                if limit.group in self.groups
-            ]
+
+        latest, longest = (
+            db.session.query(
+                func.max(GroupServerTokenLimits.latest_end).label("latest_end"),
+                func.max(GroupServerTokenLimits.longest_life).label("longest_life"),
+            )
+            .filter_by(server=server)
+            .join(
+                group_memberships,
+                group_memberships.c.group_id == GroupServerTokenLimits.group_id,
+            )
+            .filter(group_memberships.c.user_id == self.id)
+            .first()
         )
+
         return {
-            "latest_end": min(server.latest_token_expiry, max(latest)),
-            "longest_life": min(server.longest_token_life, max(longest)),
+            "latest_end": min(server.latest_token_expiry, latest),
+            "longest_life": min(server.longest_token_life, longest),
         }
 
     @hybrid_property
@@ -551,10 +571,13 @@ class Group(db.Model):
 
     def rights(self, server: Server) -> List[str]:
         return [
-            perm.server_capability.capability
-            for perm in self.server_permissions
-            if perm.server_capability.server.id == server.id
-            and perm.server_capability.enabled
+            val
+            for val, *_ in db.session.query(ServerCapability.capability)
+            .select_from(GroupServerPermission)
+            .filter_by(group=self)
+            .join(ServerCapability)
+            .filter_by(server=server, enabled=True)
+            .all()
         ]
 
     def __repr__(self) -> str:
