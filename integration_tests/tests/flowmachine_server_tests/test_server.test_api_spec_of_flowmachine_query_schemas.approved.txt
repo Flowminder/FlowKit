@@ -511,7 +511,6 @@
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
-        "most_frequent_location": "#/components/schemas/MostFrequentLocation",
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "trips_od_matrix": "#/components/schemas/TripsODMatrix",
@@ -564,9 +563,6 @@
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-      },
-      {
-        "$ref": "#/components/schemas/MostFrequentLocation"
       },
       {
         "$ref": "#/components/schemas/SpatialAggregate"

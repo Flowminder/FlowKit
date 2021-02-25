@@ -311,7 +311,7 @@ def total_active_periods_spec(
     hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
-    Return query spec for radius of gyration
+    Return query spec for total active periods.
 
     Parameters
     ----------
