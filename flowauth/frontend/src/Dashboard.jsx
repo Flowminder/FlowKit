@@ -228,11 +228,11 @@ class Dashboard extends React.Component {
             }}
             open={this.state.open}
           >
-          <div className={classes.drawerHeader}>
-          <IconButton onClick={this.handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={this.handleDrawerClose}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
             <Divider />
             {is_admin && (
               <React.Fragment>
