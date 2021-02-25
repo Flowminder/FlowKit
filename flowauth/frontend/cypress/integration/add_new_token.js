@@ -85,7 +85,7 @@ describe("Token generation", function () {
       "Warning: no permissions will be granted by this token. Are you sure?"
     );
     cy.get("#warning-dialog-cancel").click();
-    cy.contains("TOKEN_TEST02").should("not.be.visible");
+    cy.contains("TOKEN_TEST02").should("not.exist");
   });
   it("Add new token", function () {
     cy.get("#new").click();
