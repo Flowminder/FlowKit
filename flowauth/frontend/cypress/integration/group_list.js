@@ -73,7 +73,7 @@ describe("Group list screen", function () {
       cy.contains(group_name).should("be.visible");
       cy.get("#rm_" + group.id).click();
       // Check that the group is gone
-      cy.contains(group_name).should("not.be.visible");
+      cy.contains(group_name).should("not.exist");
     });
   });
 
@@ -95,7 +95,7 @@ describe("Group list screen", function () {
       cy.contains("Save").click();
       // Check that group is renamed
       cy.contains(group_name + "_edited").should("be.visible");
-      cy.contains("/^" + group_name + "$/").should("not.be.visible");
+      cy.contains("/^" + group_name + "$/").should("not.exist");
     });
   });
 });

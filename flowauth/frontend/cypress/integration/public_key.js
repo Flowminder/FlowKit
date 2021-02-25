@@ -5,12 +5,12 @@
 describe("Public key viewing", function () {
   let public_key;
   beforeEach(function () {
-    Cypress.Blob.base64StringToBlob(Cypress.env("PUBLIC_JWT_SIGNING_KEY")).then(
-      (blob) =>
-        Cypress.Blob.blobToBinaryString(blob).then((key) => {
-          public_key = key;
-        })
+    const blob = Cypress.Blob.base64StringToBlob(
+      Cypress.env("PUBLIC_JWT_SIGNING_KEY")
     );
+    Cypress.Blob.blobToBinaryString(blob).then((key) => {
+      public_key = key;
+    });
     // Log in and navigate to user details screen
     cy.login_admin();
     cy.goto("/");
