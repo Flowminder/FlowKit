@@ -520,7 +520,6 @@
             "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
             "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
             "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
-            "most_frequent_location": "#/components/schemas/MostFrequentLocation",
             "spatial_aggregate": "#/components/schemas/SpatialAggregate",
             "total_network_objects": "#/components/schemas/TotalNetworkObjects",
             "trips_od_matrix": "#/components/schemas/TripsODMatrix",
@@ -573,9 +572,6 @@
           },
           {
             "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-          },
-          {
-            "$ref": "#/components/schemas/MostFrequentLocation"
           },
           {
             "$ref": "#/components/schemas/SpatialAggregate"
@@ -3575,11 +3571,6 @@
           "get_result&meaningful_locations_between_label_od_matrix.aggregation_unit.admin2",
           "get_result&meaningful_locations_between_label_od_matrix.aggregation_unit.admin3",
           "get_result&meaningful_locations_between_label_od_matrix.aggregation_unit.lon-lat",
-          "get_result&most_frequent_location.aggregation_unit.admin0",
-          "get_result&most_frequent_location.aggregation_unit.admin1",
-          "get_result&most_frequent_location.aggregation_unit.admin2",
-          "get_result&most_frequent_location.aggregation_unit.admin3",
-          "get_result&most_frequent_location.aggregation_unit.lon-lat",
           "get_result&spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
           "get_result&spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
           "get_result&spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
@@ -5053,11 +5044,6 @@
           "run&meaningful_locations_between_label_od_matrix.aggregation_unit.admin2",
           "run&meaningful_locations_between_label_od_matrix.aggregation_unit.admin3",
           "run&meaningful_locations_between_label_od_matrix.aggregation_unit.lon-lat",
-          "run&most_frequent_location.aggregation_unit.admin0",
-          "run&most_frequent_location.aggregation_unit.admin1",
-          "run&most_frequent_location.aggregation_unit.admin2",
-          "run&most_frequent_location.aggregation_unit.admin3",
-          "run&most_frequent_location.aggregation_unit.lon-lat",
           "run&spatial_aggregate.locations.daily_location.aggregation_unit.admin0",
           "run&spatial_aggregate.locations.daily_location.aggregation_unit.admin1",
           "run&spatial_aggregate.locations.daily_location.aggregation_unit.admin2",
