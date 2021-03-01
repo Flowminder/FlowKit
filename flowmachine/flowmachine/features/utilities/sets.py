@@ -111,7 +111,7 @@ class UniqueSubscribers(Query):
         return self.unioned.column_names
 
     def _make_query(self):
-        return f"SELECT DISTINCT unioned.subscriber FROM ({self.unioned.get_query()}) unioned"
+        return f"SELECT unioned.subscriber FROM ({self.unioned.get_query()}) unioned GROUP BY subscriber"
 
     def as_set(self):
         """
