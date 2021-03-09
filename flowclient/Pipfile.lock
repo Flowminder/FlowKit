@@ -326,10 +326,10 @@
         },
         "ipdb": {
             "hashes": [
-                "sha256:c85398b5fb82f82399fc38c44fe3532c0dde1754abee727d8f5cfcc74547b334"
+                "sha256:1aa37e19e5b3b96c930fe7fe97193a54202c23a8d1b1c7763f76553f5b275731"
             ],
             "index": "pypi",
-            "version": "==0.13.4"
+            "version": "==0.13.6"
         },
         "ipython": {
             "hashes": [
