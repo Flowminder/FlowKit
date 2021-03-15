@@ -18,10 +18,10 @@
     "default": {
         "alembic": {
             "hashes": [
-                "sha256:8a8ccd58a262b1e3ac79b7224d0f9a4ac3bf96ace149972feb3ef9d7a06ac8b5",
-                "sha256:bcb9b6cd58761a517e19d927642cd8364f37cd2db4d28dd04ffad9cf70079ddf"
+                "sha256:66bbb0e7d6277b007dfe7e27237093c79b76cf4f94e6fbd0f7af6f9409546fe6",
+                "sha256:f33d561f3ce2ca390f1c87ff3849cd7d97bb93bae9c91357727263498e10028f"
             ],
-            "version": "==1.5.6"
+            "version": "==1.5.7"
         },
         "apache-airflow": {
             "extras": [
@@ -37,11 +37,11 @@
         },
         "apache-airflow-upgrade-check": {
             "hashes": [
-                "sha256:21c758192ac9c87a45ceca51d74a768235fb223c5e14304e2b3b053ca46dde08",
-                "sha256:c4b09c95be1154a6ea6154c028fbe8565e48f939d8dbd0b2ea70c890000540fc"
+                "sha256:48fe31c908394589ad39fd41b1efcc4f822ac501229aa0e5cd4c738b33eb84d9",
+                "sha256:a8f8cb2519edb20b1a7ceebede84ba5b790da73fcbb2bfcc80938b2645f32fef"
             ],
             "index": "pypi",
-            "version": "==1.2.0"
+            "version": "==1.3.0"
         },
         "apispec": {
             "extras": [
