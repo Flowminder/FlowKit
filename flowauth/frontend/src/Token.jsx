@@ -53,11 +53,6 @@ class Token extends React.Component {
         <Grid item xs={2}>
           <Typography component="p" className={isExpired ? "expired" : ""}>
             {name}{" "}
-            {isExpired ? (
-              <span title="This token has expired">&nbsp;⏰</span>
-            ) : (
-              ""
-            )}
           </Typography>
         </Grid>
         <Grid item xs={3}>
