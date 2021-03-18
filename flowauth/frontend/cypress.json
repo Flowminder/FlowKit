@@ -1,7 +1,9 @@
 {
   "baseUrl": "http://localhost:3000",
   "projectId": "67obxt",
-  "env": {
-    "RETRIES": 2
-  }
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
+  "defaultCommandTimeout": 6000
 }

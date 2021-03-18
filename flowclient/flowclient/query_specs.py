@@ -17,6 +17,7 @@ def unique_locations_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Subscriber level query which retrieves the unique set of locations visited by each subscriber
@@ -35,6 +36,8 @@ def unique_locations_spec(
         Subset of subscribers to retrieve daily locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int or None
+        Hours of the day to include in query
 
     Returns
     -------
@@ -46,6 +49,59 @@ def unique_locations_spec(
         query_kind="unique_locations",
         start_date=start_date,
         end_date=end_date,
+        aggregation_unit=aggregation_unit,
+        event_types=event_types,
+        subscriber_subset=subscriber_subset,
+        mapping_table=mapping_table,
+        geom_table=geom_table,
+        geom_table_join_column=geom_table_join_column,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
+    )
+
+
+def most_frequent_location_spec(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    hours: Optional[Tuple[int, int]] = None,
+    event_types: Optional[List[str]] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
+    mapping_table: Optional[str] = None,
+    geom_table: Optional[str] = None,
+    geom_table_join_column: Optional[str] = None,
+) -> dict:
+    """
+    Subscriber level query which retrieves the location most frequently visited by each subscriber
+    in the time period.
+
+    Parameters
+    ----------
+    start_date, end_date : str
+        ISO format dates between which to get locations, e.g. "2016-01-01"
+    hours : tuple of int
+        Hours of the day to include locations from 0-24.
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Most frequent location query specification.
+
+    """
+    return dict(
+        query_kind="most_frequent_location",
+        start_date=start_date,
+        end_date=end_date,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
         aggregation_unit=aggregation_unit,
         event_types=event_types,
         subscriber_subset=subscriber_subset,
@@ -65,6 +121,7 @@ def daily_location_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for a daily location query for a date and unit of aggregation.
@@ -85,6 +142,8 @@ def daily_location_spec(
         Subset of subscribers to retrieve daily locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -102,6 +161,9 @@ def daily_location_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
@@ -141,6 +203,7 @@ def modal_location_from_dates_spec(
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for a modal location query for a date range and unit of aggregation.
@@ -163,6 +226,8 @@ def modal_location_from_dates_spec(
         Subset of subscribers to retrieve modal locations for. Must be None
         (= all subscribers), a dictionary with the specification of a
         subset query, or a string which is a valid query id.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -184,6 +249,7 @@ def modal_location_from_dates_spec(
             mapping_table=mapping_table,
             geom_table=geom_table,
             geom_table_join_column=geom_table_join_column,
+            hours=hours,
         )
         for date in dates
     ]
@@ -196,6 +262,7 @@ def radius_of_gyration_spec(
     end_date: str,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for radius of gyration
@@ -213,6 +280,8 @@ def radius_of_gyration_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -225,7 +294,60 @@ def radius_of_gyration_spec(
         "end_date": end_date,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
+
+
+def total_active_periods_spec(
+    *,
+    start_date: str,
+    total_periods: int,
+    period_unit: str = "days",
+    period_length: int = 1,
+    event_types: Optional[List[str]] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
+) -> dict:
+    """
+    Return query spec for total active periods.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    total_periods : int
+        Total number of periods to break your time span into
+    period_length : int, default 1
+        Total number of days per period.
+    period_unit : {'days', 'hours', 'minutes'} default 'days'
+        Split this time frame into hours or days etc.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    hours : tuple of int
+        Hours of the day to include
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return dict(
+        query_kind="total_active_periods",
+        total_periods=total_periods,
+        period_length=period_length,
+        period_unit=period_unit,
+        start_date=start_date,
+        event_types=event_types,
+        subscriber_subset=subscriber_subset,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
+    )
 
 
 def unique_location_counts_spec(
@@ -235,6 +357,7 @@ def unique_location_counts_spec(
     aggregation_unit: str,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
     mapping_table: Optional[str] = None,
     geom_table: Optional[str] = None,
     geom_table_join_column: Optional[str] = None,
@@ -257,6 +380,8 @@ def unique_location_counts_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -273,6 +398,9 @@ def unique_location_counts_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
@@ -282,6 +410,7 @@ def topup_balance_spec(
     end_date: str,
     statistic: str,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for top-up balance.
@@ -298,6 +427,8 @@ def topup_balance_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -310,25 +441,29 @@ def topup_balance_spec(
         "end_date": end_date,
         "statistic": statistic,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
 def subscriber_degree_spec(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     direction: str = "both",
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for subscriber degree
 
     Parameters
     ----------
-    start : str
+    start_date : str
         ISO format date of the first day of the count, e.g. "2016-01-01"
-    stop : str
+    end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
@@ -339,6 +474,8 @@ def subscriber_degree_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -347,29 +484,33 @@ def subscriber_degree_spec(
     """
     return {
         "query_kind": "subscriber_degree",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "direction": direction,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
 def topup_amount_spec(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     statistic: str,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for topup amount
 
     Parameters
     ----------
-    start : str
+    start_date : str
         ISO format date of the first day of the count, e.g. "2016-01-01"
-    stop : str
+    end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
@@ -377,6 +518,8 @@ def topup_amount_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -385,29 +528,33 @@ def topup_amount_spec(
     """
     return {
         "query_kind": "topup_amount",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "statistic": statistic,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
 def event_count_spec(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     direction: str = "both",
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for event count
 
     Parameters
     ----------
-    start : str
+    start_date : str
         ISO format date of the first day of the count, e.g. "2016-01-01"
-    stop : str
+    end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
@@ -418,6 +565,8 @@ def event_count_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -426,31 +575,35 @@ def event_count_spec(
     """
     return {
         "query_kind": "event_count",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "direction": direction,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
 def displacement_spec(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     statistic: str,
     reference_location: Dict[str, str],
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for displacement
 
     Parameters
     ----------
-    start : str
+    start_date : str
         ISO format date of the first day of the count, e.g. "2016-01-01"
-    stop : str
+    end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
@@ -464,6 +617,8 @@ def displacement_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -472,31 +627,35 @@ def displacement_spec(
     """
     return {
         "query_kind": "displacement",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "statistic": statistic,
         "reference_location": reference_location,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
 def pareto_interactions_spec(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     proportion: float,
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for pareto interactions
 
     Parameters
     ----------
-    start : str
+    start_date : str
         ISO format date of the first day of the time interval to be considered, e.g. "2016-01-01"
-    stop : str
+    end_date : str
         ISO format date of the day _after_ the final date of the time interval to be considered, e.g. "2016-01-08"
     proportion : float
         proportion to track below
@@ -507,6 +666,8 @@ def pareto_interactions_spec(
         Subset of subscribers to include in result. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -515,18 +676,21 @@ def pareto_interactions_spec(
     """
     return {
         "query_kind": "pareto_interactions",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "proportion": proportion,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 
 def nocturnal_events_spec(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     hours: Tuple[int, int],
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
@@ -536,9 +700,9 @@ def nocturnal_events_spec(
 
     Parameters
     ----------
-    start : str
+    start_date : str
         ISO format date of the first day for which to count nocturnal events, e.g. "2016-01-01"
-    stop : str
+    end_date : str
         ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
     hours: tuple(int,int)
         Tuple defining beginning and end of night
@@ -558,8 +722,8 @@ def nocturnal_events_spec(
 
     return {
         "query_kind": "nocturnal_events",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "night_start_hour": hours[0],
         "night_end_hour": hours[1],
         "event_types": event_types,
@@ -575,6 +739,7 @@ def handset_spec(
     method: str = "last",
     event_types: Optional[List[str]] = None,
     subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
 ) -> dict:
     """
     Return query spec for handset
@@ -596,6 +761,8 @@ def handset_spec(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    hours : tuple of int
+        Hours of the day to include
 
     Returns
     -------
@@ -610,6 +777,9 @@ def handset_spec(
         "method": method,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
+        "hours": None
+        if hours is None
+        else dict(start_hour=hours[0], end_hour=hours[1]),
     }
 
 

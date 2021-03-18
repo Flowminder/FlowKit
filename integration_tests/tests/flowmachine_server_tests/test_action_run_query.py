@@ -85,6 +85,7 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 spatial_unit=make_spatial_unit("admin", level=3),
                 table=None,
                 subscriber_subset=None,
+                hours=None,
             )
         )
     )

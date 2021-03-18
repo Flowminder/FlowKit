@@ -25,6 +25,7 @@ from flowmachine.features.location.redacted_meaningful_locations_od import (
     RedactedMeaningfulLocationsOD,
 )
 from .base_exposed_query import BaseExposedQuery
+from .field_mixins import StartAndEndField, EventTypesField, SubscriberSubsetField
 from .base_schema import BaseSchema
 from .custom_fields import (
     EventTypes,
@@ -243,11 +244,15 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         return self.q_meaningful_locations_od
 
 
-class MeaningfulLocationsAggregateSchema(AggregationUnitMixin, BaseSchema):
+class MeaningfulLocationsAggregateSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    AggregationUnitMixin,
+    BaseSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
         required=True, keys=fields.String(), values=fields.Dict()
@@ -256,8 +261,6 @@ class MeaningfulLocationsAggregateSchema(AggregationUnitMixin, BaseSchema):
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = MeaningfulLocationsAggregateExposed
 
@@ -308,12 +311,16 @@ def _make_meaningful_locations_object(
     return q_meaningful_locations
 
 
-class MeaningfulLocationsBetweenLabelODMatrixSchema(AggregationUnitMixin, BaseSchema):
+class MeaningfulLocationsBetweenLabelODMatrixSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    AggregationUnitMixin,
+    BaseSchema,
+):
     query_kind = fields.String(
         validate=OneOf(["meaningful_locations_between_label_od_matrix"])
     )
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
     labels = fields.Dict(
@@ -323,13 +330,13 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(AggregationUnitMixin, BaseSc
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = MeaningfulLocationsBetweenLabelODMatrixExposed
 
 
-class MeaningfulLocationsBetweenDatesODMatrixSchema(AggregationUnitMixin, BaseSchema):
+class MeaningfulLocationsBetweenDatesODMatrixSchema(
+    EventTypesField, SubscriberSubsetField, AggregationUnitMixin, BaseSchema
+):
     query_kind = fields.String(
         validate=OneOf(["meaningful_locations_between_dates_od_matrix"])
     )
@@ -345,7 +352,5 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(AggregationUnitMixin, BaseSc
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset(required=False)
 
     __model__ = MeaningfulLocationsBetweenDatesODMatrixExposed

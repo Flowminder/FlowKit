@@ -6,7 +6,7 @@
 """
 Class for calculating MDS volume statistics.
 """
-
+from typing import Optional, Tuple
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
@@ -60,7 +60,7 @@ class MDSVolume(SubscriberFeature):
         statistic="sum",
         *,
         subscriber_identifier="msisdn",
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
         self.start = standardise_date(start)

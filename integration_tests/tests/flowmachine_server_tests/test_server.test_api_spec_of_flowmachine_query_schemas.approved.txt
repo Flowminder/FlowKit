@@ -144,6 +144,15 @@
         "nullable": true,
         "type": "string"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "mapping_table": {
         "nullable": true,
         "type": "string"
@@ -253,6 +262,15 @@
         "nullable": true,
         "type": "string"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "mapping_table": {
         "nullable": true,
         "type": "string"
@@ -292,6 +310,10 @@
   },
   "Displacement": {
     "properties": {
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
       "event_types": {
         "default": null,
         "items": {
@@ -307,6 +329,15 @@
         "nullable": true,
         "type": "array"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "query_kind": {
         "enum": [
           "displacement"
@@ -314,7 +345,7 @@
         "type": "string"
       },
       "reference_location": {
-        "$ref": "#/components/schemas/InputToDisplacement"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "sampling": {
         "allOf": [
@@ -324,7 +355,7 @@
         ],
         "nullable": true
       },
-      "start": {
+      "start_date": {
         "format": "date-time",
         "type": "string"
       },
@@ -340,19 +371,15 @@
         ],
         "type": "string"
       },
-      "stop": {
-        "format": "date-time",
-        "type": "string"
-      },
       "subscriber_subset": {
         "nullable": true,
         "type": "string"
       }
     },
     "required": [
-      "start",
-      "statistic",
-      "stop"
+      "end_date",
+      "start_date",
+      "statistic"
     ],
     "type": "object"
   },
@@ -410,6 +437,10 @@
         ],
         "type": "string"
       },
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
       "event_types": {
         "default": null,
         "items": {
@@ -425,6 +456,15 @@
         "nullable": true,
         "type": "array"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "query_kind": {
         "enum": [
           "event_count"
@@ -439,11 +479,7 @@
         ],
         "nullable": true
       },
-      "start": {
-        "format": "date-time",
-        "type": "string"
-      },
-      "stop": {
+      "start_date": {
         "format": "date-time",
         "type": "string"
       },
@@ -453,8 +489,8 @@
       }
     },
     "required": [
-      "start",
-      "stop"
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   },
@@ -639,6 +675,15 @@
         "nullable": true,
         "type": "array"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "method": {
         "enum": [
           "last",
@@ -723,6 +768,7 @@
         "subscriber_degree": "#/components/schemas/SubscriberDegree",
         "topup_amount": "#/components/schemas/TopUpAmount",
         "topup_balance": "#/components/schemas/TopUpBalance",
+        "total_active_periods": "#/components/schemas/TotalActivePeriods",
         "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
@@ -753,32 +799,38 @@
         "$ref": "#/components/schemas/TopUpBalance"
       },
       {
+        "$ref": "#/components/schemas/TotalActivePeriods"
+      },
+      {
         "$ref": "#/components/schemas/UniqueLocationCounts"
       }
     ]
   },
-  "InputToDisplacement": {
-    "discriminator": {
-      "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
+  "Hours": {
+    "properties": {
+      "end_hour": {
+        "maximum": 24,
+        "minimum": 0,
+        "type": "integer"
       },
-      "propertyName": "query_kind"
-    },
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/DailyLocation"
-      },
-      {
-        "$ref": "#/components/schemas/ModalLocation"
+      "start_hour": {
+        "maximum": 24,
+        "minimum": 0,
+        "type": "integer"
       }
-    ]
+    },
+    "required": [
+      "end_hour",
+      "start_hour"
+    ],
+    "type": "object"
   },
   "InputToFlows": {
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
         "modal_location": "#/components/schemas/ModalLocation",
+        "most_frequent_location": "#/components/schemas/MostFrequentLocation",
         "unique_locations": "#/components/schemas/UniqueLocations"
       },
       "propertyName": "query_kind"
@@ -789,6 +841,9 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MostFrequentLocation"
       },
       {
         "$ref": "#/components/schemas/UniqueLocations"
@@ -808,23 +863,6 @@
       }
     ]
   },
-  "InputToSpatialAggregate": {
-    "discriminator": {
-      "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
-      },
-      "propertyName": "query_kind"
-    },
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/DailyLocation"
-      },
-      {
-        "$ref": "#/components/schemas/ModalLocation"
-      }
-    ]
-  },
   "JoinableMetrics": {
     "discriminator": {
       "mapping": {
@@ -837,6 +875,7 @@
         "subscriber_degree": "#/components/schemas/SubscriberDegree",
         "topup_amount": "#/components/schemas/TopUpAmount",
         "topup_balance": "#/components/schemas/TopUpBalance",
+        "total_active_periods": "#/components/schemas/TotalActivePeriods",
         "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
@@ -870,6 +909,9 @@
         "$ref": "#/components/schemas/TopUpBalance"
       },
       {
+        "$ref": "#/components/schemas/TotalActivePeriods"
+      },
+      {
         "$ref": "#/components/schemas/UniqueLocationCounts"
       }
     ]
@@ -877,7 +919,7 @@
   "JoinedSpatialAggregate": {
     "properties": {
       "locations": {
-        "$ref": "#/components/schemas/InputToSpatialAggregate"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "method": {
         "enum": [
@@ -954,6 +996,15 @@
       "geom_table_join_column": {
         "nullable": true,
         "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "interval": {
         "enum": [
@@ -1037,6 +1088,15 @@
       "geom_table_join_column": {
         "nullable": true,
         "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "mapping_table": {
         "nullable": true,
@@ -1408,8 +1468,94 @@
     },
     "type": "object"
   },
+  "MostFrequentLocation": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "most_frequent_location"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
   "NocturnalEvents": {
     "properties": {
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
       "event_types": {
         "default": null,
         "items": {
@@ -1449,11 +1595,7 @@
         ],
         "nullable": true
       },
-      "start": {
-        "format": "date-time",
-        "type": "string"
-      },
-      "stop": {
+      "start_date": {
         "format": "date-time",
         "type": "string"
       },
@@ -1463,13 +1605,17 @@
       }
     },
     "required": [
-      "start",
-      "stop"
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   },
   "ParetoInteractions": {
     "properties": {
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
       "event_types": {
         "default": null,
         "items": {
@@ -1484,6 +1630,15 @@
         "minItems": 1,
         "nullable": true,
         "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "proportion": {
         "maximum": 1.0,
@@ -1504,11 +1659,7 @@
         ],
         "nullable": true
       },
-      "start": {
-        "format": "date-time",
-        "type": "string"
-      },
-      "stop": {
+      "start_date": {
         "format": "date-time",
         "type": "string"
       },
@@ -1518,9 +1669,9 @@
       }
     },
     "required": [
+      "end_date",
       "proportion",
-      "start",
-      "stop"
+      "start_date"
     ],
     "type": "object"
   },
@@ -1544,6 +1695,15 @@
         "minItems": 1,
         "nullable": true,
         "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "query_kind": {
         "enum": [
@@ -1633,7 +1793,8 @@
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
-        "modal_location": "#/components/schemas/ModalLocation"
+        "modal_location": "#/components/schemas/ModalLocation",
+        "most_frequent_location": "#/components/schemas/MostFrequentLocation"
       },
       "propertyName": "query_kind"
     },
@@ -1643,13 +1804,16 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MostFrequentLocation"
       }
     ]
   },
   "SpatialAggregate": {
     "properties": {
       "locations": {
-        "$ref": "#/components/schemas/InputToSpatialAggregate"
+        "$ref": "#/components/schemas/ReferenceLocation"
       },
       "query_kind": {
         "enum": [
@@ -1673,6 +1837,10 @@
         ],
         "type": "string"
       },
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
       "event_types": {
         "default": null,
         "items": {
@@ -1688,6 +1856,15 @@
         "nullable": true,
         "type": "array"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "query_kind": {
         "enum": [
           "subscriber_degree"
@@ -1702,11 +1879,7 @@
         ],
         "nullable": true
       },
-      "start": {
-        "format": "date-time",
-        "type": "string"
-      },
-      "stop": {
+      "start_date": {
         "format": "date-time",
         "type": "string"
       },
@@ -1716,8 +1889,8 @@
       }
     },
     "required": [
-      "start",
-      "stop"
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   },
@@ -1755,6 +1928,19 @@
   },
   "TopUpAmount": {
     "properties": {
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "query_kind": {
         "enum": [
           "topup_amount"
@@ -1769,7 +1955,7 @@
         ],
         "nullable": true
       },
-      "start": {
+      "start_date": {
         "format": "date-time",
         "type": "string"
       },
@@ -1785,19 +1971,15 @@
         ],
         "type": "string"
       },
-      "stop": {
-        "format": "date-time",
-        "type": "string"
-      },
       "subscriber_subset": {
         "nullable": true,
         "type": "string"
       }
     },
     "required": [
-      "start",
-      "statistic",
-      "stop"
+      "end_date",
+      "start_date",
+      "statistic"
     ],
     "type": "object"
   },
@@ -1806,6 +1988,15 @@
       "end_date": {
         "format": "date-time",
         "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "query_kind": {
         "enum": [
@@ -1849,6 +2040,69 @@
     ],
     "type": "object"
   },
+  "TotalActivePeriods": {
+    "properties": {
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "period_length": {
+        "default": 1,
+        "type": "integer"
+      },
+      "period_unit": {
+        "default": "days",
+        "enum": [
+          "days",
+          "hours",
+          "minutes"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "total_active_periods"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
+      "total_periods": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "start_date",
+      "total_periods"
+    ],
+    "type": "object"
+  },
   "TotalNetworkObjects": {
     "properties": {
       "aggregation_unit": {
@@ -1887,6 +2141,15 @@
       "geom_table_join_column": {
         "nullable": true,
         "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "mapping_table": {
         "nullable": true,
@@ -1965,6 +2228,15 @@
         "nullable": true,
         "type": "string"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "mapping_table": {
         "nullable": true,
         "type": "string"
@@ -2030,6 +2302,15 @@
         "nullable": true,
         "type": "string"
       },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
       "mapping_table": {
         "nullable": true,
         "type": "string"
@@ -2094,6 +2375,15 @@
       "geom_table_join_column": {
         "nullable": true,
         "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "mapping_table": {
         "nullable": true,
@@ -2167,6 +2457,15 @@
       "geom_table_join_column": {
         "nullable": true,
         "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
       },
       "mapping_table": {
         "nullable": true,

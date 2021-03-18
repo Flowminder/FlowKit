@@ -4,7 +4,7 @@
 
 import structlog
 import warnings
-from typing import List
+from typing import List, Optional, Tuple
 
 from ...core import Query
 from ...core.context import get_db
@@ -48,7 +48,7 @@ class EventsTablesUnion(Query):
         *,
         columns,
         tables=None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):

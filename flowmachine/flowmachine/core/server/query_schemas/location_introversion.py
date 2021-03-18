@@ -9,15 +9,18 @@ from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_introversion import (
     RedactedLocationIntroversion,
 )
-from .custom_fields import EventTypes
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
 from .base_schema import BaseSchema
-from .custom_fields import ISODateTime
-from .subscriber_subset import SubscriberSubset
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
@@ -29,7 +32,8 @@ class LocationIntroversionExposed(BaseExposedQuery):
         aggregation_unit,
         direction,
         event_types,
-        subscriber_subset=None
+        subscriber_subset=None,
+        hours=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -39,6 +43,7 @@ class LocationIntroversionExposed(BaseExposedQuery):
         self.direction = direction
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
+        self.hours = hours
 
     @property
     def _flowmachine_query_obj(self):
@@ -57,19 +62,23 @@ class LocationIntroversionExposed(BaseExposedQuery):
                 direction=self.direction,
                 table=self.event_types,
                 subscriber_subset=self.subscriber_subset,
+                hours=self.hours,
             )
         )
 
 
-class LocationIntroversionSchema(AggregationUnitMixin, BaseSchema):
+class LocationIntroversionSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    AggregationUnitMixin,
+    BaseSchema,
+):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_introversion"]))
-    start_date = ISODateTime(required=True)
-    end_date = ISODateTime(required=True)
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = LocationIntroversionExposed

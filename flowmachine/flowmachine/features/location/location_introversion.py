@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from ..utilities.direction_enum import Direction
 
@@ -81,7 +81,7 @@ class LocationIntroversion(GeoDataMixin, Query):
         table: str = "all",
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         direction: Union[Direction, str] = Direction.BOTH,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):

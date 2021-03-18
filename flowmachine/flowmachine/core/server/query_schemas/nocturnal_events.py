@@ -6,11 +6,15 @@ from marshmallow import fields
 from marshmallow.validate import OneOf, Range
 
 from flowmachine.features import NocturnalEvents
-from .custom_fields import EventTypes, ISODateTime
-from .subscriber_subset import SubscriberSubset
+
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+)
+from .field_mixins import (
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
 )
 
 __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
@@ -20,8 +24,8 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
         *,
-        start,
-        stop,
+        start_date,
+        end_date,
         night_start_hour,
         night_end_hour,
         event_types,
@@ -30,8 +34,8 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start = start
-        self.stop = stop
+        self.start = start_date
+        self.stop = end_date
         self.hours = (night_start_hour, night_end_hour)
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
@@ -55,15 +59,16 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
         )
 
 
-class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
+class NocturnalEventsSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    BaseQueryWithSamplingSchema,
+):
     query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
-    start = ISODateTime(required=True)
-    stop = ISODateTime(required=True)
     night_start_hour = fields.Integer(
         validate=Range(0, 23)
     )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
     night_end_hour = fields.Integer(validate=Range(0, 23))
-    event_types = EventTypes()
-    subscriber_subset = SubscriberSubset()
 
     __model__ = NocturnalEventsExposed

@@ -10,7 +10,7 @@ that a given contact participates out of the
 subscriber's total event count.
 
 """
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from flowmachine.core.mixins import GraphMixin
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
@@ -69,7 +69,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         start,
         stop,
         *,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         tables="all",
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.BOTH,

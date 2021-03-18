@@ -11,7 +11,7 @@ at the network level.
 
 """
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from ...core.context import get_db
 from ...core.mixins import GeoDataMixin
@@ -73,7 +73,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         total_by="day",
         network_object: AnySpatialUnit = make_spatial_unit("cell"),
         spatial_unit: Optional[AnySpatialUnit] = None,
-        hours="all",
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):

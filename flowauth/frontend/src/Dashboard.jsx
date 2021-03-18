@@ -15,6 +15,7 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import UserServer from "./UserServer";
 import UserServerList from "./UserServerList";
 import GroupList from "./GroupList";
@@ -218,7 +219,7 @@ class Dashboard extends React.Component {
             </Toolbar>
           </AppBar>
           <Drawer
-            variant="permanent"
+            variant="persistent"
             classes={{
               paper: classNames(
                 classes.drawerPaper,
@@ -227,6 +228,11 @@ class Dashboard extends React.Component {
             }}
             open={this.state.open}
           >
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={this.handleDrawerClose}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
             <Divider />
             {is_admin && (
               <React.Fragment>

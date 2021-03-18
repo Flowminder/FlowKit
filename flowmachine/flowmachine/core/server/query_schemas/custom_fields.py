@@ -10,6 +10,29 @@ from marshmallow import fields, Schema, validates_schema, ValidationError, post_
 from marshmallow.validate import Range, Length, OneOf
 
 
+class Hours(Schema):
+    """
+    Custom field representing a slice of the hours of the day, possibly spanning into tomorrow.
+
+    Notes
+    -----
+    Hours are _inclusive_ so start_hour=1, end_hour=2 will include 1 and 2 AM.
+    """
+
+    start_hour = fields.Integer(
+        validate=Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
+        required=True,
+    )
+    end_hour = fields.Integer(
+        validate=Range(min=0, max=24, min_inclusive=True, max_inclusive=True),
+        required=True,
+    )
+
+    @post_load
+    def to_tuple(self, params, **kwargs):
+        return params["start_hour"], params["end_hour"]
+
+
 class Bounds(Schema):
     """
     Schema representing a range (i.e. lower and upper bound, both required, lower bound must be less than upper.
