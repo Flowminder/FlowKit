@@ -17,7 +17,7 @@ p.expired span {
   font-style: normal;
 }
 
-.MuiGrid-item * {
+.MuiGrid-item p {
     text-overflow: ellipsis;
     overflow: hidden;
 }
