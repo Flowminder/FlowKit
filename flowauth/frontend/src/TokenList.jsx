@@ -59,7 +59,7 @@ class TokenList extends React.Component {
               ✅&nbsp; Active tokens
             </Typography>
           </Grid>
-          <Grid item xs>
+          <Grid item xs={1}>
             <IconButton
               color="inherit"
               id="new"
@@ -70,13 +70,13 @@ class TokenList extends React.Component {
             </IconButton>
           </Grid>
           <Grid item xs={12} />
-          <Grid item xs={2}>
+          <Grid item xs={4}>
             <Typography component="h3">Nickname</Typography>
           </Grid>
           <Grid item xs={3}>
             <Typography component="h3">Expiry</Typography>
           </Grid>
-          <Grid item xs={7} />
+          <Grid item xs={5} />
           {activeTokens.map((object) => (
             <Token
               name={object.name}
@@ -96,14 +96,14 @@ class TokenList extends React.Component {
               </Typography>
             </Grid>
             <Grid item xs={12} />
-            <Grid item xs={2}>
+            <Grid item xs={3}>
               <Typography component="h3">Nickname</Typography>
             </Grid>
             <Grid item xs={3}>
               <Typography component="h3">Expired</Typography>
             </Grid>
 
-            <Grid item xs={7} />
+            <Grid item xs={6} />
             <Grid item xs={12} />
             {expiredTokens.map((object) => (
               <Token
