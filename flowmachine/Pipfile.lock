@@ -403,11 +403,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:0e4b22f211ead9222d6a3dd0354c1b3ed37a80e47d6e59e75d659a4b165aeff0",
-                "sha256:72d03a5debea7b6ad6d896a7b203317a2a5e5cc6ad5f64873f50a58ad87ea7d6"
+                "sha256:7a18b35b06e1fa06f19b5b6f767b48fca166580bdfc987aa0ad8f4d700c96c9b",
+                "sha256:f84b57e12dce2f983e2751c484a279324134037b40bc65008d09c8e2ff60bd4d"
             ],
             "index": "pypi",
-            "version": "==0.3.2"
+            "version": "==0.3.3"
         },
         "asynctest": {
             "hashes": [
@@ -616,10 +616,10 @@
         },
         "identify": {
             "hashes": [
-                "sha256:99d40094d8c9fc0b88b379200ecb4f8345a593878656867fa5363abc850766ab",
-                "sha256:f516f69e62df018a3965a835dccfb3397ed02ddaf513584633c9acaf084be3f2"
+                "sha256:39c0b110c9d0cd2391b6c38cd0ff679ee4b4e98f8db8b06c5d9d9e502711a1e1",
+                "sha256:efbf090a619255bc31c4fbba709e2805f7d30913fd4854ad84ace52bd276e2f6"
             ],
-            "version": "==2.1.4"
+            "version": "==2.2.0"
         },
         "iniconfig": {
             "hashes": [
