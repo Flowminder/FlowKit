@@ -40,7 +40,7 @@ setup(
         "distributed ==2.19.0",  # Pinned because prefect is pinned"
         "pyyaml",
         "sh",
-        "sqlalchemy",
+        "sqlalchemy<=1.3.23",
     ],
     extras_require={
         "test": ["pytest", "pytest-cov", "sqlalchemy-utils", "testing-postgresql"],

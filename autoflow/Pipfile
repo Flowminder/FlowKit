@@ -22,7 +22,7 @@ prefect = "==0.10.7"
 psycopg2-binary = "*"
 pyyaml = "*"
 sh = "*"
-sqlalchemy = "*"
+sqlalchemy = "<=1.3.23"
 nbconvert = "*"
 nbformat = "*"
 
