@@ -50,14 +50,9 @@ class Token extends React.Component {
     const isExpired = Date.parse(expiry) < Date.parse(new Date());
     return (
       <React.Fragment>
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           <Typography component="p" className={isExpired ? "expired" : ""}>
             {name}{" "}
-            {isExpired ? (
-              <span title="This token has expired">&nbsp;⏰</span>
-            ) : (
-              ""
-            )}
           </Typography>
         </Grid>
         <Grid item xs={3}>
@@ -65,7 +60,7 @@ class Token extends React.Component {
             {expiry}
           </Typography>
         </Grid>
-        <Grid item xs={7}>
+        <Grid item xs={6}>
           <Tooltip title={copySuccess} placement="bottom">
             <Button
               variant="outlined"

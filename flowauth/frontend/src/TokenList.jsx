@@ -6,6 +6,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import Collapse from "@material-ui/core/Collapse";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
@@ -45,40 +46,87 @@ class TokenList extends React.Component {
   render() {
     const { classes, nickName, editAction } = this.props;
     const { tokens } = this.state;
+
+    const now = Date.parse(new Date());
+    const activeTokens = tokens.filter(
+      (token) => Date.parse(token.expires) > now
+    );
+    const expiredTokens = tokens.filter(
+      (token) => Date.parse(token.expires) <= now
+    );
+
     return (
       <React.Fragment>
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            Tokens: {nickName}
-          </Typography>
-        </Grid>
-        <Grid item xs={2}>
-          <Typography component="h3">Nickname</Typography>
-        </Grid>
-        <Grid item xs={3}>
-          <Typography component="h3">Expiry</Typography>
-        </Grid>
-        <Grid item xs={7} />
-        {tokens.map((object) => (
-          <Token
-            name={object.name}
-            expiry={object.expires}
-            token={object.token}
-            classes={classes}
-            editAction={editAction}
-          />
-        ))}
-        <Grid item xs={11} />
-        <Grid item xs>
-          <IconButton
-            color="inherit"
-            id="new"
-            aria-label="New"
-            onClick={editAction}
-          >
-            <AddIcon />
-          </IconButton>
-        </Grid>
+        <React.Fragment>
+          <Grid item xs={12}>
+            <Typography variant="h5" component="h1">
+              {nickName}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} />
+          <Grid item xs={11}>
+            <Typography variant="h5" component="h2">
+              ✅&nbsp; Active tokens
+            </Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton
+              color="inherit"
+              id="new"
+              aria-label="New"
+              onClick={editAction}
+            >
+              <AddIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={12} />
+          <Grid item xs={4}>
+            <Typography component="h3">Nickname</Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography component="h3">Expiry</Typography>
+          </Grid>
+          <Grid item xs={5} />
+          {activeTokens.map((object) => (
+            <Token
+              name={object.name}
+              expiry={object.expires}
+              token={object.token}
+              classes={classes}
+              editAction={editAction}
+            />
+          ))}
+        </React.Fragment>
+        {expiredTokens.length > 0 && (
+          <React.Fragment>
+            <Grid item xs={12} />
+            <Grid item xs={12}>
+              <Typography variant="h5" component="h2">
+                ⏰&nbsp;Expired tokens
+              </Typography>
+            </Grid>
+            <Grid item xs={12} />
+            <Grid item xs={3}>
+              <Typography component="h3">Nickname</Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography component="h3">Expired</Typography>
+            </Grid>
+
+            <Grid item xs={6} />
+            <Grid item xs={12} />
+            {expiredTokens.map((object) => (
+              <Token
+                name={object.name}
+                expiry={object.expires}
+                token={object.token}
+                classes={classes}
+                editAction={editAction}
+              />
+            ))}
+            <Grid item xs={12} />
+          </React.Fragment>
+        )}
       </React.Fragment>
     );
   }
