@@ -28,6 +28,7 @@ setup(
     install_requires=[
         "flask",
         "flask-sqlalchemy",
+        "sqlalchemy <=1.3.23",
         "flask-login",
         "argon2_cffi",
         "passlib",
