@@ -403,11 +403,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:7a18b35b06e1fa06f19b5b6f767b48fca166580bdfc987aa0ad8f4d700c96c9b",
-                "sha256:f84b57e12dce2f983e2751c484a279324134037b40bc65008d09c8e2ff60bd4d"
+                "sha256:0a891117f515b6b3270428374e91a9ea5d300b83da4e6502d483669cd07952e2",
+                "sha256:a2c35d1f96a5840555dc30b934a79b9b907a015638d3bbbaf50f39bb0f3c79a6"
             ],
             "index": "pypi",
-            "version": "==0.3.3"
+            "version": "==0.4.0"
         },
         "asynctest": {
             "hashes": [
