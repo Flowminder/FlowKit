@@ -22,8 +22,8 @@ from ..utilities.multilocation import MultiLocation
 class ModalLocation(MultiLocation, BaseLocation, Query):
     """
     ModalLocation is the mode of multiple DailyLocations (or other similar
-    location like objects.) It can be instantiated with either a date range
-    or a list of DailyLocations (the former is more common). It gives each
+    location like objects.) It can be instantiated with any query type which has a subscriber
+    and location columns, and provides a start and stop attribute or property. It gives each
     subscriber only one location.
     """
 

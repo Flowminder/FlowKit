@@ -11,11 +11,15 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .unique_locations import UniqueLocationsSchema
 
 
 class InputToModalLocationSchema(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {"daily_location": DailyLocationSchema}
+    type_schemas = {
+        "daily_location": DailyLocationSchema,
+        "unique_locations": UniqueLocationsSchema,
+    }
 
 
 class ModalLocationExposed(BaseExposedQueryWithSampling):

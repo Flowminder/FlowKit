@@ -54,9 +54,9 @@ class MultiLocation:
             )
         )
         self._all_dls = daily_locations
-        logger.info("ModalLocation using {} DailyLocations".format(len(self._all_dls)))
+        logger.info("ModalLocation using {} locations".format(len(self._all_dls)))
         logger.info(
-            "{}/{} DailyLocations are pre-calculated.".format(
+            "{}/{} locations are pre-calculated.".format(
                 sum(1 for dl in self._all_dls if dl.is_stored), len(self._all_dls)
             )
         )

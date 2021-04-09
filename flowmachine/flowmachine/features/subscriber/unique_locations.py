@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Union
 
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
@@ -48,6 +48,18 @@ class UniqueLocations(SubscriberFeature):
     @property
     def column_names(self) -> List[str]:
         return ["subscriber", *self.spatial_unit.location_id_columns]
+
+    @property
+    def start(self) -> Union[str, None]:
+        return self.subscriber_locations.start
+
+    @property
+    def stop(self) -> Union[str, None]:
+        return self.subscriber_locations.stop
+
+    @property
+    def subscriber_identifier(self) -> str:
+        return self.subscriber_locations.subscriber_identifier
 
     def _make_query(self):
         location_columns = ",".join(self.spatial_unit.location_id_columns)

@@ -853,13 +853,17 @@
   "InputToModalLocation": {
     "discriminator": {
       "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation"
+        "daily_location": "#/components/schemas/DailyLocation",
+        "unique_locations": "#/components/schemas/UniqueLocations"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
         "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueLocations"
       }
     ]
   },
