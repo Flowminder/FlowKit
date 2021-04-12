@@ -5,7 +5,7 @@ GEM
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     afm (0.2.2)
-    asciidoctor (2.0.12)
+    asciidoctor (2.0.13)
     asciidoctor-pdf (1.5.4)
       asciidoctor (>= 1.5.3, < 3.0.0)
       concurrent-ruby (~> 1.1.0)
