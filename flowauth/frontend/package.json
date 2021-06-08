@@ -28,7 +28,7 @@
     "cy:verify": "cypress verify"
   },
   "devDependencies": {
-    "cypress": "^7.1.0",
+    "cypress": "^7.5.0",
     "cypress-plugin-retries": "^1.5.2",
     "husky": "^6.0.0",
     "otp-cli": "^0.2.0",
