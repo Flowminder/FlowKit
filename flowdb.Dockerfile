@@ -12,15 +12,15 @@
 #  on the official Debian Stretch (9) image.
 #
 
-FROM postgres:12.7@sha256:fbbe9a48262fdd7d34e44477058c407bf656286807292330d94728d8f5e1bea4
+FROM postgres:12.7@sha256:8c6a637bf1dc6a75c3aba77de4d06105248cf27612ce38fc967514e18afe9142
 
 
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=3.1.2+dfsg-1.pgdg100+1
-ARG PGROUTING_VERSION=3.1.3-1.pgdg100+1
+ARG POSTGIS_VERSION=3.1.2+dfsg-1~exp2.pgdg100+1
+ARG PGROUTING_VERSION=3.2.0-1~exp1.pgdg100+1
 ARG PG_MEDIAN_UTILS_VERSION=0.0.7
-ARG OGR_FDW_VERSION=1.1.0-1.pgdg100+1
+ARG OGR_FDW_VERSION=1.1.1-1~exp1.pgdg100+1
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
 ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
@@ -75,7 +75,7 @@ RUN apt-get update \
         libkrb5-dev \ 
         build-essential \
         git \
-        && git clone https://git.postgresql.org/git/pldebugger.git \
+        && git clone https://github.com/EnterpriseDB/pldebugger.git \
         && mv pldebugger /usr/local/src \
         && make -C /usr/local/src/pldebugger \
         && make -C /usr/local/src/pldebugger install \
