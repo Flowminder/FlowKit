@@ -75,7 +75,7 @@ RUN apt-get update \
         libkrb5-dev \ 
         build-essential \
         git \
-        && git clone https://git.postgresql.org/git/pldebugger.git \
+        && git clone https://github.com/EnterpriseDB/pldebugger.git \
         && mv pldebugger /usr/local/src \
         && make -C /usr/local/src/pldebugger \
         && make -C /usr/local/src/pldebugger install \
