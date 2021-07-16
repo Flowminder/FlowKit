@@ -9,6 +9,8 @@ managing queries.
 
 from contextvars import ContextVar, copy_context
 from concurrent.futures import Executor, Future
+
+import uuid
 from contextlib import contextmanager
 from typing import Callable, NamedTuple
 
@@ -34,6 +36,10 @@ try:
     action_request
 except NameError:
     action_request = ContextVar("action_request")
+try:
+    interpreter_id
+except NameError:
+    interpreter_id = ContextVar("interpreter_id")
 
 _jupyter_context = (
     dict()
@@ -127,6 +133,20 @@ def get_executor() -> Executor:
             return executor.get()
     except (LookupError, KeyError):
         raise NotConnectedError
+
+
+def get_interpreter_id() -> str:
+    try:
+        if _is_notebook:
+            return interpreter_id.get(_jupyter_context["interpreter_id"])
+        else:
+            return interpreter_id.get()
+    except (LookupError, KeyError):
+        global _jupyter_context
+        ident = uuid.uuid4()
+        _jupyter_context["interpreter_id"] = ident
+        interpreter_id.set(ident)
+        return ident
 
 
 def submit_to_executor(func: Callable, *args, **kwargs) -> Future:

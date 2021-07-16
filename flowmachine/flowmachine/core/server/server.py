@@ -22,7 +22,14 @@ from zmq.asyncio import Context
 import flowmachine
 from flowmachine.core import Query, Connection
 from flowmachine.core.cache import watch_and_shrink_cache
-from flowmachine.core.context import get_db, get_executor, action_request_context
+from flowmachine.core.context import (
+    get_db,
+    get_executor,
+    action_request_context,
+    get_redis,
+)
+from flowmachine.core.query_manager import get_managed
+from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -270,10 +277,27 @@ def main():
         logger.info("Enabling asyncio's debugging mode.")
 
     # Run receive loop which receives zmq messages and sends back replies
-    asyncio.run(
-        recv(config=config),
-        debug=config.debug_mode,
-    )  # note: asyncio.run() requires Python 3.7+
+    try:
+        asyncio.run(
+            recv(config=config),
+            debug=config.debug_mode,
+        )  # note: asyncio.run() requires Python 3.7+
+    except RuntimeError as exc:
+        logger.error(
+            f"Received exception: {type(exc).__name__}: {exc}",
+            traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
+        )
+        logger.error("Releasing managed queries.")
+        for query_id in get_managed():
+            qsm = QueryStateMachine(
+                db_id=get_db().conn_id,
+                query_id=query_id,
+                redis_client=get_redis(),
+            )
+            qsm.raise_error()
+            qsm.cancel()
+            qsm.reset()
+            qsm.finish_resetting()
 
 
 if __name__ == "__main__":
