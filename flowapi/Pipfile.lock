@@ -482,11 +482,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:429c5b4ff27e1d2f9ca0aacc38f6aba0ff49b38b815448bf24b613d3de12ea02",
-                "sha256:7b13786e07541cc9ce1466fdc6a6ccd5f36eb39118edd25a42d617593cd17707"
+                "sha256:f35134fb1d81af61624e6d89bca33cd611dcedce2dc4e291f527ab04395f4e1a",
+                "sha256:f80c91d1e0588662483e22dd9c368a5778886b62e128c5399d2cc1b1898482cf"
             ],
             "index": "pypi",
-            "version": "==0.14.1"
+            "version": "==0.15.1"
         },
         "quart-jwt-extended": {
             "extras": [
