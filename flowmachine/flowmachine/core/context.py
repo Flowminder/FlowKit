@@ -136,13 +136,13 @@ def get_executor() -> Executor:
 
 
 def get_interpreter_id() -> str:
+    global _jupyter_context
     try:
         if _is_notebook:
             return interpreter_id.get(_jupyter_context["interpreter_id"])
         else:
             return interpreter_id.get()
     except (LookupError, KeyError):
-        global _jupyter_context
         ident = uuid.uuid4()
         _jupyter_context["interpreter_id"] = ident
         interpreter_id.set(ident)
