@@ -10,7 +10,7 @@ from flowauth.jwt import generate_token
 from .invalid_usage import InvalidUsage
 from .models import *
 
-blueprint = Blueprint(__name__, __name__)
+blueprint = Blueprint(__name__.split(".").pop(), __name__)
 
 
 @blueprint.route("/groups")
