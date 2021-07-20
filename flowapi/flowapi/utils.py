@@ -4,7 +4,7 @@
 
 
 from quart import request
-from quart.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException
 
 
 async def get_query_parameters_from_flowmachine(*, query_id) -> dict:
