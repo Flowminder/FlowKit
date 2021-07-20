@@ -298,6 +298,9 @@ class DummyRedis:
         except KeyError:
             self._store[key] = {current.encode(): next.encode()}
 
+    def hdel(self, key, name):
+        del self._store[key][name.encode()]
+
     def set(self, key, value):
         self._store[key] = value.encode()
 
