@@ -39,6 +39,6 @@ async def get_query_parameters_from_flowmachine(*, query_id) -> dict:
         raise HTTPException(
             description=f"Unknown query ID '{query_id}'",
             name="Query ID not found",
-            status_code=404,
+            code=404,
         )
     return reply["payload"]["query_params"]

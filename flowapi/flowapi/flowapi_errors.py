@@ -16,14 +16,14 @@ class JSONHTTPException(HTTPException):
 class BadQueryError(JSONHTTPException):
     def __init__(self):
         super().__init__(
-            status_code=400, description="Could not parse query spec.", name="Bad query"
+            code=400, description="Could not parse query spec.", name="Bad query"
         )
 
 
 class MissingQueryKindError(JSONHTTPException):
     def __init__(self):
         super().__init__(
-            status_code=400,
+            code=400,
             description="Query kind must be specified when running a query.",
             name="Bad query",
         )
@@ -32,7 +32,7 @@ class MissingQueryKindError(JSONHTTPException):
 class MissingAggregationUnitError(JSONHTTPException):
     def __init__(self):
         super().__init__(
-            status_code=400,
+            code=400,
             description="Aggregation unit must be specified when running a query.",
             name="Bad query",
         )
