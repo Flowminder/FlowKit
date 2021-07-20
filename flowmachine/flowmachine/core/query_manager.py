@@ -20,7 +20,9 @@ def set_managing(query_id):
     )
     get_redis().hset("manager", query_id, get_interpreter_id())
     get_redis().hset(
-        f"managing:{get_interpreter_id()}", query_id, datetime.datetime.now()
+        f"managing:{get_interpreter_id()}",
+        query_id,
+        datetime.datetime.now().isoformat(),
     )
     logger.debug("Set manager.", query_id=query_id, interpreter_id=get_interpreter_id())
 
