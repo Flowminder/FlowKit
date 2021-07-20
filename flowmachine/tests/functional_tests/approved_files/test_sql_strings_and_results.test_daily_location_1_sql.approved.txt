@@ -52,12 +52,12 @@ FROM (SELECT subscriber_locs.subscriber,
                                                            shape_leng,
                                                            shape_area,
                                                            geom
-                                                    FROM geography.admin3) AS geom_table ON st_within(loc_table.geom_point::geometry,
-                                                                                                      st_setsrid(geom_table.geom, 4326)::geometry)) AS sites ON (l.location_id = sites.location_id)
-                                                                                                                                                            AND (l.datetime)::date BETWEEN COALESCE(sites.date_of_first_service,
-                                                                                                                                                                                                    ('-infinity')::timestamptz)
-                                                                                                                                                                                       AND COALESCE(sites.date_of_last_service,
-                                                                                                                                                                                                    ('infinity')::timestamptz)) AS foo
+                                                    FROM geography.admin3) AS geom_table ON st_within(CAST(loc_table.geom_point AS geometry),
+                                                                                                      CAST(st_setsrid(geom_table.geom, 4326) AS geometry))) AS sites ON (l.location_id = sites.location_id)
+                                                                                                                                                                    AND CAST((l.datetime) AS date) BETWEEN COALESCE(sites.date_of_first_service,
+                                                                                                                                                                                                                    CAST(('-infinity') AS timestamptz))
+                                                                                                                                                                                                       AND COALESCE(sites.date_of_last_service,
+                                                                                                                                                                                                                    CAST(('infinity') AS timestamptz))) AS foo
             WHERE (location_id IS NOT NULL)
               AND (location_id <> '')) AS subscriber_locs) AS final_time
 WHERE rank = 1

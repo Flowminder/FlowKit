@@ -3,8 +3,8 @@ SELECT loc_table.id AS location_id,
        geom_table.date_of_last_service,
        geom_table.id AS site_id,
        geom_table.version,
-       st_x(geom_table.geom_point::geometry) AS lon,
-       st_y(geom_table.geom_point::geometry) AS lat
+       st_x(CAST(geom_table.geom_point AS geometry)) AS lon,
+       st_y(CAST(geom_table.geom_point AS geometry)) AS lat
 FROM infrastructure.cells AS loc_table
      LEFT JOIN (SELECT site_id,
                        id,
