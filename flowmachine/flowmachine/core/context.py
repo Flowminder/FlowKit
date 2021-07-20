@@ -39,10 +39,10 @@ except NameError:
 try:
     interpreter_id
 except NameError:
-    interpreter_id = ContextVar("interpreter_id")
+    interpreter_id = ContextVar("interpreter_id", default=str(uuid.uuid4()))
 
-_jupyter_context = (
-    dict()
+_jupyter_context = dict(
+    interpreter_id=interpreter_id.get()
 )  # Required as a workaround for https://github.com/ipython/ipython/issues/11565
 
 _is_notebook = False
@@ -143,10 +143,7 @@ def get_interpreter_id() -> str:
         else:
             return interpreter_id.get()
     except (LookupError, KeyError):
-        ident = str(uuid.uuid4())
-        _jupyter_context["interpreter_id"] = ident
-        interpreter_id.set(ident)
-        return ident
+        raise RuntimeError("No interpreter id.")
 
 
 def submit_to_executor(func: Callable, *args, **kwargs) -> Future:
