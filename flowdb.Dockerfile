@@ -65,7 +65,6 @@ RUN apt-get update \
         unzip curl make postgresql-plpython3-$PG_MAJOR \
         libaio1  \
         parallel nano vim python3-pip wget python3-setuptools\
-        && pip install --upgrade pip \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
