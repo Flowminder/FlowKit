@@ -69,7 +69,12 @@ def export_dataframe_to_sql(df, *, table, engine, schema, if_exists="replace"):
     # Create table schema if it doesn't exist yet
     df.head(0).to_sql(table, engine, schema, if_exists=if_exists)
 
-    cur.copy_from(output_str, f"{schema}.{table}", null="", columns=df.columns)
+    cur.copy_expert(
+        f"""
+    COPY {schema}.{table}({', '.join(df.columns)}) FROM stdin WITH DELIMITER AS ',' NULL AS ''
+    """,
+        output_str,
+    )
     conn.commit()
 
 
