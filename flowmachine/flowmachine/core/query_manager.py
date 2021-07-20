@@ -15,27 +15,21 @@ def managing(query_id):
 
 
 def set_managing(query_id):
-    logger.debug(
-        "Setting manager.", query_id=query_id, interpreter_id=get_interpreter_id()
-    )
+    logger.debug("Setting manager.", query_id=query_id)
     get_redis().hset("manager", query_id, get_interpreter_id())
     get_redis().hset(
         f"managing:{get_interpreter_id()}",
         query_id,
         datetime.datetime.now().isoformat(),
     )
-    logger.debug("Set manager.", query_id=query_id, interpreter_id=get_interpreter_id())
+    logger.debug("Set manager.", query_id=query_id)
 
 
 def unset_managing(query_id):
-    logger.debug(
-        "Releasing manager.", query_id=query_id, interpreter_id=get_interpreter_id()
-    )
+    logger.debug("Releasing manager.", query_id=query_id)
     get_redis().hdel("manager", query_id)
     get_redis().hdel(f"managing:{get_interpreter_id()}", query_id)
-    logger.debug(
-        "Released manager.", query_id=query_id, interpreter_id=get_interpreter_id()
-    )
+    logger.debug("Released manager.", query_id=query_id)
 
 
 def get_managed():
