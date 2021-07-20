@@ -71,7 +71,7 @@ def export_dataframe_to_sql(df, *, table, engine, schema, if_exists="replace"):
 
     cur.copy_expert(
         f"""
-    COPY {schema}.{table}({', '.join(df.columns)}) FROM stdin WITH DELIMITER AS ',' NULL AS ''
+    COPY {schema}.{table}({', '.join(df.columns)}) FROM stdin WITH DELIMITER AS '\t' NULL AS ''
     """,
         output_str,
     )
