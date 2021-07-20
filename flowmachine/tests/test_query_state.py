@@ -13,12 +13,13 @@ import pytest
 
 import flowmachine
 from flowmachine.core import Query
-from flowmachine.core.context import get_redis, get_db
+from flowmachine.core.context import get_redis, get_db, get_interpreter_id
 from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
     QueryResetFailedException,
 )
+from flowmachine.core.query_manager import set_managing
 from flowmachine.core.query_state import QueryStateMachine, QueryState, QueryEvent
 import flowmachine.utils
 
@@ -130,6 +131,7 @@ def test_query_cancellation(start_state, succeeds, dummy_redis):
     """Test the cancel method works as expected."""
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, start_state)
+    set_managing("DUMMY_QUERY_ID")
     state_machine.cancel()
     assert succeeds == state_machine.is_cancelled
 
