@@ -6,12 +6,6 @@ import logging
 import pytest
 
 from flowmachine.core import connect
-from flowmachine.core.context import get_interpreter_id, get_executor
-
-
-def test_consistent_interpreter_id():
-    connect()
-    assert get_executor().submit(get_interpreter_id).result() == get_interpreter_id()
 
 
 @pytest.fixture(autouse=True)
