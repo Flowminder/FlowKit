@@ -143,7 +143,7 @@ def get_interpreter_id() -> str:
         else:
             return interpreter_id.get()
     except (LookupError, KeyError):
-        ident = uuid.uuid4()
+        ident = str(uuid.uuid4())
         _jupyter_context["interpreter_id"] = ident
         interpreter_id.set(ident)
         return ident
