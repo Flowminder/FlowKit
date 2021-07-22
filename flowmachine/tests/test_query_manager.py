@@ -10,7 +10,7 @@ from flowmachine.core.query_manager import set_managing, unset_managing, release
 
 
 def test_set_managing(dummy_redis):
-    set_managing("DUMMY_ID", "DUMMY_DB_ID")
+    set_managing("DUMMY_ID", "DUMMY_DB_ID", dummy_redis)
     assert (
         dummy_redis.get("manager")[b"DUMMY_DB_ID-DUMMY_ID"]
         == get_interpreter_id().encode()
@@ -22,7 +22,7 @@ def test_set_managing(dummy_redis):
 
 def test_unset_managing(dummy_redis):
     test_set_managing(dummy_redis)
-    unset_managing("DUMMY_ID", "DUMMY_DB_ID")
+    unset_managing("DUMMY_ID", "DUMMY_DB_ID", dummy_redis)
     assert b"DUMMY_DB_ID-DUMMY_ID" not in dummy_redis.get("manager")
     assert b"DUMMY_DB_ID-DUMMY_ID" not in dummy_redis.get(
         f"managing:{get_interpreter_id()}"
@@ -31,7 +31,7 @@ def test_unset_managing(dummy_redis):
 
 def test_release_managed(dummy_redis):
     test_set_managing(dummy_redis)
-    release_managed()
+    release_managed(dummy_redis)
     assert b"DUMMY_DB_ID-DUMMY_ID" not in dummy_redis.get("manager")
     assert b"DUMMY_DB_ID-DUMMY_ID" not in dummy_redis.get(
         f"managing:{get_interpreter_id()}"

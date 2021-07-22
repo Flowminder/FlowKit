@@ -283,7 +283,7 @@ def main():
             debug=config.debug_mode,
         )  # note: asyncio.run() requires Python 3.7+
     finally:
-        release_managed()
+        release_managed(get_redis())
 
 
 if __name__ == "__main__":

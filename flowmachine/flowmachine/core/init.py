@@ -326,19 +326,13 @@ def _do_connect(
     print(
         f"Flowdb running on: {flowdb_host}:{flowdb_port}/flowdb (connecting user: {flowdb_user})"
     )
-    _register_exit_handlers()
+    _register_exit_handlers(redis_connection)
     return conn, thread_pool, redis_connection
 
 
-def _register_exit_handlers():
-    global _exit_handlers_registered
-    if _exit_handlers_registered:
-        logger.debug("Exit handlers already registered.")
-        return
+def _register_exit_handlers(redis_connection):
     import signal
 
-    atexit.register(release_managed)
-    signal.signal(signal.SIGTERM, release_managed)
-    signal.signal(signal.SIGINT, release_managed)
-
-    _exit_handlers_registered = True
+    atexit.register(release_managed, None, None, redis_connection)
+    signal.signal(signal.SIGTERM, lambda sig, frame: release_managed(redis_connection))
+    signal.signal(signal.SIGINT, lambda sig, frame: release_managed(redis_connection))
