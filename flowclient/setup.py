@@ -47,7 +47,7 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "pandas",
-        "httpx",
+        "httpx==0.17.1",
         "pyjwt<2.0.0",
         "ujson",
         "merge-args",

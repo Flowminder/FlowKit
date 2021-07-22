@@ -7,6 +7,7 @@ import pytest
 from flowmachine.features import DistanceSeries, daily_location, SubscriberLocations
 
 from flowmachine.core import make_spatial_unit
+import pandas as pd
 
 
 @pytest.mark.parametrize(
@@ -29,15 +30,21 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
     df = get_dataframe(
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
-                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
+                "2016-01-01",
+                "2016-01-07",
+                spatial_unit=make_spatial_unit("lon-lat"),
             ),
             reference_location=rl,
             statistic=stat,
         )
-    ).set_index(["subscriber", "datetime"])
-    assert df.loc[(sub_a_id, datetime(2016, 1, 1))].value == pytest.approx(
-        sub_a_expected
     )
+    df = (
+        df.assign(datetime=pd.to_datetime(df.datetime))
+        .set_index(["subscriber", "datetime"])
+        .sort_index()
+    )
+    sub = df.loc[sub_a_id]
+    assert df.loc[sub_a_id].loc["2016-01-01"].value == pytest.approx(sub_a_expected)
     assert df.loc[(sub_b_id, datetime(2016, 1, 6))].value == pytest.approx(
         sub_b_expected
     )
@@ -68,7 +75,10 @@ def test_returns_expected_values_fixed_point(
             ),
             statistic=stat,
         )
-    ).set_index(["subscriber", "datetime"])
+    )
+    df = df.assign(datetime=pd.to_datetime(df.datetime)).set_index(
+        ["subscriber", "datetime"]
+    )
     assert df.loc[(sub_a_id, datetime(2016, 1, 1))].value == pytest.approx(
         sub_a_expected
     )

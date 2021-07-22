@@ -4,7 +4,7 @@
 
 
 from quart import request
-from quart.exceptions import HTTPException
+from werkzeug.exceptions import NotFound
 
 
 async def get_query_parameters_from_flowmachine(*, query_id) -> dict:
@@ -36,9 +36,7 @@ async def get_query_parameters_from_flowmachine(*, query_id) -> dict:
     )
     reply = await request.socket.recv_json()
     if reply["status"] == "error":
-        raise HTTPException(
+        raise NotFound(
             description=f"Unknown query ID '{query_id}'",
-            name="Query ID not found",
-            status_code=404,
         )
     return reply["payload"]["query_params"]

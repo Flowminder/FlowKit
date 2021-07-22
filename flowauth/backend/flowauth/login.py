@@ -12,7 +12,7 @@ from flask_principal import AnonymousIdentity, Identity, identity_changed
 from .invalid_usage import InvalidUsage, Unauthorized
 from .models import *
 
-blueprint = Blueprint(__name__, __name__)
+blueprint = Blueprint(__name__.split(".").pop(), __name__)
 
 
 @blueprint.route("/signin", methods=["POST"])

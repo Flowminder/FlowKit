@@ -10,7 +10,7 @@ from zxcvbn import zxcvbn
 from .invalid_usage import InvalidUsage
 from .models import *
 
-blueprint = Blueprint(__name__, __name__)
+blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))
 
 

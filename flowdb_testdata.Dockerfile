@@ -21,6 +21,7 @@ RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list 
         && apt-get -y update \
         && apt-get -y install python3.7 python3.7-distutils python3-psutil \
         && pip3 install --no-cache-dir pipenv \
+        && pip3 install --upgrade pip \
         && apt-get clean --yes \
         && apt-get autoclean --yes \
         && apt-get autoremove --yes \
