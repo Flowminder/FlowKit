@@ -618,7 +618,7 @@ class Query(metaclass=ABCMeta):
             get_redis(), self.query_id, get_db().conn_id
         ).enqueue()
         logger.debug(
-            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else f' by {get_manager(self.query_id)}'}."
+            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else f' by {get_manager(self.query_id, get_db().conn_id, get_redis())}'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = submit_to_executor(
