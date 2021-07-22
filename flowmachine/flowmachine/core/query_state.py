@@ -104,6 +104,7 @@ class QueryStateMachine:
 
     def __init__(self, redis_client: StrictRedis, query_id: str, db_id: str):
         self.query_id = query_id
+        self.db_id = db_id
         must_populate = redis_client.get(f"finist:{db_id}:{query_id}-state") is None
         self.state_machine = Finist(
             redis_client, f"{db_id}:{query_id}-state", QueryState.KNOWN
@@ -273,7 +274,7 @@ class QueryStateMachine:
         """
         state, changed = self.trigger_event(QueryEvent.CANCEL)
         if changed:
-            unset_managing(self.query_id)
+            unset_managing(self.query_id, self.db_id)
         return state, changed
 
     def enqueue(self):
@@ -289,7 +290,7 @@ class QueryStateMachine:
         """
         state, changed = self.trigger_event(QueryEvent.QUEUE)
         if changed:
-            set_managing(self.query_id)
+            set_managing(self.query_id, self.db_id)
         return state, changed
 
     def raise_error(self):
@@ -305,7 +306,7 @@ class QueryStateMachine:
         """
         state, changed = self.trigger_event(QueryEvent.ERROR)
         if changed:
-            unset_managing(self.query_id)
+            unset_managing(self.query_id, self.db_id)
         return state, changed
 
     def execute(self):
@@ -334,7 +335,7 @@ class QueryStateMachine:
         """
         state, changed = self.trigger_event(QueryEvent.FINISH)
         if changed:
-            unset_managing(self.query_id)
+            unset_managing(self.query_id, self.db_id)
         return state, changed
 
     def reset(self):

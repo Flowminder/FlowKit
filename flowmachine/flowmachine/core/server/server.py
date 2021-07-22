@@ -28,7 +28,7 @@ from flowmachine.core.context import (
     action_request_context,
     get_redis,
 )
-from flowmachine.core.query_manager import get_managed
+from flowmachine.core.query_manager import get_managed, release_managed
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
@@ -282,22 +282,8 @@ def main():
             recv(config=config),
             debug=config.debug_mode,
         )  # note: asyncio.run() requires Python 3.7+
-    except RuntimeError as exc:
-        logger.error(
-            f"Received exception: {type(exc).__name__}: {exc}",
-            traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
-        )
-        logger.error("Releasing managed queries.")
-        for query_id in get_managed():
-            qsm = QueryStateMachine(
-                db_id=get_db().conn_id,
-                query_id=query_id,
-                redis_client=get_redis(),
-            )
-            qsm.raise_error()
-            qsm.cancel()
-            qsm.reset()
-            qsm.finish_resetting()
+    finally:
+        release_managed()
 
 
 if __name__ == "__main__":

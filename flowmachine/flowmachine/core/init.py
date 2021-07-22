@@ -10,6 +10,8 @@ perspective, only the `connect` method is relevant.
 From a developer perspective, this is where one-time operations
 should live - for example configuring loggers.
 """
+import atexit
+
 import warnings
 from contextlib import contextmanager
 
@@ -22,12 +24,15 @@ from redis import StrictRedis
 
 import flowmachine
 from flowmachine.core import Connection
-from flowmachine.core.context import bind_context, context, get_db
+from flowmachine.core.context import bind_context, context, get_db, get_redis
 from flowmachine.core.errors import NotConnectedError
 from flowmachine.core.logging import set_log_level
 from get_secret_or_env_var import environ, getenv
 
+from flowmachine.core.query_manager import release_managed
+
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
+_exit_handlers_registered = False
 
 
 @contextmanager
@@ -321,4 +326,19 @@ def _do_connect(
     print(
         f"Flowdb running on: {flowdb_host}:{flowdb_port}/flowdb (connecting user: {flowdb_user})"
     )
+    _register_exit_handlers()
     return conn, thread_pool, redis_connection
+
+
+def _register_exit_handlers():
+    global _exit_handlers_registered
+    if _exit_handlers_registered:
+        logger.debug("Exit handlers already registered.")
+        return
+    import signal
+
+    atexit.register(release_managed)
+    signal.signal(signal.SIGTERM, release_managed)
+    signal.signal(signal.SIGINT, release_managed)
+
+    _exit_handlers_registered = True
