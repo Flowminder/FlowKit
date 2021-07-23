@@ -131,7 +131,7 @@ def test_query_cancellation(start_state, succeeds, dummy_redis):
     """Test the cancel method works as expected."""
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID", get_db().conn_id)
     dummy_redis.set(state_machine.state_machine._name, start_state)
-    set_managing("DUMMY_QUERY_ID")
+    set_managing("DUMMY_QUERY_ID", "DUMMY_DB_ID", dummy_redis)
     state_machine.cancel()
     assert succeeds == state_machine.is_cancelled
 
