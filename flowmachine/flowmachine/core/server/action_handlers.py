@@ -408,6 +408,25 @@ async def action_handler__get_available_dates(
     return ZMQReply(status="success", payload=available_dates)
 
 
+async def action_handler__run_benchmark(
+    config: "FlowmachineServerConfig",
+) -> ZMQReply:
+    """
+
+    Parameters
+    ----------
+    config
+
+    Returns
+    -------
+
+    """
+    from ...features.benchmark.benchmark import BenchmarkQuery
+    bench_query = BenchmarkQuery()
+    time = bench_query.run_benchmark()  # Again, run_benchmark is presently blocking
+    return ZMQReply(status="success", payload={"time":time})
+
+
 def get_action_handler(action: str) -> Callable:
     """Exception should be raised for handlers that don't exist."""
     try:
@@ -467,4 +486,7 @@ ACTION_HANDLERS = {
     "get_geo_sql_for_query_result": action_handler__get_geo_sql,
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
+    "run_benchmark": action_handler__run_benchmark,
+#    "poll_benchmark": action_handler__poll_benchmark,
+#    "get_benchmark": action_handler__get_benchmark
 }

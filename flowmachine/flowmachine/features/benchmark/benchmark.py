@@ -4,12 +4,13 @@ from typing import Union
 
 import psycopg2 as ps
 import flowmachine
-from flowmachine.core import CustomQuery
+from flowmachine.core import Query
+from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 from sqlalchemy.schema import MetaData
 from sqlalchemy import Table, Column, Integer, inspect, Text
 
 
-class BenchmarkQuery(CustomQuery):
+class BenchmarkQuery():
     """
     A class that runs a query but does not return the regular output;
     instead, a set of benchmarks are retuned.
@@ -24,9 +25,7 @@ class BenchmarkQuery(CustomQuery):
 
     """
 
-    def __init__(self, sql : str, column_names):
-        super().__init__(sql, column_names)
-        self.turn_off_caching()  # For idempotence; we don't want to overestimate by just returning a cached result
+    def __init__(self):
         self._profiler = cProfile.Profile()
 
     def run_benchmark(self) -> float:
@@ -42,29 +41,31 @@ class BenchmarkQuery(CustomQuery):
         At present, this function blocks wile the query is run. This
         should probably be amended
         """
+        flowmachine.connect()
+        conn = flowmachine.core.context.get_db()
+        eng = conn.engine
         self._profiler.enable()
-        future = super().to_sql("benchmark", None, False)
-        future.result()
+        eng.execute("SELECT * FROM events.calls")
         self._profiler.disable()
         stats = pstats.Stats(self._profiler)
         return stats.total_tt
+
+
+class BenchmarkSchema(BaseSchema):
+    pass
 
 
 def test_benchmark():
     """Test for the BenchmarkQuery class"""
     # Set up:
     # Get connection
-    flowmachine.connect()
-    conn = flowmachine.core.context.get_db()
-    eng = conn.engine
-    print(eng)
+    
 
-    bench_query = BenchmarkQuery('SELECT * FROM events.calls', ["msisdn"])
+    bench_query = BenchmarkQuery()
     time = bench_query.run_benchmark()
     print(time)
     assert time
 
 
 if __name__ == "__main__":
-    # This should be removed on commit, but I'm keeping it here for now.
     test_benchmark()
