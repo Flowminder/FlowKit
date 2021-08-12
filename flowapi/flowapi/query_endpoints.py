@@ -430,8 +430,6 @@ async def run_benchmark():
       return {"status": "error", "msg": reply["msg"]}, 500
     # There should only ever be one benchmark running at a time, so it keeps one endpoint
 
-
-@blueprint.route("/bench_query", methods =["POST"])
 @jwt_required
 async def bench_query():
   json_data = await request.json

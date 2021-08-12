@@ -1,6 +1,8 @@
 from typing import Union
 
 from flowmachine.core import Query
+from flowmachine.core import Query
+from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 
 import structlog
 
@@ -74,6 +76,9 @@ LANGUAGE plpgsql;
         return f""" 
         SELECT execution_time, planning_time FROM estimate_cost('{escaped_query}')
         """
+        flowmachine.connect()
+        conn = flowmachine.core.context.get_db()
+        eng = conn.engine
 
     @property
     def column_names(self):
@@ -85,7 +90,8 @@ LANGUAGE plpgsql;
         query_list = super()._make_sql(name, schema)
         query_list = [self._explain_func] + query_list
         return query_list
-
+    
+    bench_query = BenchmarkQuery()
 
 # Not remving this completly, but commenting out for now
 

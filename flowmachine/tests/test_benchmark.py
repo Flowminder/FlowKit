@@ -8,9 +8,7 @@ Tests for benchmark functions, including verification of correctness of tables a
 """
 
 import pytest
-from flowmachine.features.benchmark.benchmark import BenchmarkQuery
-from flowmachine.core.dummy_query import DummyQuery
-from typing import List
+from flowmachine.features.benchmark.benchmark import run_benchmark
 
 
 def test_make_sql():
