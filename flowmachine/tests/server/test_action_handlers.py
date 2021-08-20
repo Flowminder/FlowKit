@@ -257,6 +257,7 @@ async def test_action_handler__bench_query(server_config, real_connections):
     params = await action_handler__get_query_params(server_config, query_id)
     out_sql = await action_handler__get_sql(server_config, query_id)
     # Under the standard situation, the benchmark query should not run against cache
+    assert out_sql
     assert "CACHE" not in out_sql.payload["sql"]
     pass
 

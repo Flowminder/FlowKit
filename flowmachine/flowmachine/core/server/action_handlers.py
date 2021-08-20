@@ -510,6 +510,13 @@ async def action_handler__run_benchmark(
     time = bench_query.run_benchmark()  # Again, run_benchmark is presently blocking
     return ZMQReply(status="success", payload={"time": time})
 
+    # TODO here:
+    # -Copy run_query with tweaks
+    # -Need to invalidate the cache for the benchmark before running, else it'll just return nothing
+    # -Even with store dependencies=false, will still use cached queries that have already been cached
+    # -Feature to add; ignore cache flag on get_query()
+    # -Can we just sum up the cache table perform. values?
+
 
 def get_action_handler(action: str) -> Callable:
     """Exception should be raised for handlers that don't exist."""
