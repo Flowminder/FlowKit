@@ -8,14 +8,22 @@ Tests for benchmark functions, including verification of correctness of tables a
 """
 
 import pytest
-from flowmachine.features.benchmark.benchmark import run_benchmark
+from flowmachine.features.benchmark.benchmark import BenchmarkQuery
+from flowmachine.core.dummy_query import DummyQuery
+from typing import List
 
-@pytest.mark.usefixtures("create_test_tables")
-def test_run_benchmark(cursor, test_tables):
-    """run_benchmark should produce a set of metrics, but leave the database untouched afterwards"""
-    initial_hash = hash(test_tables)
-    bench = run_benchmark(cursor)
-    final_hash = hash(test_tables)
-    assert initial_hash == final_hash
-    assert bench
+def test_make_sql():
+    action_params=dict(
+            query_kind="spatial_aggregate",
+            locations=dict(
+                query_kind="daily_location",
+                date="2016-01-01",
+                method="last",
+                aggregation_unit="admin3",
+            ),
+        )
+    query = DummyQuery("quartz")
+    bench = BenchmarkQuery(query)
+    out = bench._make_sql("foo", "cache")
+    assert out[0] == bench._explain_func
 

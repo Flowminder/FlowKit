@@ -409,6 +409,7 @@ async def get_available_dates():
         return {"status": "error", "msg": reply["msg"]}, 500
 
 
+#TODO Change name to 'run_simple_benchmark' or similar
 @blueprint.route("/run_benchmark")
 @jwt_required
 async def run_benchmark():
@@ -426,9 +427,54 @@ async def run_benchmark():
       return {"benchmark": reply["payload"]}, 200
     else:
       assert reply["status"] == "error"
-      return {"status": "error", "msg": reply["msg"]}
+      return {"status": "error", "msg": reply["msg"]}, 500
     # There should only ever be one benchmark running at a time, so it keeps one endpoint
 
 
-if __name__ == "__main__":
-  run_benchmark()
+@blueprint.route("/bench_query", methods =["POST"])
+@jwt_required
+async def bench_query():
+  json_data = await request.json
+  current_user.can_run(query_json=json_data)
+  current_app.query_run_logger.info("bench_query", query=json_data)
+  request.socket.send_json(
+      {"request_id": request.request_id, "action": "bench_query", "params": json_data}
+  )
+
+  reply = await request.socket.recv_json()
+  current_app.flowapi_logger.debug(
+      f"Received reply {reply}", request_id=request.request_id
+  )
+
+  if reply["status"] == "error":
+      # TODO: currently the reply msg is empty; we should either pass on the message payload (which contains
+      #       further information about the error) or add a non-empty human-readable error message.
+      #       If we pass on the payload we should also deconstruct it to make it more human-readable
+      #       because it will contain marshmallow validation errors (and/or any other possible errors?)
+      return (
+          {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]},
+          400,
+      )
+  elif reply["status"] == "success":
+      assert "query_id" in reply["payload"]
+      d = {
+          "Location": url_for(
+              f"query.poll_query", query_id=reply["payload"]["query_id"]
+          )
+      }
+      return (
+          dict(
+              query_id=reply["payload"]["query_id"],
+              progress=reply["payload"]["progress"],
+          ),
+          202,
+          d,
+      )
+  else:
+      return (
+          {
+              "status": "Error",
+              "msg": f"Unexpected reply status: {reply['status']}",
+          },
+          500,
+      )

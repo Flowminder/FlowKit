@@ -35,7 +35,7 @@ from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema, GeographySchema
 from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
-
+from ...features.benchmark.benchmark import BenchmarkQuery
 __all__ = ["perform_action"]
 
 from ..dependency_graph import query_progress
@@ -409,7 +409,7 @@ async def action_handler__get_available_dates(
 
 
 async def action_handler__run_benchmark(
-    config: "FlowmachineServerConfig",
+    config: "FlowmachineServerConfig"
 ) -> ZMQReply:
     """
 
@@ -425,6 +425,18 @@ async def action_handler__run_benchmark(
     bench_query = BenchmarkQuery()
     time = bench_query.run_benchmark()  # Again, run_benchmark is presently blocking
     return ZMQReply(status="success", payload={"time":time})
+
+
+async def action_handler__bench_query(
+        config: "FlowmachineServerConfig", **benchmark_target: dict
+) -> ZMQReply:
+
+    action_params = {
+        "query_kind": "benchmark",
+        "benchmark_target": benchmark_target
+    }
+    out = await action_handler__run_query(config, **action_params)
+    return out
 
 
 def get_action_handler(action: str) -> Callable:
@@ -486,7 +498,5 @@ ACTION_HANDLERS = {
     "get_geo_sql_for_query_result": action_handler__get_geo_sql,
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
-    "run_benchmark": action_handler__run_benchmark,
-#    "poll_benchmark": action_handler__poll_benchmark,
-#    "get_benchmark": action_handler__get_benchmark
+    #"run_benchmark": action_handler__run_benchmark,
 }
