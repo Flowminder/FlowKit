@@ -261,6 +261,6 @@ async def test_action_handler__bench_query(server_config, real_connections):
     result = await action_handler__poll_query(server_config, query_id)
     assert result.payload["query_state"] == "completed"
     params = await action_handler__get_query_params(server_config, query_id)
-    #out_sql = await action_handler__get_sql(server_config, query_id)
-    #assert out_sql
+    out_sql = await action_handler__get_sql(server_config, query_id)
+    assert out_sql
     pass

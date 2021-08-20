@@ -431,6 +431,13 @@ async def action_handler__bench_query(
         config: "FlowmachineServerConfig", **benchmark_target: dict
 ) -> ZMQReply:
 
+    # TODO here:
+    # -Copy run_query with tweaks
+    # -Need to invalidate the cache for the benchmark before running, else it'll just return nothing
+    # -Even with store dependencies=false, will still use cached queries that have already been cached
+    # -Feature to add; ignore cache flag on get_query()
+    # -Can we just sum up the cache table perform. values?
+
     action_params = {
         "query_kind": "benchmark",
         "benchmark_target": benchmark_target

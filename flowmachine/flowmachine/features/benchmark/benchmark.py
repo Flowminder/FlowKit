@@ -63,7 +63,6 @@ LANGUAGE plpgsql;
                  benchmark_target : Query,
                  ):
         super().__init__(cache=False)
-        self._profiler = cProfile.Profile()
         self.benchmark_target = benchmark_target
 
     def _make_query(self):
