@@ -235,15 +235,15 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
 
 @pytest.mark.asyncio
 async def test_action_handler__bench_query(server_config, real_connections):
-    action_params=dict(
-            query_kind="spatial_aggregate",
-            locations=dict(
-                query_kind="daily_location",
-                date="2016-01-01",
-                method="last",
-                aggregation_unit="admin3",
-            ),
-        )
+    action_params = dict(
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
 
     reply = await action_handler__bench_query(server_config, **action_params)
     query_id = reply.payload["query_id"]

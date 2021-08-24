@@ -37,15 +37,14 @@ from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema, GeographySchema
 from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
+
 __all__ = ["perform_action"]
 
 from ..dependency_graph import query_progress
 from ..errors.flowmachine_errors import LoadQueryError
 
 
-async def action_handler__ping(
-        config: FlowmachineServerConfig
-) -> ZMQReply:
+async def action_handler__ping(config: FlowmachineServerConfig) -> ZMQReply:
     """
     Handler for 'ping' action.
 
@@ -127,10 +126,10 @@ def _load_query_from_params(action_params: dict) -> BaseExposedQuery:
 
 
 async def _register_and_start_query(
-        query_obj: BaseExposedQuery,
-        action_params: dict,
-        config: "FlowmachineServerConfig",
-        store_dependencies: Union[bool, None] = None
+    query_obj: BaseExposedQuery,
+    action_params: dict,
+    config: "FlowmachineServerConfig",
+    store_dependencies: Union[bool, None] = None,
 ) -> str:
     """
 
@@ -171,10 +170,7 @@ async def _register_and_start_query(
             executor=config.server_thread_pool,
             func=partial(
                 copy_context().run,
-                partial(
-                    query_obj.store_async,
-                    store_dependencies=store_dependencies
-                ),
+                partial(query_obj.store_async, store_dependencies=store_dependencies),
             ),
         )
 
@@ -197,11 +193,7 @@ async def action_handler__run_query(
     """
     try:
         query_obj = _load_query_from_params(action_params)
-        query_id = await _register_and_start_query(
-            query_obj,
-            action_params,
-            config
-        )
+        query_id = await _register_and_start_query(query_obj, action_params, config)
 
     except LoadQueryError as err:
         return ZMQReply(
@@ -213,7 +205,7 @@ async def action_handler__run_query(
         return ZMQReply(
             status="error",
             msg="Unable to create query object",
-            payload={"exception": str(err)}
+            payload={"exception": str(err)},
         )
 
     return ZMQReply(
@@ -226,20 +218,14 @@ async def action_handler__run_query(
 
 
 async def action_handler__bench_query(
-        config: "FlowmachineServerConfig", **benchmark_target: dict
+    config: "FlowmachineServerConfig", **benchmark_target: dict
 ) -> ZMQReply:
 
-    action_params = {
-        "query_kind": "benchmark",
-        "benchmark_target": benchmark_target
-    }
+    action_params = {"query_kind": "benchmark", "benchmark_target": benchmark_target}
     try:
         query_obj = _load_query_from_params(action_params)
         query_id = await _register_and_start_query(
-            query_obj,
-            action_params,
-            config,
-            store_dependencies=False
+            query_obj, action_params, config, store_dependencies=False
         )
 
     except LoadQueryError as err:
@@ -252,7 +238,7 @@ async def action_handler__bench_query(
         return ZMQReply(
             status="error",
             msg="Unable to create query object",
-            payload={"exception": str(err)}
+            payload={"exception": str(err)},
         )
 
     return ZMQReply(
@@ -262,8 +248,6 @@ async def action_handler__bench_query(
             "progress": query_progress(query_obj._flowmachine_query_obj),
         },
     )
-
-
 
 
 def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
@@ -566,5 +550,5 @@ ACTION_HANDLERS = {
     "get_geo_sql_for_query_result": action_handler__get_geo_sql,
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
-    #"run_benchmark": action_handler__run_benchmark,
+    # "run_benchmark": action_handler__run_benchmark,
 }
