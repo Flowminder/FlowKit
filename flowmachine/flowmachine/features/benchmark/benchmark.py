@@ -1,14 +1,10 @@
-import cProfile, pstats
-
 from typing import Union
 
-
-import flowmachine
 from flowmachine.core import Query
-from flowmachine.core.context import get_db
-
 
 import structlog
+
+from flowmachine.core.errors.flowmachine_errors import BenchSideEffectError
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -68,6 +64,10 @@ LANGUAGE plpgsql;
     def _make_query(self):
         # NOTE: Beware the string delimiters here! Making this a bound query or similar would be much better!
         escaped_query = self.benchmark_target.get_query().replace(r"'", r"''")
+        if "INSERT" in escaped_query \
+        or "UPDATE" in escaped_query \
+        or "DROP" in escaped_query:
+            raise BenchSideEffectError("Data modification detected in benchmark target")
         return f""" 
         SELECT execution_time, planning_time FROM estimate_cost('{escaped_query}')
         """
@@ -76,29 +76,6 @@ LANGUAGE plpgsql;
     def column_names(self):
         return ["execution_time", "planning_time"]
 
-    # This can be broken out into its own function
-    def run_benchmark(self) -> float:
-        """
-        Returns the total time taken to run the function (as measured by cProfiler)
-
-        Returns
-        -------
-        float
-
-        Notes
-        -----
-        At present, this function blocks wile the query is run. This
-        should probably be amended
-        """
-        flowmachine.connect()
-        conn = get_db()
-        eng = conn.engine
-        self._profiler.enable()
-        eng.execute("SELECT execution_time, planning_time FROM events.calls")
-        self._profiler.disable()
-        stats = pstats.Stats(self._profiler)
-        return stats.total_tt
-
     # We need to override _make_sql to define the stored query
     # _before_ we run the rest of the expression
     def _make_sql(self, name:str, schema: Union[str, None] = None):
@@ -106,4 +83,27 @@ LANGUAGE plpgsql;
         query_list = [self._explain_func] + query_list
         return query_list
 
+# Not remving this completly, but commenting out for now
 
+# def run_benchmark(self) -> float:
+#     """
+#     Returns the total time taken to run a very simple query.
+#
+#     Returns
+#     -------
+#     float
+#
+#     Notes
+#     -----
+#     At present, this function blocks wile the query is run. This
+#     should probably be amended
+#     """
+#     profiler = cProfile.Profile()
+#     flowmachine.connect()
+#     conn = get_db()
+#     eng = conn.engine
+#     profiler.enable()
+#     eng.execute("SELECT execution_time, planning_time FROM events.calls")
+#     profiler.disable()
+#     stats = pstats.Stats(self._profiler)
+#     return stats.total_tt
