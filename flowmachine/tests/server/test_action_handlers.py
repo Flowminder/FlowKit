@@ -25,7 +25,6 @@ from flowmachine.core.server.action_handlers import (
     action_handler__get_query_params,
     action_handler__get_sql,
     action_handler__run_query,
-    action_handler__run_benchmark,
     action_handler__bench_query,
     action_handler__poll_query,
     get_action_handler,
@@ -235,12 +234,6 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
 
 
 @pytest.mark.asyncio
-async def test_action_handler__run_benchmark(server_config):
-    reply = await action_handler__run_benchmark(server_config)
-    assert reply.payload is float
-
-
-@pytest.mark.asyncio
 async def test_action_handler__bench_query(server_config, real_connections):
     action_params=dict(
             query_kind="spatial_aggregate",
@@ -262,5 +255,6 @@ async def test_action_handler__bench_query(server_config, real_connections):
     assert result.payload["query_state"] == "completed"
     params = await action_handler__get_query_params(server_config, query_id)
     out_sql = await action_handler__get_sql(server_config, query_id)
-    assert out_sql
+    # Under the standard situation, the benchmark query should not run against cache
+    assert "CACHE" not in out_sql.payload["sql"]
     pass
