@@ -28,6 +28,7 @@ from flowmachine.core.server.action_handlers import (
     action_handler__bench_query,
     action_handler__poll_query,
     get_action_handler,
+    _load_query_from_params,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
@@ -258,3 +259,21 @@ async def test_action_handler__bench_query(server_config, real_connections):
     # Under the standard situation, the benchmark query should not run against cache
     assert "CACHE" not in out_sql.payload["sql"]
     pass
+
+
+def test_load_query_from_params():
+    action_params = dict(
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
+    assert type(_load_query_from_params(action_params)) == "ExposedSpatialAggregate"
+    bench_params = dict(
+        query_kind="benchmark",
+        benchmark_target=action_params
+    )
+    assert type(_load_query_from_params(bench_params)) == "ExposedBenchmark"

@@ -41,7 +41,7 @@ from .unmoving_at_reference_location_counts import (
 )
 from .unmoving_counts import UnmovingCountsSchema
 
-from .benchmark import BenchmarkSchema
+#from .benchmark import BenchmarkSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -68,7 +68,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unmoving_counts": UnmovingCountsSchema,
         "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
         "trips_od_matrix": TripsODMatrixSchema,
-        "benchmark": BenchmarkSchema
+        #"benchmark": BenchmarkSchema
     }
 
 
