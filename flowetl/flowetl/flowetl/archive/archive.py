@@ -5,6 +5,9 @@ from pathlib import Path
 import psycopg2
 import os
 
+import logging
+logger = logging.getLogger("flowdb")
+
 def _parse_date(date):
     if type(date) == dt.date:
         return dt.date.strftime("%Y_%m_%d")
@@ -25,6 +28,7 @@ def cd(path):
     finally:
         os.chdir(old_dir)
 
+
 @contextmanager
 def get_cursor(db_con):
     cur = db_con.cursor()
@@ -33,11 +37,35 @@ def get_cursor(db_con):
     finally:
         cur.close()
 
+
+class ArchiveStep:
+    def __init__(self, query_path, query_args=None):
+        if query_args is None:
+            query_args = {}
+        self.query_path = query_path
+        self.query_args = query_args
+        self.query_name = Path(query_path).name
+        with open(query_path, 'r') as query_file:
+            logger.info(f"Loading {self.query_name} with args {self.query_args}")
+            try:
+                self.query = query_file.read().format(**self.query_args)
+            except KeyError as ke:
+                logger.critical(f"{self.query_name} requires arg {ke}")
+                raise KeyError from ke
+
+    def execute(self, cursor):
+        logger.info(f"Running {self.query_name} with args {self.query_args}")
+        return cursor.execute(self.query)
+
+
+
 class ArchiveManager:
 
-    def __init__(self, archive_dir):
+    def __init__(self, archive_dir, opt_out_list_path = None, tower_clustering_method = None):
         # TODO: path validation, input validation
         self.archive_dir = Path(archive_dir).absolute().__str__()
+        self.opt_out_path = Path(opt_out_list_path).absolute().__str__()
+        self.tower_clustering_method = tower_clustering_method
         self.db_con = psycopg2.connect(
             host = os.getenv("FLOWDB_HOST"),
             port = os.getenv("FLOWDB_PORT"),
@@ -45,14 +73,25 @@ class ArchiveManager:
             password = os.getenv("POSTGRES_PASSWORD"),
             dbname = "flowdb"
         )
+        self.query_args = {
+            "csv_dir": self.archive_dir,
+            "opt_out_path": self.opt_out_path,
+        }
 
-    def csv_to_flowdb(self, date):
+    def retrieve_csv_on_date(self, date):
         date = _parse_date(date)
+        self.query_args["date"] = date
+
         with cd(Path(__file__).parent):
-            with open("../../FlowKit/flowetl/flowetl/flowetl/archive/sql/create_and_fill_staging_table.sql", 'r') as staging_file:
-                staging_query = staging_file.read().format(date = date, csv_dir = self.archive_dir)
-            with open("../../FlowKit/flowetl/flowetl/flowetl/archive/sql/create_and_fill_reduced_table.sql", 'r') as reduced_file:
-                reduced_query = reduced_file.read().format(date = date)
+            staging = ArchiveStep("sql/create_and_fill_staging_table.sql", self.query_args)
+            opt_out = ArchiveStep("sql/opt_out.sql", self.query_args)
+            reduce = ArchiveStep("sql/create_and_fill_reduced_table.sql", self.query_args)
         with get_cursor(self.db_con) as cur:
-            cur.execute(staging_query)
-            cur.execute(reduced_query)
+            staging.execute(cur)
+            if self.opt_out_path:
+                opt_out.execute(cur)
+            if self.tower_clustering_method:
+                # This needs to be implemented. Leaving as cellid for now.
+                raise NotImplementedError
+            reduce.execute(cur)
+
