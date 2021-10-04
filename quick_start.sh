@@ -136,7 +136,7 @@ else
     $DOCKER_COMPOSE pull $DOCKER_SERVICES
     $DOCKER_COMPOSE up -d --renew-anon-volumes $DOCKER_SERVICES
     echo "Waiting for containers to be ready.."
-    docker exec flowdb bash -c 'i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
+    docker exec flowdb bash -c 'i=0; until { [ $i -ge 90 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
     (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { ((ss -tuna || netstat -an) | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
     echo "FlowMachine ready"
