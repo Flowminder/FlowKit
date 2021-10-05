@@ -43,7 +43,8 @@ CREATE TEMPORARY TABLE mds_table_{date}(
 	EVENT_ID int,
 	EVENT_TYPE varchar(10),
 	DATA_VOLUME_UP int,
-	DATA_VOLUME_DOWN int
+	DATA_VOLUME_DOWN int,
+	DURATION real
 );
 CREATE TEMPORARY TABLE topup_table_{date}(
 	MSISDN varchar(32),
