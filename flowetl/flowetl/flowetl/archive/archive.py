@@ -38,6 +38,8 @@ def get_cursor(db_con):
         cur.close()
 
 
+# TODO: Full rebuild query (reduced table, cell table, geography table)
+
 class ArchiveStep:
     def __init__(self, query_path, query_args=None):
         if query_args is None:
@@ -69,7 +71,7 @@ class ArchiveManager:
         self.db_con = psycopg2.connect(
             host = os.getenv("FLOWDB_HOST"),
             port = os.getenv("FLOWDB_PORT"),
-            user = os.getenv("POSTGRES_USER"),
+            user = os.getenv("POSTGRES_USER"), # Replace with lesss expansive permissions later
             password = os.getenv("POSTGRES_PASSWORD"),
             dbname = "flowdb"
         )

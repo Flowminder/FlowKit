@@ -2,12 +2,15 @@ BEGIN;
 
 DROP TABLE IF EXISTS reduced.numberedsquashlist_{date};
 
+
+--TODO: msisdn and locationid to bytea from text
+--TODO: Add rowid
 CREATE TABLE reduced.numberedsquashlist_{date}(
-    msisdn varchar(32) NOT NULL, -- references reduced.subscribers(subscriber_id),
+    msisdn bytea NOT NULL,
     row_id INTEGER NOT NULL,
-    location_id varchar(32) NOT NULL, -- references reduced.cells(cell_id),
+    location_id bytea NOT NULL, -- references reduced.cells(cell_id),
     event_times TIME[],
-    event_types varchar(10)[]
+    event_types smallint[]
 );
 
 WITH ranked AS (
@@ -37,5 +40,9 @@ INSERT INTO reduced.numberedsquashlist_{date}
     FROM group_ranked
     GROUP BY msisdn, cell_id, group_rank
     ORDER BY msisdn, row_id;
+
+--TODO: Attach to main numberedsquashlist (or w/e we call it) as partition. Use CHECK clause for perf (see notebook)
+--TODO: Add clustering + primary key generation + ANALYZE
+
 
 COMMIT;
