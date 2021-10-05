@@ -43,6 +43,8 @@ def connections(
     redis_host: Optional[str] = None,
     redis_port: Optional[int] = None,
     redis_password: Optional[str] = None,
+    redis_max_connections: Optional[str] = None,
+    redis_pool_timeout: Optional[float] = None,
     conn: Optional[Connection] = None,
 ) -> None:
     """
@@ -76,6 +78,10 @@ def connections(
         Port the redis server is available on
     redis_password : str
         Password for the redis instance
+    redis_max_connections : int
+        Maximum number of simultanious connections redis allows. Default 10.
+    redis_pool_timeout : float
+        Seconds to wait for a Redis connection before throwing a timeout exception. Default 5
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
@@ -103,6 +109,8 @@ def connections(
             redis_host=redis_host,
             redis_port=redis_port,
             redis_password=redis_password,
+            redis_max_connections=redis_max_connections,
+            redis_pool_timeout=redis_pool_timeout,
             conn=conn,
         )
     ):
@@ -121,6 +129,8 @@ def connect(
     redis_host: Optional[str] = None,
     redis_port: Optional[int] = None,
     redis_password: Optional[str] = None,
+    redis_max_connections: Optional[str] = None,
+    redis_pool_timeout: Optional[float] = None,
     conn: Optional[Connection] = None,
 ) -> None:
     """
@@ -154,6 +164,10 @@ def connect(
         Port the redis server is available on
     redis_password : str
         Password for the redis instance
+    redis_max_connections : int
+        Maximum number of simultanious connections redis allows. Default 10.
+    redis_pool_timeout : float
+        Seconds to wait for a Redis connection before throwing a timeout exception. Default 5
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
@@ -186,6 +200,8 @@ def connect(
             redis_host=redis_host,
             redis_port=redis_port,
             redis_password=redis_password,
+            redis_max_connections=redis_max_connections,
+            redis_pool_timeout=redis_pool_timeout,
             conn=conn,
         )
     )
@@ -203,6 +219,8 @@ def _do_connect(
     redis_host: Optional[str] = None,
     redis_port: Optional[int] = None,
     redis_password: Optional[str] = None,
+    redis_max_connections: Optional[str] = None,
+    redis_pool_timeout: Optional[float] = None,
     conn: Optional[Connection] = None,
 ) -> Tuple[Connection, ThreadPoolExecutor, StrictRedis]:
     """
@@ -232,6 +250,10 @@ def _do_connect(
         Port the redis server is available on
     redis_password : str
         Password for the redis instance
+    redis_max_connections : int
+        Maximum number of simultanious connections redis allows. Default 10.
+    redis_pool_timeout : float
+        Seconds to wait for a Redis connection before throwing a timeout exception. Default 5
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
@@ -292,6 +314,12 @@ def _do_connect(
         redis_password = (
             environ["REDIS_PASSWORD"] if redis_password is None else redis_password
         )
+        redis_max_connections = int(
+            getenv("REDIS_MAX_CONNECTIONS", 10) if redis_max_connections is None else redis_max_connections
+        )
+        redis_pool_timeout = float(
+            getenv("REDIS_POOL_TIMEOUT", 5) if redis_pool_timeout is None else redis_pool_timeout
+        )
     except KeyError as e:
         raise ValueError(
             f"You must provide a secret named {e.args[0]}, set an environment variable named {e.args[0]}, or provide the value as a parameter."
@@ -310,8 +338,16 @@ def _do_connect(
             overflow=flowdb_connection_pool_overflow,
         )
 
+    redis_pool = redis.BlockingConnectionPool(
+        host=redis_host,
+        port = redis_port,
+        password = redis_password,
+        max_connections = redis_max_connections,
+        timeout = redis_pool_timeout
+    )
+
     redis_connection = redis.StrictRedis(
-        host=redis_host, port=redis_port, password=redis_password
+        connection_pool=redis_pool
     )
     thread_pool = ThreadPoolExecutor(flowdb_connection_pool_size)
     conn.available_dates
