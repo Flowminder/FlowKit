@@ -745,7 +745,7 @@ jobs:
           key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Install pipenv
-          command: pip install -U pip setuptools==58.0.1 wheel && pip install pipenv
+          command: pip install -U pip && pip install setuptools==58.0.1 wheel && pip install pipenv
       - run:
           name: Install python dependencies
           command: |
@@ -762,7 +762,7 @@ jobs:
             --cov-report term-missing ./tests/unit
       - store_test_results:
           path: test_results
-      - run: 
+      - run:
             name: Upload coverage
             command: |
                 curl -s https://codecov.io/bash > codecov;
@@ -793,7 +793,7 @@ jobs:
             pyenv global 3.8.2
       - run:
           name: Install pipenv
-          command: pip install -U pip setuptools==58.0.1 wheel && pip install pipenv
+          command: pip install -U pip && pip install setuptools==58.0.1 wheel && pip install pipenv
       - run:
           name: Install python dependencies
           command: |
