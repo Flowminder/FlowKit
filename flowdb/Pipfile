@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 psutil = "*"
+pytest = "*"
+psycopg2-binary = "*"
+numpy = "*"
 
 [dev-packages]
 black = "==20.8b1"

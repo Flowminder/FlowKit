@@ -9,6 +9,7 @@ pandas = "*"
 pyjwt = "<3.0.0"
 merge-args = "*"
 tqdm = "*"
+bpython = "*"
 
 [dev-packages]
 pytest = "*"
