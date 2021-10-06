@@ -745,7 +745,7 @@ jobs:
           key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Install pipenv
-          command: pip install -U pip setuptools==58.0.1 wheel && pip install --upgrade pipenv
+          command: pip install -U pip setuptools==58.0.1 wheel && pip install pipenv
       - run:
           name: Install python dependencies
           command: |
@@ -793,7 +793,7 @@ jobs:
             pyenv global 3.8.2
       - run:
           name: Install pipenv
-          command: pip install -U pip setuptools==58.0.1 wheel && pip install --upgrade pipenv
+          command: pip install -U pip setuptools==58.0.1 wheel && pip install pipenv
       - run:
           name: Install python dependencies
           command: |
