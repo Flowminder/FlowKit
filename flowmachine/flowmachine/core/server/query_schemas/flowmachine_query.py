@@ -40,6 +40,7 @@ from .unmoving_at_reference_location_counts import (
     UnmovingAtReferenceLocationCountsSchema,
 )
 from .unmoving_counts import UnmovingCountsSchema
+from .mobility_estimation import MobilityEstimationSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
