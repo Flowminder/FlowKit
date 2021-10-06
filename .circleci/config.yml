@@ -745,10 +745,12 @@ jobs:
           key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Install pipenv
-          command: pip install -U pip && pip install setuptools==58.0.1 wheel && pip install pipenv
+          command: pip install --upgrade pipenv
       - run:
-          name: Install python dependencies
+          name: Install python dependencies with Airflow workaround
           command: |
+            pipenv install --deploy --dev || true
+            pipenv run python3 -m pip install setuptools==58.0.1
             pipenv install --deploy --dev
       - save_cache:
           key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock" }}
