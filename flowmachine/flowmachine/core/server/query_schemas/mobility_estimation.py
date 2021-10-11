@@ -6,7 +6,7 @@ from flowmachine.features.subscriber.mobility_estimation import MobilityEstimati
 from .base_exposed_query import BaseExposedQuery
 
 from .base_schema import BaseSchema
-from .aggregation_unit import AggregationUnitKind
+from .aggregation_unit import AggregationUnitMixin
 from .field_mixins import StartAndEndField
 
 class MobilityEstimationExposed(BaseExposedQuery):
@@ -27,6 +27,7 @@ class MobilityEstimationExposed(BaseExposedQuery):
             MobilityEstimation(self.start, self.stop, self.agg_unit)
         )
 
-class MobilityEstimationSchema(StartAndEndField, BaseSchema):
-    query_kind = fields.String(valiate=OneOf(["mobility_estimation"]))
-    agg_unit = fields.Nested(AggregationUnitKind)
+class MobilityEstimationSchema(StartAndEndField, AggregationUnitMixin, BaseSchema):
+    query_kind = fields.String(validate=OneOf(["mobility_estimation"]))
+
+    __model__ = MobilityEstimationExposed
