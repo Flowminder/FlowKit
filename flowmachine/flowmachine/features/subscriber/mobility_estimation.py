@@ -1,13 +1,13 @@
 from typing import List
 from flowmachine.core.query import Query
 
-class MobilityEstimation(Query):
 
+class MobilityEstimation(Query):
     def __init__(
-            self,
-            start,
-            stop,
-            agg_unit,
+        self,
+        start,
+        stop,
+        agg_unit,
     ):
         pass
 
@@ -21,7 +21,7 @@ class MobilityEstimation(Query):
             "resident_count_change_median",
             "resident_count_change_median_percent",
             "high_mobility_resident_percent",
-            "displaced_residents_percent"
+            "displaced_residents_percent",
         ]
 
     def _make_query(self):
