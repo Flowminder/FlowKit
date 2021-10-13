@@ -11,7 +11,10 @@ from flowmachine.core import make_spatial_unit
 
 
 def _parse_date(date_string):
-    date_now = datetime.datetime.strptime(date_string, "%Y-%m-%d")
+    if type(date_string) == datetime.datetime:
+        date_now = datetime.datetime.strptime(date_string, "%Y-%m-%d")
+    else:
+        date_now = date_string
     date_before = date_now - relativedelta(months=1)
     #    return(
     #        date_now.strftime("%Y-%m-%d"),
