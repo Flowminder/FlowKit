@@ -25,6 +25,7 @@ apispec-oneofschema = "*"
 get_secret_or_env_var = "*"
 redis = "*"
 watchdog = "*"
+dateutils = "*"
 
 [dev-packages]
 ipykernel = "*"
