@@ -8,7 +8,7 @@ from flowmachine.core import make_spatial_unit
 
 
 def test_column_names_day_trajectories(exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for DayTrajectories"""
+    """Test that column_names property matches head(0) for DayTrajectories"""
     lv = DayTrajectories(
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
     )

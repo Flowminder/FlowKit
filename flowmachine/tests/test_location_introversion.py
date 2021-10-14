@@ -15,7 +15,7 @@ from flowmachine.features.location import LocationIntroversion
 
 @pytest.mark.usefixtures("skip_datecheck")
 def test_location_introversion_column_names(exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0)"""
+    """Test that column_names property matches head(0)"""
     li = LocationIntroversion(
         "2016-01-01", "2016-01-07", spatial_unit=exemplar_spatial_unit_param
     )

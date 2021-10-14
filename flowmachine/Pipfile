@@ -26,6 +26,7 @@ get_secret_or_env_var = "*"
 redis = "*"
 watchdog = "*"
 dateutils = "*"
+pre-commit = "*"
 
 [dev-packages]
 ipykernel = "*"

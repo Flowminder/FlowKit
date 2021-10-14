@@ -373,10 +373,17 @@ def create_dag(
             )
             extract >> cluster
             from_stage = cluster
-        from_stage >> [
-            add_constraints,
-            add_indexes,
-        ] >> analyze >> attach >> latest_only >> analyze_parent
+        (
+            from_stage
+            >> [
+                add_constraints,
+                add_indexes,
+            ]
+            >> analyze
+            >> attach
+            >> latest_only
+            >> analyze_parent
+        )
         attach >> [
             update_records,
             *get_qa_checks(additional_qa_check_paths=additional_qa_check_paths),

@@ -47,7 +47,7 @@ def test_event_count(get_dataframe):
 
 @pytest.mark.parametrize("kwarg", ["direction"])
 def test_event_count_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in EventCount. """
+    """Test ValueError is raised for non-compliant kwarg in EventCount."""
 
     with pytest.raises(ValueError):
         query = EventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})

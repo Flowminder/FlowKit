@@ -36,7 +36,7 @@ def test_nocturnal_events(get_dataframe):
 
 @pytest.mark.parametrize("kwarg", ["direction"])
 def test_nocturnal_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in NocturnalEvents. """
+    """Test ValueError is raised for non-compliant kwarg in NocturnalEvents."""
 
     with pytest.raises(ValueError):
         query = NocturnalEvents("2016-01-03", "2016-01-05", **{kwarg: "error"})
