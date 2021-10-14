@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, AnyStr
 from flowmachine.core.query import Query
 
 import datetime
@@ -11,7 +11,7 @@ from flowmachine.core import make_spatial_unit
 
 
 def _parse_date(date_string):
-    if type(date_string) == datetime.datetime:
+    if type(date_string) == str:
         date_now = datetime.datetime.strptime(date_string, "%Y-%m-%d")
     else:
         date_now = date_string
@@ -30,6 +30,8 @@ class MobilityEstimation(Query):
         stop,
         agg_unit,
     ):
+        import pdb
+        pdb.set_trace()
         self.this_month_start, self.last_month_start = _parse_date(start)
         self.this_month_stop, self.last_month_stop = _parse_date(stop)
         self.agg_unit = make_spatial_unit("admin", level=3)
