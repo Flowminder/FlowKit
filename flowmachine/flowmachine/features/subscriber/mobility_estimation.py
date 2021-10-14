@@ -30,8 +30,6 @@ class MobilityEstimation(Query):
         stop,
         agg_unit,
     ):
-        import pdb
-        pdb.set_trace()
         self.this_month_start, self.last_month_start = _parse_date(start)
         self.this_month_stop, self.last_month_stop = _parse_date(stop)
         self.agg_unit = make_spatial_unit("admin", level=3)
