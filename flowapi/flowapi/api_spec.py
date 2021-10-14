@@ -52,7 +52,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
             contact=dict(email="flowkit@flowminder.org"),
         ),
     )
-    spec.components.schemas = flowmachine_query_schemas
+    spec.components.schemas.update(flowmachine_query_schemas)
     spec.components.security_scheme(
         "token",
         {

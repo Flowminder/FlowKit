@@ -29,8 +29,8 @@ nbformat = "*"
 [dev-packages]
 ipywidgets = "*"
 jupyterlab = "*"
-distributed = "==2.19.0" # Pinned because prefect is pinned
-prefect = {version="==0.10.7", extras = ["viz"]}
+distributed = "*" # Pinned because prefect is pinned
+prefect = {version="*", extras = ["viz"]}
 pytest = "*"
 pytest-cov = "*"
 sqlalchemy-utils = "*"

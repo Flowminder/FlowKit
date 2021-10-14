@@ -455,6 +455,9 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db, tmpdir):
     workflow_storage = Local(tmpdir)
     workflow_storage.add_flow(workflow_1)
     workflow_storage.add_flow(workflow_2)
+    workflow_storage.get_flow = (
+        lambda x: workflow_1 if x == "WORKFLOW_1" else workflow_2
+    )  # Replacing get_flow to allow us to return mocks here because otherwise we lose the reference when it reloads from the filesystem
 
     workflow_configs = [
         WorkflowConfig(
@@ -590,6 +593,9 @@ def test_available_dates_sensor_retries(monkeypatch, postgres_test_db, tmpdir):
     dummy_workflow.run.side_effect = [Failed(), Success(), Success()]
     workflow_storage = Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
+    workflow_storage.get_flow = (
+        lambda x: dummy_workflow
+    )  # Replacing get_flow to allow us to return a mock here because otherwise we lose the reference when it reloads from the filesystem
 
     workflow_configs = [WorkflowConfig(workflow_name="DUMMY_WORKFLOW")]
 

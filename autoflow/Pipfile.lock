@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "dbf4309c5db24fc8f97fe157f0a85d1c501b674de46ac558be2d4f0321760ce1"
+            "sha256": "c1c45bec5eb26fdfce58e063b74885adb28047aec002b6f8cf402caebebca306"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1893,13 +1893,13 @@
             ],
             "version": "==1.15.0"
         },
-        "charset-normalizer": {
+        "chardet": {
             "hashes": [
-                "sha256:e019de665e2bcf9c2b64e2e5aa025fa991da8720daa3c1138cadd2fd1856aed0",
-                "sha256:f7af805c321bfa1ce6714c51f254e0d5bb5e5834039bc17db7ebe3a4cec9492b"
+                "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa",
+                "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"
             ],
-            "markers": "python_version >= '3'",
-            "version": "==2.0.7"
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==4.0.0"
         },
         "click": {
             "hashes": [
@@ -2388,14 +2388,6 @@
             ],
             "version": "==0.4.3"
         },
-        "natsort": {
-            "hashes": [
-                "sha256:00c603a42365830c4722a2eb7663a25919551217ec09a243d3399fa8dd4ac403",
-                "sha256:d0f4fc06ca163fa4a5ef638d9bf111c67f65eedcc7920f98dec08e489045b67e"
-            ],
-            "markers": "python_version >= '3.4'",
-            "version": "==7.1.1"
-        },
         "nbclassic": {
             "hashes": [
                 "sha256:57936a39410a18261442ca3b298421f859c9012272b87bf55e17b5507f052f4d",
@@ -2820,41 +2812,6 @@
                 "sha256:9e5c1a20afc3cf786197ae59c79bcdb0e7565f218f27df5f891307ee8817c1ea"
             ],
             "version": "==0.2.0"
-        },
-        "ruamel.yaml": {
-            "hashes": [
-                "sha256:1a771fc92d3823682b7f0893ad56cb5a5c87c48e62b5399d6f42c8759a583b33",
-                "sha256:ea21da1198c4b41b8e7a259301cc9710d3b972bf8ba52f06218478e6802dd1f1"
-            ],
-            "markers": "python_version >= '3'",
-            "version": "==0.17.16"
-        },
-        "ruamel.yaml.clib": {
-            "hashes": [
-                "sha256:0847201b767447fc33b9c235780d3aa90357d20dd6108b92be544427bea197dd",
-                "sha256:1866cf2c284a03b9524a5cc00daca56d80057c5ce3cdc86a52020f4c720856f0",
-                "sha256:31ea73e564a7b5fbbe8188ab8b334393e06d997914a4e184975348f204790277",
-                "sha256:3fb9575a5acd13031c57a62cc7823e5d2ff8bc3835ba4d94b921b4e6ee664104",
-                "sha256:4ff604ce439abb20794f05613c374759ce10e3595d1867764dd1ae675b85acbd",
-                "sha256:72a2b8b2ff0a627496aad76f37a652bcef400fd861721744201ef1b45199ab78",
-                "sha256:78988ed190206672da0f5d50c61afef8f67daa718d614377dcd5e3ed85ab4a99",
-                "sha256:7b2927e92feb51d830f531de4ccb11b320255ee95e791022555971c466af4527",
-                "sha256:7f7ecb53ae6848f959db6ae93bdff1740e651809780822270eab111500842a84",
-                "sha256:825d5fccef6da42f3c8eccd4281af399f21c02b32d98e113dbc631ea6a6ecbc7",
-                "sha256:846fc8336443106fe23f9b6d6b8c14a53d38cef9a375149d61f99d78782ea468",
-                "sha256:89221ec6d6026f8ae859c09b9718799fea22c0e8da8b766b0b2c9a9ba2db326b",
-                "sha256:9efef4aab5353387b07f6b22ace0867032b900d8e91674b5d8ea9150db5cae94",
-                "sha256:a32f8d81ea0c6173ab1b3da956869114cae53ba1e9f72374032e33ba3118c233",
-                "sha256:a49e0161897901d1ac9c4a79984b8410f450565bbad64dbfcbf76152743a0cdb",
-                "sha256:ada3f400d9923a190ea8b59c8f60680c4ef8a4b0dfae134d2f2ff68429adfab5",
-                "sha256:bf75d28fa071645c529b5474a550a44686821decebdd00e21127ef1fd566eabe",
-                "sha256:cfdb9389d888c5b74af297e51ce357b800dd844898af9d4a547ffc143fa56751",
-                "sha256:d67f273097c368265a7b81e152e07fb90ed395df6e552b9fa858c6d2c9f42502",
-                "sha256:dc6a613d6c74eef5a14a214d433d06291526145431c3b964f5e16529b1842bed",
-                "sha256:de9c6b8a1ba52919ae919f3ae96abb72b994dd0350226e28f3686cb4f142165c"
-            ],
-            "markers": "python_version < '3.10' and platform_python_implementation == 'CPython'",
-            "version": "==0.2.6"
         },
         "scramp": {
             "hashes": [
