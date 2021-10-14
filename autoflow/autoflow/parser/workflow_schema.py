@@ -5,6 +5,7 @@
 """
 Defines the WorkflowSchema class, for loading a notebook-based workflow specification.
 """
+from typing import Optional
 
 from marshmallow import (
     fields,
@@ -33,6 +34,7 @@ class WorkflowSchema(Schema):
 
     name = fields.String(required=True)
     notebooks = NotebooksField(required=True)
+    storage_path = fields.String(required=False)
 
     @validates_schema(pass_many=True)
     def check_for_duplicate_names(self, data, many, **kwargs):
@@ -53,16 +55,16 @@ class WorkflowSchema(Schema):
             pass
 
     @post_load(pass_many=True)
-    def make_and_store_workflows(
-        self, data, many, storage_path=None, **kwargs
-    ) -> storage.Local:
+    def make_and_store_workflows(self, data, many, **kwargs) -> storage.Local:
         """
         Create a prefect flow for each of the provided workflow specifications,
-        and return as a prefect 'Memory' storage object.
+        and return as a prefect 'Local' storage object.
         """
-        workflow_storage = storage.Local(directory=storage_path)
+
         if not many:
             data = [data]
+        storage_path = data[0].get("storage_path")
+        workflow_storage = storage.Local(directory=storage_path)
         for workflow_spec in data:
             workflow = make_notebooks_workflow(**workflow_spec)
             workflow_storage.add_flow(workflow)
