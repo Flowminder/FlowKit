@@ -13,7 +13,7 @@ from marshmallow import (
     validates_schema,
     ValidationError,
 )
-from prefect.environments import storage
+from prefect import storage
 
 from autoflow.parser.notebooks_field import NotebooksField
 from autoflow.workflows import make_notebooks_workflow
@@ -53,12 +53,14 @@ class WorkflowSchema(Schema):
             pass
 
     @post_load(pass_many=True)
-    def make_and_store_workflows(self, data, many, **kwargs) -> storage.Memory:
+    def make_and_store_workflows(
+        self, data, many, storage_path=None, **kwargs
+    ) -> storage.Local:
         """
         Create a prefect flow for each of the provided workflow specifications,
         and return as a prefect 'Memory' storage object.
         """
-        workflow_storage = storage.Memory()
+        workflow_storage = storage.Local(directory=storage_path)
         if not many:
             data = [data]
         for workflow_spec in data:

@@ -152,7 +152,7 @@ def filter_dates(
 def get_parametrised_workflows(
     workflow_configs: List[WorkflowConfig],
     lists_of_dates: List[List["datetime.date"]],
-    workflow_storage: "prefect.environments.storage.Storage",
+    workflow_storage: "prefect.storage.Storage",
 ) -> List[Tuple[Flow, Dict[str, Any]]]:
     """
     For each workflow in a list of workflow configs, for each date in the
@@ -165,7 +165,7 @@ def get_parametrised_workflows(
         List of workflow configs.
     lists_of_dates : list of list of date
         List containing a list of dates for each workflow in workflow_configs.
-    workflow_storage : prefect.environments.storage.Storage
+    workflow_storage : prefect.storage.Storage
         Prefect Storage object containing the workflows named in workflow_configs.
 
     Returns

@@ -11,7 +11,7 @@ import prefect
 from prefect.core import Edge
 from prefect.engine import TaskRunner
 from prefect.engine.state import Failed, Success
-from prefect.environments.storage import Memory
+from prefect.storage import Local
 from prefect.schedules import CronSchedule
 from prefect.tasks.core.function import FunctionTask
 from prefect.utilities.configuration import set_temporary_config
@@ -212,11 +212,11 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
     assert filtered_dates == [pendulum.date(2016, 1, d) for d in [5, 6]]
 
 
-def test_get_parametrised_workflows(test_logger):
+def test_get_parametrised_workflows(test_logger, tmpdir):
     """
     Test that get_parametrised_workflows correctly combines workflow parameters with dates.
     """
-    workflow_storage = Memory()
+    workflow_storage = Local(tmpdir)
     workflow_storage.add_flow(prefect.Flow(name="WORKFLOW_1"))
     workflow_storage.add_flow(prefect.Flow(name="WORKFLOW_2"))
 
@@ -427,7 +427,7 @@ def test_run_workflow_ignores_schedule(test_logger):
     function_mock.assert_called_once_with(dummy_param="DUMMY_VALUE")
 
 
-def test_available_dates_sensor(monkeypatch, postgres_test_db):
+def test_available_dates_sensor(monkeypatch, postgres_test_db, tmpdir):
     """
     Test that the available_dates_sensor flow runs the specified workflows with
     the correct parameters, and does not run successful workflow runs more than
@@ -452,7 +452,7 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
     workflow_2 = Mock()
     workflow_2.name = "WORKFLOW_2"
     workflow_2.run.return_value = Success()
-    workflow_storage = Memory()
+    workflow_storage = Local(tmpdir)
     workflow_storage.add_flow(workflow_1)
     workflow_storage.add_flow(workflow_2)
 
@@ -569,7 +569,7 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
     )
 
 
-def test_available_dates_sensor_retries(monkeypatch, postgres_test_db):
+def test_available_dates_sensor_retries(monkeypatch, postgres_test_db, tmpdir):
     """
     Test that the available_dates_sensor flow re-runs workflows that failed on
     the previous attempt, and does not re-run them again once they have succeeded.
@@ -588,7 +588,7 @@ def test_available_dates_sensor_retries(monkeypatch, postgres_test_db):
     dummy_workflow = Mock()
     dummy_workflow.name = "DUMMY_WORKFLOW"
     dummy_workflow.run.side_effect = [Failed(), Success(), Success()]
-    workflow_storage = Memory()
+    workflow_storage = Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     workflow_configs = [WorkflowConfig(workflow_name="DUMMY_WORKFLOW")]
