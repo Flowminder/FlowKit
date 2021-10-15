@@ -47,7 +47,7 @@ def test_no_result_is_greater_than_one(get_dataframe):
 
 
 def test_counterpart_subset(get_dataframe):
-    """ Test that counterparts_subset method gets correct subset. """
+    """Test that counterparts_subset method gets correct subset."""
     query = ContactBalance("2016-01-01", "2016-01-03")
     cb = get_dataframe(query)
     cs = get_dataframe(query.counterparts_subset())

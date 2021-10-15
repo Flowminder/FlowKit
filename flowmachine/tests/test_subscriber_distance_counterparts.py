@@ -16,7 +16,7 @@ import pytest
 
 @pytest.fixture()
 def distance_matrix(get_dataframe):
-    """ Calculates the distance matrix between cells. """
+    """Calculates the distance matrix between cells."""
     return get_dataframe(DistanceMatrix())
 
 

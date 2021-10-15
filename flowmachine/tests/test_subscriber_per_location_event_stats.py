@@ -30,7 +30,7 @@ import pytest
     ],
 )
 def test_per_location_event_stats(get_dataframe, kwargs, msisdn, want):
-    """ Test hand-picked PerLocationEventStats. """
+    """Test hand-picked PerLocationEventStats."""
     if "spatial_unit" in kwargs:
         kwargs["spatial_unit"] = make_spatial_unit(**kwargs["spatial_unit"])
     query = PerLocationEventStats("2016-01-01", "2016-01-06", **kwargs)
@@ -40,7 +40,7 @@ def test_per_location_event_stats(get_dataframe, kwargs, msisdn, want):
 
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])
 def test_per_location_event_stats_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in PerLocationEventStats. """
+    """Test ValueError is raised for non-compliant kwarg in PerLocationEventStats."""
 
     with pytest.raises(ValueError):
         query = PerLocationEventStats("2016-01-03", "2016-01-05", **{kwarg: "error"})

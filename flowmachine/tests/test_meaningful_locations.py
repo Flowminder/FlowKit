@@ -16,7 +16,7 @@ from flowmachine.features.subscriber.meaningful_locations import MeaningfulLocat
 def test_column_names_meaningful_locations(
     get_column_names_from_run, meaningful_locations_labels
 ):
-    """ Test that column_names property matches head(0) for meaningfullocations"""
+    """Test that column_names property matches head(0) for meaningfullocations"""
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(

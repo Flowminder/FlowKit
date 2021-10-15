@@ -46,7 +46,7 @@ def test_mds_volume_type(get_dataframe):
 
 @pytest.mark.parametrize("kwarg", ["volume", "statistic"])
 def test_mds_volume_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in MDSVolume. """
+    """Test ValueError is raised for non-compliant kwarg in MDSVolume."""
 
     with pytest.raises(ValueError):
         query = MDSVolume("2016-01-03", "2016-01-05", **{kwarg: "error"})
