@@ -148,7 +148,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202107-02
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -162,10 +162,10 @@ jobs:
       - restore_cache:
           key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.8.2"
+          name: "Switch to Python v3.9.4"
           command: |
             pyenv versions
-            pyenv global 3.8.2
+            pyenv global 3.9.4
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv virtualenv
@@ -247,17 +247,17 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202107-02
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.8.2"
+          name: "Switch to Python v3.9.4"
           command: |
             pyenv versions
-            pyenv global 3.8.2
+            pyenv global 3.9.4
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -310,7 +310,7 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker:
-          version: 19.03.8
+          version: 20.10.7
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -335,7 +335,7 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker:
-          version: 19.03.8
+          version: 20.10.7
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -712,7 +712,7 @@ jobs:
       component_path:
         type: string
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202107-02
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -776,7 +776,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202107-02
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
@@ -790,7 +790,7 @@ jobs:
           name: Set python version
           command: |
             pyenv versions
-            pyenv global 3.8.2
+            pyenv global 3.9.4
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -869,7 +869,7 @@ jobs:
         enum: ["", "examples smaller_data"]
         default: ""
     machine:
-      image: circleci/classic:201808-01
+      image: ubuntu-2004:202107-02
     working_directory: /home/circleci/project
     steps:
       - checkout:
