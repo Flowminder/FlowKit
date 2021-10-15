@@ -42,9 +42,8 @@ describe("Server management", function () {
     cy.get("#spec-upload-button").then((subject) => {
       cy.fixture("api_spec.json").then((content) => {
         const el = subject[0];
-        content["components"]["securitySchemes"]["token"][
-          "x-audience"
-        ] = server_name;
+        content["components"]["securitySchemes"]["token"]["x-audience"] =
+          server_name;
         const testFile = new File([JSON.stringify(content)], "api_spec.json");
         const dataTransfer = new DataTransfer();
 
@@ -78,9 +77,8 @@ describe("Server management", function () {
       .then((subject) => {
         cy.fixture("api_spec.json").then((content) => {
           const el = subject[0];
-          content["components"]["securitySchemes"]["token"][
-            "x-audience"
-          ] = server_name;
+          content["components"]["securitySchemes"]["token"]["x-audience"] =
+            server_name;
           content["components"]["securitySchemes"]["token"][
             "x-security-scopes"
           ] = ["get_result&test_scope"];
