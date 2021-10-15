@@ -9,7 +9,7 @@ import pytest
 
 
 def test_contact_reciprocal(get_dataframe):
-    """ Test a few cases of ContactReciprocal. """
+    """Test a few cases of ContactReciprocal."""
     query = ContactReciprocal("2016-01-01", "2016-01-08", exclude_self_calls=False)
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["self_caller"].reciprocal
@@ -17,7 +17,7 @@ def test_contact_reciprocal(get_dataframe):
 
 
 def test_proportion_contact_reciprocal(get_dataframe):
-    """ Test a few cases of ProportionContactReciprocal. """
+    """Test a few cases of ProportionContactReciprocal."""
     query = ProportionContactReciprocal(
         ContactReciprocal("2016-01-01", "2016-01-08", exclude_self_calls=False)
     )
@@ -27,7 +27,7 @@ def test_proportion_contact_reciprocal(get_dataframe):
 
 
 def test_proportion_reciprocal(get_dataframe):
-    """ Test a few cases of ProportionEventReciprocal. """
+    """Test a few cases of ProportionEventReciprocal."""
     query = ProportionEventReciprocal(
         "2016-01-01",
         "2016-01-08",
@@ -73,7 +73,7 @@ def test_proportion_reciprocal(get_dataframe):
 
 @pytest.mark.parametrize("kwarg", ["direction"])
 def test_proportion_event_reciprocal_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in ProportionEventReciprocal. """
+    """Test ValueError is raised for non-compliant kwarg in ProportionEventReciprocal."""
 
     with pytest.raises(ValueError):
         query = ProportionEventReciprocal(

@@ -267,6 +267,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     >>> list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
     ["get_result&dummy", "run&dummy", "get_result&available_dates"],
     """
+    resolved = ResolvingParser(spec_string=dumps(schema))
     yield from per_query_scopes(
         queries=ResolvingParser(spec_string=dumps(schema)).specification["components"][
             "schemas"

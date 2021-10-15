@@ -6,14 +6,14 @@ import pytest
 
 from marshmallow import ValidationError
 from prefect import Flow, Parameter
-from prefect.environments import storage
+from prefect import storage
 from prefect.schedules import Schedule
 
 from autoflow.parser.available_dates_sensor_schema import AvailableDatesSensorSchema
 from autoflow.sensor import WorkflowConfig
 
 
-def test_available_dates_sensor_schema():
+def test_available_dates_sensor_schema(tmpdir):
     """
     Test that AvailableDatesSensorSchema can load a valid set of sensor config parameters.
     """
@@ -21,7 +21,7 @@ def test_available_dates_sensor_schema():
     dummy_workflow = Flow(name="DUMMY_WORKFLOW")
     for parameter in ["reference_date", "date_ranges", "DUMMY_PARAM"]:
         dummy_workflow.add_task(Parameter(parameter))
-    workflow_storage = storage.Memory()
+    workflow_storage = storage.Local(tmpdir)
     workflow_storage.add_flow(dummy_workflow)
 
     input_dict = dict(

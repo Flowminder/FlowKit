@@ -21,7 +21,7 @@ from flowmachine.features.location.meaningful_locations_aggregate import (
 def test_column_names_meaningful_locations_aggregate(
     exemplar_spatial_unit_param, get_column_names_from_run, meaningful_locations_labels
 ):
-    """ Test that column_names property matches head(0) for aggregated meaningful locations"""
+    """Test that column_names property matches head(0) for aggregated meaningful locations"""
     if not exemplar_spatial_unit_param.is_polygon:
         pytest.xfail(
             f"The spatial unit {exemplar_spatial_unit_param} is not supported as an aggregation unit for MeaningfulLocations."
@@ -55,7 +55,7 @@ def test_column_names_meaningful_locations_aggregate(
 def test_meaningful_locations_aggregate_disallowed_spatial_unit_raises(
     meaningful_locations_labels,
 ):
-    """ Test that a bad spatial unit raises an InvalidSpatialUnitError"""
+    """Test that a bad spatial unit raises an InvalidSpatialUnitError"""
 
     with pytest.raises(InvalidSpatialUnitError):
         mfl_agg = MeaningfulLocationsAggregate(

@@ -23,7 +23,7 @@ from flowmachine.features import daily_location, ContactBalance, ModalLocation
 def test_contact_reference_location_stats(
     get_dataframe, statistic, msisdn, spatial_unit_type, want
 ):
-    """ Test a few hand-picked ContactReferenceLocationStats. """
+    """Test a few hand-picked ContactReferenceLocationStats."""
     cb = ContactBalance("2016-01-01", "2016-01-03")
     ml = ModalLocation(
         *[
@@ -43,7 +43,7 @@ def test_contact_reference_location_stats(
 
 
 def test_contact_reference_location_stats_custom_geometry(get_dataframe):
-    """ Test ContactReferenceLocationStats with custom geometry column. """
+    """Test ContactReferenceLocationStats with custom geometry column."""
     cb = ContactBalance("2016-01-01", "2016-01-03")
     ml = ModalLocation(
         *[
@@ -67,7 +67,7 @@ def test_contact_reference_location_stats_custom_geometry(get_dataframe):
 
 
 def test_contact_reference_location_stats_false_statistic_raises():
-    """ Test ValueError is raised for non-compliant statistics parameter. """
+    """Test ValueError is raised for non-compliant statistics parameter."""
     cb = ContactBalance("2016-01-01", "2016-01-03")
     ml = ModalLocation(
         *[
@@ -104,7 +104,7 @@ def test_contact_reference_location_bad_spatial_unit_raises():
 
 
 def test_contact_reference_location_no_spatial_unit_raises():
-    """ Test ValueError is raised for contact_location without spatial_unit attribute. """
+    """Test ValueError is raised for contact_location without spatial_unit attribute."""
     cb = ContactBalance("2016-01-01", "2016-01-03")
     # by encapsulating ModalLocations in a CustomQuery we remove the spatial_unit
     # attribute from it which should raise an error
@@ -124,7 +124,7 @@ def test_contact_reference_location_no_spatial_unit_raises():
 
 
 def test_contact_reference_location_no_subscriber_raises():
-    """ Test ValueError is raised for contact_location without subscriber. """
+    """Test ValueError is raised for contact_location without subscriber."""
     cb = ContactBalance("2016-01-01", "2016-01-03")
     cl = CustomQuery("SELECT 1 AS foo", ["foo"])
     with pytest.raises(ValueError):

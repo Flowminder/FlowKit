@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Further improvements to token display in FlowAuth. [#1124](https://github.com/Flowminder/FlowKit/issues/1124)
 
 ### Fixed
+- Autoflow's prefect version is now current. [#2544](https://github.com/Flowminder/FlowKit/issues/2544)
 
 ### Removed
 

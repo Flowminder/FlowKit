@@ -21,7 +21,7 @@ from .call_days import CallDays
 
 
 class BaseCluster(GeoDataMixin, Query):
-    """ Base query for cluster methods, providing a geo augmented query method."""
+    """Base query for cluster methods, providing a geo augmented query method."""
 
     def _geo_augmented_query(self):
         cols = [c for c in self.column_names if c != "cluster"]

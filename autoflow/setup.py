@@ -36,8 +36,8 @@ setup(
         "nbformat",
         "papermill >= 1.2.1",
         "pendulum",
-        "prefect ==0.10.7",  # Pinned pending updating for removal of storage.Memory
-        "distributed ==2.19.0",  # Pinned because prefect is pinned"
+        "prefect",
+        "distributed",
         "pyyaml",
         "sh",
         "sqlalchemy<=1.3.23",
