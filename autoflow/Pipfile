@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-black = "==20.8b1" # required by papermill
+black = "==21.9b0" # required by papermill
 descartes = "*"
 flowclient = {editable = true,path = "./../flowclient"}
 geopandas = "*"
@@ -17,8 +17,8 @@ nteract-scrapbook = "*"
 pandas = "*"
 papermill = ">=1.2.1"
 pendulum = "*"
-distributed = "==2.19.0" # Pinned because prefect is pinned
-prefect = "==0.10.7"
+distributed = "*"
+prefect = "*"
 psycopg2-binary = "*"
 pyyaml = "*"
 sh = "*"
@@ -29,8 +29,8 @@ nbformat = "*"
 [dev-packages]
 ipywidgets = "*"
 jupyterlab = "*"
-distributed = "==2.19.0" # Pinned because prefect is pinned
-prefect = {version="==0.10.7", extras = ["viz"]}
+distributed = "*" # Pinned because prefect is pinned
+prefect = {version="*", extras = ["viz"]}
 pytest = "*"
 pytest-cov = "*"
 sqlalchemy-utils = "*"

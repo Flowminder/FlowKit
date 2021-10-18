@@ -68,8 +68,9 @@ class ServerAdminDetails extends React.Component {
         scopeGraph: scopeGraph,
         fullRights: Object.keys(specScopes),
         enabledRights: enabledKeys,
-        name:
-          parsedSpec["components"]["securitySchemes"]["token"]["x-audience"],
+        name: parsedSpec["components"]["securitySchemes"]["token"][
+          "x-audience"
+        ],
       });
     };
   }

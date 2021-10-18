@@ -7,7 +7,7 @@ import pytest
 import datetime
 from textwrap import dedent
 
-from prefect.environments import storage
+from prefect import storage
 from prefect.schedules import Schedule
 
 from autoflow.date_stencil import DateStencil
