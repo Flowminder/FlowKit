@@ -259,7 +259,7 @@ def generate_token(
         token_data["aud"] = flowapi_identifier
     return jwt.encode(
         payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
-    ).decode("utf-8")
+    )
 
 
 @lru_cache(None)
