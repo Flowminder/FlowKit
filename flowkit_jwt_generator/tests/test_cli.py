@@ -30,7 +30,6 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
     decoded = jwt.decode(
         jwt=result.output.strip(),
         key=public_key,
-        verify=True,
         algorithms=["RS256"],
         audience=dummy_flowapi["aud"],
     )
