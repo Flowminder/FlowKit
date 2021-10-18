@@ -8,6 +8,7 @@ pytest = "*"
 pre-commit = "*"
 
 [dev-packages]
+pygrep = "*"
 
 [requires]
 python_version = "3.8"
