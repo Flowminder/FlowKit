@@ -22,8 +22,9 @@ pytest = "*"
 pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
-black = "==20.8b1"
+black = "==21.9b0"
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
+flowapi = {editable = true, path = "."}
 
 [requires]
 python_version = "3.8"

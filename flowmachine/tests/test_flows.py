@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("skip_datecheck")
 
 @pytest.mark.parametrize("query", [InFlow, OutFlow])
 def test_column_names_inout(query, exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for InFlow & OutFlow"""
+    """Test that column_names property matches head(0) for InFlow & OutFlow"""
     flow = Flows(
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
@@ -37,7 +37,7 @@ def test_flows_raise_error():
 
 
 def test_column_names_flow(exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for Flows"""
+    """Test that column_names property matches head(0) for Flows"""
     flow = Flows(
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),

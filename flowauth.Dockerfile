@@ -24,7 +24,7 @@ RUN apk update && apk add --no-cache --virtual build-dependencies build-base pos
     pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
     apk del build-dependencies && \
     ~/.cargo/bin/rustup self uninstall -y &&\
-    apk add --no-cache libpq mariadb-connector-c # Required for psycopg2 & mysqlclient
+    apk add --no-cache libpq libgcc mariadb-connector-c # Required for psycopg2 & mysqlclient
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth

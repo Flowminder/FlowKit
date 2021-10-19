@@ -68,7 +68,7 @@ def test_returns_correct_in_out_values(get_dataframe):
 
 @pytest.mark.parametrize("kwarg", ["direction"])
 def test_subscriber_degree_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in SubscriberDegree. """
+    """Test ValueError is raised for non-compliant kwarg in SubscriberDegree."""
 
     with pytest.raises(ValueError):
         query = SubscriberDegree("2016-01-03", "2016-01-05", **{kwarg: "error"})

@@ -24,7 +24,7 @@ from flowclient.errors import FlowclientConnectionError
 
 @pytest.mark.asyncio
 async def test_query_ready_reports_false():
-    """ Test that status code 202 is interpreted as query running. """
+    """Test that status code 202 is interpreted as query running."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(
         return_value=AMock(
@@ -43,7 +43,7 @@ async def test_query_ready_reports_false():
 
 @pytest.mark.asyncio
 async def test_query_ready_reports_true():
-    """ Test that status code 303 is interpreted as query ready. """
+    """Test that status code 303 is interpreted as query ready."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(return_value=AMock(status_code=303))
     is_ready, reply = await query_is_ready(connection=con_mock, query_id="foo")
@@ -52,7 +52,7 @@ async def test_query_ready_reports_true():
 
 @pytest.mark.asyncio
 async def test_query_ready_raises():
-    """ Test that status codes other than 202, 303, 401, and 404 raise a generic error. """
+    """Test that status codes other than 202, 303, 401, and 404 raise a generic error."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(return_value=AMock(status_code=999))
     with pytest.raises(FlowclientConnectionError):
@@ -165,7 +165,7 @@ async def test_available_dates_error_with_no_info():
 @pytest.mark.asyncio
 @pytest.mark.parametrize("running_status", ["queued", "executing"])
 async def test_get_status_reports_running(running_status):
-    """ Test that status code 202 is interpreted as query running or queued. """
+    """Test that status code 202 is interpreted as query running or queued."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(
         return_value=Mock(
@@ -184,7 +184,7 @@ async def test_get_status_reports_running(running_status):
 
 @pytest.mark.asyncio
 async def test_get_status_reports_finished():
-    """ Test that status code 303 is interpreted as query finished. """
+    """Test that status code 303 is interpreted as query finished."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(return_value=Mock(status_code=303))
     status = await get_status(connection=con_mock, query_id="foo")
@@ -193,7 +193,7 @@ async def test_get_status_reports_finished():
 
 @pytest.mark.asyncio
 async def test_get_status_404():
-    """ Test that get_status reports that a query is not running. """
+    """Test that get_status reports that a query is not running."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(side_effect=FileNotFoundError("DUMMY_404"))
     status_returned = await get_status(connection=con_mock, query_id="foo")
@@ -202,7 +202,7 @@ async def test_get_status_404():
 
 @pytest.mark.asyncio
 async def test_get_status_raises():
-    """ Test that get_status raises an error for a status code other than 202, 303 or 404. """
+    """Test that get_status raises an error for a status code other than 202, 303 or 404."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(return_value=Mock(status_code=500))
     with pytest.raises(FlowclientConnectionError):
@@ -211,7 +211,7 @@ async def test_get_status_raises():
 
 @pytest.mark.asyncio
 async def test_get_json_dataframe():
-    """ Test that get_json_dataframe returns results. """
+    """Test that get_json_dataframe returns results."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(
         return_value=Mock(
@@ -225,7 +225,7 @@ async def test_get_json_dataframe():
 
 @pytest.mark.asyncio
 async def test_get_json_dataframe_raises():
-    """ Test that get_json_dataframe raises an error. """
+    """Test that get_json_dataframe raises an error."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(
         return_value=Mock(
@@ -238,7 +238,7 @@ async def test_get_json_dataframe_raises():
 
 @pytest.mark.asyncio
 async def test_get_geojson_result_by_query_id_raises(monkeypatch):
-    """ Test that get_geojson_result_by_query_id raises an error. """
+    """Test that get_geojson_result_by_query_id raises an error."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(
         return_value=Mock(
@@ -255,7 +255,7 @@ async def test_get_geojson_result_by_query_id_raises(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_status_raises_without_status():
-    """ Test that get_status raises an error if the status field is absent. """
+    """Test that get_status raises an error if the status field is absent."""
     con_mock = AMock()
     con_mock.get_url = CoroutineMock(
         return_value=Mock(

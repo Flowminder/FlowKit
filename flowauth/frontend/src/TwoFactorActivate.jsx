@@ -55,13 +55,8 @@ class TwoFactorActivate extends React.Component {
   };
 
   render() {
-    const {
-      provisioning_url,
-      secret,
-      two_factor_code,
-      cancel,
-      classes,
-    } = this.props;
+    const { provisioning_url, secret, two_factor_code, cancel, classes } =
+      this.props;
     if (this.state.hasError) throw this.state.error;
 
     const { two_factor_enabled, activating } = this.state;

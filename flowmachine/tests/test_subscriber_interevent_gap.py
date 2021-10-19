@@ -10,7 +10,7 @@ import pandas as pd
 
 @pytest.fixture()
 def intervent_period(get_dataframe):
-    """ Returns a dataframe with the subscriber and datetime for each event. """
+    """Returns a dataframe with the subscriber and datetime for each event."""
     postgres_stat_to_pandas_stat = dict(avg="mean", stddev="std", median="median")
 
     def _intervent_period(*, start, stop, direction, subset, stat):
@@ -106,7 +106,7 @@ def test_interevent_interval(
 
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])
 def test_interevent_period_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in IntereventPeriod. """
+    """Test ValueError is raised for non-compliant kwarg in IntereventPeriod."""
 
     with pytest.raises(ValueError):
         query = IntereventPeriod("2016-01-03", "2016-01-05", **{kwarg: "error"})

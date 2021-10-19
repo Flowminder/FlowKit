@@ -8,12 +8,8 @@ import Input from "@material-ui/core/Input";
 import React from "react";
 
 function LoginBox(props) {
-  const {
-    username,
-    password,
-    usernameChangeHandler,
-    passwordChangeHandler,
-  } = props;
+  const { username, password, usernameChangeHandler, passwordChangeHandler } =
+    props;
   return (
     <>
       <FormControl margin="normal" required fullWidth>
