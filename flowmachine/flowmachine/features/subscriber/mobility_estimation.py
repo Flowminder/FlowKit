@@ -7,6 +7,7 @@ from dateutil.rrule import rrule, DAILY
 
 from flowmachine.features.subscriber.daily_location import daily_location
 from flowmachine.features.subscriber.modal_location import ModalLocation
+from flowmachine.features.subscriber.home_location_monthly import HomeLocationMonthly
 from flowmachine.core import make_spatial_unit
 
 
@@ -26,6 +27,7 @@ def _parse_date(date_string):
 class MobilityEstimation(Query):
     def __init__(
         self,
+        *,
         start,
         stop,
         agg_unit,
@@ -52,65 +54,39 @@ class MobilityEstimation(Query):
     # Are the csv files you're iterating over daily event records?
     def _make_query(self):
 
-        # Remember; rrule will include the date given in 'until'
-        daily_locations_this_month = [
-            daily_location(day.strftime("%Y-%m-%d"))
-            for day in rrule(
-                DAILY, dtstart=self.this_month_start, until=self.this_month_stop
-            )
-        ]
-        modal_location_this_month = ModalLocation(*daily_locations_this_month)
-
-        daily_locations_last_month = [
-            daily_location(day.strftime("%Y-%m-%d"))
-            for day in rrule(
-                DAILY, dtstart=self.last_month_start, until=self.last_month_stop
-            )
-        ]
-        modal_location_last_month = ModalLocation(*daily_locations_last_month)
+        home_location_monthly = HomeLocationMonthly(
+            window_start=self.this_month_start,
+            window_stop=self.this_month_stop,
+            n_months_back=2,
+            agg_unit=self.agg_unit,
+        )
 
         sql = f"""
-WITH home_locs_this_month AS (
-    {modal_location_this_month.get_query()}
-), home_locs_last_month AS(
-    {modal_location_last_month.get_query()}
-), home_count_this_month AS(
-    SELECT pcod, count(subscriber) as sub_count
-    FROM home_locs_this_month
-    GROUP BY pcod
-), home_count_last_month AS(
-    SELECT pcod, count(subscriber) as sub_count
-    FROM home_locs_last_month
-    GROUP BY pcod
-), home_count_time_series AS(
-    SELECT 
-        pcod,
-        home_count_this_month.sub_count AS home_locs_this_month,
-        home_count_last_month.sub_count AS home_locs_last_month
-    FROM
-        home_count_this_month INNER JOIN home_count_last_month USING (pcod)
+WITH home_count_time_series AS (
+    {home_location_monthly.get_query()}
 ), stats_precursor_1 AS(
     SELECT
         pcod AS area,
         9999 as month,
-        home_locs_this_month AS resident_count,
-        home_locs_last_month,
-        home_locs_this_month - home_locs_last_month AS resident_count_change,    
+        home_locs_0 AS resident_count,
+        home_locs_1,
+        home_locs_0 - home_locs_1 AS resident_count_change,    
         9999 AS year_median
     FROM home_count_time_series
 ), stats_precursor_2 AS(
     SELECT
-        area, month, resident_count, resident_count_change, home_locs_last_month,
+        area, month, resident_count, resident_count_change, home_locs_1,
         resident_count - year_median AS resident_count_change_median
     FROM stats_precursor_1
 )
 SELECT
     area, month, resident_count, resident_count_change,
-    (cast(resident_count_change as decimal)/home_locs_last_month)*100 AS resident_count_change_percent,       
+    (cast(resident_count_change as decimal)/home_locs_1)*100 AS resident_count_change_percent,       
     resident_count_change_median,
     (cast(resident_count_change as decimal)/resident_count_change_median)*100 AS resident_count_change_median_percent,
     9999 AS high_mobility_resident_percent,
     9999 AS displaced_resident_percent
 FROM stats_precursor_2
 """
+
         return sql
