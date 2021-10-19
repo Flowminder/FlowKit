@@ -315,10 +315,14 @@ def _do_connect(
             environ["REDIS_PASSWORD"] if redis_password is None else redis_password
         )
         redis_max_connections = int(
-            getenv("REDIS_MAX_CONNECTIONS", 10) if redis_max_connections is None else redis_max_connections
+            getenv("REDIS_MAX_CONNECTIONS", 10)
+            if redis_max_connections is None
+            else redis_max_connections
         )
         redis_pool_timeout = float(
-            getenv("REDIS_POOL_TIMEOUT", 5) if redis_pool_timeout is None else redis_pool_timeout
+            getenv("REDIS_POOL_TIMEOUT", 5)
+            if redis_pool_timeout is None
+            else redis_pool_timeout
         )
     except KeyError as e:
         raise ValueError(
@@ -340,15 +344,13 @@ def _do_connect(
 
     redis_pool = redis.BlockingConnectionPool(
         host=redis_host,
-        port = redis_port,
-        password = redis_password,
-        max_connections = redis_max_connections,
-        timeout = redis_pool_timeout
+        port=redis_port,
+        password=redis_password,
+        max_connections=redis_max_connections,
+        timeout=redis_pool_timeout,
     )
 
-    redis_connection = redis.StrictRedis(
-        connection_pool=redis_pool
-    )
+    redis_connection = redis.StrictRedis(connection_pool=redis_pool)
     thread_pool = ThreadPoolExecutor(flowdb_connection_pool_size)
     conn.available_dates
 

@@ -146,6 +146,7 @@ class LoadQueryError(Exception):
     given parameters. Members are the error message from the loading function
     and the base error message that caused the original exception.
     """
+
     # There's probably a better way to do this
     def __init__(self, error_msg, base_error_msg):
         self.error_msg = error_msg
@@ -154,4 +155,5 @@ class LoadQueryError(Exception):
 
 class BenchSideEffectError(Exception):
     """Error thrown when side effects are detected in BenchmarkQuery"""
+
     pass

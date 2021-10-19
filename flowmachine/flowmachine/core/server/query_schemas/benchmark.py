@@ -13,6 +13,7 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
     SpatialAggregateSchema,
 )
 
+
 class BenchmarkQueryExposed(BaseExposedQuery):
     def __init__(self, *, benchmark_target):
         self.benchmark_target = benchmark_target
