@@ -4,23 +4,23 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
 black = "==21.9b0" # required by papermill
 pytest = "*"
 pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
-flowclient = {editable = true,path = "./../flowclient"}
 flowapi = {editable = true,path = "./../flowapi"}
-autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
 approvaltests = "*"
 pytest-cov = "*"
-tavern = {extras = ["pytest"],version = "*"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 geojson = "*"
+flowclient = {editable = true, path = "./../flowclient"}
+
+[dev-packages]
+tavern = {extras = ["pytest"],version = "*"}
 
 [requires]
 python_version = "3.8.5"
-
-[dev-packages]
 
 [scripts]
 run-tests = "bash run_tests.sh"

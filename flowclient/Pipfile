@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-httpx = "==0.18.2"
+httpx = "*"
 pandas = "*"
 pyjwt = "<3.0.0"
 merge-args = "*"
