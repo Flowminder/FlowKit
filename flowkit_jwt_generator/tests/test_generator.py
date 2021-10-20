@@ -49,7 +49,7 @@ def test_token_generator(private_key, public_key):
         lifetime=timedelta(seconds=90),
         claims=["A_CLAIM"],
     )
-    decoded = jwt.decode(jwt=token, key=public_key, verify=True, algorithms=["RS256"])
+    decoded = jwt.decode(jwt=token, key=public_key, algorithms=["RS256"])
     assert decoded["identity"] == "test"
     assert decompress_claims(decoded["user_claims"]) == ["A_CLAIM"]
     assert "aud" not in decoded
@@ -67,7 +67,6 @@ def test_token_generator_with_audience(private_key, public_key):
     decoded = jwt.decode(
         jwt=token,
         key=public_key,
-        verify=True,
         algorithms=["RS256"],
         audience="test_audience",
     )

@@ -86,7 +86,9 @@ class Connection:
             JSON Web Token for this API server
         """
         try:
-            self.user = jwt.decode(token, verify=False)["identity"]
+            self.user = jwt.decode(token, options=dict(verify_signature=False))[
+                "identity"
+            ]
         except jwt.DecodeError:
             raise FlowclientConnectionError(f"Unable to decode token: '{token}'")
         except KeyError:
@@ -118,7 +120,7 @@ class Connection:
             response = self.session.request(
                 "GET",
                 route,
-                allow_redirects=False,
+                follow_redirects=False,
                 json=data,
             )
         except RequestError as e:

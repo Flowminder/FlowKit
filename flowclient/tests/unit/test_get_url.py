@@ -14,9 +14,7 @@ def test_get_url_good_statuses(
     session_mock, dummy_route, flowclient_connection, status_code
 ):
     """response object should be returned for OK status codes.."""
-    request = session_mock.add(
-        "GET",
-        dummy_route,
+    request = session_mock.get(dummy_route).respond(
         status_code=status_code,
         content="TEST",
     )
@@ -25,10 +23,8 @@ def test_get_url_good_statuses(
 
 def test_get_url_reraises(session_mock, dummy_route, flowclient_connection):
     """get_url should reraise anything raises by requests."""
-    request = session_mock.add(
-        "GET",
-        dummy_route,
-        content=RequestError("DUMMY_MESSAGE", request=None),
+    request = session_mock.get(dummy_route).mock(
+        side_effect=RequestError("DUMMY_MESSAGE"),
     )
     with pytest.raises(FlowclientConnectionError, match="DUMMY_MESSAGE"):
         flowclient_connection.get_url(route="DUMMY_ROUTE")
@@ -36,7 +32,7 @@ def test_get_url_reraises(session_mock, dummy_route, flowclient_connection):
 
 def test_404_raises_error(session_mock, dummy_route, flowclient_connection):
     """Exception should be raised for a 404 response."""
-    request = session_mock.add("GET", dummy_route, status_code=404, content=[])
+    request = session_mock.get(dummy_route).respond(status_code=404, content=[])
     with pytest.raises(
         FileNotFoundError, match="https://DUMMY_API/api/0/DUMMY_ROUTE not found."
     ):
@@ -48,11 +44,9 @@ def test_access_denied_error(
     denial_status_code, session_mock, dummy_route, flowclient_connection
 ):
     """If a msg field is available for an access denied it should be used as the error message."""
-    session_mock.add(
-        "GET",
-        dummy_route,
+    session_mock.get(dummy_route).respond(
         status_code=denial_status_code,
-        content={"msg": "ERROR_MESSAGE"},
+        json={"msg": "ERROR_MESSAGE"},
     )
     with pytest.raises(FlowclientConnectionError, match="ERROR_MESSAGE"):
         flowclient_connection.get_url(route="DUMMY_ROUTE")
@@ -63,11 +57,9 @@ def test_access_denied_error(
     denial_status_code, session_mock, dummy_route, flowclient_connection
 ):
     """If a msg field is not available for an access denied a generic error should be used."""
-    session_mock.add(
-        "GET",
-        dummy_route,
+    session_mock.get(dummy_route).respond(
         status_code=denial_status_code,
-        content={},
+        json={},
     )
     with pytest.raises(FlowclientConnectionError, match="Unknown access denied error"):
         flowclient_connection.get_url(route="DUMMY_ROUTE")
@@ -75,11 +67,9 @@ def test_access_denied_error(
 
 def test_generic_status_code_error(session_mock, dummy_route, flowclient_connection):
     """An error should be raised for status codes that aren't expected."""
-    session_mock.add(
-        "GET",
-        dummy_route,
+    session_mock.get(dummy_route).respond(
         status_code=418,
-        content={"msg": "I AM A TEAPOT"},
+        json={"msg": "I AM A TEAPOT"},
     )
     with pytest.raises(
         FlowclientConnectionError,
@@ -93,12 +83,12 @@ def test_generic_status_code_unknown_error(
     json_failure, session_mock, dummy_route, flowclient_connection
 ):
     """An error should be raised for status codes that aren't expected, with a default error message if not given."""
-    session_mock.add(
-        "GET",
-        dummy_route,
-        status_code=418,
-        content=json_failure,
+    err_arg = (
+        dict(content=json_failure)
+        if isinstance(json_failure, str)
+        else dict(json=json_failure)
     )
+    session_mock.get(dummy_route).respond(status_code=418, **err_arg)
     with pytest.raises(
         FlowclientConnectionError,
         match="Something went wrong: Unknown error. API returned with status code: 418 and status 'Unknown status'",

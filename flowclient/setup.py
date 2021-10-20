@@ -28,7 +28,7 @@ test_requirements = [
     "pytest-cov",
     "asynctest",
     "pytest-asyncio",
-    "respx==0.15.1",
+    "respx>0.17",
 ]
 
 setup(
@@ -47,8 +47,8 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "pandas",
-        "httpx==0.17.1",
-        "pyjwt<2.0.0",
+        "httpx>0.17",
+        "pyjwt>2.2.0",
         "ujson",
         "merge-args",
         "tqdm",

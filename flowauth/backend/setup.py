@@ -33,7 +33,7 @@ setup(
         "argon2_cffi",
         "passlib",
         "flask-principal",
-        "pyjwt<2.0.0",
+        "pyjwt>2.2.0",
         "flask-wtf",
         "zxcvbn",
         "cryptography",

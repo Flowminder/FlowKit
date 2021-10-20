@@ -834,7 +834,7 @@ jobs:
       - restore_cache:
           key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
       - run: *install_autoflow_deps
-      - run: pipenv install --deploy
+      - run: pipenv install --deploy --dev
       - save_cache:
           key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
           paths:

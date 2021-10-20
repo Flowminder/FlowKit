@@ -5,6 +5,7 @@
 from asynctest import CoroutineMock
 
 import pytest
+from httpx import Response
 
 from flowclient import ASyncConnection
 
@@ -12,7 +13,7 @@ from flowclient import ASyncConnection
 @pytest.mark.asyncio
 async def test_get_url(session_mock, dummy_route, async_flowclient_connection):
 
-    session_mock.add("GET", dummy_route, content="DUMMY_RETURN")
+    session_mock.get(dummy_route).respond(200, content="DUMMY_RETURN")
     assert (
         b"DUMMY_RETURN"
         == (
@@ -25,7 +26,7 @@ async def test_get_url(session_mock, dummy_route, async_flowclient_connection):
 
 @pytest.mark.asyncio
 async def test_post_json(session_mock, dummy_route, async_flowclient_connection):
-    session_mock.post(dummy_route, content="DUMMY_RETURN", status_code=202)
+    session_mock.post(dummy_route).respond(content="DUMMY_RETURN", status_code=202)
     assert (
         b"DUMMY_RETURN"
         == (
