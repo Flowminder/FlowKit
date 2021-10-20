@@ -40,6 +40,7 @@ from .unmoving_at_reference_location_counts import (
     UnmovingAtReferenceLocationCountsSchema,
 )
 from .unmoving_counts import UnmovingCountsSchema
+from .visited_most_days import VisitedMostDaysSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -66,6 +67,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unmoving_counts": UnmovingCountsSchema,
         "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
         "trips_od_matrix": TripsODMatrixSchema,
+        "visited_most_days": VisitedMostDaysSchema,
     }
 
 
