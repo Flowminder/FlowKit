@@ -125,6 +125,7 @@ class Table(Query):
         if not q_state_machine.is_completed:
             state, succeeded = q_state_machine.enqueue()
             state, succeeded = q_state_machine.execute()
+            state, succeeded = q_state_machine.finish()
             if succeeded:
                 with get_db().engine.begin() as trans:
                     write_cache_metadata(trans, self, compute_time=0)
