@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# DOCKER COMPOSE FOR FLOWKIT WITH AUTOFLOW
+#
+
+version: '3.5'
+
+services:
+  autoflow:
+    container_name: autoflow
+    image: flowminder/autoflow:${CONTAINER_TAG:-latest}
+    restart: always
+    volumes:
+      - ${AUTOFLOW_INPUTS_DIR:?Must set AUTOFLOW_INPUTS_DIR env var}:/mounts/inputs:ro
+      - ${AUTOFLOW_OUTPUTS_DIR:?Must set AUTOFLOW_OUTPUTS_DIR env var}:/mounts/outputs:rw
+    environment:
+      AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:?Must set AUTOFLOW_LOG_LEVEL env var}
+      AUTOFLOW_DB_URI: ${AUTOFLOW_DB_URI:?Must set AUTOFLOW_DB_URI env var}
+      AUTOFLOW_DB_PASSWORD: ${AUTOFLOW_DB_PASSWORD}
+      FLOWAPI_URL: http://flowapi:${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}
+      FLOWAPI_TOKEN: $FLOWAPI_TOKEN
+    networks:
+      - api

@@ -19,6 +19,7 @@
 #
 
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
+DOCKER_COMPOSE_AUTOFLOW_FILE ?= docker-compose.autoflow.yml
 DOCKER_COMPOSE_TESTDATA_FILE ?= docker-compose-testdata.yml
 DOCKER_COMPOSE_SYNTHETICDATA_FILE ?= docker-compose-syntheticdata.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
@@ -31,6 +32,12 @@ space :=
 space +=
 DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
 FLOWDB_SERVICE := $(filter flowdb%, $(DOCKER_SERVICES))
+
+# Add autoflow if specified
+NUM_AUTOFLOW=$(words $(filter autoflow%, $(DOCKER_SERVICES)))
+ifeq ($(NUM_AUTOFLOW),1)
+    DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_AUTOFLOW_FILE)
+endif
 
 # Check that at most one flowdb service is present in DOCKER_SERVICES
 NUM_SPECIFIED_FLOWDB_SERVICES=$(words $(filter flowdb%, $(DOCKER_SERVICES)))
