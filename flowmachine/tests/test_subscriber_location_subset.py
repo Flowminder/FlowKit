@@ -44,7 +44,7 @@ def test_subscribers_who_make_atleast_3_calls_in_central_development_region():
     """
     start, stop = "2016-01-01", "2016-01-07"
     regions = Table(
-        "admin2", "geography", columns=["admin1name", "admin2pcod", "geom"]
+        "admin2", schema="geography", columns=["admin1name", "admin2pcod", "geom"]
     ).subset("admin1name", ["Central Development Region"])
 
     sls = SubscriberLocationSubset(
