@@ -6,9 +6,11 @@ from flowmachine.core import GeoTable
 def test_geotable_bad_params():
     """Test that geotable raises errors correctly."""
     with pytest.raises(ValueError):
-        t = GeoTable("geography.admin3", geom_column="bad_column")
+        t = GeoTable("geography.admin3", geom_column="bad_column", columns=["geom"])
     with pytest.raises(ValueError):
-        t = GeoTable("geography.admin3", gid_column="bad_column")
+        t = GeoTable(
+            "geography.admin3", gid_column="bad_column", columns=["geom", "gid"]
+        )
 
 
 def test_geotable():
