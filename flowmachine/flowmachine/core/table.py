@@ -9,7 +9,7 @@ database.
 """
 from typing import List, Iterable, Optional
 
-from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.preflight import pre_flight
 from flowmachine.core.query import Query
@@ -124,13 +124,12 @@ class Table(Query):
         )
         if not q_state_machine.is_completed:
             state, succeeded = q_state_machine.enqueue()
+            state, succeeded = q_state_machine.execute()
             if succeeded:
-                state, succeeded = q_state_machine.execute()
-                if succeeded:
-                    with get_db().engine.begin() as trans:
-                        write_cache_metadata(trans, self, compute_time=0)
-                    state, succeeded = q_state_machine.finish()
-            if not succeeded:
+                with get_db().engine.begin() as trans:
+                    write_cache_metadata(trans, self, compute_time=0)
+                state, succeeded = q_state_machine.finish()
+            if state != QueryState.COMPLETED:
                 raise RuntimeError(
                     f"Couldn't fast forward state machine for table {self}. State is: {state}"
                 )

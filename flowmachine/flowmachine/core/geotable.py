@@ -58,11 +58,11 @@ class GeoTable(GeoDataMixin, Table):
     ):
         self.geom_column = geom_column
         self.gid_column = gid_column
-        if self.geom_column not in self.column_names:
+        if self.geom_column not in columns:
             raise ValueError(
                 f"geom_column: {self.geom_column} is not a column in this table."
             )
-        if self.gid_column is not None and self.gid_column not in self.column_names:
+        if self.gid_column is not None and self.gid_column not in columns:
             raise ValueError(
                 f"gid_column: {self.gid_column} is not a column in this table."
             )
