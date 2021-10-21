@@ -5,10 +5,10 @@ import datetime
 
 import structlog
 import warnings
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
-from ...core import Query
-from ...core.errors import MissingDateError
+from flowmachine.core import Query
+from flowmachine.core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
 from flowmachine.utils import standardise_date
 
