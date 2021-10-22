@@ -5,9 +5,16 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from .base_schema import BaseSchema
-from .base_exposed_query import BaseExposedQuery
-from .field_mixins import StartAndEndField
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
+from .field_mixins import (
+    HoursField,
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+)
 from .aggregation_unit import AggregationUnitMixin
 from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
 
@@ -18,29 +25,53 @@ __all__ = [
 ]
 
 
-class VisitedMostDaysExposed(BaseExposedQuery):
+class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
     def __init__(
-        # Note: all input parameters need to be defined as attributes on `self`
-        # so that marshmallow can serialise the object correctly.
         self,
         start_date,
         end_date,
+        *,
         aggregation_unit,
+        event_types,
+        subscriber_subset=None,
+        sampling=None,
+        hours=None
     ):
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
+        self.hours = hours
+        self.event_types = event_types
+        self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
+        """
+        Return the underlying flowmachine daily_location object.
+
+        Returns
+        -------
+        Query
+        """
         return VisitedMostDays(
             start_date=self.start_date,
             end_date=self.end_date,
+            hours=self.hours,
             spatial_unit=self.aggregation_unit,
+            table=self.event_types,
+            subscriber_subset=self.subscriber_subset,
         )
 
 
-class VisitedMostDaysSchema(StartAndEndField, AggregationUnitMixin, BaseSchema):
+class VisitedMostDaysSchema(
+    StartAndEndField,
+    EventTypesField,
+    SubscriberSubsetField,
+    HoursField,
+    AggregationUnitMixin,
+    BaseQueryWithSamplingSchema,
+):
     query_kind = fields.String(validate=OneOf(["visited_most_days"]))
 
     __model__ = VisitedMostDaysExposed
