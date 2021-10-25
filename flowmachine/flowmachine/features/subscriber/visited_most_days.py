@@ -113,9 +113,9 @@ class VisitedMostDays(BaseLocation, Query):
             ranked.subscriber, 
             {relevant_columns}
         FROM
-			(
-				SELECT
-				    agg.subscriber, {relevant_columns},
+            (
+                SELECT
+                    agg.subscriber, {relevant_columns},
                     row_number() OVER (
                         PARTITION BY agg.subscriber
                         ORDER BY
@@ -123,15 +123,15 @@ class VisitedMostDays(BaseLocation, Query):
                             agg.num_events DESC,
                             RANDOM()
                     ) AS rank
-             	FROM (
-					SELECT
-						subscriber, pcod,
+                FROM (
+                    SELECT
+                        subscriber, {relevant_columns},
                         COUNT(date_visited) AS num_days_visited,
                         SUM(total) AS num_events
-					FROM ({times_visited}) AS times_visited
-					GROUP BY subscriber, pcod
-				) AS agg
-			) AS ranked
+                    FROM ({times_visited}) AS times_visited
+                    GROUP BY subscriber, {relevant_columns}
+                ) AS agg
+            ) AS ranked
         WHERE rank = 1
         """
 
