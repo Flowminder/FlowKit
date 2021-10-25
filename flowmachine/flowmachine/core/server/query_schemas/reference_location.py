@@ -9,6 +9,9 @@ from flowmachine.core.server.query_schemas.modal_location import ModalLocationSc
 from flowmachine.core.server.query_schemas.most_frequent_location import (
     MostFrequentLocationSchema,
 )
+from flowmachine.core.server.query_schemas.visited_most_days import (
+    VisitedMostDaysSchema,
+)
 
 
 class ReferenceLocationSchema(OneOfSchema):
@@ -17,4 +20,5 @@ class ReferenceLocationSchema(OneOfSchema):
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
         "most_frequent_location": MostFrequentLocationSchema,
+        "visited_most_days": VisitedMostDaysSchema,
     }
