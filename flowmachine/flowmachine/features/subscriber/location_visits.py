@@ -14,6 +14,7 @@ by the count of days it appears as a daily_location for that subscriber.
 from typing import List
 
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.subscriber.day_trajectories import DayTrajectories
 
 
 class LocationVisits(SubscriberFeature):
@@ -34,7 +35,7 @@ class LocationVisits(SubscriberFeature):
                 3   038OVABN11Ak4W5P    Dolpa      1
     """
 
-    def __init__(self, day_trajectories):
+    def __init__(self, day_trajectories: DayTrajectories):
         self.day_trajectories = day_trajectories
         self.spatial_unit = day_trajectories.spatial_unit
         super().__init__()
