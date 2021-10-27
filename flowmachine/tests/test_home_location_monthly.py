@@ -11,6 +11,7 @@ def test_home_location_monthly():
         unknown_threshold=2,
         cache=False,
     )
+    sql = home_location_monthly.get_query()
 
     home_location_next_month = HomeLocationMonthly(
         window_start="2016-01-15",
