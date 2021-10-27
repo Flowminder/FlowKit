@@ -6,7 +6,7 @@ from flowmachine.features.subscriber.active_subscribers import ActiveSubscribers
 class UniqueActiveSubscribers(ActiveSubscribers):
     @property
     def column_names(self) -> List[str]:
-        return ["msisdn"]
+        return ["subscriber"]
 
     def _make_query(self):
         list = super()._make_query()
@@ -14,7 +14,7 @@ class UniqueActiveSubscribers(ActiveSubscribers):
 WITH active_subs AS (
     {list}
     )
-SELECT DISTINCT msisdn
+SELECT DISTINCT subscriber
 FROM active_subs
 """
         return sql
