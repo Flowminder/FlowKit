@@ -26,14 +26,12 @@ class HomeLocationMonthly(Query):
 
     def __init__(
         self,
-        *args,
         window_start: Union[str, datetime],
         window_stop: Union[str, datetime],
         agg_unit: AnySpatialUnit,
         unknown_threshold: int,
         known_threshold: int,
         ref_location: Union["HomeLocationMonthly", None] = None,
-        **kwargs,
     ):
 
         self.window_start = window_start
@@ -66,7 +64,7 @@ class HomeLocationMonthly(Query):
         #     self.last_locations  # Ask Jono about this
         # )
 
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
     @property
     def column_names(self) -> List[str]:
@@ -110,7 +108,7 @@ FROM ({last_location.get_query()}) AS tbl
 UNION ALL
 """
 
-        last_locations_clause.rstrip("\nUNION ALL\n")
+        last_locations_clause = last_locations_clause.rstrip("UNION ALL\n")
 
         sql = f"""
 WITH last_locations AS (
@@ -130,17 +128,19 @@ WITH last_locations AS (
 	AND location_histogram.y >= {self.known_threshold}
 ), """
 
-        if self.ref_location is not None:
+        if self.ref_location:
             sql += f"""
-potential_last_month_known_homes AS (
+reference_locations AS (
     SELECT subscriber, pcod
-    FROM {self.ref_location.get_query()}
+    FROM ({self.ref_location.get_query()}) AS tbl
 ), last_month_known_homes AS (
     SELECT location_histogram.subscriber, location_histogram.pcod
-    FROM location_histogram INNER JOIN reference_locations INNER JOIN modal_locations USING (subscriber)
+    FROM location_histogram 
+    INNER JOIN  reference_locations USING (subscriber) 
+    INNER JOIN modal_locations USING (subscriber)
     WHERE modal_locations.pcod = reference_locations.pcod
     AND location_histogram.y >= {self.unknown_threshold}
-    AND location_histogram NOT IN (SELECT subscriber FROM this_month_known_homes)
+    AND location_histogram.subscriber NOT IN (SELECT subscriber FROM this_month_known_homes)
 ), """
 
         if self.ref_location is None:
@@ -160,7 +160,16 @@ known_homes AS (
 ), """
 
         sql += f"""
-SELECT * FROM known_homes
+unknown_homes AS(
+	SELECT subscriber, 'unknown' AS pcod
+	FROM location_histogram
+	WHERE subscriber NOT IN (SELECT subscriber FROM known_homes)
+)
+SELECT subscriber, pcod
+FROM known_homes
+UNION ALL
+SELECT subscriber, pcod
+FROM unknown_homes
 """
 
         return sql
