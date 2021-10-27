@@ -35,10 +35,10 @@ class HomeLocationMonthly(Query):
         ref_location: Union["HomeLocationMonthly", None] = None,
         **kwargs,
     ):
-        super().__init__(*args, **kwargs)
+
         self.window_start = window_start
         self.window_stop = window_stop
-        self.ref_location = copy(ref_location)
+        self.ref_location = ref_location
         self.agg_unit = agg_unit
         self.known_threshold = known_threshold
         self.unknown_threshold = unknown_threshold
@@ -65,6 +65,8 @@ class HomeLocationMonthly(Query):
         # self.daily_location_frequency = LocationVisits(
         #     self.last_locations  # Ask Jono about this
         # )
+
+        super().__init__(*args, **kwargs)
 
     @property
     def column_names(self) -> List[str]:
