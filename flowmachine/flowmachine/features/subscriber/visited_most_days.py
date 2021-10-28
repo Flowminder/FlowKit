@@ -30,7 +30,7 @@ class VisitedMostDays(BaseLocation, Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'all'
+    table : str, default None
         schema qualified name of the table which the analysis is
         based upon. If None it will use all tables that contain
         location data.
