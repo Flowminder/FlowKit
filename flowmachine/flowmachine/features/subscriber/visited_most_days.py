@@ -57,7 +57,7 @@ class VisitedMostDays(BaseLocation, Query):
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Optional[Tuple[int, int]] = None,
         table: Optional[List[str]] = None,
-        subscriber_identifier="msisdn",
+        subscriber_identifier: str="msisdn",
         *,
         ignore_nulls:bool=True,
         subscriber_subset: Optional["Query"]=None,
