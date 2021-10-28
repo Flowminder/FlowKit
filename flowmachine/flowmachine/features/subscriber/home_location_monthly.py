@@ -32,6 +32,10 @@ class HomeLocationMonthly(Query):
         unknown_threshold: int,
         known_threshold: int,
         ref_location: Union["HomeLocationMonthly", None] = None,
+        events_tables=None,
+        modal_lookback=40,
+        active_days=4,
+        interval=7,
     ):
 
         self.window_start = window_start
@@ -40,25 +44,43 @@ class HomeLocationMonthly(Query):
         self.agg_unit = agg_unit
         self.known_threshold = known_threshold
         self.unknown_threshold = unknown_threshold
+        self.modal_lookback = modal_lookback
 
         self.active_subs = ActiveSubscribers(
             start_date=self.window_start,
             end_date=self.window_stop,
-            active_days=5,  # TODO: Parameterise somehow
-            interval=7,  # TODO: Parameterise somehow
+            active_days=active_days,
+            interval=interval,
+            events_tables=events_tables,
         )
 
-        self.last_locations = [
-            LastLocation(
+        if self._window_start >= self._window_stop - timedelta(days=modal_lookback):
+            full_range_start = self._window_stop - timedelta(days=modal_lookback)
+        else:
+            full_range_start = self._window_start
+        full_range_stop = self._window_stop
+
+        all_locations = {
+            day: LastLocation(
                 start=day.strftime("%Y-%m-%d"),
                 stop=(day + timedelta(days=1)).strftime("%Y-%m-%d"),
                 spatial_unit=self.agg_unit,
                 subscriber_subset=self.active_subs,
+                table=events_tables,
             )
-            for day in rrule(DAILY, dtstart=self._window_start, until=self._window_stop)
+            for day in rrule(DAILY, dtstart=full_range_start, until=full_range_stop)
+        }
+        modal_days = [
+            query
+            for (day, query) in all_locations.items()
+            if full_range_start <= day <= full_range_stop
         ]
-
-        self.modal_locations = ModalLocation(*self.last_locations)
+        self.last_locations = [
+            query
+            for (day, query) in all_locations.items()
+            if self._window_start <= day <= self._window_stop
+        ]
+        self.modal_locations = ModalLocation(*modal_days)
 
         # self.daily_location_frequency = LocationVisits(
         #     self.last_locations  # Ask Jono about this

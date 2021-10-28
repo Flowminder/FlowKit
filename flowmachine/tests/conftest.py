@@ -149,6 +149,15 @@ def flowmachine_connect():
 
 
 @pytest.fixture
+def flowmachine_admin_connect():
+
+    yield
+    reset_cache(get_db(), get_redis(), protect_table_objects=False)
+    get_db().engine.dispose()  # Close the connection
+    get_redis().flushdb()  # Empty the redis
+
+
+@pytest.fixture
 def mocked_connections(monkeypatch):
     """
     Fixture which mocks out the setup methods for logger,
@@ -219,6 +228,28 @@ def get_column_names_from_run(flowmachine_connect):
 @pytest.fixture
 def get_length(flowmachine_connect):
     yield lambda query: len(pd.read_sql_query(query.get_query(), con=get_db().engine))
+
+
+@pytest.fixture()
+def test_events_table(flowmachine_connect):
+    """Creates a test event table and grants"""
+    # Creds hard-coded here for two reasons; 1) they're public anyway 2) This fixture will crash when run live
+    with connections(flowdb_user="flowdb", flowdb_password="flowflow"):
+        con = get_db().engine
+        con.execute(
+            """
+            CREATE TABLE events.test (
+                LIKE events.calls
+            );
+            GRANT INSERT ON events.test TO flowmachine;
+            """
+        )
+
+    # Don't yield the privileged connection
+    yield
+
+    with connections(flowdb_user="flowdb", flowdb_password="flowflow"):
+        con.execute("""DROP TABLE events.test""")
 
 
 class DummyRedis:
