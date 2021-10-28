@@ -1,9 +1,10 @@
 import datetime
 from datetime import timedelta, date, datetime
-from typing import List, Union
+from typing import List, Union, Optional
 from flowmachine.core.query import Query
 from flowmachine.features.subscriber.call_days import CallDays
 from flowmachine.features.subscriber.interevent_interval import IntereventInterval
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 
 
 class ActiveSubscribers(Query):
@@ -14,22 +15,29 @@ class ActiveSubscribers(Query):
 
     def __init__(
         self,
-        *args,
         start_date: Union[date, str],
         end_date: Union[date, str],
         active_days: int,
         interval: int,
         active_hours: int = None,
-        sub_id_column: str = "msisdn",
-        **kwargs,
+        subscriber_id: str = "msisdn",
+        events_tables: Optional[List[str]] = None,
     ):
-        super().__init__(*args, **kwargs)
         self.start_date = start_date
         self.end_date = end_date
         self.active_days = active_days
         self.interval = interval
         self.active_hours = active_hours
-        self.sub_id_column = sub_id_column
+        self.sub_id_column = subscriber_id
+        self._window_start = self._start_date - timedelta(days=self.interval - 1)
+        self.events_table = EventsTablesUnion(
+            start_date,
+            end_date,
+            tables=events_tables,
+            subscriber_identifier=subscriber_id,
+            columns=[subscriber_id, "datetime"],
+        )
+        super().__init__()
 
     @property
     def start_date(self):
@@ -39,7 +47,7 @@ class ActiveSubscribers(Query):
     def start_date(self, value):
         if type(value) is str:
             self._start_date = datetime.strptime(value, "%Y-%m-%d")
-        elif type(value) is datetime:
+        elif type(value) in [date, datetime]:
             self._start_date = value
         else:
             raise TypeError("start_date must be datetime or yyyy-mm-dd")
@@ -52,7 +60,7 @@ class ActiveSubscribers(Query):
     def end_date(self, value):
         if type(value) is str:
             self._end_date = datetime.strptime(value, "%Y-%m-%d")
-        elif type(value) is datetime:
+        elif type(value) in [date, datetime]:
             self._end_date = value
         else:
             raise TypeError("end_date must be datetime or yyyy-mm-dd")
@@ -71,13 +79,11 @@ class ActiveSubscribers(Query):
         # Should this return subscribers-day pairs, or just a list of subscribers?
         # Should we offer the choice?
 
-        window_start = self._start_date - timedelta(days=self.interval - 1)
-
         sql = f"""
 WITH ordered_events AS(
-	SELECT {self.sub_id_column} AS subscriber, datetime
-	FROM events.calls
-	WHERE datetime BETWEEN date('{window_start:%Y-%m-%d}') AND date('{self._end_date:%Y-%m-%d}')
+	SELECT  subscriber, datetime
+	FROM ({self.events_table.get_query()}) AS tbl
+	WHERE datetime BETWEEN date('{self._window_start :%Y-%m-%d}') AND date('{self._end_date:%Y-%m-%d}')
 	ORDER BY subscriber, datetime
 ), seen_on_days AS(
 	SELECT DISTINCT ON (event_date, subscriber)
@@ -86,7 +92,7 @@ WITH ordered_events AS(
 	ORDER BY subscriber
 ), dates_of_interest AS (
 	SELECT i::date as dates_of_interest
-	FROM generate_series('{window_start:%Y-%m-%d}', '{self._end_date:%Y-%m-%d}', '1 day'::interval) AS i
+	FROM generate_series('{self._window_start :%Y-%m-%d}', '{self._end_date:%Y-%m-%d}', '1 day'::interval) AS i
 ), active_as_of AS (
 	SELECT dates_of_interest, subscriber
 	FROM dates_of_interest

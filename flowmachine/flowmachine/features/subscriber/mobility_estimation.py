@@ -57,8 +57,9 @@ class MobilityEstimation(Query):
         home_location_monthly = HomeLocationMonthly(
             window_start=self.this_month_start,
             window_stop=self.this_month_stop,
-            n_months_back=2,
             agg_unit=self.agg_unit,
+            unknown_threshold=10,
+            known_threshold=15,
         )
 
         sql = f"""
