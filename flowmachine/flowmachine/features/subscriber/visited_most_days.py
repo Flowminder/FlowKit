@@ -65,7 +65,7 @@ class VisitedMostDays(BaseLocation, Query):
         self.start_date = standardise_date(start_date)
         self.end_date = standardise_date(end_date)
         if spatial_unit is None:
-            self.spatial_unit = make_spatial_unit("admin", level=1)
+            self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
             self.spatial_unit = spatial_unit
         self.hours = hours
