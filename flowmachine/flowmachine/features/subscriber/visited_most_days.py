@@ -28,7 +28,7 @@ class VisitedMostDays(BaseLocation, Query):
     hours : tuple of int or None, default None
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
-        across all specified days. Or set to 'all' to include
+        across all specified days. Or set to None to include
         all hours.
     table : str, default None
         schema qualified name of the table which the analysis is
