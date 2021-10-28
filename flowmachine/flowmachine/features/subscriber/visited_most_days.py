@@ -32,7 +32,7 @@ class VisitedMostDays(BaseLocation, Query):
         all hours.
     table : str, default 'all'
         schema qualified name of the table which the analysis is
-        based upon. If 'all' it will use all tables that contain
+        based upon. If None it will use all tables that contain
         location data.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
