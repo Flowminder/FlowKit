@@ -57,10 +57,10 @@ class VisitedMostDays(BaseLocation, Query):
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Optional[Tuple[int, int]] = None,
         table: Optional[List[str]] = None,
-        subscriber_identifier: str="msisdn",
+        subscriber_identifier: str = "msisdn",
         *,
-        ignore_nulls:bool=True,
-        subscriber_subset: Optional["Query"]=None,
+        ignore_nulls: bool = True,
+        subscriber_subset: Optional["Query"] = None,
     ):
         self.start_date = standardise_date(start_date)
         self.end_date = standardise_date(end_date)
@@ -92,7 +92,6 @@ class VisitedMostDays(BaseLocation, Query):
         """
         Default query method implemented in the metaclass Query().
         """
-        subscriber_query = f"{self.subscriber_locs.get_query()} ORDER BY time"
 
         relevant_columns = ", ".join(self.spatial_unit.location_id_columns)
 
@@ -104,7 +103,7 @@ class VisitedMostDays(BaseLocation, Query):
             {relevant_columns}, 
             time::date AS date_visited, 
             count(*) AS total
-        FROM ({subscriber_query}) AS subscriber_locs
+        FROM ({self.subscriber_locs.get_query()}) AS subscriber_locs
         GROUP BY subscriber_locs.subscriber, {relevant_columns}, time::date
         """
 
