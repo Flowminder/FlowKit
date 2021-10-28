@@ -6,10 +6,6 @@ from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
 from flowmachine.core import make_spatial_unit
 import pytest
 
-import structlog
-
-logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
-
 
 def test_visited_most_days_column_names(get_dataframe):
     """Test that column_names property is accurate"""
