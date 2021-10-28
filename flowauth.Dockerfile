@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM node:16 as builder
+FROM node:17 as builder
 # Node version pinned until https://github.com/nodejs/docker-node/issues/1379 is closed
 
 COPY flowauth/frontend /
