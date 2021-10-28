@@ -39,8 +39,8 @@ def test_home_location_monthly_single(home_loc_test_data):
         window_start="2016-01-01",
         window_stop="2016-01-07",
         agg_unit=AdminSpatialUnit(level=3),
-        unknown_threshold=3,
-        known_threshold=2,
+        home_this_month=3,
+        home_last_month=2,
         events_tables=["events.test"],
         modal_lookback=10,
     )
@@ -60,8 +60,8 @@ def test_home_location_monthly_chained(test_events_table):
         window_start="2016-01-07",
         window_stop="2016-01-10",
         agg_unit=AdminSpatialUnit(level=3),
-        unknown_threshold=3,
-        known_threshold=2,
+        home_this_month=3,
+        home_last_month=2,
         events_tables=["events.test"],
     )
 
@@ -69,8 +69,8 @@ def test_home_location_monthly_chained(test_events_table):
         window_start="2016-01-11",
         window_stop="2016-01-14",
         agg_unit=AdminSpatialUnit(level=3),
-        unknown_threshold=3,
-        known_threshold=2,
+        home_this_month=3,
+        home_last_month=2,
         ref_location=home_location_monthly,
         events_tables=["events.test"],
     )
