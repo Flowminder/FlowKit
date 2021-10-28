@@ -59,7 +59,7 @@ class VisitedMostDays(BaseLocation, Query):
         table: Optional[List[str]] = None,
         subscriber_identifier="msisdn",
         *,
-        ignore_nulls=True,
+        ignore_nulls:bool=True,
         subscriber_subset: Optional["Query"]=None,
     ):
         self.start_date = standardise_date(start_date)
