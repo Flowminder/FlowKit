@@ -29,8 +29,8 @@ class HomeLocationMonthly(Query):
         window_start: Union[str, datetime],
         window_stop: Union[str, datetime],
         agg_unit: AnySpatialUnit,
-        unknown_threshold: int,
-        known_threshold: int,
+        home_this_month: int,
+        home_last_month: int,
         ref_location: Union["HomeLocationMonthly", None] = None,
         events_tables=None,
         modal_lookback=40,
@@ -42,8 +42,8 @@ class HomeLocationMonthly(Query):
         self.window_stop = window_stop
         self.ref_location = ref_location
         self.agg_unit = agg_unit
-        self.known_threshold = known_threshold
-        self.unknown_threshold = unknown_threshold
+        self.home_this_month = home_last_month
+        self.home_last_month = home_this_month
         self.modal_lookback = modal_lookback
 
         self.active_subs = ActiveSubscribers(
@@ -147,7 +147,7 @@ WITH last_locations AS (
 		INNER JOIN  location_histogram ON location_histogram.subscriber = modal_locations.subscriber
 	WHERE modal_locations.pcod = location_histogram.pcod
 	AND modal_locations.subscriber = location_histogram.subscriber
-	AND location_histogram.y >= {self.known_threshold}
+	AND location_histogram.y >= {self.home_this_month}
 ), """
 
         if self.ref_location:
@@ -161,7 +161,7 @@ reference_locations AS (
     INNER JOIN  reference_locations USING (subscriber) 
     INNER JOIN modal_locations USING (subscriber)
     WHERE modal_locations.pcod = reference_locations.pcod
-    AND location_histogram.y >= {self.unknown_threshold}
+    AND location_histogram.y >= {self.home_last_month}
     AND location_histogram.subscriber NOT IN (SELECT subscriber FROM this_month_known_homes)
 ), """
 
