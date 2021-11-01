@@ -9,13 +9,6 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
-from .field_mixins import (
-    HoursField,
-    StartAndEndField,
-    EventTypesField,
-    SubscriberSubsetField,
-)
-from .aggregation_unit import AggregationUnitMixin
 from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
 
 
@@ -26,24 +19,8 @@ __all__ = [
 
 
 class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
-    def __init__(
-        self,
-        start_date,
-        end_date,
-        *,
-        aggregation_unit,
-        event_types,
-        subscriber_subset=None,
-        sampling=None,
-        hours=None
-    ):
-        self.start_date = start_date
-        self.end_date = end_date
-        self.aggregation_unit = aggregation_unit
-        self.hours = hours
-        self.event_types = event_types
-        self.subscriber_subset = subscriber_subset
-        self.sampling = sampling
+    def __init__(self, *, subscriber_locations=None):
+        self.subscriber_locations = subscriber_locations
 
     @property
     def _unsampled_query_obj(self):
@@ -55,12 +32,7 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
         Query
         """
         return VisitedMostDays(
-            start_date=self.start_date,
-            end_date=self.end_date,
-            hours=self.hours,
-            spatial_unit=self.aggregation_unit,
-            table=self.event_types,
-            subscriber_subset=self.subscriber_subset,
+            subscriber_locations=self.subscriber_locations,
         )
 
 

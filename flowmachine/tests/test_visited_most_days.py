@@ -3,16 +3,20 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.core import make_spatial_unit
 import pytest
 
 
 def test_visited_most_days_column_names(get_dataframe):
     """Test that column_names property is accurate"""
+
     vmd = VisitedMostDays(
-        start_date="2016-01-01",
-        end_date="2016-01-02",
-        spatial_unit=make_spatial_unit("admin", level=1),
+        subscriber_locations=SubscriberLocations(
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("admin", level=1),
+        )
     )
     assert get_dataframe(vmd).columns.tolist() == vmd.column_names
 
@@ -23,7 +27,11 @@ def test_vsites(get_dataframe):
     """
 
     vmd = VisitedMostDays(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("versioned-site")
+        subscriber_locations=SubscriberLocations(
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
+        )
     )
     df = get_dataframe(vmd)
     df.set_index("subscriber", inplace=True)
@@ -38,7 +46,11 @@ def test_lon_lats(get_dataframe):
     """
 
     vmd = VisitedMostDays(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+        subscriber_locations=SubscriberLocations(
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("lon-lat"),
+        )
     )
     df = get_dataframe(vmd)
     df.set_index("subscriber", inplace=True)
@@ -52,7 +64,11 @@ def test_most_frequent_admin(get_dataframe):
     Test that the most frequent admin3 is correctly calculated.
     """
     vmd = VisitedMostDays(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("admin", level=3)
+        subscriber_locations=SubscriberLocations(
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("admin", level=3),
+        )
     )
     df = get_dataframe(vmd)
     # A few hand picked values
