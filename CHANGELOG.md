@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Additional FlowETL QA checks in the dags folder are now picked up. [#3484](https://github.com/Flowminder/FlowKit/issues/3484)
+- Quickstart will no longer raise a warning about unset Autoflow related environment variables. [#2118](https://github.com/Flowminder/FlowKit/issues/2118)
 
 
 ## [1.14.5]
