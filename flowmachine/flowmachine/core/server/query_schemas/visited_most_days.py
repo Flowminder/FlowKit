@@ -37,11 +37,6 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
 
 
 class VisitedMostDaysSchema(
-    StartAndEndField,
-    EventTypesField,
-    SubscriberSubsetField,
-    HoursField,
-    AggregationUnitMixin,
     BaseQueryWithSamplingSchema,
 ):
     query_kind = fields.String(validate=OneOf(["visited_most_days"]))
