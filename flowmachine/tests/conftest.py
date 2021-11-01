@@ -233,8 +233,10 @@ def get_length(flowmachine_connect):
 @pytest.fixture()
 def test_events_table(flowmachine_connect):
     """Creates a test event table and grants"""
-    # Creds hard-coded here for two reasons; 1) they're public anyway 2) This fixture will crash when run live
-    with connections(flowdb_user="flowdb", flowdb_password="flowflow"):
+    with connections(
+        flowdb_user=os.getenv("POSTGRES_USER"),
+        flowdb_password=os.getenv("POSTGRES_PASSWORD"),
+    ):
         con = get_db().engine
         con.execute(
             """
@@ -248,7 +250,10 @@ def test_events_table(flowmachine_connect):
     # Don't yield the privileged connection
     yield
 
-    with connections(flowdb_user="flowdb", flowdb_password="flowflow"):
+    with connections(
+        flowdb_user=os.getenv("POSTGRES_USER"),
+        flowdb_password=os.getenv("POSTGRES_PASSWORD"),
+    ):
         con.execute("""DROP TABLE events.test""")
 
 
