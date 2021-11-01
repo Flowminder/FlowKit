@@ -2547,6 +2547,56 @@
   },
   "VisitedMostDays": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "geom_table": {
+        "nullable": true,
+        "type": "string"
+      },
+      "geom_table_join_column": {
+        "nullable": true,
+        "type": "string"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "mapping_table": {
+        "nullable": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "visited_most_days"
@@ -2560,8 +2610,21 @@
           }
         ],
         "nullable": true
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
       }
     },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
     "type": "object"
   }
 }
