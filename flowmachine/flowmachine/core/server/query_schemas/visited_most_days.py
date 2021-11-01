@@ -9,6 +9,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
 
 
@@ -19,7 +20,7 @@ __all__ = [
 
 
 class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
-    def __init__(self, *, subscriber_locations=None):
+    def __init__(self, *, subscriber_locations: SubscriberLocations = None):
         self.subscriber_locations = subscriber_locations
 
     @property
