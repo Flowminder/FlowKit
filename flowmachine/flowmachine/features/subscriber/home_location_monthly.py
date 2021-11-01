@@ -42,8 +42,8 @@ class HomeLocationMonthly(Query):
         self.window_stop = window_stop
         self.ref_location = ref_location
         self.agg_unit = agg_unit
-        self.home_this_month = home_last_month
-        self.home_last_month = home_this_month
+        self.home_this_month = home_this_month
+        self.home_last_month = home_last_month
         self.modal_lookback = modal_lookback
 
         self.active_subs = ActiveSubscribers(
@@ -123,6 +123,7 @@ class HomeLocationMonthly(Query):
 
         last_locations_clause = ""
 
+        # NOTE: last_locations seems to be dropping the final record? This is weird.
         for last_location in self.last_locations:
             last_locations_clause += f"""
 SELECT subscriber, pcod, '{last_location.start}' AS day
@@ -183,7 +184,7 @@ known_homes AS (
 
         sql += f"""
 unknown_homes AS(
-	SELECT subscriber, 'unknown' AS pcod
+	SELECT DISTINCT(subscriber), 'unknown' AS pcod
 	FROM location_histogram
 	WHERE subscriber NOT IN (SELECT subscriber FROM known_homes)
 )
