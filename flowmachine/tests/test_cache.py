@@ -249,6 +249,34 @@ def test_retrieve(get_dataframe):
     assert get_dataframe(from_cache[dl1.query_id]).equals(local_df)
 
 
+@pytest.fixture
+def create_and_store_novel_query():
+    """Creates and stores a query object defined at runtime."""
+
+    class TestQuery(Query):
+        @property
+        def column_names(self):
+            return ["value"]
+
+        def _make_query(self):
+            return "select 1 as value"
+
+    q = TestQuery()
+    q_id = q.query_id
+    q.store().result()
+    yield q_id
+
+
+def test_retrieve_novel_query(create_and_store_novel_query):
+    """ Test that a runtime defined query can be pulled from cache and invalidated. """
+    from_cache = {x.query_id: x for x in Query.get_stored()}
+    assert create_and_store_novel_query in from_cache
+    from_cache[create_and_store_novel_query].invalidate_db_cache()
+    assert create_and_store_novel_query not in {
+        x.query_id: x for x in Query.get_stored()
+    }
+
+
 def test_df_not_pickled():
     """
     Test that a pickled query does not contain a dataframe.
