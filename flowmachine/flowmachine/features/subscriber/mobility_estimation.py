@@ -35,6 +35,13 @@ class MobilityEstimation(Query):
         self.this_month_start, self.last_month_start = _parse_date(start)
         self.this_month_stop, self.last_month_stop = _parse_date(stop)
         self.agg_unit = make_spatial_unit("admin", level=3)
+        self.home_location_monthly = HomeLocationMonthly(
+            window_start=self.this_month_start,
+            window_stop=self.this_month_stop,
+            spatial_unit=self.agg_unit,
+            home_this_month=10,
+            home_last_month=15,
+        )
 
     @property
     def column_names(self) -> List[str]:
@@ -54,17 +61,9 @@ class MobilityEstimation(Query):
     # Are the csv files you're iterating over daily event records?
     def _make_query(self):
 
-        home_location_monthly = HomeLocationMonthly(
-            window_start=self.this_month_start,
-            window_stop=self.this_month_stop,
-            agg_unit=self.agg_unit,
-            home_this_month=10,
-            home_last_month=15,
-        )
-
         sql = f"""
 WITH home_count_time_series AS (
-    {home_location_monthly.get_query()}
+    {self.home_location_monthly.get_query()}
 ), stats_precursor_1 AS(
     SELECT
         pcod AS area,

@@ -28,7 +28,7 @@ class HomeLocationMonthly(Query):
         self,
         window_start: Union[str, datetime],
         window_stop: Union[str, datetime],
-        agg_unit: AnySpatialUnit,
+        spatial_unit: AnySpatialUnit,
         home_this_month: int,
         home_last_month: int,
         ref_location: Union["HomeLocationMonthly", None] = None,
@@ -41,7 +41,7 @@ class HomeLocationMonthly(Query):
         self.window_start = window_start
         self.window_stop = window_stop
         self.ref_location = ref_location
-        self.agg_unit = agg_unit
+        self.spatial_unit = spatial_unit
         self.home_this_month = home_this_month
         self.home_last_month = home_last_month
         self.modal_lookback = modal_lookback
@@ -64,7 +64,7 @@ class HomeLocationMonthly(Query):
             day: LastLocation(
                 start=day.strftime("%Y-%m-%d"),
                 stop=(day + timedelta(days=1)).strftime("%Y-%m-%d"),
-                spatial_unit=self.agg_unit,
+                spatial_unit=self.spatial_unit,
                 subscriber_subset=self.active_subs,
                 table=events_tables,
             )

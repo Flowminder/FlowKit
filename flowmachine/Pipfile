@@ -24,9 +24,8 @@ marshmallow-oneofschema = "*"
 apispec-oneofschema = "*"
 get_secret_or_env_var = "*"
 redis = "*"
-watchdog = "*"
 dateutils = "*"
-pre-commit = "*"
+
 
 [dev-packages]
 ipykernel = "*"
@@ -46,6 +45,8 @@ approvaltests = "*"
 watchdog = "*"
 ipdb = "*"
 flowmachine = {editable = true, extras = ["test"], path = "."}
+watchdog = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.8"

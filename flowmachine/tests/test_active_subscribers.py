@@ -5,6 +5,8 @@ from flowmachine.features.subscriber.unique_active_subscribers import (
 )
 from datetime import date, datetime
 from flowmachine.core.context import get_db
+from pandas import DataFrame as df
+from pandas.testing import assert_frame_equal
 
 
 @pytest.fixture()
@@ -40,8 +42,12 @@ def test_active_subscribers(active_sub_test_data):
         events_tables=["events.test"],
     )
     # test from flowdb_syntheticdata
-    out = list(iter(active_subscribers))
-    assert out == [(date(2016, 1, 4), "AAAAAA"), (date(2016, 1, 4), "BBBBBB")]
+    out = active_subscribers.get_dataframe()
+    target = df.from_records(
+        [(date(2016, 1, 4), "AAAAAA"), (date(2016, 1, 4), "BBBBBB")],
+        columns=["datetime", "subscriber"],
+    )
+    assert_frame_equal(out, target)
 
 
 def test_unique_active_subscribers(active_sub_test_data):
@@ -52,5 +58,6 @@ def test_unique_active_subscribers(active_sub_test_data):
         interval=7,
         events_tables=["events.test"],
     )
-    out = list(iter(unique_active_subscribers))
-    assert out == [("AAAAAA",), ("BBBBBB",)]
+    target = df.from_records([("AAAAAA",), ("BBBBBB",)], columns=["subscriber"])
+    out = unique_active_subscribers.get_dataframe()
+    assert_frame_equal(out, target)

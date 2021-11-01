@@ -5,6 +5,7 @@ from flowmachine.core.query import Query
 from flowmachine.features.subscriber.call_days import CallDays
 from flowmachine.features.subscriber.interevent_interval import IntereventInterval
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.utils import standardise_date
 
 
 class ActiveSubscribers(Query):
@@ -22,6 +23,7 @@ class ActiveSubscribers(Query):
         active_hours: int = None,
         subscriber_id: str = "msisdn",
         events_tables: Optional[List[str]] = None,
+        subscriber_subset=None,
     ):
         self.start_date = start_date
         self.end_date = end_date
@@ -31,11 +33,12 @@ class ActiveSubscribers(Query):
         self.sub_id_column = subscriber_id
         self._window_start = self._start_date - timedelta(days=self.interval - 1)
         self.events_table = EventsTablesUnion(
-            start_date,
+            self._window_start,
             end_date,
             tables=events_tables,
             subscriber_identifier=subscriber_id,
             columns=[subscriber_id, "datetime"],
+            subscriber_subset=subscriber_subset,
         )
         super().__init__()
 

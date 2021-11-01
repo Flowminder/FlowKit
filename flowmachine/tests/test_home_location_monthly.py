@@ -3,6 +3,8 @@ from flowmachine.core.spatial_unit import AnySpatialUnit, AdminSpatialUnit
 from flowmachine.core.query import Query
 from flowmachine.core.context import get_db
 import pytest
+from pandas import DataFrame as df
+from pandas.testing import assert_frame_equal
 
 
 @pytest.fixture()
@@ -38,20 +40,24 @@ def test_home_location_monthly_single(home_loc_test_data):
     home_location_monthly = HomeLocationMonthly(
         window_start="2016-01-01",
         window_stop="2016-01-07",
-        agg_unit=AdminSpatialUnit(level=3),
+        spatial_unit=AdminSpatialUnit(level=3),
         home_this_month=3,
         home_last_month=2,
         events_tables=["events.test"],
         modal_lookback=10,
     )
 
-    out = list(iter(home_location_monthly))
+    out = home_location_monthly.get_dataframe()
     sql = home_location_monthly.get_query()
-    assert out == [
-        ("AAAAAA", "NPL.1.3.2_1"),
-        ("BBBBBB", "NPL.4.3.2_1"),
-        ("CCCCCC", "unknown"),
-    ]
+    target = df.from_records(
+        [
+            ("AAAAAA", "NPL.1.3.2_1"),
+            ("BBBBBB", "NPL.4.3.2_1"),
+            ("CCCCCC", "unknown"),
+        ],
+        columns=["subscriber", "location"],
+    )
+    assert_frame_equal(out, target)
 
 
 def test_home_location_monthly_chained(test_events_table):
@@ -59,7 +65,7 @@ def test_home_location_monthly_chained(test_events_table):
     home_location_monthly = HomeLocationMonthly(
         window_start="2016-01-07",
         window_stop="2016-01-10",
-        agg_unit=AdminSpatialUnit(level=3),
+        spatial_unit=AdminSpatialUnit(level=3),
         home_this_month=3,
         home_last_month=2,
         events_tables=["events.test"],
@@ -68,7 +74,7 @@ def test_home_location_monthly_chained(test_events_table):
     home_location_next_month = HomeLocationMonthly(
         window_start="2016-01-11",
         window_stop="2016-01-14",
-        agg_unit=AdminSpatialUnit(level=3),
+        spatial_unit=AdminSpatialUnit(level=3),
         home_this_month=3,
         home_last_month=2,
         ref_location=home_location_monthly,
@@ -76,5 +82,5 @@ def test_home_location_monthly_chained(test_events_table):
     )
 
     assert home_location_next_month.ref_location.window_start == "2016-01-07"
-    out = list(iter(home_location_next_month))
+    out = home_location_next_month.get_dataframe()
     assert out
