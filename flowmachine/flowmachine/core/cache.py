@@ -449,7 +449,7 @@ def get_cached_query_objects_ordered_by_score(
         """
     cache_queries = connection.fetch(qry)
     for query_id, table_size in cache_queries:
-        yield get_obj_or_stub(connection, query_id)
+        yield get_obj_or_stub(connection, query_id), table_size
 
 
 def shrink_one(
