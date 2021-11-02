@@ -272,7 +272,7 @@ def create_and_store_novel_query():
 
 
 def test_retrieve_novel_query(create_and_store_novel_query, flowmachine_connect):
-    """ Test that a runtime defined query can be pulled from cache and invalidated. """
+    """Test that a runtime defined query can be pulled from cache and invalidated."""
     from_cache = get_obj_or_stub(get_db(), create_and_store_novel_query)
     assert from_cache.query_id == create_and_store_novel_query
     assert from_cache.is_stored
@@ -315,7 +315,7 @@ def create_and_store_novel_query_with_dependency():
 def test_retrieve_novel_query_with_dependency(
     create_and_store_novel_query_with_dependency, flowmachine_connect
 ):
-    """ Test that a runtime defined query composed of others can be pulled from cache and invalidated. """
+    """Test that a runtime defined query composed of others can be pulled from cache and invalidated."""
     qid, nested_id = create_and_store_novel_query_with_dependency
     from_cache = get_obj_or_stub(get_db(), qid)
     assert from_cache.query_id == qid
