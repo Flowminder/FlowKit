@@ -8,7 +8,11 @@ Tests for query caching functions.
 
 import pytest
 
-from flowmachine.core.cache import cache_table_exists, write_cache_metadata
+from flowmachine.core.cache import (
+    cache_table_exists,
+    write_cache_metadata,
+    get_obj_or_stub,
+)
 from flowmachine.core.context import get_db
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location, ModalLocation, Flows
@@ -267,14 +271,10 @@ def create_and_store_novel_query():
     yield q_id
 
 
-def test_retrieve_novel_query(create_and_store_novel_query):
+def test_retrieve_novel_query(create_and_store_novel_query, flowmachine_connect):
     """ Test that a runtime defined query can be pulled from cache and invalidated. """
-    from_cache = {x.query_id: x for x in Query.get_stored()}
-    assert create_and_store_novel_query in from_cache
-    from_cache[create_and_store_novel_query].invalidate_db_cache()
-    assert create_and_store_novel_query not in {
-        x.query_id: x for x in Query.get_stored()
-    }
+    from_cache = get_obj_or_stub(get_db(), create_and_store_novel_query)
+    from_cache.invalidate_db_cache()
 
 
 def test_df_not_pickled():
