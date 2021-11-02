@@ -74,7 +74,6 @@ class ActiveSubscribers(Query):
     def _make_query(self):
 
         # Review questions:
-        # What ID should we join on? Been using msisdn so far.
         # How should we pass dates around internally in fm?
         # Should this return subscribers-day pairs, or just a list of subscribers?
         # Should we offer the choice?
