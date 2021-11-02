@@ -16,6 +16,7 @@ from .field_mixins import (
     SubscriberSubsetField,
 )
 from .aggregation_unit import AggregationUnitMixin
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
 
 
@@ -34,33 +35,41 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
         aggregation_unit,
         event_types,
         subscriber_subset=None,
+        subscriber_identifier=None,
+        ignore_nulls=None,
+        hours=None,
         sampling=None,
-        hours=None
     ):
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.hours = hours
         self.event_types = event_types
-        self.subscriber_subset = subscriber_subset
+        self.subscriber_subset = (subscriber_subset,)
+        self.subscriber_identifier = (subscriber_identifier,)
+        self.ignore_nulls = ignore_nulls
         self.sampling = sampling
 
     @property
     def _unsampled_query_obj(self):
         """
-        Return the underlying flowmachine daily_location object.
+        Return the underlying flowmachine visited_most days object.
 
         Returns
         -------
         Query
         """
         return VisitedMostDays(
-            start_date=self.start_date,
-            end_date=self.end_date,
-            hours=self.hours,
-            spatial_unit=self.aggregation_unit,
-            table=self.event_types,
-            subscriber_subset=self.subscriber_subset,
+            subscriber_locations=SubscriberLocations(
+                start=self.start_date,
+                stop=self.end_date,
+                hours=self.hours,
+                spatial_unit=self.aggregation_unit,
+                table=self.event_types,
+                subscriber_subset=self.subscriber_subset,
+                subscriber_identifier=self.subscriber_identifier,
+                ignore_nulls=self.ignore_nulls,
+            )
         )
 
 
