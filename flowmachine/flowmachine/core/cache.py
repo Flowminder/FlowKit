@@ -36,7 +36,26 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
-def get_obj_or_stub(connection, query_id):
+def get_obj_or_stub(connection: "Connection", query_id: str):
+    """
+    Get a query object by ID if the object can be recreated. If it cannot
+    then get a stub which keeps the query's dependency relationships as recorded
+    in the database.
+
+    Parameters
+    ----------
+    connection : Connection
+        DB connection to get the object from
+    query_id : str
+        Unique identifier of the query
+
+    Returns
+    -------
+    Query
+        The query object if it can be recreated, or a 'stub' class which records
+        the dependencies it had if not.
+
+    """
     from flowmachine.core.query import Query
 
     class QStub(Query):
