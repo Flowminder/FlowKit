@@ -20,9 +20,9 @@ def active_sub_test_data(test_events_table):
             ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-01 11:54:50.439203+00'),
             ('AAAAAA', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 12:54:50.439203+00'),
             ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-04 10:54:50.439203+00'),
-            ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 06:07:18.536049+00'),
             ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
-            ('BBBBBB', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-03 06:07:18.536049+00'),
+            ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
+            ('BBBBBB', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-02 06:07:18.536049+00'),
             ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-04 06:07:18.536049+00'),
             ('CCCCCC', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 06:07:18.536049+00'),
             ('CCCCCC', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
@@ -38,6 +38,7 @@ def test_active_subscribers_one_day(active_sub_test_data):
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=2),
         active_hours=3,
+        active_days=1,
         events_tables=["events.test"],
     )
     out = active_subscribers.get_dataframe()
@@ -54,11 +55,14 @@ def test_active_subscribers_many_days(active_sub_test_data):
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=4),
         active_hours=1,
+        active_days=3,
         events_tables=["events.test"],
     )
     out = active_subscribers.get_dataframe()
+    sql = active_subscribers.get_query()
+    print(out)
     target = df.from_records(
-        [("AAAAAA",), ("BBBBBB",)],
+        [("CCCCCC",)],
         columns=["subscriber"],
     )
     assert_frame_equal(out, target)

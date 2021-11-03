@@ -16,7 +16,8 @@ from dateutil.rrule import rrule, DAILY
 
 class ActiveSubscribers(Query):
     """Returns a list of subscribers active `active_days`
-    out of `interval`, with at least Z call-hours active"""
+    out of `interval`, where 'active' at least `active_hours` call-hours active
+    """
 
     # TODO: Parameterise which events tables to use + which ID method to use
 
@@ -25,6 +26,7 @@ class ActiveSubscribers(Query):
         start_date: Union[date, str],
         end_date: Union[date, str],
         active_hours: int,
+        active_days: int,
         subscriber_id: str = "msisdn",
         events_tables: Optional[List[str]] = None,
         subscriber_subset=None,
@@ -34,6 +36,7 @@ class ActiveSubscribers(Query):
         self.active_hours = active_hours
         self.sub_id_column = subscriber_id
         self.events_tables = events_tables
+        self.active_days = active_days
 
         self.events_table_query = EventsTablesUnion(
             self.start_date,
@@ -44,7 +47,7 @@ class ActiveSubscribers(Query):
             subscriber_subset=subscriber_subset,
         )
 
-        hour_queries = [
+        self.hour_queries = [
             TotalActivePeriodsSubscriber(
                 start=day,
                 total_periods=24,
@@ -56,7 +59,7 @@ class ActiveSubscribers(Query):
             ).numeric_subset("value", low=active_hours, high=24)
             for day in rrule(DAILY, dtstart=self._start_dt, until=self._end_dt)
         ]
-        self.bigquery = reduce(lambda x, y: x.union(y), hour_queries)
+        self.seen_on_days = reduce(lambda x, y: x.union(y), self.hour_queries)
         super().__init__()
 
     @property
@@ -91,4 +94,11 @@ class ActiveSubscribers(Query):
 
     def _make_query(self):
 
-        return self.bigquery.get_query()
+        sql = f"""
+        SELECT subscriber
+        FROM ({self.seen_on_days.get_query()}) AS tbl
+        GROUP BY subscriber
+        HAVING count(subscriber) >= {self.active_days}
+        """
+
+        return sql
