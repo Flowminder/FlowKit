@@ -17,8 +17,8 @@ def active_sub_test_data(test_events_table):
         INSERT INTO events.test(msisdn, location_id, datetime)
         VALUES 
             ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-01 10:54:50.439203+00'),
-            ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-02 11:54:50.439203+00'),
-            ('AAAAAA', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-03 12:54:50.439203+00'),
+            ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-01 11:54:50.439203+00'),
+            ('AAAAAA', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 12:54:50.439203+00'),
             ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-04 10:54:50.439203+00'),
             ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 06:07:18.536049+00'),
             ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
@@ -32,20 +32,34 @@ def active_sub_test_data(test_events_table):
     yield
 
 
-def test_active_subscribers(active_sub_test_data):
+def test_active_subscribers_one_day(active_sub_test_data):
 
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
-        end_date=date(year=2016, month=2, day=7),
-        active_days=4,
-        interval=7,
+        end_date=date(year=2016, month=1, day=2),
+        active_hours=3,
         events_tables=["events.test"],
     )
-    # test from flowdb_syntheticdata
     out = active_subscribers.get_dataframe()
     target = df.from_records(
-        [(date(2016, 1, 4), "AAAAAA"), (date(2016, 1, 4), "BBBBBB")],
-        columns=["datetime", "subscriber"],
+        [("AAAAAA",)],
+        columns=["subscriber"],
+    )
+    assert_frame_equal(out, target)
+
+
+def test_active_subscribers_many_days(active_sub_test_data):
+
+    active_subscribers = ActiveSubscribers(
+        start_date=date(year=2016, month=1, day=1),
+        end_date=date(year=2016, month=1, day=4),
+        active_hours=1,
+        events_tables=["events.test"],
+    )
+    out = active_subscribers.get_dataframe()
+    target = df.from_records(
+        [("AAAAAA",), ("BBBBBB",)],
+        columns=["subscriber"],
     )
     assert_frame_equal(out, target)
 

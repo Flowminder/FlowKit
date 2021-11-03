@@ -240,6 +240,7 @@ def test_events_table(flowmachine_connect):
         con = get_db().engine
         con.execute(
             """
+            DROP TABLE IF EXISTS events.test;
             CREATE TABLE events.test (
                 LIKE events.calls
             );
