@@ -1,25 +1,20 @@
-import datetime
-from datetime import timedelta, date, datetime
+from datetime import date
 from typing import List, Union, Optional
 from functools import reduce
 
+from flowmachine.core.mixins.exposed_datetime_mixin import ExposedDatetimeMixin
 from flowmachine.core.query import Query
-from flowmachine.features.subscriber.call_days import CallDays
-from flowmachine.features.subscriber.interevent_interval import IntereventInterval
 from flowmachine.features.subscriber.total_active_periods import (
     TotalActivePeriodsSubscriber,
 )
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
-from flowmachine.utils import standardise_date
 from dateutil.rrule import rrule, DAILY
 
 
-class ActiveSubscribers(Query):
-    """Returns a list of subscribers active `active_days`
-    out of `interval`, where 'active' at least `active_hours` call-hours active
+class ActiveSubscribers(ExposedDatetimeMixin, Query):
+    """Returns a list of subscribers seen at least `active_days` between `start_date` and `end_date`,
+    where 'active' is at least `active_hours` call-hours active
     """
-
-    # TODO: Parameterise which events tables to use + which ID method to use
 
     def __init__(
         self,
@@ -61,32 +56,6 @@ class ActiveSubscribers(Query):
         ]
         self.seen_on_days = reduce(lambda x, y: x.union(y), self.hour_queries)
         super().__init__()
-
-    @property
-    def start_date(self):
-        return self._start_dt.strftime("%Y-%m-%d")
-
-    @start_date.setter
-    def start_date(self, value):
-        if type(value) is str:
-            self._start_dt = datetime.strptime(value, "%Y-%m-%d")
-        elif type(value) in [date, datetime]:
-            self._start_dt = value
-        else:
-            raise TypeError("start_date must be datetime or yyyy-mm-dd")
-
-    @property
-    def end_date(self):
-        return self._end_dt.strftime("%Y-%m-%d")
-
-    @end_date.setter
-    def end_date(self, value):
-        if type(value) is str:
-            self._end_dt = datetime.strptime(value, "%Y-%m-%d")
-        elif type(value) in [date, datetime]:
-            self._end_dt = value
-        else:
-            raise TypeError("end_date must be datetime or yyyy-mm-dd")
 
     @property
     def column_names(self) -> List[str]:

@@ -1,7 +1,7 @@
 import pytest
 from flowmachine.features.subscriber.active_subscribers import ActiveSubscribers
-from flowmachine.features.subscriber.unique_active_subscribers import (
-    UniqueActiveSubscribers,
+from flowmachine.features.subscriber.rolling_count_threshold_subscribers import (
+    RollingCountThresholdSubscribers,
 )
 from datetime import date, datetime
 from flowmachine.core.context import get_db
@@ -68,14 +68,16 @@ def test_active_subscribers_many_days(active_sub_test_data):
     assert_frame_equal(out, target)
 
 
-def test_unique_active_subscribers(active_sub_test_data):
-    unique_active_subscribers = UniqueActiveSubscribers(
+def test_rolling_count_threshold_subscribers(active_sub_test_data):
+    unique_active_subscribers = RollingCountThresholdSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=7),
-        active_days=4,
-        interval=7,
+        lookback_period=7,
+        active_hours=1,
         events_tables=["events.test"],
+        threshold=3,
     )
-    target = df.from_records([("AAAAAA",), ("BBBBBB",)], columns=["subscriber"])
+    target = df.from_records([("CCCCCC",)], columns=["subscriber"])
     out = unique_active_subscribers.get_dataframe()
+    print(out)
     assert_frame_equal(out, target)
