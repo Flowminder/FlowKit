@@ -24,6 +24,7 @@ from .event_count import EventCount
 from .subscriber_degree import SubscriberDegree
 from .hartigan_cluster import HartiganCluster
 from .most_frequent_location import MostFrequentLocation
+from .visited_most_days import VisitedMostDays
 from .last_location import LastLocation
 
 from .unique_location_counts import UniqueLocationCounts
