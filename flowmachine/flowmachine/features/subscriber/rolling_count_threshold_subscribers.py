@@ -40,7 +40,7 @@ class RollingCountThresholdSubscribers(ExposedDatetimeMixin, Query):
                 end_date=day + relativedelta(days=self.lookforward_period),
                 active_days=self.threshold,
                 active_hours=self.active_hours,
-                events_tables=self.events_table,
+                tables=self.events_table,
             )
             for day in rrule(DAILY, dtstart=self._start_dt, until=self._end_dt)
         ]

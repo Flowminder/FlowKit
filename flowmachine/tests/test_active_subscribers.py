@@ -39,7 +39,7 @@ def test_active_subscribers_one_day(active_sub_test_data):
         end_date=date(year=2016, month=1, day=2),
         active_hours=3,
         active_days=1,
-        events_tables=["events.test"],
+        tables=["events.test"],
     )
     out = active_subscribers.get_dataframe()
     target = df.from_records(
@@ -56,7 +56,7 @@ def test_active_subscribers_many_days(active_sub_test_data):
         end_date=date(year=2016, month=1, day=4),
         active_hours=1,
         active_days=3,
-        events_tables=["events.test"],
+        tables=["events.test"],
     )
     out = active_subscribers.get_dataframe()
     sql = active_subscribers.get_query()
