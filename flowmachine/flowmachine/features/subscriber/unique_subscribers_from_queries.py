@@ -19,10 +19,17 @@ class UniqueSubscribersFromQueries(Query):
     def _make_query(self):
 
         for query in self.query_list:
-            sql = "\nUNION\n".join(
+            union_stack = "\nUNION ALL\n".join(
                 f"""
             SELECT subscriber FROM
             ({query.get_query()}) as tbl"""
             )
 
+        sql = f"""
+            SELECT subscriber
+            FROM (
+                {union_stack}
+            ) AS unioned
+            GROUP BY subscriber
+        """
         return sql
