@@ -14,16 +14,16 @@ class UniqueSubscribersFromQueries(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscribers"]
+        return ["subscriber"]
 
     def _make_query(self):
 
-        for query in self.query_list:
-            union_stack = "\nUNION ALL\n".join(
-                f"""
-            SELECT subscriber FROM
-            ({query.get_query()}) as tbl"""
-            )
+        union_stack = "\nUNION ALL\n".join(
+            [
+                f"SELECT subscriber FROM ({query.get_query()}) as tbl"
+                for query in self.query_list
+            ]
+        )
 
         sql = f"""
             SELECT subscriber
