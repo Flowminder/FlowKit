@@ -18,12 +18,11 @@ class UniqueSubscribersFromQueries(Query):
 
     def _make_query(self):
 
-        sql = ""
         for query in self.query_list:
-            sql += f"""
+            sql = "\nUNION\n".join(
+                f"""
             SELECT subscriber FROM
-            ({query.get_query()}) as tbl
-            UNION
-            """
-        sql = sql.rstrip("UNION\n")
+            ({query.get_query()}) as tbl"""
+            )
+
         return sql
