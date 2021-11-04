@@ -22,39 +22,42 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
         end_date: Union[date, str],
         active_hours: int,
         active_days: int,
-        subscriber_id: str = "msisdn",
-        events_tables: Optional[List[str]] = None,
+        subscriber_identifier: str = "msisdn",
+        tables: Optional[List[str]] = None,
         subscriber_subset=None,
+        total_periods=24,
+        period_length=1,
+        period_unit="hours",
     ):
         self.start_date = start_date
         self.end_date = end_date
         self.active_hours = active_hours
-        self.sub_id_column = subscriber_id
-        self.events_tables = events_tables
+        self.sub_id_column = subscriber_identifier
+        self.events_tables = tables
         self.active_days = active_days
 
         self.events_table_query = EventsTablesUnion(
             self.start_date,
             self.end_date,
-            tables=events_tables,
-            subscriber_identifier=subscriber_id,
-            columns=[subscriber_id, "datetime"],
+            tables=tables,
+            subscriber_identifier=subscriber_identifier,
+            columns=[subscriber_identifier, "datetime"],
             subscriber_subset=subscriber_subset,
         )
 
-        self.hour_queries = [
+        hour_queries = [
             TotalActivePeriodsSubscriber(
                 start=day,
-                total_periods=24,
-                period_length=1,
-                period_unit="hours",
-                table=self.events_tables,
-                subscriber_identifier=self.sub_id_column,
-                subscriber_subset=self.events_table_query,
+                total_periods=total_periods,
+                period_length=period_length,
+                period_unit=period_unit,
+                table=tables,
+                subscriber_identifier=subscriber_identifier,
+                subscriber_subset=subscriber_subset,
             ).numeric_subset("value", low=active_hours, high=24)
             for day in rrule(DAILY, dtstart=self._start_dt, until=self._end_dt)
         ]
-        self.seen_on_days = reduce(lambda x, y: x.union(y), self.hour_queries)
+        self.seen_on_days = reduce(lambda x, y: x.union(y), hour_queries)
         super().__init__()
 
     @property
