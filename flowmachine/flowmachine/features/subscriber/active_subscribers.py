@@ -54,7 +54,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
                 table=tables,
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
-            ).numeric_subset("value", low=active_hours, high=24)
+            ).numeric_subset("value", low=active_hours, high=total_periods)
             for day in rrule(DAILY, dtstart=self._start_dt, until=self._end_dt)
         ]
         self.seen_on_days = reduce(lambda x, y: x.union(y), hour_queries)
