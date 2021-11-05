@@ -10,6 +10,7 @@ from flowmachine.features.utilities.unique_values_from_queries import (
 )
 from flowmachine.features.utilities.events_tables_union import EventTableSubset
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
+from flowmachine.features.subscriber.last_location import LastLocation
 from flowmachine.core.errors import MissingColumnsError
 from pandas.testing import assert_frame_equal
 
@@ -40,18 +41,9 @@ def test_unique_subscribers_from_queries(get_dataframe):
 
 def test_with_two_queries(get_dataframe):
 
-    different_queries = UniqueValuesFromQueries(
-        query_list=[
-            EventTableSubset(start="2016-01-01", stop="2016-01-03", columns=["cell"]),
-            SubscriberLocations(start="2016-01-01", stop="2016-01-03"),
-        ],
-        column_names=["cell"],
-    )
-    assert get_dataframe(different_queries).iloc[0].tolist == ["NUMBERHERE"]
-
     two_column_query = UniqueValuesFromQueries(
         query_list=[
-            EventTableSubset(start="2016-01-01", stop="2016-01-03"),
+            EventTableSubset(start="2016-01-01", stop="2016-01-04"),
             EventTableSubset(start="2016-01-04", stop="2016-01-06"),
         ],
         column_names=["imei", "location_id"],
