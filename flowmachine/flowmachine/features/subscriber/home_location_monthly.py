@@ -26,65 +26,20 @@ class HomeLocationMonthly(Query):
 
     def __init__(
         self,
-        window_start: Union[str, datetime],
-        window_stop: Union[str, datetime],
-        spatial_unit: AnySpatialUnit,
+        modal_location: ModalLocation,
+        location_visits: LocationVisits,
+        subscriber_subset: Query,
         home_this_month: int,
-        home_last_month: int,
-        ref_location: Union["HomeLocationMonthly", None] = None,
-        events_tables=None,
-        modal_lookback=40,
-        active_days=4,
-        interval=7,
+        reference_location: Union["HomeLocationMonthly", None] = None,
+        home_last_month: Union[int, None] = None,
     ):
 
-        self.window_start = window_start
-        self.window_stop = window_stop
-        self.ref_location = ref_location
-        self.spatial_unit = spatial_unit
-        self.home_this_month = home_this_month
+        self.subscriber_subset = subscriber_subset
+        self.location_visits = location_visits
+        self.modal_locations = modal_location
+        self.ref_location = reference_location
+        self.home_this_month = (home_this_month,)
         self.home_last_month = home_last_month
-        self.modal_lookback = modal_lookback
-
-        self.active_subs = ActiveSubscribers(
-            start_date=self.window_start,
-            end_date=self.window_stop,
-            active_days=active_days,
-            interval=interval,
-            events_tables=events_tables,
-        )
-
-        if self._window_start >= self._window_stop - timedelta(days=modal_lookback):
-            full_range_start = self._window_stop - timedelta(days=modal_lookback)
-        else:
-            full_range_start = self._window_start
-        full_range_stop = self._window_stop
-
-        all_locations = {
-            day: LastLocation(
-                start=day.strftime("%Y-%m-%d"),
-                stop=(day + timedelta(days=1)).strftime("%Y-%m-%d"),
-                spatial_unit=self.spatial_unit,
-                subscriber_subset=self.active_subs,
-                table=events_tables,
-            )
-            for day in rrule(DAILY, dtstart=full_range_start, until=full_range_stop)
-        }
-        modal_days = [
-            query
-            for (day, query) in all_locations.items()
-            if full_range_start <= day <= full_range_stop
-        ]
-        self.last_locations = [
-            query
-            for (day, query) in all_locations.items()
-            if self._window_start <= day <= self._window_stop
-        ]
-        self.modal_locations = ModalLocation(*modal_days)
-
-        # self.daily_location_frequency = LocationVisits(
-        #     self.last_locations  # Ask Jono about this
-        # )
 
         super().__init__()
 
@@ -121,21 +76,9 @@ class HomeLocationMonthly(Query):
 
     def _make_query(self):
 
-        last_locations_clause = ""
-
-        # NOTE: last_locations seems to be dropping the final record? This is weird.
-        for last_location in self.last_locations:
-            last_locations_clause += f"""
-SELECT subscriber, pcod, '{last_location.start}' AS day
-FROM ({last_location.get_query()}) AS tbl
-UNION ALL
-"""
-
-        last_locations_clause = last_locations_clause.rstrip("UNION ALL\n")
-
         sql = f"""
 WITH last_locations AS (
-    {last_locations_clause}
+    {self.location_visits.get_query()}
 ), modal_locations AS (
     {self.modal_locations.get_query()}
 ), location_histogram AS (
