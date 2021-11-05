@@ -9,6 +9,7 @@ from flowmachine.features.utilities.unique_values_from_queries import (
     UniqueValuesFromQueries,
 )
 from flowmachine.features.utilities.events_tables_union import EventTableSubset
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.core.errors import MissingColumnsError
 
 
@@ -34,6 +35,18 @@ def test_unique_subscribers_from_queries(get_dataframe):
         < len(get_dataframe(two_column_query))
         < len(get_dataframe(EventTableSubset(start="2016-01-01", stop="2016-01-03")))
     )
+
+
+def test_with_two_queries(get_dataframe):
+
+    two_query_query = UniqueValuesFromQueries(
+        query_list=[
+            EventTableSubset(start="2016-01-01", stop="2016-01-03", columns=["cell"]),
+            SubscriberLocations(start="2016-01-01", stop="2016-01-03"),
+        ],
+        column_names=["cell"],
+    )
+    assert get_dataframe(two_query_query).iloc[0].tolist == ["NUMBERHERE"]
 
 
 def test_missing_columns_exception(get_dataframe):

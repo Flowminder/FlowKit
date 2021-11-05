@@ -31,7 +31,7 @@ class UniqueValuesFromQueries(Query):
         column_names: Union[str, List[str]],
     ):
 
-        if issubclass(type(query_list), Query):
+        if isinstance(type(query_list), Query):
             self.query_list = [query_list]
         else:
             self.query_list = query_list
