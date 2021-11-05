@@ -7,7 +7,7 @@
 Given a list of queries and a list of columns, returns a table of each unique combination of `column` .
 """
 
-from typing import List
+from typing import List, Union
 
 from flowmachine.core.query import Query
 from flowmachine.core.errors import MissingColumnsError
@@ -24,14 +24,27 @@ class UniqueValuesFromQueries(Query):
 
     """
 
-    def __init__(self, query_list: List[Query], column_names: List[str]):
+    def __init__(
+        self,
+        *,
+        query_list: Union[Query, List[Query]],
+        column_names: Union[str, List[str]],
+    ):
 
-        for query in query_list:
-            if any(name not in query.column_names for name in column_names):
-                raise MissingColumnsError(query, column_names)
+        if issubclass(type(query_list), Query):
+            self.query_list = [query_list]
+        else:
+            self.query_list = query_list
+        if type(column_names) is str:
+            self._column_names = [column_names]
+        else:
+            self._column_names = column_names
 
-        self.query_list = query_list
-        self._column_names = list(column_names)
+        for query in self.query_list:
+
+            if any(name not in query.column_names for name in self._column_names):
+                raise MissingColumnsError(query, self._column_names)
+
         super().__init__()
 
     @property
