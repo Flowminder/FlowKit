@@ -27,7 +27,7 @@ class UniqueValuesFromQueries(Query):
     def __init__(self, query_list: List[Query], column_names: List[str]):
 
         for query in query_list:
-            if False in [name in query.column_names for name in column_names]:
+            if any(name not in query.column_names for name in column_names):
                 raise MissingColumnsError(query, column_names)
 
         self.query_list = query_list
