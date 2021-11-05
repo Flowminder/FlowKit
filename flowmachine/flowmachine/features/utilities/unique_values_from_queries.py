@@ -15,14 +15,15 @@ from flowmachine.core.errors import MissingColumnsError
 
 class UniqueValuesFromQueries(Query):
     """
-    Class representing unique values in  across a set of queries
+    Class representing unique values or combinations of values in selected columns across a query or collection
+    of queries. Returns a table of `column_names` columns.
 
     Parameters
     ----------
-    query_list: List[Query]
-        A list of Query objects, each of which must include the columns in `column_names`
-    column_names: List[str]
-        A list of column headings to deduplicate
+    query_list: Union[Query, List[Query]]
+        A Query object or list of Query objects, each of which must include the columns in `column_names`
+    column_names: Union[str, List[str]]
+        A column heading or list of column headings to deduplicate
 
     """
 
