@@ -23,15 +23,18 @@ def test_unique_subscribers_from_queries(get_dataframe):
     )
     two_column_query = UniqueValuesFromQueries(
         query_list=[EventTableSubset(start="2016-01-01", stop="2016-01-03")],
-        column_names=["imei", "location_id"],
+        column_names=["subscriber", "location_id"],
     )
     print(get_dataframe(two_column_query))
     assert get_dataframe(two_column_query).iloc[4].tolist() == [
-        "097b5f121396c77d79150acae9a3052d",
-        "b80699f8af4fa963c6f75eb6990556e1",
+        "a76Ajyb9dmEYNd8L",
+        "w4H81eLM",
     ]
-    assert get_dataframe(two_column_query).columns.tolist() == ["imei", "location_id"]
-    # location_id should dedupe more than location_id and imei, which should in turn dedupe more that the intitial query
+    assert get_dataframe(two_column_query).columns.tolist() == [
+        "subscriber",
+        "location_id",
+    ]
+    # location_id should dedupe more than location_id and subscriber, which should in turn dedupe more that the initial query
     assert (
         len(get_dataframe(one_column_query))
         < len(get_dataframe(two_column_query))
@@ -46,12 +49,12 @@ def test_with_two_queries(get_dataframe):
             EventTableSubset(start="2016-01-01", stop="2016-01-04"),
             EventTableSubset(start="2016-01-04", stop="2016-01-06"),
         ],
-        column_names=["imei", "location_id"],
+        column_names=["subscriber", "location_id"],
     )
 
     equivalent_query = UniqueValuesFromQueries(
         query_list=[EventTableSubset(start="2016-01-01", stop="2016-01-06")],
-        column_names=["imei", "location_id"],
+        column_names=["subscriber", "location_id"],
     )
 
     assert_frame_equal(get_dataframe(two_column_query), get_dataframe(equivalent_query))
