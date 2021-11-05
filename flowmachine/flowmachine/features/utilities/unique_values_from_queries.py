@@ -31,7 +31,7 @@ class UniqueValuesFromQueries(Query):
                 raise MissingColumnsError(query, column_names)
 
         self.query_list = query_list
-        self._column_names: List[str] = column_names
+        self._column_names = list(column_names)
         super().__init__()
 
     @property
