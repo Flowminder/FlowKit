@@ -20,7 +20,7 @@ class UniqueValuesFromQueries(Query):
     Parameters
     ----------
     query_list: List[Query]
-        A list of Query objects, each of which must include the columns in `column_list`
+        A list of Query objects, each of which must include the columns in `column_names`
     column_names: List[str]
         A list of column headings to deduplicate
 
