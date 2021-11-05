@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 """
-Given a list of queries with a 'subscriber' column, returns a 1-column table of unique subscribers.
+Given a list of queries and a list of columns, returns a table of each unique combination of `column` .
 """
 
 from typing import List
@@ -12,9 +12,9 @@ from typing import List
 from flowmachine.core.query import Query
 
 
-class UniqueSubscribersFromQueries(Query):
+class UniqueValuesFromQueries(Query):
     """
-    Class representing unique subscribers across a set of queries
+    Class representing unique values in  across a set of queries
 
     Parameters
     ----------
@@ -23,30 +23,29 @@ class UniqueSubscribersFromQueries(Query):
 
     """
 
-    # Review question: Does this need to be 'subscriber' or can we make the column to select a parameter?
-
-    def __init__(self, query_list: List[Query]):
+    def __init__(self, query_list: List[Query], column_names: List[str]):
         self.query_list = query_list
+        self._column_names: List[str] = column_names
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"]
+        return self._column_names
 
     def _make_query(self):
 
+        column_str = ", ".join(self.column_names)
+
         union_stack = "\nUNION ALL\n".join(
-            [
-                f"SELECT subscriber FROM ({query.get_query()}) as tbl"
-                for query in self.query_list
-            ]
+            f"SELECT {column_str} FROM ({query.get_query()}) as tbl"
+            for query in self.query_list
         )
 
         sql = f"""
-            SELECT subscriber
+            SELECT {column_str}
             FROM (
                 {union_stack}
             ) AS unioned
-            GROUP BY subscriber
+            GROUP BY {column_str}
         """
         return sql
