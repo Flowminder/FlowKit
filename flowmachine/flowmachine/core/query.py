@@ -792,64 +792,75 @@ class Query(metaclass=ABCMeta):
         log("Resetting state machine.")
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
-            log("Reset state machine.")
-            con = get_db().engine
             try:
-                log("Getting table reference.")
-                table_reference_to_this_query = self.get_table()
-                if table_reference_to_this_query is not self:
-                    log("Invalidating table reference cache.")
-                    table_reference_to_this_query.invalidate_db_cache(
-                        cascade=cascade, drop=drop
-                    )  # Remove any Table pointing as this query
-            except (ValueError, NotImplementedError) as e:
-                log("Query not stored - no table..")
-                pass  # This cache record isn't actually stored
-            try:
-                log = partial(log, table_name=self.fully_qualified_table_name)
-            except NotImplementedError:
-                pass  # Not a storable by default table
-            try:
-                dep_ids = [
-                    rec[0]
-                    for rec in get_db().fetch(
-                        f"SELECT query_id FROM cache.dependencies WHERE depends_on='{self.query_id}'"
-                    )
-                ]
-                with con.begin():
-                    con.execute(
-                        "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
-                    )
-                    log("Deleted cache record.")
-                    if drop:
+                log("Reset state machine.")
+                con = get_db().engine
+                try:
+                    log("Getting table reference.")
+                    table_reference_to_this_query = self.get_table()
+                    if table_reference_to_this_query is not self:
+                        log("Invalidating table reference cache.")
+                        table_reference_to_this_query.invalidate_db_cache(
+                            cascade=cascade, drop=drop
+                        )  # Remove any Table pointing as this query
+                except (ValueError, NotImplementedError) as e:
+                    log("Query not stored - no table..")
+                    pass  # This cache record isn't actually stored
+                try:
+                    log = partial(log, table_name=self.fully_qualified_table_name)
+                except NotImplementedError:
+                    pass  # Not a storable by default table
+                try:
+                    dep_ids = [
+                        rec[0]
+                        for rec in get_db().fetch(
+                            f"SELECT query_id FROM cache.dependencies WHERE depends_on='{self.query_id}'"
+                        )
+                    ]
+                    with con.begin():
                         con.execute(
-                            "DROP TABLE IF EXISTS {}".format(
-                                self.fully_qualified_table_name
+                            "DELETE FROM cache.cached WHERE query_id=%s",
+                            (self.query_id,),
+                        )
+                        log("Deleted cache record.")
+                        if drop:
+                            con.execute(
+                                "DROP TABLE IF EXISTS {}".format(
+                                    self.fully_qualified_table_name
+                                )
                             )
-                        )
-                        log("Dropped cache table.")
+                            log("Dropped cache table.")
 
-                if cascade:
-                    for dep_id in dep_ids:
-                        dep = get_obj_or_stub(get_db(), dep_id)
-                        log(
-                            "Cascading to dependent.",
-                            dependency=dep.fully_qualified_table_name,
-                        )
-                        dep.invalidate_db_cache()
+                    if cascade:
+                        for dep_id in dep_ids:
+                            dep = get_obj_or_stub(get_db(), dep_id)
+                            log(
+                                "Cascading to dependent.",
+                                dependency=dep.fully_qualified_table_name,
+                            )
+                            dep.invalidate_db_cache()
+                    else:
+                        log("Not cascading to dependents.")
+                except NotImplementedError:
+                    logger.info("Table has no standard name.")
+                # Outside of cache schema table
+                if schema is not None:
+                    full_name = "{}.{}".format(schema, name)
+                    log("Dropping table outside cache schema.", table_name=full_name)
                 else:
-                    log("Not cascading to dependents.")
-            except NotImplementedError:
-                logger.info("Table has no standard name.")
-            # Outside of cache schema table
-            if schema is not None:
-                full_name = "{}.{}".format(schema, name)
-            else:
-                full_name = name
-            log("Dropping table outside cache schema.", table_name=full_name)
-            with con.begin():
-                con.execute("DROP TABLE IF EXISTS {}".format(full_name))
-            q_state_machine.finish_resetting()
+                    full_name = name
+                with con.begin():
+                    con.execute("DROP TABLE IF EXISTS {}".format(full_name))
+                q_state_machine.finish_resetting()
+            except Exception as exc:
+                logger.error(
+                    "Query reset failed.",
+                    query_id=self.query_id,
+                    action="invalidate_db_cache",
+                    exception=exc,
+                )
+                q_state_machine.raise_error()
+                raise exc
         elif q_state_machine.is_resetting:
             log("Query is being reset from elsewhere, waiting for reset to finish.")
             while q_state_machine.is_resetting:

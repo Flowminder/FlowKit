@@ -32,6 +32,7 @@ class QueryState(str, Enum):
     EXECUTING = ("executing", "is currently running")
     ERRORED = ("errored", "finished with an error")
     RESETTING = ("resetting", "is being reset")
+    RESET_FAILED = ("reset_failed", "error during reset")
     KNOWN = ("known", "is known, but has not yet been run")
 
     def __new__(cls, name, desc, **kwargs):
@@ -78,6 +79,7 @@ class QueryStateMachine:
     - errored, when a query has been run but failed to succeed
     - cancelled, when execution was terminated by the user
     - resetting, when a previously run query is being purged from cache
+    - reset_failed, when an error occurred during reset
 
     When the query is in a queued, executing, or resetting state, methods which need
     to use the results of the query should wait. The `wait_until_complete` method
@@ -138,6 +140,12 @@ class QueryStateMachine:
             )
             self.state_machine.on(
                 QueryEvent.FINISH_RESET, QueryState.RESETTING, QueryState.KNOWN
+            )
+            self.state_machine.on(
+                QueryEvent.ERROR, QueryState.RESETTING, QueryState.RESET_FAILED
+            )
+            self.state_machine.on(
+                QueryEvent.RESET, QueryState.RESET_FAILED, QueryState.RESETTING
             )
 
     @property
@@ -205,6 +213,17 @@ class QueryStateMachine:
 
         """
         return self.current_query_state == QueryState.ERRORED
+
+    @property
+    def is_errored_in_reset(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query failed to reset with an error
+
+        """
+        return self.current_query_state == QueryState.RESET_FAILED
 
     @property
     def is_resetting(self) -> bool:
