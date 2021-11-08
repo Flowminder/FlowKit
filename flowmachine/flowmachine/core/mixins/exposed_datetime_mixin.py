@@ -5,9 +5,7 @@
 Mixin that exposes start_date and end_date internally as datetime objects
 """
 
-
-from datetime import datetime
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, standardise_date_to_datetime
 
 
 class ExposedDatetimeMixin:
@@ -22,7 +20,7 @@ class ExposedDatetimeMixin:
 
     @start_date.setter
     def start_date(self, value):
-        self._start_dt = datetime.strptime(standardise_date(value), "%Y-%m-%d %H:%M:%S")
+        self._start_dt = standardise_date_to_datetime(value)
 
     @property
     def end_date(self):
@@ -30,4 +28,4 @@ class ExposedDatetimeMixin:
 
     @end_date.setter
     def end_date(self, value):
-        self._end_dt = datetime.strptime(standardise_date(value), "%Y-%m-%d %H:%M:%S")
+        self._end_dt = standardise_date_to_datetime(value)
