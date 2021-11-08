@@ -1,3 +1,11 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""
+Mixin that exposes start_date and end_date internally as datetime objects
+"""
+
+
 from datetime import datetime
 from flowmachine.utils import standardise_date
 
