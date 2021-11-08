@@ -104,7 +104,7 @@ Original function can be found at:
 	https://wiki.postgresql.org/wiki/Aggregate_Median
 
 ******************************************************************************/
-CREATE OR REPLACE FUNCTION _final_median(anyarray) 
+CREATE OR REPLACE FUNCTION _final_median(anycompatiblearray)
 	RETURNS float8 AS 
 $$ 
 	WITH q AS
@@ -127,9 +127,9 @@ $$
 	) q2;
 $$ LANGUAGE SQL IMMUTABLE;
  
-CREATE AGGREGATE median(anyelement) (
+CREATE AGGREGATE median(anycompatible) (
 	SFUNC=array_append,
-	STYPE=anyarray,
+	STYPE=anycompatiblearray,
 	FINALFUNC=_final_median,
 	INITCOND='{}'
 );
