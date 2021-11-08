@@ -234,8 +234,10 @@ def test_system_rows_fail_with_inheritance():
     Test whether the system row method fails if the subscriber queries for random rows on a parent table.
     """
     with pytest.raises(ValueError):
-        df = Table(name="events.calls", columns=["msisdn"]).random_sample(
-            size=8, sampling_method="system_rows"
+        df = (
+            Table(name="events.calls", columns=["msisdn"])
+            .random_sample(size=8, sampling_method="system_rows")
+            .preflight()
         )
 
 
