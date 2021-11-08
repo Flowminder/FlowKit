@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from flowmachine.utils import standardise_date
 
 
 class ExposedDatetimeMixin:
@@ -9,26 +10,16 @@ class ExposedDatetimeMixin:
 
     @property
     def start_date(self):
-        return self._start_dt.strftime("%Y-%m-%d %H:%M:%S")
+        return standardise_date(self._start_dt)
 
     @start_date.setter
     def start_date(self, value):
-        if type(value) is str:
-            self._start_dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-        elif type(value) in [date, datetime]:
-            self._start_dt = value
-        else:
-            raise TypeError("start_date must be datetime or yyyy-mm-dd hh:mm:ss")
+        self._start_dt = datetime.strptime(standardise_date(value), "%Y-%m-%d %H:%M:%S")
 
     @property
     def end_date(self):
-        return self._end_dt.strftime("%Y-%m-%d %H:%M:%S")
+        return standardise_date(self._end_dt)
 
     @end_date.setter
     def end_date(self, value):
-        if type(value) is str:
-            self._end_dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-        elif type(value) in [date, datetime]:
-            self._end_dt = value
-        else:
-            raise TypeError("end_date must be datetime or yyyy-mm-dd hh:mm:ss")
+        self._end_dt = datetime.strptime(standardise_date(value), "%Y-%m-%d %H:%M:%S")
