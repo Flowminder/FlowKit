@@ -82,5 +82,9 @@ def test_daily_locs_errors():
         daily_location("2016-01-31").preflight()
     with pytest.raises(MissingDateError):
         raise exc.value.errors[
-            "<Query of type: EventTableSubset, query_id: '6157c031804143a3ac3e9a2a9a4ca52a'>"
+            "<Query of type: EventTableSubset, query_id: '607268fcdebd1e536d30256ee0ee40e1'>"
+        ][0]
+    with pytest.raises(MissingDateError):
+        raise exc.value.errors[
+            "<Query of type: EventTableSubset, query_id: '8533ca0424a0030218ec75f691c6d465'>"
         ][0]
