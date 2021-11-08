@@ -8,6 +8,7 @@ apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.14"}
 sqlalchemy = "<=1.3.23"
 click = "*"
 apache-airflow-upgrade-check = "*"
+wtforms = "<3.0.0"
 
 [dev-packages]
 structlog = "*"
