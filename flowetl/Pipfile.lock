@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "28d5d207f4a4d01c93956f13c77da5d384ab9fa2ad60f333d5d0c649bebab9af"
+            "sha256": "f1d031d526ae2bab4662d78c541cdcd481f42e36a785b23615a9fea7493086ca"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -29,11 +29,11 @@
                 "postgres"
             ],
             "hashes": [
-                "sha256:3a386bb0d2197e2538c3398ae28c3957930b61c2e98883879bbb912ef69015b7",
-                "sha256:49d7b79c8c0b8ed2c329ae0e2913f58316715c37ac91c3cfcf9401ff285fcad8"
+                "sha256:25ac3988e1f2ca20c14b397fdb21ac6b160d868ff319c474af944b4b2b46db63",
+                "sha256:7df77ab7b05a768fe5b49483b990f023abcdd8f031a469003f733f308d5a67ab"
             ],
             "index": "pypi",
-            "version": "==1.10.14"
+            "version": "==1.10.15"
         },
         "apache-airflow-upgrade-check": {
             "hashes": [
@@ -367,11 +367,11 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:b618b6d2d5ffa2f16add5697cf57a46c76a56229b0ed1c438322e4e95645bd15",
-                "sha256:f284b3e11256ad1e5d03ab86bb2ccd6f5339688ff17a4d797a0fe7df326f23b1"
+                "sha256:b8de9eff2b35fb037368f28a7df1df4e6436f578fa74423505b6c6a778d5b5dd",
+                "sha256:c2d6341ff566f609e89a2acb2db190e5e1d23d5409d6cc8d2fe34d72443876d4"
             ],
             "markers": "python_version < '3.9'",
-            "version": "==4.8.1"
+            "version": "==2.1.1"
         },
         "importlib-resources": {
             "hashes": [
