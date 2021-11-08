@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from flowmachine.utils import standardise_date
 
 
