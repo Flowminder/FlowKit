@@ -195,6 +195,9 @@ def bind_context(
         db.set(connection)
         executor.set(executor_pool)
         redis_connection.set(redis_conn)
+    from flowmachine.core.init import _register_exit_handlers
+
+    _register_exit_handlers(redis_conn)
 
 
 @contextmanager
@@ -224,6 +227,9 @@ def context(connection: Connection, executor_pool: Executor, redis_conn: StrictR
     db_token = db.set(connection)
     redis_token = redis_connection.set(redis_conn)
     executor_token = executor.set(executor_pool)
+    from flowmachine.core.init import _register_exit_handlers
+
+    _register_exit_handlers(redis_conn)
     try:
         yield
     finally:
