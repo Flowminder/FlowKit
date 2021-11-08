@@ -81,7 +81,7 @@ def standardise_date(
 
 def standardise_date_to_datetime(
     date: Union[str, datetime.date, datetime.datetime]
-) -> Union[datetime, None]:
+) -> Union[datetime.datetime, None]:
     """
     As `standardise_date` but returns a datetime object or None if input was None
     Parameters
