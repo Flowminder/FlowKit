@@ -55,14 +55,17 @@ def test_active_subscribers_many_days(get_dataframe):
 
 
 def test_active_subscribers_custom_period(get_dataframe):
+    # Test for subscribers that are active in at least two ten minute intervals in half an hour, at least
+    # three times across two hours
     active_subscribers = ActiveSubscribers(
         start_date=datetime(year=2016, month=1, day=1, hour=20),
         end_date=datetime(year=2016, month=1, day=1, hour=22),
-        active_period_threshold=1,
+        active_period_threshold=2,
         active_period_count=3,
         tables=["events.calls"],
-        total_periods=4,
-        period_length=30,
+        total_periods=3,
+        period_length=10,
         period_unit="minutes",
     )
     assert len(active_subscribers.period_queries) == 4
+    assert active_subscribers.period_queries[2].start == "2016-01-01 21:00:00"

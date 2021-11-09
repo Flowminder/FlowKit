@@ -9,6 +9,7 @@ from flowmachine.features.subscriber.total_active_periods import (
 )
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 import dateutil.rrule as rr
+from dateutil.relativedelta import relativedelta
 
 """Returns a list of subscribers seen at least `active_period_count` between `start_date` and `end_date`,
     where 'active' is at least `active_hours` call-hours active"""
@@ -64,9 +65,9 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
 
         date_generator = rr.rrule(
             self.period_to_rrule_mapping[period_unit],
-            interval=total_periods,
+            interval=total_periods * period_length,
             dtstart=self._start_dt,
-            until=self._end_dt,
+            until=self._end_dt - relativedelta(seconds=1),
         )
 
         self.period_queries = [
