@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import List, Union, Optional
 from functools import reduce
 
@@ -10,13 +10,21 @@ from flowmachine.features.subscriber.total_active_periods import (
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 import dateutil.rrule as rr
 
-"""Returns a list of subscribers seen at least `active_days` between `start_date` and `end_date`,
+"""Returns a list of subscribers seen at least `active_period_count` between `start_date` and `end_date`,
     where 'active' is at least `active_hours` call-hours active"""
 
 
 class ActiveSubscribers(ExposedDatetimeMixin, Query):
     """
-    Class that represents subscribers seen  within a period.
+    Class that represents subscribers seen to be active in more than X major peroids
+     within a datetime range.
+
+    Parameters
+    ----------
+    start_date, end_date: Union[date, datetime, str]
+        Period between which to search for subscribers
+    active_period
+
     """
 
     period_to_rrule_mapping = {
@@ -27,10 +35,10 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
 
     def __init__(
         self,
-        start_date: Union[date, str],
-        end_date: Union[date, str],
-        active_hours: int,
-        active_days: int,
+        start_date: Union[date, datetime, str],
+        end_date: Union[date, datetime, str],
+        active_period_threshold: int,
+        active_period_count: int,
         subscriber_identifier: str = "msisdn",
         tables: Optional[List[str]] = None,
         subscriber_subset=None,
@@ -40,10 +48,10 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     ):
         self.start_date = start_date
         self.end_date = end_date
-        self.active_hours = active_hours
+        self.active_period_threshold = active_period_threshold
         self.sub_id_column = subscriber_identifier
         self.events_tables = tables
-        self.active_days = active_days
+        self.active_days = active_period_count
 
         self.events_table_query = EventsTablesUnion(
             self.start_date,
@@ -70,7 +78,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
                 table=tables,
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
-            ).numeric_subset("value", low=active_hours, high=total_periods)
+            ).numeric_subset("value", low=active_period_threshold, high=total_periods)
             for date in date_generator
         ]
         super().__init__()

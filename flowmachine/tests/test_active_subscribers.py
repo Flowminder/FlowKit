@@ -11,8 +11,8 @@ def test_active_subscribers_one_day(get_dataframe):
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=2),
-        active_hours=3,
-        active_days=1,
+        active_period_threshold=3,
+        active_period_count=1,
         tables=["events.calls"],
     )
     out = get_dataframe(active_subscribers).iloc[0:5]
@@ -35,8 +35,8 @@ def test_active_subscribers_many_days(get_dataframe):
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=4),
-        active_hours=1,
-        active_days=3,
+        active_period_threshold=1,
+        active_period_count=3,
         tables=["events.calls"],
     )
     out = get_dataframe(active_subscribers).iloc[0:5]
@@ -52,3 +52,17 @@ def test_active_subscribers_many_days(get_dataframe):
         columns=["subscriber"],
     )
     assert_frame_equal(out, target)
+
+
+def test_active_subscribers_custom_period(get_dataframe):
+    active_subscribers = ActiveSubscribers(
+        start_date=datetime(year=2016, month=1, day=1, hour=20),
+        end_date=datetime(year=2016, month=1, day=1, hour=22),
+        active_period_threshold=1,
+        active_period_count=3,
+        tables=["events.calls"],
+        total_periods=4,
+        period_length=30,
+        period_unit="minutes",
+    )
+    assert len(active_subscribers.period_queries) == 4
