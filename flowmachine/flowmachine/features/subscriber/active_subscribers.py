@@ -81,7 +81,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
 
     def _make_query(self):
 
-        seen_on_days_clause = "\nUNION\n".join(
+        seen_on_days_clause = "\nUNION ALL\n".join(
             period_query.get_query() for period_query in self.period_queries
         )
 
