@@ -10,5 +10,6 @@ from the Query class.
 """
 from .graph_mixin import GraphMixin
 from .geodata_mixin import GeoDataMixin
+from .exposed_datetime_mixin import ExposedDatetimeMixin
 
-__all__ = ["GraphMixin", "GeoDataMixin"]
+__all__ = ["GraphMixin", "GeoDataMixin", "ExposedDatetimeMixin"]

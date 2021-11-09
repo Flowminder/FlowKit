@@ -79,6 +79,26 @@ def standardise_date(
         return parse_datestring(date).strftime("%Y-%m-%d %H:%M:%S")
 
 
+def standardise_date_to_datetime(
+    date: Union[str, datetime.date, datetime.datetime]
+) -> Union[datetime.datetime, None]:
+    """
+    As `standardise_date` but returns a datetime object or None if input was None
+    Parameters
+    ----------
+    date : str, date or datetime
+        Date-like-thing to standardise.
+
+    Returns
+    -------
+    datetime
+
+    """
+    if date is None:
+        return None
+    return datetime.datetime.strptime(standardise_date(date), "%Y-%m-%d %H:%M:%S")
+
+
 def list_of_dates(start, stop):
     """
 
