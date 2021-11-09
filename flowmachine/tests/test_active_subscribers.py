@@ -1,3 +1,8 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
 import pytest
 from flowmachine.features.subscriber.active_subscribers import ActiveSubscribers
 from datetime import date, datetime
@@ -11,8 +16,8 @@ def test_active_subscribers_one_day(get_dataframe):
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=2),
-        active_period_threshold=3,
-        active_period_count=1,
+        minor_period_threshold=3,
+        major_period_threshold=1,
         tables=["events.calls"],
     )
     out = get_dataframe(active_subscribers).iloc[0:5]
@@ -35,8 +40,8 @@ def test_active_subscribers_many_days(get_dataframe):
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=4),
-        active_period_threshold=1,
-        active_period_count=3,
+        minor_period_threshold=1,
+        major_period_threshold=3,
         tables=["events.calls"],
     )
     out = get_dataframe(active_subscribers).iloc[0:5]
@@ -60,11 +65,11 @@ def test_active_subscribers_custom_period(get_dataframe):
     active_subscribers = ActiveSubscribers(
         start_date=datetime(year=2016, month=1, day=1, hour=20),
         end_date=datetime(year=2016, month=1, day=1, hour=22),
-        active_period_threshold=2,
-        active_period_count=3,
+        minor_period_threshold=2,
+        major_period_threshold=3,
         tables=["events.calls"],
-        total_periods=3,
-        period_length=10,
+        minor_period_count=3,
+        minor_period_length=10,
         period_unit="minutes",
     )
     assert len(active_subscribers.period_queries) == 4
