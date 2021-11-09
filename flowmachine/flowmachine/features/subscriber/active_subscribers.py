@@ -8,7 +8,7 @@ from flowmachine.features.subscriber.total_active_periods import (
     TotalActivePeriodsSubscriber,
 )
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
-from dateutil.rrule import rrule, DAILY
+import dateutil.rrule as rr
 
 """Returns a list of subscribers seen at least `active_days` between `start_date` and `end_date`,
     where 'active' is at least `active_hours` call-hours active"""
@@ -18,6 +18,12 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     """
     Class that represents subscribers seen  within a period.
     """
+
+    period_to_rrule_mapping = {
+        "days": rr.DAILY,
+        "hours": rr.HOURLY,
+        "minutes": rr.MINUTELY,
+    }
 
     def __init__(
         self,
@@ -48,9 +54,16 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
             subscriber_subset=subscriber_subset,
         )
 
+        date_generator = rr.rrule(
+            self.period_to_rrule_mapping[period_unit],
+            interval=total_periods,
+            dtstart=self._start_dt,
+            until=self._end_dt,
+        )
+
         hour_queries = [
             TotalActivePeriodsSubscriber(
-                start=day,
+                start=date,
                 total_periods=total_periods,
                 period_length=period_length,
                 period_unit=period_unit,
@@ -58,7 +71,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
             ).numeric_subset("value", low=active_hours, high=total_periods)
-            for day in rrule(DAILY, dtstart=self._start_dt, until=self._end_dt)
+            for date in date_generator
         ]
         self.seen_on_days = reduce(lambda x, y: x.union(y), hour_queries)
         super().__init__()
