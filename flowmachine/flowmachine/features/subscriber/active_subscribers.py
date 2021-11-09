@@ -61,7 +61,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
             until=self._end_dt,
         )
 
-        hour_queries = [
+        self.period_queries = [
             TotalActivePeriodsSubscriber(
                 start=date,
                 total_periods=total_periods,
@@ -73,7 +73,6 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
             ).numeric_subset("value", low=active_hours, high=total_periods)
             for date in date_generator
         ]
-        self.seen_on_days = reduce(lambda x, y: x.union(y), hour_queries)
         super().__init__()
 
     @property
@@ -82,9 +81,13 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
 
     def _make_query(self):
 
+        seen_on_days_clause = "\nUNION\n".join(
+            period_query.get_query() for period_query in self.period_queries
+        )
+
         sql = f"""
         SELECT subscriber
-        FROM ({self.seen_on_days.get_query()}) AS tbl
+        FROM ({seen_on_days_clause}) AS tbl
         GROUP BY subscriber
         HAVING count(subscriber) >= {self.active_days}
         """
