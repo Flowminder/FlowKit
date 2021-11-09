@@ -9,75 +9,49 @@ from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
 
 
-@pytest.fixture()
-def active_sub_test_data(test_events_table):
-    con = get_db().engine
-    con.execute(
-        """
-        INSERT INTO events.test(msisdn, location_id, datetime)
-        VALUES 
-            ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-01 10:54:50.439203+00'),
-            ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-01 11:54:50.439203+00'),
-            ('AAAAAA', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 12:54:50.439203+00'),
-            ('AAAAAA', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-04 10:54:50.439203+00'),
-            ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
-            ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
-            ('BBBBBB', 'a8eb53475ccd0c0ed0d73a9106dd7f25', '2016-01-02 06:07:18.536049+00'),
-            ('BBBBBB', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-04 06:07:18.536049+00'),
-            ('CCCCCC', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-01 06:07:18.536049+00'),
-            ('CCCCCC', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-02 06:07:18.536049+00'),
-            ('CCCCCC', 'a9bb6802eda69ea4d030d1e585f6539d', '2016-01-03 06:07:18.536049+00');
-    """
-    )
-    yield
-
-
-def test_active_subscribers_one_day(active_sub_test_data):
+def test_active_subscribers_one_day(get_dataframe):
 
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=2),
         active_hours=3,
         active_days=1,
-        tables=["events.test"],
+        tables=["events.calls"],
     )
-    out = active_subscribers.get_dataframe()
+    out = get_dataframe(active_subscribers).iloc[0:5]
+    print(out)
     target = df.from_records(
-        [("AAAAAA",)],
+        [
+            ["038OVABN11Ak4W5P"],
+            ["0DB8zw67E9mZAPK2"],
+            ["0gmvwzMAYbz5We1E"],
+            ["0MQ4RYeKn7lryxGa"],
+            ["0W71ObElrz5VkdZw"],
+        ],
         columns=["subscriber"],
     )
     assert_frame_equal(out, target)
 
 
-def test_active_subscribers_many_days(active_sub_test_data):
+def test_active_subscribers_many_days(get_dataframe):
 
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         end_date=date(year=2016, month=1, day=4),
         active_hours=1,
         active_days=3,
-        tables=["events.test"],
+        tables=["events.calls"],
     )
-    out = active_subscribers.get_dataframe()
-    sql = active_subscribers.get_query()
+    out = get_dataframe(active_subscribers).iloc[0:5]
     print(out)
     target = df.from_records(
-        [("CCCCCC",)],
+        [
+            ["038OVABN11Ak4W5P"],
+            ["09NrjaNNvDanD8pk"],
+            ["0ayZGYEQrqYlKw6g"],
+            ["0DB8zw67E9mZAPK2"],
+            ["0Gl95NRLjW2aw8pW"],
+        ],
         columns=["subscriber"],
     )
-    assert_frame_equal(out, target)
-
-
-def test_rolling_count_threshold_subscribers(active_sub_test_data):
-    unique_active_subscribers = RollingCountThresholdSubscribers(
-        start_date=date(year=2016, month=1, day=1),
-        end_date=date(year=2016, month=1, day=7),
-        lookback_period=7,
-        active_hours=1,
-        events_tables=["events.test"],
-        threshold=3,
-    )
-    target = df.from_records([("CCCCCC",)], columns=["subscriber"])
-    out = unique_active_subscribers.get_dataframe()
-    print(out)
     assert_frame_equal(out, target)
