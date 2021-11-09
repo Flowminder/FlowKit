@@ -10,10 +10,13 @@ from flowmachine.features.subscriber.total_active_periods import (
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from dateutil.rrule import rrule, DAILY
 
+"""Returns a list of subscribers seen at least `active_days` between `start_date` and `end_date`,
+    where 'active' is at least `active_hours` call-hours active"""
+
 
 class ActiveSubscribers(ExposedDatetimeMixin, Query):
-    """Returns a list of subscribers seen at least `active_days` between `start_date` and `end_date`,
-    where 'active' is at least `active_hours` call-hours active
+    """
+    Class that represents subscribers seen  within a period.
     """
 
     def __init__(
