@@ -1,8 +1,5 @@
 import pytest
 from flowmachine.features.subscriber.active_subscribers import ActiveSubscribers
-from flowmachine.features.subscriber.rolling_count_threshold_subscribers import (
-    RollingCountThresholdSubscribers,
-)
 from datetime import date, datetime
 from flowmachine.core.context import get_db
 from pandas import DataFrame as df
