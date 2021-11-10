@@ -10,7 +10,6 @@ defines methods that returns the query as a string and as a pandas dataframe.
 """
 from functools import partial
 
-import rapidjson as json
 import pickle
 import weakref
 from concurrent.futures import Future
@@ -19,10 +18,8 @@ from concurrent.futures import Future
 import structlog
 from typing import List, Union
 
-import psycopg2
 import pandas as pd
 
-from hashlib import md5
 
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
@@ -34,6 +31,7 @@ from flowmachine.core.context import (
     submit_to_executor,
 )
 from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+from flowmachine.core.query_hash import hash_query, gen_all_of_type
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
@@ -46,7 +44,6 @@ from flowmachine.core.errors import (
 import flowmachine
 from flowmachine.utils import _sleep
 from flowmachine.core.dependency_graph import (
-    store_all_unstored_dependencies,
     store_queries_in_order,
     unstored_dependencies_graph,
 )
@@ -100,28 +97,7 @@ class Query(metaclass=ABCMeta):
         try:
             return self._md5
         except:
-            dependencies = self.dependencies
-            state = self.__getstate__()
-            hashes = sorted([x.query_id for x in dependencies])
-            for key, item in sorted(state.items()):
-                if isinstance(item, Query) and item in dependencies:
-                    # this item is already included in `hashes`
-                    continue
-                elif isinstance(item, list) or isinstance(item, tuple):
-                    item = sorted(
-                        item,
-                        key=lambda x: x.query_id if isinstance(x, Query) else str(x),
-                    )
-                elif isinstance(item, dict):
-                    item = json.dumps(item, sort_keys=True, default=str)
-                else:
-                    # if it's not a list or a dict we leave the item as it is
-                    pass
-
-                hashes.append(str(item))
-            hashes.append(self.__class__.__name__)
-            hashes.sort()
-            self._md5 = md5(str(hashes).encode()).hexdigest()
+            self._md5 = hash_query(self)
             return self._md5
 
     @abstractmethod
@@ -749,24 +725,8 @@ class Query(metaclass=ABCMeta):
             The set of queries which this one is directly dependent on.
         """
         dependencies = set()
-        for x in self.__dict__.values():
-            if isinstance(x, Query):
-                dependencies.add(x)
-        lists = []
-        for x in self.__dict__.values():
-            if isinstance(x, list) or isinstance(x, tuple):
-                lists.append(x)
-            else:
-                parent_classes = [cls.__name__ for cls in x.__class__.__mro__]
-                if "SubscriberSubsetterBase" in parent_classes:
-                    # special case for subscriber subsetters, because they may contain
-                    # attributes which are Query object but do not derive from Query
-                    # themselves
-                    lists.append(x.__dict__.values())
-        for l in lists:
-            for x in l:
-                if isinstance(x, Query):
-                    dependencies.add(x)
+        for x in gen_all_of_type(self.__dict__, Query):
+            dependencies.add(x)
 
         return dependencies
 
