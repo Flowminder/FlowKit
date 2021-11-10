@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from datetime import date, datetime
-from typing import List, Union, Optional, Literal, NewType
+from typing import List, Union, Optional, Literal, NewType, Tuple
 
 from flowmachine.core.mixins.exposed_datetime_mixin import ExposedDatetimeMixin
 from flowmachine.core.query import Query
@@ -21,8 +21,8 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     """
     Class that represents subscribers seen to be active.
 
-    To determine this, we regard the timeframe between `start_date` and `end_date` as the major period.
-    We then break the major period into `minor_period_count` minor periods.
+    To determine this, we regard the timeframe between `start_date` and `end_date` as the total period.
+    We then break the total period into `minor_period_count` minor periods.
 
     A subscriber is considered to be active in a minor period if they are seen at least `minor_period_
     threshold` times within that period.
@@ -46,7 +46,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    minor_period_count: int, default 24
+    minor_periods_per_major_period: int, default 24
         The number of minor periods to split the major period into
     minor_period_length: int, default 1
         The number of period_units that make up a minor period
@@ -64,20 +64,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     --------
     Returns subscribers who were active on at least three hours between 2016-01-01 and 2016-01-02
 
-
-    >>>     active_subscribers = ActiveSubscribers(
-                start_date=date(year=2016, month=1, day=1),
-                end_date=date(year=2016, month=1, day=2),
-                minor_period_threshold=3,
-                major_period_threshold=1,
-                tables=["events.calls"],
-            )
-
-    Returns subscribers who were active in at least five hours, at least three days out of the four
-    between 2016-01-01 and 2016-01-04
-
-
-    >>>     active_subscribers = ActiveSubscribers(
+    >>>     active_subscribers = ActiveSubscribers(4,,
                 start_date=date(year=2016, month=1, day=1),
                 end_date=date(year=2016, month=1, day=4),
                 minor_period_threshold=5,
@@ -89,7 +76,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     at least three times across the two hours between 20:00:00 and 22:00:00 on 2016-01-01
 
 
-    >>> active_subscribers = ActiveSubscribers(
+    >>> active_subscribers = ActiveSubscribers(4,,
                 start_date=datetime(year=2016, month=1, day=1, hour=20),
                 end_date=datetime(year=2016, month=1, day=1, hour=22),
                 minor_period_threshold=2,
@@ -112,52 +99,44 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     def __init__(
         self,
         start_date: Union[date, datetime, str],
-        end_date: Union[date, datetime, str],
+        minor_period_length: int,
+        minor_periods_per_major_period: int,
+        total_major_periods: int,
         minor_period_threshold: int,
         major_period_threshold: int,
+        period_unit: Literal["days", "hours", "minutes"] = "hours",
         subscriber_identifier: Optional[str] = "msisdn",
         tables: Optional[List[str]] = None,
         subscriber_subset: Optional[SubscriberSubsetType] = None,
-        minor_period_count: int = 24,
-        minor_period_length: int = 1,
-        period_unit: Literal["days", "hours", "minutes"] = "hours",
+        hours: Optional[Tuple[int, int]] = None,
     ):
         self.start_date = start_date
-        self.end_date = end_date
         self.minor_period_threshold = minor_period_threshold
         self.sub_id_column = subscriber_identifier
-        self.events_tables = tables
         self.major_period_threshold = major_period_threshold
+        self.total_major_periods = total_major_periods
 
-        self.events_table_query = EventsTablesUnion(
-            self.start_date,
-            self.end_date,
-            tables=tables,
-            subscriber_identifier=subscriber_identifier,
-            columns=[subscriber_identifier, "datetime"],
-            subscriber_subset=subscriber_subset,
-        )
-
-        date_generator = rr.rrule(
+        minor_period_generator = rr.rrule(
             self.period_to_rrule_mapping[period_unit],
-            interval=minor_period_count * minor_period_length,
+            interval=minor_periods_per_major_period * minor_period_length,
             dtstart=self._start_dt,
-            until=self._end_dt - relativedelta(seconds=1),
+            count=self.total_major_periods,
         )
 
         self.period_queries = [
             TotalActivePeriodsSubscriber(
-                start=date,
-                total_periods=minor_period_count,
+                start=minor_period_start,
+                total_periods=minor_periods_per_major_period,
                 period_length=minor_period_length,
                 period_unit=period_unit,
                 table=tables,
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
+                hours=hours,
             ).numeric_subset(
-                "value", low=minor_period_threshold, high=minor_period_count
+                "value", low=minor_period_threshold, high=minor_periods_per_major_period
             )
-            for date in date_generator
+            for minor_period_start in minor_period_generator
         ]
         super().__init__()
 

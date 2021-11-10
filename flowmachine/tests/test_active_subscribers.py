@@ -15,7 +15,9 @@ def test_active_subscribers_one_day(get_dataframe):
 
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
-        end_date=date(year=2016, month=1, day=2),
+        minor_period_length=1,
+        minor_periods_per_major_period=24,
+        total_major_periods=1,
         minor_period_threshold=3,
         major_period_threshold=1,
         tables=["events.calls"],
@@ -39,7 +41,9 @@ def test_active_subscribers_many_days(get_dataframe):
 
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
-        end_date=date(year=2016, month=1, day=4),
+        minor_period_length=1,
+        minor_periods_per_major_period=24,
+        total_major_periods=4,
         minor_period_threshold=1,
         major_period_threshold=3,
         tables=["events.calls"],
@@ -64,13 +68,13 @@ def test_active_subscribers_custom_period(get_dataframe):
     # three times across two hours
     active_subscribers = ActiveSubscribers(
         start_date=datetime(year=2016, month=1, day=1, hour=20),
-        end_date=datetime(year=2016, month=1, day=1, hour=22),
+        minor_period_length=10,
+        minor_periods_per_major_period=3,
+        total_major_periods=4,
         minor_period_threshold=2,
         major_period_threshold=3,
-        tables=["events.calls"],
-        minor_period_count=3,
-        minor_period_length=10,
         period_unit="minutes",
+        tables=["events.calls"],
     )
     assert len(active_subscribers.period_queries) == 4
     assert active_subscribers.period_queries[2].start == "2016-01-01 21:00:00"
