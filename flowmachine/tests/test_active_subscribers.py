@@ -27,10 +27,10 @@ def test_active_subscribers_one_day(get_dataframe):
     target = df.from_records(
         [
             ["038OVABN11Ak4W5P"],
-            ["0DB8zw67E9mZAPK2"],
             ["0gmvwzMAYbz5We1E"],
             ["0MQ4RYeKn7lryxGa"],
-            ["0W71ObElrz5VkdZw"],
+            ["0Ze1l70j0LNgyY4w"],
+            ["1d29oEA95KEzAKlW"],
         ],
         columns=["subscriber"],
     )
