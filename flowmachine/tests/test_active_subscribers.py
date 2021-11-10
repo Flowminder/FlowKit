@@ -76,5 +76,5 @@ def test_active_subscribers_custom_period(get_dataframe):
         period_unit="minutes",
         tables=["events.calls"],
     )
-    assert len(active_subscribers.period_queries) == 4
-    assert active_subscribers.period_queries[2].start == "2016-01-01 21:00:00"
+    assert len(active_subscribers.major_period_queries) == 4
+    assert active_subscribers.major_period_queries[2].start == "2016-01-01 21:00:00"
