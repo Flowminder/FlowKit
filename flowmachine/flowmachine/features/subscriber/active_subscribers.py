@@ -23,17 +23,17 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
 
     The search range is split into major periods. Each major period is split into minor periods.
 
-    A single minor period is `minor_period_length * period_units` long
+    A single minor period is `minor_period_length * period_unit` long
 
-    A single major period is `minor_periods_per_major_period` long
+    A single major period is `minor_periods_per_major_period` minor periods long
 
     This makes the search range between `start_date` and `start_date +
-    (period_units * minor_period_length * minor_periods_in_major_period)`
+    (period_unit * minor_period_length * minor_periods_per_major_period * total_major_periods)`
 
     A subscriber is considered to be active in a major period if they are seen in at least `minor_period_
     threshold` minor periods within that period
 
-    A subscriber is considered active over the entire serach range if they are active in at least
+    A subscriber is considered active over the entire search range if they are active in at least
     `major_period_threshold` major periods.
 
     Parameters
