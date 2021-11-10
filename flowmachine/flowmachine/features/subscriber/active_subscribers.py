@@ -122,9 +122,11 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
     ):
         self.start_date = start_date
         self.minor_period_threshold = minor_period_threshold
-        self.sub_id_column = subscriber_identifier
         self.major_period_threshold = major_period_threshold
+        self.minor_period_length = minor_period_length
+        self.minor_periods_per_major_period = minor_periods_per_major_period
         self.total_major_periods = total_major_periods
+        self.period_unit = period_unit
 
         major_period_generator = rr.rrule(
             self.period_to_rrule_mapping[period_unit],
@@ -132,6 +134,13 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
             dtstart=self._start_dt,
             count=self.total_major_periods,
         )
+
+        rd_args = {
+            period_unit: minor_period_length
+            * minor_periods_per_major_period
+            * total_major_periods
+        }
+        self.end_date = start_date + relativedelta(**rd_args)
 
         self.major_period_queries = [
             TotalActivePeriodsSubscriber(
