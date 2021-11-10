@@ -65,10 +65,6 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
 
     Notes
     -----
-    * The date range will be inclusive os `start_date` but exclusive of `end_date` (ie range = start_
-    date ... (end_date - 1 second))
-    * The default values for minor_period_count and minor_period_length assume you wish to seach
-    for subscribers who are active at least `minor_period_threshold` hours throughout the day.
     * if minor_period_length is equal to or less than the length of hours, there will be a set
     of major_periods that are guaranteed to be empty (as they fall outside the range set by hours).
 
