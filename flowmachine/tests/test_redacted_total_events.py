@@ -21,15 +21,15 @@ def test_all_above_threshold(get_dataframe):
         total_events=TotalLocationEvents(
             "2016-01-01",
             "2016-01-02",
+            tables=["events.calls"],
             spatial_unit=make_spatial_unit("cell"),
             interval="day",
-            table=["events.calls"],
         )
     )
     us = get_dataframe(
         RedactedUniqueSubscriberCounts(
             unique_subscriber_counts=UniqueSubscriberCounts(
-                "2016-01-01", "2016-01-02", table=["events.calls"]
+                "2016-01-01", "2016-01-02", tables=["events.calls"]
             )
         )
     )

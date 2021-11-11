@@ -104,7 +104,7 @@ class Displacement(SubscriberFeature):
             self.stop,
             spatial_unit=self.spatial_unit,
             hours=hours,
-            table=table,
+            tables=table,
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,

@@ -89,7 +89,7 @@ class UniqueLocationCounts(SubscriberFeature):
                 stop=stop,
                 spatial_unit=spatial_unit,
                 hours=hours,
-                table=tables,
+                tables=tables,
                 subscriber_identifier=subscriber_identifier,
                 ignore_nulls=ignore_nulls,
                 subscriber_subset=subscriber_subset,

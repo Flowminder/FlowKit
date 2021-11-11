@@ -76,7 +76,6 @@ class DistanceCounterparts(SubscriberFeature):
         subscriber_subset=None,
         exclude_self_calls=True,
     ):
-        self.tables = tables
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
@@ -92,7 +91,6 @@ class DistanceCounterparts(SubscriberFeature):
             )
 
         column_list = ["msisdn", "msisdn_counterpart", "id", "location_id", "outgoing"]
-        self.tables = tables
 
         # EventsTablesUnion will only subset on the subscriber identifier,
         # which means that we need to query for a unioned table twice. That has
@@ -101,7 +99,7 @@ class DistanceCounterparts(SubscriberFeature):
             self.start,
             self.stop,
             columns=column_list,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier="msisdn",
             hours=hours,
             subscriber_subset=subscriber_subset,
@@ -111,7 +109,7 @@ class DistanceCounterparts(SubscriberFeature):
             self.start,
             self.stop,
             columns=column_list,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier="msisdn_counterpart",
             hours=hours,
             subscriber_subset=subscriber_subset,

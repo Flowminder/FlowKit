@@ -89,13 +89,12 @@ class FirstLocation(SubscriberFeature):
             self.stop,
             spatial_unit=spatial_unit,
             hours=hours,
-            table=table,
+            tables=table,
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
         )
 
-        self.table = self.ul.table
         self.subscriber_identifier = self.ul.subscriber_identifier
 
         super().__init__()

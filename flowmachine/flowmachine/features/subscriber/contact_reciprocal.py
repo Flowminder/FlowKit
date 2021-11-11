@@ -79,18 +79,15 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        self.tables = tables
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
         self.exclude_self_calls = exclude_self_calls
-        self.tables = tables
-
         self.contact_in_query = ContactBalance(
             self.start,
             self.stop,
             hours=self.hours,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier="msisdn",
             direction=Direction.IN,
             exclude_self_calls=self.exclude_self_calls,
@@ -101,7 +98,7 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
             self.start,
             self.stop,
             hours=self.hours,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier="msisdn",
             direction=Direction.OUT,
             exclude_self_calls=self.exclude_self_calls,
@@ -277,7 +274,6 @@ class ProportionEventReciprocal(SubscriberFeature):
         self.hours = hours
         self.exclude_self_calls = exclude_self_calls
         self.direction = Direction(direction)
-        self.tables = tables
 
         column_list = [
             self.subscriber_identifier,
@@ -289,7 +285,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.tables,
+            tables=tables,
             columns=column_list,
             hours=hours,
             subscriber_identifier=subscriber_identifier,

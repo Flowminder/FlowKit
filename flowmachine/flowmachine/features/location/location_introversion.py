@@ -44,7 +44,7 @@ class LocationIntroversion(GeoDataMixin, Query):
         ISO format date string to at which to start the analysis
     stop : str
         AS above for the end of the analysis
-    table : str, default 'all'
+    tables : str, default 'all'
         Specifies a table of cdr data on which to base the analysis. Table must
         exist in events schema. If 'ALL' then we use all tables specified in
         flowmachine.yml.
@@ -64,7 +64,7 @@ class LocationIntroversion(GeoDataMixin, Query):
 
     Examples
     --------
-    >>> LocationIntroversion("2016-01-01", "2016-01-07").head()
+    >>> LocationIntroversion("2016-01-01","2016-01-07").head()
           location_id  introversion  extroversion
     0    AUQZGMW3      0.050000      0.950000
     1    ns6vzdkC      0.049180      0.950820
@@ -73,21 +73,12 @@ class LocationIntroversion(GeoDataMixin, Query):
     4    eAwMUT94      0.045175      0.954825
     """
 
-    def __init__(
-        self,
-        start: str,
-        stop: str,
-        *,
-        table: str = "all",
-        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        direction: Union[Direction, str] = Direction.BOTH,
-        hours: Optional[Tuple[int, int]] = None,
-        subscriber_subset=None,
-        subscriber_identifier="msisdn",
-    ):
+    def __init__(self, start: str, stop: str, *, tables: str = "all",
+                 spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
+                 direction: Union[Direction, str] = Direction.BOTH, hours: Optional[Tuple[int, int]] = None,
+                 subscriber_subset=None, subscriber_identifier="msisdn"):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
-        self.table = table
         self.spatial_unit = spatial_unit
         self.direction = Direction(direction)
 
@@ -102,7 +93,7 @@ class LocationIntroversion(GeoDataMixin, Query):
                     "datetime",
                     subscriber_identifier,
                 ],
-                tables=self.table,
+                tables=tables,
                 hours=hours,
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=subscriber_identifier,

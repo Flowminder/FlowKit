@@ -10,11 +10,7 @@ def test_unique_locations_column_names(get_column_names_from_run):
     assert (
         get_column_names_from_run(
             UniqueLocations(
-                SubscriberLocations(
-                    "2016-01-01",
-                    "2016-01-02",
-                    spatial_unit=make_spatial_unit("admin", level=3),
-                )
+                SubscriberLocations("2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("admin", level=3))
             )
         )
         == ["subscriber", "pcod"]
@@ -26,11 +22,7 @@ def test_unique_locations(get_dataframe):
     Values test for unique locations.
     """
     unique_locs = UniqueLocations(
-        SubscriberLocations(
-            "2016-01-01",
-            "2016-01-02",
-            spatial_unit=make_spatial_unit("admin", level=3),
-        )
+        SubscriberLocations("2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("admin", level=3))
     )
     df = get_dataframe(unique_locs).set_index("subscriber")
     assert df.loc["038OVABN11Ak4W5P"].pcod.tolist() == [

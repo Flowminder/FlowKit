@@ -69,7 +69,6 @@ class MDSVolume(SubscriberFeature):
         self.hours = hours
         self.volume = volume
         self.statistic = statistic.lower()
-        self.tables = "events.mds"
 
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -86,7 +85,7 @@ class MDSVolume(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.tables,
+            tables="events.mds",
             columns=column_list,
             hours=hours,
             subscriber_identifier=subscriber_identifier,

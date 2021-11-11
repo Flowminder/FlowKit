@@ -53,7 +53,7 @@ class DistanceSeries(SubscriberFeature):
 
     Examples
     --------
-    >>> d = DistanceSeries(subscriber_locations=SubscriberLocations("2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")))
+    >>> d = DistanceSeries(subscriber_locations=SubscriberLocations("2016-01-01","2016-01-07",spatial_unit=make_spatial_unit("lon-lat")))
     >>> d.head()
              subscriber    datetime         value
     0  038OVABN11Ak4W5P  2016-01-01  9.384215e+06

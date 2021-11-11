@@ -32,7 +32,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         ISO format date string to at which to start the analysis
     stop : str
         As above for the end of the analysis
-    table : str, default 'all'
+    tables : str, default 'all'
         Specifies a table of cdr data on which to base the analysis. Table must
         exist in events schema. If 'all' then we use all tables specified in
         flowmachine.yml.
@@ -53,7 +53,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         start: str,
         stop: str,
         *,
-        table: Union[None, List[str]] = None,
+        tables: Union[None, List[str]] = None,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         interval: str = "hour",
         direction: Union[str, Direction] = Direction.BOTH,
@@ -63,7 +63,6 @@ class TotalLocationEvents(GeoDataMixin, Query):
     ):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
-        self.table = table
         self.spatial_unit = spatial_unit
         self.interval = interval
         self.direction = Direction(direction)
@@ -92,7 +91,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
             EventsTablesUnion(
                 self.start,
                 self.stop,
-                tables=self.table,
+                tables=tables,
                 columns=events_tables_union_cols,
                 hours=hours,
                 subscriber_subset=subscriber_subset,

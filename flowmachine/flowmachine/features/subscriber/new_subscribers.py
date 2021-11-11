@@ -31,7 +31,7 @@ class NewSubscribers(Query):
 
     Examples
     --------
-    >>>newbies = NewSubscribers(unique_subscribers_bench_mark=UniqueSubscribers('2016-01-01','2016-01-07'), unique_subscribers_focal=UniqueSubscribers('2016-03-01', '2016-03-07'))
+    >>>newbies = NewSubscribers(unique_subscribers_bench_mark=UniqueSubscribers('2016-01-01','2016-01-07'), unique_subscribers_focal=UniqueSubscribers('2016-03-01','2016-03-07'))
     subscriber | location
     ---------------
       A  |  cellX

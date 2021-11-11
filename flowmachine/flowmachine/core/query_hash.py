@@ -3,49 +3,43 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from collections import Iterable
+from collections import Mapping
+import functools
 
 from hashlib import md5
 import rapidjson as json
 
 
+@functools.singledispatch
+def to_hashable(val):
+    return str(val)
+
+
+@to_hashable.register(set)
+def _(val: set):
+    return str(sorted(to_hashable(v) for v in val))
+
+
+@to_hashable.register
+def _(val: Mapping):
+    return json.dumps(
+        val,
+        sort_keys=True,
+        default=to_hashable,
+        iterable_mode=json.IM_ONLY_LISTS,
+        mapping_mode=json.MM_COERCE_KEYS_TO_STRINGS,
+    )
+
+
 def hash_query(query: "Query"):
     dependencies = query.dependencies
     state = query.__getstate__()
-    hashes = sorted([x.query_id for x in dependencies])
-    for key, item in sorted(state.items()):
-        try:
-            item_q_id = item.query_id
-            if item not in dependencies:
-                hashes.append(item_q_id)
-        except AttributeError:
-            if isinstance(item, (list, tuple, set)):
-                item = sorted(
-                    item,
-                    key=lambda x: x.query_id if hasattr(x, "query_id") else str(x),
-                )
-            elif isinstance(item, dict):
-                # Transform any queries to query ids
-                item_dict = dict()
-                for key, val in item.items():
-                    try:
-                        key = key.query_id
-                    except AttributeError:
-                        pass
-                    try:
-                        val = val.query_id
-                    except AttributeError:
-                        pass
-                    item_dict[key] = val
-                item = json.dumps(item_dict, sort_keys=True, default=str)
-            else:
-                # if it's not a list or a dict we leave the item as it is
-                pass
-
-            hashes.append(str(item))
-    hashes.append(query.__class__.__name__)
-    hashes.sort()
-    return md5(str(hashes).encode()).hexdigest()
+    vals = [
+        *[x.query_id for x in dependencies],
+        *[to_hashable(val) for val in state.values()],
+        query.__class__.__name__,
+    ]
+    return md5(str(sorted(vals)).encode()).hexdigest()
 
 
 def gen_all_of_type(var, typ):

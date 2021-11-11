@@ -146,7 +146,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
                 start,
                 stop,
                 hours=hours,
-                table=table,
+                tables=table,
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
             )

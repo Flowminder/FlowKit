@@ -55,9 +55,9 @@ class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
         return MostFrequentLocation(
             start=self.start,
             stop=self.stop,
-            hours=self.hours,
             spatial_unit=self.aggregation_unit,
-            table=self.event_types,
+            hours=self.hours,
+            tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
 

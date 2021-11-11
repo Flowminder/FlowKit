@@ -128,7 +128,6 @@ class PeriodicEntropy(BaseEntropy):
         tables="all",
     ):
 
-        self.tables = tables
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
@@ -173,7 +172,7 @@ class PeriodicEntropy(BaseEntropy):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.tables,
+            tables=tables,
             columns=column_list,
             hours=hours,
             subscriber_identifier=subscriber_identifier,
@@ -265,11 +264,11 @@ class LocationEntropy(BaseEntropy):
             start=start,
             stop=stop,
             spatial_unit=spatial_unit,
-            table=tables,
             hours=hours,
+            tables=tables,
             subscriber_identifier=subscriber_identifier,
-            subscriber_subset=subscriber_subset,
             ignore_nulls=ignore_nulls,
+            subscriber_subset=subscriber_subset,
         )
 
         super().__init__()

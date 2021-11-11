@@ -67,7 +67,6 @@ class TopUpAmount(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()
-        self.tables = "events.topups"
 
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -81,7 +80,7 @@ class TopUpAmount(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.tables,
+            tables="events.topups",
             columns=column_list,
             hours=hours,
             subscriber_identifier=subscriber_identifier,

@@ -55,8 +55,8 @@ def test_ignore_texts(get_dataframe):
     te = TotalLocationEvents(
         "2016-01-01",
         "2016-01-04",
+        tables="events.calls",
         spatial_unit=make_spatial_unit("versioned-site"),
-        table="events.calls",
     )
     df = get_dataframe(te)
 

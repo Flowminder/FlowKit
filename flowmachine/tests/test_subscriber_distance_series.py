@@ -30,9 +30,7 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
     df = get_dataframe(
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
-                "2016-01-01",
-                "2016-01-07",
-                spatial_unit=make_spatial_unit("lon-lat"),
+                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
             ),
             reference_location=rl,
             statistic=stat,

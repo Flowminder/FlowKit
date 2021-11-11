@@ -47,7 +47,10 @@ def test_aggregate_returns_correct_values(stat, expected, get_dataframe):
     """
     instance = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
-            start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
+            start="2016-01-01",
+            stop="2016-12-30",
+            tables=["events.calls"],
+            total_by="hour",
         ),
         statistic=stat,
     )
@@ -67,7 +70,7 @@ def test_count_returns_correct_values(get_dataframe):
 
     """
     instance = TotalNetworkObjects(
-        start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
+        start="2016-01-01", stop="2016-12-30", tables=["events.calls"], total_by="hour"
     )
     df = get_dataframe(instance)
 
@@ -85,7 +88,7 @@ def test_bad_total_by():
         TotalNetworkObjects(
             start="2016-01-01",
             stop="2016-12-30",
-            table="calls",
+            tables=["events.calls"],
             total_by="BAD_TOTAL_BY",
         )
 
@@ -102,7 +105,10 @@ def test_bad_spatial_units(bad_arg, spatial_unit_type):
     su = make_spatial_unit(spatial_unit_type)
     with pytest.raises(InvalidSpatialUnitError):
         TotalNetworkObjects(
-            start="2016-01-01", stop="2016-12-30", table="calls", **{bad_arg: su}
+            start="2016-01-01",
+            stop="2016-12-30",
+            tables=["events.calls"],
+            **{bad_arg: su}
         )
 
 
@@ -111,7 +117,7 @@ def test_bad_aggregate_by():
     with pytest.raises(ValueError):
         AggregateNetworkObjects(
             total_network_objects=TotalNetworkObjects(
-                start="2016-01-01", stop="2016-12-30", table="calls"
+                start="2016-01-01", stop="2016-12-30", tables=["events.calls"]
             ),
             aggregate_by="BAD_AGGREGATE_BY",
         )
@@ -122,7 +128,7 @@ def test_bad_statistic():
     with pytest.raises(ValueError):
         AggregateNetworkObjects(
             total_network_objects=TotalNetworkObjects(
-                start="2016-01-01", stop="2016-12-30", table="calls"
+                start="2016-01-01", stop="2016-12-30", tables=["events.calls"]
             ),
             statistic="count",
         )
@@ -135,7 +141,7 @@ def test_median_returns_correct_values(get_dataframe):
     """
     instance = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
-            table="calls",
+            tables=["events.calls"],
             total_by="hour",
             network_object=make_spatial_unit("versioned-site"),
         ),

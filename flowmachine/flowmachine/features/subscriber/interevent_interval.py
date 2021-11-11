@@ -87,7 +87,6 @@ class IntereventInterval(SubscriberFeature):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.tables = tables
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)
 
@@ -108,7 +107,7 @@ class IntereventInterval(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.tables,
+            tables=tables,
             columns=column_list,
             hours=self.hours,
             subscriber_identifier=self.subscriber_identifier,

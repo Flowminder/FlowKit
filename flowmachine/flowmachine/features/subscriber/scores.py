@@ -83,44 +83,48 @@ class EventScore(Query):
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Union[str, Tuple[int, int]] = "all",
         table: Union[str, List[str]] = "all",
-        score_hour: List[float] = [
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            0,
-            0,
-            0,
-            0,
-            -1,
-            -1,
-            -1,
-        ],
-        score_dow: Dict[str, float] = {
-            "monday": 1,
-            "tuesday": 1,
-            "wednesday": 1,
-            "thursday": 0,
-            "friday": -1,
-            "saturday": -1,
-            "sunday": -1,
-        },
+        score_hour: List[float] = None,
+        score_dow: Dict[str, float] = None,
         subscriber_identifier: str = "msisdn",
         subscriber_subset=None,
     ):
+        if score_dow is None:
+            score_dow = {
+                "monday": 1,
+                "tuesday": 1,
+                "wednesday": 1,
+                "thursday": 0,
+                "friday": -1,
+                "saturday": -1,
+                "sunday": -1,
+            }
+        if score_hour is None:
+            score_hour = [
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                -1,
+                -1,
+            ]
         if set(score_dow.keys()) != {
             "monday",
             "tuesday",
@@ -141,7 +145,7 @@ class EventScore(Query):
             raise ValueError(f"Hour of day scores must be floats between -1 and 1.")
         if not all([-1 <= float(x) <= 1 for x in score_dow.values()]):
             raise ValueError(f"Day of week scores must be floats between -1 and 1.")
-        self.score_hour = score_hour
+        self.score_hour = {hour: score for hour, score in enumerate(score_hour)}
         self.score_dow = score_dow
         if spatial_unit is None:
             self.spatial_unit = make_spatial_unit("admin", level=3)
@@ -177,7 +181,7 @@ class EventScore(Query):
         FROM ({self.sds.get_query()}) _"""
 
         hour_case = f"""(CASE 
-        {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in enumerate(self.score_hour))}
+        {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in self.score_hour.items())}
         END)"""
 
         day_case = f"""(CASE 

@@ -14,11 +14,8 @@ def test_unmoving_counts_column_names(get_column_names_from_run):
             UnmovingCounts(
                 Unmoving(
                     locations=UniqueLocations(
-                        SubscriberLocations(
-                            "2016-01-01",
-                            "2016-01-01 10:00",
-                            spatial_unit=make_spatial_unit("admin", level=3),
-                        )
+                        SubscriberLocations("2016-01-01", "2016-01-01 10:00",
+                                            spatial_unit=make_spatial_unit("admin", level=3))
                     )
                 )
             )
@@ -32,11 +29,8 @@ def test_unmoving_counts_values(get_dataframe):
         UnmovingCounts(
             Unmoving(
                 locations=UniqueLocations(
-                    SubscriberLocations(
-                        "2016-01-01",
-                        "2016-01-01 10:00",
-                        spatial_unit=make_spatial_unit("admin", level=3),
-                    )
+                    SubscriberLocations("2016-01-01", "2016-01-01 10:00",
+                                        spatial_unit=make_spatial_unit("admin", level=3))
                 )
             )
         )

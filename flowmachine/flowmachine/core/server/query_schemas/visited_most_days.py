@@ -63,12 +63,12 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
             subscriber_locations=SubscriberLocations(
                 start=self.start_date,
                 stop=self.end_date,
-                hours=self.hours,
                 spatial_unit=self.aggregation_unit,
-                table=self.event_types,
-                subscriber_subset=self.subscriber_subset,
+                hours=self.hours,
+                tables=self.event_types,
                 subscriber_identifier=self.subscriber_identifier,
                 ignore_nulls=self.ignore_nulls,
+                subscriber_subset=self.subscriber_subset,
             )
         )
 

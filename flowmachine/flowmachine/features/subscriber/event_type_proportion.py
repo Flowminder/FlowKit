@@ -77,8 +77,6 @@ class ProportionEventType(SubscriberFeature):
         self.direction = Direction(direction)
         self.numerator_direction = Direction(numerator_direction)
         self.hours = hours
-        self.tables = tables
-        self.numerator = numerator if isinstance(numerator, list) else [numerator]
 
         self.numerator_query = EventCount(
             self.start,
@@ -87,7 +85,7 @@ class ProportionEventType(SubscriberFeature):
             direction=self.numerator_direction,
             hours=self.hours,
             subscriber_subset=subscriber_subset,
-            tables=self.numerator,
+            tables=numerator,
         )
 
         self.denominator_query = EventCount(
@@ -97,7 +95,7 @@ class ProportionEventType(SubscriberFeature):
             direction=self.direction,
             hours=self.hours,
             subscriber_subset=subscriber_subset,
-            tables=self.tables,
+            tables=tables,
         )
 
         super().__init__()

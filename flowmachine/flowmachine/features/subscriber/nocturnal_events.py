@@ -75,7 +75,6 @@ class NocturnalEvents(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)
         self.hours = hours
-        self.tables = tables
 
         column_list = [
             self.subscriber_identifier,
@@ -86,7 +85,7 @@ class NocturnalEvents(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.tables,
+            tables=tables,
             columns=column_list,
             hours="all",
             subscriber_identifier=subscriber_identifier,

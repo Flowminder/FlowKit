@@ -82,7 +82,6 @@ class SubscriberDegree(SubscriberFeature):
         self.direction = Direction(direction)
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
-        self.tables = tables
 
         column_list = [
             self.subscriber_identifier,
@@ -94,7 +93,7 @@ class SubscriberDegree(SubscriberFeature):
             self.start,
             self.stop,
             hours=self.hours,
-            tables=self.tables,
+            tables=tables,
             columns=column_list,
             subscriber_identifier=self.subscriber_identifier,
             subscriber_subset=subscriber_subset,

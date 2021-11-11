@@ -59,10 +59,10 @@ class HandsetExposed(BaseExposedQueryWithSampling):
             start=self.start_date,
             stop=self.end_date,
             characteristic=self.characteristic,
-            method=self.method,
-            table=self.event_types,
-            subscriber_subset=self.subscriber_subset,
             hours=self.hours,
+            tables=self.event_types,
+            method=self.method,
+            subscriber_subset=self.subscriber_subset,
         )
 
 

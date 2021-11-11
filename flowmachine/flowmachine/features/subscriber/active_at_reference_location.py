@@ -30,8 +30,7 @@ class ActiveAtReferenceLocation(SubscriberFeature):
 
     Examples
     --------
-    >>> ActiveAtReferenceLocation(subscriber_locations=UniqueLocations(SubscriberLocations("2016-01-01", "2016-01-02",
-    >>> spatial_unit=make_spatial_unit("admin", level=3))),
+    >>> ActiveAtReferenceLocation(subscriber_locations=UniqueLocations(SubscriberLocations("2016-01-01","2016-01-02",spatial_unit=make_spatial_unit("admin", level=3))),
     >>> reference_locations=daily_location("2016-01-03")).head()
              subscriber  value
     0  038OVABN11Ak4W5P   True

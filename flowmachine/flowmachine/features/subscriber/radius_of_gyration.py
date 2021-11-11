@@ -105,10 +105,10 @@ class RadiusOfGyration(SubscriberFeature):
             self.stop,
             spatial_unit=make_spatial_unit("lon-lat"),
             hours=hours,
-            table=table,
-            subscriber_subset=subscriber_subset,
+            tables=table,
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
+            subscriber_subset=subscriber_subset,
         )
 
         super().__init__()

@@ -49,7 +49,7 @@ class SubscriberLocations(Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'all'
+    tables : str, default 'all'
         schema qualified name of the table which the analysis is
         based upon. If 'all' it will pull together all of the tables
         specified as flowmachine.yml under 'location_tables'
@@ -72,7 +72,7 @@ class SubscriberLocations(Query):
 
     Examples
     --------
-    >>> subscriber_locs = SubscriberLocations('2016-01-01 13:30:30',
+    >>> subscriber_locs = SubscriberLocations('2016-01-01 13:30:30',)
                                '2016-01-02 16:25:00')
     >>> subscriber_locs.head()
      subscriber                 time    cell
@@ -90,7 +90,7 @@ class SubscriberLocations(Query):
         *,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours: Optional[Tuple[int, int]] = None,
-        table="all",
+        tables="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,
         subscriber_subset=None,
@@ -100,18 +100,16 @@ class SubscriberLocations(Query):
         self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.ignore_nulls = ignore_nulls
 
-        self.tables = table
         cols = [self.subscriber_identifier, "datetime", "location_id"]
         self.unioned = location_joined_query(
             EventsTablesUnion(
                 self.start,
                 self.stop,
                 columns=cols,
-                tables=self.table,
+                tables=tables,
                 hours=self.hours,
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,

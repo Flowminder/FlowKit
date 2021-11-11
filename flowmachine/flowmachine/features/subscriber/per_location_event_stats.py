@@ -80,7 +80,6 @@ class PerLocationEventStats(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit
         self.hours = hours
-        self.tables = tables
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)
         self.statistic = statistic
@@ -103,7 +102,7 @@ class PerLocationEventStats(SubscriberFeature):
             EventsTablesUnion(
                 self.start,
                 self.stop,
-                tables=self.tables,
+                tables=tables,
                 columns=column_list,
                 hours=hours,
                 subscriber_identifier=subscriber_identifier,

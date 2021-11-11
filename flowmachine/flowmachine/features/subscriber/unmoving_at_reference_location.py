@@ -27,7 +27,7 @@ class UnmovingAtReferenceLocation(SubscriberFeature):
 
     Examples
     --------
-    >>> UnmovingAtReferenceLocation(locations=UniqueLocations(SubscriberLocations("2016-01-01", "2016-01-01 10:00", spatial_unit=make_spatial_unit("admin", level=3))), reference_locations=LastLocation("2016-01-01", "2016-01-02")).head()
+    >>> UnmovingAtReferenceLocation(locations=UniqueLocations(SubscriberLocations("2016-01-01","2016-01-01 10:00",spatial_unit=make_spatial_unit("admin", level=3))), reference_locations=LastLocation("2016-01-01","2016-01-02")).head()
              subscriber  value
     0  038OVABN11Ak4W5P  False
     1  09NrjaNNvDanD8pk  False

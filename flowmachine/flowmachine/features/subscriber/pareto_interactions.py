@@ -83,7 +83,6 @@ class ParetoInteractions(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.hours = hours
         self.direction = Direction(direction)
-        self.tables = tables
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
 
@@ -96,7 +95,7 @@ class ParetoInteractions(SubscriberFeature):
             self.start,
             self.stop,
             hours=self.hours,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier=self.subscriber_identifier,
             direction=self.direction,
             exclude_self_calls=exclude_self_calls,
@@ -107,7 +106,7 @@ class ParetoInteractions(SubscriberFeature):
             self.start,
             self.stop,
             hours=self.hours,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier=self.subscriber_identifier,
             direction=self.direction,
             exclude_self_calls=self.exclude_self_calls,

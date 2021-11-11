@@ -38,7 +38,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         Stop time to filter query.
     total_by : {'second', 'minute', 'hour', 'day', 'month', 'year'}
         A period definition to group data by.
-    table : str
+    tables : str
         Either 'calls', 'sms', or other table under `events.*`. If no specific
         table is provided this will collect statistics from all tables.
     network_object : flowmachine.core.spatial_unit.*SpatialUnit, default cell
@@ -64,31 +64,16 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     """
 
-    def __init__(
-        self,
-        start=None,
-        stop=None,
-        *,
-        table="all",
-        total_by="day",
-        network_object: AnySpatialUnit = make_spatial_unit("cell"),
-        spatial_unit: Optional[AnySpatialUnit] = None,
-        hours: Optional[Tuple[int, int]] = None,
-        subscriber_subset=None,
-        subscriber_identifier="msisdn",
-    ):
+    def __init__(self, start=None, stop=None, *, tables="all", total_by="day",
+                 network_object: AnySpatialUnit = make_spatial_unit("cell"),
+                 spatial_unit: Optional[AnySpatialUnit] = None, hours: Optional[Tuple[int, int]] = None,
+                 subscriber_subset=None, subscriber_identifier="msisdn"):
         self.start = standardise_date(
-            get_db().min_date(table=table) if start is None else start
+            get_db().min_date(table=tables) if start is None else start
         )
         self.stop = standardise_date(
-            get_db().max_date(table=table) if stop is None else stop
+            get_db().max_date(table=tables) if stop is None else stop
         )
-
-        self.table = table
-        if isinstance(self.table, str):
-            self.table = self.table.lower()
-            if self.table != "all" and not self.table.startswith("events"):
-                self.table = "events.{}".format(self.table)
 
         network_object.verify_criterion("is_network_object")
         self.network_object = network_object
@@ -104,7 +89,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
             EventsTablesUnion(
                 self.start,
                 self.stop,
-                tables=self.table,
+                tables=tables,
                 columns=["location_id", "datetime"],
                 hours=hours,
                 subscriber_subset=subscriber_subset,

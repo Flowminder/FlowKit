@@ -37,7 +37,7 @@ class MostFrequentLocation(BaseLocation, Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'all'
+    tables : str, default 'all'
         schema qualified name of the table which the analysis is
         based upon. If 'all' it will use all tables that contain
         location data.
@@ -58,18 +58,9 @@ class MostFrequentLocation(BaseLocation, Query):
 
     """
 
-    def __init__(
-        self,
-        start,
-        stop,
-        spatial_unit: Optional[AnySpatialUnit] = None,
-        hours: Optional[Tuple[int, int]] = None,
-        table="all",
-        subscriber_identifier="msisdn",
-        *,
-        ignore_nulls=True,
-        subscriber_subset=None,
-    ):
+    def __init__(self, start, stop, spatial_unit: Optional[AnySpatialUnit] = None,
+                 hours: Optional[Tuple[int, int]] = None, tables="all", subscriber_identifier="msisdn", *,
+                 ignore_nulls=True, subscriber_subset=None):
         """"""
 
         self.start = standardise_date(start)
@@ -79,14 +70,13 @@ class MostFrequentLocation(BaseLocation, Query):
         else:
             self.spatial_unit = spatial_unit
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.subscriber_locs = SubscriberLocations(
             start=self.start,
             stop=self.stop,
             spatial_unit=self.spatial_unit,
             hours=self.hours,
-            table=self.table,
+            tables=tables,
             subscriber_identifier=self.subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,

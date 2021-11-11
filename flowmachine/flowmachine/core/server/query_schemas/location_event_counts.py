@@ -57,12 +57,12 @@ class LocationEventCountsExposed(BaseExposedQuery):
             total_events=TotalLocationEvents(
                 start=self.start_date,
                 stop=self.end_date,
+                tables=self.event_types,
+                spatial_unit=self.aggregation_unit,
                 interval=self.interval,
                 direction=self.direction,
-                table=self.event_types,
-                spatial_unit=self.aggregation_unit,
-                subscriber_subset=self.subscriber_subset,
                 hours=self.hours,
+                subscriber_subset=self.subscriber_subset,
             )
         )
 

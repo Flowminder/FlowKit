@@ -76,15 +76,12 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        self.tables = tables
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
         self.direction = Direction(direction)
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
-        self.tables = tables
-
         column_list = [
             self.subscriber_identifier,
             "msisdn_counterpart",
@@ -95,7 +92,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             self.start,
             self.stop,
             columns=column_list,
-            tables=self.tables,
+            tables=tables,
             subscriber_identifier=self.subscriber_identifier,
             hours=hours,
             subscriber_subset=subscriber_subset,

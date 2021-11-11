@@ -22,7 +22,7 @@ class UniqueLocations(SubscriberFeature):
 
     Examples
     --------
-    >>> UniqueLocations(subscriber_locations=SubscriberLocations("2016-01-01", "2016-01-02", make_spatial_unit("admin", level=3))).head()
+    >>> UniqueLocations(subscriber_locations=SubscriberLocations("2016-01-01","2016-01-02")).head()
              subscriber         pcod
     0  038OVABN11Ak4W5P  524 2 04 20
     1  038OVABN11Ak4W5P  524 3 08 43

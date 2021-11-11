@@ -47,7 +47,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'all'
+    tables : str, default 'all'
         schema qualified name of the table which the analysis is
         based upon. If 'all' it will pull together all of the tables
         specified as flowmachine.yml under 'location_tables'
@@ -66,7 +66,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
     Examples
     --------
-    >>> usc = UniqueSubscriberCounts('2016-01-01', '2016-01-04', spatial_unit=AdminSpatialUnit(level=3), hours=(5,17))
+    >>> usc = UniqueSubscriberCounts('2016-01-01','2016-01-04',spatial_unit=AdminSpatialUnit(level=3),hours=(5,17))
     >>> usc.head(4)
           name                  unique_subscriber_counts
     0     Arghakhanchi          313
@@ -74,28 +74,20 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
     2     Bajhang               285
     """
 
-    def __init__(
-        self,
-        start,
-        stop,
-        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-        hours: Optional[Tuple[int, int]] = None,
-        table="all",
-        subscriber_subset=None,
-    ):
+    def __init__(self, start, stop, spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
+                 hours: Optional[Tuple[int, int]] = None, tables="all", subscriber_subset=None):
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit
         self.hours = hours
-        self.table = table
         self.ul = UniqueLocations(
             SubscriberLocations(
                 start=self.start,
                 stop=self.stop,
                 spatial_unit=self.spatial_unit,
                 hours=self.hours,
-                table=self.table,
+                tables=tables,
                 subscriber_subset=subscriber_subset,
             )
         )

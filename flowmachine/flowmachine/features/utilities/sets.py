@@ -43,7 +43,7 @@ class UniqueSubscribers(Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'all'
+    tables : str, default 'all'
         Table on which to perform the query. By default it will look
         at ALL tables, which are any tables with subscriber information
         in them, specified via subscriber_tables in flowmachine.yml. Otherwise
@@ -68,7 +68,7 @@ class UniqueSubscribers(Query):
 
     Examples
     --------
-    >>> UU = UniqueSubscribers('2016-01-01 13:30:30',
+    >>> UU = UniqueSubscribers('2016-01-01 13:30:30',)
                          '2016-01-02 16:25:00')
     >>> UU.as_set()
     {'038OVABN11Ak4W5P',
@@ -84,21 +84,20 @@ class UniqueSubscribers(Query):
         stop: str,
         *,
         hours: Optional[Tuple[int, int]] = None,
-        table: Union[str, List[str]] = "all",
+        tables: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
     ):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.tables = table
         self.subscriber_identifier = subscriber_identifier
         cols = [self.subscriber_identifier]
         self.unioned = EventsTablesUnion(
             self.start,
             self.stop,
             columns=cols,
-            tables=self.tables,
+            tables=tables,
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,

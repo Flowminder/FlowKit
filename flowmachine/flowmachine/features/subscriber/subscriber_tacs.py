@@ -86,7 +86,7 @@ class SubscriberTACs(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -98,7 +98,7 @@ class SubscriberTACs(SubscriberFeature):
     Examples
     -------------
 
-    >>> subscriber_tacs = SubscriberTACs('2016-01-01 13:30:30',
+    >>> subscriber_tacs = SubscriberTACs('2016-01-01 13:30:30',)
                                '2016-01-02 16:25:00')
     >>> subscriber_tacs.head()
                 subscriber                      time         tac
@@ -116,7 +116,7 @@ class SubscriberTACs(SubscriberFeature):
         stop,
         *,
         hours: Optional[Tuple[int, int]] = None,
-        table="all",
+        tables="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
@@ -125,13 +125,12 @@ class SubscriberTACs(SubscriberFeature):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.tbl = EventsTablesUnion(
             start,
             stop,
             columns=[subscriber_identifier, "tac", "datetime"],
-            tables=table,
+            tables=tables,
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
@@ -210,15 +209,14 @@ class SubscriberTAC(SubscriberFeature):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.subscriber_tacs = SubscriberTACs(
             start,
             stop,
             hours=hours,
-            table=table,
-            subscriber_identifier=subscriber_identifier,
+            tables=table,
             subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         self.method = method
         if self.method not in ("most-common", "last"):
@@ -263,7 +261,7 @@ class SubscriberHandsets(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     subscriber_identifier : str, default 'msisdn'
         The focus of the analysis, usually either
         'msisdn', 'imei'
@@ -272,7 +270,7 @@ class SubscriberHandsets(SubscriberFeature):
     Examples
     -------------
 
-    >>> subscriber_handsets = SubscriberHandsets('2016-01-01 13:30:30',
+    >>> subscriber_handsets = SubscriberHandsets('2016-01-01 13:30:30',)
                                '2016-01-02 16:25:00')
     >>> subscriber_handsets.get_dataframe()
               tac        subscriber                      time    brand  model width   ...    j2me_midp_20 j2me_midp_21 j2me_cldc_10 j2me_cldc_11 j2me_cldc_20 hnd_type
@@ -293,7 +291,7 @@ class SubscriberHandsets(SubscriberFeature):
         stop,
         *,
         hours: Optional[Tuple[int, int]] = None,
-        table="all",
+        tables="all",
         subscriber_identifier="msisdn",
         subscriber_subset=None,
     ):
@@ -302,15 +300,14 @@ class SubscriberHandsets(SubscriberFeature):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.subscriber_tacs = SubscriberTACs(
             start,
             stop,
             hours=hours,
-            table=table,
-            subscriber_identifier=subscriber_identifier,
+            tables=tables,
             subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         self.tacs = Table("infrastructure.tacs")
         self.joined = self.subscriber_tacs.join(self.tacs, "tac", "id", how="left")
@@ -341,7 +338,7 @@ class SubscriberHandset(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     subscriber_identifier : str, default 'msisdn'
         The focus of the analysis, usually either
         'msisdn', 'imei'
@@ -352,7 +349,7 @@ class SubscriberHandset(SubscriberFeature):
     Examples
     -------------
 
-    >>> subscriber_handsets = SubscriberHandset('2016-01-01', '2016-01-07')
+    >>> subscriber_handsets = SubscriberHandset('2016-01-01','2016-01-07')
     >>> subscriber_handsets.get_dataframe()
               tac        subscriber  brand  model width height depth   ...    j2me_midp_10 j2me_midp_20 j2me_midp_21 j2me_cldc_10 j2me_cldc_11 j2me_cldc_20 hnd_type
     0  18867440.0  038OVABN11Ak4W5P   Sony  TO-64  None   None  None   ...            None         None         None         None         None         None    Smart
@@ -372,7 +369,7 @@ class SubscriberHandset(SubscriberFeature):
         stop,
         *,
         hours: Optional[Tuple[int, int]] = None,
-        table="all",
+        tables="all",
         subscriber_identifier="msisdn",
         method="most-common",
         subscriber_subset=None,
@@ -382,13 +379,12 @@ class SubscriberHandset(SubscriberFeature):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.subscriber_tac = SubscriberTAC(
             start,
             stop,
             hours=hours,
-            table=table,
+            table=tables,
             subscriber_identifier=subscriber_identifier,
             method=method,
             subscriber_subset=subscriber_subset,
@@ -473,7 +469,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     subscriber_identifier : str, default 'msisdn'
         The focus of the analysis, usually either
         'msisdn', 'imei'
@@ -484,7 +480,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
     Examples
     -------------
 
-    >>> subscriber_smart = SubscriberHandsetCharacteristic('2016-01-01', '2016-01-07',
+    >>> subscriber_smart = SubscriberHandsetCharacteristic('2016-01-01','2016-01-07',)
         'hnd_type')
     >>> subscriber_smart.get_dataframe()
              subscriber        value
@@ -510,7 +506,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
         stop,
         characteristic,
         hours: Optional[Tuple[int, int]] = None,
-        table="all",
+        tables="all",
         subscriber_identifier="msisdn",
         method="most-common",
         subscriber_subset=None,
@@ -520,7 +516,6 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
-        self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.characteristic = characteristic
         if self.characteristic not in valid_characteristics:
@@ -530,7 +525,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
                 start,
                 stop,
                 hours=hours,
-                table=table,
+                tables=tables,
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
             )
@@ -539,10 +534,10 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
                 start,
                 stop,
                 hours=hours,
-                table=table,
+                tables=tables,
                 subscriber_identifier=subscriber_identifier,
-                subscriber_subset=subscriber_subset,
                 method=method,
+                subscriber_subset=subscriber_subset,
             )
         self.method = method
         super().__init__()

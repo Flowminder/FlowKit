@@ -39,10 +39,7 @@ class CustomQuery(Query):
 
     def __init__(self, sql: str, column_names: Union[List[str], Set[str]]):
         self.sql = pretty_sql(sql)
-        seen = {}  # Dedupe the column names but preserve order
-        self._column_names = [
-            seen.setdefault(x, x) for x in column_names if x not in seen
-        ]
+        self._column_names = sorted(set(column_names))
         super().__init__()
 
     @property

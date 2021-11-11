@@ -278,15 +278,9 @@ def _make_meaningful_locations_object(
     tower_day_of_week_scores,
     tower_hour_of_day_scores,
 ):
-    q_subscriber_locations = SubscriberLocations(
-        start=start_date,
-        stop=end_date,
-        spatial_unit=make_spatial_unit(
-            "versioned-site"
-        ),  # note this 'spatial_unit' is not the same as the exposed parameter 'aggregation_unit'
-        table=event_types,
-        subscriber_subset=subscriber_subset,
-    )
+    q_subscriber_locations = SubscriberLocations(start=start_date, stop=end_date, spatial_unit=make_spatial_unit(
+        "versioned-site"
+    ), tables=event_types, subscriber_subset=subscriber_subset)
     q_call_days = CallDays(subscriber_locations=q_subscriber_locations)
     q_hartigan_cluster = HartiganCluster(
         calldays=q_call_days,
