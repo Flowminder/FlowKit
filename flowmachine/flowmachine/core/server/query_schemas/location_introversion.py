@@ -55,10 +55,15 @@ class LocationIntroversionExposed(BaseExposedQuery):
         Query
         """
         return RedactedLocationIntroversion(
-            location_introversion=LocationIntroversion(start=self.start_date, stop=self.end_date,
-                                                       tables=self.event_types, spatial_unit=self.aggregation_unit,
-                                                       direction=self.direction, hours=self.hours,
-                                                       subscriber_subset=self.subscriber_subset)
+            location_introversion=LocationIntroversion(
+                start=self.start_date,
+                stop=self.end_date,
+                tables=self.event_types,
+                spatial_unit=self.aggregation_unit,
+                direction=self.direction,
+                hours=self.hours,
+                subscriber_subset=self.subscriber_subset,
+            )
         )
 
 

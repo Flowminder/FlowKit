@@ -73,10 +73,18 @@ class LocationIntroversion(GeoDataMixin, Query):
     4    eAwMUT94      0.045175      0.954825
     """
 
-    def __init__(self, start: str, stop: str, *, tables: str = "all",
-                 spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-                 direction: Union[Direction, str] = Direction.BOTH, hours: Optional[Tuple[int, int]] = None,
-                 subscriber_subset=None, subscriber_identifier="msisdn"):
+    def __init__(
+        self,
+        start: str,
+        stop: str,
+        *,
+        tables: str = "all",
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
+        direction: Union[Direction, str] = Direction.BOTH,
+        hours: Optional[Tuple[int, int]] = None,
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
+    ):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit

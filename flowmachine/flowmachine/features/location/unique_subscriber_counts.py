@@ -74,8 +74,15 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
     2     Bajhang               285
     """
 
-    def __init__(self, start, stop, spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
-                 hours: Optional[Tuple[int, int]] = None, tables="all", subscriber_subset=None):
+    def __init__(
+        self,
+        start,
+        stop,
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
+        hours: Optional[Tuple[int, int]] = None,
+        tables="all",
+        subscriber_subset=None,
+    ):
 
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)

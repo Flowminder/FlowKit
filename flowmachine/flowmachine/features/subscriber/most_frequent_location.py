@@ -58,9 +58,18 @@ class MostFrequentLocation(BaseLocation, Query):
 
     """
 
-    def __init__(self, start, stop, spatial_unit: Optional[AnySpatialUnit] = None,
-                 hours: Optional[Tuple[int, int]] = None, tables="all", subscriber_identifier="msisdn", *,
-                 ignore_nulls=True, subscriber_subset=None):
+    def __init__(
+        self,
+        start,
+        stop,
+        spatial_unit: Optional[AnySpatialUnit] = None,
+        hours: Optional[Tuple[int, int]] = None,
+        tables="all",
+        subscriber_identifier="msisdn",
+        *,
+        ignore_nulls=True,
+        subscriber_subset=None,
+    ):
         """"""
 
         self.start = standardise_date(start)

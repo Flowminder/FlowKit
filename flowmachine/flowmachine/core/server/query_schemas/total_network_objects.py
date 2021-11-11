@@ -53,9 +53,15 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return TotalNetworkObjects(start=self.start_date, stop=self.end_date, tables=self.event_types,
-                                   total_by=self.total_by, spatial_unit=self.aggregation_unit, hours=self.hours,
-                                   subscriber_subset=self.subscriber_subset)
+        return TotalNetworkObjects(
+            start=self.start_date,
+            stop=self.end_date,
+            tables=self.event_types,
+            total_by=self.total_by,
+            spatial_unit=self.aggregation_unit,
+            hours=self.hours,
+            subscriber_subset=self.subscriber_subset,
+        )
 
 
 class TotalNetworkObjectsSchema(

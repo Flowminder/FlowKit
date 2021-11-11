@@ -13,21 +13,21 @@ from flowmachine.features.location.redacted_unmoving_counts import (
 
 
 def test_unmoving_counts_column_names(get_column_names_from_run):
-    assert (
-        get_column_names_from_run(
-            RedactedUnmovingCounts(
-                unmoving_counts=UnmovingCounts(
-                    Unmoving(
-                        locations=UniqueLocations(
-                            SubscriberLocations("2016-01-01", "2016-01-01 10:00",
-                                                spatial_unit=make_spatial_unit("admin", level=3))
+    assert get_column_names_from_run(
+        RedactedUnmovingCounts(
+            unmoving_counts=UnmovingCounts(
+                Unmoving(
+                    locations=UniqueLocations(
+                        SubscriberLocations(
+                            "2016-01-01",
+                            "2016-01-01 10:00",
+                            spatial_unit=make_spatial_unit("admin", level=3),
                         )
                     )
                 )
             )
         )
-        == ["pcod", "value"]
-    )
+    ) == ["pcod", "value"]
 
 
 def test_unmoving_counts_values(get_dataframe):
@@ -36,8 +36,11 @@ def test_unmoving_counts_values(get_dataframe):
             unmoving_counts=UnmovingCounts(
                 Unmoving(
                     locations=UniqueLocations(
-                        SubscriberLocations("2016-01-01", "2016-01-01 10:00",
-                                            spatial_unit=make_spatial_unit("admin", level=2))
+                        SubscriberLocations(
+                            "2016-01-01",
+                            "2016-01-01 10:00",
+                            spatial_unit=make_spatial_unit("admin", level=2),
+                        )
                     )
                 )
             )

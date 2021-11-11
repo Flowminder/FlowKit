@@ -56,8 +56,14 @@ class UniqueLocationsExposed(BaseExposedQueryWithSampling):
         Query
         """
         return UniqueLocations(
-            SubscriberLocations(self.start_date, self.end_date, spatial_unit=self.aggregation_unit, hours=self.hours,
-                                tables=self.event_types, subscriber_subset=self.subscriber_subset)
+            SubscriberLocations(
+                self.start_date,
+                self.end_date,
+                spatial_unit=self.aggregation_unit,
+                hours=self.hours,
+                tables=self.event_types,
+                subscriber_subset=self.subscriber_subset,
+            )
         )
 
 
