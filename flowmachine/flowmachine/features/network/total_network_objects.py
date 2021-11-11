@@ -13,6 +13,7 @@ at the network level.
 
 from typing import List, Optional, Tuple
 
+from ..utilities.events_tables_union import parse_tables
 from ...core.context import get_db
 from ...core.mixins import GeoDataMixin
 from ...core import location_joined_query, make_spatial_unit
@@ -64,10 +65,20 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     """
 
-    def __init__(self, start=None, stop=None, *, tables="all", total_by="day",
-                 network_object: AnySpatialUnit = make_spatial_unit("cell"),
-                 spatial_unit: Optional[AnySpatialUnit] = None, hours: Optional[Tuple[int, int]] = None,
-                 subscriber_subset=None, subscriber_identifier="msisdn"):
+    def __init__(
+        self,
+        start=None,
+        stop=None,
+        *,
+        tables="all",
+        total_by="day",
+        network_object: AnySpatialUnit = make_spatial_unit("cell"),
+        spatial_unit: Optional[AnySpatialUnit] = None,
+        hours: Optional[Tuple[int, int]] = None,
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
+    ):
+        tables = parse_tables(tables)
         self.start = standardise_date(
             get_db().min_date(table=tables) if start is None else start
         )

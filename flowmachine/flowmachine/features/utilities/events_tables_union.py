@@ -15,6 +15,15 @@ from flowmachine.utils import standardise_date
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
+def parse_tables(tables):
+    if tables is None:
+        return sorted(f"events.{t}" for t in get_db().subscriber_tables)
+    elif isinstance(tables, str):
+        return [tables]
+    else:
+        return sorted(tables)
+
+
 class EventsTablesUnion(Query):
     """
     Takes a list of subtables, subsets each of them
@@ -62,7 +71,7 @@ class EventsTablesUnion(Query):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.columns = columns
-        self.tables = self._parse_tables(tables)
+        self.tables = parse_tables(tables)
         if "*" in columns and len(self.tables) != 1:
             raise ValueError(
                 "Must give named tables when combining multiple event type tables."
@@ -80,14 +89,6 @@ class EventsTablesUnion(Query):
         return self.date_subsets[
             0
         ].column_names  # Use in preference to self.columns which might be ["*"]
-
-    def _parse_tables(self, tables):
-        if tables is None:
-            return sorted(f"events.{t}" for t in get_db().subscriber_tables)
-        elif isinstance(tables, str):
-            return [tables]
-        else:
-            return sorted(tables)
 
     def _make_table_list(self, *, hours, subscriber_subset, subscriber_identifier):
         """

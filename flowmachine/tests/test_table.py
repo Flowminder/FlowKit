@@ -82,7 +82,7 @@ def test_dependencies():
     t2 = Table("events.calls", columns=["id"])
     assert len(t2.dependencies) == 1
     t2_parent = t2.dependencies.pop()
-    assert "057addedac04dbeb1dcbbb6b524b43f0" == t2_parent.query_id
+    assert t1.query_id == t2_parent.query_id
 
 
 def test_subset():
