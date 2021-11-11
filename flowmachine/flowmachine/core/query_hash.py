@@ -54,6 +54,8 @@ def gen_all_of_type(var, typ):
             elif isinstance(v, (set, list, tuple)):
                 for d in v:
                     yield from gen_all_of_type(d, typ)
+            elif hasattr(v, "flowmachine_query"):
+                yield v.flowmachine_query
 
     elif isinstance(var, typ):
         yield var
