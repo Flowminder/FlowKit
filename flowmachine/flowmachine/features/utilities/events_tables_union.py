@@ -19,9 +19,9 @@ def parse_tables(tables):
     if tables is None:
         return sorted(f"events.{t}" for t in get_db().subscriber_tables)
     elif isinstance(tables, str):
-        return [tables]
+        return [tables.lower()]
     else:
-        return sorted(tables)
+        return sorted(tab.lower() for tab in tables)
 
 
 class EventsTablesUnion(Query):

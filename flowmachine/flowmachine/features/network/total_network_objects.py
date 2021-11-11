@@ -78,12 +78,17 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        tables = parse_tables(tables)
+        tables = parse_tables(None if tables is "all" else tables)
+        unsuffixed_tables = [table.split(".").pop() for table in tables]
         self.start = standardise_date(
-            get_db().min_date(table=tables) if start is None else start
+            min(get_db().min_date(table) for table in unsuffixed_tables)
+            if start is None
+            else start
         )
         self.stop = standardise_date(
-            get_db().max_date(table=tables) if stop is None else stop
+            min(get_db().max_date(table) for table in unsuffixed_tables)
+            if stop is None
+            else stop
         )
 
         network_object.verify_criterion("is_network_object")
