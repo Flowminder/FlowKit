@@ -10,7 +10,7 @@ from flowmachine.core.errors import MissingColumnsError
 
 class CombineFirst(Query):
     """
-    Given two queries 'first_query' and 'other_query', fill null values in the
+    Given two queries 'first_query' and 'other_query', fill null or missing values in the
     result of 'first_query' using those in the result of 'other_query'.
 
     Somewhat analogous to pandas.DataFrame.combine_first(), except that here we

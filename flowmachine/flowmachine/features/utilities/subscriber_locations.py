@@ -23,6 +23,7 @@ from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from ...core.query import Query
 from ...core import location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
+from flowmachine.core.errors import MissingColumnsError
 
 import structlog
 
@@ -180,6 +181,39 @@ class BaseLocation:
 
         return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
 
+    def coalesce_location(self, other_query):
+        # TODO: add docstring and type hints
+        return CoalescedLocation(first_query=self, other_query=other_query)
+
     def __getitem__(self, item):
 
         return self.subset(col="subscriber", subset=item)
+
+
+class CoalescedLocation(BaseLocation, Query):
+    # TODO: add docstring and type hints
+    def __init__(self, first_query, other_query):
+        self.first_query = first_query
+        self.other_query = other_query
+        self.spatial_unit = first_query.spatial_unit
+
+        # Note: This check is performed within CombinedQuery, but we don't want to instantiate the
+        # CombinedQuery object here, otherwise it would become a dependency of this query,
+        # so the query result would get stored twice (when stored with 'store_dependencies=True')
+        if not set(self.column_names).issubset(other_query.column_names):
+            raise MissingColumnsError(
+                other_query, set(self.column_names).difference(other_query.column_names)
+            )
+
+        super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber"] + self.spatial_unit.location_id_columns
+
+    def _make_query(self):
+        return self.first_query.combine_first(
+            other_query=self.other_query,
+            join_columns="subscriber",
+            combine_columns=self.spatial_unit.location_id_columns,
+        ).get_query()

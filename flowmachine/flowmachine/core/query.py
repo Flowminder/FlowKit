@@ -511,12 +511,13 @@ class Query(metaclass=ABCMeta):
 
     def combine_first(
         self,
+        *,
         other_query: "Query",
         join_columns: Union[str, Collection[str]],
         combine_columns: Union[str, Collection[str]],
     ) -> "CombineFirst":
         """
-        Fill null values in this query using values from another query.
+        Fill null or missing values in this query using values from another query.
 
         Parameters
         ----------
