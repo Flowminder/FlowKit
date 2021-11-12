@@ -14,7 +14,7 @@ class CombineFirst(Query):
     result of 'first_query' using those in the result of 'other_query'.
 
     Somewhat analogous to pandas.DataFrame.combine_first(), except that here we
-    specify the columns on which the queries will be joined.
+    specify the columns on which the queries will be (full outer) joined.
 
     Parameters
     ----------
@@ -38,6 +38,7 @@ class CombineFirst(Query):
 
     def __init__(
         self,
+        *,
         first_query: Query,
         other_query: Query,
         join_columns: Union[str, Collection[str]],
