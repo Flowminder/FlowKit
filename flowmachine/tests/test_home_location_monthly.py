@@ -1,5 +1,9 @@
-from flowmachine.features.subscriber.home_location_monthly import HomeLocationMonthly
+from flowmachine.features.subscriber.home_location_monthly import MajorityLocation
+from flowmachine.features.subscriber.modal_location import ModalLocation
+from flowmachine.features.subscriber.location_visits import LocationVisits
+from flowmachine.features.subscriber.day_trajectories import DayTrajectories
 from flowmachine.core.spatial_unit import AnySpatialUnit, AdminSpatialUnit
+from flowmachine.features import daily_location
 from flowmachine.core.query import Query
 from flowmachine.core.context import get_db
 import pytest
@@ -35,16 +39,40 @@ def home_loc_test_data(test_events_table):
     yield
 
 
-def test_home_location_monthly_single(home_loc_test_data):
+def test_home_location_monthly_single(test_events_table, exemplar_spatial_unit_param):
+    dls = [
+        daily_location(
+            "2016-01-01",
+            stop="2016-01-02",
+            method="last",
+            spatial_unit=exemplar_spatial_unit_param,
+        ),
+        daily_location(
+            "2016-01-02",
+            stop="2016-01-03",
+            method="last",
+            spatial_unit=exemplar_spatial_unit_param,
+        ),
+        daily_location(
+            "2016-01-03",
+            stop="2016-01-04",
+            method="last",
+            spatial_unit=exemplar_spatial_unit_param,
+        ),
+    ]
+    modal_location = ModalLocation(*dls)
+    location_visits = LocationVisits(
+        DayTrajectories(
+            daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
+        )
+    )
+    subscriber_subset = ["AAAAAA", "BBBBBB", "CCCCCC"]
 
-    home_location_monthly = HomeLocationMonthly(
-        window_start="2016-01-01",
-        window_stop="2016-01-07",
-        spatial_unit=AdminSpatialUnit(level=3),
-        home_this_month=3,
-        home_last_month=2,
-        events_tables=["events.test"],
-        modal_lookback=10,
+    home_location_monthly = MajorityLocation(
+        modal_location=modal_location,
+        location_visits=location_visits,
+        subscriber_subset=subscriber_subset,
+        home_this_month=15,
     )
 
     out = home_location_monthly.get_dataframe()
@@ -62,7 +90,7 @@ def test_home_location_monthly_single(home_loc_test_data):
 
 def test_home_location_monthly_chained(test_events_table):
 
-    home_location_monthly = HomeLocationMonthly(
+    home_location_monthly = MajorityLocation(
         window_start="2016-01-07",
         window_stop="2016-01-10",
         spatial_unit=AdminSpatialUnit(level=3),
@@ -71,7 +99,7 @@ def test_home_location_monthly_chained(test_events_table):
         events_tables=["events.test"],
     )
 
-    home_location_next_month = HomeLocationMonthly(
+    home_location_next_month = MajorityLocation(
         window_start="2016-01-11",
         window_stop="2016-01-14",
         spatial_unit=AdminSpatialUnit(level=3),
@@ -81,6 +109,6 @@ def test_home_location_monthly_chained(test_events_table):
         events_tables=["events.test"],
     )
 
-    assert home_location_next_month.ref_location.window_start == "2016-01-07"
+    assert home_location_next_month.reference_location.window_start == "2016-01-07"
     out = home_location_next_month.get_dataframe()
     assert out
