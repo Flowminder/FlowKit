@@ -1,15 +1,27 @@
+from flowmachine.features import DayTrajectories, daily_location
 from flowmachine.features.location.majority_location import MajorityLocation
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
+from flowmachine.features.subscriber.location_visits import LocationVisits
 from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
 
 
 def test_majority_location(get_dataframe):
-    subscriber_subset = SubscriberLocations("2016-01-01", "2016-01-02")
-    ml = MajorityLocation(subscriber_subset)
+
+    # TODO Monday: Figure out why LocationVisits doesn't match it's docs.
+
+    lv = LocationVisits(
+        DayTrajectories(
+            daily_location("2016-01-01"),
+            daily_location("2016-01-02"),
+            daily_location("2016-01-03"),
+            daily_location("2016-01-04"),
+        )
+    )
+    ml = MajorityLocation(lv, "dl_count")
     sql = ml.get_query()
     out = get_dataframe(ml)
-    assert len(out) == 28
+    assert len(out) == 15
     assert out.subscriber.is_unique
     target = df.from_records(
         [
@@ -19,6 +31,6 @@ def test_majority_location(get_dataframe):
             ["8rxEQOL3ePZdAe1z", "xaFQVHqu"],
             ["aK9GDX8nozb2RB67", "ns6vzdkC"],
         ],
-        columns=["subscriber", "location_id"],
+        columns=["subscriber", "pcod"],
     )
     assert_frame_equal(out.head(5), target)
