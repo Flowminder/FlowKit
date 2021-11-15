@@ -114,7 +114,8 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 #
 COPY ./flowdb/Pipfile* /tmp/
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev  \
+        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev \
+        postgresql-server-dev-$PG_MAJOR=$PG_VERSION  \
         && pip3 install pgxnclient \
         && pgxnclient install "pg_median_utils=$PG_MEDIAN_UTILS_VERSION" \
         && pip3 install pipenv \
