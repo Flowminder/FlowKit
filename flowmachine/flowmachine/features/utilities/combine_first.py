@@ -6,6 +6,7 @@ from typing import Collection, List, Union
 
 from flowmachine.core.query import Query
 from flowmachine.core.errors import MissingColumnsError
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
 class CombineFirst(Query):
@@ -29,8 +30,6 @@ class CombineFirst(Query):
 
     Notes
     -----
-    The Query.combine_first() method returns a query of this type.
-
     Relevant column names are assumed to be the same in both queries
     (i.e. nulls in column 'a' of first_query are filled with values from
     column 'a' of other_query)
@@ -96,3 +95,34 @@ class CombineFirst(Query):
         """
 
         return sql
+
+
+class CoalescedLocation(BaseLocation, CombineFirst):
+    """
+    Wrapper around CombineFirst for the special case of coalescing locations
+    from two subscriber location queries. For each subscriber appearing in
+    either query, this will return their location from preferred_locations if
+    they appear with non-null location in the result of preferred_locations, or
+    their location from fallback_locations otherwise.
+
+    Parameters
+    ----------
+    preferred_locations: Query
+        Subscriber locations to be chosen preferentially
+    fallback_locations: Query
+        Subscriber locations to be assigned for subscribers who do not have a
+        location in preferred_locations
+
+    See Also
+    --------
+    CombineFirst
+    """
+
+    def __init__(self, first_query: Query, other_query: Query):
+        self.spatial_unit = first_query.spatial_unit
+        super().__init__(
+            first_query=first_query,
+            other_query=other_query,
+            join_columns="subscriber",
+            combine_columns=self.spatial_unit.location_id_columns,
+        )
