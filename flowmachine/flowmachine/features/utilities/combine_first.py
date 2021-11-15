@@ -14,6 +14,10 @@ class CombineFirst(Query):
     Given two queries 'first_query' and 'other_query', fill null or missing values in the
     result of 'first_query' using those in the result of 'other_query'.
 
+    Values that will be filled include rows that are present in 'other_query'
+    but not 'first_query', and rows present in both queries but where fields
+    in 'first_query' have the value NULL.
+
     Somewhat analogous to pandas.DataFrame.combine_first(), except that here we
     specify the columns on which the queries will be (full outer) joined.
 
