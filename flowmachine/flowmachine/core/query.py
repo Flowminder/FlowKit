@@ -17,7 +17,7 @@ from concurrent.futures import Future
 
 
 import structlog
-from typing import Collection, List, Union
+from typing import List, Union
 
 import psycopg2
 import pandas as pd
@@ -508,43 +508,6 @@ class Query(metaclass=ABCMeta):
 
         subset_class = subset_numbers_factory(self.__class__)
         return subset_class(self, col, low, high)
-
-    def combine_first(
-        self,
-        *,
-        other_query: "Query",
-        join_columns: Union[str, Collection[str]],
-        combine_columns: Union[str, Collection[str]],
-    ) -> "CombineFirst":
-        """
-        Fill null or missing values in this query using values from another query.
-
-        Parameters
-        ----------
-        other_query: Query
-            Query whose values will be used to fill nulls
-        join_columns: str or collection of str
-            Names of columns on which queries will be joined
-        combine_columns: str or collection of str
-            Names of columns in which null values will be filled
-
-        Returns
-        -------
-        CombineFirst
-            Query object representing the combined queries
-
-        See Also
-        --------
-        flowmachine.core.combine_first.CombineFirst
-        """
-        from flowmachine.core.combine_first import CombineFirst
-
-        return CombineFirst(
-            first_query=self,
-            other_query=other_query,
-            join_columns=join_columns,
-            combine_columns=combine_columns,
-        )
 
     def _make_sql(self, name: str, schema: Union[str, None] = None) -> List[str]:
         """
