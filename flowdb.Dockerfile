@@ -27,7 +27,7 @@ ARG POSTGRES_USER=flowdb
 ENV POSTGRES_USER=$POSTGRES_USER
 ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
-ENV TDS_FDW_VERSION=2.0.2
+ENV TDS_FDW_VERSION=2.0.2-3.pgdg110+1
 
 
 RUN apt-get update \
@@ -36,6 +36,7 @@ RUN apt-get update \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts=$POSTGIS_VERSION \
         postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
         postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
+        postgresql-$PG_MAJOR-tds-fdw=$TDS_FDW_VERSION \
         postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
         postgis=$POSTGIS_VERSION \
         && rm -rf /var/lib/apt/lists/* \
@@ -85,22 +86,6 @@ RUN apt-get update \
         git \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
-
-# TDS_FDW
-
-RUN apt-get update && \
-        apt-get install -y --no-install-recommends \
-        libsybdb5 freetds-dev freetds-common gnupg gcc wget && \
-        wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
-        tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
-        rm v${TDS_FDW_VERSION}.tar.gz && \
-        cd tds_fdw-${TDS_FDW_VERSION}/ && \
-        make USE_PGXS=1 && \
-        make USE_PGXS=1 install && \
-        cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
-        apt-get remove -y gnupg gcc && \
-        apt purge -y --auto-remove  &&\
-        rm -rf /var/lib/apt/lists/*
 
 
 
