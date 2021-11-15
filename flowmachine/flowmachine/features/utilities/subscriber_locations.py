@@ -179,7 +179,7 @@ class BaseLocation:
         JoinedSpatialAggregate
         """
 
-        return JoinedSpatialAggregate(metric=metric, locations=self, method=method)=
+        return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
 
     def __getitem__(self, item):
 
