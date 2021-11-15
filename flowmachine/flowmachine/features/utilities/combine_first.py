@@ -118,11 +118,11 @@ class CoalescedLocation(BaseLocation, CombineFirst):
     CombineFirst
     """
 
-    def __init__(self, first_query: Query, other_query: Query):
-        self.spatial_unit = first_query.spatial_unit
+    def __init__(self, preferred_locations: Query, fallback_locations: Query):
+        self.spatial_unit = preferred_locations.spatial_unit
         super().__init__(
-            first_query=first_query,
-            other_query=other_query,
+            first_query=preferred_locations,
+            other_query=fallback_locations,
             join_columns="subscriber",
             combine_columns=self.spatial_unit.location_id_columns,
         )
