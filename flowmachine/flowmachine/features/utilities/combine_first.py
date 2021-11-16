@@ -5,7 +5,7 @@
 from typing import Collection, List, Union
 
 from flowmachine.core.query import Query
-from flowmachine.core.errors import MissingColumnsError
+from flowmachine.core.errors import InvalidSpatialUnitError, MissingColumnsError
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
@@ -35,8 +35,8 @@ class CombineFirst(Query):
     Notes
     -----
     Relevant column names are assumed to be the same in both queries
-    (i.e. nulls in column 'a' of first_query are filled with values from
-    column 'a' of other_query)
+    (i.e. nulls in column 'col1' of first_query are filled with values from
+    column 'col1' of other_query)
     """
 
     def __init__(
@@ -123,7 +123,12 @@ class CoalescedLocation(BaseLocation, CombineFirst):
     """
 
     def __init__(self, preferred_locations: Query, fallback_locations: Query):
+        if preferred_locations.spatial_unit != fallback_locations.spatial_unit:
+            raise InvalidSpatialUnitError(
+                "Spatial units of the preferred_locations and fallback_locations arguments to CoalescedLocation must match."
+            )
         self.spatial_unit = preferred_locations.spatial_unit
+
         super().__init__(
             first_query=preferred_locations,
             other_query=fallback_locations,
