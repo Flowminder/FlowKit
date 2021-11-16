@@ -52,9 +52,7 @@ def flowmachine_cleanup():
         try:
             yield
         finally:
-            logger.info("Cleaning cache and redis.")
-            reset_cache(get_db(), get_redis(), protect_table_objects=False)
-            get_db().engine.dispose()  # Close the connection
+            logger.info("Cleaning redis.")
             get_redis().flushdb()  # Empty the redis
 
 
