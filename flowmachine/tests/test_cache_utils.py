@@ -272,7 +272,7 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     get_db().engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 100 WHERE query_id='{dl_aggregate.query_id}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 1000 WHERE query_id='{dl_aggregate.query_id}'"
     )
     get_db().engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
@@ -291,7 +291,7 @@ def test_shrink_one(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     get_db().engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 100 WHERE query_id='{dl_aggregate.query_id}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 1000 WHERE query_id='{dl_aggregate.query_id}'"
     )
     get_db().engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
@@ -420,10 +420,12 @@ def flowmachine_connect_with_cache_settings_reset(flowmachine_connect):
     max_cache_size = get_max_size_of_cache(get_db())
     cache_half_life = get_cache_half_life(get_db())
     cache_protect_period = get_cache_protected_period(get_db())
-    yield
-    set_max_size_of_cache(get_db(), max_cache_size)
-    set_cache_half_life(get_db(), cache_half_life)
-    set_cache_protected_period(get_db(), cache_protect_period)
+    try:
+        yield
+    finally:
+        set_max_size_of_cache(get_db(), max_cache_size)
+        set_cache_half_life(get_db(), cache_half_life)
+        set_cache_protected_period(get_db(), cache_protect_period)
 
 
 def test_get_set_cache_size_limit(flowmachine_connect_with_cache_settings_reset):
