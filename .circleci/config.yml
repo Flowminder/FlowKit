@@ -195,7 +195,7 @@ jobs:
             docker pull flowminder/flowdb:latest && export BUILD_CACHE_TAG=latest || true
             docker pull flowminder/flowdb:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
             echo Using cache from $BUILD_CACHE_TAG
-            DOCKER_BUILDKIT=1 docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
+            DOCKER_BUILDKIT=1 docker build --progress plain --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
               --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 -f flowdb.Dockerfile .
       - run:
           name: Test that not providing a superuser password causes the container to exit
