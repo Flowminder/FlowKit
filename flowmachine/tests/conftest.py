@@ -43,6 +43,21 @@ here = os.path.dirname(os.path.abspath(__file__))
 flowkit_toplevel_dir = Path(__file__).parent.parent.parent
 
 
+@pytest.fixture(scope="session", autouse=True)
+def flowmachine_cleanup():
+    logger.info("Cleaning cache and redis.")
+    with connections():
+        get_redis().flushdb()
+        reset_cache(get_db(), get_redis(), protect_table_objects=False)
+        try:
+            yield
+        finally:
+            logger.info("Cleaning cache and redis.")
+            reset_cache(get_db(), get_redis(), protect_table_objects=False)
+            get_db().engine.dispose()  # Close the connection
+            get_redis().flushdb()  # Empty the redis
+
+
 @pytest.fixture
 def meaningful_locations_labels():
     return {
