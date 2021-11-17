@@ -62,6 +62,7 @@ WITH subscriber_subset AS (
 ), summed_weights AS (
     SELECT subscriber, sum({self.weight_column}) AS total_weight
     FROM subscriber_subset
+    WHERE {self.weight_column} >= 0
     GROUP BY subscriber
 ), seen_subs AS (
     SELECT subscriber, {loc_id}
