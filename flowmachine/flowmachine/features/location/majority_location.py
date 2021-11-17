@@ -27,7 +27,7 @@ class MajorityLocation(BaseLocation, Query):
         self,
         subscriber_location_weights: Query,
         weight_column: str,
-        include_unlocatable=False,
+        include_unlocatable: bool = False,
     ):
         if "subscriber" not in subscriber_location_weights.column_names:
             raise ValueError("`subscriber` not in subscriber_location_weights query")
@@ -46,14 +46,10 @@ class MajorityLocation(BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return [
-            "subscriber"
-        ] + self.subscriber_location_weights.spatial_unit.location_id_columns
+        return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
-        loc_id = ",".join(
-            self.subscriber_location_weights.spatial_unit.location_id_columns
-        )
+        loc_id = ",".join(self.spatial_unit.location_id_columns)
         sql = f"""
 WITH subscriber_subset AS (
     {self.subscriber_location_weights.get_query()}

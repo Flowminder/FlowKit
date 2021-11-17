@@ -1,6 +1,5 @@
 from flowmachine.features import DayTrajectories, daily_location
 from flowmachine.features.location.majority_location import MajorityLocation
-from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.subscriber.location_visits import LocationVisits
 from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
@@ -39,6 +38,7 @@ def test_majority_location(get_dataframe, location_visits):
         ],
         columns=["subscriber", "pcod"],
     )
+    assert (ml.column_names == target.columns).all()
     assert_frame_equal(out.head(7), target)
 
 
@@ -49,3 +49,9 @@ def test_include_unlocatable(get_dataframe, location_visits):
     out_lv = get_dataframe(lv)
     assert out_lv.subscriber.nunique() == len(out_ml)
     assert len(out_ml.pcod.dropna()) == 15
+
+
+def test_weight_column_missing(location_visits):
+    lv = location_visits
+    with pytest.raises(ValueError):
+        ml = MajorityLocation(lv, "nonexistant")
