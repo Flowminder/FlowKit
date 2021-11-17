@@ -182,7 +182,7 @@ def test_count_locatable_location_ids(cdr_type, flowdb_transaction, jinja_env):
     flowdb_transaction.execute(insert_sql)
     flowdb_transaction.execute(cells_sql)
     check_sql = jinja_env.get_template("count_locatable_location_ids.sql").render(
-        cdr_type=cdr_type, final_table=f"events.{cdr_type}_20160101"
+        cdr_type=cdr_type, final_table=f"events.{cdr_type}_20160101", ds="2016-01-01"
     )
 
     check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
@@ -377,7 +377,7 @@ def test_count_onnet_msisdns_incoming(cdr_type, flowdb_transaction, jinja_env):
     flowdb_transaction.execute(create_sql)
     flowdb_transaction.execute(insert_sql)
     check_sql = jinja_env.get_template(
-        f"{cdr_type}/count_onnet_msisdns_outgoing.sql"
+        f"{cdr_type}/count_onnet_msisdns_incoming.sql"
     ).render(cdr_type=cdr_type, final_table=f"events.{cdr_type}_20160101")
     check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
 
@@ -388,9 +388,9 @@ def test_count_onnet_msisdns_incoming(cdr_type, flowdb_transaction, jinja_env):
 def test_max_duration(cdr_type, flowdb_transaction, jinja_env):
     create_sql = f"""CREATE TABLE IF NOT EXISTS events.{cdr_type}_20160101 (LIKE events.{cdr_type});"""
     insert_sql = f"""INSERT INTO events.{cdr_type}_20160101(datetime, msisdn, duration, location_id) VALUES 
-            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 10 '{"B" * 64}'), 
-            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 20 '{"B" * 64}'), 
-            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 50 '{"B" * 64}')"""
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 10, '{"B" * 64}'), 
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 20, '{"B" * 64}'), 
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 50, '{"B" * 64}')"""
     flowdb_transaction.execute(create_sql)
     flowdb_transaction.execute(insert_sql)
     check_sql = jinja_env.get_template(f"{cdr_type}/max_duration.sql").render(
@@ -405,9 +405,9 @@ def test_max_duration(cdr_type, flowdb_transaction, jinja_env):
 def test_median_duration(cdr_type, flowdb_transaction, jinja_env):
     create_sql = f"""CREATE TABLE IF NOT EXISTS events.{cdr_type}_20160101 (LIKE events.{cdr_type});"""
     insert_sql = f"""INSERT INTO events.{cdr_type}_20160101(datetime, msisdn, duration, location_id) VALUES 
-            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 10 '{"B" * 64}'), 
-            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 20 '{"B" * 64}'), 
-            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 50 '{"B" * 64}')"""
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 10, '{"B" * 64}'), 
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 20, '{"B" * 64}'), 
+            ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', 50, '{"B" * 64}')"""
     flowdb_transaction.execute(create_sql)
     flowdb_transaction.execute(insert_sql)
     check_sql = jinja_env.get_template(f"{cdr_type}/median_duration.sql").render(
