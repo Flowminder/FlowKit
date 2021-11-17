@@ -35,6 +35,7 @@ class MajorityLocation(BaseLocation, Query):
 
     def __init__(
         self,
+        *,
         subscriber_location_weights: Query,
         weight_column: str,
         include_unlocatable: bool = False,

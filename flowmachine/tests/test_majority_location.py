@@ -28,7 +28,7 @@ def location_visits(flowmachine_connect):
 
 def test_majority_location(get_dataframe, location_visits):
     lv = location_visits
-    ml = MajorityLocation(lv, "dl_count")
+    ml = MajorityLocation(subscriber_location_weights=lv, weight_column="dl_count")
     out = get_dataframe(ml)
     assert len(out) == 15
     assert out.subscriber.is_unique
@@ -50,7 +50,11 @@ def test_majority_location(get_dataframe, location_visits):
 
 def test_include_unlocatable(get_dataframe, location_visits):
     lv = location_visits
-    ml = MajorityLocation(lv, "dl_count", include_unlocatable=True)
+    ml = MajorityLocation(
+        subscriber_location_weights=lv,
+        weight_column="dl_count",
+        include_unlocatable=True,
+    )
     out_ml = get_dataframe(ml)
     out_lv = get_dataframe(lv)
     assert out_lv.subscriber.nunique() == len(out_ml)
@@ -60,7 +64,9 @@ def test_include_unlocatable(get_dataframe, location_visits):
 def test_weight_column_missing(location_visits):
     lv = location_visits
     with pytest.raises(ValueError):
-        ml = MajorityLocation(lv, "nonexistant")
+        ml = MajorityLocation(
+            subscriber_location_weights=lv, weight_column="nonexistant"
+        )
 
 
 def test_spatial_units(exemplar_spatial_unit_param, get_dataframe):
@@ -70,7 +76,7 @@ def test_spatial_units(exemplar_spatial_unit_param, get_dataframe):
             daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param),
         )
     )
-    ml = MajorityLocation(lv, "dl_count")
+    ml = MajorityLocation(subscriber_location_weights=lv, weight_column="dl_count")
     assert ml.column_names == (["subscriber"] + lv.spatial_unit.location_id_columns)
     out = get_dataframe(ml)
     assert len(out) >= 0
