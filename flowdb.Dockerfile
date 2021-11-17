@@ -12,7 +12,7 @@
 #  on the official Debian Stretch (9) image.
 #
 
-FROM postgres:12.7@sha256:ce60e09b3b09c3664fe294a6a3acde3d74df1aa0544f5634ec920e6f8136045d
+FROM postgres:12.9@sha256:f78cac09147c651bd5ff3650ea361c10e935d58bc3b21a062de39e0eddebc144
 
 
 ARG POSTGIS_MAJOR=3
@@ -27,7 +27,7 @@ ARG POSTGRES_USER=flowdb
 ENV POSTGRES_USER=$POSTGRES_USER
 ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
-ENV TDS_FDW_VERSION=2.0.2
+ENV TDS_FDW_VERSION=2.0.2-3.pgdg110+1
 
 
 RUN apt-get update \
@@ -36,6 +36,7 @@ RUN apt-get update \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts=$POSTGIS_VERSION \
         postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
         postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
+        postgresql-$PG_MAJOR-tds-fdw=$TDS_FDW_VERSION \
         postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
         postgis=$POSTGIS_VERSION \
         && rm -rf /var/lib/apt/lists/* \
@@ -86,22 +87,6 @@ RUN apt-get update \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
-# TDS_FDW
-
-RUN apt-get update && \
-        apt-get install -y --no-install-recommends \
-        libsybdb5 freetds-dev freetds-common gnupg gcc wget && \
-        wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
-        tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
-        rm v${TDS_FDW_VERSION}.tar.gz && \
-        cd tds_fdw-${TDS_FDW_VERSION}/ && \
-        make USE_PGXS=1 && \
-        make USE_PGXS=1 install && \
-        cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
-        apt-get remove -y gnupg gcc && \
-        apt purge -y --auto-remove  &&\
-        rm -rf /var/lib/apt/lists/*
-
 
 
 #
@@ -129,7 +114,8 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 #
 COPY ./flowdb/Pipfile* /tmp/
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev  \
+        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev \
+        postgresql-server-dev-$PG_MAJOR=$PG_VERSION  \
         && pip3 install pgxnclient \
         && pgxnclient install "pg_median_utils=$PG_MEDIAN_UTILS_VERSION" \
         && pip3 install pipenv \
