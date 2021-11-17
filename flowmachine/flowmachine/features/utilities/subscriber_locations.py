@@ -20,9 +20,10 @@ from flowmachine.features.location.joined_spatial_aggregate import (
 )
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
-from ...core.query import Query
-from ...core import location_joined_query, make_spatial_unit
-from ...core.spatial_unit import AnySpatialUnit
+from flowmachine.core.query import Query
+from flowmachine.core import location_joined_query, make_spatial_unit
+from flowmachine.core.spatial_unit import AnySpatialUnit
+from flowmachine.core.errors import MissingColumnsError
 
 import structlog
 

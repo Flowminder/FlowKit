@@ -7,7 +7,7 @@ name = "pypi"
 psutil = "*"
 
 [dev-packages]
-black = "==21.9b0"
+black = {extras = ["jupyter"],version = "==21.10b0"}
 
 [requires]
 python_version = "3.9"
