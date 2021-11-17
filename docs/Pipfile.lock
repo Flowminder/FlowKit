@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "dc70dd4fe50dd900f79f8eb00a738756fdb377fa96fbfa1eb6cd8f0f001c8633"
+            "sha256": "a4c0bd2b7db246c81223f4f20e610e76ba3756fdf8b25a50cc54ba9ebad0c0a7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -118,12 +118,15 @@
             "version": "==0.2.0"
         },
         "black": {
+            "extras": [
+                "jupyter"
+            ],
             "hashes": [
-                "sha256:380f1b5da05e5a1429225676655dddb96f5ae8c75bdf91e53d798871b902a115",
-                "sha256:7de4cfc7eb6b710de325712d40125689101d21d25283eed7e9998722cf10eb91"
+                "sha256:6eb7448da9143ee65b856a5f3676b7dda98ad9abe0f87fce8c59291f15e82a5b",
+                "sha256:a9952229092e325fe5f3dae56d81f639b23f7131eb840781947e4b2886030f33"
             ],
             "index": "pypi",
-            "version": "==21.9b0"
+            "version": "==21.10b0"
         },
         "bleach": {
             "hashes": [
@@ -503,7 +506,6 @@
                 "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff",
                 "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"
             ],
-            "markers": "python_version >= '3'",
             "version": "==3.3"
         },
         "imagesize": {
@@ -1791,6 +1793,13 @@
             ],
             "version": "==0.5.0"
         },
+        "tokenize-rt": {
+            "hashes": [
+                "sha256:08a27fa032a81cf45e8858d0ac706004fcd523e8463415ddf1442be38e204ea8",
+                "sha256:0d4f69026fed520f8a1e0103aa36c406ef4661417f20ca643f913e33531b3b94"
+            ],
+            "version": "==4.2.1"
+        },
         "toml": {
             "hashes": [
                 "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b",
@@ -2239,7 +2248,6 @@
                 "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff",
                 "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"
             ],
-            "markers": "python_version >= '3'",
             "version": "==3.3"
         },
         "importlib-resources": {

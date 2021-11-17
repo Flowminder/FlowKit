@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f7d6580462f3dfce702dee6d652d85866a112a2f745610101f93dcc78578ee18"
+            "sha256": "97f690e20b2f3cbbc3eca6b362553b2d4c0bb5d0886b64dc7c9b47e7e436ad04"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -250,12 +250,15 @@
             "version": "==0.2.0"
         },
         "black": {
+            "extras": [
+                "jupyter"
+            ],
             "hashes": [
-                "sha256:380f1b5da05e5a1429225676655dddb96f5ae8c75bdf91e53d798871b902a115",
-                "sha256:7de4cfc7eb6b710de325712d40125689101d21d25283eed7e9998722cf10eb91"
+                "sha256:6eb7448da9143ee65b856a5f3676b7dda98ad9abe0f87fce8c59291f15e82a5b",
+                "sha256:a9952229092e325fe5f3dae56d81f639b23f7131eb840781947e4b2886030f33"
             ],
             "index": "pypi",
-            "version": "==21.9b0"
+            "version": "==21.10b0"
         },
         "bleach": {
             "hashes": [
@@ -1120,6 +1123,13 @@
                 "sha256:8044f9a0bab6567fc644a3593164e872543bb44225b0e24846e2c89237937589"
             ],
             "version": "==0.5.0"
+        },
+        "tokenize-rt": {
+            "hashes": [
+                "sha256:08a27fa032a81cf45e8858d0ac706004fcd523e8463415ddf1442be38e204ea8",
+                "sha256:0d4f69026fed520f8a1e0103aa36c406ef4661417f20ca643f913e33531b3b94"
+            ],
+            "version": "==4.2.1"
         },
         "toml": {
             "hashes": [
