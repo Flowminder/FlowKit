@@ -53,14 +53,12 @@ def test_combine_first_overlapping_join_combine_columns_raises():
     Test that CombineFirst raises a ValueError if join_columns overlap with
     combine_columns
     """
-    flows = (
-        Flows(
-            loc1=MostFrequentLocation(
-                "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("cell")
-            ),
-            loc2=MostFrequentLocation(
-                "2016-01-02", "2016-01-03", spatial_unit=make_spatial_unit("cell")
-            ),
+    flows = Flows(
+        loc1=MostFrequentLocation(
+            "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("cell")
+        ),
+        loc2=MostFrequentLocation(
+            "2016-01-02", "2016-01-03", spatial_unit=make_spatial_unit("cell")
         ),
     )
     with pytest.raises(ValueError):
@@ -157,14 +155,12 @@ def test_combine_first_fills_missing(get_dataframe):
     from first_query
     """
     # Make a query with correct columns but empty result
-    empty_query = (
-        Flows(
-            loc1=MostFrequentLocation(
-                "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("cell")
-            ),
-            loc2=MostFrequentLocation(
-                "2016-01-02", "2016-01-03", spatial_unit=make_spatial_unit("cell")
-            ),
+    empty_query = Flows(
+        loc1=MostFrequentLocation(
+            "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("cell")
+        ),
+        loc2=MostFrequentLocation(
+            "2016-01-02", "2016-01-03", spatial_unit=make_spatial_unit("cell")
         ),
     ).numeric_subset("value", -2, -1)
 
@@ -200,14 +196,12 @@ def test_combine_first_keeps_rows_missing_from_other_query(get_dataframe):
         ),
     )
     # Make a query with correct columns but empty result
-    empty_query = (
-        Flows(
-            loc1=MostFrequentLocation(
-                "2016-01-02", "2016-01-03", spatial_unit=make_spatial_unit("cell")
-            ),
-            loc2=MostFrequentLocation(
-                "2016-01-03", "2016-01-04", spatial_unit=make_spatial_unit("cell")
-            ),
+    empty_query = Flows(
+        loc1=MostFrequentLocation(
+            "2016-01-02", "2016-01-03", spatial_unit=make_spatial_unit("cell")
+        ),
+        loc2=MostFrequentLocation(
+            "2016-01-03", "2016-01-04", spatial_unit=make_spatial_unit("cell")
         ),
     ).numeric_subset("value", -2, -1)
 
