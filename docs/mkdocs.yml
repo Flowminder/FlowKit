@@ -5,6 +5,7 @@ docs_dir: source
 site_dir: flowkit-docs
 edit_uri: ""
 plugins:
+  - mike
   - mktheapidocs:
       modules:
         flowmachine:
@@ -17,7 +18,7 @@ plugins:
           section: flowetl
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowetl/flowetl"
   - mknotebooks:
-      execute: true
+      execute: false
       preamble: "notebook_preamble.py"
       timeout: 600
 
@@ -135,3 +136,5 @@ extra:
       link: "https://github.com/Flowminder"
     - icon: fontawesome/brands/twitter
       link: "https://twitter.com/Flowminder"
+  version:
+    provider: mike
