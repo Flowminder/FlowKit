@@ -27,6 +27,10 @@ class MajorityLocation(BaseLocation, Query):
         If `True`, returns every unique subscriber in the `subscriber_location_weights` query, with
         the location column as `NULL` if no majority is reached.
         If `False`, returns only subscribers that have achieved a majority location
+
+    Notes
+    -----
+    Any rows where weight < 0 will be dropped
     """
 
     def __init__(
@@ -39,7 +43,7 @@ class MajorityLocation(BaseLocation, Query):
             raise ValueError("`subscriber` not in subscriber_location_weights query")
         if weight_column not in subscriber_location_weights.column_names:
             raise ValueError("weight_column must exist in subscriber_subset")
-        if not getattr(subscriber_location_weights, "spatial_unit"):
+        if not hasattr(subscriber_location_weights, "spatial_unit"):
             raise AttributeError(
                 "subscriber_location_weights needs a spatial_unit column"
             )
