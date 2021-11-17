@@ -5,11 +5,11 @@ from flowmachine.features.subscriber.location_visits import LocationVisits
 from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
 
+import pytest
 
-def test_majority_location(get_dataframe):
 
-    # TODO Monday: Figure out why LocationVisits doesn't match it's docs.
-
+@pytest.fixture
+def location_visits(flowmachine_connect):
     lv = LocationVisits(
         DayTrajectories(
             daily_location("2016-01-01"),
@@ -18,6 +18,11 @@ def test_majority_location(get_dataframe):
             daily_location("2016-01-04"),
         )
     )
+    yield lv
+
+
+def test_majority_location(get_dataframe, location_visits):
+    lv = location_visits
     ml = MajorityLocation(lv, "dl_count")
     out = get_dataframe(ml)
     assert len(out) == 15
@@ -35,3 +40,12 @@ def test_majority_location(get_dataframe):
         columns=["subscriber", "pcod"],
     )
     assert_frame_equal(out.head(7), target)
+
+
+def test_include_unlocatable(get_dataframe, location_visits):
+    lv = location_visits
+    ml = MajorityLocation(lv, "dl_count", include_unlocatable=True)
+    out_ml = get_dataframe(ml)
+    out_lv = get_dataframe(lv)
+    assert out_lv.subscriber.nunique() == len(out_ml)
+    assert len(out_ml.pcod.dropna()) == 15
