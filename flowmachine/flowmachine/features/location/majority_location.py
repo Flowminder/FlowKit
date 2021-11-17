@@ -45,7 +45,7 @@ class MajorityLocation(BaseLocation, Query):
             raise ValueError("weight_column must exist in subscriber_subset")
         if not hasattr(subscriber_location_weights, "spatial_unit"):
             raise AttributeError(
-                "subscriber_location_weights needs a spatial_unit column"
+                "subscriber_location_weights query needs a spatial_unit attribute"
             )
 
         self.subscriber_location_weights = subscriber_location_weights
