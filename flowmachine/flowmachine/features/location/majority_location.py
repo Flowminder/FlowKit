@@ -6,14 +6,38 @@ from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
 class MajorityLocation(BaseLocation, Query):
+    """
+    A class for producing a list of subscribers along with the location (derived from `spatial_unit')
+    that they visited more than half the time. Takes a query that includes a 'subscribers' column,
+    a 'spatial_unit' attribute and a column to be used as weighting for locations (`location_count` for example)
+
+    Parameters
+    ----------
+    subscriber_location_weights: Query
+        The query object containing subscribers, locations, and weights.
+    weight_column: str
+        The column, when summed, that will produce the count used to threshold the majority
+    include_unlocatable: bool default False
+        If `True`, returns every unique subscriber in the `subscriber_location_weights` query, with
+        the location column as `NULL` if no majority is reached.
+        If `False`, returns only subscribers that have achieved a majority location
+    """
+
     def __init__(
         self,
         subscriber_location_weights: Query,
-        weight_column,
+        weight_column: str,
         include_unlocatable=False,
     ):
+        if "subscriber" not in subscriber_location_weights.column_names:
+            raise ValueError("`subscriber` not in subscriber_location_weights query")
         if weight_column not in subscriber_location_weights.column_names:
             raise ValueError("weight_column must exist in subscriber_subset")
+        if not getattr(subscriber_location_weights, "spatial_unit"):
+            raise AttributeError(
+                "subscriber_location_weights needs a spatial_unit column"
+            )
+
         self.subscriber_location_weights = subscriber_location_weights
         self.weight_column = weight_column
         self.include_unlocatable = include_unlocatable
@@ -22,7 +46,6 @@ class MajorityLocation(BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        # This should be a reduction, so no new columns
         return [
             "subscriber"
         ] + self.subscriber_location_weights.spatial_unit.location_id_columns
@@ -51,6 +74,6 @@ SELECT subscriber, seen_subs.{loc_id}
 FROM seen_subs RIGHT OUTER JOIN summed_weights USING(subscriber)
             """
         else:
-            sql += """SELECT * FROM seen_subs"""
+            sql += f"""SELECT subscriber, {loc_id} FROM seen_subs"""
 
         return sql
