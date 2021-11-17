@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added unique value from query list query. [#4486](https://github.com/Flowminder/FlowKit/pull/4486)
 - Added mixin for exposing start_date and end_date internally as datetime objects [#4497](https://github.com/Flowminder/FlowKit/issues/4497)
 - Added `CombineFirst` and `CoalescedLocation` queries. [#4524](https://github.com/Flowminder/FlowKit/issues/4524)
+- Added FlowETL QA checks 'count_imeis', 'count_imsis', 'count_locatable_location_ids', 'count_null_imeis', 'count_null_imsis', 'count_null_location_ids', 'max_msisdns_per_imei', 'max_msisdns_per_imsi', 'count_added_rows_outgoing', 'count_null_counterparts', 'count_null_durations', 'count_onnet_msisdns_incoming', 'count_onnet_msisdns_outgoing', 'count_onnet_msisdns', 'max_duration' and 'median_duration'. [#4552](https://github.com/Flowminder/FlowKit/issues/4552)
 
 ### Changed
 - Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
