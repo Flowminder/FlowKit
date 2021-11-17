@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
+
 from flowmachine.features import DayTrajectories, daily_location
 from flowmachine.features.location.majority_location import MajorityLocation
 from flowmachine.features.subscriber.location_visits import LocationVisits
@@ -55,3 +61,16 @@ def test_weight_column_missing(location_visits):
     lv = location_visits
     with pytest.raises(ValueError):
         ml = MajorityLocation(lv, "nonexistant")
+
+
+def test_spatial_units(exemplar_spatial_unit_param, get_dataframe):
+    lv = LocationVisits(
+        DayTrajectories(
+            daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
+            daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param),
+        )
+    )
+    ml = MajorityLocation(lv, "dl_count")
+    assert ml.column_names == (["subscriber"] + lv.spatial_unit.location_id_columns)
+    out = get_dataframe(ml)
+    assert len(out) >= 0
