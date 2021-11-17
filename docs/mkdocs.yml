@@ -70,6 +70,7 @@ nav:
         - administrator/management/logging.md
         - administrator/management/users.md
   - license.md
+  - changelog.md
 
 theme:
   name: "material"
