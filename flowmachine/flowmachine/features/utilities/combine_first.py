@@ -5,8 +5,7 @@
 from typing import Collection, List, Union
 
 from flowmachine.core.query import Query
-from flowmachine.core.errors import InvalidSpatialUnitError, MissingColumnsError
-from flowmachine.features.utilities.subscriber_locations import BaseLocation
+from flowmachine.core.errors import MissingColumnsError
 
 
 class CombineFirst(Query):
@@ -99,39 +98,3 @@ class CombineFirst(Query):
         """
 
         return sql
-
-
-class CoalescedLocation(BaseLocation, CombineFirst):
-    """
-    Wrapper around CombineFirst for the special case of coalescing locations
-    from two subscriber location queries. For each subscriber appearing in
-    either query, this will return their location from preferred_locations if
-    they appear with non-null location in the result of preferred_locations, or
-    their location from fallback_locations otherwise.
-
-    Parameters
-    ----------
-    preferred_locations: Query
-        Subscriber locations to be chosen preferentially
-    fallback_locations: Query
-        Subscriber locations to be assigned for subscribers who do not have a
-        location in preferred_locations
-
-    See Also
-    --------
-    CombineFirst
-    """
-
-    def __init__(self, preferred_locations: Query, fallback_locations: Query):
-        if preferred_locations.spatial_unit != fallback_locations.spatial_unit:
-            raise InvalidSpatialUnitError(
-                "Spatial units of the preferred_locations and fallback_locations arguments to CoalescedLocation must match."
-            )
-        self.spatial_unit = preferred_locations.spatial_unit
-
-        super().__init__(
-            first_query=preferred_locations,
-            other_query=fallback_locations,
-            join_columns="subscriber",
-            combine_columns=self.spatial_unit.location_id_columns,
-        )
