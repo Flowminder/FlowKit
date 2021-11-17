@@ -18,7 +18,7 @@ plugins:
           section: flowetl
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowetl/flowetl"
   - mknotebooks:
-      execute: false
+      execute: true
       preamble: "notebook_preamble.py"
       timeout: 600
 
