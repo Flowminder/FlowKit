@@ -119,6 +119,8 @@ class Flows(FlowLike, Query):
         first time frame of interest
     loc2 : daily_location, or ModalLocation object
         As above for the second period
+    join_type : {"inner", "full outer", "left", "right", "left outer", "right outer"} default "inner"
+        Join type of the join between loc_1 and loc_2
     """
 
     def __init__(self, loc1, loc2, join_type="inner"):
