@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added unique value from query list query. [#4486](https://github.com/Flowminder/FlowKit/pull/4486)
 - Added mixin for exposing start_date and end_date internally as datetime objects [#4497](https://github.com/Flowminder/FlowKit/issues/4497)
 - Added `CombineFirst` and `CoalescedLocation` queries. [#4524](https://github.com/Flowminder/FlowKit/issues/4524)
+- Added `MajorityLocation` query. [#4522](https://github.com/Flowminder/FlowKit/issues/4522)
 
 ### Changed
 - Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
