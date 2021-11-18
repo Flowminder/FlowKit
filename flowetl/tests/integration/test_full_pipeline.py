@@ -108,8 +108,8 @@ def test_file_pipeline(
 
     # Check qa checks
 
-    qa_check_query = "SELECT count(*)=23 from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
-    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0]
+    qa_check_query = "SELECT count(*) from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
+    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 23
 
 
 def test_file_pipeline_bad_file(
