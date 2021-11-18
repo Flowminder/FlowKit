@@ -7,6 +7,8 @@
 from flowmachine.features import DayTrajectories, daily_location
 from flowmachine.features.location.majority_location import MajorityLocation
 from flowmachine.features.subscriber.location_visits import LocationVisits
+from flowmachine.features.location.total_events import TotalLocationEvents
+from flowmachine.features.subscriber.handset_stats import HandsetStats
 from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
 
@@ -44,7 +46,7 @@ def test_majority_location(get_dataframe, location_visits):
         ],
         columns=["subscriber", "pcod"],
     )
-    assert (ml.column_names == target.columns).all()
+    assert (ml.column_names == out.columns).all()
     assert_frame_equal(out.head(7), target)
 
 
@@ -66,6 +68,24 @@ def test_weight_column_missing(location_visits):
     with pytest.raises(ValueError):
         ml = MajorityLocation(
             subscriber_location_weights=lv, weight_column="nonexistant"
+        )
+
+
+def test_subscriber_missing():
+    with pytest.raises(ValueError):
+        MajorityLocation(
+            subscriber_location_weights=TotalLocationEvents("2016-01-01", "2016-01-02"),
+            weight_column="value",
+        )
+
+
+def test_spatial_unit_missing():
+    with pytest.raises(ValueError):
+        MajorityLocation(
+            subscriber_location_weights=HandsetStats(
+                "width", "count", subscriber_handsets=None
+            ),
+            weight_column="value",
         )
 
 

@@ -9,6 +9,7 @@ from typing import List
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
+from flowmachine.core.errors import InvalidSpatialUnitError
 
 
 class MajorityLocation(BaseLocation, Query):
@@ -45,7 +46,7 @@ class MajorityLocation(BaseLocation, Query):
         if weight_column not in subscriber_location_weights.column_names:
             raise ValueError("weight_column must exist in subscriber_subset")
         if not hasattr(subscriber_location_weights, "spatial_unit"):
-            raise AttributeError(
+            raise InvalidSpatialUnitError(
                 "subscriber_location_weights query needs a spatial_unit attribute"
             )
 
@@ -60,7 +61,7 @@ class MajorityLocation(BaseLocation, Query):
         return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
-        loc_id = ",".join(self.spatial_unit.location_id_columns)
+        loc_id_columns_string = ",".join(self.spatial_unit.location_id_columns)
         sql = f"""
 WITH subscriber_subset AS (
     {self.subscriber_location_weights.get_query()}
@@ -70,7 +71,7 @@ WITH subscriber_subset AS (
     WHERE {self.weight_column} >= 0
     GROUP BY subscriber
 ), seen_subs AS (
-    SELECT subscriber, {loc_id}
+    SELECT subscriber, {loc_id_columns_string}
     FROM summed_weights JOIN subscriber_subset USING(subscriber)
     WHERE {self.weight_column} > total_weight/2.0
 )
@@ -78,10 +79,10 @@ WITH subscriber_subset AS (
 
         if self.include_unlocatable:
             sql += f"""
-SELECT subscriber, seen_subs.{loc_id}
+SELECT subscriber, seen_subs.{loc_id_columns_string}
 FROM seen_subs RIGHT OUTER JOIN summed_weights USING(subscriber)
             """
         else:
-            sql += f"""SELECT subscriber, {loc_id} FROM seen_subs"""
+            sql += f"""SELECT subscriber, {loc_id_columns_string} FROM seen_subs"""
 
         return sql
