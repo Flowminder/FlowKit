@@ -151,3 +151,17 @@ def test_flows_geojson(get_dataframe):
         ].set_index("admin2name_to")
         for dest, tot in outflows.items():
             assert tot == df_src.loc[dest]["value"]
+
+
+def test_flows_outer_join(get_dataframe):
+    """
+    Test that outer_join returns appropriate pieces
+    """
+    flow = Flows(
+        daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)),
+        daily_location("2016-01-02", spatial_unit=make_spatial_unit("admin", level=3)),
+        join_type="left outer",
+    )
+    out = get_dataframe(flow)
+    assert out.pcod_to.isna().any()
+    assert not out.pcod_from.isna().any()
