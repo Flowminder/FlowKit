@@ -12,4 +12,4 @@ def test_per_subscriber_aggregate(get_dataframe):
         agg_column="value",
         agg_method="avg",
     )
-    assert len(psa) >= 0
+    assert len(get_dataframe(psa)) >= 0
