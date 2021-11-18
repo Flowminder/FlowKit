@@ -121,7 +121,7 @@ class Flows(FlowLike, Query):
         As above for the second period
     """
 
-    def __init__(self, loc1, loc2):
+    def __init__(self, loc1, loc2, join_type="inner"):
         if loc1.spatial_unit != loc2.spatial_unit:
             raise InvalidSpatialUnitError(
                 "You cannot compute flows for locations on different spatial units"
@@ -129,7 +129,11 @@ class Flows(FlowLike, Query):
 
         self.spatial_unit = loc1.spatial_unit
         self.joined = loc1.join(
-            loc2, on_left="subscriber", left_append="_from", right_append="_to"
+            loc2,
+            on_left="subscriber",
+            left_append="_from",
+            right_append="_to",
+            how=join_type,
         )
         logger.info(
             "{} locations are pre-calculated.".format(loc1.is_stored + loc2.is_stored)
