@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `CombineFirst` and `CoalescedLocation` queries. [#4524](https://github.com/Flowminder/FlowKit/issues/4524)
 - Added `MajorityLocation` query. [#4522](https://github.com/Flowminder/FlowKit/issues/4522)
 - Added `join_type` param to `Flows` class. [#4539](https://github.com/Flowminder/FlowKit/issues/4539)
+- Added `PerSubscriberAggregate` query. [#4559](https://github.com/Flowminder/FlowKit/issues/4559)
 
 ### Changed
 - Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
