@@ -30,11 +30,22 @@ def test_aggregates(get_dataframe, agg_method, per_location_query):
         agg_column="value",
         agg_method=agg_method,
     )
-    # per_location_query is 608 rows
     assert (
         len(get_dataframe(psa))
         == get_dataframe(per_location_query).subscriber.nunique()
     )
+
+
+def test_agg_method(get_dataframe, per_location_query):
+    max_psa = PerSubscriberAggregate(
+        subscriber_query=per_location_query, agg_column="value", agg_method="max"
+    )
+    min_psa = PerSubscriberAggregate(
+        subscriber_query=per_location_query, agg_column="value", agg_method="min"
+    )
+    max_df = get_dataframe(max_psa)
+    min_df = get_dataframe(min_psa)
+    assert (max_df.value >= min_df.value).all()
 
 
 def test_agg_column_validation(per_location_query):
