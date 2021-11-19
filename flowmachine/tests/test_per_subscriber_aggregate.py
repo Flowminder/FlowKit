@@ -51,7 +51,7 @@ def test_agg_method(get_dataframe, per_location_query):
     )
     max_df = get_dataframe(max_psa)
     min_df = get_dataframe(min_psa)
-    assert (max_df.value >= min_df.value).all()
+    assert (max_df.value > min_df.value).any()
 
 
 def test_agg_column_validation(per_location_query):
