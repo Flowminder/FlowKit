@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
+
 from flowmachine.features.subscriber.per_subscriber_aggregate import (
     PerSubscriberAggregate,
     agg_methods,
@@ -71,4 +77,13 @@ def test_subscriber_column_validation():
     with pytest.raises(ValueError, match="'subscriber'"):
         psa = PerSubscriberAggregate(
             subscriber_query=dq, agg_column="value", agg_method="avg"
+        )
+
+
+def test_not_subscriber_validation(per_location_query):
+    with pytest.raises(ValueError, match="'agg_column' cannot be 'subscriber'"):
+        psa = PerSubscriberAggregate(
+            subscriber_query=per_location_query,
+            agg_column="subscriber",
+            agg_method="avg",
         )
