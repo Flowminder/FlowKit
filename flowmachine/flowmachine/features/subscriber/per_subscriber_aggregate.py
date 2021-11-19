@@ -15,9 +15,9 @@ class PerSubscriberAggregate(SubscriberFeature):
         if "subscriber" not in subscriber_query.column_names:
             raise ValueError("'subscriber' column not in subscriber_query")
         if agg_column not in subscriber_query.column_names:
-            raise ValueError(f"{agg_column} not in subscriber_query")
+            raise ValueError(f"'{agg_column}' column not in subscriber_query")
         if agg_method not in agg_methods:
-            raise ValueError(f"{agg_method} not in {agg_methods}")
+            raise ValueError(f"agg_method must be one of {agg_methods}, not '{agg_method}'")
 
         self.subscriber_query = subscriber_query
         self.agg_column = agg_column

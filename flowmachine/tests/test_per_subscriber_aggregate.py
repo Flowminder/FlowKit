@@ -38,7 +38,7 @@ def test_aggregates(get_dataframe, agg_method, per_location_query):
 
 
 def test_agg_column_validation(per_location_query):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'nonexistant'"):
         psa = PerSubscriberAggregate(
             subscriber_query=per_location_query,
             agg_column="nonexistant",
@@ -47,7 +47,7 @@ def test_agg_column_validation(per_location_query):
 
 
 def test_agg_method_validation(per_location_query):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'bogosort'"):
         psa = PerSubscriberAggregate(
             subscriber_query=per_location_query,
             agg_column="value",
@@ -57,7 +57,7 @@ def test_agg_method_validation(per_location_query):
 
 def test_subscriber_column_validation():
     dq = NonSubQuery(dummy_param="foo")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'subscriber'"):
         psa = PerSubscriberAggregate(
             subscriber_query=dq, agg_column="value", agg_method="avg"
         )
