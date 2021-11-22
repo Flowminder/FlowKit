@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `CombineFirst` and `CoalescedLocation` queries. [#4524](https://github.com/Flowminder/FlowKit/issues/4524)
 - Added `MajorityLocation` query. [#4522](https://github.com/Flowminder/FlowKit/issues/4522)
 - Added `join_type` param to `Flows` class. [#4539](https://github.com/Flowminder/FlowKit/issues/4539)
+- Added `PerSubscriberAggregate` query. [#4559](https://github.com/Flowminder/FlowKit/issues/4559)
 - Added FlowETL QA checks 'count_imeis', 'count_imsis', 'count_locatable_location_ids', 'count_null_imeis', 'count_null_imsis', 'count_null_location_ids', 'max_msisdns_per_imei', 'max_msisdns_per_imsi', 'count_added_rows_outgoing', 'count_null_counterparts', 'count_null_durations', 'count_onnet_msisdns_incoming', 'count_onnet_msisdns_outgoing', 'count_onnet_msisdns', 'max_duration' and 'median_duration'. [#4552](https://github.com/Flowminder/FlowKit/issues/4552)
 
 ### Changed
