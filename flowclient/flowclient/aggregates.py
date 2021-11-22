@@ -697,6 +697,7 @@ def flows_spec(
     *,
     from_location: Dict[str, Union[str, Dict[str, str]]],
     to_location: Dict[str, Union[str, Dict[str, str]]],
+    join_type: Union[str, None] = "inner",
 ) -> dict:
     """
     Return query spec for flows between two locations.
@@ -718,6 +719,7 @@ def flows_spec(
         "query_kind": "flows",
         "from_location": from_location,
         "to_location": to_location,
+        "join_type": join_type,
     }
 
 
