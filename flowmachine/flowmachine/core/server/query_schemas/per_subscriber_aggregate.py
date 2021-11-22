@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.core.server.query_schemas import BaseExposedQuery
@@ -31,3 +31,5 @@ class PerSubscriberAggregateSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["per_subscriber_aggregate"]))
     subscriber_query = fields.Nested(SubscriberSubset)
     agg_method = fields.String(validate=OneOf(agg_methods))
+
+    __model__ = PerSubscriberAggregateExposed
