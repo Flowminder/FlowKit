@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a4c0bd2b7db246c81223f4f20e610e76ba3756fdf8b25a50cc54ba9ebad0c0a7"
+            "sha256": "4cf462bd3aac2bbd0e452775f015609ff9ec7ca2a204b02f83effaa1229737a2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,7 +59,7 @@
                 "sha256:93aa393e9d6c54c5cd570ccadd8edad61ea0c4b9ea7a01409020c9aa019eb442",
                 "sha256:dd83cd4b5b460958838f6eb3000c660b1f9caf2a5b1de4264e941512f603258a"
             ],
-            "markers": "sys_platform == 'darwin'",
+            "markers": "platform_system == 'Darwin'",
             "version": "==0.1.2"
         },
         "argon2-cffi": {
@@ -520,7 +520,6 @@
                 "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff",
                 "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"
             ],
-            "markers": "python_version >= '3'",
             "version": "==3.3"
         },
         "imagesize": {
@@ -535,6 +534,7 @@
                 "sha256:53ccfd5c134223e497627b9815d5030edf77d2ed573922f7a0b8f8bb81a1c100",
                 "sha256:75bdec14c397f528724c1bfd9709d660b33a4d2e77387a3358f20b848bb5e5fb"
             ],
+            "markers": "python_version < '3.10'",
             "version": "==4.8.2"
         },
         "importlib-resources": {
@@ -700,11 +700,11 @@
         },
         "markdown": {
             "hashes": [
-                "sha256:5d9f2b5ca24bc4c7a390d22323ca4bad200368612b5aaa7796babf971d2b2f18",
-                "sha256:c109c15b7dc20a9ac454c9e6025927d44460b85bd039da028d85e2b6d0bcc328"
+                "sha256:0d2d09f75cb8d1ffc6770c65c61770b23a61708101f47bda416a002a0edbc480",
+                "sha256:26e9546bfbcde5fcd072bd8f612c9c1b6e2677cb8aadbdf65206674f46dde069"
             ],
             "index": "pypi",
-            "version": "==3.3.3"
+            "version": "==3.3.5"
         },
         "markupsafe": {
             "hashes": [
@@ -2094,7 +2094,7 @@
                 "sha256:93aa393e9d6c54c5cd570ccadd8edad61ea0c4b9ea7a01409020c9aa019eb442",
                 "sha256:dd83cd4b5b460958838f6eb3000c660b1f9caf2a5b1de4264e941512f603258a"
             ],
-            "markers": "sys_platform == 'darwin'",
+            "markers": "platform_system == 'Darwin'",
             "version": "==0.1.2"
         },
         "argon2-cffi": {
@@ -2263,7 +2263,6 @@
                 "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff",
                 "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"
             ],
-            "markers": "python_version >= '3'",
             "version": "==3.3"
         },
         "importlib-resources": {
