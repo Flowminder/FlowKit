@@ -269,6 +269,22 @@ def test_construct_query(diff_reporter):
             "event_types": ["calls", "sms"],
             "subscriber_subset": None,
         },
+        {
+            "query_kind": "flows",
+            "from_location": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+            },
+            "to_location": {
+                "query_kind": "unique_locations",
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-04",
+                "aggregation_unit": "admin3",
+            },
+            "join_type": "left outer",
+        },
     ]
 
     def get_query_id_for_query_spec(query_spec):

@@ -59,6 +59,6 @@ class FlowsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
-    join_type = fields.String(validate=OneOf(valid_joins))
+    join_type = fields.String(validate=OneOf(valid_joins), missing="inner")
 
     __model__ = FlowsExposed
