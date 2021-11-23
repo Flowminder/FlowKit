@@ -15,9 +15,9 @@ aggregated to a spatial unit.
 from abc import ABCMeta
 from typing import List
 
-from ...core.query import Query
-from ...core.mixins import GeoDataMixin, GraphMixin
-from ...core.errors import InvalidSpatialUnitError
+from flowmachine.core.query import Query
+from flowmachine.core.mixins import GeoDataMixin, GraphMixin
+from flowmachine.core.errors import InvalidSpatialUnitError
 
 from flowmachine.core.join import Join
 
