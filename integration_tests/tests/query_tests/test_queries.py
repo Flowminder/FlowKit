@@ -706,6 +706,9 @@ queries = [
         aggregation_unit="admin3",
         event_types=["calls", "sms"],
     ),
+    partial(
+        flowclient.per_subscriber_aggregate,
+    ),
 ]
 
 

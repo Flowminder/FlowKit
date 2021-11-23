@@ -1566,3 +1566,21 @@ def per_subscriber_aggregate_spec(*, subscriber_query: Dict, agg_method: str):
         "subscriber_subset": subscriber_query,
         "agg_method": agg_method,
     }
+
+
+def per_subscriber_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Query that performs per-subscriber aggregation of a column. Returns a column
+        'subscriber' containing unique subscribers and a column 'value' containing the
+        aggregration.
+
+        Parameters
+        ----------
+        subscriber_query: SubscriberFeature
+            A query with a `subscriber` column
+        agg_column: str
+            The name of the column in `subscriber_query` to aggregate. Cannot be 'subscriber'.
+        agg_method: {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"} default "avg"
+            The method of aggregation to perform
+    """
+    return connection.make_api_query(parameters=per_subscriber_aggregate_spec(**kwargs))

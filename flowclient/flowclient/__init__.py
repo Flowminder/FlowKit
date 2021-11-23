@@ -67,6 +67,7 @@ from .aggregates import (
     unmoving_counts,
     consecutive_trips_od_matrix,
     trips_od_matrix,
+    per_subscriber_aggregate,
 )
 
 __all__ = [
@@ -101,4 +102,5 @@ __all__ = [
     "unmoving_counts",
     "consecutive_trips_od_matrix",
     "trips_od_matrix",
+    "per_subscriber_aggregate",
 ]
