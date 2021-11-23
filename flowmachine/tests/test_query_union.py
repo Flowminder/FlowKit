@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import pytest
 
 from flowmachine.core import Table
 from flowmachine.core.custom_query import CustomQuery
@@ -32,3 +33,13 @@ def test_union(get_dataframe):
     union_df = get_dataframe(union)
     single_id = union_df[union_df.id == "5wNJA-PdRJ4-jxEdG-yOXpZ"]
     assert len(single_id) == 2
+
+
+def test_union_raises():
+    """
+    Test that unioning queries with inconsistent column names raises an error.
+    """
+    with pytest.raises(ValueError):
+        Table(schema="events", name="calls", columns=["msisdn"]).union(
+            Table(schema="events", name="calls")
+        )
