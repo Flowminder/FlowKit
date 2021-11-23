@@ -738,6 +738,8 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
 
     Returns
     -------

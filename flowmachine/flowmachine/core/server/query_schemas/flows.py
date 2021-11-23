@@ -33,7 +33,7 @@ class InputToFlowsSchema(OneOfSchema):
 
 
 class FlowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location, join_type=None):
+    def __init__(self, *, from_location, to_location, join_type):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.from_location = from_location
