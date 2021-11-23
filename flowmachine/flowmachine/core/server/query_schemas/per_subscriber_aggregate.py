@@ -22,8 +22,10 @@ class PerSubscriberAggregateExposed(BaseExposedQuery):
         self.subscriber_queries = subscriber_queries
         self.agg_method = agg_method
 
-    def _flomachine_query_obj(self):
+    @property
+    def _flowmachine_query_obj(self):
         subscriber_query = reduce(
+            # TODO: Replace with Jono's new list input to union
             lambda x, y: x._flowmachine_query_obj.union(y._flowmachine_query_obj),
             self.subscriber_queries,
         )
@@ -36,8 +38,7 @@ class PerSubscriberAggregateExposed(BaseExposedQuery):
 
 class PerSubscriberAggregateSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["per_subscriber_aggregate"]))
-    # TODO: Can we make this a list or a single query?
-    subscriber_query = fields.List(
+    subscriber_queries = fields.List(
         fields.Nested(NumericSubscriberMetricsSchema), validate=Length(min=1)
     )
     agg_method = fields.String(validate=OneOf(agg_methods))
