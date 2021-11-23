@@ -707,7 +707,20 @@ queries = [
         event_types=["calls", "sms"],
     ),
     partial(
-        flowclient.per_subscriber_aggregate,
+        flowclient.per_subscriber_aggregate_spec,
+        subscriber_queries=[
+            flowclient.total_active_periods_spec(
+                start_date="2016-01-01",
+                total_periods=1,
+                event_types=["calls", "sms"],
+            ),
+            flowclient.total_active_periods_spec(
+                start_date="2016-01-02",
+                total_periods=1,
+                event_types=["calls", "sms"],
+            ),
+        ],
+        agg_method="min",
     ),
 ]
 

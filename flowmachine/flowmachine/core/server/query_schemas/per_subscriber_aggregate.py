@@ -4,10 +4,12 @@
 from functools import reduce
 
 from marshmallow import fields
-from marshmallow.validate import OneOf
+from marshmallow.validate import OneOf, Length
 
 from flowmachine.core.server.query_schemas import BaseExposedQuery
-from flowmachine.core.server.query_schemas.subscriber_subset import SubscriberSubset
+from flowmachine.core.server.query_schemas.numeric_subscriber_metrics import (
+    NumericSubscriberMetricsSchema,
+)
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 from flowmachine.features.subscriber.per_subscriber_aggregate import (
     PerSubscriberAggregate,
@@ -17,12 +19,16 @@ from flowmachine.features.subscriber.per_subscriber_aggregate import (
 
 class PerSubscriberAggregateExposed(BaseExposedQuery):
     def __init__(self, subscriber_queries, agg_method):
-        self.subscriber_query = reduce(lambda x, y: x.join(y), subscriber_queries)
+        self.subscriber_queries = subscriber_queries
         self.agg_method = agg_method
 
     def _flomachine_query_obj(self):
+        subscriber_query = reduce(
+            lambda x, y: x._flowmachine_query_obj.union(y._flowmachine_query_obj),
+            self.subscriber_queries,
+        )
         return PerSubscriberAggregate(
-            subscriber_query=self.subscriber_query,
+            subscriber_query=subscriber_query,
             agg_column="value",
             agg_method=self.agg_method,
         )
@@ -31,7 +37,9 @@ class PerSubscriberAggregateExposed(BaseExposedQuery):
 class PerSubscriberAggregateSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["per_subscriber_aggregate"]))
     # TODO: Can we make this a list or a single query?
-    subscriber_query = fields.List(SubscriberSubset)
+    subscriber_query = fields.List(
+        fields.Nested(NumericSubscriberMetricsSchema), validate=Length(min=1)
+    )
     agg_method = fields.String(validate=OneOf(agg_methods))
 
     __model__ = PerSubscriberAggregateExposed

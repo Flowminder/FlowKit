@@ -4,26 +4,8 @@
 
 from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas.custom_fields import Bounds
-from flowmachine.core.server.query_schemas.radius_of_gyration import (
-    RadiusOfGyrationSchema,
-)
-from flowmachine.core.server.query_schemas.subscriber_degree import (
-    SubscriberDegreeSchema,
-)
-from flowmachine.core.server.query_schemas.topup_amount import TopUpAmountSchema
-from flowmachine.core.server.query_schemas.event_count import EventCountSchema
-from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
-from flowmachine.core.server.query_schemas.unique_location_counts import (
-    UniqueLocationCountsSchema,
-)
-from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
-from flowmachine.core.server.query_schemas.pareto_interactions import (
-    ParetoInteractionsSchema,
-)
-from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 
 from flowmachine.features import HistogramAggregation
 from .base_exposed_query import BaseExposedQuery
@@ -32,23 +14,7 @@ from .base_exposed_query import BaseExposedQuery
 __all__ = ["HistogramAggregateSchema", "HistogramAggregateExposed"]
 
 from .base_schema import BaseSchema
-from .total_active_periods import TotalActivePeriodsSchema
-
-
-class HistogrammableMetrics(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "radius_of_gyration": RadiusOfGyrationSchema,
-        "unique_location_counts": UniqueLocationCountsSchema,
-        "topup_balance": TopUpBalanceSchema,
-        "subscriber_degree": SubscriberDegreeSchema,
-        "topup_amount": TopUpAmountSchema,
-        "event_count": EventCountSchema,
-        "pareto_interactions": ParetoInteractionsSchema,
-        "nocturnal_events": NocturnalEventsSchema,
-        "displacement": DisplacementSchema,
-        "total_active_periods": TotalActivePeriodsSchema,
-    }
+from .numeric_subscriber_metrics import NumericSubscriberMetricsSchema
 
 
 class HistogramBins(Schema):
@@ -99,7 +65,7 @@ class HistogramAggregateExposed(BaseExposedQuery):
 class HistogramAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["histogram_aggregate"]))
-    metric = fields.Nested(HistogrammableMetrics, required=True)
+    metric = fields.Nested(NumericSubscriberMetricsSchema, required=True)
     range = fields.Nested(Bounds)
     bins = fields.Nested(HistogramBins)
 
