@@ -398,7 +398,7 @@ class Query(metaclass=ABCMeta):
         """
         return flowmachine.core.Table(self.fully_qualified_table_name)
 
-    def union(self, other, all=True):
+    def union(self, *other, all=True):
         """
         Returns a Query representing a the union of the two queries.
         This is simply the two tables concatenated. By passing the
@@ -429,7 +429,7 @@ class Query(metaclass=ABCMeta):
 
         from .union import Union
 
-        return Union(self, other, all)
+        return Union(self, *other, all=all)
 
     def join(
         self,
