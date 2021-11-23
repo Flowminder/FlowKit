@@ -1563,7 +1563,7 @@ def per_subscriber_aggregate_spec(*, subscriber_query: Dict, agg_method: str):
     """
     return {
         "query_kind": "per_subscriber_aggregate",
-        "subscriber_subset": subscriber_query,
+        "subscriber_query": subscriber_query,
         "agg_method": agg_method,
     }
 
