@@ -54,10 +54,11 @@ class FlowsExposed(BaseExposedQuery):
 
 
 class FlowsSchema(BaseSchema):
+    valid_joins = ("inner", "full outer", "left", "right", "left outer", "right outer")
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
-    join_type = fields.String(validate=OneOf(Flows.valid_joins))
+    join_type = fields.String(validate=OneOf(valid_joins))
 
     __model__ = FlowsExposed

@@ -123,8 +123,6 @@ class Flows(FlowLike, Query):
         Join type of the join between loc_1 and loc_2
     """
 
-    valid_joins = ("inner", "full outer", "left", "right", "left outer", "right outer")
-
     def __init__(self, loc1, loc2, join_type="inner"):
         if loc1.spatial_unit != loc2.spatial_unit:
             raise InvalidSpatialUnitError(
