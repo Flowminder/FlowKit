@@ -9,6 +9,7 @@ from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
+from flowmachine.core.join import Join
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .daily_location import DailyLocationSchema
@@ -54,11 +55,10 @@ class FlowsExposed(BaseExposedQuery):
 
 
 class FlowsSchema(BaseSchema):
-    valid_joins = ("inner", "full outer", "left", "right", "left outer", "right outer")
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
-    join_type = fields.String(validate=OneOf(valid_joins), missing="inner")
+    join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
 
     __model__ = FlowsExposed

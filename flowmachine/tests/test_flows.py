@@ -165,3 +165,19 @@ def test_flows_outer_join(get_dataframe):
     out = get_dataframe(flow)
     assert out.pcod_to.isna().any()
     assert not out.pcod_from.isna().any()
+
+
+def test_flows_bad_join_type_raises_error():
+    """
+    Tests that the param validation for join_type is working
+    """
+    with pytest.raises(ValueError, match="notajoin"):
+        flow = Flows(
+            daily_location(
+                "2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)
+            ),
+            daily_location(
+                "2016-01-02", spatial_unit=make_spatial_unit("admin", level=3)
+            ),
+            join_type="left notajoin",
+        )
