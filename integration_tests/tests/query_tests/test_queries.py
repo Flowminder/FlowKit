@@ -340,7 +340,7 @@ queries = [
             end_date="2016-01-04",
             aggregation_unit="admin3",
         ),
-        join_type="outer_left",
+        join_type="left outer",
     ),
     partial(
         flowclient.meaningful_locations_aggregate,
