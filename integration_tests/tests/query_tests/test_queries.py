@@ -329,6 +329,20 @@ queries = [
         ),
     ),
     partial(
+        flowclient.flows,
+        from_location=flowclient.daily_location_spec(
+            date="2016-01-01",
+            aggregation_unit="admin3",
+            method="last",
+        ),
+        to_location=flowclient.unique_locations_spec(
+            start_date="2016-01-01",
+            end_date="2016-01-04",
+            aggregation_unit="admin3",
+        ),
+        join_type="outer_left",
+    ),
+    partial(
         flowclient.meaningful_locations_aggregate,
         start_date="2016-01-01",
         end_date="2016-01-02",
