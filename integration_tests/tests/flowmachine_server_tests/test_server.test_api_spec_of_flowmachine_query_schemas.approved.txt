@@ -592,6 +592,18 @@
       "from_location": {
         "$ref": "#/components/schemas/InputToFlows"
       },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "flows"

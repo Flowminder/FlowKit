@@ -9,6 +9,7 @@ from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
+from flowmachine.core.join import Join
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 from .daily_location import DailyLocationSchema
@@ -32,11 +33,12 @@ class InputToFlowsSchema(OneOfSchema):
 
 
 class FlowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location):
+    def __init__(self, *, from_location, to_location, join_type):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.from_location = from_location
         self.to_location = to_location
+        self.join_type = join_type
 
     @property
     def _flowmachine_query_obj(self):
@@ -49,7 +51,7 @@ class FlowsExposed(BaseExposedQuery):
         """
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
-        return RedactedFlows(flows=Flows(loc1, loc2))
+        return RedactedFlows(flows=Flows(loc1, loc2, join_type=self.join_type))
 
 
 class FlowsSchema(BaseSchema):
@@ -57,5 +59,6 @@ class FlowsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
+    join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
 
     __model__ = FlowsExposed

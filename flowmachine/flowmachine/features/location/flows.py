@@ -15,9 +15,11 @@ aggregated to a spatial unit.
 from abc import ABCMeta
 from typing import List
 
-from ...core.query import Query
-from ...core.mixins import GeoDataMixin, GraphMixin
-from ...core.errors import InvalidSpatialUnitError
+from flowmachine.core.query import Query
+from flowmachine.core.mixins import GeoDataMixin, GraphMixin
+from flowmachine.core.errors import InvalidSpatialUnitError
+
+from flowmachine.core.join import Join
 
 import structlog
 
@@ -127,6 +129,11 @@ class Flows(FlowLike, Query):
         if loc1.spatial_unit != loc2.spatial_unit:
             raise InvalidSpatialUnitError(
                 "You cannot compute flows for locations on different spatial units"
+            )
+
+        if join_type not in Join.join_kinds:
+            raise ValueError(
+                f"join_type should be one of {Join.join_kinds}, not {join_type}"
             )
 
         self.spatial_unit = loc1.spatial_unit
