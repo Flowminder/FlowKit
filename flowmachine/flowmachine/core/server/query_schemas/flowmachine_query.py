@@ -30,6 +30,7 @@ from .aggregate_network_objects import AggregateNetworkObjectsSchema
 from .geography import GeographySchema
 from .location_event_counts import LocationEventCountsSchema
 from .most_frequent_location import MostFrequentLocationSchema
+from .per_subscriber_aggregate import PerSubscriberAggregateSchema
 from .trips_od_matrix import TripsODMatrixSchema
 from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 from .location_introversion import LocationIntroversionSchema
@@ -66,6 +67,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unmoving_counts": UnmovingCountsSchema,
         "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
         "trips_od_matrix": TripsODMatrixSchema,
+        "per_subscriber_aggregate": PerSubscriberAggregateSchema,
     }
 
 

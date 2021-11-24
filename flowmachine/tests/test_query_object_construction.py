@@ -269,6 +269,24 @@ def test_construct_query(diff_reporter):
             "event_types": ["calls", "sms"],
             "subscriber_subset": None,
         },
+        {
+            "query_kind": "per_subscriber_aggregate",
+            "subscriber_queries": [
+                {
+                    "query_kind": "total_active_periods",
+                    "start_date": "2016-01-01",
+                    "total_periods": 1,
+                    "event_types": ["calls", "sms"],
+                },
+                {
+                    "query_kind": "total_active_periods",
+                    "start_date": "2016-01-02",
+                    "total_periods": 1,
+                    "event_types": ["calls", "sms"],
+                },
+            ],
+            "agg_method": "min",
+        },
     ]
 
     def get_query_id_for_query_spec(query_spec):

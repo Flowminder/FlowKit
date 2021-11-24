@@ -47,6 +47,7 @@ from .query_specs import (
     unique_locations_spec,
     most_frequent_location_spec,
     total_active_periods_spec,
+    per_subscriber_aggregate_spec,
 )
 from . import aggregates
 from .aggregates import (
