@@ -14,25 +14,28 @@ class Union(Query):
 
     Parameters
     ----------
-    top, bottom : flowmachine.Query object
-        First and second tables respectively
+    queries : flowmachine.Query object
+        Queries to union
+    all : bool, default: True
+        If True, queries will be deduped, if set to False, duplicate rows will be preserved.
     """
 
-    def __init__(self, top, bottom, all=True):
-        """"""
-
-        self.top = top
-        self.bottom = bottom
+    def __init__(self, *queries: Query, all: bool = True):
+        self.queries = queries
         self.all = all
+        column_set = set(tuple(query.column_names) for query in queries)
+        if len(column_set) > 1:
+            raise ValueError("Inconsistent columns.")
+        if len(queries) < 2:
+            raise ValueError("Union requires at least two queries.")
 
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return list(self.top.column_names)
+        return list(self.queries[0].column_names)
 
     def _make_query(self):
-
-        return """({}) UNION {} ({})""".format(
-            self.top.get_query(), "ALL" if self.all else "", self.bottom.get_query()
+        return (" UNION ALL " if self.all else " UNION ").join(
+            f"({query.get_query()})" for query in self.queries
         )
