@@ -278,12 +278,34 @@ def test_construct_query(diff_reporter):
                 "method": "last",
             },
             "to_location": {
-                "query_kind": "unique_locations",
+                "query_kind": "most_frequent_location",
                 "start_date": "2016-01-01",
                 "end_date": "2016-01-04",
                 "aggregation_unit": "admin3",
             },
             "join_type": "left outer",
+        },
+        {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+                "query_kind": "location_visits",
+                "day_trajectories": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": "admin3",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": "admin3",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
         },
     ]
 

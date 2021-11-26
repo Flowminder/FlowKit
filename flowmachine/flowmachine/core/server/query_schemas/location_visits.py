@@ -27,3 +27,5 @@ class LocationVisitsSchema(BaseSchema):
         fields.Nested(DailyLocationSchema),
         validate=OneOf([DailyLocationSchema, ModalLocationSchema]),
     )
+
+    __model__ = LocationVisitsExposed

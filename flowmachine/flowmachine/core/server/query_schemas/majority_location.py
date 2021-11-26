@@ -9,7 +9,8 @@ from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas import BaseExposedQuery
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
-from flowmachine.features.location.majority_location import MajorityLocation
+from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
+from flowmachine.features.subscriber.majority_location import MajorityLocation
 
 
 class MajorityLocationExposed(BaseExposedQuery):
