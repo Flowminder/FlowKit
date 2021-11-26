@@ -67,6 +67,10 @@ from .aggregates import (
     unmoving_counts,
     consecutive_trips_od_matrix,
     trips_od_matrix,
+    location_visits,
+    majority_location,
+    majority_location_spec,  # This doesn't seem to be consistent with the rest of this; should these be in query_specs?
+    location_visits_spec,
 )
 
 __all__ = [
@@ -101,4 +105,6 @@ __all__ = [
     "unmoving_counts",
     "consecutive_trips_od_matrix",
     "trips_od_matrix",
+    "location_visits",
+    "majority_location",
 ]

@@ -722,16 +722,16 @@ queries = [
     ),
     partial(
         flowclient.flows,
-        from_location=flowclient.majority_location(
-            subscriber_location_weights=flowclient.location_visits(
+        from_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
                 day_trajectories=[
-                    flowclient.daily_location(
+                    flowclient.daily_location_spec(
                         date="2016-01-01",
                         aggregation_unit="admin3",
                         method="last",
                         subscriber_subset=None,
                     ),
-                    flowclient.daily_location(
+                    flowclient.daily_location_spec(
                         date="2016-01-02",
                         aggregation_unit="admin3",
                         method="last",
@@ -740,16 +740,16 @@ queries = [
                 ]
             ),
         ),
-        to_location=flowclient.majority_location(
-            subscriber_location_weights=flowclient.location_visits(
+        to_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
                 day_trajectories=[
-                    flowclient.daily_location(
+                    flowclient.daily_location_spec(
                         date="2016-01-04",
                         aggregation_unit="admin3",
                         method="last",
                         subscriber_subset=None,
                     ),
-                    flowclient.daily_location(
+                    flowclient.daily_location_spec(
                         date="2016-01-05",
                         aggregation_unit="admin3",
                         method="last",
