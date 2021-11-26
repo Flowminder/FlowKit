@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-
-from typing import List
+import numpy as np
+from typing import List, Optional
 
 from flowmachine.core.query import Query
 from flowmachine.features.subscriber.location_visits import LocationVisits
@@ -24,8 +24,8 @@ class VisitCountFilteredReferenceLocation(Query, BaseLocation):
         Location visit counts to use for thresholding
     lower_bound : int
         Minimum number of visits to allow a location to be included
-    upper_bound : int
-        Maximum number of visits to allow a location to be included
+    upper_bound : int, default Inf
+        Maximum number of visits to allow a location to be included. Defaults to unbounded.
     """
 
     def __init__(
@@ -33,7 +33,7 @@ class VisitCountFilteredReferenceLocation(Query, BaseLocation):
         reference_locations_query: BaseLocation,
         location_visits_query: LocationVisits,
         lower_bound: int,
-        upper_bound: int,
+        upper_bound: int = np.inf,
     ):
         self.locations = reference_locations_query.join(
             location_visits_query.numeric_subset(
