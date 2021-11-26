@@ -25,5 +25,5 @@ class ReferenceLocationSchema(OneOfSchema):
         "modal_location": ModalLocationSchema,
         "most_frequent_location": MostFrequentLocationSchema,
         "visited_most_days": VisitedMostDaysSchema,
-        "majority_location_schema": MajorityLocationSchema,
+        "majority_location": MajorityLocationSchema,
     }

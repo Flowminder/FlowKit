@@ -21,13 +21,12 @@ class MajorityLocationExposed(BaseExposedQuery):
     @property
     def _flowmachine_query_obj(self):
         return MajorityLocation(
-            subscriber_location_weights=self.subscriber_location_weights,
+            subscriber_location_weights=self.subscriber_location_weights._flowmachine_query_obj(),
             weight_column="value",
             include_unlocatable=self.include_unlocatable,
         )
 
 
-# Blocked till LocationVisits is exposed
 class LocatableQueries(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {"location_visits": LocationVisitsSchema}
@@ -37,3 +36,5 @@ class MajorityLocationSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["majority_location"]))
     subscriber_location_weights = fields.Nested(LocatableQueries)
     include_unlocatable = fields.Boolean(missing=False)
+
+    __model__ = MajorityLocationExposed

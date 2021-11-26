@@ -1,4 +1,4 @@
-from marshmallow import fields
+from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -11,21 +11,29 @@ from flowmachine.features.subscriber.location_visits import LocationVisits
 
 
 class LocationVisitsExposed(BaseExposedQuery):
-    def __init__(self, day_trajectories, spatial_unit):
+    def __init__(self, day_trajectories):
         self.day_trajectories = day_trajectories
-        self.spatial_unit = spatial_unit
 
     def _flowmachine_query_obj(self):
         return LocationVisits(
-            day_trajectories=DayTrajectories(self.day_trajectories),
+            day_trajectories=DayTrajectories(
+                *[
+                    exp_query._flowmachine_query_obj
+                    for exp_query in self.day_trajectories
+                ]
+            ),
         )
+
+
+class VisitableLocation(OneOfSchema):
+    type_field = "query_kind"
+    type_schemas = {
+        "daily_location": DailyLocationSchema,
+        "modal_location": ModalLocationSchema,
+    }
 
 
 class LocationVisitsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["location_visits"]))
-    day_trajectories = fields.List(
-        fields.Nested(DailyLocationSchema),
-        validate=OneOf([DailyLocationSchema, ModalLocationSchema]),
-    )
-
+    day_trajectories = fields.List(fields.Nested(VisitableLocation))
     __model__ = LocationVisitsExposed
