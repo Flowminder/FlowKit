@@ -398,11 +398,11 @@ class Query(metaclass=ABCMeta):
         """
         return flowmachine.core.Table(self.fully_qualified_table_name)
 
-    def union(self, other, all=True):
+    def union(self, *other: "Query", all: bool = True):
         """
-        Returns a Query representing a the union of the two queries.
-        This is simply the two tables concatenated. By passing the
-        argument all as true the duplicates are also removed.
+        Returns a Query representing a the union of queries.
+        This is simply the tables concatenated. By passing the
+        argument all as False the duplicates are also removed.
 
         Parameters
         ----------
@@ -429,7 +429,7 @@ class Query(metaclass=ABCMeta):
 
         from .union import Union
 
-        return Union(self, other, all)
+        return Union(self, *other, all=all)
 
     def join(
         self,
