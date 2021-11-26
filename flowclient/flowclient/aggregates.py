@@ -1550,3 +1550,15 @@ def histogram_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
         Histogram aggregate query
     """
     return connection.make_api_query(parameters=histogram_aggregate_spec(**kwargs))
+
+
+def majority_location_spec(*, subscriber_location_weights: Dict):
+    return {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": subscriber_location_weights,
+    }
+
+
+@merge_args(majority_location_spec)
+def majority_location(*, connection: Connection, **kwargs):
+    return connection.make_api_query(parameters=majority_location_spec(**kwargs))
