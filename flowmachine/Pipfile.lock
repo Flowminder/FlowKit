@@ -493,11 +493,11 @@
     "develop": {
         "approvaltests": {
             "hashes": [
-                "sha256:28b2b0aa2dd1684a1912e8f18d3ac919936f581e3ef447a5c3b39e5684804da6",
-                "sha256:5542364c38d0bf31a7dc35dfa6a5f22ec7896061a481e433d4d544ae87d36281"
+                "sha256:8486bc42fdff88499e4dbe268662f45671b6eebaffcb8553b8267647fc57a860",
+                "sha256:df28a265d3d14e71630c668596acdf61efae94bbca822bb584e06051394dcde9"
             ],
             "index": "pypi",
-            "version": "==3.1.0"
+            "version": "==3.2.0"
         },
         "asynctest": {
             "hashes": [
