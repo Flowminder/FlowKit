@@ -25,7 +25,10 @@ from .unique_locations import UniqueLocationsSchema
 
 class InputToFlowsSchema(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = ReferenceLocationSchema.type_schemas
+    type_schemas = {
+        **ReferenceLocationSchema.type_schemas,
+        "unique_locations": UniqueLocationsSchema,
+    }
 
 
 class FlowsExposed(BaseExposedQuery):
