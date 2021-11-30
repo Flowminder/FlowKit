@@ -7,19 +7,24 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
-from flowmachine.core.server.query_schemas import BaseExposedQuery
-from flowmachine.core.server.query_schemas.base_schema import BaseSchema
+from flowmachine.core.server.query_schemas.base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
 from flowmachine.features.subscriber.majority_location import MajorityLocation
 
 
-class MajorityLocationExposed(BaseExposedQuery):
-    def __init__(self, *, subscriber_location_weights, include_unlocatable):
+class MajorityLocationExposed(BaseExposedQueryWithSampling):
+    def __init__(
+        self, *, subscriber_location_weights, include_unlocatable, sampling=None
+    ):
         self.subscriber_location_weights = subscriber_location_weights
         self.include_unlocatable = include_unlocatable
+        self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         return MajorityLocation(
             subscriber_location_weights=self.subscriber_location_weights._flowmachine_query_obj(),
             weight_column="value",
@@ -32,9 +37,9 @@ class WeightedLocationQueries(OneOfSchema):
     type_schemas = {"location_visits": LocationVisitsSchema}
 
 
-class MajorityLocationSchema(BaseSchema):
+class MajorityLocationSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["majority_location"]))
-    subscriber_location_weights = fields.Nested(WeightedLocationQueries)
+    subscriber_location_weights = fields.Nested(WeightedLocationQueries, required=True)
     include_unlocatable = fields.Boolean(missing=False)
 
     __model__ = MajorityLocationExposed
