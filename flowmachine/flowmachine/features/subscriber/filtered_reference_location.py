@@ -4,24 +4,25 @@
 
 # -*- coding: utf-8 -*-
 import numpy as np
-from typing import List, Optional
+from typing import List, Union
 
 from flowmachine.core.query import Query
+from flowmachine.features import CallDays, PerLocationSubscriberCallDurations
 from flowmachine.features.subscriber.location_visits import LocationVisits
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
-class VisitCountFilteredReferenceLocation(Query, BaseLocation):
+class FilteredReferenceLocation(Query, BaseLocation):
     """
     A filtered reference location, which includes rows only where the subscriber
-    visited the location a specified number of times.
+    filter is true, for example visited a location at least N times.
 
     Parameters
     ----------
     reference_locations_query : BaseLocation
         Reference location to take locations from
-    location_visits_query : LocationVisits
-        Location visit counts to use for thresholding
+    filter_query : LocationVisits or CallDays or PerLocationSubscriberCallDurations
+        Per subscriber per location values to use for filtering
     lower_bound : int
         Minimum number of visits to allow a location to be included
     upper_bound : int, default Inf
@@ -31,14 +32,18 @@ class VisitCountFilteredReferenceLocation(Query, BaseLocation):
     def __init__(
         self,
         reference_locations_query: BaseLocation,
-        location_visits_query: LocationVisits,
+        filter_query: Union[
+            LocationVisits, CallDays, PerLocationSubscriberCallDurations
+        ],
         lower_bound: int,
         upper_bound: int = np.inf,
     ):
+        if reference_locations_query.spatial_unit != filter_query.spatial_unit:
+            raise ValueError(
+                "reference_locations_query and filter_query must have a common spatial unit."
+            )
         self.locations = reference_locations_query.join(
-            location_visits_query.numeric_subset(
-                low=lower_bound, high=upper_bound, col="value"
-            ),
+            filter_query.numeric_subset(low=lower_bound, high=upper_bound, col="value"),
             how="inner",
             on_left=(
                 "subscriber",
