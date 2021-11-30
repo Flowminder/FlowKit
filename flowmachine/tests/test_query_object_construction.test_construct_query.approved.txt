@@ -355,7 +355,7 @@
     ],
     "subscriber_subset": null
   },
-  "4278e355681a98ab1c2e698b6c98a150": {
+  "c3dc95da89aeb0908b9398918dab6f26": {
     "query_kind": "flows",
     "from_location": {
       "query_kind": "daily_location",
@@ -364,7 +364,7 @@
       "method": "last"
     },
     "to_location": {
-      "query_kind": "most_frequent_location",
+      "query_kind": "unique_locations",
       "start_date": "2016-01-01",
       "end_date": "2016-01-04",
       "aggregation_unit": "admin3"

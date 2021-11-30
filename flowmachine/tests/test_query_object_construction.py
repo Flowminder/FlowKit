@@ -279,7 +279,7 @@ def test_construct_query(diff_reporter):
                 "method": "last",
             },
             "to_location": {
-                "query_kind": "most_frequent_location",
+                "query_kind": "unique_locations",
                 "start_date": "2016-01-01",
                 "end_date": "2016-01-04",
                 "aggregation_unit": "admin3",
@@ -405,9 +405,10 @@ def test_invalid_sampling_params_raises_error(sampling, message):
     print(exc)
 
 
-def test_unmatching_spatial_unit_raiese_error():
+@pytest.mark.parametrize("query_type", ["daily_location", "modal_location"])
+def test_unmatching_spatial_unit_raiese_error(query_type):
     query_spec = {
-        "query_kind": "location_visits",
+        "query_kind": query_type,
         "locations": [
             {
                 "query_kind": "daily_location",
@@ -426,8 +427,6 @@ def test_unmatching_spatial_unit_raiese_error():
         ],
     }
 
-    with pytest.raises(
-        ValidationError, match="All locations must have the same spatial unit"
-    ) as exc:
+    with pytest.raises(ValidationError, match="same spatial unit") as exc:
         _ = LocationVisitsSchema().load(query_spec)
     print(exc)
