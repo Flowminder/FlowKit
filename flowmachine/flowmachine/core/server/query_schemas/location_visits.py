@@ -38,4 +38,10 @@ class VisitableLocation(OneOfSchema):
 class LocationVisitsSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["location_visits"]))
     locations = fields.List(fields.Nested(VisitableLocation), validate=Length(min=1))
+
+    @validates("locations")
+    def validate_locations(self, values):
+        if len(set(value.aggregation_unit for value in values)) > 1:
+            raise ValidationError("All locations must have the same spatial unit")
+
     __model__ = LocationVisitsExposed

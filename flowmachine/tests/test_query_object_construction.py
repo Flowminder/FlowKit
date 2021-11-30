@@ -7,6 +7,7 @@ import pytest
 from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
 
 
 def test_construct_query(diff_reporter):
@@ -401,4 +402,32 @@ def test_invalid_sampling_params_raises_error(sampling, message):
     }
     with pytest.raises(ValidationError, match=message) as exc:
         _ = FlowmachineQuerySchema().load(query_spec)
+    print(exc)
+
+
+def test_unmatching_spatial_unit_raiese_error():
+    query_spec = {
+        "query_kind": "location_visits",
+        "locations": [
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-02",
+                "aggregation_unit": "admin2",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+        ],
+    }
+
+    with pytest.raises(
+        ValidationError, match="All locations must have the same spatial unit"
+    ) as exc:
+        _ = LocationVisitsSchema().load(query_spec)
     print(exc)
