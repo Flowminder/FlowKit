@@ -842,12 +842,50 @@ def random_sample_spec(
     return sampled_query
 
 
-def majority_location_spec(*, subscriber_location_weights: Dict):
+def majority_location_spec(
+    *, subscriber_location_weights: Dict, include_unlocatable=False
+) -> dict:
+    """
+    A class for producing a list of subscribers along with the location (derived from `spatial_unit')
+    that they visited more than half the time.
+
+    Parameters
+    ----------
+    subscriber_location_weights: dict
+        A `location_visits_spec`  query specification
+    include_unlocatable: bool default False
+        If `True`, returns every unique subscriber in the `subscriber_location_weights` query, with
+        the location column as `NULL` if no majority is reached.
+        If `False`, returns only subscribers that have achieved a majority location
+
+    Returns
+    -------
+    dict
+        A dictionary of the query specification
+
+
+    """
     return {
         "query_kind": "majority_location",
         "subscriber_location_weights": subscriber_location_weights,
+        "include_unlocatable": include_unlocatable,
     }
 
 
-def location_visits_spec(*, locations: List):
+def location_visits_spec(*, locations: List) -> dict:
+    """
+    Class that defines lists of unique Dailylocations for each subscriber.
+    Each location is accompanied by the count of times it was a daily_location.
+
+    Parameters
+    ----------
+    locations : List
+        A list of either daily_location or modal_location query specs
+
+    Returns
+    -------
+    dict
+        A dictionary specifying a location_visits query
+
+    """
     return {"query_kind": "location_visits", "locations": locations}

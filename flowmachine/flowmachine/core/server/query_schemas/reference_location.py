@@ -19,7 +19,6 @@ from flowmachine.core.server.query_schemas.visited_most_days import (
 
 class ReferenceLocationSchema(OneOfSchema):
     type_field = "query_kind"
-    # Should UniqueLocation be in here?
     type_schemas = {
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
