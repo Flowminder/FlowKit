@@ -27,14 +27,14 @@ class MajorityLocationExposed(BaseExposedQuery):
         )
 
 
-class LocatableQueries(OneOfSchema):
+class WeightedLocationQueries(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {"location_visits": LocationVisitsSchema}
 
 
 class MajorityLocationSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["majority_location"]))
-    subscriber_location_weights = fields.Nested(LocatableQueries)
+    subscriber_location_weights = fields.Nested(WeightedLocationQueries)
     include_unlocatable = fields.Boolean(missing=False)
 
     __model__ = MajorityLocationExposed

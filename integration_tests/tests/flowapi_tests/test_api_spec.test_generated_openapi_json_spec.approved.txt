@@ -984,7 +984,7 @@
         ],
         "type": "object"
       },
-      "LocatableQueries": {
+      "WeightedLocationQueries": {
         "discriminator": {
           "mapping": {
             "location_visits": "#/components/schemas/LocationVisits"
@@ -1203,7 +1203,7 @@
             "type": "string"
           },
           "subscriber_location_weights": {
-            "$ref": "#/components/schemas/LocatableQueries"
+            "$ref": "#/components/schemas/WeightedLocationQueries"
           }
         },
         "type": "object"
