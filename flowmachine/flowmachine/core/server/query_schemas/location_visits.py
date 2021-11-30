@@ -3,6 +3,10 @@ from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas import BaseExposedQuery
+from flowmachine.core.server.query_schemas.base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 from flowmachine.core.server.query_schemas.daily_location import DailyLocationSchema
 from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
@@ -10,11 +14,12 @@ from flowmachine.features import DayTrajectories
 from flowmachine.features.subscriber.location_visits import LocationVisits
 
 
-class LocationVisitsExposed(BaseExposedQuery):
-    def __init__(self, locations):
+class LocationVisitsExposed(BaseExposedQueryWithSampling):
+    def __init__(self, locations, *, sampling=None):
         self.locations = locations
+        self.sampling = sampling
 
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         return LocationVisits(
             day_trajectories=DayTrajectories(
                 *[exp_query._flowmachine_query_obj for exp_query in self.locations]
@@ -30,7 +35,7 @@ class VisitableLocation(OneOfSchema):
     }
 
 
-class LocationVisitsSchema(BaseSchema):
+class LocationVisitsSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["location_visits"]))
     locations = fields.List(fields.Nested(VisitableLocation), validate=Length(min=1))
     __model__ = LocationVisitsExposed
