@@ -70,7 +70,6 @@ from .aggregates import (
     consecutive_trips_od_matrix,
     trips_od_matrix,
 )
-from query_specs import majority_location_spec, location_visits_spec
 
 __all__ = [
     "aggregates",
