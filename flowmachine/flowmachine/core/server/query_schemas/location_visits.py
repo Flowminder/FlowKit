@@ -48,6 +48,6 @@ class LocationVisitsSchema(BaseQueryWithSamplingSchema):
     @validates("locations")
     def validate_locations(self, values):
         if len(set(value.aggregation_unit for value in values)) > 1:
-            raise ValidationError("All locations must have the same spatial unit")
+            raise ValidationError("All locations must have the same aggregation unit")
 
     __model__ = LocationVisitsExposed
