@@ -1159,7 +1159,7 @@
   },
   "LocationVisits": {
     "properties": {
-      "day_trajectories": {
+      "locations": {
         "items": {
           "$ref": "#/components/schemas/VisitableLocation"
         },

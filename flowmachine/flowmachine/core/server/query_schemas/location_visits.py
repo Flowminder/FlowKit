@@ -11,16 +11,13 @@ from flowmachine.features.subscriber.location_visits import LocationVisits
 
 
 class LocationVisitsExposed(BaseExposedQuery):
-    def __init__(self, day_trajectories):
-        self.day_trajectories = day_trajectories
+    def __init__(self, locations):
+        self.locations = locations
 
     def _flowmachine_query_obj(self):
         return LocationVisits(
             day_trajectories=DayTrajectories(
-                *[
-                    exp_query._flowmachine_query_obj
-                    for exp_query in self.day_trajectories
-                ]
+                *[exp_query._flowmachine_query_obj for exp_query in self.locations]
             ),
         )
 
@@ -35,5 +32,5 @@ class VisitableLocation(OneOfSchema):
 
 class LocationVisitsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["location_visits"]))
-    day_trajectories = fields.List(fields.Nested(VisitableLocation))
+    locations = fields.List(fields.Nested(VisitableLocation))
     __model__ = LocationVisitsExposed

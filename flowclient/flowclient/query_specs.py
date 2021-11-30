@@ -849,5 +849,5 @@ def majority_location_spec(*, subscriber_location_weights: Dict):
     }
 
 
-def location_visits_spec(*, day_trajectories: List):
-    return {"query_kind": "location_visits", "day_trajectories": day_trajectories}
+def location_visits_spec(*, locations: List):
+    return {"query_kind": "location_visits", "locations": locations}

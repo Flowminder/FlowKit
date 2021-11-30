@@ -724,7 +724,7 @@ queries = [
         flowclient.flows,
         from_location=flowclient.majority_location_spec(
             subscriber_location_weights=flowclient.location_visits_spec(
-                day_trajectories=[
+                locations=[
                     flowclient.daily_location_spec(
                         date="2016-01-01",
                         aggregation_unit="admin3",
@@ -742,7 +742,7 @@ queries = [
         ),
         to_location=flowclient.majority_location_spec(
             subscriber_location_weights=flowclient.location_visits_spec(
-                day_trajectories=[
+                locations=[
                     flowclient.daily_location_spec(
                         date="2016-01-04",
                         aggregation_unit="admin3",

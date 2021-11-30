@@ -291,7 +291,7 @@ def test_construct_query(diff_reporter):
                 "query_kind": "majority_location",
                 "subscriber_location_weights": {
                     "query_kind": "location_visits",
-                    "day_trajectories": [
+                    "locations": [
                         {
                             "query_kind": "daily_location",
                             "date": "2016-01-01",
@@ -313,7 +313,7 @@ def test_construct_query(diff_reporter):
                 "query_kind": "majority_location",
                 "subscriber_location_weights": {
                     "query_kind": "location_visits",
-                    "day_trajectories": [
+                    "locations": [
                         {
                             "query_kind": "daily_location",
                             "date": "2016-01-04",
