@@ -1,5 +1,5 @@
 from marshmallow import fields, validates, ValidationError
-from marshmallow.validate import OneOf
+from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas import BaseExposedQuery
@@ -32,5 +32,5 @@ class VisitableLocation(OneOfSchema):
 
 class LocationVisitsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["location_visits"]))
-    locations = fields.List(fields.Nested(VisitableLocation))
+    locations = fields.List(fields.Nested(VisitableLocation), validate=Length(min=1))
     __model__ = LocationVisitsExposed
