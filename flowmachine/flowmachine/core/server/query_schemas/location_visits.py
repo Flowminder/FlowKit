@@ -46,8 +46,8 @@ class LocationVisitsSchema(BaseQueryWithSamplingSchema):
     locations = fields.List(fields.Nested(VisitableLocation), validate=Length(min=1))
 
     @validates("locations")
-    def validate_locations(self, values):
-        if len(set(value.aggregation_unit for value in values)) > 1:
+    def validate_locations(self, locations):
+        if len(set(location.aggregation_unit for location in locations)) > 1:
             raise ValidationError("All locations must have the same aggregation unit")
 
     __model__ = LocationVisitsExposed

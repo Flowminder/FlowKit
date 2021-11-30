@@ -405,10 +405,29 @@ def test_invalid_sampling_params_raises_error(sampling, message):
     print(exc)
 
 
-@pytest.mark.parametrize("query_type", ["daily_location", "modal_location"])
-def test_unmatching_spatial_unit_raiese_error(query_type):
+@pytest.fixture
+def location_list_unmatched_agg():
+    return [
+        {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": None,
+        },
+        {
+            "query_kind": "daily_location",
+            "date": "2016-01-02",
+            "aggregation_unit": "admin2",
+            "method": "last",
+            "subscriber_subset": None,
+        },
+    ]
+
+
+def test_unmatching_spatial_unit_raises_error_daily(location_list_unmatched_agg):
     query_spec = {
-        "query_kind": query_type,
+        "query_kind": "location_visits",
         "locations": [
             {
                 "query_kind": "daily_location",
@@ -427,6 +446,55 @@ def test_unmatching_spatial_unit_raiese_error(query_type):
         ],
     }
 
-    with pytest.raises(ValidationError, match="same spatial unit") as exc:
+    with pytest.raises(ValidationError, match="same aggregation unit") as exc:
+        _ = LocationVisitsSchema().load(query_spec)
+    print(exc)
+
+
+def test_unmatching_spatial_unit_raises_error_modal(location_list_unmatched_agg):
+    query_spec = {
+        "query_kind": "location_visits",
+        "locations": [
+            {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": "admin2",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": "admin2",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
+            {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": "admin3",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": "admin3",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
+        ],
+    }
+    with pytest.raises(ValidationError, match="same aggregation unit") as exc:
         _ = LocationVisitsSchema().load(query_spec)
     print(exc)
