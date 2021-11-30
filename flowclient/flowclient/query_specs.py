@@ -840,3 +840,14 @@ def random_sample_spec(
     )
     sampled_query["sampling"] = sampling
     return sampled_query
+
+
+def majority_location_spec(*, subscriber_location_weights: Dict):
+    return {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": subscriber_location_weights,
+    }
+
+
+def location_visits_spec(*, day_trajectories: List):
+    return {"query_kind": "location_visits", "day_trajectories": day_trajectories}
