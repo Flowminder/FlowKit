@@ -984,19 +984,6 @@
         ],
         "type": "object"
       },
-      "WeightedLocationQueries": {
-        "discriminator": {
-          "mapping": {
-            "location_visits": "#/components/schemas/LocationVisits"
-          },
-          "propertyName": "query_kind"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/LocationVisits"
-          }
-        ]
-      },
       "LocationEventCounts": {
         "properties": {
           "aggregation_unit": {
@@ -1179,6 +1166,7 @@
             "items": {
               "$ref": "#/components/schemas/VisitableLocation"
             },
+            "minItems": 1,
             "type": "array"
           },
           "query_kind": {
@@ -1186,6 +1174,14 @@
               "location_visits"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           }
         },
         "type": "object"
@@ -1202,10 +1198,22 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "subscriber_location_weights": {
             "$ref": "#/components/schemas/WeightedLocationQueries"
           }
         },
+        "required": [
+          "query_kind",
+          "subscriber_location_weights"
+        ],
         "type": "object"
       },
       "MeaningfulLocationsAggregate": {
@@ -2749,6 +2757,19 @@
           "start_date"
         ],
         "type": "object"
+      },
+      "WeightedLocationQueries": {
+        "discriminator": {
+          "mapping": {
+            "location_visits": "#/components/schemas/LocationVisits"
+          },
+          "propertyName": "query_kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/LocationVisits"
+          }
+        ]
       }
     },
     "securitySchemes": {
