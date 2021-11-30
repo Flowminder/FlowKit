@@ -190,7 +190,7 @@ You may also set the following environment variables:
 
 | Variable name | Purpose | Notes |
 | ------------- | ------- | ----- |
-| DB_URI | URI for the backing database | Should be of the form `postgres://flowauth:{}@flowauth_postgres:5432/flowauth`. If not set, a temporary sqlite database will be created. The `{}` will be populated using the value of the `FLOWAUTH_DB_PASSWORD` secret. | 
+| DB_URI | URI for the backing database | Should be of the form `postgresql://flowauth:{}@flowauth_postgres:5432/flowauth`. If not set, a temporary sqlite database will be created. The `{}` will be populated using the value of the `FLOWAUTH_DB_PASSWORD` secret. | 
 | RESET_FLOWAUTH_DB | Set to true to reset the database | |
 | FLOWAUTH_CACHE_BACKEND | Backend to use for two factor auth last used key cache | Defaults to 'file'. May be set to 'memory' if deploying a single instance on only one CPU, or to 'redis' for larger deployments |
 
