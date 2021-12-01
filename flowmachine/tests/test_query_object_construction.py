@@ -405,7 +405,7 @@ def test_invalid_sampling_params_raises_error(sampling, message):
     print(exc)
 
 
-def test_unmatching_spatial_unit_raises_error_daily(location_list_unmatched_agg):
+def test_unmatching_spatial_unit_raises_error_daily():
     query_spec = {
         "query_kind": "location_visits",
         "locations": [
@@ -431,7 +431,7 @@ def test_unmatching_spatial_unit_raises_error_daily(location_list_unmatched_agg)
     print(exc)
 
 
-def test_unmatching_spatial_unit_raises_error_modal(location_list_unmatched_agg):
+def test_unmatching_spatial_unit_raises_error_modal():
     query_spec = {
         "query_kind": "location_visits",
         "locations": [
