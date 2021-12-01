@@ -2,7 +2,7 @@ version: 2.1
 
 defaults:
   - &base_docker
-    - image: circleci/python:3.8
+    - image: cimg/python:3.8
       environment:
         FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
@@ -114,7 +114,7 @@ executors:
       FLOWDB_HOST: localhost
       FLOWAPI_IDENTIFIER: TEST_SERVER
     docker:
-      - image: circleci/python:<<parameters.python_version>>
+      - image: cimg/python:<<parameters.python_version>>
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
         environment:
           N_DAYS: <<parameters.num_days>>
@@ -304,7 +304,7 @@ jobs:
 
   build_flowdb_testdata:
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     working_directory: /home/circleci/project
     steps:
       - checkout:
@@ -329,7 +329,7 @@ jobs:
 
   build_flowdb_synthdata:
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     working_directory: /home/circleci/project
     steps:
       - checkout:
@@ -392,7 +392,7 @@ jobs:
 
   lint_js:
     docker:
-      - image: circleci/node
+      - image: cimg/node
     working_directory: /home/circleci/project/flowauth/frontend
     steps:
       - checkout:
@@ -481,7 +481,7 @@ jobs:
 
   run_token_generator_tests:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     environment:
       FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowkit_jwt_generator
@@ -519,7 +519,7 @@ jobs:
 
   run_flowkit_api_tests:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
         environment:
           FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowapi
@@ -548,7 +548,7 @@ jobs:
 
   run_flowauth_backend_tests:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     environment: &flowauth_env
       FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
@@ -635,7 +635,7 @@ jobs:
 
   run_flowclient_tests:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     working_directory: /home/circleci/project/flowclient
     steps:
       - checkout:
@@ -662,7 +662,7 @@ jobs:
 
   run_autoflow_tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     working_directory: /home/circleci/project/autoflow
     steps:
       - checkout:
@@ -736,7 +736,7 @@ jobs:
 
   run_flowetl_unit_tests:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
@@ -1044,7 +1044,7 @@ jobs:
         type: string
         default: "latest"
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - run:
           name: Install retagger
