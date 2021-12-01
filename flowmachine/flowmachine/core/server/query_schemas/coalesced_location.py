@@ -11,6 +11,9 @@ from flowmachine.core.server.query_schemas.majority_location import (
     MajorityLocationSchema,
 )
 from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
+from flowmachine.core.server.query_schemas.reference_location import (
+    ReferenceLocationSchema,
+)
 from flowmachine.features.subscriber.coalesced_location import CoalescedLocation
 from flowmachine.features.subscriber.filtered_reference_location import (
     FilteredReferenceLocation,
@@ -42,20 +45,6 @@ class CoalescedLocationExposed(BaseExposedQueryWithSampling):
         )
 
 
-# List of queries that map a set of unique subscribers to a set of locations
-class SubscriberLocationMappingQueries(OneOfSchema):
-    """
-    Set of queries that map a set of unique subscribers to a set of locations
-    """
-
-    type_field = "query_kind"
-    type_schemas = {
-        "majority_location": MajorityLocationSchema,
-        "modal_location": ModalLocationSchema
-        # More here?
-    }
-
-
 class SubscriberWeightMappingQueries(OneOfSchema):
     """
     Set of queries that map a subscriber to a set of weights
@@ -74,7 +63,7 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
     """
 
     query_kind = fields.String(validate=OneOf(["coalesced_location"]))
-    preferred_location = fields.Nested(SubscriberLocationMappingQueries)
-    fallback_location = fields.Nested(SubscriberLocationMappingQueries)
+    preferred_location = fields.Nested(ReferenceLocationSchema)
+    fallback_location = fields.Nested(ReferenceLocationSchema)
     subscriber_location_weights = fields.Nested(SubscriberWeightMappingQueries)
     weight_threshold = fields.Integer()
