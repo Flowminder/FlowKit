@@ -405,26 +405,6 @@ def test_invalid_sampling_params_raises_error(sampling, message):
     print(exc)
 
 
-@pytest.fixture
-def location_list_unmatched_agg():
-    return [
-        {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "subscriber_subset": None,
-        },
-        {
-            "query_kind": "daily_location",
-            "date": "2016-01-02",
-            "aggregation_unit": "admin2",
-            "method": "last",
-            "subscriber_subset": None,
-        },
-    ]
-
-
 def test_unmatching_spatial_unit_raises_error_daily(location_list_unmatched_agg):
     query_spec = {
         "query_kind": "location_visits",
