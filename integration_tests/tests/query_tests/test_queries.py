@@ -720,6 +720,45 @@ queries = [
         aggregation_unit="admin3",
         event_types=["calls", "sms"],
     ),
+    partial(
+        flowclient.flows,
+        from_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-02",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                ]
+            ),
+        ),
+        to_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-04",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-05",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                ],
+            )
+        ),
+    ),
 ]
 
 

@@ -7,6 +7,7 @@ import pytest
 from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
 
 
 def test_construct_query(diff_reporter):
@@ -285,6 +286,53 @@ def test_construct_query(diff_reporter):
             },
             "join_type": "left outer",
         },
+        {
+            "query_kind": "flows",
+            "from_location": {
+                "query_kind": "majority_location",
+                "subscriber_location_weights": {
+                    "query_kind": "location_visits",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-01",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-02",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ],
+                },
+            },
+            "to_location": {
+                "query_kind": "majority_location",
+                "subscriber_location_weights": {
+                    "query_kind": "location_visits",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-04",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-05",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ],
+                },
+            },
+        },
     ]
 
     def get_query_id_for_query_spec(query_spec):
@@ -354,4 +402,79 @@ def test_invalid_sampling_params_raises_error(sampling, message):
     }
     with pytest.raises(ValidationError, match=message) as exc:
         _ = FlowmachineQuerySchema().load(query_spec)
+    print(exc)
+
+
+def test_unmatching_spatial_unit_raises_error_daily():
+    query_spec = {
+        "query_kind": "location_visits",
+        "locations": [
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-02",
+                "aggregation_unit": "admin2",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+        ],
+    }
+
+    with pytest.raises(ValidationError, match="same aggregation unit") as exc:
+        _ = LocationVisitsSchema().load(query_spec)
+    print(exc)
+
+
+def test_unmatching_spatial_unit_raises_error_modal():
+    query_spec = {
+        "query_kind": "location_visits",
+        "locations": [
+            {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": "admin2",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": "admin2",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
+            {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": "admin3",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": "admin3",
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
+        ],
+    }
+    with pytest.raises(ValidationError, match="same aggregation unit") as exc:
+        _ = LocationVisitsSchema().load(query_spec)
     print(exc)

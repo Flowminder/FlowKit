@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields
+from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
@@ -24,6 +24,7 @@ class ModalLocationExposed(BaseExposedQueryWithSampling):
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
         self.sampling = sampling
+        self.aggregation_unit = locations[0].aggregation_unit
 
     @property
     def _unsampled_query_obj(self):
@@ -43,8 +44,15 @@ class ModalLocationExposed(BaseExposedQueryWithSampling):
 class ModalLocationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["modal_location"]))
-    locations = fields.Nested(
-        InputToModalLocationSchema, many=True, validate=Length(min=1)
+    locations = fields.List(
+        fields.Nested(InputToModalLocationSchema), validate=Length(min=1)
     )
+
+    @validates("locations")
+    def validate_locations(self, values):
+        if len(set(value.aggregation_unit for value in values)) > 1:
+            raise ValidationError(
+                "All inputs to modal_locations should have the same aggregation unit"
+            )
 
     __model__ = ModalLocationExposed
