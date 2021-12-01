@@ -889,3 +889,19 @@ def location_visits_spec(*, locations: List) -> dict:
 
     """
     return {"query_kind": "location_visits", "locations": locations}
+
+
+def coalesced_location_spec(
+    *,
+    preferred_location,
+    fallback_location,
+    subscriber_location_weights,
+    weight_threshold,
+) -> dict:
+    return {
+        "query_kind": "coalesced_location",
+        "preferred_location": preferred_location,
+        "fallback_location": fallback_location,
+        "subscriber_location_weights": subscriber_location_weights,
+        "weight_threshold": weight_threshold,
+    }

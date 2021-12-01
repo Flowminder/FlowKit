@@ -759,6 +759,47 @@ queries = [
             )
         ),
     ),
+    partial(
+        flowclient.flows,
+        from_location=flowclient.coalesced_location_spec(
+            preferred_location=flowclient.daily_location_spec(
+                date="2016-01-02", aggregation_unit="admin3", method="last"
+            ),
+            fallback_location=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="admin3", method="last"
+            ),
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-01", aggregation_unit="admin3", method="last"
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-02", aggregation_unit="admin3", method="last"
+                    ),
+                ]
+            ),
+            weight_threshold=2,
+        ),
+        to_location=flowclient.coalesced_location_spec(
+            preferred_location=flowclient.daily_location_spec(
+                date="2016-01-06", aggregation_unit="admin3", method="last"
+            ),
+            fallback_location=flowclient.daily_location_spec(
+                date="2016-01-05", aggregation_unit="admin3", method="last"
+            ),
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-05", aggregation_unit="admin3", method="last"
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-06", aggregation_unit="admin3", method="last"
+                    ),
+                ]
+            ),
+            weight_threshold=2,
+        ),
+    ),
 ]
 
 

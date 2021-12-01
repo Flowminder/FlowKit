@@ -49,6 +49,7 @@ from .query_specs import (
     total_active_periods_spec,
     location_visits_spec,
     majority_location_spec,
+    coalesced_location_spec,
 )
 from . import aggregates
 from .aggregates import (
@@ -103,4 +104,5 @@ __all__ = [
     "unmoving_counts",
     "consecutive_trips_od_matrix",
     "trips_od_matrix",
+    "coalesced_location_spec",
 ]
