@@ -333,6 +333,79 @@ def test_construct_query(diff_reporter):
                 },
             },
         },
+        {
+            "query_kind": "flows",
+            "from_location": {
+                "query_kind": "coalesced_location",
+                "preferred_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-02",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "fallback_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "subscriber_location_weights": {
+                    "query_kind": "location_visits",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-01",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-02",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ],
+                },
+                "weight_threshold": 2,
+            },
+            "to_location": {
+                "query_kind": "coalesced_location",
+                "preferred_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-06",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "fallback_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-05",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "subscriber_location_weights": {
+                    "query_kind": "location_visits",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-05",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-06",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ],
+                },
+                "weight_threshold": 2,
+            },
+        },
     ]
 
     def get_query_id_for_query_spec(query_spec):
