@@ -43,8 +43,7 @@ def enum_paths(
         and len(tree["enum"]) > 1
         and new_path[-1] in argument_names_to_extract
     ):
-        pth = list(zip(repeat(new_path), tree["enum"]))
-        yield (new_path, "{agg_unit}")
+        yield (new_path, f"{{{new_path[-1]}}}")
     elif "items" in tree.keys():
         yield from enum_paths(paths=new_path, tree=tree["items"])
     else:
