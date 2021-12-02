@@ -105,6 +105,37 @@
     ],
     "type": "object"
   },
+  "CoalescedLocation": {
+    "properties": {
+      "fallback_location": {
+        "$ref": "#/components/schemas/MajorityLocation"
+      },
+      "preferred_location": {
+        "$ref": "#/components/schemas/MajorityLocation"
+      },
+      "query_kind": {
+        "enum": [
+          "coalesced_location"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "subscriber_location_weights": {
+        "$ref": "#/components/schemas/LocationVisits"
+      },
+      "weight_threshold": {
+        "type": "integer"
+      }
+    },
+    "type": "object"
+  },
   "ConsecutiveTripsODMatrix": {
     "properties": {
       "aggregation_unit": {
@@ -840,6 +871,7 @@
   "InputToFlows": {
     "discriminator": {
       "mapping": {
+        "coalesced_location": "#/components/schemas/CoalescedLocation",
         "daily_location": "#/components/schemas/DailyLocation",
         "majority_location": "#/components/schemas/MajorityLocation",
         "modal_location": "#/components/schemas/ModalLocation",
@@ -850,6 +882,9 @@
       "propertyName": "query_kind"
     },
     "oneOf": [
+      {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
       {
         "$ref": "#/components/schemas/DailyLocation"
       },
@@ -1867,6 +1902,7 @@
   "ReferenceLocation": {
     "discriminator": {
       "mapping": {
+        "coalesced_location": "#/components/schemas/CoalescedLocation",
         "daily_location": "#/components/schemas/DailyLocation",
         "majority_location": "#/components/schemas/MajorityLocation",
         "modal_location": "#/components/schemas/ModalLocation",
@@ -1876,6 +1912,9 @@
       "propertyName": "query_kind"
     },
     "oneOf": [
+      {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
       {
         "$ref": "#/components/schemas/DailyLocation"
       },

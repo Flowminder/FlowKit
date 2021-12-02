@@ -762,11 +762,41 @@ queries = [
     partial(
         flowclient.flows,
         from_location=flowclient.coalesced_location_spec(
-            preferred_location=flowclient.daily_location_spec(
-                date="2016-01-02", aggregation_unit="admin3", method="last"
+            preferred_location=flowclient.majority_location_spec(
+                subscriber_location_weights=flowclient.location_visits_spec(
+                    locations=[
+                        flowclient.daily_location_spec(
+                            date="2016-01-01",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                        flowclient.daily_location_spec(
+                            date="2016-01-02",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                    ]
+                ),
             ),
-            fallback_location=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="admin3", method="last"
+            fallback_location=flowclient.majority_location_spec(
+                subscriber_location_weights=flowclient.location_visits_spec(
+                    locations=[
+                        flowclient.daily_location_spec(
+                            date="2016-01-01",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                        flowclient.daily_location_spec(
+                            date="2016-01-02",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                    ]
+                ),
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -781,11 +811,41 @@ queries = [
             weight_threshold=2,
         ),
         to_location=flowclient.coalesced_location_spec(
-            preferred_location=flowclient.daily_location_spec(
-                date="2016-01-06", aggregation_unit="admin3", method="last"
+            preferred_location=flowclient.majority_location_spec(
+                subscriber_location_weights=flowclient.location_visits_spec(
+                    locations=[
+                        flowclient.daily_location_spec(
+                            date="2016-01-01",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                        flowclient.daily_location_spec(
+                            date="2016-01-02",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                    ]
+                ),
             ),
-            fallback_location=flowclient.daily_location_spec(
-                date="2016-01-05", aggregation_unit="admin3", method="last"
+            fallback_location=flowclient.majority_location_spec(
+                subscriber_location_weights=flowclient.location_visits_spec(
+                    locations=[
+                        flowclient.daily_location_spec(
+                            date="2016-01-01",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                        flowclient.daily_location_spec(
+                            date="2016-01-02",
+                            aggregation_unit="admin3",
+                            method="last",
+                            subscriber_subset=None,
+                        ),
+                    ]
+                ),
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -811,6 +871,24 @@ queries = [
     "query",
     queries,
     ids=lambda val: f"{val.func.__name__}({val.keywords})",
+)
+@pytest.mark.xfail(
+    query=partial(
+        flowclient.joined_spatial_aggregate,
+        locations=flowclient.daily_location_spec(
+            date="2016-01-01", aggregation_unit="admin3", method="last"
+        ),
+        metric=flowclient.displacement_spec(
+            start_date="2016-01-01",
+            end_date="2016-01-02",
+            statistic="avg",
+            reference_location=flowclient.daily_location_spec(
+                date="2016-01-01", aggregation_unit="lon-lat", method="last"
+            ),
+            event_types=["calls", "sms"],
+        ),
+    ),
+    reason="Under new schema rules, cannot mix admin levels. See bug #4649",
 )
 async def test_run_query(connection, query, universal_access_token, flowapi_url):
     """

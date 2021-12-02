@@ -338,16 +338,48 @@ def test_construct_query(diff_reporter):
             "from_location": {
                 "query_kind": "coalesced_location",
                 "preferred_location": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-02",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
                 },
                 "fallback_location": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
                 },
                 "subscriber_location_weights": {
                     "query_kind": "location_visits",
@@ -373,16 +405,48 @@ def test_construct_query(diff_reporter):
             "to_location": {
                 "query_kind": "coalesced_location",
                 "preferred_location": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-06",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
                 },
                 "fallback_location": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-05",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
                 },
                 "subscriber_location_weights": {
                     "query_kind": "location_visits",
