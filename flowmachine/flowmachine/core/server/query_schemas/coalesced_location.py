@@ -60,10 +60,10 @@ class SubscriberLocationMappingQueries(OneOfSchema):
 
     type_field = "query_kind"
     type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-        "most_frequent_location": MostFrequentLocationSchema,
-        "visited_most_days": VisitedMostDaysSchema,
+        # "daily_location": DailyLocationSchema,
+        # "modal_location": ModalLocationSchema,
+        # "most_frequent_location": MostFrequentLocationSchema,
+        # "visited_most_days": VisitedMostDaysSchema,
         "majority_location": MajorityLocationSchema,
     }
 
