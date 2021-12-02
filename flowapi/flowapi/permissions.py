@@ -43,7 +43,8 @@ def enum_paths(
         and len(tree["enum"]) > 1
         and new_path[-1] in argument_names_to_extract
     ):
-        yield from zip(repeat(new_path), tree["enum"])
+        pth = list(zip(repeat(new_path), tree["enum"]))
+        yield (new_path, "{agg_unit}")
     elif "items" in tree.keys():
         yield from enum_paths(paths=new_path, tree=tree["items"])
     else:
@@ -267,7 +268,6 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     >>> list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
     ["get_result&dummy", "run&dummy", "get_result&available_dates"],
     """
-    resolved = ResolvingParser(spec_string=dumps(schema))
     yield from per_query_scopes(
         queries=ResolvingParser(spec_string=dumps(schema)).specification["components"][
             "schemas"
