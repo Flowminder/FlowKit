@@ -55,7 +55,6 @@ class CoalescedLocationExposed(BaseExposedQueryWithSampling):
 class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
     """
     Schema that exposes CoalescedLocation with a specific fallback
-
     """
 
     query_kind = fields.String(validate=OneOf(["coalesced_location"]))

@@ -1,0 +1,421 @@
+{
+  "261b85fc9c64253889174ea8151f1d69": {
+    "query_kind": "spatial_aggregate",
+    "locations": {
+      "query_kind": "daily_location",
+      "date": "2016-01-01",
+      "aggregation_unit": "admin3",
+      "method": "last",
+      "event_types": [
+        "calls",
+        "sms"
+      ],
+      "subscriber_subset": null,
+      "sampling": {
+        "sampling_method": "bernoulli",
+        "size": 10,
+        "seed": 0.5,
+        "fraction": null,
+        "estimate_count": false
+      }
+    }
+  },
+  "e142ffb3174add433422c2724a08c02b": {
+    "query_kind": "spatial_aggregate",
+    "locations": {
+      "query_kind": "daily_location",
+      "date": "2016-01-01",
+      "aggregation_unit": "admin3",
+      "method": "last",
+      "event_types": null,
+      "subscriber_subset": null,
+      "sampling": null
+    }
+  },
+  "4ae98753ec0f8a86a6d46657b3649d7d": {
+    "query_kind": "location_event_counts",
+    "start_date": "2016-01-01",
+    "end_date": "2016-01-02",
+    "interval": "day",
+    "aggregation_unit": "admin3",
+    "direction": "both",
+    "event_types": null,
+    "subscriber_subset": null
+  },
+  "ea5d819b0128448732785dea44bcd866": {
+    "query_kind": "spatial_aggregate",
+    "locations": {
+      "query_kind": "modal_location",
+      "locations": [
+        {
+          "query_kind": "daily_location",
+          "date": "2016-01-01",
+          "aggregation_unit": "admin3",
+          "method": "last",
+          "subscriber_subset": null
+        },
+        {
+          "query_kind": "daily_location",
+          "date": "2016-01-02",
+          "aggregation_unit": "admin3",
+          "method": "last",
+          "subscriber_subset": null
+        }
+      ]
+    }
+  },
+  "6521353e7563ed700dfd2cf90721934b": {
+    "query_kind": "geography",
+    "aggregation_unit": "admin3"
+  },
+  "fe9d9b685b45fc4924d268e718ecc1e0": {
+    "query_kind": "meaningful_locations_aggregate",
+    "aggregation_unit": "admin1",
+    "start_date": "2016-01-01",
+    "end_date": "2016-01-02",
+    "label": "unknown",
+    "labels": {
+      "evening": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1e-06,
+              -0.5
+            ],
+            [
+              1e-06,
+              -1.1
+            ],
+            [
+              1.1,
+              -1.1
+            ],
+            [
+              1.1,
+              -0.5
+            ]
+          ]
+        ]
+      },
+      "day": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.1,
+              -0.5
+            ],
+            [
+              -1.1,
+              0.5
+            ],
+            [
+              -1e-06,
+              0.5
+            ],
+            [
+              0,
+              -0.5
+            ]
+          ]
+        ]
+      }
+    },
+    "tower_hour_of_day_scores": [
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      -1,
+      -1,
+      -1
+    ],
+    "tower_day_of_week_scores": {
+      "monday": 1,
+      "tuesday": 1,
+      "wednesday": 1,
+      "thursday": 0,
+      "friday": -1,
+      "saturday": -1,
+      "sunday": -1
+    },
+    "tower_cluster_radius": 1.0,
+    "tower_cluster_call_threshold": 0,
+    "subscriber_subset": null
+  },
+  "145a4f9f65ffa930a7224f3e131e482f": {
+    "query_kind": "meaningful_locations_between_label_od_matrix",
+    "aggregation_unit": "admin1",
+    "start_date": "2016-01-01",
+    "end_date": "2016-01-02",
+    "label_a": "day",
+    "label_b": "evening",
+    "labels": {
+      "day": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.1,
+              -0.5
+            ],
+            [
+              -1.1,
+              0.5
+            ],
+            [
+              -1e-06,
+              0.5
+            ],
+            [
+              0,
+              -0.5
+            ]
+          ]
+        ]
+      },
+      "evening": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1e-06,
+              -0.5
+            ],
+            [
+              1e-06,
+              -1.1
+            ],
+            [
+              1.1,
+              -1.1
+            ],
+            [
+              1.1,
+              -0.5
+            ]
+          ]
+        ]
+      }
+    },
+    "tower_hour_of_day_scores": [
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      -1,
+      -1,
+      -1
+    ],
+    "tower_day_of_week_scores": {
+      "monday": 1,
+      "tuesday": 1,
+      "wednesday": 1,
+      "thursday": 0,
+      "friday": -1,
+      "saturday": -1,
+      "sunday": -1
+    },
+    "tower_cluster_radius": 1.0,
+    "tower_cluster_call_threshold": 0,
+    "event_types": null,
+    "subscriber_subset": null
+  },
+  "32db130159c1f97f5407b5ac8207c6cb": {
+    "query_kind": "meaningful_locations_between_dates_od_matrix",
+    "aggregation_unit": "admin1",
+    "start_date_a": "2016-01-01",
+    "end_date_a": "2016-01-02",
+    "start_date_b": "2016-01-01",
+    "end_date_b": "2016-01-05",
+    "label": "unknown",
+    "labels": {
+      "day": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.1,
+              -0.5
+            ],
+            [
+              -1.1,
+              0.5
+            ],
+            [
+              -1e-06,
+              0.5
+            ],
+            [
+              0,
+              -0.5
+            ]
+          ]
+        ]
+      },
+      "evening": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1e-06,
+              -0.5
+            ],
+            [
+              1e-06,
+              -1.1
+            ],
+            [
+              1.1,
+              -1.1
+            ],
+            [
+              1.1,
+              -0.5
+            ]
+          ]
+        ]
+      }
+    },
+    "tower_hour_of_day_scores": [
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      -1,
+      -1,
+      -1
+    ],
+    "tower_day_of_week_scores": {
+      "monday": 1,
+      "tuesday": 1,
+      "wednesday": 1,
+      "thursday": 0,
+      "friday": -1,
+      "saturday": -1,
+      "sunday": -1
+    },
+    "tower_cluster_radius": 1.0,
+    "tower_cluster_call_threshold": 2,
+    "event_types": [
+      "calls",
+      "sms"
+    ],
+    "subscriber_subset": null
+  },
+  "c3dc95da89aeb0908b9398918dab6f26": {
+    "query_kind": "flows",
+    "from_location": {
+      "query_kind": "daily_location",
+      "date": "2016-01-01",
+      "aggregation_unit": "admin3",
+      "method": "last"
+    },
+    "to_location": {
+      "query_kind": "unique_locations",
+      "start_date": "2016-01-01",
+      "end_date": "2016-01-04",
+      "aggregation_unit": "admin3"
+    },
+    "join_type": "left outer"
+  },
+  "115c2688d7476f3f6ab5550e40b48b55": {
+    "query_kind": "flows",
+    "from_location": {
+      "query_kind": "majority_location",
+      "subscriber_location_weights": {
+        "query_kind": "location_visits",
+        "locations": [
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          },
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-02",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          }
+        ]
+      }
+    },
+    "to_location": {
+      "query_kind": "majority_location",
+      "subscriber_location_weights": {
+        "query_kind": "location_visits",
+        "locations": [
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-04",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          },
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-05",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          }
+        ]
+      }
+    }
+  }
+}
