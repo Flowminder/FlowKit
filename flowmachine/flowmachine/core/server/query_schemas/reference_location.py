@@ -32,5 +32,5 @@ class ReferenceLocationSchema(OneOfSchema):
         "most_frequent_location": MostFrequentLocationSchema,
         "visited_most_days": VisitedMostDaysSchema,
         "majority_location": MajorityLocationSchema,
-        # "coalesced_location": CoalescedLocationSchema,
+        "coalesced_location": CoalescedLocationSchema,
     }

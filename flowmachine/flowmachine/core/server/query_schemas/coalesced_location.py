@@ -43,54 +43,25 @@ class CoalescedLocationExposed(BaseExposedQueryWithSampling):
     @property
     def _unsampled_query_obj(self):
         return CoalescedLocation(
-            preferred_locations=self.preferred_location._unsampled_query_obj,
+            preferred_locations=self.preferred_location._flowmachine_query_obj,
             fallback_locations=FilteredReferenceLocation(
-                reference_locations_query=self.fallback_location._unsampled_query_obj,
-                filter_query=self.subscriber_location_weights._unsampled_query_obj,
+                reference_locations_query=self.fallback_location._flowmachine_query_obj,
+                filter_query=self.subscriber_location_weights._flowmachine_query_obj,
                 lower_bound=self.weight_threshold,
             ),
         )
 
 
-# Wanted this to be
-class SubscriberLocationMappingQueries(OneOfSchema):
-    """
-    A set of queries that return a mapping between unique subscribers and locations
-    """
-
-    type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-        "most_frequent_location": MostFrequentLocationSchema,
-        "visited_most_days": VisitedMostDaysSchema,
-        "majority_location": MajorityLocationSchema,
-    }
-
-
-class SubscriberWeightMappingQueries(OneOfSchema):
-    """
-    Set of queries that map a subscriber to a set of weights
-    """
-
-    type_field = "query_kind"
-    type_schemas = {
-        "location_visits": LocationVisitsSchema,
-        # These don't seem to be exposed yet
-        # "call_days": CallDaysSchema
-        # "per_location_subscriber_call_duration" :PerLocationSubscriberCallDurationSchema
-    }
-
-
 class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
     """
-    Schema that exposes CoalescedLocation
+    Schema that exposes CoalescedLocation with a specific fallback
+
     """
 
     query_kind = fields.String(validate=OneOf(["coalesced_location"]))
-    preferred_location = fields.Nested(SubscriberLocationMappingQueries)
-    fallback_location = fields.Nested(SubscriberLocationMappingQueries)
-    subscriber_location_weights = fields.Nested(SubscriberWeightMappingQueries)
+    preferred_location = fields.Nested(MajorityLocationSchema)
+    fallback_location = fields.Nested(MajorityLocationSchema)
+    subscriber_location_weights = fields.Nested(LocationVisitsSchema)
     weight_threshold = fields.Integer()
 
     __model__ = CoalescedLocationExposed
