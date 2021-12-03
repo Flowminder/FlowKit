@@ -611,7 +611,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:01774a2c2c729619760320270e42cd9e797427ecfddd32c2a7b639cdc481f3c0",
@@ -840,11 +840,11 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:c8f3e07aefb9cf9e067f39686f035ce09b27a1ee602116a3030b91b6fc138ee4",
-                "sha256:d41f8e80b99690122400f9b2069b12f670246a1b4cc5d332bd6c4e2500e6d6fb"
+                "sha256:cb6aef731bf708a7727ab6cde8df87f0281b1427d41e65d62d4b68934fa54e97",
+                "sha256:fc60ef843e0863dd4e24ab2bb5698f071031332801ecf8d1aeb4fb622056545c"
             ],
             "index": "pypi",
-            "version": "==7.30.0"
+            "version": "==7.30.1"
         },
         "jedi": {
             "hashes": [
