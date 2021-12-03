@@ -27,40 +27,14 @@ class MobilityClassification(SubscriberFeature):
             f"SELECT subscriber, {loc_cols_string}, {i} AS ordinal FROM ({loc.get_query()}) _"
             for i, loc in enumerate(self.locations)
         )
-        # Can probably skip this sub-query, and just join to locations[-1] and put "coalesce({loc_cols_string}) IS NULL" in the final step
-        this_month_activity = f"""
-        SELECT
-            subscriber,
-            coalesce({loc_cols_string}) IS NULL AS unlocatable
-        FROM ({self.locations[-1].get_query()}) AS most_recent_period
-        """
 
         long_term_activity = f"""
         SELECT
             subscriber,
             count(*) < {len(self.locations)} AS sometimes_inactive,
             count(coalesce({loc_cols_string})) < {len(self.locations)} AS sometimes_unlocatable
-        FROM ({locations_union}) locations_union
+        FROM ({locations_union}) AS locations_union
         GROUP BY subscriber
-        """
-
-        # Alternative approach for long_term_activity
-        # Note: could equally well use INTERSECT ALL or INNER JOIN here
-        long_term_active = " INTERSECT ".join(
-            f"SELECT subscriber FROM ({loc.get_query()}) _" for loc in self.locations
-        )
-        long_term_locatable = " INTERSECT ".join(
-            f"SELECT subscriber FROM ({loc.get_query()}) _ WHERE coalesce({loc_cols_string}) IS NOT NULL"
-            for loc in self.locations
-        )
-        alternative_long_term_activity = f"""
-        SELECT subscriber, TRUE AS always_active, always_locatable
-        FROM ({long_term_active}) long_term_active
-        LEFT JOIN (
-            SELECT subscriber, TRUE AS always_locatable
-            FROM ({long_term_locatable}) _
-        ) long_term_locatable
-        USING (subscriber)
         """
 
         # Find stay lengths using gaps-and-islands approach
@@ -76,22 +50,21 @@ class MobilityClassification(SubscriberFeature):
                         PARTITION BY subscriber, {loc_cols_string}
                         ORDER BY ordinal
                     ) AS stay_id
-                FROM ({locations_union}) locations_union
+                FROM ({locations_union}) AS locations_union
             ) locations_with_stay_id
             GROUP BY subscriber, {loc_cols_string}, stay_id
-        )
+        ) stay_lengths
         GROUP BY subscriber
         """
 
-        # TODO: try to choose some shorter labels
         sql = f"""
         SELECT
             subscriber,
             CASE
-                WHEN coalesce({loc_cols_string}) IS NULL THEN 'unlocatable'
-                WHEN sometimes_inactive THEN 'sometimes_inactive'
-                WHEN sometimes_unlocatable THEN 'sometimes_unlocatable'
-                WHEN longest_stay < {self.stay_length_threshold} THEN 'highly_mobile'
+                WHEN coalesce({loc_cols_string}) IS NULL THEN 'unlocated'
+                WHEN sometimes_inactive THEN 'irregular'
+                WHEN sometimes_unlocatable THEN 'not_always_locatable'
+                WHEN longest_stay < {self.stay_length_threshold} THEN 'mobile'
                 ELSE 'stable'
             END AS value
         FROM ({self.locations[-1].get_query()}) AS most_recent_period
@@ -101,58 +74,47 @@ class MobilityClassification(SubscriberFeature):
         USING (subscriber)
         """
 
-        # Alternative, using alternative_long_term_activity
-        alternative_sql = f"""
-        SELECT
-            subscriber,
-            CASE
-                WHEN coalesce({loc_cols_string}) IS NULL THEN 'unlocatable'
-                WHEN NOT coalesce(always_active, FALSE) THEN 'sometimes_inactive'
-                WHEN NOT coalesce(always_locatable, FALSE) THEN 'sometimes_unlocatable'
-                WHEN longest_stay < {self.stay_length_threshold} THEN 'highly_mobile'
-                ELSE 'stable'
-            END AS value
-        FROM ({self.locations[-1].get_query()}) AS most_recent_period
-        LEFT JOIN ({long_term_activity}) AS alternative_long_term_activity
-        USING (subscriber)
-        LEFT JOIN ({long_term_mobility}) AS long_term_mobility
-        USING (subscriber)
-        """
+        # # Alternative approach, by intersecting to find always-active and always-locatable subsets
+        # # instead of counting active/locatable periods per subscriber.
+        # # From a test on 100000 subscribers, this approach is slower.
+        # long_term_active_subq = f"""
+        # SELECT subscriber
+        # FROM ({self.locations[0].get_query()}) loc0
+        # """ + "\n".join(
+        #     f"INNER JOIN ({loc.get_query()}) loc{i+1} USING (subscriber)"
+        #     for i, loc in enumerate(self.locations[1:])
+        # )
+        # long_term_locatable_subq = f"""
+        # SELECT subscriber
+        # FROM (SELECT * FROM ({self.locations[0].get_query()}) _ WHERE coalesce({loc_cols_string}) IS NOT NULL) loc0
+        # """ + "\n".join(
+        #     f"INNER JOIN (SELECT * FROM ({loc.get_query()}) _ WHERE coalesce({loc_cols_string}) IS NOT NULL) loc{i+1} USING (subscriber)"
+        #     for i, loc in enumerate(self.locations[1:])
+        # )
+        # alternative_long_term_activity = f"""
+        # SELECT subscriber, TRUE AS always_active, always_locatable
+        # FROM ({long_term_active_subq}) long_term_active
+        # LEFT JOIN (
+        #     SELECT subscriber, TRUE AS always_locatable
+        #     FROM ({long_term_locatable_subq}) _
+        # ) long_term_locatable
+        # USING (subscriber)
+        # """
+        # alternative_sql = f"""
+        # SELECT
+        #     subscriber,
+        #     CASE
+        #         WHEN coalesce({loc_cols_string}) IS NULL THEN 'unlocatable'
+        #         WHEN NOT coalesce(always_active, FALSE) THEN 'sometimes_inactive'
+        #         WHEN NOT coalesce(always_locatable, FALSE) THEN 'sometimes_unlocatable'
+        #         WHEN longest_stay < {self.stay_length_threshold} THEN 'highly_mobile'
+        #         ELSE 'stable'
+        #     END AS value
+        # FROM ({self.locations[-1].get_query()}) AS most_recent_period
+        # LEFT JOIN ({alternative_long_term_activity}) AS alternative_long_term_activity
+        # USING (subscriber)
+        # LEFT JOIN ({long_term_mobility}) AS long_term_mobility
+        # USING (subscriber)
+        # """
 
         return sql
-
-
-# Approach 1 - assign boolean flags to all subscribers, then join and get label using CASE WHEN:
-#     1. Identify subscribers as "unlocatable" or not this month
-#     2. Identify subscribers as "sometimes_inactive" or not, and "sometimes_unlocatable" or not, over all months
-#     3. Identify subscribers as "highly_mobile" or not over all months
-#     4. SELECT subscriber, unlocatable, sometimes_inactive, sometimes_unlocatable, highly_mobile
-#        FROM (1) this_month_activity
-#        LEFT JOIN (2) long_term_activity
-#        LEFT JOIN (3) long_term_mobility
-#        USING (subscriber)
-#     5. CASE WHEN unlocatable THEN 'unlocatable'
-#             WHEN sometimes_inactive THEN 'sometimes_inactive'
-#             WHEN sometimes_unlocatable THEN 'sometimes_unlocatable'
-#             WHEN highly_mobile THEN 'highly_mobile'
-#             ELSE 'stable'
-#
-# Approach 2 - get subscriber subset for each level in flow diagram, then recursively join and get label using COALESCE:
-#     1. All subs this month ("active")
-#     2. All subs this month where location is not null ("locatable")
-#     3. (2) INTERSECT (intersection of subscribers from all months) ("always active")
-#     4. (3) INTERSECT (intersection of subscribers from all months where location is not null) ("always locatable")
-#     5. (4) INTERSECT (subscribers who spent more than 2 consecutive months at the same location) ("stable")
-#     6. SELECT subscriber, coalesce(value, 'sometimes_unlocatable') AS value
-#        FROM (3) always_active
-#        LEFT JOIN (
-#            SELECT subscriber, coalesce(value, 'highly_mobile') AS value
-#            FROM (4) always_locatable
-#            LEFT JOIN (
-#                SELECT subscriber, 'stable' AS value
-#                FROM (5) stable
-#            ) labelled_stable
-#            USING (subscriber)
-#        ) labelled_always_locatable
-#        USING (subscriber)
-#        (etc.)
