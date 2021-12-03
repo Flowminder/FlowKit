@@ -23,6 +23,9 @@ class MobilityClassification(SubscriberFeature):
 
     def _make_query(self):
         loc_cols_string = ", ".join(self.locations[0].spatial_unit.location_id_columns)
+
+        # Note: in some ways it would be nicer to use a DayTrajectories query instead of a list of location queries,
+        # but DayTrajectories only works with queries that have 'start' and 'stop' attributes
         locations_union = " UNION ALL ".join(
             f"SELECT subscriber, {loc_cols_string}, {i} AS ordinal FROM ({loc.get_query()}) _"
             for i, loc in enumerate(self.locations)
