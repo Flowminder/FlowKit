@@ -74,47 +74,4 @@ class MobilityClassification(SubscriberFeature):
         USING (subscriber)
         """
 
-        # # Alternative approach, by intersecting to find always-active and always-locatable subsets
-        # # instead of counting active/locatable periods per subscriber.
-        # # From a test on 100000 subscribers, this approach is slower.
-        # long_term_active_subq = f"""
-        # SELECT subscriber
-        # FROM ({self.locations[0].get_query()}) loc0
-        # """ + "\n".join(
-        #     f"INNER JOIN ({loc.get_query()}) loc{i+1} USING (subscriber)"
-        #     for i, loc in enumerate(self.locations[1:])
-        # )
-        # long_term_locatable_subq = f"""
-        # SELECT subscriber
-        # FROM (SELECT * FROM ({self.locations[0].get_query()}) _ WHERE coalesce({loc_cols_string}) IS NOT NULL) loc0
-        # """ + "\n".join(
-        #     f"INNER JOIN (SELECT * FROM ({loc.get_query()}) _ WHERE coalesce({loc_cols_string}) IS NOT NULL) loc{i+1} USING (subscriber)"
-        #     for i, loc in enumerate(self.locations[1:])
-        # )
-        # alternative_long_term_activity = f"""
-        # SELECT subscriber, TRUE AS always_active, always_locatable
-        # FROM ({long_term_active_subq}) long_term_active
-        # LEFT JOIN (
-        #     SELECT subscriber, TRUE AS always_locatable
-        #     FROM ({long_term_locatable_subq}) _
-        # ) long_term_locatable
-        # USING (subscriber)
-        # """
-        # alternative_sql = f"""
-        # SELECT
-        #     subscriber,
-        #     CASE
-        #         WHEN coalesce({loc_cols_string}) IS NULL THEN 'unlocatable'
-        #         WHEN NOT coalesce(always_active, FALSE) THEN 'sometimes_inactive'
-        #         WHEN NOT coalesce(always_locatable, FALSE) THEN 'sometimes_unlocatable'
-        #         WHEN longest_stay < {self.stay_length_threshold} THEN 'highly_mobile'
-        #         ELSE 'stable'
-        #     END AS value
-        # FROM ({self.locations[-1].get_query()}) AS most_recent_period
-        # LEFT JOIN ({alternative_long_term_activity}) AS alternative_long_term_activity
-        # USING (subscriber)
-        # LEFT JOIN ({long_term_mobility}) AS long_term_mobility
-        # USING (subscriber)
-        # """
-
         return sql
