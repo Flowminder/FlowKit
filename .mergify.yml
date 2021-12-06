@@ -1,3 +1,11 @@
+queue_rules:
+  - name: default
+    method: merge
+    conditions:
+      - status-success=run_build_pipeline
+      - base=master
+
+
 pull_request_rules:
   - name: Automatic merge for approved PRs labelled as ready
     conditions:
@@ -6,17 +14,17 @@ pull_request_rules:
       - label=ready-to-merge
       - status-success=run_build_pipeline
     actions:
-      merge:
-        method: merge
-        strict: smart
+      queue:
+        name: default
+
   - name: automatic merge for Dependabot pull requests on master
     conditions:
       - author=dependabot[bot]
       - status-success=run_build_pipeline
       - base=master
     actions:
-      merge:
-        method: merge
+      queue:
+        - name: default
   - name: automatic bump for Dependabot pull requests on master
     conditions:
       - author=dependabot[bot]
