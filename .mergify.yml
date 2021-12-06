@@ -1,6 +1,5 @@
 queue_rules:
   - name: default
-    method: merge
     conditions:
       - status-success=run_build_pipeline
       - base=master
@@ -16,6 +15,7 @@ pull_request_rules:
     actions:
       queue:
         name: default
+        method: merge
 
   - name: automatic merge for Dependabot pull requests on master
     conditions:
@@ -24,7 +24,8 @@ pull_request_rules:
       - base=master
     actions:
       queue:
-        - name: default
+        name: default
+        method: merge
   - name: automatic bump for Dependabot pull requests on master
     conditions:
       - author=dependabot[bot]
