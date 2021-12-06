@@ -841,15 +841,20 @@
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
+        "majority_location": "#/components/schemas/MajorityLocation",
         "modal_location": "#/components/schemas/ModalLocation",
         "most_frequent_location": "#/components/schemas/MostFrequentLocation",
-        "unique_locations": "#/components/schemas/UniqueLocations"
+        "unique_locations": "#/components/schemas/UniqueLocations",
+        "visited_most_days": "#/components/schemas/VisitedMostDays"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
         "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MajorityLocation"
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
@@ -859,6 +864,9 @@
       },
       {
         "$ref": "#/components/schemas/UniqueLocations"
+      },
+      {
+        "$ref": "#/components/schemas/VisitedMostDays"
       }
     ]
   },
@@ -1133,6 +1141,61 @@
       "aggregation_unit",
       "end_date",
       "start_date"
+    ],
+    "type": "object"
+  },
+  "LocationVisits": {
+    "properties": {
+      "locations": {
+        "items": {
+          "$ref": "#/components/schemas/VisitableLocation"
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "query_kind": {
+        "enum": [
+          "location_visits"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      }
+    },
+    "type": "object"
+  },
+  "MajorityLocation": {
+    "properties": {
+      "include_unlocatable": {
+        "default": false,
+        "type": "boolean"
+      },
+      "query_kind": {
+        "enum": [
+          "majority_location"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "subscriber_location_weights": {
+        "$ref": "#/components/schemas/WeightedLocationQueries"
+      }
+    },
+    "required": [
+      "subscriber_location_weights"
     ],
     "type": "object"
   },
@@ -1805,6 +1868,7 @@
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
+        "majority_location": "#/components/schemas/MajorityLocation",
         "modal_location": "#/components/schemas/ModalLocation",
         "most_frequent_location": "#/components/schemas/MostFrequentLocation",
         "visited_most_days": "#/components/schemas/VisitedMostDays"
@@ -1814,6 +1878,9 @@
     "oneOf": [
       {
         "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MajorityLocation"
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
@@ -2557,6 +2624,23 @@
     },
     "type": "object"
   },
+  "VisitableLocation": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
+      }
+    ]
+  },
   "VisitedMostDays": {
     "properties": {
       "aggregation_unit": {
@@ -2638,5 +2722,18 @@
       "start_date"
     ],
     "type": "object"
+  },
+  "WeightedLocationQueries": {
+    "discriminator": {
+      "mapping": {
+        "location_visits": "#/components/schemas/LocationVisits"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/LocationVisits"
+      }
+    ]
   }
 }
