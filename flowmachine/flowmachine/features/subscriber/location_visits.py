@@ -27,7 +27,7 @@ class LocationVisits(SubscriberFeature):
                                     spatial_unit=make_spatial_unit('admin', level=3),
                                     method='last', hours=(5,17))
             >>> lv.head(4)
-                    subscriber                name       dl_count
+                    subscriber                name       value
                 0   038OVABN11Ak4W5P    Dolpa      5
                 1   038OVABN11Ak4W5P    Baglung    3
                 2   038OVABN11Ak4W5P    Jhapa      2
@@ -41,7 +41,7 @@ class LocationVisits(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + self.spatial_unit.location_id_columns + ["dl_count"]
+        return ["subscriber"] + self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
         """
@@ -54,7 +54,7 @@ class LocationVisits(SubscriberFeature):
         SELECT
             day_trajectories.subscriber,
             day_trajectories.{location_columns},
-            COUNT(*) AS dl_count
+            COUNT(*) AS value
         FROM
             ({self.day_trajectories.get_query()}) AS day_trajectories
         GROUP BY 

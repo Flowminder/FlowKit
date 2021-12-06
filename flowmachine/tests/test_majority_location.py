@@ -5,7 +5,7 @@
 # -*- coding: utf-8 -*-
 
 from flowmachine.features import DayTrajectories, daily_location
-from flowmachine.features.location.majority_location import MajorityLocation
+from flowmachine.features.subscriber.majority_location import MajorityLocation
 from flowmachine.features.subscriber.location_visits import LocationVisits
 from flowmachine.features.location.total_events import TotalLocationEvents
 from flowmachine.features.subscriber.handset_stats import HandsetStats
@@ -30,7 +30,7 @@ def location_visits(flowmachine_connect):
 
 def test_majority_location(get_dataframe, location_visits):
     lv = location_visits
-    ml = MajorityLocation(subscriber_location_weights=lv, weight_column="dl_count")
+    ml = MajorityLocation(subscriber_location_weights=lv, weight_column="value")
     out = get_dataframe(ml)
     assert len(out) == 15
     assert out.subscriber.is_unique
@@ -54,7 +54,7 @@ def test_include_unlocatable(get_dataframe, location_visits):
     lv = location_visits
     ml = MajorityLocation(
         subscriber_location_weights=lv,
-        weight_column="dl_count",
+        weight_column="value",
         include_unlocatable=True,
     )
     out_ml = get_dataframe(ml)
@@ -96,7 +96,7 @@ def test_spatial_units(exemplar_spatial_unit_param, get_dataframe):
             daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param),
         )
     )
-    ml = MajorityLocation(subscriber_location_weights=lv, weight_column="dl_count")
+    ml = MajorityLocation(subscriber_location_weights=lv, weight_column="value")
     assert ml.column_names == (["subscriber"] + lv.spatial_unit.location_id_columns)
     out = get_dataframe(ml)
     assert len(out) >= 0
