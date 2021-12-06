@@ -6,6 +6,7 @@ from typing import List
 
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
+from flowmachine.core.errors import InvalidSpatialUnitError
 
 
 class MobilityClassification(SubscriberFeature):
@@ -46,7 +47,7 @@ class MobilityClassification(SubscriberFeature):
     def __init__(self, locations: List[BaseLocation], stay_length_threshold: int = 3):
         self.locations = locations
         if len(set(l.spatial_unit for l in self.locations)) > 1:
-            raise ValueError(
+            raise InvalidSpatialUnitError(
                 "MobilityClassification requires all input locations to have the same spatial unit"
             )
         self.stay_length_threshold = int(stay_length_threshold)
@@ -59,6 +60,14 @@ class MobilityClassification(SubscriberFeature):
     def _make_query(self) -> str:
         loc_cols_string = ", ".join(self.locations[0].spatial_unit.location_id_columns)
 
+        # Workaround to count rows where all location columns are null, if there are multiple location columns
+        if len(self.locations[0].spatial_unit.location_id_columns) > 1:
+            count_unlocatable = f"sum((NOT (({loc_cols_string}) IS NULL))::int)"
+        else:
+            count_unlocatable = (
+                f"count({self.locations[0].spatial_unit.location_id_columns[0]})"
+            )
+
         # Note: in some ways it would be nicer to use a DayTrajectories query instead of a list of location queries,
         # but DayTrajectories only works with queries that have 'start' and 'stop' attributes
         locations_union = " UNION ALL ".join(
@@ -70,7 +79,7 @@ class MobilityClassification(SubscriberFeature):
         SELECT
             subscriber,
             count(*) < {len(self.locations)} AS sometimes_inactive,
-            count(coalesce({loc_cols_string})) < {len(self.locations)} AS sometimes_unlocatable
+            {count_unlocatable} < {len(self.locations)} AS sometimes_unlocatable
         FROM ({locations_union}) AS locations_union
         GROUP BY subscriber
         """
@@ -99,7 +108,7 @@ class MobilityClassification(SubscriberFeature):
         SELECT
             subscriber,
             CASE
-                WHEN coalesce({loc_cols_string}) IS NULL THEN 'unlocated'
+                WHEN ({loc_cols_string}) IS NULL THEN 'unlocated'
                 WHEN sometimes_inactive THEN 'irregular'
                 WHEN sometimes_unlocatable THEN 'not_always_locatable'
                 WHEN longest_stay < {self.stay_length_threshold} THEN 'mobile'
