@@ -872,29 +872,50 @@ queries = [
     queries,
     ids=lambda val: f"{val.func.__name__}({val.keywords})",
 )
-@pytest.mark.xfail(
-    query=partial(
-        flowclient.joined_spatial_aggregate,
-        locations=flowclient.daily_location_spec(
-            date="2016-01-01", aggregation_unit="admin3", method="last"
-        ),
-        metric=flowclient.displacement_spec(
-            start_date="2016-01-01",
-            end_date="2016-01-02",
-            statistic="avg",
-            reference_location=flowclient.daily_location_spec(
-                date="2016-01-01", aggregation_unit="lon-lat", method="last"
-            ),
-            event_types=["calls", "sms"],
-        ),
-    ),
-    reason="Under new schema rules, cannot mix admin levels. See bug #4649",
-)
 async def test_run_query(connection, query, universal_access_token, flowapi_url):
     """
     Test that queries can be run, and return a QueryResult object.
     """
     con = connection(url=flowapi_url, token=universal_access_token)
+
+    if query.keywords == {
+        "locations": {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "event_types": None,
+            "subscriber_subset": None,
+            "mapping_table": None,
+            "geom_table": None,
+            "geom_table_join_column": None,
+            "hours": None,
+        },
+        "metric": {
+            "query_kind": "displacement",
+            "start_date": "2016-01-01",
+            "end_date": "2016-01-02",
+            "statistic": "avg",
+            "reference_location": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "lon-lat",
+                "method": "last",
+                "event_types": None,
+                "subscriber_subset": None,
+                "mapping_table": None,
+                "geom_table": None,
+                "geom_table_join_column": None,
+                "hours": None,
+            },
+            "event_types": ["calls", "sms"],
+            "subscriber_subset": None,
+            "hours": None,
+        },
+    }:
+        pytest.xfail(
+            "Under new schema rules, cannot presently mix admin levels. See bug #4649"
+        )
 
     try:
         await query(connection=con).get_result()
