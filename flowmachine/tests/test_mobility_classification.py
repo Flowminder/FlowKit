@@ -97,7 +97,7 @@ def test_mobility_classification_stay_length_threshold(get_dataframe):
         locations=[
             daily_location(
                 "2016-01-01",
-                spatial_unit=make_spatial_unit("admin", level=2),
+                spatial_unit=make_spatial_unit("admin", level=3),
             ),
             daily_location(
                 "2016-01-02",
@@ -110,7 +110,7 @@ def test_mobility_classification_stay_length_threshold(get_dataframe):
         locations=[
             daily_location(
                 "2016-01-01",
-                spatial_unit=make_spatial_unit("admin", level=2),
+                spatial_unit=make_spatial_unit("admin", level=3),
             ),
             daily_location(
                 "2016-01-02",
