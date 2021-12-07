@@ -34,7 +34,10 @@ class SpatialAggregate(GeoDataMixin, Query):
     @property
     def column_names(self) -> List[str]:
         # Do we want to return the labels column as well?
-        return self.spatial_unit.location_id_columns + ["value"]
+        if self.subscriber_labels:
+            return self.spatial_unit.location_id_columns + ["label", "value"]
+        else:
+            return self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
 
