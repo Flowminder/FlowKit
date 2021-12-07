@@ -1,3 +1,10 @@
+queue_rules:
+  - name: default
+    conditions:
+      - status-success=run_build_pipeline
+      - base=master
+
+
 pull_request_rules:
   - name: Automatic merge for approved PRs labelled as ready
     conditions:
@@ -6,17 +13,20 @@ pull_request_rules:
       - label=ready-to-merge
       - status-success=run_build_pipeline
     actions:
-      merge:
+      queue:
+        name: default
         method: merge
-        strict: smart
+
   - name: automatic merge for Dependabot pull requests on master
     conditions:
       - author=dependabot[bot]
       - status-success=run_build_pipeline
       - base=master
     actions:
-      merge:
+      queue:
+        name: default
         method: merge
+
   - name: automatic bump for Dependabot pull requests on master
     conditions:
       - author=dependabot[bot]
@@ -24,6 +34,7 @@ pull_request_rules:
     actions:
       comment:
         message: "@dependabot rebase"
+
   - name: Delete branch after merge
     actions:
       delete_head_branch: {}
