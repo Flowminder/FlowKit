@@ -82,3 +82,4 @@ def test_labelled_spatial_aggregate(get_dataframe):
     df = get_dataframe(labelled)
     assert len(df) == 50
     assert len(df.pcod.unique()) == 25
+    assert len(df.label.unique()) == 2
