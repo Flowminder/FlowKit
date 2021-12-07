@@ -8,6 +8,7 @@ from flowmachine.features import (
     daily_location,
     SubscriberHandsetCharacteristic,
 )
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
@@ -62,3 +63,22 @@ def test_can_be_aggregated_admin3_distribution(get_dataframe):
     df = get_dataframe(agg)
     assert ["pcod", "metric", "key", "value"] == list(df.columns)
     assert all(df[df.metric == "value"].groupby("pcod").sum() == 1.0)
+
+
+def test_labelled_spatial_aggregate(get_dataframe):
+    """
+    Tests disaggregation by a label query
+    """
+    locations = locate_subscribers(
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+    metric = SubscriberHandsetCharacteristic(
+        "2016-01-01", "2016-01-02", characteristic="hnd_type"
+    )
+    labelled = SpatialAggregate(locations=locations, subscriber_labels=metric)
+    df = get_dataframe(labelled)
+    assert len(df) == 50
+    assert len(df.pcod.unique()) == 25
