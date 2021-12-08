@@ -8,7 +8,6 @@ from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 class LabelledSpatialAggregate(GeoDataMixin, Query):
     """
     Class representing a disaggregation of a SpatialAggregate by some label or set of labels
-    Returns a query with
     """
 
     def __init__(

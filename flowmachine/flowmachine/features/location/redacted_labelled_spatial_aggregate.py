@@ -20,7 +20,7 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, Query):
         self,
         *,
         labelled_spatial_aggregate: LabelledSpatialAggregate,
-        redaction_threshold=15,
+        redaction_threshold: int = 15,
     ):
 
         self.labelled_spatial_aggregate = labelled_spatial_aggregate

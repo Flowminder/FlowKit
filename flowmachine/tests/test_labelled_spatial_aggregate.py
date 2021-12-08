@@ -1,7 +1,9 @@
-from core import make_spatial_unit
-from features import SubscriberHandsetCharacteristic
-from features.location.labelled_spatial_aggregate import LabelledSpatialAggregate
-from features.subscriber.daily_location import locate_subscribers
+from flowmachine.core import make_spatial_unit
+from flowmachine.features import SubscriberHandsetCharacteristic
+from flowmachine.features.location.labelled_spatial_aggregate import (
+    LabelledSpatialAggregate,
+)
+from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
 def test_labelled_spatial_aggregate(get_dataframe):
@@ -18,7 +20,6 @@ def test_labelled_spatial_aggregate(get_dataframe):
         "2016-01-01", "2016-01-02", characteristic="hnd_type"
     )
     labelled = LabelledSpatialAggregate(locations=locations, subscriber_labels=metric)
-    foo = labelled.get_query()
     df = get_dataframe(labelled)
     assert len(df) == 50
     assert len(df.pcod.unique()) == 25
