@@ -12,6 +12,25 @@ valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "varianc
 
 
 class SubscriberStayLengths(SubscriberFeature):
+    """
+    Calculate stats on the lengths of a subscriber's stays at the same
+    location. From the provided sequence of reference locations, stay lengths
+    are calculated as the number of consecutive locations that are the same
+    (e.g. a subscriber with locations [A, A, B, C, C, C, A, D, D] would have
+    stay lengths [2, 1, 3, 1, 2]), and the specified statistic is calculated
+    over all of a subscriber's stay lengths.
+
+    Parameters
+    ----------
+    locations : list of BaseLocation
+        List of reference location queries, each returning a single location
+        per subscriber (or NULL location for subscribers that are active but
+        unlocatable). The list is assumed to be sorted into ascending
+        chronological order.
+    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'stddev', 'variance'}, default 'max'
+        Aggregation statistic over the stay lengths. Defaults to max.
+    """
+
     def __init__(self, locations: List[BaseLocation], statistic: str = "max"):
         self.locations = locations
         if len(set(l.spatial_unit for l in self.locations)) > 1:
