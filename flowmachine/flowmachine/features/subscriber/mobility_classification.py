@@ -60,14 +60,6 @@ class MobilityClassification(SubscriberFeature):
     def _make_query(self) -> str:
         loc_cols_string = ", ".join(self.locations[0].spatial_unit.location_id_columns)
 
-        # Workaround to count rows where all location columns are null, if there are multiple location columns
-        if len(self.locations[0].spatial_unit.location_id_columns) > 1:
-            count_unlocatable = f"sum((NOT (({loc_cols_string}) IS NULL))::int)"
-        else:
-            count_unlocatable = (
-                f"count({self.locations[0].spatial_unit.location_id_columns[0]})"
-            )
-
         # Note: in some ways it would be nicer to use a DayTrajectories query instead of a list of location queries,
         # but DayTrajectories only works with queries that have 'start' and 'stop' attributes
         locations_union = " UNION ALL ".join(
@@ -79,7 +71,7 @@ class MobilityClassification(SubscriberFeature):
         SELECT
             subscriber,
             count(*) < {len(self.locations)} AS sometimes_inactive,
-            {count_unlocatable} < {len(self.locations)} AS sometimes_unlocatable
+            bool_or(({loc_cols_string}) IS NULL) AS sometimes_unlocatable
         FROM ({locations_union}) AS locations_union
         GROUP BY subscriber
         """
