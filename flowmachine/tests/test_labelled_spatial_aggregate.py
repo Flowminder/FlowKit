@@ -10,7 +10,7 @@ from flowmachine.features.location.labelled_spatial_aggregate import (
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
-def test_labelled_spatial_aggregate(get_dataframe):
+def test_one_label(get_dataframe):
     """
     Tests disaggregation by a label query
     """
@@ -28,6 +28,41 @@ def test_labelled_spatial_aggregate(get_dataframe):
     assert len(df) == 50
     assert len(df.pcod.unique()) == 25
     assert len(df.label_value.unique()) == 2
+    # Total number of values should equal the initial number of subscribers
+    assert sum(map(int, df.value.tolist())) == len(get_dataframe(metric))
+
+
+def test_multiple_labels(get_dataframe):
+    """
+    Tests disaggregation by multiple labels
+    """
+    locations = locate_subscribers(
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+    metric = SubscriberHandsetCharacteristic(
+        "2016-01-01", "2016-01-02", characteristic="hnd_type"
+    ).join(
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-02", characteristic="model"
+        ),
+        on_left="subscriber",
+        left_append="_hnd_type",
+        right_append="_model",
+    )
+    labelled = LabelledSpatialAggregate(
+        locations=locations,
+        subscriber_labels=metric,
+        label_columns=["value_hnd_type", "value_model"],
+    )
+    df = get_dataframe(labelled)
+    foo = labelled.get_query()
+    assert all(
+        df.columns == ["pcod", "label_value_hnd_type", "label_value_model", "value"]
+    )
+    assert len(df) > 300
 
 
 def test_label_validation():
