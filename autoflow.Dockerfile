@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10.1-slim
 
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
