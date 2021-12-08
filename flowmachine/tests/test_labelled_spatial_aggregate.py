@@ -1,5 +1,8 @@
 import pytest
 
+from pandas.testing import assert_series_equal
+
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.core.dummy_query import DummyQuery
 from flowmachine.features import TotalLocationEvents
 from flowmachine.core import make_spatial_unit
@@ -29,7 +32,11 @@ def test_one_label(get_dataframe):
     assert len(df.pcod.unique()) == 25
     assert len(df.label_value.unique()) == 2
     # Total number of values should equal the initial number of subscribers
-    assert sum(map(int, df.value.tolist())) == len(get_dataframe(metric))
+    assert df.value.sum() == len(get_dataframe(locations))
+    assert (
+        df.groupby("pcod").value.sum().tolist()
+        == get_dataframe(SpatialAggregate(locations=locations)).value.tolist()
+    )
 
 
 def test_multiple_labels(get_dataframe):
@@ -58,7 +65,6 @@ def test_multiple_labels(get_dataframe):
         label_columns=["value_hnd_type", "value_model"],
     )
     df = get_dataframe(labelled)
-    foo = labelled.get_query()
     assert all(
         df.columns == ["pcod", "label_value_hnd_type", "label_value_model", "value"]
     )
