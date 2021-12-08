@@ -59,7 +59,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
             )
         if "subscriber" not in locations.column_names:
             raise ValueError(f"Locations query must have a subscriber column")
-        if "spatial_unit" not in dir(locations):
+        if not hasattr(locations, "spatial_unit"):
             raise ValueError(f"Locations must have a spatial_unit attribute")
         if "subscriber" in label_columns:
             raise ValueError(f"'subscriber' cannot be a label")
