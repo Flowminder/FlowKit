@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 from typing import List
 
 from flowmachine.features.location.labelled_spatial_aggregate import (
@@ -9,11 +13,14 @@ from flowmachine.core.mixins import GeoDataMixin
 
 class RedactedLabelledSpatialAggregate(GeoDataMixin, Query):
     """
-    Query that drops and reaggregates data if any 'label' column falls below redcation_threshold
+    Query that drops any locations that, when disaggregated by label, reveal a number of subscribers
+    less than redaction_threshold
     Parameters
     ----------
-    labelled_spatial_aggregate
-    redaction_threshold
+    labelled_spatial_aggregate: LabelledSpatialAggregate
+        The LabelledSpatialAggregate query to redact
+    redaction_threshold: int default 15
+        If any labels within a location reveal less than this number of subscribers, that location is dropeed
     """
 
     def __init__(
