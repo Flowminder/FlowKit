@@ -16,6 +16,13 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
         subscriber_labels: Query,
         label_columns: List[str] = ("value",),
     ):
+        if any(
+            label_column not in subscriber_labels.column_names
+            for label_column in label_columns
+        ):
+            raise ValueError(
+                f"One of {label_columns} not a column of {subscriber_labels}"
+            )
         self.locations = locations
         self.subscriber_labels = subscriber_labels
         self.label_columns = list(label_columns)
