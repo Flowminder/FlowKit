@@ -68,6 +68,7 @@ def test_multiple_labels(get_dataframe):
     assert all(
         df.columns == ["pcod", "label_value_hnd_type", "label_value_model", "value"]
     )
+    assert all(df.columns == labelled.column_names)
     assert len(df) > 300
 
 
