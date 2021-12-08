@@ -50,13 +50,9 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
         label_columns: List[str] = ("value",),
     ):
 
-        if any(
-            label_column not in subscriber_labels.column_names
-            for label_column in label_columns
-        ):
-            raise ValueError(
-                f"One of {label_columns} not a column of {subscriber_labels}"
-            )
+        for label_column in label_columns:
+            if label_column not in subscriber_labels.column_names:
+                raise ValueError(f"{label_column} not a column of {subscriber_labels}")
         if "subscriber" not in locations.column_names:
             raise ValueError(f"Locations query must have a subscriber column")
         if not hasattr(locations, "spatial_unit"):
