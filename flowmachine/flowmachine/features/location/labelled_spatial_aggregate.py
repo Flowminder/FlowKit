@@ -78,7 +78,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     def column_names(self) -> List[str]:
         return (
             list(self.spatial_unit.location_id_columns)
-            + [f"label_{label}" for label in self.label_columns]
+            + self.out_label_columns
             + ["value"]
         )
 
