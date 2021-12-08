@@ -15,6 +15,10 @@ from flowmachine.features.location.joined_spatial_aggregate import (
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.utils import list_of_dates
 
+from flowmachine.features.location.labelled_spatial_aggregate import (
+    LabelledSpatialAggregate,
+)
+
 
 def test_can_be_aggregated_admin3(get_dataframe):
     """
@@ -78,8 +82,9 @@ def test_labelled_spatial_aggregate(get_dataframe):
     metric = SubscriberHandsetCharacteristic(
         "2016-01-01", "2016-01-02", characteristic="hnd_type"
     )
-    labelled = SpatialAggregate(locations=locations, subscriber_labels=metric)
+    labelled = LabelledSpatialAggregate(locations=locations, subscriber_labels=metric)
+    foo = labelled.get_query()
     df = get_dataframe(labelled)
     assert len(df) == 50
     assert len(df.pcod.unique()) == 25
-    assert len(df.label.unique()) == 2
+    assert len(df.label_value.unique()) == 2
