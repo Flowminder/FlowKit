@@ -21,7 +21,8 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     label_columns: List[str]
         A list of columns in subscriber_labels to aggregate on
 
-    Example:
+    Examples
+    --------
 
     >>> locations = locate_subscribers(
     ...     "2016-01-01",
