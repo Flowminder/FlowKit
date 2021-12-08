@@ -39,6 +39,7 @@ class SubscriberStayLengths(SubscriberFeature):
             for i, loc in enumerate(self.locations)
         )
 
+        # Find stay lengths using gaps-and-islands approach
         sql = f"""
         SELECT subscriber, {self.statistic}(stay_length) AS value
         FROM (
