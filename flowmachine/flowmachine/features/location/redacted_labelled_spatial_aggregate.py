@@ -20,7 +20,7 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, Query):
     labelled_spatial_aggregate: LabelledSpatialAggregate
         The LabelledSpatialAggregate query to redact
     redaction_threshold: int default 15
-        If any labels within a location reveal less than this number of subscribers, that location is dropeed
+        If any labels within a location reveal less than this number of subscribers, that location is dropped
     """
 
     def __init__(
@@ -32,6 +32,7 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, Query):
 
         self.labelled_spatial_aggregate = labelled_spatial_aggregate
         self.redaction_threshold = redaction_threshold
+        self.spatial_unit = labelled_spatial_aggregate.spatial_unit
         super().__init__()
 
     @property
@@ -43,7 +44,6 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, Query):
         aggs = ",".join(
             self.labelled_spatial_aggregate.spatial_unit.location_id_columns
         )
-        labels = self.labelled_spatial_aggregate.out_label_columns_as_string_list
         all_cols = self.labelled_spatial_aggregate.column_names_as_string_list
 
         sql = f"""
