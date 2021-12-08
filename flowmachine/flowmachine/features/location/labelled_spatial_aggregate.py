@@ -109,7 +109,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
                 {aggregate_cols}, {label_select}, count(*) AS value
             FROM 
                 ({self.locations.get_query()}) AS agg
-            JOIN
+            LEFT JOIN
                 ({self.subscriber_labels.get_query()}) AS labels USING (subscriber)
             GROUP BY
                 {aggregate_cols}, {label_group}
