@@ -8,6 +8,35 @@ from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 class LabelledSpatialAggregate(GeoDataMixin, Query):
     """
     Class representing a disaggregation of a SpatialAggregate by some label or set of labels
+
+    Parameters
+    ----------
+    locations: Query
+        Any query with a subscriber and location columns
+    subscriber_labels: Query
+        Any query with a subscriber column
+    label_columns: List[str]
+        A list of columns in subscriber_labels to aggregate on
+
+    Example:
+
+    >>> locations = locate_subscribers(
+    ...     "2016-01-01",
+    ...     "2016-01-02",
+    ...     spatial_unit=make_spatial_unit("admin", level=3),
+    ...     method="most-common",
+    ... )
+    >>> metric = SubscriberHandsetCharacteristic(
+    ...     "2016-01-01", "2016-01-02", characteristic="hnd_type"
+    ... )
+    >>> labelled = LabelledSpatialAggregate(locations=locations, subscriber_labels=metric)
+    >>> labelled.get_dataframe()
+               pcod label_value  value
+     0  524 3 08 44     Feature     36
+     1  524 3 08 44       Smart     28
+     2  524 4 12 62     Feature     44
+     3  524 4 12 62       Smart     19'
+
     """
 
     def __init__(
@@ -16,6 +45,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
         subscriber_labels: Query,
         label_columns: List[str] = ("value",),
     ):
+
         if any(
             label_column not in subscriber_labels.column_names
             for label_column in label_columns
@@ -23,6 +53,13 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
             raise ValueError(
                 f"One of {label_columns} not a column of {subscriber_labels}"
             )
+        if "subscriber" not in locations.column_names:
+            raise ValueError(f"Locations query must have a subscriber column")
+        if "spatial_unit" not in dir(locations):
+            raise ValueError(f"Locations must have a spatial_unit attribute")
+        if "subscriber" in label_columns:
+            raise ValueError(f"'subscriber' cannot be a label")
+
         self.locations = locations
         self.subscriber_labels = subscriber_labels
         self.label_columns = list(label_columns)
@@ -43,6 +80,9 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
 
     @property
     def out_label_columns_as_string_list(self):
+        """
+        Returns the label column heading as a single string
+        """
         return ",".join(self.out_label_columns)
 
     def _make_query(self):

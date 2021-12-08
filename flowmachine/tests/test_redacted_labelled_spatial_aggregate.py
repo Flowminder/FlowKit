@@ -14,7 +14,7 @@ from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
-def test_no_redaction(get_dataframe):
+def test_redaction(get_dataframe):
 
     locations = locate_subscribers(
         "2016-01-01",
