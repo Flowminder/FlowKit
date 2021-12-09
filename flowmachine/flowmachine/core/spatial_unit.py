@@ -12,9 +12,9 @@ from typing import Union, List, Iterable, Optional
 
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
-from . import Query, Table
-from .context import get_db
-from .grid import Grid
+from flowmachine.core import Query, Table
+from flowmachine.core.context import get_db
+from flowmachine.core.grid import Grid
 
 # TODO: Currently most spatial units require a FlowDB connection at init time.
 # It would be useful to remove this requirement wherever possible, and instead
