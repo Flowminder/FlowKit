@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # TODO: Add __all__
-from typing import Union, Dict, List, Optional, Tuple
+from typing import Union, Dict, List, Optional, Tuple, Any
 
 from merge_args import merge_args
 
@@ -1116,6 +1116,57 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
     return connection.make_api_query(parameters=spatial_aggregate_spec(**kwargs))
 
 
+def labelled_spatial_aggregate_spec(
+    *, locations: Dict[str, Any], subscriber_labels: Dict[str, Any],
+) -> dict:
+    """
+    Retrieves the counts of subscribers per location, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    locations : dict
+        Location query to aggregate spatially
+    subscriber_labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts
+
+    Returns
+    -------
+    dict
+        Query specification for a labelled spatial aggregate query
+    """
+    return {
+        "query_kind": "labelled_spatial_aggregate",
+        "locations": locations,
+        "subscriber_labels": subscriber_labels,
+    }
+
+
+@merge_args(labelled_spatial_aggregate_spec)
+def labelled_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Retrieves the counts of subscribers per location, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    locations : dict
+        Location query to aggregate spatially
+    subscriber_labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts
+
+    Returns
+    -------
+    APIQuery
+        Labelled spatial aggregate query
+    """
+    return connection.make_api_query(
+        parameters=labelled_spatial_aggregate_spec(**kwargs)
+    )
+
+
 def consecutive_trips_od_matrix_spec(
     *,
     start_date: str,
@@ -1279,14 +1330,11 @@ def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         trips_od_matrix query
     """
-    return connection.make_api_query(
-        parameters=trips_od_matrix_spec(**kwargs),
-    )
+    return connection.make_api_query(parameters=trips_od_matrix_spec(**kwargs),)
 
 
 def unmoving_counts_spec(
-    *,
-    unique_locations: Dict[str, Union[str, Dict[str, str]]],
+    *, unique_locations: Dict[str, Union[str, Dict[str, str]]],
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     A count by location of subscribers who were unmoving at that location.
@@ -1302,10 +1350,7 @@ def unmoving_counts_spec(
         Query specification
 
     """
-    return dict(
-        query_kind="unmoving_counts",
-        locations=unique_locations,
-    )
+    return dict(query_kind="unmoving_counts", locations=unique_locations,)
 
 
 @merge_args(unmoving_counts_spec)
@@ -1325,9 +1370,7 @@ def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         unmoving_counts query
     """
-    return connection.make_api_query(
-        parameters=unmoving_counts_spec(**kwargs),
-    )
+    return connection.make_api_query(parameters=unmoving_counts_spec(**kwargs),)
 
 
 def unmoving_at_reference_location_counts_spec(
