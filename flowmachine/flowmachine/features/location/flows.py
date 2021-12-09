@@ -193,11 +193,17 @@ class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
         cols = self.flow.column_names
         self.loc_from = ",".join([c for c in cols if c.endswith("_from")])
         self.loc_to = ",".join([c for c in cols if c.endswith("_to")])
+        self.label = ",".join(c for c in cols if c.endswith("_label"))
+        if not self.label:
+            self.label = None
         self.spatial_unit = flow.spatial_unit
         super().__init__()
 
     # Returns a query that groups by one column and sums the count
     def _groupby_col(self, sql_in, col):
+
+        if self.label:
+            col = ",".join([col, self.label])
 
         sql_out = """
                   SELECT {c}, sum(value) AS value
@@ -218,7 +224,6 @@ class OutFlow(BaseInOutFlow):
     """
 
     def _make_query(self):
-
         return self._groupby_col(self.flow.get_query(), self.loc_from)
 
     @property
@@ -229,7 +234,14 @@ class OutFlow(BaseInOutFlow):
     @property
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
-        return [f"{col}_from" for col in cols] + ["value"]
+        if hasattr(self.flow, "out_label_columns"):
+            return (
+                [f"{col}_from" for col in cols]
+                + self.flow.out_label_columns
+                + ["value"]
+            )
+        else:
+            return [f"{col}_from" for col in cols] + ["value"]
 
 
 class InFlow(BaseInOutFlow):
@@ -251,4 +263,9 @@ class InFlow(BaseInOutFlow):
     @property
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
-        return [f"{col}_to" for col in cols] + ["value"]
+        if hasattr(self.flow, "out_label_columns"):
+            return (
+                [f"{col}_to" for col in cols] + self.flow.out_label_columns + ["value"]
+            )
+        else:
+            return [f"{col}_to" for col in cols] + ["value"]
