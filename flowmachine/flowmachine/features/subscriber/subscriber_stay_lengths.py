@@ -31,7 +31,7 @@ class SubscriberStayLengths(SubscriberFeature):
         Aggregation statistic over the stay lengths. Defaults to max.
     """
 
-    def __init__(self, locations: List[BaseLocation], statistic: str = "max"):
+    def __init__(self, *, locations: List[BaseLocation], statistic: str = "max"):
         self.locations = locations
         if len(set(l.spatial_unit for l in self.locations)) > 1:
             raise InvalidSpatialUnitError(
@@ -72,6 +72,7 @@ class SubscriberStayLengths(SubscriberFeature):
                         ORDER BY ordinal
                     ) AS stay_id
                 FROM ({locations_union}) AS locations_union
+                WHERE NOT (({loc_cols_string}) IS NULL)
             ) locations_with_stay_id
             GROUP BY subscriber, {loc_cols_string}, stay_id
         ) stay_lengths

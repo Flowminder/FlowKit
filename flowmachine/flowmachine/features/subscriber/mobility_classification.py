@@ -47,7 +47,9 @@ class MobilityClassification(SubscriberFeature):
         'stable'.
     """
 
-    def __init__(self, locations: List[BaseLocation], stay_length_threshold: int = 3):
+    def __init__(
+        self, *, locations: List[BaseLocation], stay_length_threshold: int = 3
+    ):
         self.locations = locations
         if len(set(l.spatial_unit for l in self.locations)) > 1:
             raise InvalidSpatialUnitError(
