@@ -890,7 +890,7 @@ def location_visits_spec(*, locations: List) -> dict:
     """
     return {"query_kind": "location_visits", "locations": locations}
 
-  
+
 def coalesced_location_spec(
     *,
     preferred_location,
@@ -941,7 +941,7 @@ def mobility_classification_spec(
         Minimum number of consecutive periods over which a subscriber's
         location must remain the same for that subscriber to be classified as
         'stable'.
-    
+
     Returns
     -------
     dict
