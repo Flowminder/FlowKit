@@ -27,7 +27,7 @@ class MajorityLocationExposed(BaseExposedQueryWithSampling):
     @property
     def _unsampled_query_obj(self):
         return MajorityLocation(
-            subscriber_location_weights=self.subscriber_location_weights._unsampled_query_obj,
+            subscriber_location_weights=self.subscriber_location_weights._flowmachine_query_obj,
             weight_column="value",
             include_unlocatable=self.include_unlocatable,
         )
