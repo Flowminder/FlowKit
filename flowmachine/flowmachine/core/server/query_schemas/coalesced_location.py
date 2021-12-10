@@ -1,23 +1,17 @@
-from marshmallow import fields, Schema
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+from marshmallow import fields
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas.base_query_with_sampling import (
     BaseExposedQueryWithSampling,
     BaseQueryWithSamplingSchema,
 )
-from flowmachine.core.server.query_schemas.daily_location import DailyLocationSchema
 from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
 from flowmachine.core.server.query_schemas.majority_location import (
     MajorityLocationSchema,
-)
-from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
-from flowmachine.core.server.query_schemas.most_frequent_location import (
-    MostFrequentLocationSchema,
-)
-
-from flowmachine.core.server.query_schemas.visited_most_days import (
-    VisitedMostDaysSchema,
 )
 from flowmachine.features.subscriber.coalesced_location import CoalescedLocation
 from flowmachine.features.subscriber.filtered_reference_location import (
@@ -54,13 +48,13 @@ class CoalescedLocationExposed(BaseExposedQueryWithSampling):
 
 class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
     """
-    Schema that exposes CoalescedLocation with a specific fallback
+    Schema that exposes CoalescedLocation with a FilteredReferenceLocation query as the fallback location
     """
 
     query_kind = fields.String(validate=OneOf(["coalesced_location"]))
-    preferred_location = fields.Nested(MajorityLocationSchema)
-    fallback_location = fields.Nested(MajorityLocationSchema)
-    subscriber_location_weights = fields.Nested(LocationVisitsSchema)
-    weight_threshold = fields.Integer()
+    preferred_location = fields.Nested(MajorityLocationSchema, required=True)
+    fallback_location = fields.Nested(MajorityLocationSchema, required=True)
+    subscriber_location_weights = fields.Nested(LocationVisitsSchema, required=True)
+    weight_threshold = fields.Integer(required=True)
 
     __model__ = CoalescedLocationExposed
