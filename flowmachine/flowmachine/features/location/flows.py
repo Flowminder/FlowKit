@@ -62,14 +62,18 @@ class FlowLike(GeoDataMixin, GraphMixin):
         self.spatial_unit.verify_criterion("has_geography")
 
         loc_cols = self.spatial_unit.location_id_columns
+        if hasattr(self, "label_columns"):
+            lab_cols = self.label_columns
+        else:
+            lab_cols = []
         loc_cols_string = ",".join(loc_cols)
-        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols])
-        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols])
-        loc_cols_from_aliased_string = ",".join(
-            [f"{col}_from AS {col}" for col in loc_cols]
+        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols]) + lab_cols
+        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols]) + lab_cols
+        loc_cols_from_aliased_string = (
+            ",".join([f"{col}_from AS {col}" for col in loc_cols]) + lab_cols
         )
-        loc_cols_to_aliased_string = ",".join(
-            [f"{col}_to AS {col}" for col in loc_cols]
+        loc_cols_to_aliased_string = (
+            ",".join([f"{col}_to AS {col}" for col in loc_cols]) + lab_cols
         )
 
         agg_qry = f"""

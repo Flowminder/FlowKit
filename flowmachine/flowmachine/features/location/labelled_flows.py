@@ -42,7 +42,7 @@ class LabelledInFlow(InFlow, LabelledBaseInOutFlow):
         return super().column_names + self.flow.out_label_columns
 
 
-class LabelledFlows(FlowLike, Query):
+class LabelledFlows(LabelledFlowLike, GeoDataMixin, Query):
     def __init__(
         self, *, loc_from, loc_to, labels, label_columns=("value",), join_type="inner"
     ):
