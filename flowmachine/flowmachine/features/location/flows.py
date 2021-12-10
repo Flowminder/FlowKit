@@ -62,19 +62,66 @@ class FlowLike(GeoDataMixin, GraphMixin):
         self.spatial_unit.verify_criterion("has_geography")
 
         loc_cols = self.spatial_unit.location_id_columns
-        if hasattr(self, "label_columns"):
-            lab_cols = self.label_columns
+        if hasattr(self, "out_label_columns"):
+            lab_cols = self.out_label_columns
+            lab_cols_string = ",".join(lab_cols)
         else:
             lab_cols = []
+            lab_cols_string = ""
         loc_cols_string = ",".join(loc_cols)
-        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols]) + lab_cols
-        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols]) + lab_cols
-        loc_cols_from_aliased_string = (
-            ",".join([f"{col}_from AS {col}" for col in loc_cols]) + lab_cols
+        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols] + lab_cols)
+        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols] + lab_cols)
+        loc_cols_from_aliased_string = ",".join(
+            [f"{col}_from AS {col}" for col in loc_cols] + lab_cols
         )
-        loc_cols_to_aliased_string = (
-            ",".join([f"{col}_to AS {col}" for col in loc_cols]) + lab_cols
+        loc_cols_to_aliased_string = ",".join(
+            [f"{col}_to AS {col}" for col in loc_cols] + lab_cols
         )
+
+        def _build_json_agg_clause(loc_cols, direction, label_cols=[]):
+            if direction == "in":
+                outer_suffix = "to"
+                inner_suffix = "from"
+            elif direction == "out":
+                outer_suffix = "from"
+                inner_suffix = "to"
+            else:
+                raise ValueError(
+                    f"Expected direction to be 'in' or 'out', not '{direction}'"
+                )
+
+            # Key cols are those that will be keys in the nested json object
+            key_cols = label_cols + [f"{loc_cols[0]}_{inner_suffix}"]
+            loc_cols_aliased_string = ", ".join(
+                f"{col}_{outer_suffix} AS {col}" for col in loc_cols
+            )
+
+            # Alias column names so we don't have to handle the first nesting differently
+            clause = f"""
+            SELECT
+                {loc_cols_aliased_string},
+                {', '.join(key_cols)},
+                value AS {direction}flows
+            FROM flows
+            """
+
+            # Loop through key columns (in reverse order), and add a json_agg layer for each
+            for i in range(len(key_cols) - 1, -1, -1):
+                group_cols_string = ", ".join(loc_cols)
+                for col in key_cols[:i]:
+                    group_cols_string += f", {col}"
+                clause = f"""
+                SELECT
+                    {group_cols_string},
+                    json_object_agg({key_cols[i]}, {direction}flows) AS {direction}flows
+                FROM ({clause}) _
+                GROUP BY {group_cols_string}
+                """
+
+            return clause
+
+        from_clause = _build_json_agg_clause(loc_cols, "in", lab_cols)
+        to_clause = _build_json_agg_clause(loc_cols, "out", lab_cols)
 
         agg_qry = f"""
                 WITH flows AS ({self.get_query()})
@@ -84,19 +131,11 @@ class FlowLike(GeoDataMixin, GraphMixin):
                     json_strip_nulls(inflows) as inflows
                 FROM
                 (
-                    SELECT
-                        {loc_cols_from_aliased_string},
-                        json_object_agg({loc_cols[0]}_to, value) AS outflows
-                    FROM flows
-                    GROUP BY {loc_cols_from_string}
+                    {from_clause}
                 ) x
                 FULL JOIN
                 (
-                    SELECT
-                        {loc_cols_to_aliased_string},
-                        json_object_agg({loc_cols[0]}_from, value) AS inflows
-                    FROM flows
-                    GROUP BY {loc_cols_to_string}
+                    {to_clause}
                 ) y
                 USING ({loc_cols_string})
                 """

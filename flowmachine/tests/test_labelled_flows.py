@@ -30,6 +30,7 @@ def labelled_flows():
     )
 
     return LabelledFlows(loc_from=loc_1, loc_to=loc_2, labels=labels_1)
+    # return Flows(loc1=loc_1, loc2=loc_2)
 
 
 def test_labelled_flow(labelled_flows, get_dataframe):
