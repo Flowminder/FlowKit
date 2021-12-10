@@ -137,6 +137,13 @@
             "type": "integer"
           }
         },
+        "required": [
+          "fallback_location",
+          "preferred_location",
+          "query_kind",
+          "subscriber_location_weights",
+          "weight_threshold"
+        ],
         "type": "object"
       },
       "ConsecutiveTripsODMatrix": {
