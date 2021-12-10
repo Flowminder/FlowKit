@@ -543,6 +543,7 @@
         "geography": "#/components/schemas/Geography",
         "histogram_aggregate": "#/components/schemas/HistogramAggregate",
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
+        "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
@@ -585,6 +586,9 @@
       },
       {
         "$ref": "#/components/schemas/JoinedSpatialAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/LabelledSpatialAggregate"
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
@@ -1008,6 +1012,27 @@
     "required": [
       "locations",
       "metric"
+    ],
+    "type": "object"
+  },
+  "LabelledSpatialAggregate": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
+      "query_kind": {
+        "enum": [
+          "labelled_spatial_aggregate"
+        ],
+        "type": "string"
+      },
+      "subscriber_labels": {
+        "$ref": "#/components/schemas/MobilityClassification"
+      }
+    },
+    "required": [
+      "locations",
+      "subscriber_labels"
     ],
     "type": "object"
   },
@@ -1555,6 +1580,38 @@
       "start_date",
       "tower_day_of_week_scores",
       "tower_hour_of_day_scores"
+    ],
+    "type": "object"
+  },
+  "MobilityClassification": {
+    "properties": {
+      "locations": {
+        "items": {
+          "$ref": "#/components/schemas/CoalescedLocation"
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "query_kind": {
+        "enum": [
+          "mobility_classification"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "stay_length_threshold": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "stay_length_threshold"
     ],
     "type": "object"
   },
