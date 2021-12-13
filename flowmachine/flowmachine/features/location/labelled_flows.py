@@ -39,8 +39,6 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         self.label_columns = list(label_columns)
         self.spatial_unit = loc1.spatial_unit
 
-        self.out_label_columns = [f"{col}_label" for col in label_columns]
-
         loc_joined = loc1.join(
             loc2,
             on_left="subscriber",
@@ -64,6 +62,10 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
             + self.out_label_columns
             + ["value"]
         )
+
+    @property
+    def out_label_columns(self) -> List[str]:
+        return [f"{col}_label" for col in self.label_columns]
 
     def _make_query(self):
 
