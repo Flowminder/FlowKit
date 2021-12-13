@@ -494,11 +494,11 @@
     "develop": {
         "approvaltests": {
             "hashes": [
-                "sha256:28b2b0aa2dd1684a1912e8f18d3ac919936f581e3ef447a5c3b39e5684804da6",
-                "sha256:5542364c38d0bf31a7dc35dfa6a5f22ec7896061a481e433d4d544ae87d36281"
+                "sha256:21c6b0a1f07b69d4881a80db1c252f65cce96c1703c7589616f07f07ddc706b1",
+                "sha256:5b1934ed3ddaa2707529f015818ac034c5c18d6fb1514b166bb7a433855eed3d"
             ],
             "index": "pypi",
-            "version": "==3.1.0"
+            "version": "==3.3.0"
         },
         "asynctest": {
             "hashes": [
@@ -612,7 +612,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:01774a2c2c729619760320270e42cd9e797427ecfddd32c2a7b639cdc481f3c0",
