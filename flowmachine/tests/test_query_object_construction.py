@@ -340,7 +340,7 @@ def test_construct_query(diff_reporter):
             },
         },
         {
-            "query_kind": "labelled_spatial_aggregate",
+            "query_kind": "labelled_query",
             "locations": {
                 "query_kind": "coalesced_location",
                 "preferred_location": {

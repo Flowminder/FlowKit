@@ -43,7 +43,7 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
         Query
         """
         return RedactedLabelledSpatialQuery(
-            labelled_spatial_aggregate=LabelledSpatialAggregate(
+            labelled_query=LabelledSpatialAggregate(
                 locations=self.locations._flowmachine_query_obj,
                 subscriber_labels=self.subscriber_labels._flowmachine_query_obj,
             )
@@ -52,7 +52,7 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
 
 class LabelledSpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["labelled_spatial_aggregate"]))
+    query_kind = fields.String(validate=OneOf(["labelled_query"]))
     locations = fields.Nested(CoalescedLocationSchema, required=True)
     subscriber_labels = fields.Nested(MobilityClassificationSchema, required=True)
 

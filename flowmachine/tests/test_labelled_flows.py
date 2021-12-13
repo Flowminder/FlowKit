@@ -211,7 +211,7 @@ def test_geojson_multi_labels(multi_labelled_flows):
 
 def test_redacted_labelled_flows(labelled_flows, get_dataframe):
     redacted_flows = RedactedLabelledSpatialQuery(
-        labelled_spatial_aggregate=labelled_flows, redaction_threshold=3
+        labelled_query=labelled_flows, redaction_threshold=3
     )
     df = get_dataframe(redacted_flows)
     assert len(df) < 10
@@ -220,7 +220,7 @@ def test_redacted_labelled_flows(labelled_flows, get_dataframe):
 
 def test_redacted_multi_labelled_flows(multi_labelled_flows, get_dataframe):
     redacted_flows = RedactedLabelledSpatialQuery(
-        labelled_spatial_aggregate=multi_labelled_flows, redaction_threshold=1
+        labelled_query=multi_labelled_flows, redaction_threshold=1
     )
     df = get_dataframe(redacted_flows)
     assert len(df) == 19

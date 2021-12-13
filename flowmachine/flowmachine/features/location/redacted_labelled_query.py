@@ -13,41 +13,43 @@ from flowmachine.core.mixins import GeoDataMixin
 
 class RedactedLabelledSpatialQuery(GeoDataMixin, Query):
     """
-    Query that drops any locations that, when disaggregated by label, reveal a number of subscribers
+    Query that drops any locations aggregates or flows that, when disaggregated by label, reveal a number of subscribers
     less than redaction_threshold
     Parameters
     ----------
-    labelled_spatial_aggregate: LabelledSpatialAggregate
+    labelled_query: LabelledSpatialAggregate
         The LabelledSpatialAggregate query to redact
     redaction_threshold: int default 15
         If any labels within a location reveal less than this number of subscribers, that location is dropped
     """
 
     def __init__(
-        self,
-        *,
-        labelled_spatial_aggregate: LabelledSpatialAggregate,
-        redaction_threshold: int = 15,
+        self, *, labelled_query: LabelledSpatialAggregate, redaction_threshold: int = 15
     ):
 
-        self.labelled_spatial_aggregate = labelled_spatial_aggregate
+        if not hasattr(labelled_query, "spatial_unit"):
+            raise ValueError("labelled_query must have a spatial unit")
+        if not hasattr(labelled_query, "out_spatial_columns"):
+            raise ValueError("labelled_query must implement out_spatial_columns")
+
+        self.labelled_query = labelled_query
         self.redaction_threshold = redaction_threshold
-        self.spatial_unit = labelled_spatial_aggregate.spatial_unit
+        self.spatial_unit = labelled_query.spatial_unit
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return self.labelled_spatial_aggregate.column_names
+        return self.labelled_query.column_names
 
     def _make_query(self):
 
-        aggs = ",".join(self.labelled_spatial_aggregate.out_spatial_columns)
-        all_cols = self.labelled_spatial_aggregate.column_names_as_string_list
+        aggs = ",".join(self.labelled_query.out_spatial_columns)
+        all_cols = self.labelled_query.column_names_as_string_list
 
         sql = f"""
         WITH lsa_query AS(
             SELECT *
-            FROM({self.labelled_spatial_aggregate.get_query()}) AS t
+            FROM({self.labelled_query.get_query()}) AS t
         ), aggs_to_keep AS(
             SELECT {aggs}
             FROM lsa_query

@@ -31,7 +31,7 @@ def test_redaction(get_dataframe):
     )
     labelled = LabelledSpatialAggregate(locations=locations, labels=metric)
 
-    redacted = RedactedLabelledSpatialQuery(labelled_spatial_aggregate=labelled)
+    redacted = RedactedLabelledSpatialQuery(labelled_query=labelled)
     redacted_df = get_dataframe(redacted)
 
     target = pd.DataFrame(
