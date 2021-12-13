@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `LabelledSpatialAggregate` query and redaction, which sub-aggregates by subscriber labels. [#4668](https://github.com/Flowminder/FlowKit/issues/4668)
 - Added `MobilityClassification` query, to classify subscribers by mobility type based on a sequence of locations. [#4666](https://github.com/Flowminder/FlowKit/issues/4666)
 - Exposed `CoalescedLocation` via FlowAPI, in the specific case where the fallback location is a `FilteredReferenceLocation` query. [#4585](https://github.com/Flowminder/FlowKit/issues/4585)
+- Added `LabelledFlows` query, which returns flows disaggregated by label [#4679](https://github.com/Flowminder/FlowKit/issues/4679)
 
 ### Changed
 - Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
