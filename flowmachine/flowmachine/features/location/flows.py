@@ -64,19 +64,9 @@ class FlowLike(GeoDataMixin, GraphMixin):
         loc_cols = self.spatial_unit.location_id_columns
         if hasattr(self, "out_label_columns"):
             lab_cols = self.out_label_columns
-            lab_cols_string = ",".join(lab_cols)
         else:
             lab_cols = []
-            lab_cols_string = ""
         loc_cols_string = ",".join(loc_cols)
-        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols] + lab_cols)
-        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols] + lab_cols)
-        loc_cols_from_aliased_string = ",".join(
-            [f"{col}_from AS {col}" for col in loc_cols] + lab_cols
-        )
-        loc_cols_to_aliased_string = ",".join(
-            [f"{col}_to AS {col}" for col in loc_cols] + lab_cols
-        )
 
         def _build_json_agg_clause(loc_cols, direction, label_cols=[]):
             if direction == "in":

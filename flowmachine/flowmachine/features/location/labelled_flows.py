@@ -11,64 +11,38 @@ from flowmachine.features.location.flows import (
 )
 
 
-class LabelledFlowLike(FlowLike):
-    def outflow(self):
-        return LabelledOutFlow(self)
-
-    def inflow(self):
-        return LabelledInFlow(self)
-
-
-class LabelledBaseInOutFlow(BaseInOutFlow):
-    def __init__(self, flow):
-        cols = self.flow.column_names
-        self.label = ",".join(c for c in cols if c.endswith("_label"))
-        super().__init__(flow)
-
-    def _groupby_col(self, sql_in, col):
-        labelled_col = ",".join([col, self.label])
-        return super()._groupby_col(sql_in, labelled_col)
-
-
-class LabelledOutFlow(OutFlow, LabelledBaseInOutFlow):
-    @property
-    def column_names(self) -> List[str]:
-        return super().column_names + self.flow.out_label_columns
-
-
-class LabelledInFlow(InFlow, LabelledBaseInOutFlow):
-    @property
-    def column_names(self) -> List[str]:
-        return super().column_names + self.flow.out_label_columns
-
-
-class LabelledFlows(LabelledFlowLike, GeoDataMixin, Query):
+class LabelledFlows(FlowLike, GeoDataMixin, Query):
     def __init__(
-        self, *, loc_from, loc_to, labels, label_columns=("value",), join_type="inner"
+        self, *, loc1, loc2, labels, label_columns=("value",), join_type="inner"
     ):
         """
         Creates a
         Parameters
         ----------
-        loc_from
-        loc_to
+        loc1
+        loc2
         labels
         label_columns
         """
 
         # Check spatial units are same
         # Check label columns are
+        if loc1.spatial_unit != loc2.spatial_unit:
+            raise ValueError("Flows must have the same spatial unit")
+        for label_column in label_columns:
+            if label_column not in labels.column_names:
+                raise ValueError(f"{label_column} not present in {labels.column_names}")
 
-        self.loc_from = loc_from
-        self.loc_to = loc_to
+        self.loc_from = loc1
+        self.loc_to = loc2
         self.labels = labels
         self.label_columns = list(label_columns)
-        self.spatial_unit = loc_from.spatial_unit
+        self.spatial_unit = loc1.spatial_unit
 
         self.out_label_columns = [f"{col}_label" for col in label_columns]
 
-        loc_joined = loc_from.join(
-            loc_to,
+        loc_joined = loc1.join(
+            loc2,
             on_left="subscriber",
             left_append="_from",
             right_append="_to",
