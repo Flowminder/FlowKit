@@ -49,7 +49,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
 
         return InFlow(self)
 
-    def _build_json_agg_clause(self, loc_cols, direction, label_cols=[]):
+    def _build_json_agg_clause(self, direction):
         if direction == "in":
             outer_suffix = "to"
             inner_suffix = "from"
@@ -60,6 +60,12 @@ class FlowLike(GeoDataMixin, GraphMixin):
             raise ValueError(
                 f"Expected direction to be 'in' or 'out', not '{direction}'"
             )
+
+        loc_cols = self.spatial_unit.location_id_columns
+        if hasattr(self, "out_label_columns"):
+            label_cols = self.out_label_columns
+        else:
+            label_cols = []
 
         # Key cols are those that will be keys in the nested json object
         key_cols = label_cols + [f"{loc_cols[0]}_{inner_suffix}"]
@@ -104,14 +110,10 @@ class FlowLike(GeoDataMixin, GraphMixin):
         self.spatial_unit.verify_criterion("has_geography")
 
         loc_cols = self.spatial_unit.location_id_columns
-        if hasattr(self, "out_label_columns"):
-            lab_cols = self.out_label_columns
-        else:
-            lab_cols = []
         loc_cols_string = ",".join(loc_cols)
 
-        from_clause = self._build_json_agg_clause(loc_cols, "in", lab_cols)
-        to_clause = self._build_json_agg_clause(loc_cols, "out", lab_cols)
+        from_clause = self._build_json_agg_clause("in")
+        to_clause = self._build_json_agg_clause("out")
 
         agg_qry = f"""
                 WITH flows AS ({self.get_query()})
