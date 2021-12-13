@@ -10,10 +10,7 @@ from json import loads
 
 from flowmachine.features.location.labelled_flows import LabelledFlows
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import SubscriberHandsetCharacteristic, Flows
-from flowmachine.features.location.labelled_spatial_aggregate import (
-    LabelledSpatialAggregate,
-)
+from flowmachine.features import SubscriberHandsetCharacteristic
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
@@ -151,6 +148,30 @@ def test_column_validation():
         )
 
 
+def test_subscriber_validation():
+    loc_1 = locate_subscribers(
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+
+    loc_2 = locate_subscribers(
+        "2016-01-02",
+        "2016-01-03",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+
+    labels_1 = SubscriberHandsetCharacteristic(
+        "2016-01-01", "2016-01-03", characteristic="hnd_type"
+    )
+    with pytest.raises(ValueError, match="subscriber"):
+        _ = LabelledFlows(
+            loc1=loc_1, loc2=loc_2, labels=labels_1, label_columns=["subscriber"]
+        )
+
+
 def test_geojson(labelled_flows):
 
     out = labelled_flows.to_geojson_string()
@@ -159,10 +180,17 @@ def test_geojson(labelled_flows):
         test in dict["features"][0]["properties"]["outflows"].keys()
         for test in ["Smart", "Feature"]
     )
+    assert (
+        "524 1 01 04" in dict["features"][0]["properties"]["outflows"]["Feature"].keys()
+    )
     assert all(
         test in dict["features"][0]["properties"]["inflows"].keys()
         for test in ["Smart", "Feature"]
     )
+    assert (
+        "524 3 08 43" in dict["features"][0]["properties"]["inflows"]["Feature"].keys()
+    )
+    assert dict["features"][0]["properties"]["inflows"]["Feature"]["524 3 08 43"] == 5
 
 
 def test_geojson_multi_labels(multi_labelled_flows):

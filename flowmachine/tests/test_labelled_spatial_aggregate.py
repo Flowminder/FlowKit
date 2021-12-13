@@ -26,11 +26,11 @@ def test_one_label(get_dataframe):
     metric = SubscriberHandsetCharacteristic(
         "2016-01-01", "2016-01-02", characteristic="hnd_type"
     )
-    labelled = LabelledSpatialAggregate(locations=locations, subscriber_labels=metric)
+    labelled = LabelledSpatialAggregate(locations=locations, labels=metric)
     df = get_dataframe(labelled)
     assert len(df) == 50
     assert len(df.pcod.unique()) == 25
-    assert len(df.label_value.unique()) == 2
+    assert len(df.value_label.unique()) == 2
     # Total number of values should equal the initial number of subscribers
     assert df.value.sum() == len(get_dataframe(locations))
     assert (
@@ -61,12 +61,12 @@ def test_multiple_labels(get_dataframe):
     )
     labelled = LabelledSpatialAggregate(
         locations=locations,
-        subscriber_labels=metric,
+        labels=metric,
         label_columns=["value_hnd_type", "value_model"],
     )
     df = get_dataframe(labelled)
     assert all(
-        df.columns == ["pcod", "label_value_hnd_type", "label_value_model", "value"]
+        df.columns == ["pcod", "value_hnd_type_label", "value_model_label", "value"]
     )
     assert all(df.columns == labelled.column_names)
     assert len(df) > 300
@@ -84,7 +84,7 @@ def test_label_validation():
             "2016-01-01", "2016-01-02", characteristic="hnd_type"
         )
         labelled = LabelledSpatialAggregate(
-            locations=locations, subscriber_labels=metric, label_columns=["foo", "bar"]
+            locations=locations, labels=metric, label_columns=["foo", "bar"]
         )
 
 
@@ -92,7 +92,7 @@ def test_loc_sub_validation():
     with pytest.raises(ValueError, match="Locations query must have a subscriber"):
         _ = LabelledSpatialAggregate(
             locations=TotalLocationEvents("2016-01-01", "2016-01-02"),
-            subscriber_labels=SubscriberHandsetCharacteristic(
+            labels=SubscriberHandsetCharacteristic(
                 "2016-01-01", "2016-01-02", characteristic="hnd_type"
             ),
         )
@@ -107,7 +107,7 @@ def test_col_sub_validation():
                 spatial_unit=make_spatial_unit("admin", level=3),
                 method="most-common",
             ),
-            subscriber_labels=SubscriberHandsetCharacteristic(
+            labels=SubscriberHandsetCharacteristic(
                 "2016-01-01", "2016-01-02", characteristic="hnd_type"
             ),
             label_columns=["subscriber"],
@@ -125,7 +125,7 @@ def test_spatial_unit_validation():
     with pytest.raises(ValueError, match="spatial_unit"):
         _ = LabelledSpatialAggregate(
             locations=dq,
-            subscriber_labels=SubscriberHandsetCharacteristic(
+            labels=SubscriberHandsetCharacteristic(
                 "2016-01-01", "2016-01-02", characteristic="hnd_type"
             ),
         )

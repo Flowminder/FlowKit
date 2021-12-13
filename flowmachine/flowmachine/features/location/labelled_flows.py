@@ -76,7 +76,13 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
     """
 
     def __init__(
-        self, *, loc1, loc2, labels, label_columns=("value",), join_type="inner"
+        self,
+        *,
+        loc1: Query,
+        loc2: Query,
+        labels: Query,
+        label_columns: List[str] = ("value",),
+        join_type: str = "inner",
     ):
 
         if loc1.spatial_unit != loc2.spatial_unit:
@@ -84,6 +90,8 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         for label_column in label_columns:
             if label_column not in labels.column_names:
                 raise ValueError(f"{label_column} not present in {labels.column_names}")
+        if "subscriber" in label_columns:
+            raise ValueError("'subscriber' cannot be a label column")
 
         self.loc_from = loc1
         self.loc_to = loc2
@@ -100,7 +108,7 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         )
 
         self.joined = loc_joined.join(
-            self.labels, on_left="subscriber", right_append="_label"
+            self.labels, on_left="subscriber", right_append="_label", how="left"
         )
 
         super().__init__()

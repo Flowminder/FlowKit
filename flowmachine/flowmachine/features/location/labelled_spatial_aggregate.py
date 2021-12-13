@@ -16,7 +16,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     ----------
     locations: Query
         Any query with a subscriber and location columns
-    subscriber_labels: Query
+    labels: Query
         Any query with a subscriber column
     label_columns: List[str]
         A list of columns in subscriber_labels to aggregate on
@@ -33,7 +33,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     >>> metric = SubscriberHandsetCharacteristic(
     ...     "2016-01-01", "2016-01-02", characteristic="hnd_type"
     ... )
-    >>> labelled = LabelledSpatialAggregate(locations=locations, subscriber_labels=metric)
+    >>> labelled = LabelledSpatialAggregate(locations=locations,labels=metric)
     >>> labelled.get_dataframe()
                pcod label_value  value
      0  524 3 08 44     Feature     36
@@ -44,15 +44,12 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     """
 
     def __init__(
-        self,
-        locations: Query,
-        subscriber_labels: Query,
-        label_columns: List[str] = ("value",),
+        self, locations: Query, labels: Query, label_columns: List[str] = ("value",)
     ):
 
         for label_column in label_columns:
-            if label_column not in subscriber_labels.column_names:
-                raise ValueError(f"{label_column} not a column of {subscriber_labels}")
+            if label_column not in labels.column_names:
+                raise ValueError(f"{label_column} not a column of {labels}")
         if "subscriber" not in locations.column_names:
             raise ValueError(f"Locations query must have a subscriber column")
         if not hasattr(locations, "spatial_unit"):
@@ -61,13 +58,11 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
             raise ValueError(f"'subscriber' cannot be a label")
 
         self.locations = locations
-        self.subscriber_labels = subscriber_labels
+        self.subscriber_labels = labels
         self.label_columns = list(label_columns)
         self.spatial_unit = locations.spatial_unit
         self.label_columns = label_columns
-        self.out_label_columns = [
-            f"label_{label_col}" for label_col in self.label_columns
-        ]
+
         super().__init__()
 
     @property
@@ -84,6 +79,20 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
         Returns the label column heading as a single string
         """
         return ",".join(self.out_label_columns)
+
+    @property
+    def out_spatial_columns(self) -> List[str]:
+        """
+        Returns all spatial-related columns
+        """
+        return self.spatial_unit.location_id_columns
+
+    @property
+    def out_label_columns(self) -> List[str]:
+        """
+        Returns all label columns
+        """
+        return [f"{label_col}_label" for label_col in self.label_columns]
 
     def _make_query(self):
 
