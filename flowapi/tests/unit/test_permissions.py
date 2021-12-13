@@ -137,6 +137,41 @@ def test_valid_tree_walks(tree, expected):
     ],
 )
 def test_per_query_scopes(tree, expected):
+
+    if tree == {
+        "properties": {
+            "query_kind": {"enum": ["dummy"]},
+            "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
+        }
+    } or tree == {
+        "oneOf": [
+            {
+                "properties": {
+                    "query_kind": {"enum": ["dummy"]},
+                    "dummy_param": {
+                        "properties": {
+                            "query_kind": {"enum": ["nested_dummy"]},
+                            "aggregation_unit": {
+                                "enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]
+                            },
+                        }
+                    },
+                    "dummy_param_2": {
+                        "properties": {
+                            "query_kind": {"enum": ["nested_dummy_2"]},
+                            "aggregation_unit": {
+                                "enum": ["DUMMY_UNIT_2", "DUMMY_UNIT_3"]
+                            },
+                        },
+                    },
+                },
+            }
+        ]
+    }:
+        pytest.xfail(
+            "Under new schema rules, cannot presently mix admin levels in the same query. See bug #4649"
+        )
+
     assert list(per_query_scopes(queries=tree)) == expected
 
 
