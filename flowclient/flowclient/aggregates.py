@@ -750,6 +750,71 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
     return connection.make_api_query(parameters=flows_spec(**kwargs))
 
 
+def labelled_flows_spec(
+    *,
+    from_location: Dict[str, Any],
+    to_location: Dict[str, Any],
+    subscriber_labels: Dict[str, Any],
+    join_type: str = "inner",
+) -> dict:
+    """
+    Return query spec for flows between two locations, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    subscriber_labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    dict
+        Query specification for the labelled flows query
+
+    """
+    return {
+        "query_kind": "flows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "subscriber_labels": subscriber_labels,
+        "join_type": join_type,
+    }
+
+
+@merge_args(labelled_flows_spec)
+def labelled_flows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Flows between two locations, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    subscriber_labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Labelled flows query
+
+    """
+    return connection.make_api_query(parameters=labelled_flows_spec(**kwargs))
+
+
 def unique_subscriber_counts_spec(
     *,
     start_date: str,
@@ -1117,9 +1182,7 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
 
 
 def labelled_spatial_aggregate_spec(
-    *,
-    locations: Dict[str, Any],
-    subscriber_labels: Dict[str, Any],
+    *, locations: Dict[str, Any], subscriber_labels: Dict[str, Any],
 ) -> dict:
     """
     Retrieves the counts of subscribers per location, disaggregated by labels
@@ -1332,14 +1395,11 @@ def trips_od_matrix(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         trips_od_matrix query
     """
-    return connection.make_api_query(
-        parameters=trips_od_matrix_spec(**kwargs),
-    )
+    return connection.make_api_query(parameters=trips_od_matrix_spec(**kwargs),)
 
 
 def unmoving_counts_spec(
-    *,
-    unique_locations: Dict[str, Union[str, Dict[str, str]]],
+    *, unique_locations: Dict[str, Union[str, Dict[str, str]]],
 ) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     A count by location of subscribers who were unmoving at that location.
@@ -1355,10 +1415,7 @@ def unmoving_counts_spec(
         Query specification
 
     """
-    return dict(
-        query_kind="unmoving_counts",
-        locations=unique_locations,
-    )
+    return dict(query_kind="unmoving_counts", locations=unique_locations,)
 
 
 @merge_args(unmoving_counts_spec)
@@ -1378,9 +1435,7 @@ def unmoving_counts(*, connection: Connection, **kwargs) -> APIQuery:
     APIQuery
         unmoving_counts query
     """
-    return connection.make_api_query(
-        parameters=unmoving_counts_spec(**kwargs),
-    )
+    return connection.make_api_query(parameters=unmoving_counts_spec(**kwargs),)
 
 
 def unmoving_at_reference_location_counts_spec(
