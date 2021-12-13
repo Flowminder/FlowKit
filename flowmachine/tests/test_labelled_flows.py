@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
+
 import pytest
 
 from json import loads
@@ -36,14 +42,12 @@ def labelled_flows():
 
 def test_labelled_flow(labelled_flows, get_dataframe):
 
-    foo = labelled_flows.get_query()
     df = get_dataframe(labelled_flows)
     assert len(df) == 349
     # We lose some subscribers between locations
     assert df.value.sum() == 490
 
     labelled_outflow = labelled_flows.outflow()
-    bar = labelled_outflow.get_query()
     out_df = get_dataframe(labelled_outflow)
     assert all(out_df.columns == ["pcod_from", "value_label", "value"])
 
