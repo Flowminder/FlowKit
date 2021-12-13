@@ -50,6 +50,7 @@ from .query_specs import (
     location_visits_spec,
     majority_location_spec,
     coalesced_location_spec,
+    mobility_classification_spec,
 )
 from . import aggregates
 from .aggregates import (
@@ -70,6 +71,7 @@ from .aggregates import (
     unmoving_counts,
     consecutive_trips_od_matrix,
     trips_od_matrix,
+    labelled_spatial_aggregate,
 )
 
 __all__ = [
@@ -104,5 +106,5 @@ __all__ = [
     "unmoving_counts",
     "consecutive_trips_od_matrix",
     "trips_od_matrix",
-    "coalesced_location_spec",
+    "labelled_spatial_aggregate",
 ]

@@ -760,8 +760,8 @@ queries = [
         ),
     ),
     partial(
-        flowclient.flows,
-        from_location=flowclient.coalesced_location_spec(
+        flowclient.labelled_spatial_aggregate,
+        locations=flowclient.coalesced_location_spec(
             preferred_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
                     locations=[
@@ -769,16 +769,14 @@ queries = [
                             date="2016-01-01",
                             aggregation_unit="admin3",
                             method="last",
-                            subscriber_subset=None,
                         ),
                         flowclient.daily_location_spec(
                             date="2016-01-02",
                             aggregation_unit="admin3",
                             method="last",
-                            subscriber_subset=None,
                         ),
-                    ]
-                ),
+                    ],
+                )
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -787,77 +785,133 @@ queries = [
                             date="2016-01-01",
                             aggregation_unit="admin3",
                             method="last",
-                            subscriber_subset=None,
                         ),
                         flowclient.daily_location_spec(
                             date="2016-01-02",
                             aggregation_unit="admin3",
                             method="last",
-                            subscriber_subset=None,
                         ),
-                    ]
-                ),
+                    ],
+                )
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
                     flowclient.daily_location_spec(
-                        date="2016-01-01", aggregation_unit="admin3", method="last"
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="last",
                     ),
                     flowclient.daily_location_spec(
-                        date="2016-01-02", aggregation_unit="admin3", method="last"
+                        date="2016-01-02",
+                        aggregation_unit="admin3",
+                        method="last",
                     ),
-                ]
+                ],
             ),
             weight_threshold=2,
         ),
-        to_location=flowclient.coalesced_location_spec(
-            preferred_location=flowclient.majority_location_spec(
-                subscriber_location_weights=flowclient.location_visits_spec(
-                    locations=[
-                        flowclient.daily_location_spec(
-                            date="2016-01-01",
-                            aggregation_unit="admin3",
-                            method="last",
-                            subscriber_subset=None,
-                        ),
-                        flowclient.daily_location_spec(
-                            date="2016-01-02",
-                            aggregation_unit="admin3",
-                            method="last",
-                            subscriber_subset=None,
-                        ),
-                    ]
-                ),
-            ),
-            fallback_location=flowclient.majority_location_spec(
-                subscriber_location_weights=flowclient.location_visits_spec(
-                    locations=[
-                        flowclient.daily_location_spec(
-                            date="2016-01-01",
-                            aggregation_unit="admin3",
-                            method="last",
-                            subscriber_subset=None,
-                        ),
-                        flowclient.daily_location_spec(
-                            date="2016-01-02",
-                            aggregation_unit="admin3",
-                            method="last",
-                            subscriber_subset=None,
-                        ),
-                    ]
-                ),
-            ),
-            subscriber_location_weights=flowclient.location_visits_spec(
-                locations=[
-                    flowclient.daily_location_spec(
-                        date="2016-01-05", aggregation_unit="admin3", method="last"
+        subscriber_labels=flowclient.mobility_classification_spec(
+            locations=[
+                flowclient.coalesced_location_spec(
+                    preferred_location=flowclient.majority_location_spec(
+                        subscriber_location_weights=flowclient.location_visits_spec(
+                            locations=[
+                                flowclient.daily_location_spec(
+                                    date="2016-01-01",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                                flowclient.daily_location_spec(
+                                    date="2016-01-02",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                            ],
+                        )
                     ),
-                    flowclient.daily_location_spec(
-                        date="2016-01-06", aggregation_unit="admin3", method="last"
+                    fallback_location=flowclient.majority_location_spec(
+                        subscriber_location_weights=flowclient.location_visits_spec(
+                            locations=[
+                                flowclient.daily_location_spec(
+                                    date="2016-01-01",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                                flowclient.daily_location_spec(
+                                    date="2016-01-02",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                            ],
+                        )
                     ),
-                ]
-            ),
-            weight_threshold=2,
+                    subscriber_location_weights=flowclient.location_visits_spec(
+                        locations=[
+                            flowclient.daily_location_spec(
+                                date="2016-01-05",
+                                aggregation_unit="admin3",
+                                method="last",
+                            ),
+                            flowclient.daily_location_spec(
+                                date="2016-01-06",
+                                aggregation_unit="admin3",
+                                method="last",
+                            ),
+                        ],
+                    ),
+                    weight_threshold=2,
+                ),
+                flowclient.coalesced_location_spec(
+                    preferred_location=flowclient.majority_location_spec(
+                        subscriber_location_weights=flowclient.location_visits_spec(
+                            locations=[
+                                flowclient.daily_location_spec(
+                                    date="2016-01-01",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                                flowclient.daily_location_spec(
+                                    date="2016-01-02",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                            ],
+                        )
+                    ),
+                    fallback_location=flowclient.majority_location_spec(
+                        subscriber_location_weights=flowclient.location_visits_spec(
+                            locations=[
+                                flowclient.daily_location_spec(
+                                    date="2016-01-01",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                                flowclient.daily_location_spec(
+                                    date="2016-01-02",
+                                    aggregation_unit="admin3",
+                                    method="last",
+                                ),
+                            ],
+                        )
+                    ),
+                    subscriber_location_weights=flowclient.location_visits_spec(
+                        locations=[
+                            flowclient.daily_location_spec(
+                                date="2016-01-01",
+                                aggregation_unit="admin3",
+                                method="last",
+                            ),
+                            flowclient.daily_location_spec(
+                                date="2016-01-02",
+                                aggregation_unit="admin3",
+                                method="last",
+                            ),
+                        ],
+                    ),
+                    weight_threshold=2,
+                ),
+            ],
+            stay_length_threshold=2,
         ),
     ),
 ]
