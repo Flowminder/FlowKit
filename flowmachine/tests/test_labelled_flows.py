@@ -8,6 +8,9 @@ import pytest
 
 from json import loads
 
+from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
+    RedactedLabelledSpatialQuery,
+)
 from flowmachine.features.location.labelled_flows import LabelledFlows
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import SubscriberHandsetCharacteristic
@@ -200,3 +203,16 @@ def test_geojson_multi_labels(multi_labelled_flows):
         brand in dict["features"][0]["properties"]["outflows"]["Feature"].keys()
         for brand in ["Nokia", "Apple", "Sony"]
     )
+    assert (
+        dict["features"][0]["properties"]["outflows"]["Feature"]["Nokia"]["524 3 08 43"]
+        == 1
+    )
+
+
+def test_redacted_labelled_flows(labelled_flows, get_dataframe):
+    redacted_flows = RedactedLabelledSpatialQuery(
+        labelled_spatial_aggregate=labelled_flows, redaction_threshold=3
+    )
+    df = get_dataframe(redacted_flows)
+    assert len(df) < 10
+    assert df.value.max() > 3

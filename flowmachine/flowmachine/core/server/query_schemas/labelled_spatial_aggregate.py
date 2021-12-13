@@ -6,7 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
-    RedactedLabelledSpatialAggregate,
+    RedactedLabelledSpatialQuery,
 )
 from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
@@ -42,7 +42,7 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
         -------
         Query
         """
-        return RedactedLabelledSpatialAggregate(
+        return RedactedLabelledSpatialQuery(
             labelled_spatial_aggregate=LabelledSpatialAggregate(
                 locations=self.locations._flowmachine_query_obj,
                 subscriber_labels=self.subscriber_labels._flowmachine_query_obj,

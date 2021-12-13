@@ -13,7 +13,7 @@ from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
 )
 from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
-    RedactedLabelledSpatialAggregate,
+    RedactedLabelledSpatialQuery,
 )
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
@@ -31,7 +31,7 @@ def test_redaction(get_dataframe):
     )
     labelled = LabelledSpatialAggregate(locations=locations, labels=metric)
 
-    redacted = RedactedLabelledSpatialAggregate(labelled_spatial_aggregate=labelled)
+    redacted = RedactedLabelledSpatialQuery(labelled_spatial_aggregate=labelled)
     redacted_df = get_dataframe(redacted)
 
     target = pd.DataFrame(
