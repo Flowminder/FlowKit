@@ -41,7 +41,7 @@ def test_redaction(get_dataframe):
             ["524 4 12 62", "Feature", 44],
             ["524 4 12 62", "Smart", 19],
         ],
-        columns=["pcod", "label_value", "value"],
+        columns=["pcod", "value_label", "value"],
     )
 
     assert_frame_equal(redacted_df, target)
