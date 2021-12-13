@@ -226,10 +226,12 @@ class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
     def __init__(self, flow):
         self.flow = flow
         cols = self.flow.column_names
+        # NOTE: Replace with spatial_unit.from_columns
         self.loc_from = ",".join([c for c in cols if c.endswith("_from")])
         self.loc_to = ",".join([c for c in cols if c.endswith("_to")])
-        self.label = ",".join(c for c in cols if c.endswith("_label"))
-        if not self.label:
+        if hasattr(self.flow, "out_label_columns"):
+            self.label = ",".join(self.flow.out_label_columns)
+        else:
             self.label = None
         self.spatial_unit = flow.spatial_unit
         super().__init__()
