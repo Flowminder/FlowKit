@@ -33,11 +33,45 @@ def labelled_flows():
         method="most-common",
     )
 
-    labels_1 = SubscriberHandsetCharacteristic(
+    labels = SubscriberHandsetCharacteristic(
         "2016-01-01", "2016-01-03", characteristic="hnd_type"
     )
 
-    return LabelledFlows(loc1=loc_1, loc2=loc_2, labels=labels_1)
+    return LabelledFlows(loc1=loc_1, loc2=loc_2, labels=labels)
+
+
+@pytest.fixture
+def multi_labelled_flows():
+    loc_1 = locate_subscribers(
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+
+    loc_2 = locate_subscribers(
+        "2016-01-02",
+        "2016-01-03",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+
+    labels = SubscriberHandsetCharacteristic(
+        "2016-01-01", "2016-01-03", characteristic="hnd_type"
+    ).join(
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-03", characteristic="brand"
+        ),
+        "subscriber",
+        left_append="_hnd_type",
+        right_append="_brand",
+    )
+    return LabelledFlows(
+        loc1=loc_1,
+        loc2=loc_2,
+        labels=labels,
+        label_columns=["value_hnd_type", "value_brand"],
+    )
 
 
 def test_labelled_flow(labelled_flows, get_dataframe):
@@ -50,6 +84,24 @@ def test_labelled_flow(labelled_flows, get_dataframe):
     labelled_outflow = labelled_flows.outflow()
     out_df = get_dataframe(labelled_outflow)
     assert all(out_df.columns == ["pcod_from", "value_label", "value"])
+
+
+def test_multiple_labels(get_dataframe, multi_labelled_flows):
+
+    assert multi_labelled_flows.out_label_columns == [
+        "value_hnd_type_label",
+        "value_brand_label",
+    ]
+    assert multi_labelled_flows.column_names == [
+        "pcod_from",
+        "pcod_to",
+        "value_hnd_type_label",
+        "value_brand_label",
+        "value",
+    ]
+    df = get_dataframe(multi_labelled_flows)
+    assert len(df) > 300
+    assert df.value.sum() == 490
 
 
 def test_spatial_unit_validation():
@@ -110,4 +162,13 @@ def test_geojson(labelled_flows):
     assert all(
         test in dict["features"][0]["properties"]["inflows"].keys()
         for test in ["Smart", "Feature"]
+    )
+
+
+def test_geojson_multi_labels(multi_labelled_flows):
+    out = multi_labelled_flows.to_geojson_string()
+    dict = loads(out)
+    assert all(
+        brand in dict["features"][0]["properties"]["outflows"]["Feature"].keys()
+        for brand in ["Nokia", "Apple", "Sony"]
     )

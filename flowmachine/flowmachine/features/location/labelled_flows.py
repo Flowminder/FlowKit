@@ -14,64 +14,70 @@ from flowmachine.features.location.flows import (
 
 
 class LabelledFlows(FlowLike, GeoDataMixin, Query):
+    """
+    An object representing movement of subscribers between both locations and labelled categories within those
+    locations.
+
+
+    Parameters
+    ----------
+    loc1 : {daily_location, ModalLocation}
+        Object representing the locations of people within the
+        first time frame of interest
+    loc2 : daily_location, or ModalLocation object
+        As above for the second period
+    labels : Query
+        A query returning a set of unique 'subscriber' columns and at least one categorical column.
+    label_columns : List[str] default ('value',)
+        Columns in `labels` query to disaggregate on. Will be present in output query as "{column_name}_label"
+    join_type : {"inner", "full outer", "left", "right", "left outer", "right outer"} default "inner"
+        Join type of the join between loc_1 and loc_2
+
+    Properties
+    ----------
+    out_label_columns : List[str]
+        The names of the label columns with suffix attached
+
+    Examples
+    --------
+
+    Get count of subscribers who moved between locations and handset types between the 1st and the 2nd Jan, 2016.
+    Please note that SubscriberHandsetCharacteristic is *not* exposed to this query through the API due to
+    deanonymisation risk - it is used here as an illustrative example.
+
+    >>>     loc_1 = locate_subscribers(
+    ...        "2016-01-01",
+    ...        "2016-01-02",
+    ...        spatial_unit=make_spatial_unit("admin", level=3),
+    ...        method="most-common",
+    ...    )
+    ...
+    ...    loc_2 = locate_subscribers(
+    ...        "2016-01-02",
+    ...        "2016-01-03",
+    ...        spatial_unit=make_spatial_unit("admin", level=3),
+    ...        method="most-common",
+    ...    )
+    ...
+    ...    labels_1 = SubscriberHandsetCharacteristic(
+    ...        "2016-01-01", "2016-01-03", characteristic="hnd_type"
+    ...    )
+    ...
+    ...    LabelledFlows(loc1=loc_1, loc2=loc_2, labels=labels_1)
+
+           pcod_from      pcod_to value_label  value
+    0    524 1 01 04  524 1 02 09       Smart      1
+    1    524 1 01 04  524 1 03 13     Feature      1
+    2    524 1 01 04  524 2 04 20     Feature      1
+    3    524 1 01 04  524 2 05 24     Feature      2
+    4    524 1 01 04  524 2 05 29       Smart      1
+    ..           ...          ...         ...    ...
+
+    """
+
     def __init__(
         self, *, loc1, loc2, labels, label_columns=("value",), join_type="inner"
     ):
-        """
-        An object representing movement of subscribers between both locations and labelled categories within those
-        locations.
-
-
-        Parameters
-        ----------
-        loc1 : {daily_location, ModalLocation}
-            Object representing the locations of people within the
-            first time frame of interest
-        loc2 : daily_location, or ModalLocation object
-            As above for the second period
-        labels : Query
-            A query returning a set of unique 'subscriber' columns and at least one categorical column.
-        label_columns : List[str], default ] ('value',)
-            The
-        join_type : {"inner", "full outer", "left", "right", "left outer", "right outer"} default "inner"
-            Join type of the join between loc_1 and loc_2
-
-        Examples
-        --------
-
-        Get count of subscribers who moved between locations and handset types between the 1st and the 2nd Jan, 2016.
-        Please note that SubscriberHandsetCharacteristic is *not* exposed to this query through the API due to
-        deanonymisation risk - it is used here as an illustrative example.
-
-        >>>     loc_1 = locate_subscribers(
-        ...        "2016-01-01",
-        ...        "2016-01-02",
-        ...        spatial_unit=make_spatial_unit("admin", level=3),
-        ...        method="most-common",
-        ...    )
-        ...
-        ...    loc_2 = locate_subscribers(
-        ...        "2016-01-02",
-        ...        "2016-01-03",
-        ...        spatial_unit=make_spatial_unit("admin", level=3),
-        ...        method="most-common",
-        ...    )
-        ...
-        ...    labels_1 = SubscriberHandsetCharacteristic(
-        ...        "2016-01-01", "2016-01-03", characteristic="hnd_type"
-        ...    )
-        ...
-        ...    LabelledFlows(loc1=loc_1, loc2=loc_2, labels=labels_1)
-
-               pcod_from      pcod_to value_label  value
-        0    524 1 01 04  524 1 02 09       Smart      1
-        1    524 1 01 04  524 1 03 13     Feature      1
-        2    524 1 01 04  524 2 04 20     Feature      1
-        3    524 1 01 04  524 2 05 24     Feature      2
-        4    524 1 01 04  524 2 05 29       Smart      1
-        ..           ...          ...         ...    ...
-
-        """
 
         if loc1.spatial_unit != loc2.spatial_unit:
             raise ValueError("Flows must have the same spatial unit")
