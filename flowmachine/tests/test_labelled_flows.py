@@ -216,3 +216,12 @@ def test_redacted_labelled_flows(labelled_flows, get_dataframe):
     df = get_dataframe(redacted_flows)
     assert len(df) < 10
     assert df.value.max() > 3
+
+
+def test_redacted_multi_labelled_flows(multi_labelled_flows, get_dataframe):
+    redacted_flows = RedactedLabelledSpatialQuery(
+        labelled_spatial_aggregate=multi_labelled_flows, redaction_threshold=1
+    )
+    df = get_dataframe(redacted_flows)
+    assert len(df) == 19
+    assert df.value.max() > 1
