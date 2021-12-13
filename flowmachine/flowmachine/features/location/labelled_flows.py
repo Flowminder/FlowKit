@@ -41,7 +41,7 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
     Examples
     --------
 
-    Get count of subscribers who moved between locations and handset types between the 1st and the 2nd Jan, 2016.
+    Get count of subscribers, per handset type, who moved between locations between the 1st and the 2nd Jan, 2016.
     Please note that SubscriberHandsetCharacteristic is *not* exposed to this query through the API due to
     deanonymisation risk - it is used here as an illustrative example.
 
