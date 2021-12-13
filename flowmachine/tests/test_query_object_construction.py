@@ -8,6 +8,12 @@ from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
+from flowmachine.core.server.query_schemas.mobility_classification import (
+    MobilityClassificationSchema,
+)
+from flowmachine.core.server.query_schemas.coalesced_location import (
+    CoalescedLocationSchema,
+)
 
 
 def test_construct_query(diff_reporter):
@@ -688,3 +694,239 @@ def test_unmatching_spatial_unit_raises_error_modal():
     with pytest.raises(ValidationError, match="same aggregation unit") as exc:
         _ = LocationVisitsSchema().load(query_spec)
     print(exc)
+
+
+@pytest.mark.parametrize(
+    "agg_unit_preferred, agg_unit_fallback, agg_unit_weights, invalid_fields",
+    [
+        ("admin3", "admin3", "admin1", {"subscriber_location_weights"}),
+        ("admin3", "admin1", "admin1", {"fallback_location"}),
+        (
+            "admin3",
+            "admin2",
+            "admin1",
+            {"fallback_location", "subscriber_location_weights"},
+        ),
+    ],
+)
+def test_mismatched_aggregation_units_coalesced_location(
+    agg_unit_preferred, agg_unit_fallback, agg_unit_weights, invalid_fields
+):
+    query_spec = {
+        "query_kind": "coalesced_location",
+        "preferred_location": {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+                "query_kind": "location_visits",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": agg_unit_preferred,
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": agg_unit_preferred,
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
+        },
+        "fallback_location": {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+                "query_kind": "location_visits",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "aggregation_unit": agg_unit_fallback,
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "aggregation_unit": agg_unit_fallback,
+                        "method": "last",
+                        "subscriber_subset": None,
+                    },
+                ],
+            },
+        },
+        "subscriber_location_weights": {
+            "query_kind": "location_visits",
+            "locations": [
+                {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": agg_unit_weights,
+                    "method": "last",
+                    "subscriber_subset": None,
+                },
+                {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-02",
+                    "aggregation_unit": agg_unit_weights,
+                    "method": "last",
+                    "subscriber_subset": None,
+                },
+            ],
+        },
+        "weight_threshold": 2,
+    }
+    with pytest.raises(ValidationError, match="aggregation_unit") as exc:
+        CoalescedLocationSchema().load(query_spec)
+    # Check that errors were raised for the expected fields
+    assert exc.value.messages.keys() == invalid_fields
+
+
+def test_mismatched_aggregation_units_mobility_classification():
+    query_spec = {
+        "query_kind": "mobility_classification",
+        "locations": [
+            {
+                "query_kind": "coalesced_location",
+                "preferred_location": {
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
+                },
+                "fallback_location": {
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin3",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
+                },
+                "subscriber_location_weights": {
+                    "query_kind": "location_visits",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-05",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-06",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ],
+                },
+                "weight_threshold": 2,
+            },
+            {
+                "query_kind": "coalesced_location",
+                "preferred_location": {
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin2",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin2",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
+                },
+                "fallback_location": {
+                    "query_kind": "majority_location",
+                    "subscriber_location_weights": {
+                        "query_kind": "location_visits",
+                        "locations": [
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-01",
+                                "aggregation_unit": "admin2",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                            {
+                                "query_kind": "daily_location",
+                                "date": "2016-01-02",
+                                "aggregation_unit": "admin2",
+                                "method": "last",
+                                "subscriber_subset": None,
+                            },
+                        ],
+                    },
+                },
+                "subscriber_location_weights": {
+                    "query_kind": "location_visits",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-01",
+                            "aggregation_unit": "admin2",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-02",
+                            "aggregation_unit": "admin2",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ],
+                },
+                "weight_threshold": 2,
+            },
+        ],
+        "stay_length_threshold": 2,
+    }
+    with pytest.raises(ValidationError, match="aggregation unit") as exc:
+        MobilityClassificationSchema().load(query_spec)
+    # Check that error was raised for the expected field
+    assert exc.value.messages.keys() == {"locations"}
