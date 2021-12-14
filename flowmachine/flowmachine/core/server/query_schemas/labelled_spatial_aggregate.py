@@ -5,7 +5,7 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
+from flowmachine.features.location.redacted_labelled_spatial_query import (
     RedactedLabelledSpatialQuery,
 )
 from flowmachine.features.location.labelled_spatial_aggregate import (
