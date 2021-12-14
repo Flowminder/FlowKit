@@ -754,7 +754,7 @@ def labelled_flows_spec(
     *,
     from_location: Dict[str, Any],
     to_location: Dict[str, Any],
-    subscriber_labels: Dict[str, Any],
+    labels: Dict[str, Any],
     join_type: str = "inner",
 ) -> dict:
     """
@@ -767,7 +767,7 @@ def labelled_flows_spec(
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
-    subscriber_labels : dict
+    labels : dict
         Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
     join_type: str default "inner"
         Join type to use to build the flows
@@ -782,7 +782,7 @@ def labelled_flows_spec(
         "query_kind": "flows",
         "from_location": from_location,
         "to_location": to_location,
-        "subscriber_labels": subscriber_labels,
+        "labels": labels,
         "join_type": join_type,
     }
 
@@ -801,7 +801,7 @@ def labelled_flows(*, connection: Connection, **kwargs) -> APIQuery:
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
-    subscriber_labels : dict
+    labels : dict
         Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
     join_type: str default "inner"
         Join type to use to build the flows

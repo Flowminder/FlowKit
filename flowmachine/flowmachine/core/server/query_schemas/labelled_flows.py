@@ -22,12 +22,12 @@ __all__ = ["LabelledFlowsSchema", "LabelledFlowsExposed"]
 
 
 class LabelledFlowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location, subscriber_labels, join_type):
+    def __init__(self, *, from_location, to_location, labels, join_type):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.from_location = from_location
         self.to_location = to_location
-        self.subscriber_labels = subscriber_labels
+        self.labels = labels
         self.join_type = join_type
 
     @property
@@ -41,10 +41,10 @@ class LabelledFlowsExposed(BaseExposedQuery):
         """
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
-        labels = self.subscriber_labels._flowmachine_query_obj
+        labels = self.labels._flowmachine_query_obj
         return RedactedLabelledFlows(
             labelled_flows=LabelledFlows(
-                loc1, loc2, subscriber_labels=labels, join_type=self.join_type
+                loc1, loc2, labels=labels, join_type=self.join_type
             )
         )
 
@@ -57,7 +57,7 @@ class LabelledFlowsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["labelled_flows"]))
     from_location = fields.Nested(CoalescedLocationSchema, required=True)
     to_location = fields.Nested(CoalescedLocationSchema, required=True)
-    subscriber_labels = fields.Nested(MobilityClassificationSchema, required=True)
+    labels = fields.Nested(MobilityClassificationSchema, required=True)
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
 
     __model__ = LabelledFlowsExposed
