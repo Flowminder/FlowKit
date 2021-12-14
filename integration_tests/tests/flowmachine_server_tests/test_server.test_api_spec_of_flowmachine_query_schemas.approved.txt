@@ -1036,14 +1036,14 @@
         ],
         "type": "string"
       },
+      "labels": {
+        "$ref": "#/components/schemas/MobilityClassification"
+      },
       "query_kind": {
         "enum": [
           "labelled_flows"
         ],
         "type": "string"
-      },
-      "subscriber_labels": {
-        "$ref": "#/components/schemas/MobilityClassification"
       },
       "to_location": {
         "$ref": "#/components/schemas/CoalescedLocation"
@@ -1051,7 +1051,7 @@
     },
     "required": [
       "from_location",
-      "subscriber_labels",
+      "labels",
       "to_location"
     ],
     "type": "object"
