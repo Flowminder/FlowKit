@@ -181,3 +181,12 @@ def test_flows_bad_join_type_raises_error():
             ),
             join_type="left notajoin",
         )
+
+
+def test_build_agg_validation():
+    flow = Flows(
+        daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)),
+        daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)),
+    )
+    with pytest.raises(ValueError, match="'in' or 'out'"):
+        flow._build_json_agg_clause("wrong")

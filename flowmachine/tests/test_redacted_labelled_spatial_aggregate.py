@@ -29,7 +29,7 @@ def test_redaction(get_dataframe):
     metric = SubscriberHandsetCharacteristic(
         "2016-01-01", "2016-01-02", characteristic="hnd_type"
     )
-    labelled = LabelledSpatialAggregate(locations=locations, subscriber_labels=metric)
+    labelled = LabelledSpatialAggregate(locations=locations, labels=metric)
 
     redacted = RedactedLabelledSpatialAggregate(labelled_spatial_aggregate=labelled)
     redacted_df = get_dataframe(redacted)
@@ -41,7 +41,7 @@ def test_redaction(get_dataframe):
             ["524 4 12 62", "Feature", 44],
             ["524 4 12 62", "Smart", 19],
         ],
-        columns=["pcod", "label_value", "value"],
+        columns=["pcod", "value_label", "value"],
     )
 
     assert_frame_equal(redacted_df, target)

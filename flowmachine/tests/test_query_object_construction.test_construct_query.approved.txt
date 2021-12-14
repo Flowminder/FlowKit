@@ -418,7 +418,7 @@
       }
     }
   },
-  "c023c0990cc56a7e755cf5fabb0681e4": {
+  "a6d8b8265d03ee10615fc2711148c924": {
     "query_kind": "labelled_spatial_aggregate",
     "locations": {
       "query_kind": "coalesced_location",
@@ -487,7 +487,7 @@
       },
       "weight_threshold": 2
     },
-    "subscriber_labels": {
+    "labels": {
       "query_kind": "mobility_classification",
       "locations": [
         {
