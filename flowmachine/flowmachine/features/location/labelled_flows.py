@@ -21,10 +21,10 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
 
     Parameters
     ----------
-    loc1 : {daily_location, ModalLocation}
+    loc1 : Query
         Object representing the locations of people within the
         first time frame of interest
-    loc2 : daily_location, or ModalLocation object
+    loc2 : Query
         As above for the second period
     labels : Query
         A query returning a set of unique 'subscriber' columns and at least one categorical column.
@@ -127,9 +127,15 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
     def out_label_columns(self) -> List[str]:
         return [f"{col}_label" for col in self.label_columns]
 
+    @property
+    def out_spatial_columns(self) -> List[str]:
+        return [f"{col}_from" for col in self.spatial_unit.location_id_columns] + [
+            f"{col}_to" for col in self.spatial_unit.location_id_columns
+        ]
+
     def _make_query(self):
 
-        group_cols = ",".join(self.joined.column_names[1:])
+        group_cols = ",".join(self.out_spatial_columns + self.out_label_columns)
 
         grouped = f"""
         SELECT
