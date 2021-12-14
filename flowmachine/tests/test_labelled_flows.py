@@ -203,8 +203,11 @@ def test_label_redaction(get_dataframe):
         labels=labels,
         label_columns=["value_hnd_type"],
     )
-    assert "value_brand" not in lf.out_label_columns
-    assert "value_brand" not in get_dataframe(lf).columns
+    assert ["value_hnd_type_label"] == lf.out_label_columns
+    assert all(
+        ["pcod_from", "pcod_to", "value_hnd_type_label", "value"]
+        == get_dataframe(lf).columns
+    )
 
 
 def test_geojson(labelled_flows):
