@@ -1026,13 +1026,13 @@
         ],
         "type": "string"
       },
-      "subscriber_labels": {
+      "labels": {
         "$ref": "#/components/schemas/MobilityClassification"
       }
     },
     "required": [
       "locations",
-      "subscriber_labels"
+      "labels"
     ],
     "type": "object"
   },

@@ -19,7 +19,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     labels: Query
         Any query with a subscriber column
     label_columns: List[str]
-        A list of columns in subscriber_labels to aggregate on
+        A list of columns in labels to aggregate on
 
     Examples
     --------
@@ -58,7 +58,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
             raise ValueError(f"'subscriber' cannot be a label")
 
         self.locations = locations
-        self.subscriber_labels = labels
+        self.labels = labels
         self.label_columns = list(label_columns)
         self.spatial_unit = locations.spatial_unit
         self.label_columns = label_columns
@@ -115,7 +115,7 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
             FROM 
                 ({self.locations.get_query()}) AS agg
             LEFT JOIN
-                ({self.subscriber_labels.get_query()}) AS labels USING (subscriber)
+                ({self.labels.get_query()}) AS labels USING (subscriber)
             GROUP BY
                 {aggregate_cols}, {label_group}
             """
