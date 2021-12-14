@@ -1017,6 +1017,9 @@
   },
   "LabelledSpatialAggregate": {
     "properties": {
+      "labels": {
+        "$ref": "#/components/schemas/MobilityClassification"
+      },
       "locations": {
         "$ref": "#/components/schemas/CoalescedLocation"
       },
@@ -1025,14 +1028,11 @@
           "labelled_spatial_aggregate"
         ],
         "type": "string"
-      },
-      "labels": {
-        "$ref": "#/components/schemas/MobilityClassification"
       }
     },
     "required": [
-      "locations",
-      "labels"
+      "labels",
+      "locations"
     ],
     "type": "object"
   },
