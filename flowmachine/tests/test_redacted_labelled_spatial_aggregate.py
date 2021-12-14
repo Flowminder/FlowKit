@@ -12,7 +12,7 @@ from flowmachine.features import SubscriberHandsetCharacteristic
 from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
 )
-from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
+from flowmachine.features.location.redacted_labelled_spatial_query import (
     RedactedLabelledSpatialQuery,
 )
 from flowmachine.features.subscriber.daily_location import locate_subscribers

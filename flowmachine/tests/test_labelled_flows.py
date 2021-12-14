@@ -8,7 +8,7 @@ import pytest
 
 from json import loads
 
-from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
+from flowmachine.features.location.redacted_labelled_spatial_query import (
     RedactedLabelledSpatialQuery,
 )
 from flowmachine.features.location.labelled_flows import LabelledFlows
