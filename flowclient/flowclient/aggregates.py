@@ -1119,7 +1119,7 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
 def labelled_spatial_aggregate_spec(
     *,
     locations: Dict[str, Any],
-    subscriber_labels: Dict[str, Any],
+    labels: Dict[str, Any],
 ) -> dict:
     """
     Retrieves the counts of subscribers per location, disaggregated by labels
@@ -1129,7 +1129,7 @@ def labelled_spatial_aggregate_spec(
     ----------
     locations : dict
         Location query to aggregate spatially
-    subscriber_labels : dict
+    labels : dict
         Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts
 
     Returns
@@ -1140,7 +1140,7 @@ def labelled_spatial_aggregate_spec(
     return {
         "query_kind": "labelled_query",
         "locations": locations,
-        "subscriber_labels": subscriber_labels,
+        "labels": labels,
     }
 
 
@@ -1156,7 +1156,7 @@ def labelled_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
         FlowKit API connection
     locations : dict
         Location query to aggregate spatially
-    subscriber_labels : dict
+    labels : dict
         Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts
 
     Returns

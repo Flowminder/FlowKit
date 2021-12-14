@@ -27,11 +27,11 @@ __all__ = [
 
 
 class LabelledSpatialAggregateExposed(BaseExposedQuery):
-    def __init__(self, *, locations, subscriber_labels):
+    def __init__(self, *, locations, labels):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
-        self.subscriber_labels = subscriber_labels
+        self.labels = labels
 
     @property
     def _flowmachine_query_obj(self):
@@ -45,7 +45,7 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
         return RedactedLabelledSpatialQuery(
             labelled_query=LabelledSpatialAggregate(
                 locations=self.locations._flowmachine_query_obj,
-                subscriber_labels=self.subscriber_labels._flowmachine_query_obj,
+                labels=self.labels._flowmachine_query_obj,
             )
         )
 
@@ -54,6 +54,6 @@ class LabelledSpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["labelled_query"]))
     locations = fields.Nested(CoalescedLocationSchema, required=True)
-    subscriber_labels = fields.Nested(MobilityClassificationSchema, required=True)
+    labels = fields.Nested(MobilityClassificationSchema, required=True)
 
     __model__ = LabelledSpatialAggregateExposed

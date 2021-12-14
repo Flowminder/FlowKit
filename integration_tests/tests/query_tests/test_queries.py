@@ -810,7 +810,7 @@ queries = [
             ),
             weight_threshold=2,
         ),
-        subscriber_labels=flowclient.mobility_classification_spec(
+        labels=flowclient.mobility_classification_spec(
             locations=[
                 flowclient.coalesced_location_spec(
                     preferred_location=flowclient.majority_location_spec(
