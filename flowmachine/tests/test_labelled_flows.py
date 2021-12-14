@@ -175,6 +175,44 @@ def test_subscriber_validation():
         )
 
 
+def test_label_redaction(get_dataframe):
+    loc_1 = locate_subscribers(
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+
+    loc_2 = locate_subscribers(
+        "2016-01-02",
+        "2016-01-03",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
+    )
+
+    labels = SubscriberHandsetCharacteristic(
+        "2016-01-01", "2016-01-03", characteristic="hnd_type"
+    ).join(
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-03", characteristic="brand"
+        ),
+        "subscriber",
+        left_append="_hnd_type",
+        right_append="_brand",
+    )
+    lf = LabelledFlows(
+        loc1=loc_1,
+        loc2=loc_2,
+        labels=labels,
+        label_columns=["value_hnd_type"],
+    )
+    assert ["value_hnd_type_label"] == lf.out_label_columns
+    assert all(
+        ["pcod_from", "pcod_to", "value_hnd_type_label", "value"]
+        == get_dataframe(lf).columns
+    )
+
+
 def test_geojson(labelled_flows):
 
     out = labelled_flows.to_geojson_string()
