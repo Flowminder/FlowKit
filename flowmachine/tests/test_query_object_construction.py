@@ -408,7 +408,7 @@ def test_construct_query(diff_reporter):
                 },
                 "weight_threshold": 2,
             },
-            "subscriber_labels": {
+            "labels": {
                 "query_kind": "mobility_classification",
                 "locations": [
                     {
