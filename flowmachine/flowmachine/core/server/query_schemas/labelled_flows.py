@@ -44,7 +44,7 @@ class LabelledFlowsExposed(BaseExposedQuery):
         labels = self.labels._flowmachine_query_obj
         return RedactedLabelledFlows(
             labelled_flows=LabelledFlows(
-                loc1, loc2, labels=labels, join_type=self.join_type
+                loc1=loc1, loc2=loc2, labels=labels, join_type=self.join_type
             )
         )
 
