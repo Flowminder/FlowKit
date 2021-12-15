@@ -73,7 +73,13 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
 
     try:
         return get_query_object_by_id(connection, query_id)
-    except (EOFError, ModuleNotFoundError, AttributeError) as exc:
+    except (
+        EOFError,
+        ModuleNotFoundError,
+        AttributeError,
+        pickle.UnpicklingError,
+        IndexError
+    ) as exc:
         logger.debug("Can't unpickle, creating stub.", query_id=query_id, exception=exc)
         qry = f"SELECT depends_on FROM cache.dependencies WHERE query_id='{query_id}'"
         return QStub(
