@@ -78,7 +78,7 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
         ModuleNotFoundError,
         AttributeError,
         pickle.UnpicklingError,
-        IndexError
+        IndexError,
     ) as exc:
         logger.debug("Can't unpickle, creating stub.", query_id=query_id, exception=exc)
         qry = f"SELECT depends_on FROM cache.dependencies WHERE query_id='{query_id}'"
