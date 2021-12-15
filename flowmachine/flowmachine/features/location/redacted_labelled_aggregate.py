@@ -2,16 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import List
+from typing import List, Union
 
+from flowmachine.features.location.labelled_flows import LabelledFlows
 from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
 )
 from flowmachine.core import Query
-from flowmachine.core.mixins import GeoDataMixin
 
 
-class RedactedLabelledMixin(Query):
+class RedactedLabelledAggregate(Query):
     """
     Query that drops any locations aggregates or flows that, when disaggregated by label, reveal a number of subscribers
     less than redaction_threshold
@@ -24,11 +24,12 @@ class RedactedLabelledMixin(Query):
     """
 
     def __init__(
-        self, *, labelled_query: Union[LabelledSpatialAggregate, LabelledFlows], redaction_threshold: int = 15
+        self,
+        *,
+        labelled_query: Union[LabelledSpatialAggregate, LabelledFlows],
+        redaction_threshold: int = 15,
     ):
 
-        if not hasattr(labelled_query, "spatial_unit"):
-            raise ValueError("labelled_query must have a spatial unit")
         if not hasattr(labelled_query, "out_spatial_columns"):
             raise ValueError("labelled_query must implement out_spatial_columns")
 
