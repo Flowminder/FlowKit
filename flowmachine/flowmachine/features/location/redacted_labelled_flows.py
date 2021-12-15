@@ -17,13 +17,13 @@ class RedactedLabelledFlows(FlowLike, RedactedLabelledAggregate):
     less than redaction_threshold
     Parameters
     ----------
-    labelled_spatial_aggregate: LabelledSpatialAggregate or LabelledFlows
-        The LabelledSpatialAggregate query to redact
+    labelled_flows: LabelledFlows
+        The LabelledFlows query to redact
     redaction_threshold: int default 15
         If any labels within a flow (from - to) reveal this number of subscribers or fewer, that flow is dropped
     """
 
-    def __init__(self, *, labelled_flows: Query, redaction_threshold: int = 15):
+    def __init__(self, *, labelled_flows: LabelledFlows, redaction_threshold: int = 15):
 
         if not hasattr(labelled_flows, "spatial_unit"):
             raise ValueError("labelled_flows must have a spatial unit")

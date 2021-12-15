@@ -20,7 +20,7 @@ class RedactedLabelledAggregate(Query):
     labelled_query: LabelledSpatialAggregate or LabelledFlows
         The LabelledSpatialAggregate query to redact
     redaction_threshold: int default 15
-        If any labels within a location reveal less than this number of subscribers, that location is dropped
+        If any labels within a location reveal this number of subscribers or fewer, that location is dropped
     """
 
     def __init__(

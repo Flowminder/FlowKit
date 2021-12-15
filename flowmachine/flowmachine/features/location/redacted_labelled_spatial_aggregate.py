@@ -15,14 +15,14 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, RedactedLabelledAggregate):
     less than redaction_threshold
     Parameters
     ----------
-    labelled_spatial_aggregate: LabelledSpatialAggregate or LabelledFlows
+    labelled_spatial_aggregate: LabelledSpatialAggregate
         The LabelledSpatialAggregate query to redact
     redaction_threshold: int default 15
         If any labels within a location reveal this number of subscribers or fewer, that location is dropped
     """
 
     def __init__(
-        self, *, labelled_spatial_aggregate: Query, redaction_threshold: int = 15
+        self, *, labelled_spatial_aggregate: LabelledSpatialAggregate, redaction_threshold: int = 15
     ):
 
         if not hasattr(labelled_spatial_aggregate, "spatial_unit"):
