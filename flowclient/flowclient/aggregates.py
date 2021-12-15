@@ -1138,7 +1138,7 @@ def labelled_spatial_aggregate_spec(
         Query specification for a labelled spatial aggregate query
     """
     return {
-        "query_kind": "labelled_query",
+        "query_kind": "labelled_spatial_aggregate",
         "locations": locations,
         "labels": labels,
     }

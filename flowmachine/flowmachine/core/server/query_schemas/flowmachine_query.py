@@ -67,7 +67,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unmoving_counts": UnmovingCountsSchema,
         "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
         "trips_od_matrix": TripsODMatrixSchema,
-        "labelled_query": LabelledSpatialAggregateSchema,
+        "labelled_spatial_aggregate": LabelledSpatialAggregateSchema,
     }
 
 

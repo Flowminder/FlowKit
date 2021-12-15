@@ -52,7 +52,7 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
 
 class LabelledSpatialAggregateSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["labelled_query"]))
+    query_kind = fields.String(validate=OneOf(["labelled_spatial_aggregate"]))
     locations = fields.Nested(CoalescedLocationSchema, required=True)
     labels = fields.Nested(MobilityClassificationSchema, required=True)
 
