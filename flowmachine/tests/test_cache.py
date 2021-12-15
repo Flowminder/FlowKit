@@ -8,7 +8,11 @@ Tests for query caching functions.
 
 import pytest
 
-from flowmachine.core.cache import cache_table_exists, write_cache_metadata
+from flowmachine.core.cache import (
+    cache_table_exists,
+    write_cache_metadata,
+    get_obj_or_stub,
+)
 from flowmachine.core.context import get_db
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location, ModalLocation, Flows
@@ -247,6 +251,80 @@ def test_retrieve(get_dataframe):
     from_cache = {x.query_id: x for x in dl1.get_stored()}
     assert dl1.query_id in from_cache
     assert get_dataframe(from_cache[dl1.query_id]).equals(local_df)
+
+
+@pytest.fixture
+def create_and_store_novel_query():
+    """Creates and stores a query object defined at runtime."""
+
+    class TestQuery(Query):
+        @property
+        def column_names(self):
+            return ["value"]
+
+        def _make_query(self):
+            return "select 1 as value"
+
+    q = TestQuery()
+    q_id = q.query_id
+    q.store().result()
+    yield q_id
+
+
+def test_retrieve_novel_query(create_and_store_novel_query, flowmachine_connect):
+    """Test that a runtime defined query can be pulled from cache and invalidated."""
+    from_cache = get_obj_or_stub(get_db(), create_and_store_novel_query)
+    assert from_cache.query_id == create_and_store_novel_query
+    assert from_cache.is_stored
+    from_cache.invalidate_db_cache()
+    assert not from_cache.is_stored
+
+
+@pytest.fixture
+def create_and_store_novel_query_with_dependency():
+    """Creates and stores a query object defined at runtime with a composed query type."""
+
+    class TestQuery(Query):
+        @property
+        def column_names(self):
+            return ["value"]
+
+        def _make_query(self):
+            return "select 1 as value"
+
+    class NestTestQuery(Query):
+        def __init__(self):
+            self.nested = TestQuery()
+            super().__init__()
+
+        @property
+        def column_names(self):
+            return ["value"]
+
+        def _make_query(self):
+            return "select 1 as value"
+
+    q = NestTestQuery()
+    q_id = q.query_id
+    nested_id = q.nested.query_id
+    q.store(store_dependencies=True).result()
+    Query._QueryPool.clear()
+    yield q_id, nested_id
+
+
+def test_retrieve_novel_query_with_dependency(
+    create_and_store_novel_query_with_dependency, flowmachine_connect
+):
+    """Test that a runtime defined query composed of others can be pulled from cache and invalidated."""
+    qid, nested_id = create_and_store_novel_query_with_dependency
+    from_cache = get_obj_or_stub(get_db(), qid)
+    assert from_cache.query_id == qid
+    assert from_cache.is_stored
+    assert from_cache.deps[0].query_id == nested_id
+    assert type(from_cache).__name__ == "QStub"
+    from_cache.deps[0].invalidate_db_cache(cascade=True)
+    assert not from_cache.deps[0].is_stored
+    assert not from_cache.is_stored
 
 
 def test_df_not_pickled():
