@@ -8,8 +8,8 @@ import pytest
 
 from json import loads
 
-from flowmachine.features.location.redacted_labelled_spatial_query import (
-    RedactedLabelledSpatialQuery,
+from flowmachine.features.location.redacted_labelled_flows import (
+    RedactedLabelledFlows,
 )
 from flowmachine.features.location.labelled_flows import LabelledFlows
 from flowmachine.core import make_spatial_unit
@@ -248,8 +248,8 @@ def test_geojson_multi_labels(multi_labelled_flows):
 
 
 def test_redacted_labelled_flows(labelled_flows, get_dataframe):
-    redacted_flows = RedactedLabelledSpatialQuery(
-        labelled_query=labelled_flows, redaction_threshold=3
+    redacted_flows = RedactedLabelledFlows(
+        labelled_flows=labelled_flows, redaction_threshold=3
     )
     df = get_dataframe(redacted_flows)
     assert len(df) < 10
@@ -257,8 +257,8 @@ def test_redacted_labelled_flows(labelled_flows, get_dataframe):
 
 
 def test_redacted_multi_labelled_flows(multi_labelled_flows, get_dataframe):
-    redacted_flows = RedactedLabelledSpatialQuery(
-        labelled_query=multi_labelled_flows, redaction_threshold=1
+    redacted_flows = RedactedLabelledFlows(
+        labelled_flows=multi_labelled_flows, redaction_threshold=1
     )
     df = get_dataframe(redacted_flows)
     assert len(df) == 19

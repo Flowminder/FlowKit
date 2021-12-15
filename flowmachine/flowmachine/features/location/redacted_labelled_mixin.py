@@ -11,7 +11,7 @@ from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
 
 
-class RedactedLabelledSpatialQuery(GeoDataMixin, Query):
+class RedactedLabelledMixin(Query):
     """
     Query that drops any locations aggregates or flows that, when disaggregated by label, reveal a number of subscribers
     less than redaction_threshold
