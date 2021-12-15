@@ -35,7 +35,6 @@ class RedactedLabelledAggregate(Query):
 
         self.labelled_query = labelled_query
         self.redaction_threshold = redaction_threshold
-        self.spatial_unit = labelled_query.spatial_unit
         super().__init__()
 
     @property

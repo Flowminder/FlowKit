@@ -11,6 +11,8 @@ class RedactedLabelledFlows(FlowLike, RedactedLabelledAggregate):
         if not hasattr(labelled_flows, "spatial_unit"):
             raise ValueError("labelled_query must have a spatial unit")
 
+        self.spatial_unit = labelled_flows.spatial_unit
+
         super().__init__(
             labelled_query=labelled_flows, redaction_threshold=redaction_threshold
         )
