@@ -1,4 +1,8 @@
-from flowmachine.core import Query
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+from flowmachine.core.query import Query
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.location.redacted_labelled_aggregate import (
     RedactedLabelledAggregate,
@@ -14,13 +18,15 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, RedactedLabelledAggregate):
     labelled_spatial_aggregate: LabelledSpatialAggregate or LabelledFlows
         The LabelledSpatialAggregate query to redact
     redaction_threshold: int default 15
-        If any labels within a location reveal less than this number of subscribers, that location is dropped
+        If any labels within a location reveal this number of subscribers or fewer, that location is dropped
     """
 
-    def __init__(self, *, labelled_spatial_aggregate, redaction_threshold=15):
+    def __init__(
+        self, *, labelled_spatial_aggregate: Query, redaction_threshold: int = 15
+    ):
 
         if not hasattr(labelled_spatial_aggregate, "spatial_unit"):
-            raise ValueError("labelled_query must have a spatial unit")
+            raise ValueError("labelled_spatial_aggregate must have a spatial unit")
 
         self.spatial_unit = labelled_spatial_aggregate.spatial_unit
 

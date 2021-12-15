@@ -45,3 +45,12 @@ def test_redaction(get_dataframe):
     )
 
     assert_frame_equal(redacted_df, target)
+
+
+def test_spatial_unit_validation():
+    with pytest.raises(ValueError, match="spatial unit"):
+        RedactedLabelledSpatialAggregate(
+            labelled_spatial_aggregate=SubscriberHandsetCharacteristic(
+                "2016-01-01", "2016-01-02", characteristic="hnd_type"
+            )
+        )

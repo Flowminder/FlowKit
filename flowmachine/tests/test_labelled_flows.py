@@ -263,3 +263,12 @@ def test_redacted_multi_labelled_flows(multi_labelled_flows, get_dataframe):
     df = get_dataframe(redacted_flows)
     assert len(df) == 19
     assert df.value.max() > 1
+
+
+def test_redacted_spatial_unit_validation():
+    with pytest.raises(ValueError, match="spatial unit"):
+        RedactedLabelledFlows(
+            labelled_flows=SubscriberHandsetCharacteristic(
+                "2016-01-01", "2016-01-02", characteristic="hnd_type"
+            )
+        )
