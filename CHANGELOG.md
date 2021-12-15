@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Exposed `CoalescedLocation` via FlowAPI, in the specific case where the fallback location is a `FilteredReferenceLocation` query. [#4585](https://github.com/Flowminder/FlowKit/issues/4585)
 - Added `LabelledFlows` query, which returns flows disaggregated by label [#4679](https://github.com/Flowminder/FlowKit/issues/4679)
 - Exposed `LabelledSpatialAggregate` via FlowAPI, with a `MobilityClassification` query accepted as the 'labels' parameter. [#4669](https://github.com/Flowminder/FlowKit/issues/4669)
+- Added `RedactedLabelledAggregate` and subclasses for redacting labelled data (see ADR 0011). [#4671](https://github.com/Flowminder/FlowKit/issues/4671)
 
 ### Changed
 - Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
