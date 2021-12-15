@@ -7,6 +7,9 @@ from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.location.redacted_labelled_aggregate import (
     RedactedLabelledAggregate,
 )
+from flowmachine.features.location.labelled_spatial_aggregate import (
+    LabelledSpatialAggregate,
+)
 
 
 class RedactedLabelledSpatialAggregate(GeoDataMixin, RedactedLabelledAggregate):
@@ -22,7 +25,10 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, RedactedLabelledAggregate):
     """
 
     def __init__(
-        self, *, labelled_spatial_aggregate: LabelledSpatialAggregate, redaction_threshold: int = 15
+        self,
+        *,
+        labelled_spatial_aggregate: LabelledSpatialAggregate,
+        redaction_threshold: int = 15
     ):
 
         if not hasattr(labelled_spatial_aggregate, "spatial_unit"):

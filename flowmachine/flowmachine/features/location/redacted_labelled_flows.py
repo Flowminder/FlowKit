@@ -5,6 +5,7 @@
 
 from flowmachine.core import Query
 from flowmachine.features.location.flows import FlowLike
+from flowmachine.features.location.labelled_flows import LabelledFlows
 from flowmachine.features.location.redacted_labelled_aggregate import (
     RedactedLabelledAggregate,
 )
