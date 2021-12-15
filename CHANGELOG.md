@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `MobilityClassification` query, to classify subscribers by mobility type based on a sequence of locations. [#4666](https://github.com/Flowminder/FlowKit/issues/4666)
 - Exposed `CoalescedLocation` via FlowAPI, in the specific case where the fallback location is a `FilteredReferenceLocation` query. [#4585](https://github.com/Flowminder/FlowKit/issues/4585)
 - Added `LabelledFlows` query, which returns flows disaggregated by label [#4679](https://github.com/Flowminder/FlowKit/issues/4679)
-- Exposed `LabelledSpatialAggregate` via FlowAPI, with a `MobilityClassification` query accepted as the 'labels' parameter. [#4669](https://github.com/Flowminder/FlowKit/issues/4669)
+- Exposed `LabelledSpatialAggregate` and `LabelledFlows` via FlowAPI, with a `MobilityClassification` query accepted as the 'labels' parameter. [#4669](https://github.com/Flowminder/FlowKit/issues/4669)
 - Added `RedactedLabelledAggregate` and subclasses for redacting labelled data (see ADR 0011). [#4671](https://github.com/Flowminder/FlowKit/issues/4671)
 
 ### Changed
