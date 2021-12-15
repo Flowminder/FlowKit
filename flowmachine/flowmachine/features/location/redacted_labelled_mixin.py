@@ -17,14 +17,14 @@ class RedactedLabelledMixin(Query):
     less than redaction_threshold
     Parameters
     ----------
-    labelled_query: LabelledSpatialAggregate
+    labelled_query: LabelledSpatialAggregate or LabelledFlows
         The LabelledSpatialAggregate query to redact
     redaction_threshold: int default 15
         If any labels within a location reveal less than this number of subscribers, that location is dropped
     """
 
     def __init__(
-        self, *, labelled_query: LabelledSpatialAggregate, redaction_threshold: int = 15
+        self, *, labelled_query: Union[LabelledSpatialAggregate, LabelledFlows], redaction_threshold: int = 15
     ):
 
         if not hasattr(labelled_query, "spatial_unit"):
