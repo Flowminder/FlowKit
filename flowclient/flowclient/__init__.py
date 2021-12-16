@@ -72,6 +72,7 @@ from .aggregates import (
     consecutive_trips_od_matrix,
     trips_od_matrix,
     labelled_spatial_aggregate,
+    labelled_flows,
 )
 
 __all__ = [
@@ -107,4 +108,5 @@ __all__ = [
     "consecutive_trips_od_matrix",
     "trips_od_matrix",
     "labelled_spatial_aggregate",
+    "labelled_flows",
 ]

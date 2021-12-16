@@ -543,6 +543,7 @@
         "geography": "#/components/schemas/Geography",
         "histogram_aggregate": "#/components/schemas/HistogramAggregate",
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
+        "labelled_flows": "#/components/schemas/LabelledFlows",
         "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
@@ -586,6 +587,9 @@
       },
       {
         "$ref": "#/components/schemas/JoinedSpatialAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/LabelledFlows"
       },
       {
         "$ref": "#/components/schemas/LabelledSpatialAggregate"
@@ -1012,6 +1016,43 @@
     "required": [
       "locations",
       "metric"
+    ],
+    "type": "object"
+  },
+  "LabelledFlows": {
+    "properties": {
+      "from_location": {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
+      "labels": {
+        "$ref": "#/components/schemas/MobilityClassification"
+      },
+      "query_kind": {
+        "enum": [
+          "labelled_flows"
+        ],
+        "type": "string"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      }
+    },
+    "required": [
+      "from_location",
+      "labels",
+      "to_location"
     ],
     "type": "object"
   },

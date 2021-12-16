@@ -79,6 +79,7 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "unmoving_at_reference_location_counts",
                 "trips_od_matrix",
                 "labelled_spatial_aggregate",
+                "labelled_flows",
             ]
         },
     }

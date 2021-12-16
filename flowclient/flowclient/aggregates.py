@@ -750,6 +750,71 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
     return connection.make_api_query(parameters=flows_spec(**kwargs))
 
 
+def labelled_flows_spec(
+    *,
+    from_location: Dict[str, Any],
+    to_location: Dict[str, Any],
+    labels: Dict[str, Any],
+    join_type: str = "inner",
+) -> dict:
+    """
+    Return query spec for flows between two locations, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    dict
+        Query specification for the labelled flows query
+
+    """
+    return {
+        "query_kind": "labelled_flows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "labels": labels,
+        "join_type": join_type,
+    }
+
+
+@merge_args(labelled_flows_spec)
+def labelled_flows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Flows between two locations, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Labelled flows query
+
+    """
+    return connection.make_api_query(parameters=labelled_flows_spec(**kwargs))
+
+
 def unique_subscriber_counts_spec(
     *,
     start_date: str,
