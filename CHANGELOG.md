@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.16.0]
+
+### Added
 - Most frequent locations is now available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
 - Total active periods is now available via FlowAPI.
 - Made hour of day slicing available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
@@ -19,6 +29,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `PerSubscriberAggregate` query. [#4559](https://github.com/Flowminder/FlowKit/issues/4559)
 - Added FlowETL QA checks 'count_imeis', 'count_imsis', 'count_locatable_location_ids', 'count_null_imeis', 'count_null_imsis', 'count_null_location_ids', 'max_msisdns_per_imei', 'max_msisdns_per_imsi', 'count_added_rows_outgoing', 'count_null_counterparts', 'count_null_durations', 'count_onnet_msisdns_incoming', 'count_onnet_msisdns_outgoing', 'count_onnet_msisdns', 'max_duration' and 'median_duration'. [#4552](https://github.com/Flowminder/FlowKit/issues/4552)
 - Added `FilteredReferenceLocation` query, which returns only rows where a subscriber visited a reference location the required number of times. [#4584](https://github.com/Flowminder/FlowKit/issues/4584) 
+- Added `LabelledSpatialAggregate` query and redaction, which sub-aggregates by subscriber labels. [#4668](https://github.com/Flowminder/FlowKit/issues/4668)
+- Added `MobilityClassification` query, to classify subscribers by mobility type based on a sequence of locations. [#4666](https://github.com/Flowminder/FlowKit/issues/4666)
+- Exposed `CoalescedLocation` via FlowAPI, in the specific case where the fallback location is a `FilteredReferenceLocation` query. [#4585](https://github.com/Flowminder/FlowKit/issues/4585)
+- Added `LabelledFlows` query, which returns flows disaggregated by label [#4679](https://github.com/Flowminder/FlowKit/issues/4679)
+- Exposed `LabelledSpatialAggregate` and `LabelledFlows` via FlowAPI, with a `MobilityClassification` query accepted as the 'labels' parameter. [#4669](https://github.com/Flowminder/FlowKit/issues/4669)
+- Added `RedactedLabelledAggregate` and subclasses for redacting labelled data (see ADR 0011). [#4671](https://github.com/Flowminder/FlowKit/issues/4671)
 
 ### Changed
 - Harmonised FlowAPI parameter names for start and end dates. They are now all `start_date` and `end_date`
@@ -28,10 +44,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Autoflow's prefect version is now current. [#2544](https://github.com/Flowminder/FlowKit/issues/2544)
+- FlowMachine server will now successfully remove cache for queries defined in an interactive flowmachine session during cleanup. [#4008](https://github.com/Flowminder/FlowKit/issues/4008)   
 
-### Removed
-
-## [1.5.0]
+## [1.15.0]
 
 ### Added
 - FlowETL flux check can be turned off by setting `use_flux_sensor=False` in `create_dag`. [#3603](https://github.com/Flowminder/FlowKit/issues/3603)
@@ -903,7 +918,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added Python 3.6 support for FlowClient
 
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.15.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.16.0...master
+[1.16.0]: https://github.com/Flowminder/FlowKit/compare/1.15.0...1.16.0
 [1.15.0]: https://github.com/Flowminder/FlowKit/compare/1.14.6...1.15.0
 [1.14.6]: https://github.com/Flowminder/FlowKit/compare/1.14.5...1.14.6
 [1.14.5]: https://github.com/Flowminder/FlowKit/compare/1.14.4...1.14.5

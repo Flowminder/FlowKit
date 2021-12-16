@@ -14,7 +14,7 @@
     "react-dom": "^17.0.2",
     "react-qr-svg": "^2.4.0",
     "react-scripts": "^4.0.3",
-    "rsuite": "^5.2.2",
+    "rsuite": "^5.3.0",
     "zxcvbn": "^4.4.2"
   },
   "homepage": "http://site.com/static",
@@ -28,11 +28,11 @@
     "cy:verify": "cypress verify"
   },
   "devDependencies": {
-    "cypress": "^9.1.0",
+    "cypress": "^9.1.1",
     "cypress-plugin-retries": "^1.5.2",
     "husky": "^7.0.4",
     "otp-cli": "^0.2.0",
-    "prettier": "^2.5.0",
+    "prettier": "^2.5.1",
     "pretty-quick": "^3.1.2"
   },
   "browserslist": [

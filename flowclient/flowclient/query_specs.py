@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import Union, List, Dict, Optional, Tuple
+from typing import Union, List, Dict, Optional, Tuple, Any
 
 import pandas as pd
 
@@ -840,3 +840,115 @@ def random_sample_spec(
     )
     sampled_query["sampling"] = sampling
     return sampled_query
+
+
+def majority_location_spec(
+    *, subscriber_location_weights: Dict, include_unlocatable=False
+) -> dict:
+    """
+    A class for producing a list of subscribers along with the location (derived from `spatial_unit')
+    that they visited more than half the time.
+
+    Parameters
+    ----------
+    subscriber_location_weights: dict
+        A `location_visits_spec`  query specification
+    include_unlocatable: bool default False
+        If `True`, returns every unique subscriber in the `subscriber_location_weights` query, with
+        the location column as `NULL` if no majority is reached.
+        If `False`, returns only subscribers that have achieved a majority location
+
+    Returns
+    -------
+    dict
+        A dictionary of the query specification
+
+
+    """
+    return {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": subscriber_location_weights,
+        "include_unlocatable": include_unlocatable,
+    }
+
+
+def location_visits_spec(*, locations: List) -> dict:
+    """
+    Class that defines lists of unique Dailylocations for each subscriber.
+    Each location is accompanied by the count of times it was a daily_location.
+
+    Parameters
+    ----------
+    locations : List
+        A list of either daily_location or modal_location query specs
+
+    Returns
+    -------
+    dict
+        A dictionary specifying a location_visits query
+
+    """
+    return {"query_kind": "location_visits", "locations": locations}
+
+
+def coalesced_location_spec(
+    *,
+    preferred_location,
+    fallback_location,
+    subscriber_location_weights,
+    weight_threshold,
+) -> dict:
+    return {
+        "query_kind": "coalesced_location",
+        "preferred_location": preferred_location,
+        "fallback_location": fallback_location,
+        "subscriber_location_weights": subscriber_location_weights,
+        "weight_threshold": weight_threshold,
+    }
+
+
+def mobility_classification_spec(
+    *, locations: List[Dict[str, Any]], stay_length_threshold: int
+) -> dict:
+    """
+    Based on subscribers' reference locations in a sequence of reference
+    periods, classify each subscriber as having one of the following mobility
+    types (the assigned label corresponds to the first of these criteria that
+    is true for a given subscriber):
+
+    - 'unlocated': Subscriber has a NULL location in the most recent period
+    - 'irregular': Subscriber is not active in at least one of the reference
+      periods
+    - 'not_always_locatable': Subscriber has a NULL location in at least one of
+      the reference periods
+    - 'mobile': Subscriber spent fewer than 'stay_length_threshold' consecutive
+      periods at any single location
+    - 'stable': Subscriber spent at least 'stay_length_threshold' consecutive
+      periods at the same location
+    Only subscribers appearing in the result of the reference location query
+    for the most recent period are included in the result of this query (i.e.
+    subscribers absent from the query result can be assumed to fall into a
+    sixth category: "not active in the most recent period").
+
+    Parameters
+    ----------
+    locations : list of reference location query specs
+        List of reference location queries, each returning a single location
+        per subscriber (or NULL location for subscribers that are active but
+        unlocatable). The list is assumed to be sorted into ascending
+        chronological order.
+    stay_length_threshold : int
+        Minimum number of consecutive periods over which a subscriber's
+        location must remain the same for that subscriber to be classified as
+        'stable'.
+
+    Returns
+    -------
+    dict
+        A dictionary specifying a mobility_classification query
+    """
+    return {
+        "query_kind": "mobility_classification",
+        "locations": locations,
+        "stay_length_threshold": stay_length_threshold,
+    }

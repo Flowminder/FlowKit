@@ -10,14 +10,12 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
 from flowmachine.core.join import Join
-from .base_exposed_query import BaseExposedQuery
-from .base_schema import BaseSchema
-from .daily_location import DailyLocationSchema
-from .modal_location import ModalLocationSchema
+from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
+from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
-from .most_frequent_location import MostFrequentLocationSchema
+from .reference_location import ReferenceLocationSchema
 
 from .unique_locations import UniqueLocationsSchema
 
@@ -25,10 +23,8 @@ from .unique_locations import UniqueLocationsSchema
 class InputToFlowsSchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
+        **ReferenceLocationSchema.type_schemas,
         "unique_locations": UniqueLocationsSchema,
-        "most_frequent_location": MostFrequentLocationSchema,
     }
 
 

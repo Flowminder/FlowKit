@@ -5,7 +5,7 @@
 # -*- coding: utf-8 -*-
 
 from flowmachine.features import DayTrajectories, daily_location
-from flowmachine.features.location.majority_location import MajorityLocation
+from flowmachine.features.subscriber.majority_location import MajorityLocation
 from flowmachine.features.subscriber.location_visits import LocationVisits
 from flowmachine.features.location.total_events import TotalLocationEvents
 from flowmachine.features.subscriber.handset_stats import HandsetStats
