@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.16.0]
+
+### Added
 - Most frequent locations is now available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
 - Total active periods is now available via FlowAPI.
 - Made hour of day slicing available via FlowAPI. [#3165](https://github.com/Flowminder/FlowKit/issues/3165)
@@ -36,9 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Autoflow's prefect version is now current. [#2544](https://github.com/Flowminder/FlowKit/issues/2544)
 - FlowMachine server will now successfully remove cache for queries defined in an interactive flowmachine session during cleanup. [#4008](https://github.com/Flowminder/FlowKit/issues/4008)   
 
-### Removed
-
-## [1.5.0]
+## [1.15.0]
 
 ### Added
 - FlowETL flux check can be turned off by setting `use_flux_sensor=False` in `create_dag`. [#3603](https://github.com/Flowminder/FlowKit/issues/3603)
@@ -910,7 +918,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added Python 3.6 support for FlowClient
 
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.15.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.16.0...master
+[1.16.0]: https://github.com/Flowminder/FlowKit/compare/1.15.0...1.16.0
 [1.15.0]: https://github.com/Flowminder/FlowKit/compare/1.14.6...1.15.0
 [1.14.6]: https://github.com/Flowminder/FlowKit/compare/1.14.5...1.14.6
 [1.14.5]: https://github.com/Flowminder/FlowKit/compare/1.14.4...1.14.5
