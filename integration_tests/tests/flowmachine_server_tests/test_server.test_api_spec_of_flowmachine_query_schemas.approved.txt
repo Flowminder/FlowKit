@@ -105,6 +105,43 @@
     ],
     "type": "object"
   },
+  "CoalescedLocation": {
+    "properties": {
+      "fallback_location": {
+        "$ref": "#/components/schemas/MajorityLocation"
+      },
+      "preferred_location": {
+        "$ref": "#/components/schemas/MajorityLocation"
+      },
+      "query_kind": {
+        "enum": [
+          "coalesced_location"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "subscriber_location_weights": {
+        "$ref": "#/components/schemas/LocationVisits"
+      },
+      "weight_threshold": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "fallback_location",
+      "preferred_location",
+      "subscriber_location_weights",
+      "weight_threshold"
+    ],
+    "type": "object"
+  },
   "ConsecutiveTripsODMatrix": {
     "properties": {
       "aggregation_unit": {
@@ -506,6 +543,8 @@
         "geography": "#/components/schemas/Geography",
         "histogram_aggregate": "#/components/schemas/HistogramAggregate",
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
+        "labelled_flows": "#/components/schemas/LabelledFlows",
+        "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
@@ -548,6 +587,12 @@
       },
       {
         "$ref": "#/components/schemas/JoinedSpatialAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/LabelledFlows"
+      },
+      {
+        "$ref": "#/components/schemas/LabelledSpatialAggregate"
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
@@ -840,16 +885,25 @@
   "InputToFlows": {
     "discriminator": {
       "mapping": {
+        "coalesced_location": "#/components/schemas/CoalescedLocation",
         "daily_location": "#/components/schemas/DailyLocation",
+        "majority_location": "#/components/schemas/MajorityLocation",
         "modal_location": "#/components/schemas/ModalLocation",
         "most_frequent_location": "#/components/schemas/MostFrequentLocation",
-        "unique_locations": "#/components/schemas/UniqueLocations"
+        "unique_locations": "#/components/schemas/UniqueLocations",
+        "visited_most_days": "#/components/schemas/VisitedMostDays"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
+      {
         "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MajorityLocation"
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
@@ -859,6 +913,9 @@
       },
       {
         "$ref": "#/components/schemas/UniqueLocations"
+      },
+      {
+        "$ref": "#/components/schemas/VisitedMostDays"
       }
     ]
   },
@@ -959,6 +1016,64 @@
     "required": [
       "locations",
       "metric"
+    ],
+    "type": "object"
+  },
+  "LabelledFlows": {
+    "properties": {
+      "from_location": {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
+      "labels": {
+        "$ref": "#/components/schemas/MobilityClassification"
+      },
+      "query_kind": {
+        "enum": [
+          "labelled_flows"
+        ],
+        "type": "string"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      }
+    },
+    "required": [
+      "from_location",
+      "labels",
+      "to_location"
+    ],
+    "type": "object"
+  },
+  "LabelledSpatialAggregate": {
+    "properties": {
+      "labels": {
+        "$ref": "#/components/schemas/MobilityClassification"
+      },
+      "locations": {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
+      "query_kind": {
+        "enum": [
+          "labelled_spatial_aggregate"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "labels",
+      "locations"
     ],
     "type": "object"
   },
@@ -1133,6 +1248,61 @@
       "aggregation_unit",
       "end_date",
       "start_date"
+    ],
+    "type": "object"
+  },
+  "LocationVisits": {
+    "properties": {
+      "locations": {
+        "items": {
+          "$ref": "#/components/schemas/VisitableLocation"
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "query_kind": {
+        "enum": [
+          "location_visits"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      }
+    },
+    "type": "object"
+  },
+  "MajorityLocation": {
+    "properties": {
+      "include_unlocatable": {
+        "default": false,
+        "type": "boolean"
+      },
+      "query_kind": {
+        "enum": [
+          "majority_location"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "subscriber_location_weights": {
+        "$ref": "#/components/schemas/WeightedLocationQueries"
+      }
+    },
+    "required": [
+      "subscriber_location_weights"
     ],
     "type": "object"
   },
@@ -1451,6 +1621,38 @@
       "start_date",
       "tower_day_of_week_scores",
       "tower_hour_of_day_scores"
+    ],
+    "type": "object"
+  },
+  "MobilityClassification": {
+    "properties": {
+      "locations": {
+        "items": {
+          "$ref": "#/components/schemas/CoalescedLocation"
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "query_kind": {
+        "enum": [
+          "mobility_classification"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "stay_length_threshold": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "stay_length_threshold"
     ],
     "type": "object"
   },
@@ -1804,7 +2006,9 @@
   "ReferenceLocation": {
     "discriminator": {
       "mapping": {
+        "coalesced_location": "#/components/schemas/CoalescedLocation",
         "daily_location": "#/components/schemas/DailyLocation",
+        "majority_location": "#/components/schemas/MajorityLocation",
         "modal_location": "#/components/schemas/ModalLocation",
         "most_frequent_location": "#/components/schemas/MostFrequentLocation",
         "visited_most_days": "#/components/schemas/VisitedMostDays"
@@ -1813,7 +2017,13 @@
     },
     "oneOf": [
       {
+        "$ref": "#/components/schemas/CoalescedLocation"
+      },
+      {
         "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/MajorityLocation"
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
@@ -2557,6 +2767,23 @@
     },
     "type": "object"
   },
+  "VisitableLocation": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
+      }
+    ]
+  },
   "VisitedMostDays": {
     "properties": {
       "aggregation_unit": {
@@ -2638,5 +2865,18 @@
       "start_date"
     ],
     "type": "object"
+  },
+  "WeightedLocationQueries": {
+    "discriminator": {
+      "mapping": {
+        "location_visits": "#/components/schemas/LocationVisits"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/LocationVisits"
+      }
+    ]
   }
 }
