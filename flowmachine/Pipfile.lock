@@ -427,11 +427,11 @@
         },
         "structlog": {
             "hashes": [
-                "sha256:305a66201f9605a2e8a2595271a446f258175901c09c01e4c2c2a8ac5b68edf1",
-                "sha256:6ed8fadb27cf8362be0e606f5e79ccdd3b1e879aac65f9dc0ac3033fd013a7be"
+                "sha256:68c4c29c003714fe86834f347cb107452847ba52414390a7ee583472bde00fc9",
+                "sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8"
             ],
             "index": "pypi",
-            "version": "==21.4.0"
+            "version": "==21.5.0"
         },
         "wrapt": {
             "hashes": [
@@ -772,11 +772,11 @@
         },
         "fonttools": {
             "hashes": [
-                "sha256:ca6ecc67e5a5620d31754f92147f22f48fd5461fd3fafe6afe031aa9ee079b0f",
-                "sha256:edb48922873d3fda489ab400bd40888ac239ae8070b53f494b839bcdff0d01f6"
+                "sha256:581a682a7102a41421e7e484303572c565c1b8e52b1cc9fecd3c159dbe9a02f4",
+                "sha256:9934e3587dd5abf4e7f1d7176bcf0373db3f0ed728edf79791a9d2a7e664aac9"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==4.28.3"
+            "version": "==4.28.4"
         },
         "geojson": {
             "hashes": [
@@ -1468,11 +1468,11 @@
         },
         "tomli": {
             "hashes": [
-                "sha256:c6ce0015eb38820eaf32b5db832dbc26deb3dd427bd5f6556cf0acac2c214fee",
-                "sha256:f04066f68f5554911363063a30b108d2b5a5b1a010aa8b6132af78489fe3aade"
+                "sha256:05b6166bff487dc068d322585c7ea4ef78deed501cc124060e0f238e89a9231f",
+                "sha256:e3069e4be3ead9668e21cb9b074cd948f7b3113fd9c8bba083f48247aab8b11c"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.2.2"
+            "version": "==1.2.3"
         },
         "tornado": {
             "hashes": [

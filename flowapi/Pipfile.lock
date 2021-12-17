@@ -652,11 +652,11 @@
         },
         "structlog": {
             "hashes": [
-                "sha256:305a66201f9605a2e8a2595271a446f258175901c09c01e4c2c2a8ac5b68edf1",
-                "sha256:6ed8fadb27cf8362be0e606f5e79ccdd3b1e879aac65f9dc0ac3033fd013a7be"
+                "sha256:68c4c29c003714fe86834f347cb107452847ba52414390a7ee583472bde00fc9",
+                "sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8"
             ],
             "index": "pypi",
-            "version": "==21.4.0"
+            "version": "==21.5.0"
         },
         "toml": {
             "hashes": [
@@ -1606,11 +1606,11 @@
         },
         "structlog": {
             "hashes": [
-                "sha256:305a66201f9605a2e8a2595271a446f258175901c09c01e4c2c2a8ac5b68edf1",
-                "sha256:6ed8fadb27cf8362be0e606f5e79ccdd3b1e879aac65f9dc0ac3033fd013a7be"
+                "sha256:68c4c29c003714fe86834f347cb107452847ba52414390a7ee583472bde00fc9",
+                "sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8"
             ],
             "index": "pypi",
-            "version": "==21.4.0"
+            "version": "==21.5.0"
         },
         "tokenize-rt": {
             "hashes": [
