@@ -464,7 +464,7 @@ jobs:
           path: /home/circleci/project/
       - run:
           name: install deps
-          command: pipenv install --dev --deploy
+          command: pipenv install --python 3 --dev --deploy
       - run: *wait_for_flowdb
       - run:
           name: Run tests
