@@ -284,6 +284,7 @@ jobs:
           name: Run tests
           command: |
             cd flowdb/tests
+            pipenv install pytest
             pipenv run pytest --junit-xml=../test_results/pytest/results.xml \
             test_oracle_fdw.py
       - store_test_results:
