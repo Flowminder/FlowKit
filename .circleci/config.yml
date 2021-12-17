@@ -388,7 +388,7 @@ jobs:
 
   lint_js:
     docker:
-            - image: cimg/node:lts
+      - image: cimg/node:lts
     working_directory: /home/circleci/project/flowauth/frontend
     steps:
       - checkout:
