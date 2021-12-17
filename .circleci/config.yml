@@ -421,7 +421,7 @@ jobs:
 
       - run:
           name: Install graphviz
-          command: sudo apt-get install -y xvfb libgraphviz-dev graphviz
+          command: sudy apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
       - run: *wait_for_flowdb
       - run:
           name: Run tests
@@ -464,7 +464,7 @@ jobs:
           path: /home/circleci/project/
       - run:
           name: install deps
-          command: pipenv install --python 3 --dev --deploy
+          command: pipenv install --dev --deploy
       - run: *wait_for_flowdb
       - run:
           name: Run tests
