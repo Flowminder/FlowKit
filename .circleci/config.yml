@@ -664,9 +664,7 @@ jobs:
           name: Install non-python autoflow dependencies
           command: |
             sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y postgresql pandoc ruby
-            sudo gem install bundler
-            sudo bundle update
-            sudo bundle install
+            sudo gem install asciidoctor asciidoctor-pdf
       - run:
           name: Install python dependencies
           command: |
