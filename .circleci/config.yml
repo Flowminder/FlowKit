@@ -55,7 +55,7 @@ executors:
     parameters:
       python_version:
         type: enum
-        enum: ["3.7", "3.8", "3.8.3", "3.8.5"]
+        enum: ["3.7", "3.8", "3.8.3", "3.8.5", "3.9"]
         default: "3.8"
       flowdb_image:
         type: enum
@@ -465,7 +465,7 @@ jobs:
           path: /home/circleci/project/
       - run:
           name: install deps
-          command: pipenv install --dev --deploy --yes
+          command: pipenv install --dev --deploy
       - run: *wait_for_flowdb
       - run:
           name: Run tests
