@@ -665,8 +665,8 @@ jobs:
           command: |
             sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y postgresql pandoc ruby
             sudo gem install bundler
-            bundle update
-            bundle install
+            sudo bundle update
+            sudo bundle install
       - run:
           name: Install python dependencies
           command: |
