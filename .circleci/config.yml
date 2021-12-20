@@ -663,8 +663,9 @@ jobs:
       - run: &install_autoflow_deps
           name: Install non-python autoflow dependencies
           command: |
-            sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y ruby postgresql pandoc
-            gem install bundler
+            sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y postgresql pandoc ruby
+            sudo gem install bundler
+            bundle update
             bundle install
       - run:
           name: Install python dependencies
