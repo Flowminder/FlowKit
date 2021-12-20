@@ -422,7 +422,7 @@ jobs:
 
       - run:
           name: Install graphviz
-          command: sudy apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
+          command: sudo apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
       - run: *wait_for_flowdb
       - run:
           name: Run tests
