@@ -226,11 +226,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:229d1e8684919c455281526d7c19e3568d51e4e5657a0051a4625d00902a1122",
-                "sha256:eafbed8b1cb9827552c0066386d3e693c16d3977dd60896bfa07dca4c9d92a20"
+                "sha256:3f55c7d0a51a93601d24fb773b88b1cd05c8ccb33e19294d1215bc0e19a6939c",
+                "sha256:fcbfd5b691176cfcbf558cfa536909b2ef249af5528c99fcf941405c1c9aba74"
             ],
             "index": "pypi",
-            "version": "==0.13.0"
+            "version": "==0.13.1"
         },
         "hyperframe": {
             "hashes": [
@@ -1011,11 +1011,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:229d1e8684919c455281526d7c19e3568d51e4e5657a0051a4625d00902a1122",
-                "sha256:eafbed8b1cb9827552c0066386d3e693c16d3977dd60896bfa07dca4c9d92a20"
+                "sha256:3f55c7d0a51a93601d24fb773b88b1cd05c8ccb33e19294d1215bc0e19a6939c",
+                "sha256:fcbfd5b691176cfcbf558cfa536909b2ef249af5528c99fcf941405c1c9aba74"
             ],
             "index": "pypi",
-            "version": "==0.13.0"
+            "version": "==0.13.1"
         },
         "hyperframe": {
             "hashes": [
