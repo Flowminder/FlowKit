@@ -458,14 +458,14 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
-      python_version: "3.9"
+      python_version: "3.8.5"
     working_directory: /home/circleci/project/flowdb/tests
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
           name: install deps
-          command: pipenv install --dev --deploy
+          command: pipenv install --dev --deploy --yes
       - run: *wait_for_flowdb
       - run:
           name: Run tests
