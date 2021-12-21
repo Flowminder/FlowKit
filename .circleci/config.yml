@@ -458,7 +458,7 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
-      python_version: "3.8.5"
+      python_version: <<parameters.python_version>>
     working_directory: /home/circleci/project/flowdb/tests
     steps:
       - checkout:
