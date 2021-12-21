@@ -340,11 +340,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:22c7348c6d2976a52632c67f7ab0cdf40147db7789f9aed18734643fe9cf3373",
-                "sha256:4ce92f1e1f8f01233ee9952c04f6b81d1e02939d6e1b488428154974a4d0783e"
+                "sha256:032e5949c02878c405552fb800743aad96940097460bc6f115340402852dcdde",
+                "sha256:989ab2d3e632ba23358b8d43950bd46babde5bbb1516760dc5f5ccfe7accdd45"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==59.6.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==60.0.3"
         },
         "shapely": {
             "hashes": [
@@ -494,11 +494,11 @@
     "develop": {
         "approvaltests": {
             "hashes": [
-                "sha256:28b2b0aa2dd1684a1912e8f18d3ac919936f581e3ef447a5c3b39e5684804da6",
-                "sha256:5542364c38d0bf31a7dc35dfa6a5f22ec7896061a481e433d4d544ae87d36281"
+                "sha256:e21d1b3ec392b3cb685c707a8a2828cecc118e82886cddb1632132ccfb37f1de",
+                "sha256:e5b89218dc3422bd5d96ab75c73c34bce4adaa60737077c5cdd7af950c09e239"
             ],
             "index": "pypi",
-            "version": "==3.1.0"
+            "version": "==3.3.2"
         },
         "asynctest": {
             "hashes": [
@@ -772,11 +772,11 @@
         },
         "fonttools": {
             "hashes": [
-                "sha256:581a682a7102a41421e7e484303572c565c1b8e52b1cc9fecd3c159dbe9a02f4",
-                "sha256:9934e3587dd5abf4e7f1d7176bcf0373db3f0ed728edf79791a9d2a7e664aac9"
+                "sha256:545c05d0f7903a863c2020e07b8f0a57517f2c40d940bded77076397872d14ca",
+                "sha256:edf251d5d2cc0580d5f72de4621c338d8c66c5f61abb50cf486640f73c8194d5"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==4.28.4"
+            "version": "==4.28.5"
         },
         "geojson": {
             "hashes": [
@@ -1402,11 +1402,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:22c7348c6d2976a52632c67f7ab0cdf40147db7789f9aed18734643fe9cf3373",
-                "sha256:4ce92f1e1f8f01233ee9952c04f6b81d1e02939d6e1b488428154974a4d0783e"
+                "sha256:032e5949c02878c405552fb800743aad96940097460bc6f115340402852dcdde",
+                "sha256:989ab2d3e632ba23358b8d43950bd46babde5bbb1516760dc5f5ccfe7accdd45"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==59.6.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==60.0.3"
         },
         "shapely": {
             "hashes": [
