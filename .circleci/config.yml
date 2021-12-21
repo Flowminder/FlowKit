@@ -384,11 +384,8 @@ jobs:
       - checkout
 
       - run:
-          name: Installing black
-          command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv install black
-      - run:
           name: Linting files with black
-          command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv run black --check .
+          command: pip install black && black --check .
 
   lint_js:
     docker:
