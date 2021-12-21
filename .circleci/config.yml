@@ -383,7 +383,7 @@ jobs:
     steps:
       - checkout
 
-      - install_black:
+      - run:
           name: Installing black
           command: PIPENV_PIPFILE=flowmachine/pipfile pipenv install black
       - run:
