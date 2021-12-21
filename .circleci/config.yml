@@ -428,6 +428,7 @@ jobs:
           name: Run tests
           command: |
             pipenv run pytest \
+                      --dev \
                       --junit-xml=test_results/pytest/results.xml \
                       --cov flowmachine/ \
                       --cov-report xml \
