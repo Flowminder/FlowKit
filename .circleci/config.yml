@@ -390,7 +390,7 @@ jobs:
       # (see https://github.com/Flowminder/FlowKit/issues/952)
       - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
       - run: cd flowmachine && sudo apt-get update && sudo apt-get install -y libgraphviz-dev graphviz && pipenv run pip install pygraphviz
-      - save_cache:
+     - save_cache:
           key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
