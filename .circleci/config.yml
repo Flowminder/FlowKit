@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@3
+
 defaults:
   - &base_docker
     - image: cimg/python:3.8
@@ -436,18 +439,7 @@ jobs:
                       --durations=50
       - store_test_results:
           path: test_results
-      - run:
-          name: Upload coverage
-          command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F flowmachine_unit_tests
-          when: always
+      - codecov/upload
 
   run_flowdbsynth_tests:
     parameters:
@@ -500,17 +492,7 @@ jobs:
             COV_CORE_DATAFILE: .coverage.eager
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F flowkit_jwt_generator_unit_tests
+      - codecov/upload
 
   run_flowkit_api_tests:
     docker:
@@ -529,17 +511,7 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F flowapi_unit_tests
+      - codecov/upload
 
   run_flowauth_backend_tests:
     docker:
@@ -566,17 +538,7 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F flowauth_unit_tests
+      - codecov/upload
 
   run_flowauth_end_to_end_tests:
     docker:
@@ -641,17 +603,7 @@ jobs:
             --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F flowclient_unit_tests
+      - codecov/upload
 
   run_autoflow_tests:
     docker:
@@ -683,17 +635,7 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F autoflow_unit_tests
+      - codecov/upload
 
   build_docker_image:
     parameters:
@@ -753,17 +695,7 @@ jobs:
             --cov-report term-missing ./tests/unit
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F flowetl_unit_tests
+      - codecov/upload
 
   run_flowetl_integration_tests:
     machine:
@@ -839,17 +771,7 @@ jobs:
             -k "<<parameters.pytest_selector>>"
       - store_test_results:
           path: test_results
-      - run: 
-            name: Upload coverage
-            command: |
-                curl -s https://codecov.io/bash > codecov;
-                VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-                for i in 1 256 512
-                do
-                  shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-                  shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-                done
-                bash codecov -F integration_tests
+      - codecov/upload
 
   run_quickstart_tests:
     parameters:
