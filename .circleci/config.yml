@@ -6,9 +6,7 @@ commands:
       test:
         type: string
     steps:
-      - run:
-        name: Uploading to codecov
-        command: |
+      - run: |
           curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
@@ -770,7 +768,7 @@ jobs:
       - store_test_results:
           path: test_results
       - upload_codecov:
-          path: test_results
+          test: test_results
 
   integration_tests:
     parameters:
@@ -804,7 +802,8 @@ jobs:
             -k "<<parameters.pytest_selector>>"
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
 
   run_quickstart_tests:
     parameters:
