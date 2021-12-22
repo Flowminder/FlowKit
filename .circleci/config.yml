@@ -1,7 +1,22 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@3
+commands:
+  upload_codecov:
+    parameters:
+      test:
+        type: string
+    steps:
+      - run:
+        name: Uploading to codecov
+        command: |
+          curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+          curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+          gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+          shasum -a 256 -c codecov.SHA256SUM
+          chmod +x codecov
+          ./codecov <<parameters.test>>
 
 defaults:
   - &base_docker
@@ -439,7 +454,8 @@ jobs:
                       --durations=50
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
 
   run_flowdbsynth_tests:
     parameters:
@@ -465,6 +481,8 @@ jobs:
           command: pipenv run pytest --junit-xml=../../test_results/pytest/results.xml test_synthetic_data.py
       - store_test_results:
           path: test_results
+      - upload_codecov:
+          test: test_results
 
   run_token_generator_tests:
     docker:
@@ -492,7 +510,8 @@ jobs:
             COV_CORE_DATAFILE: .coverage.eager
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
 
   run_flowkit_api_tests:
     docker:
@@ -511,7 +530,9 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
+
 
   run_flowauth_backend_tests:
     docker:
@@ -538,7 +559,10 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
+
+      
 
   run_flowauth_end_to_end_tests:
     docker:
@@ -603,7 +627,10 @@ jobs:
             --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
+
+
 
   run_autoflow_tests:
     docker:
@@ -635,7 +662,10 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
+
+ 
 
   build_docker_image:
     parameters:
@@ -695,7 +725,8 @@ jobs:
             --cov-report term-missing ./tests/unit
       - store_test_results:
           path: test_results
-      - codecov/upload
+      - upload_codecov:
+          test: test_results
 
   run_flowetl_integration_tests:
     machine:
@@ -737,6 +768,8 @@ jobs:
           command: |
             pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
       - store_test_results:
+          path: test_results
+      - upload_codecov:
           path: test_results
 
   integration_tests:
