@@ -443,7 +443,7 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
       - run:
           name: Install python dependencies
-          command: pipenv install --dev --deploy && pipenv run pip install -e . 
+          command: pipenv install --dev --deploy && pipenv run pip install -e . && pipenv install pygraphviz 
       - run: *wait_for_flowdb
       - run:
           name: Run tests
