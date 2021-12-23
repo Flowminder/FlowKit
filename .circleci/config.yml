@@ -388,13 +388,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-3-{{ checksum "flowmachine/Pipfile.lock" }}
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
       - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
       - run: cd flowmachine && sudo apt-get update && sudo apt-get install -y libgraphviz-dev graphviz && pipenv install pygraphviz
       - save_cache:
-          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-3-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
 
@@ -652,7 +652,7 @@ jobs:
           path: /home/circleci/project/
       - restore_cache:
           keys:
-            - autoflow-deps-1-{{ checksum "Pipfile.lock" }}
+            - autoflow-deps-2-{{ checksum "Pipfile.lock" }}
       - run: &install_autoflow_deps
           name: Install non-python autoflow dependencies
           command: |
@@ -665,7 +665,7 @@ jobs:
           command: |
             pipenv install --deploy --dev
       - save_cache:
-          key: autoflow-deps-1-{{ checksum "Pipfile.lock" }}
+          key: autoflow-deps-2-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
@@ -719,7 +719,7 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - restore_cache:
-          key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock"}}
+          key: flowetl-unit-deps-2-{{ checksum "Pipfile.lock"}}
       - run:
           name: Install pipenv
           command: pip install --upgrade pipenv
@@ -728,7 +728,7 @@ jobs:
           command: |
             pipenv install --deploy --dev
       - save_cache:
-          key: flowetl-unit-deps-1-{{ checksum "Pipfile.lock" }}
+          key: flowetl-unit-deps-2-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
