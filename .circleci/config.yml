@@ -404,7 +404,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-3-{{ checksum "flowmachine/Pipfile.lock" }}
       - run:
           name: Linting files with black
           command: pip install black && black --check .
@@ -444,7 +444,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowmachine-deps-2-{{ checksum "Pipfile.lock" }}
+          key: flowmachine-deps-3-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install graphviz
           command: sudo apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
@@ -802,11 +802,11 @@ jobs:
       - attach_workspace:
           at: /home/circleci
       - restore_cache:
-          key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
+          key: integration-test-deps-2-{{ checksum "Pipfile.lock" }}
       - run: *install_autoflow_deps
       - run: pipenv install --deploy --dev
       - save_cache:
-          key: integration-test-deps-1-{{ checksum "Pipfile.lock" }}
+          key: integration-test-deps-2-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run: *wait_for_flowdb
@@ -877,7 +877,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowkit-docs-deps1-{{ checksum "Pipfile.lock" }}
+          key: flowkit-docs-deps-2-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install pandoc
           command: |
@@ -961,7 +961,7 @@ jobs:
           path: /home/circleci/project/docs/pg_log.zip
           destination: pg_log
       - save_cache:
-          key: flowkit-docs-deps1-{{ checksum "Pipfile.lock" }}
+          key: flowkit-docs-deps-2-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
 
