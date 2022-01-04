@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-httpx = "==0.18.2"
+httpx = "*"
 pandas = "*"
 pyjwt = "<3.0.0"
 merge-args = "*"
@@ -16,7 +16,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 asynctest = "*"
 versioneer = "*"
-black = "==20.8b1"
+black = {extras = ["jupyter"],version = "==21.12b0"}
 respx = "*"
 ipython = "*"
 ipdb = "*"

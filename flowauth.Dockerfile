@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM node:15 as builder
+FROM node:16 as builder
 # Node version pinned until https://github.com/nodejs/docker-node/issues/1379 is closed
 
 COPY flowauth/frontend /
@@ -19,12 +19,9 @@ COPY ./flowauth/Pipfile* ./
 # Install dependencies required for argon crypto & psycopg2
 RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
     libressl-dev libffi-dev mariadb-connector-c-dev curl && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -q -y && \
-    source $HOME/.cargo/env && \
-    pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
+    pip install --no-cache-dir --upgrade pip pipenv && pipenv install --clear --deploy --system && \
     apk del build-dependencies && \
-    ~/.cargo/bin/rustup self uninstall -y &&\
-    apk add --no-cache libpq mariadb-connector-c # Required for psycopg2 & mysqlclient
+    apk add --no-cache libpq libgcc mariadb-connector-c # Required for psycopg2 & mysqlclient
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth

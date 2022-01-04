@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # TODO: Add __all__
-from typing import Union, Dict, List, Optional, Tuple
+from typing import Union, Dict, List, Optional, Tuple, Any
 
 from merge_args import merge_args
 
@@ -697,6 +697,7 @@ def flows_spec(
     *,
     from_location: Dict[str, Union[str, Dict[str, str]]],
     to_location: Dict[str, Union[str, Dict[str, str]]],
+    join_type: str = "inner",
 ) -> dict:
     """
     Return query spec for flows between two locations.
@@ -707,6 +708,8 @@ def flows_spec(
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
 
     Returns
     -------
@@ -718,6 +721,7 @@ def flows_spec(
         "query_kind": "flows",
         "from_location": from_location,
         "to_location": to_location,
+        "join_type": join_type,
     }
 
 
@@ -734,6 +738,8 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
 
     Returns
     -------
@@ -742,6 +748,71 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
 
     """
     return connection.make_api_query(parameters=flows_spec(**kwargs))
+
+
+def labelled_flows_spec(
+    *,
+    from_location: Dict[str, Any],
+    to_location: Dict[str, Any],
+    labels: Dict[str, Any],
+    join_type: str = "inner",
+) -> dict:
+    """
+    Return query spec for flows between two locations, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    dict
+        Query specification for the labelled flows query
+
+    """
+    return {
+        "query_kind": "labelled_flows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "labels": labels,
+        "join_type": join_type,
+    }
+
+
+@merge_args(labelled_flows_spec)
+def labelled_flows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Flows between two locations, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Labelled flows query
+
+    """
+    return connection.make_api_query(parameters=labelled_flows_spec(**kwargs))
 
 
 def unique_subscriber_counts_spec(
@@ -1108,6 +1179,59 @@ def spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
         Spatial aggregate query
     """
     return connection.make_api_query(parameters=spatial_aggregate_spec(**kwargs))
+
+
+def labelled_spatial_aggregate_spec(
+    *,
+    locations: Dict[str, Any],
+    labels: Dict[str, Any],
+) -> dict:
+    """
+    Retrieves the counts of subscribers per location, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    locations : dict
+        Location query to aggregate spatially
+    labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts
+
+    Returns
+    -------
+    dict
+        Query specification for a labelled spatial aggregate query
+    """
+    return {
+        "query_kind": "labelled_spatial_aggregate",
+        "locations": locations,
+        "labels": labels,
+    }
+
+
+@merge_args(labelled_spatial_aggregate_spec)
+def labelled_spatial_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Retrieves the counts of subscribers per location, disaggregated by labels
+    from a categorical subscriber metric.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    locations : dict
+        Location query to aggregate spatially
+    labels : dict
+        Categorical subscriber metric query whose values will be used to disaggregate the subscriber counts
+
+    Returns
+    -------
+    APIQuery
+        Labelled spatial aggregate query
+    """
+    return connection.make_api_query(
+        parameters=labelled_spatial_aggregate_spec(**kwargs)
+    )
 
 
 def consecutive_trips_od_matrix_spec(

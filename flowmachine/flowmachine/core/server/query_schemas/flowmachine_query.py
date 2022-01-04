@@ -40,8 +40,8 @@ from .unmoving_at_reference_location_counts import (
     UnmovingAtReferenceLocationCountsSchema,
 )
 from .unmoving_counts import UnmovingCountsSchema
-
-from .benchmark import BenchmarkSchema
+from .labelled_spatial_aggregate import LabelledSpatialAggregateSchema
+from .labelled_flows import LabelledFlowsSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -68,7 +68,8 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unmoving_counts": UnmovingCountsSchema,
         "unmoving_at_reference_location_counts": UnmovingAtReferenceLocationCountsSchema,
         "trips_od_matrix": TripsODMatrixSchema,
-        "benchmark": BenchmarkSchema
+        "labelled_spatial_aggregate": LabelledSpatialAggregateSchema,
+        "labelled_flows": LabelledFlowsSchema,
     }
 
 

@@ -5,7 +5,7 @@
 import pytest
 
 from marshmallow import ValidationError
-from prefect.environments import storage
+from prefect import storage
 
 from autoflow.parser.workflow_schema import WorkflowSchema
 

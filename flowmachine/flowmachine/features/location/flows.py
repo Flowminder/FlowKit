@@ -15,9 +15,11 @@ aggregated to a spatial unit.
 from abc import ABCMeta
 from typing import List
 
-from ...core.query import Query
-from ...core.mixins import GeoDataMixin, GraphMixin
-from ...core.errors import InvalidSpatialUnitError
+from flowmachine.core.query import Query
+from flowmachine.core.mixins import GeoDataMixin, GraphMixin
+from flowmachine.core.errors import InvalidSpatialUnitError
+
+from flowmachine.core.join import Join
 
 import structlog
 
@@ -47,6 +49,54 @@ class FlowLike(GeoDataMixin, GraphMixin):
 
         return InFlow(self)
 
+    def _build_json_agg_clause(self, direction):
+        if direction == "in":
+            outer_suffix = "to"
+            inner_suffix = "from"
+        elif direction == "out":
+            outer_suffix = "from"
+            inner_suffix = "to"
+        else:
+            raise ValueError(
+                f"Expected direction to be 'in' or 'out', not '{direction}'"
+            )
+
+        loc_cols = self.spatial_unit.location_id_columns
+        if hasattr(self, "out_label_columns"):
+            label_cols = self.out_label_columns
+        else:
+            label_cols = []
+
+        # Key cols are those that will be keys in the nested json object
+        key_cols = label_cols + [f"{loc_cols[0]}_{inner_suffix}"]
+        loc_cols_aliased_string = ", ".join(
+            f"{col}_{outer_suffix} AS {col}" for col in loc_cols
+        )
+
+        # Alias column names so we don't have to handle the first nesting differently
+        clause = f"""
+        SELECT
+            {loc_cols_aliased_string},
+            {', '.join(key_cols)},
+            value AS {direction}flows
+        FROM flows
+        """
+
+        # Loop through key columns (in reverse order), and add a json_agg layer for each
+        for i in range(len(key_cols) - 1, -1, -1):
+            group_cols_string = ", ".join(loc_cols)
+            for col in key_cols[:i]:
+                group_cols_string += f", {col}"
+            clause = f"""
+            SELECT
+                {group_cols_string},
+                json_object_agg({key_cols[i]}, {direction}flows) AS {direction}flows
+            FROM ({clause}) _
+            GROUP BY {group_cols_string}
+            """
+
+        return clause
+
     def _geo_augmented_query(self):
         """
         Returns one of each geom for non-point spatial units, with the
@@ -61,14 +111,9 @@ class FlowLike(GeoDataMixin, GraphMixin):
 
         loc_cols = self.spatial_unit.location_id_columns
         loc_cols_string = ",".join(loc_cols)
-        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols])
-        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols])
-        loc_cols_from_aliased_string = ",".join(
-            [f"{col}_from AS {col}" for col in loc_cols]
-        )
-        loc_cols_to_aliased_string = ",".join(
-            [f"{col}_to AS {col}" for col in loc_cols]
-        )
+
+        from_clause = self._build_json_agg_clause("in")
+        to_clause = self._build_json_agg_clause("out")
 
         agg_qry = f"""
                 WITH flows AS ({self.get_query()})
@@ -78,19 +123,11 @@ class FlowLike(GeoDataMixin, GraphMixin):
                     json_strip_nulls(inflows) as inflows
                 FROM
                 (
-                    SELECT
-                        {loc_cols_from_aliased_string},
-                        json_object_agg({loc_cols[0]}_to, value) AS outflows
-                    FROM flows
-                    GROUP BY {loc_cols_from_string}
+                    {from_clause}
                 ) x
                 FULL JOIN
                 (
-                    SELECT
-                        {loc_cols_to_aliased_string},
-                        json_object_agg({loc_cols[0]}_from, value) AS inflows
-                    FROM flows
-                    GROUP BY {loc_cols_to_string}
+                    {to_clause}
                 ) y
                 USING ({loc_cols_string})
                 """
@@ -119,17 +156,28 @@ class Flows(FlowLike, Query):
         first time frame of interest
     loc2 : daily_location, or ModalLocation object
         As above for the second period
+    join_type : {"inner", "full outer", "left", "right", "left outer", "right outer"} default "inner"
+        Join type of the join between loc_1 and loc_2
     """
 
-    def __init__(self, loc1, loc2):
+    def __init__(self, loc1, loc2, join_type="inner"):
         if loc1.spatial_unit != loc2.spatial_unit:
             raise InvalidSpatialUnitError(
                 "You cannot compute flows for locations on different spatial units"
             )
 
+        if join_type not in Join.join_kinds:
+            raise ValueError(
+                f"join_type should be one of {Join.join_kinds}, not {join_type}"
+            )
+
         self.spatial_unit = loc1.spatial_unit
         self.joined = loc1.join(
-            loc2, on_left="subscriber", left_append="_from", right_append="_to"
+            loc2,
+            on_left="subscriber",
+            left_append="_from",
+            right_append="_to",
+            how=join_type,
         )
         logger.info(
             "{} locations are pre-calculated.".format(loc1.is_stored + loc2.is_stored)
@@ -178,13 +226,21 @@ class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
     def __init__(self, flow):
         self.flow = flow
         cols = self.flow.column_names
+        # NOTE: Replace with spatial_unit.from_columns
         self.loc_from = ",".join([c for c in cols if c.endswith("_from")])
         self.loc_to = ",".join([c for c in cols if c.endswith("_to")])
+        if hasattr(self.flow, "out_label_columns"):
+            self.label = ",".join(self.flow.out_label_columns)
+        else:
+            self.label = None
         self.spatial_unit = flow.spatial_unit
         super().__init__()
 
     # Returns a query that groups by one column and sums the count
     def _groupby_col(self, sql_in, col):
+
+        if self.label:
+            col = ",".join([col, self.label])
 
         sql_out = """
                   SELECT {c}, sum(value) AS value
@@ -205,7 +261,6 @@ class OutFlow(BaseInOutFlow):
     """
 
     def _make_query(self):
-
         return self._groupby_col(self.flow.get_query(), self.loc_from)
 
     @property
@@ -216,7 +271,14 @@ class OutFlow(BaseInOutFlow):
     @property
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
-        return [f"{col}_from" for col in cols] + ["value"]
+        if hasattr(self.flow, "out_label_columns"):
+            return (
+                [f"{col}_from" for col in cols]
+                + self.flow.out_label_columns
+                + ["value"]
+            )
+        else:
+            return [f"{col}_from" for col in cols] + ["value"]
 
 
 class InFlow(BaseInOutFlow):
@@ -238,4 +300,9 @@ class InFlow(BaseInOutFlow):
     @property
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
-        return [f"{col}_to" for col in cols] + ["value"]
+        if hasattr(self.flow, "out_label_columns"):
+            return (
+                [f"{col}_to" for col in cols] + self.flow.out_label_columns + ["value"]
+            )
+        else:
+            return [f"{col}_to" for col in cols] + ["value"]

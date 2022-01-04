@@ -33,7 +33,7 @@ def test_topup_amount(get_dataframe, statistic, msisdn, want):
 
 @pytest.mark.parametrize("kwarg", ["statistic"])
 def test_topup_amount_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in TopUpAmount. """
+    """Test ValueError is raised for non-compliant kwarg in TopUpAmount."""
 
     with pytest.raises(ValueError):
         query = TopUpAmount("2016-01-03", "2016-01-05", **{kwarg: "error"})

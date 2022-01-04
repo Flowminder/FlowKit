@@ -27,7 +27,7 @@ from hashlib import md5
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
-from flowmachine.core.cache import touch_cache
+from flowmachine.core.cache import touch_cache, get_obj_or_stub
 from flowmachine.core.context import (
     get_db,
     get_redis,
@@ -398,11 +398,11 @@ class Query(metaclass=ABCMeta):
         """
         return flowmachine.core.Table(self.fully_qualified_table_name)
 
-    def union(self, other, all=True):
+    def union(self, *other: "Query", all: bool = True):
         """
-        Returns a Query representing a the union of the two queries.
-        This is simply the two tables concatenated. By passing the
-        argument all as true the duplicates are also removed.
+        Returns a Query representing a the union of queries.
+        This is simply the tables concatenated. By passing the
+        argument all as False the duplicates are also removed.
 
         Parameters
         ----------
@@ -429,7 +429,7 @@ class Query(metaclass=ABCMeta):
 
         from .union import Union
 
-        return Union(self, other, all)
+        return Union(self, *other, all=all)
 
     def join(
         self,
@@ -848,13 +848,12 @@ class Query(metaclass=ABCMeta):
             except NotImplementedError:
                 pass  # Not a storable by default table
             try:
-                deps = get_db().fetch(
-                    """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
-                    ON cache.cached.query_id=cache.dependencies.query_id
-                    WHERE depends_on='{}'""".format(
-                        self.query_id
+                dep_ids = [
+                    rec[0]
+                    for rec in get_db().fetch(
+                        f"SELECT query_id FROM cache.dependencies WHERE depends_on='{self.query_id}'"
                     )
-                )
+                ]
                 with con.begin():
                     con.execute(
                         "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
@@ -869,8 +868,8 @@ class Query(metaclass=ABCMeta):
                         log("Dropped cache table.")
 
                 if cascade:
-                    for rec in deps:
-                        dep = pickle.loads(rec[0])
+                    for dep_id in dep_ids:
+                        dep = get_obj_or_stub(get_db(), dep_id)
                         log(
                             "Cascading to dependent.",
                             dependency=dep.fully_qualified_table_name,
@@ -981,22 +980,17 @@ class Query(metaclass=ABCMeta):
         self._cache = False
 
     @classmethod
-    def get_stored(cls):
+    def get_stored(cls) -> "Query":
         """
-        Get a list of stored query objects of this type
+        Get a generator of stored query objects of this type
 
-        Returns
-        -------
-        list
+        Yields
+        ------
+        Query
             All cached instances of this Query type, or any if called with
             Query.
 
         """
-        try:
-            get_db()
-        except:
-            raise NotConnectedError()
-
         if cls is Query:
             qry = "SELECT obj FROM cache.cached"
         else:

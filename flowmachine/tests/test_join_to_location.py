@@ -14,7 +14,7 @@ from flowmachine.core.errors import InvalidSpatialUnitError
 
 
 def test_join_to_location_column_names(exemplar_spatial_unit_param):
-    """ Test that JoinToLocation's column_names property is accurate."""
+    """Test that JoinToLocation's column_names property is accurate."""
     if not exemplar_spatial_unit_param.has_geography:
         pytest.skip("JoinToLocation does not accept CellSpatialUnit objects")
     table = SubscriberLocations(

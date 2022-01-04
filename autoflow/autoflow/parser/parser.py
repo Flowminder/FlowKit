@@ -19,7 +19,7 @@ from autoflow.parser.workflow_schema import WorkflowSchema
 def parse_workflows_yaml(
     filename: str, inputs_dir: str
 ) -> Tuple[
-    "prefect.environments.storage.Storage",
+    "prefect.storage.Storage",
     Dict[
         str,
         Union[

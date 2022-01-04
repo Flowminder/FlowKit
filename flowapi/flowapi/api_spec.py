@@ -52,14 +52,21 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
             contact=dict(email="flowkit@flowminder.org"),
         ),
     )
-    spec.components.schemas = flowmachine_query_schemas
+    spec.components.schemas.update(flowmachine_query_schemas)
+    scopes = [
+        scope.format(aggregation_unit=agg_unit)
+        for scope in schema_to_scopes(spec.to_dict())
+        for agg_unit in flowmachine_query_schemas["DummyQuery"]["properties"][
+            "aggregation_unit"
+        ]["enum"]
+    ]
     spec.components.security_scheme(
         "token",
         {
             "type": "http",
             "scheme": "bearer",
             "bearerFormat": "JWT",
-            "x-security-scopes": sorted(schema_to_scopes(spec.to_dict())),
+            "x-security-scopes": sorted(scopes),
             "x-audience": current_app.config["JWT_DECODE_AUDIENCE"],
         },
     )

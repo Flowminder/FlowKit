@@ -5,17 +5,17 @@ name = "pypi"
 
 [packages]
 flask = "*"
-sqlalchemy = "<1.4.14"
+sqlalchemy = "<1.4.29"
 flask-sqlalchemy = "*"
 flask-login = "*"
 flask-principal = "*"
-pyjwt = "<2.0.0"
+pyjwt = ">2.2.0"
 flask-wtf =  "*"
 zxcvbn = "*"
 versioneer = "*"
 passlib = "*"
 argon2_cffi = "*"
-psycopg2-binary = "*"
+psycopg2 = "*"
 mysqlclient = "*"
 cryptography = "*"
 get-secret-or-env-var = "*"
@@ -29,7 +29,7 @@ simplejson = "*"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-black = "==20.8b1"
+black = {extras = ["jupyter"],version = "==21.12b0"}
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 

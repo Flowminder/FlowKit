@@ -28,6 +28,20 @@ def test_standardise_date(date, expected):
     assert standardise_date(date) == expected
 
 
+@pytest.mark.parametrize(
+    "date, expected",
+    [
+        (None, None),
+        ("2016-01-01 00:00:00", datetime.datetime(2016, 1, 1)),
+        ("2016-01-01", datetime.datetime(2016, 1, 1)),
+        ("2016-01-01T00:00:00", datetime.datetime(2016, 1, 1)),
+        ("2016-01-01 00:00:00", datetime.datetime(2016, 1, 1)),
+    ],
+)
+def test_standardise_date_to_datetime(date, expected):
+    assert standardise_date_to_datetime(date) == expected
+
+
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
 def test_proj4string(crs, flowmachine_connect):
     """

@@ -22,7 +22,7 @@ from flowmachine.utils import make_where, standardise_date
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
-    """ Base query for calculating entropy of subscriber features. """
+    """Base query for calculating entropy of subscriber features."""
 
     @property
     def column_names(self) -> List[str]:

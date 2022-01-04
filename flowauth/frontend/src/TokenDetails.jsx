@@ -126,14 +126,8 @@ class TokenDetails extends React.Component {
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const {
-      expiry,
-      latest_expiry,
-      name,
-      name_helper_text,
-      rights,
-      permitted,
-    } = this.state;
+    const { expiry, latest_expiry, name, name_helper_text, rights, permitted } =
+      this.state;
     const { classes, onClick } = this.props;
 
     return (

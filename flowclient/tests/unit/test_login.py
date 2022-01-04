@@ -23,7 +23,7 @@ def test_https_warning(token):
 
 
 def test_no_warning_for_https(token, monkeypatch):
-    """ Test that no insecure warning is raised when connecting via https. """
+    """Test that no insecure warning is raised when connecting via https."""
     with pytest.warns(None) as warnings_record:
         c = Connection(url="https://foo", token=token)
     assert not warnings_record.list

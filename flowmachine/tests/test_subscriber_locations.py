@@ -12,7 +12,7 @@ pytestmark = pytest.mark.usefixtures("skip_datecheck")
 
 @pytest.mark.parametrize("ignore_nulls", [True, False])
 def test_column_names(exemplar_spatial_unit_param, ignore_nulls):
-    """ Test that column_names property matches head(0) for SubscriberLocations"""
+    """Test that column_names property matches head(0) for SubscriberLocations"""
     sl = SubscriberLocations(
         "2016-01-01",
         "2016-01-04",

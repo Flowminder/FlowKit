@@ -8,7 +8,7 @@ from flowmachine.core import make_spatial_unit
 
 
 def test_column_names_location_visits(exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for LocationVisits"""
+    """Test that column_names property matches head(0) for LocationVisits"""
     lv = LocationVisits(
         DayTrajectories(
             daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
@@ -17,7 +17,7 @@ def test_column_names_location_visits(exemplar_spatial_unit_param):
     assert lv.head(0).columns.tolist() == lv.column_names
 
 
-def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
+def test_value_sum_equal_or_less_than_period(get_dataframe):
     """
     Sum of LocationVisits per subscriber should not be more than total
     number of days between 'start_date' and 'stop_date'
@@ -37,7 +37,7 @@ def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
         )
     )
     df = get_dataframe(lv)
-    assert df[df["subscriber"] == df.iloc[0, 0]]["dl_count"].sum() <= days
+    assert df[df["subscriber"] == df.iloc[0, 0]]["value"].sum() <= days
     # test 2
     days = 3
     start_date = "2016-01-01"
@@ -53,4 +53,4 @@ def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
         )
     )
     df = get_dataframe(lv)
-    assert df[df["subscriber"] == df.iloc[0, 0]]["dl_count"].sum() <= days
+    assert df[df["subscriber"] == df.iloc[0, 0]]["value"].sum() <= days

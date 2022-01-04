@@ -32,7 +32,7 @@ pre_commit = "*"
 geojson = "*"
 geopandas = "*"
 descartes = "*"
-black = "==20.8b1"
+black = {extras = ["jupyter"],version = "==21.12b0"}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
@@ -40,8 +40,10 @@ pytest-testmon = "*"
 asynctest = "*"
 cachey = "*"
 approvaltests = "*"
+empty-files = "*" # Needed for approval tests until https://github.com/approvals/ApprovalTests.Python/issues/100 is resolved
 watchdog = "*"
 ipdb = "*"
+flowmachine = {editable = true, extras = ["test"], path = "."}
 
 [requires]
 python_version = "3.8"

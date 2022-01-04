@@ -36,6 +36,58 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
+def get_obj_or_stub(connection: "Connection", query_id: str):
+    """
+    Get a query object by ID if the object can be recreated. If it cannot
+    then get a stub which keeps the query's dependency relationships as recorded
+    in the database.
+
+    Parameters
+    ----------
+    connection : Connection
+        DB connection to get the object from
+    query_id : str
+        Unique identifier of the query
+
+    Returns
+    -------
+    Query
+        The query object if it can be recreated, or a 'stub' class which records
+        the dependencies it had if not.
+
+    """
+    from flowmachine.core.query import Query
+
+    class QStub(Query):
+        def __init__(self, deps, qid):
+            self.deps = deps
+            self._md5 = qid
+            super().__init__()
+
+        def _make_query(self):
+            pass
+
+        @property
+        def column_names(self):
+            pass
+
+    try:
+        return get_query_object_by_id(connection, query_id)
+    except (
+        EOFError,
+        ModuleNotFoundError,
+        AttributeError,
+        pickle.UnpicklingError,
+        IndexError,
+    ) as exc:
+        logger.debug("Can't unpickle, creating stub.", query_id=query_id, exception=exc)
+        qry = f"SELECT depends_on FROM cache.dependencies WHERE query_id='{query_id}'"
+        return QStub(
+            deps=[get_obj_or_stub(connection, res[0]) for res in connection.fetch(qry)],
+            qid=query_id,
+        )
+
+
 def write_query_to_cache(
     *,
     name: str,
@@ -395,14 +447,15 @@ def get_cached_query_objects_ordered_by_score(
         if protected_period is not None
         else " AND NOW()-created > (cache_protected_period()*INTERVAL '1 seconds')"
     )
-    qry = f"""SELECT obj, table_size(tablename, schema) as table_size
+    qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
         WHERE cached.class!='Table' AND cached.class!='GeoTable'
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
     cache_queries = connection.fetch(qry)
-    yield from ((pickle.loads(obj), table_size) for obj, table_size in cache_queries)
+    for query_id, table_size in cache_queries:
+        yield get_obj_or_stub(connection, query_id), table_size
 
 
 def shrink_one(

@@ -45,7 +45,6 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_by
                 jwt=universal_access_token,
                 audience=os.environ["FLOWAPI_IDENTIFIER"],
                 key={public_key_bytes},
-                verify=True,
                 algorithms=["RS256"],
             )
             assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["claims"]}
@@ -89,7 +88,6 @@ def test_plugin_works_with_no_audience(
             decoded = jwt.decode(
                 jwt=universal_access_token,
                 key={public_key_bytes},
-                verify=True,
                 algorithms=["RS256"],
             )
             assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["claims"]}

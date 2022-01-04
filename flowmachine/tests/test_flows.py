@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("skip_datecheck")
 
 @pytest.mark.parametrize("query", [InFlow, OutFlow])
 def test_column_names_inout(query, exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for InFlow & OutFlow"""
+    """Test that column_names property matches head(0) for InFlow & OutFlow"""
     flow = Flows(
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
@@ -37,7 +37,7 @@ def test_flows_raise_error():
 
 
 def test_column_names_flow(exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for Flows"""
+    """Test that column_names property matches head(0) for Flows"""
     flow = Flows(
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
@@ -151,3 +151,42 @@ def test_flows_geojson(get_dataframe):
         ].set_index("admin2name_to")
         for dest, tot in outflows.items():
             assert tot == df_src.loc[dest]["value"]
+
+
+def test_flows_outer_join(get_dataframe):
+    """
+    Test that outer_join returns appropriate pieces
+    """
+    flow = Flows(
+        daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)),
+        daily_location("2016-01-02", spatial_unit=make_spatial_unit("admin", level=3)),
+        join_type="left outer",
+    )
+    out = get_dataframe(flow)
+    assert out.pcod_to.isna().any()
+    assert not out.pcod_from.isna().any()
+
+
+def test_flows_bad_join_type_raises_error():
+    """
+    Tests that the param validation for join_type is working
+    """
+    with pytest.raises(ValueError, match="notajoin"):
+        flow = Flows(
+            daily_location(
+                "2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)
+            ),
+            daily_location(
+                "2016-01-02", spatial_unit=make_spatial_unit("admin", level=3)
+            ),
+            join_type="left notajoin",
+        )
+
+
+def test_build_agg_validation():
+    flow = Flows(
+        daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)),
+        daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3)),
+    )
+    with pytest.raises(ValueError, match="'in' or 'out'"):
+        flow._build_json_agg_clause("wrong")

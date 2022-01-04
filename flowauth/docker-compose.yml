@@ -27,7 +27,7 @@ services:
     ports:
       - ${FLOWAUTH_HOST_PORT:-9091}:80
     environment:
-      DB_URI: "postgres://flowauth:{}@flowauth_postgres:5432/flowauth"
+      DB_URI: "postgresql://flowauth:{}@flowauth_postgres:5432/flowauth"
       FLOWAUTH_REDIS_HOST: "redis"
       FLOWAUTH_CACHE_BACKEND: "REDIS"
     secrets:

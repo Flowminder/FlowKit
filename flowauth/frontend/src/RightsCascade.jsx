@@ -4,7 +4,7 @@
 
 import React from "react";
 import { MultiCascader } from "rsuite";
-import "rsuite/dist/styles/rsuite-default.css";
+import "rsuite/dist/rsuite.min.css";
 
 class RightsCascade extends React.Component {
   render() {

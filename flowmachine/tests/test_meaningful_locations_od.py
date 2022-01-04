@@ -19,7 +19,7 @@ from flowmachine.features.location.meaningful_locations_od import MeaningfulLoca
 def test_column_names_meaningful_locations_od(
     exemplar_spatial_unit_param, get_column_names_from_run, meaningful_locations_labels
 ):
-    """ Test that column_names property matches head(0) for an od matrix between meaningful locations"""
+    """Test that column_names property matches head(0) for an od matrix between meaningful locations"""
     if not exemplar_spatial_unit_param.is_polygon:
         pytest.xfail(
             f"The spatial unit {exemplar_spatial_unit_param} is not supported as an aggregation unit for ODs between MeaningfulLocations."
