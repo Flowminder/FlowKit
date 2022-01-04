@@ -12,3 +12,8 @@ def test_custom_query_hash():
     )
     assert base.query_id == case_mismatch.query_id
     assert base.query_id == space_mismatch.query_id
+
+
+def test_custom_query_hash_with_dependents():
+    base = CustomQuery("SELECT 1 as col from foo", ["col"])
+    outer = CustomQuery("SELECT col FROM ({base}) as _", ["col"], {"base": base})

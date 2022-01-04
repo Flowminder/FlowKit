@@ -37,17 +37,30 @@ class CustomQuery(Query):
     .table.Table for an equivalent that deals with simple table access
     """
 
-    def __init__(self, sql: str, column_names: Union[List[str], Set[str]]):
-        self.sql = pretty_sql(sql)
+    def __init__(
+        self, sql: str, column_names: Union[List[str], Set[str]], queries=None
+    ):
+        self.queries = dict() if queries is None else queries
+        hashing_sql = sql.format(
+            **{
+                k: f"SELECT {v.column_names_as_string_list} FROM {k}"
+                for k, v in self.queries.items()
+            }
+        )
+        self.sql = pretty_sql(hashing_sql)
+
         seen = {}  # Dedupe the column names but preserve order
         self._column_names = [
             seen.setdefault(x, x) for x in column_names if x not in seen
         ]
         super().__init__()
+        self.sql = sql
 
     @property
     def column_names(self) -> List[str]:
         return self._column_names
 
     def _make_query(self):
-        return self.sql
+        return self.sql.format(
+            {name: query.get_query() for name, query in self.queries.items()}
+        )
