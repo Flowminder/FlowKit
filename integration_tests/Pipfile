@@ -5,13 +5,12 @@ name = "pypi"
 
 [packages]
 autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
-black = {extras = ["jupyter"],version = "==21.10b0"} # required by papermill
+black = {extras = ["jupyter"],version = "==21.12b0"} # required by papermill
 pytest = "*"
 pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowapi = {editable = true,path = "./../flowapi"}
 approvaltests = "*"
-empty-files = "*" # Needed for approval tests until https://github.com/approvals/ApprovalTests.Python/issues/100 is resolved
 pytest-cov = "*"
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 geojson = "*"
