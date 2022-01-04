@@ -407,7 +407,8 @@ jobs:
           key: flowmachine-deps-3-{{ checksum "flowmachine/Pipfile.lock" }}
       - run:
           name: Linting files with black
-          command: pip install black && black --check .
+          # Installed the version of Black from flowmachine's lockfile
+          command: pushd flowmachine && pip install $(pipenv graph | grep black) && popd && black --check .
 
   lint_js:
     docker:
