@@ -26,8 +26,8 @@ class Union(Query):
         column_set = set(tuple(query.column_names) for query in queries)
         if len(column_set) > 1:
             raise ValueError("Inconsistent columns.")
-        if len(queries) < 2:
-            raise ValueError("Union requires at least two queries.")
+        if len(queries) < 1:
+            raise ValueError("Union requires at least one query.")
 
         super().__init__()
 
