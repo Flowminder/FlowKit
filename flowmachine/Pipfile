@@ -40,7 +40,6 @@ pytest-testmon = "*"
 asynctest = "*"
 cachey = "*"
 approvaltests = "*"
-empty-files = "*" # Needed for approval tests until https://github.com/approvals/ApprovalTests.Python/issues/100 is resolved
 watchdog = "*"
 ipdb = "*"
 flowmachine = {editable = true, extras = ["test"], path = "."}
