@@ -96,14 +96,14 @@ class _PopulationBuffer(Query):
             (SELECT * FROM 
             (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.value as src_pop, hl_to.value as sink_pop
             FROM
-            ({self.population_object.get_query()}) as hl_from
+            ({self.population_object.tokenize()}) as hl_from
             LEFT JOIN 
-            ({self.population_object.get_query()}) as hl_to
+            ({self.population_object.tokenize()}) as hl_to
             ON 
                 {" OR ".join(f"hl_from.{c} != hl_to.{c}" for c in cols)}
             ) pops
             LEFT JOIN
-            ({self.distance_matrix.get_query()}) as dm
+            ({self.distance_matrix.tokenize()}) as dm
             USING ({", ".join(f"{c}_{direction}" for c in cols for direction in ("to", "from"))})
             )
          ) distance_pop_matrix
@@ -269,8 +269,8 @@ class PopulationWeightedOpportunities(Query):
             )
 
         return f"""
-        WITH buffer AS ({self.population_buffer_object.get_query()}),
-        beta AS (SELECT 1.0/sum(value) as beta FROM ({self.population_object.get_query()}) pops),
+        WITH buffer AS ({self.population_buffer_object.tokenize()}),
+        beta AS (SELECT 1.0/sum(value) as beta FROM ({self.population_object.tokenize()}) pops),
         sigma AS (
             SELECT
              {", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)},

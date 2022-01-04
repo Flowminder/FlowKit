@@ -72,7 +72,7 @@ class TripsODMatrix(FlowLike, Query):
               {", ".join(loc_cols)},
               min(time) as earliest_visit,
               max(time) as latest_visit
-            FROM ({self.subscriber_locations.get_query()}) _
+            FROM ({self.subscriber_locations.tokenize()}) _
             GROUP BY subscriber, {", ".join(loc_cols)}
             )
         SELECT

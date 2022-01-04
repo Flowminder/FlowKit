@@ -92,7 +92,7 @@ class HandsetStats(SubscriberFeature):
         if self.statistic in {"count", "max", "min"}:
             sql = f"""
             SELECT subscriber, {self.statistic}({self.characteristic}) AS value
-            FROM ({self.handsets_query.get_query()}) AS U
+            FROM ({self.handsets_query.tokenize()}) AS U
             GROUP BY subscriber
             """
             return sql
@@ -138,7 +138,7 @@ class HandsetStats(SubscriberFeature):
                     ) OVER msisdn_by_datetime
                 ) AS weight,
                 CUME_DIST() OVER msisdn_by_datetime
-            FROM ({self.handsets_query.get_query()}) AS U
+            FROM ({self.handsets_query.tokenize()}) AS U
             WINDOW msisdn_by_datetime AS (PARTITION BY subscriber ORDER BY time)
         )
         SELECT subscriber, value, weight

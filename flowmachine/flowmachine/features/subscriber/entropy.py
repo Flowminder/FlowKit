@@ -186,7 +186,7 @@ class PeriodicEntropy(BaseEntropy):
 
         return f"""
         SELECT subscriber, COUNT(*) AS absolute_freq FROM
-        ({self.unioned_query.get_query()}) u
+        ({self.unioned_query.tokenize()}) u
         {make_where(self.direction.get_filter_clause())}
         GROUP BY subscriber, EXTRACT( {self.phase} FROM datetime )
         HAVING COUNT(*) > 0
@@ -282,7 +282,7 @@ class LocationEntropy(BaseEntropy):
 
         return f"""
         SELECT subscriber, COUNT(*) AS absolute_freq FROM
-        ({self.subscriber_locations.get_query()}) u
+        ({self.subscriber_locations.tokenize()}) u
         GROUP BY subscriber, {location_cols}
         HAVING COUNT(*) > 0
         """
@@ -373,7 +373,7 @@ class ContactEntropy(BaseEntropy):
 
         return f"""
         SELECT subscriber, events AS absolute_freq FROM
-        ({self.contact_balance.get_query()}) u
+        ({self.contact_balance.tokenize()}) u
         """
 
     @property
@@ -381,5 +381,5 @@ class ContactEntropy(BaseEntropy):
 
         return f"""
         SELECT subscriber, proportion AS relative_freq FROM
-        ({self.contact_balance.get_query()}) u
+        ({self.contact_balance.tokenize()}) u
         """

@@ -139,12 +139,12 @@ class DistanceCounterparts(SubscriberFeature):
         FROM
             (
                 SELECT A.subscriber, A.location_id AS location_id_from, B.location_id AS location_id_to FROM
-                ({self.unioned_from_query.get_query()}) AS A
-                JOIN ({self.unioned_to_query.get_query()}) AS B
+                ({self.unioned_from_query.tokenize()}) AS A
+                JOIN ({self.unioned_to_query.tokenize()}) AS B
                 ON A.id = B.id AND A.outgoing != B.outgoing {on_filters}
             ) U
         JOIN
-            ({self.distance_matrix.get_query()}) D
+            ({self.distance_matrix.tokenize()}) D
         USING (location_id_from, location_id_to)
         GROUP BY U.subscriber
         """

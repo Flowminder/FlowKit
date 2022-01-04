@@ -45,7 +45,7 @@ class VisitedMostDays(BaseLocation, Query):
             {relevant_columns}, 
             time::date AS date_visited, 
             count(*) AS total
-        FROM ({self.subscriber_locations.get_query()}) AS subscriber_locations
+        FROM ({self.subscriber_locations.tokenize()}) AS subscriber_locations
         GROUP BY subscriber_locations.subscriber, {relevant_columns}, time::date
         """
 

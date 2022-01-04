@@ -92,7 +92,7 @@ class EventCount(SubscriberFeature):
     def _make_query(self):
         return f"""
         SELECT subscriber, COUNT(*) as value FROM
-        ({self.unioned_query.get_query()}) u
+        ({self.unioned_query.tokenize()}) u
         {make_where(self.direction.get_filter_clause())}
         GROUP BY subscriber
         """

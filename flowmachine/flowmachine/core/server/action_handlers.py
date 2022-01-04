@@ -285,7 +285,7 @@ async def action_handler__get_sql(
 
     if query_state == QueryState.COMPLETED:
         q = get_query_object_by_id(get_db(), query_id)
-        sql = q.get_query()
+        sql = q.tokenize()
         payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
         return ZMQReply(status="success", payload=payload)
     else:

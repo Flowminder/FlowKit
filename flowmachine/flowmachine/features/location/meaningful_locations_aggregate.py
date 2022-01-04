@@ -46,7 +46,7 @@ class MeaningfulLocationsAggregate(Query):
 
         return f"""
         SELECT label, {location_cols}, sum(1./n_clusters) as value FROM
-        ({self.meaningful_locations.get_query()}) meaningful_locations
+        ({self.meaningful_locations.tokenize()}) meaningful_locations
         LEFT JOIN 
         ({self.spatial_unit.get_geom_query()}) agg
         ON ST_Contains(agg.geom::geometry, meaningful_locations.cluster::geometry)

@@ -54,7 +54,7 @@ class RedactedTotalEvents(RedactedLocationMetric, Query):
                 count(*) AS value,
                 count(distinct subscriber) > 15 AS safe_agg
             FROM
-                ({self.redaction_target.unioned.get_query()}) unioned
+                ({self.redaction_target.unioned.tokenize()}) unioned
             {make_where(self.redaction_target.direction.get_filter_clause())}
             GROUP BY
                 {', '.join(groups)})

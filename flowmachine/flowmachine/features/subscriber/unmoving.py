@@ -53,7 +53,7 @@ class Unmoving(SubscriberFeature):
             subscriber,
             count(*) = 1 as value
         FROM
-            ({self.locations.get_query()}) _
+            ({self.locations.tokenize()}) _
         GROUP BY subscriber
         """
 

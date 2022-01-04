@@ -368,16 +368,16 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if hasattr(self, "mapping_table"):
             return f"""
                     LEFT JOIN
-                        ({self.mapping_table.get_query()}) AS _ USING ({self._loc_on})
+                        ({self.mapping_table.tokenize()}) AS _ USING ({self._loc_on})
                     LEFT JOIN
-                        ({self.geom_table.get_query()}) AS {geom_table_alias}
+                        ({self.geom_table.tokenize()}) AS {geom_table_alias}
                     USING ({self._geom_on})
                     """
         else:
 
             return f"""
                     LEFT JOIN
-                        ({self.geom_table.get_query()}) AS {geom_table_alias}
+                        ({self.geom_table.tokenize()}) AS {geom_table_alias}
                     ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
                     """
 
@@ -460,7 +460,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if "location_id" in self.location_id_columns:
             columns = [f"{geom_table_alias}.id AS location_id"] + columns
 
-        sql = f"SELECT {','.join(columns)} FROM ({self.geom_table.get_query()}) AS {geom_table_alias}"
+        sql = f"SELECT {','.join(columns)} FROM ({self.geom_table.tokenize()}) AS {geom_table_alias}"
 
         return sql
 
@@ -682,7 +682,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         else:
             return f"""
             INNER JOIN
-                ({self.geom_table.get_query()}) AS {geom_table_alias}
+                ({self.geom_table.tokenize()}) AS {geom_table_alias}
             ON ST_within(
                 {loc_table_alias}.geom_point::geometry,
                 ST_SetSRID({geom_table_alias}.{self._geom_col}, 4326)::geometry

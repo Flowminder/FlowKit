@@ -109,7 +109,7 @@ class ProportionEventType(SubscriberFeature):
     def _make_query(self):
         return f"""
         SELECT D.subscriber, N.value::float / D.value::float AS value
-        FROM ({self.numerator_query.get_query()}) N
-        JOIN ({self.denominator_query.get_query()}) D
+        FROM ({self.numerator_query.tokenize()}) N
+        JOIN ({self.denominator_query.tokenize()}) D
         ON D.subscriber = N.subscriber
         """

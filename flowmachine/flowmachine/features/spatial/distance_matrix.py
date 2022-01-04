@@ -110,7 +110,7 @@ class DistanceMatrix(GraphMixin, Query):
             ST_X(geom_destination) as lon_to, ST_Y(geom_destination) as lat_to,
             value
             {return_geometry_statement}
-            FROM ({self.geom_matrix.get_query()}) G
+            FROM ({self.geom_matrix.tokenize()}) G
             """
         cols_A = ",".join(
             [f"A.{c} AS {c}_from" for c in self.spatial_unit.location_id_columns]
@@ -139,7 +139,7 @@ class DistanceMatrix(GraphMixin, Query):
             FROM ({geom_query}) AS A
             CROSS JOIN ({geom_query}) AS B
             LEFT JOIN
-            ({self.geom_matrix.get_query()}) G
+            ({self.geom_matrix.tokenize()}) G
             ON A.geom=G.geom_origin
             AND
             B.geom=G.geom_destination

@@ -37,7 +37,7 @@ def _get_bounds_clause(bounds, value_column: str, metric: Query) -> str:
     return f"""
         SELECT max({value_column})::numeric as upper, 
                 min({value_column})::numeric as lower 
-            FROM ({metric.get_query()}) AS to_agg
+            FROM ({metric.tokenize()}) AS to_agg
         """
 
 
@@ -136,7 +136,7 @@ class HistogramAggregation(Query):
             lower(bin) as lower_edge,
             upper(bin) as upper_edge 
         FROM breaks
-         LEFT JOIN ({self.metric.get_query()}) as to_agg
+         LEFT JOIN ({self.metric.tokenize()}) as to_agg
          ON bin @> to_agg.{self.value_column}::numeric
         GROUP BY bin 
         ORDER BY bin ASC

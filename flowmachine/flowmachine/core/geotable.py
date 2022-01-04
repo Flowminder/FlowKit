@@ -72,6 +72,6 @@ class GeoTable(GeoDataMixin, Table):
         cols = [c for c in self.column_names if c not in (gid_column, self.geom_column)]
         aliased_cols = cols + [f"{gid_column} as gid", f"{self.geom_column} as geom"]
         return (
-            f"SELECT {', '.join(aliased_cols)} FROM ({self.get_query()}) as t",
+            f"SELECT {', '.join(aliased_cols)} FROM ({self.tokenize()}) as t",
             cols + ["gid", "geom"],
         )

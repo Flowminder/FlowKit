@@ -143,7 +143,7 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
         tbl = sql.alias("tbl")
 
         # Create a sqlalchemy "Textual SQL" object from the flowmachine SQL string
-        textual_sql = text(self.flowmachine_query.get_query())
+        textual_sql = text(self.flowmachine_query.tokenize())
 
         # Create sqlalchemy column objects for each of the columns
         # in the output of the flowmachine query

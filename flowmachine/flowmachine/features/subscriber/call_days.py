@@ -52,7 +52,7 @@ class CallDays(SubscriberFeature):
                 COUNT(*) AS value
             FROM (
                 SELECT DISTINCT locations.subscriber, {location_columns}, locations.time::date
-                FROM ({self.ul.get_query()}) AS locations
+                FROM ({self.ul.tokenize()}) AS locations
             ) AS connections
             GROUP BY connections.subscriber, {location_columns}
         ) calldays

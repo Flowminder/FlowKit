@@ -56,8 +56,8 @@ class ImputedDistanceSeries(Query):
         SELECT subscriber, datetime{date_cast}, rolling_median_impute(value, {self.window_size}) OVER(partition by subscriber order by datetime) as value FROM
         (SELECT subscriber, 
         generate_series(timestamptz '{self.distance_series.start}', '{self.distance_series.stop}'::timestamptz - interval '1' second, '1 {self.distance_series.aggregate_by}') as datetime 
-            FROM ({self.distance_series.get_query()}) _ GROUP BY subscriber HAVING COUNT(value) > {self.window_size}) sparse
+            FROM ({self.distance_series.tokenize()}) _ GROUP BY subscriber HAVING COUNT(value) > {self.window_size}) sparse
         LEFT JOIN
-            ({self.distance_series.get_query()}) series
+            ({self.distance_series.tokenize()}) series
         USING (subscriber, datetime)
         """

@@ -119,7 +119,7 @@ class EventsTablesUnion(Query):
 
         # Get the list of tables, select the relevant columns and union
         # them all
-        sql = "\nUNION ALL\n".join(sd.get_query() for sd in self.date_subsets)
+        sql = "\nUNION ALL\n".join(sd.tokenize() for sd in self.date_subsets)
 
         return sql
 

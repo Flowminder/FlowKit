@@ -120,7 +120,7 @@ class SubscriberDegree(SubscriberFeature):
            COUNT(*) AS value
         FROM (
             SELECT DISTINCT subscriber, msisdn_counterpart
-            FROM ({self.unioned_query.get_query()}) AS U
+            FROM ({self.unioned_query.tokenize()}) AS U
             {where_clause}
         ) AS U
         GROUP BY subscriber

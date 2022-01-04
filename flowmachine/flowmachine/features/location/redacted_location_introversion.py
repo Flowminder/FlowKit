@@ -35,7 +35,7 @@ class RedactedLocationIntroversion(RedactedLocationMetric, GeoDataMixin, Query):
         location_columns = self.spatial_unit.location_id_columns
 
         sql = f"""
-        WITH unioned_table AS ({self.redaction_target.unioned_query.get_query()})
+        WITH unioned_table AS ({self.redaction_target.unioned_query.tokenize()})
         SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as value FROM (
             SELECT
                {', '.join(f'A.{c} as {c}' for c in location_columns)},

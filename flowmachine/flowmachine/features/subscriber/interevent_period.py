@@ -112,7 +112,7 @@ class IntereventPeriod(SubscriberFeature):
         SELECT
             subscriber,
             FLOOR(EXTRACT(epoch FROM value)/{self.time_divisor}) AS value
-        FROM ({self.event_interval.get_query()}) AS U
+        FROM ({self.event_interval.tokenize()}) AS U
         """
 
         return sql

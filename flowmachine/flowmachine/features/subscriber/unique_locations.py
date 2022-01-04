@@ -57,7 +57,7 @@ class UniqueLocations(SubscriberFeature):
             subscriber,
             {location_columns}
         FROM
-            ({self.subscriber_locations.get_query()}) _ GROUP BY subscriber, {location_columns}
+            ({self.subscriber_locations.tokenize()}) _ GROUP BY subscriber, {location_columns}
         """
 
         return sql

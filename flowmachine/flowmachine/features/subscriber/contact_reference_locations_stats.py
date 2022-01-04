@@ -97,11 +97,11 @@ class ContactReferenceLocationStats(SubscriberFeature):
                 SELECT C.subscriber, C.msisdn_counterpart, C.subscriber_geom_point, {loc_cols('L')} AS msisdn_counterpart_geom_point
                 FROM (
                     SELECT C.subscriber, C.msisdn_counterpart, {loc_cols('L')} AS subscriber_geom_point
-                    FROM ({self.contact_balance_query.get_query()}) C
-                    JOIN ({self.contact_locations_query.get_query()}) L
+                    FROM ({self.contact_balance_query.tokenize()}) C
+                    JOIN ({self.contact_locations_query.tokenize()}) L
                     ON C.subscriber = L.subscriber
                 ) C
-                JOIN ({self.contact_locations_query.get_query()}) L
+                JOIN ({self.contact_locations_query.tokenize()}) L
                 ON C.msisdn_counterpart = L.subscriber
         ),
         D AS (
@@ -113,7 +113,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
         SELECT subscriber, {self.statistic}(distance) AS value
         FROM (
             SELECT C.subscriber, C.msisdn_counterpart, D.distance
-            FROM ({self.contact_balance_query.get_query()}) C, L, D
+            FROM ({self.contact_balance_query.tokenize()}) C, L, D
             WHERE
                 C.subscriber = L.subscriber AND
                 C.msisdn_counterpart = L.msisdn_counterpart AND

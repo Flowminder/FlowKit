@@ -56,7 +56,7 @@ class LocationVisits(SubscriberFeature):
             day_trajectories.{location_columns},
             COUNT(*) AS value
         FROM
-            ({self.day_trajectories.get_query()}) AS day_trajectories
+            ({self.day_trajectories.tokenize()}) AS day_trajectories
         GROUP BY 
             day_trajectories.subscriber,
             day_trajectories.{location_columns}

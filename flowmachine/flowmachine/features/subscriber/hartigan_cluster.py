@@ -26,7 +26,7 @@ class BaseCluster(GeoDataMixin, Query):
     def _geo_augmented_query(self):
         cols = [c for c in self.column_names if c != "cluster"]
         return (
-            f"SELECT {', '.join(cols)}, cluster as geom, row_number() over() as gid FROM ({self.get_query()}) q",
+            f"SELECT {', '.join(cols)}, cluster as geom, row_number() over() as gid FROM ({self.tokenize()}) q",
             cols + ["geom", "gid"],
         )
 
@@ -132,7 +132,7 @@ class HartiganCluster(BaseCluster):
 
     def _make_query(self):
 
-        calldays = "({}) AS calldays".format(self.calldays.get_query())
+        calldays = "({}) AS calldays".format(self.calldays.tokenize())
 
         sql = f"""
         SELECT clusters.subscriber AS subscriber,
@@ -235,7 +235,7 @@ class _JoinedHartiganCluster(BaseCluster):
 
     def _make_query(self):
 
-        table = f"({self.query.get_query()}) AS t"
+        table = f"({self.query.tokenize()}) AS t"
 
         value_cols = ", ".join(
             [
@@ -245,7 +245,7 @@ class _JoinedHartiganCluster(BaseCluster):
             ]
         )
 
-        hartigan = f"({self.hartigan.get_query()}) AS h"
+        hartigan = f"({self.hartigan.tokenize()}) AS h"
 
         sql = f"""
         SELECT hartigan.subscriber,

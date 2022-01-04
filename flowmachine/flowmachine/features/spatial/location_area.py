@@ -155,7 +155,7 @@ class _computeArea(Query):
     Parameters
     ----------
     location_area_query : str
-        Query from a LocationArea().get_query()
+        Query from a LocationArea().tokenize()
         method.
 
     geom_area_column : str
@@ -348,7 +348,7 @@ class LocationArea(GeoDataMixin, Query):
         super().__init__()
 
         self.computed_area = _computeArea(
-            location_area_query=self.get_query(), geom_area_column=self.column_name
+            location_area_query=self.tokenize(), geom_area_column=self.column_name
         )
 
     @property
@@ -371,7 +371,7 @@ class LocationArea(GeoDataMixin, Query):
         """
         if isinstance(self.point_collection, str):
             if self.point_collection in ("sites", "cells"):
-                sql_points = "(" + self.versioned_infrastructure.get_query() + ")"
+                sql_points = "(" + self.versioned_infrastructure.tokenize() + ")"
             else:
                 sql_points = self.point_collection
 
@@ -626,7 +626,7 @@ class LocationArea(GeoDataMixin, Query):
         return sql
 
     def _geo_augmented_query(self):
-        sql_base = self.get_query()
+        sql_base = self.tokenize()
         sql = (
             """
 

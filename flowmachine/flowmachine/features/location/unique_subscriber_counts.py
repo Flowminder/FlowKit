@@ -121,6 +121,6 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         FROM ({all_locs}) AS all_locs) AS _
         GROUP BY {rc} 
         """.format(
-            all_locs=self.ul.get_query(), rc=relevant_columns
+            all_locs=self.ul.tokenize(), rc=relevant_columns
         )
         return sql

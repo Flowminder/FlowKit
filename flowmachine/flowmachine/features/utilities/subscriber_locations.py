@@ -139,7 +139,7 @@ class SubscriberLocations(Query):
                 SELECT
                     subscriber, datetime as time, {location_cols}
                 FROM
-                    ({self.unioned.get_query()}) AS foo
+                    ({self.unioned.tokenize()}) AS foo
                 {where_clause}
                 """
         return sql

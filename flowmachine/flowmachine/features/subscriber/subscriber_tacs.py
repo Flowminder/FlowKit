@@ -146,7 +146,7 @@ class SubscriberTACs(SubscriberFeature):
     def _make_query(self):
         return f"""
                 SELECT subscriber, datetime AS time, tac
-                FROM ({self.tbl.get_query()}) e
+                FROM ({self.tbl.tokenize()}) e
                 WHERE tac IS NOT NULL ORDER BY datetime"""
 
 
@@ -235,7 +235,7 @@ class SubscriberTAC(SubscriberFeature):
                     SELECT t.subscriber as subscriber, pg_catalog.mode() WITHIN GROUP(ORDER BY tac) as tac
                     FROM ({}) t
                     GROUP BY t.subscriber""".format(
-                self.subscriber_tacs.get_query()
+                self.subscriber_tacs.tokenize()
             )
         elif self.method == "last":
             query = """
@@ -243,7 +243,7 @@ class SubscriberTAC(SubscriberFeature):
                     FROM ({}) t 
                     ORDER BY t.subscriber, time DESC
             """.format(
-                self.subscriber_tacs.get_query()
+                self.subscriber_tacs.tokenize()
             )
         else:
             raise ValueError(
@@ -321,7 +321,7 @@ class SubscriberHandsets(SubscriberFeature):
         return self.joined.column_names
 
     def _make_query(self):
-        return self.joined.get_query()
+        return self.joined.tokenize()
 
 
 class SubscriberHandset(SubscriberFeature):
@@ -403,7 +403,7 @@ class SubscriberHandset(SubscriberFeature):
         return self.joined.column_names
 
     def _make_query(self):
-        return self.joined.get_query()
+        return self.joined.tokenize()
 
 
 class SubscriberHandsetCharacteristic(SubscriberFeature):
@@ -555,11 +555,11 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
         if self.method == "most-common":
             query = f"""
                     SELECT t.subscriber as subscriber, pg_catalog.mode() WITHIN GROUP(ORDER BY t.{self.characteristic}) as value
-                    FROM ({self.subscriber_handsets.get_query()}) t
+                    FROM ({self.subscriber_handsets.tokenize()}) t
                     GROUP BY t.subscriber"""
         elif self.method == "last":
             query = f"""
             SELECT t.subscriber as subscriber, t.{self.characteristic} as value
-            FROM ({self.subscriber_handsets.get_query()}) t
+            FROM ({self.subscriber_handsets.tokenize()}) t
             """
         return query

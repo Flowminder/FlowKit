@@ -68,11 +68,11 @@ class ActiveAtReferenceLocation(SubscriberFeature):
             ref.subscriber,
             COALESCE(loc_match, FALSE) as value
         FROM
-            ({self.reference_location.get_query()}) ref
+            ({self.reference_location.tokenize()}) ref
             LEFT OUTER JOIN
             (
                 SELECT subscriber, {location_columns}, TRUE as loc_match 
-                    FROM ({self.subscriber_locations.get_query()}) _
+                    FROM ({self.subscriber_locations.tokenize()}) _
             ) AS all_locs
             USING (subscriber, {location_columns})
         """

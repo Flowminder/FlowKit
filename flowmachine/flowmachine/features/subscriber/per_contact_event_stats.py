@@ -59,6 +59,6 @@ class PerContactEventStats(SubscriberFeature):
 
         return f"""
         SELECT subscriber, {self.statistic}(events) AS value
-        FROM ({self.contact_balance.get_query()}) C
+        FROM ({self.contact_balance.tokenize()}) C
         GROUP BY subscriber
         """

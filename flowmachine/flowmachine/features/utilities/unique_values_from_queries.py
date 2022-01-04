@@ -59,7 +59,7 @@ class UniqueValuesFromQueries(Query):
         column_str = ", ".join(self.column_names)
 
         union_stack = "\nUNION ALL\n".join(
-            f"SELECT {column_str} FROM ({query.get_query()}) as tbl"
+            f"SELECT {column_str} FROM ({query.tokenize()}) as tbl"
             for query in self.query_list
         )
 

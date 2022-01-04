@@ -70,7 +70,7 @@ class MeaningfulLocationsOD(FlowLike, Query):
         location_cols_aliased = ", ".join(location_cols_aliased)
         return f"""
         SELECT label_from, label_to, {location_cols_aliased}, sum(1./(n_clusters_from*n_clusters_to)) as value FROM
-        ({self.flow.get_query()}) meaningful_locations
+        ({self.flow.tokenize()}) meaningful_locations
         LEFT JOIN 
         ({agg_query}) from_q
         ON ST_Contains(from_q.geom::geometry, meaningful_locations.cluster_from::geometry)

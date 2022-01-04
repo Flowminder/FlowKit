@@ -161,7 +161,7 @@ class Displacement(SubscriberFeature):
             subscriber,
             {self.statistic}(COALESCE(value_dist, 0) * {multiplier}) as value
         FROM 
-            ({self.joined.get_query()}) _
+            ({self.joined.tokenize()}) _
         GROUP BY 
             subscriber
         """
@@ -170,7 +170,7 @@ class Displacement(SubscriberFeature):
             sql = f"""
             SELECT subscriber, dists.value
             FROM
-            ({self.reference_location.get_query()}) _
+            ({self.reference_location.tokenize()}) _
             LEFT OUTER JOIN
             ({sql}) dists
             USING (subscriber)

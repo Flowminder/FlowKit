@@ -98,6 +98,6 @@ class TopUpAmount(SubscriberFeature):
 
         return f"""
         SELECT subscriber, {self.statistic}(recharge_amount) AS value
-        FROM ({self.unioned_query.get_query()}) U
+        FROM ({self.unioned_query.tokenize()}) U
         GROUP BY subscriber
         """

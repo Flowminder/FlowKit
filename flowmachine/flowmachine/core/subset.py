@@ -87,7 +87,7 @@ def subset_factory(parent_class):
                         WHERE
                             {clause}
                        """.format(
-                parent=self.parent.get_query(), clause=clause
+                parent=self.parent.tokenize(), clause=clause
             )
 
             return sql
@@ -163,7 +163,7 @@ def subset_numbers_factory(parent_class):
                         WHERE
                             {clause}
                        """.format(
-                parent=self.parent.get_query(), clause=clause
+                parent=self.parent.tokenize(), clause=clause
             )
 
             return sql

@@ -47,7 +47,7 @@ class Grid(GeoDataMixin, Query):
         """
 
         return (
-            f"SELECT grid_id, geom_square as geom, row_number() OVER (ORDER BY longitude, latitude) as gid FROM ({self.get_query()}) as x",
+            f"SELECT grid_id, geom_square as geom, row_number() OVER (ORDER BY longitude, latitude) as gid FROM ({self.tokenize()}) as x",
             ["grid_id", "geom", "gid"],
         )
 

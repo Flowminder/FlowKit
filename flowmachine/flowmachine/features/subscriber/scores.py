@@ -174,7 +174,7 @@ class EventScore(Query):
 
         day_of_week_and_hour_added = f"""SELECT *, 
         trim(to_char(datetime, 'day')) as dow, extract(hour from datetime) as hour 
-        FROM ({self.sds.get_query()}) _"""
+        FROM ({self.sds.tokenize()}) _"""
 
         hour_case = f"""(CASE 
         {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in enumerate(self.score_hour))}

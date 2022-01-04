@@ -126,7 +126,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
                 {', '.join(self.time_cols)},
                 count(*) AS value
             FROM
-                ({self.unioned.get_query()}) unioned
+                ({self.unioned.tokenize()}) unioned
             {make_where(self.direction.get_filter_clause())}
             GROUP BY
                 {', '.join(groups)}

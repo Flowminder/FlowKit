@@ -42,7 +42,7 @@ class Geography(GeoDataMixin, Query):
     def _geo_augmented_query(self):
         sql = f"""
         SELECT row_number() over() AS gid, *
-        FROM ({self.get_query()}) AS Q
+        FROM ({self.tokenize()}) AS Q
         """
 
         return sql, ["gid"] + self.column_names

@@ -116,7 +116,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
         to_clause = self._build_json_agg_clause("out")
 
         agg_qry = f"""
-                WITH flows AS ({self.get_query()})
+                WITH flows AS ({self.tokenize()})
                 SELECT
                     {loc_cols_string},
                     json_strip_nulls(outflows) as outflows,
@@ -204,7 +204,7 @@ class Flows(FlowLike, Query):
             {group_cols},
             count(*) as value
         FROM 
-            ({self.joined.get_query()}) AS joined
+            ({self.joined.tokenize()}) AS joined
         GROUP BY
             {group_cols}
         ORDER BY {group_cols} DESC
@@ -261,7 +261,7 @@ class OutFlow(BaseInOutFlow):
     """
 
     def _make_query(self):
-        return self._groupby_col(self.flow.get_query(), self.loc_from)
+        return self._groupby_col(self.flow.tokenize(), self.loc_from)
 
     @property
     def index_cols(self):
@@ -290,7 +290,7 @@ class InFlow(BaseInOutFlow):
 
     def _make_query(self):
 
-        return self._groupby_col(self.flow.get_query(), self.loc_to)
+        return self._groupby_col(self.flow.tokenize(), self.loc_to)
 
     @property
     def index_cols(self):

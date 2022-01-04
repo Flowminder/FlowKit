@@ -120,7 +120,7 @@ class LastLocation(BaseLocation, Query):
              FROM ({subscriber_locs}) AS subscriber_locs) AS final_time
         WHERE rank = 1
         """.format(
-            subscriber_locs=self.subscriber_locs.get_query(), rc=relevant_columns
+            subscriber_locs=self.subscriber_locs.tokenize(), rc=relevant_columns
         )
 
         return sql

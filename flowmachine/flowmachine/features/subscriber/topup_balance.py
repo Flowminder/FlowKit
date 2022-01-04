@@ -139,7 +139,7 @@ class TopUpBalance(SubscriberFeature):
         if self.statistic in {"count"}:
             sql = f"""
             SELECT subscriber, COUNT(*) AS value
-            FROM ({self.unioned_query.get_query()}) AS U
+            FROM ({self.unioned_query.tokenize()}) AS U
             GROUP BY subscriber
             """
             return sql
@@ -149,11 +149,11 @@ class TopUpBalance(SubscriberFeature):
             SELECT subscriber, {self.statistic}(balance) AS value
             FROM (
                 SELECT subscriber, {self.statistic}(pre_event_balance) AS balance
-                FROM ({self.unioned_query.get_query()}) AS U
+                FROM ({self.unioned_query.tokenize()}) AS U
                 GROUP BY subscriber
                 UNION ALL
                 SELECT subscriber, {self.statistic}(post_event_balance) AS balance
-                FROM ({self.unioned_query.get_query()}) AS U
+                FROM ({self.unioned_query.tokenize()}) AS U
                 GROUP BY subscriber
             ) U
             GROUP BY subscriber
@@ -208,7 +208,7 @@ class TopUpBalance(SubscriberFeature):
                     ) OVER msisdn_by_datetime
                 ) AS weight,
                 CUME_DIST() OVER msisdn_by_datetime
-            FROM ({self.unioned_query.get_query()}) AS U
+            FROM ({self.unioned_query.tokenize()}) AS U
             WINDOW msisdn_by_datetime AS (PARTITION BY subscriber ORDER BY datetime)
         )
         SELECT subscriber, balance, weight

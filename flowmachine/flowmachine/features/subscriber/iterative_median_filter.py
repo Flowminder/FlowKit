@@ -80,5 +80,5 @@ class IterativeMedianFilter(Query):
         SELECT {cols} iterated_median_filter({self.column_to_filter}, 
         {self.filter_window_size}) over({partition_statement} {order_statement}) as {self.column_to_filter}
         FROM
-        ({self.query_to_filter.get_query()}) as to_filter
+        ({self.query_to_filter.tokenize()}) as to_filter
         """

@@ -392,7 +392,7 @@ class LocationCluster(GeoDataMixin, Query):
 
         if self.point_collection in ("sites", "cells"):
             points_stable_statement = (
-                "(" + self.versioned_infrastructure.get_query() + ")"
+                "(" + self.versioned_infrastructure.tokenize() + ")"
             )
         else:
             points_stable_statement = self.point_collection
@@ -452,7 +452,7 @@ class LocationCluster(GeoDataMixin, Query):
         """.format(
             location_identifier=location_identifier,
             geometry_identifier=geometry_identifier,
-            base_query=self.get_query(),
+            base_query=self.tokenize(),
         )
 
         return sql, ["gid", "cluster_id", "geom"]

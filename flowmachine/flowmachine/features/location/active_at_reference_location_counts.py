@@ -37,9 +37,9 @@ class ActiveAtReferenceLocationCounts(GeoDataMixin, Query):
         sql = f"""
         SELECT {location_columns}, sum(value::int) as value
         FROM
-        ({self.active_at_reference_location.reference_location.get_query()}) ref
+        ({self.active_at_reference_location.reference_location.tokenize()}) ref
         LEFT JOIN
-         ({self.active_at_reference_location.get_query()}) active
+         ({self.active_at_reference_location.tokenize()}) active
         USING (subscriber)
         GROUP BY {location_columns}
         """

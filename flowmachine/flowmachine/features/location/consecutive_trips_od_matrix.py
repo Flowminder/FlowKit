@@ -73,7 +73,7 @@ class ConsecutiveTripsODMatrix(FlowLike, Query):
             SELECT subscriber,
               {", ".join(loc_cols)},
               row_number() OVER (PARTITION BY subscriber ORDER BY time ASC) AS rank
-            FROM ({self.subscriber_locations.get_query()}) _
+            FROM ({self.subscriber_locations.tokenize()}) _
             )
         SELECT
             {loc_cols_from_string},

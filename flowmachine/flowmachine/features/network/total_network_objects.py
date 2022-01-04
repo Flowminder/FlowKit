@@ -140,7 +140,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
              datetime FROM
               (SELECT DISTINCT {group_cols_str}, {cols_str}, datetime FROM           
                 (SELECT {group_cols_str}, {cols_str}, date_trunc('{self.total_by}', x.datetime) AS datetime
-                FROM ({self.joined.get_query()}) x) y) _
+                FROM ({self.joined.tokenize()}) x) y) _
             GROUP BY {group_cols_str}, datetime
             ORDER BY {group_cols_str}, datetime
         """
@@ -225,7 +225,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         sql = f"""
         SELECT {group_cols}, {av_call} as value,
         date_trunc('{self.aggregate_by}', z.datetime) as datetime FROM 
-            ({self.total_objs.get_query()}) z
+            ({self.total_objs.tokenize()}) z
         GROUP BY {group_cols}, date_trunc('{self.aggregate_by}', z.datetime)
         ORDER BY {group_cols}, date_trunc('{self.aggregate_by}', z.datetime)
         """

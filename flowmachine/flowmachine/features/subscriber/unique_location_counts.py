@@ -113,7 +113,7 @@ class UniqueLocationCounts(SubscriberFeature):
             subscriber, 
             COUNT(*) as value  
             FROM
-        ({self.ul.get_query()}) AS _
+        ({self.ul.tokenize()}) AS _
         GROUP BY subscriber  
         """
 

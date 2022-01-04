@@ -97,34 +97,23 @@ class Query(metaclass=ABCMeta):
             query_id hash string
         """
         try:
-            return self._md5
-        except:
-            dependencies = self.dependencies
-            state = self.__getstate__()
-            hashes = sorted([x.query_id for x in dependencies])
-            for key, item in sorted(state.items()):
-                if isinstance(item, Query) and item in dependencies:
-                    # this item is already included in `hashes`
-                    continue
-                elif isinstance(item, list) or isinstance(item, tuple):
-                    item = sorted(
-                        item,
-                        key=lambda x: x.query_id if isinstance(x, Query) else str(x),
-                    )
-                elif isinstance(item, dict):
-                    item = json.dumps(item, sort_keys=True, default=str)
-                else:
-                    # if it's not a list or a dict we leave the item as it is
-                    pass
-
-                hashes.append(str(item))
-            hashes.append(self.__class__.__name__)
-            hashes.sort()
-            self._md5 = md5(str(hashes).encode()).hexdigest()
-            return self._md5
+            return self._query_id
+        except AttributeError:
+            q_string = self._make_query()
+            try:
+                qs = {
+                    query.query_id: query.get_cache_retrieval_query()
+                    for query in self.dependencies
+                }
+                filled = q_string.format(**qs)
+            except Exception as exc:
+                logger.error("Hashing failed.", qs=qs, q_string=q_string)
+                raise exc
+            self._query_id = md5(filled.encode()).hexdigest()
+        return self._query_id
 
     @abstractmethod
-    def _make_query(self):
+    def _make_query(self) -> str:
 
         raise NotImplementedError
 
@@ -169,7 +158,7 @@ class Query(metaclass=ABCMeta):
 
     def __iter__(self):
         con = get_db().engine
-        qur = self.get_query()
+        qur = self.tokenize()
         with con.begin():
             self._query_object = con.execute(qur)
 
@@ -190,7 +179,7 @@ class Query(metaclass=ABCMeta):
             sql = """
                   SELECT count(*) FROM ({everything}) AS foo
                   """.format(
-                everything=self.get_query()
+                everything=self.tokenize()
             )
             self._len = get_db().fetch(sql)[0][0]
             return self._len
@@ -286,7 +275,15 @@ class Query(metaclass=ABCMeta):
                 return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
-        return pretty_sql(self._make_query())
+        return pretty_sql(self.get_executable_sql())
+
+    def get_executable_sql(self):
+        q_string = self._make_query()
+        try:
+            qs = {query.query_id: query.get_query() for query in self.dependencies}
+            return q_string.format(**qs)
+        except Exception as exc:
+            raise exc
 
     def get_dataframe_async(self):
         """
@@ -310,13 +307,13 @@ class Query(metaclass=ABCMeta):
                 try:
                     return self._df.copy()
                 except AttributeError:
-                    qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
+                    qur = f"SELECT {self.column_names_as_string_list} FROM ({self.tokenize()}) _"
                     with get_db().engine.begin():
                         self._df = pd.read_sql_query(qur, con=get_db().engine)
 
                     return self._df.copy()
             else:
-                qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
+                qur = f"SELECT {self.column_names_as_string_list} FROM ({self.tokenize()}) _"
                 with get_db().engine.begin():
                     return pd.read_sql_query(qur, con=get_db().engine)
 
@@ -379,7 +376,7 @@ class Query(metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
+            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.tokenize()}) h LIMIT {n};"
             con = get_db().engine
             with con.begin():
                 df = pd.read_sql_query(Q, con=con)
@@ -419,10 +416,10 @@ class Query(metaclass=ABCMeta):
         --------
         >>> dl1 = daily_location('2016-01-01', spatial_unit=CellSpatialUnit())
         >>> dl2 = daily_location('2016-01-02', spatial_unit=CellSpatialUnit())
-        >>> dl1.union(dl2).get_query()
+        >>> dl1.union(dl2).tokenize()
         'cell_msisdn_20160101 UNION ALL cell_msisdn_20160102'
 
-        >>> dl1.union(dl2,all=False).get_query()
+        >>> dl1.union(dl2,all=False).tokenize()
         'cell_msisdn_20160101 UNION cell_msisdn_20160102'
         """
 
@@ -538,7 +535,7 @@ class Query(metaclass=ABCMeta):
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-        (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
+        (SELECT {self.column_names_as_string_list} FROM ({self.get_executable_sql()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
@@ -658,7 +655,7 @@ class Query(metaclass=ABCMeta):
         opts = ["FORMAT {}".format(format)]
         if analyse:
             opts.append("ANALYZE")
-        Q = "EXPLAIN ({})".format(", ".join(opts)) + self._make_query()
+        Q = "EXPLAIN ({})".format(", ".join(opts)) + self.get_executable_sql()
 
         exp = get_db().fetch(Q)
 
@@ -1055,3 +1052,9 @@ class Query(metaclass=ABCMeta):
 
     def __hash__(self):
         return hash(self.query_id)
+
+    def tokenize(self):
+        return f"{{{self.query_id}}}"
+
+    def get_cache_retrieval_query(self):
+        return f"SELECT * FROM cache.{self.table_name}"

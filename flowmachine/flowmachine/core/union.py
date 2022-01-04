@@ -37,5 +37,5 @@ class Union(Query):
 
     def _make_query(self):
         return (" UNION ALL " if self.all else " UNION ").join(
-            f"({query.get_query()})" for query in self.queries
+            f"({query.tokenize()})" for query in self.queries
         )

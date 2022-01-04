@@ -53,9 +53,9 @@ class RedactedUniqueVisitorCounts(GeoDataMixin, Query):
         sql = f"""
         SELECT {location_columns}, us.value - ref.value as value
         FROM
-        ({self.active_at_reference_location_counts.get_query()}) ref
+        ({self.active_at_reference_location_counts.tokenize()}) ref
         INNER JOIN
-         ({self.unique_subscriber_counts.get_query()}) us
+         ({self.unique_subscriber_counts.tokenize()}) us
         USING ({location_columns})
         WHERE us.value - ref.value > 15
         """

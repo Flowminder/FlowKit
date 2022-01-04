@@ -214,4 +214,4 @@ class ModelResult(Query):
     def _make_query(self):
         if not self.is_stored:
             self.store().result()
-        return self.get_query()
+        return self.tokenize()

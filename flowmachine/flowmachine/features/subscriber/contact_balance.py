@@ -118,7 +118,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         WITH unioned AS (
             SELECT
                 *
-            FROM ({self.unioned_query.get_query()}) as U
+            FROM ({self.unioned_query.tokenize()}) as U
             {where_clause}
         ),
         total_events AS (
@@ -214,11 +214,11 @@ class _ContactBalanceSubset(SubscriberFeature):
             and self.contact_balance_query.subscriber_identifier in {"msisdn"}
         ):
             include_subscriber_clause = f"""
-            UNION SELECT DISTINCT subscriber FROM ({self.contact_balance_query.get_query()}) C
+            UNION SELECT DISTINCT subscriber FROM ({self.contact_balance_query.tokenize()}) C
             """
 
         return f"""
         SELECT DISTINCT msisdn_counterpart AS subscriber
-        FROM ({self.contact_balance_query.get_query()}) C
+        FROM ({self.contact_balance_query.tokenize()}) C
         {include_subscriber_clause}
         """

@@ -138,7 +138,7 @@ class IntereventInterval(SubscriberFeature):
             {statistic_clause} AS value
         FROM (
             SELECT subscriber, datetime - LAG(datetime, 1, NULL) OVER (PARTITION BY subscriber ORDER BY datetime) AS delta
-            FROM ({self.unioned_query.get_query()}) AS U
+            FROM ({self.unioned_query.tokenize()}) AS U
             {where_clause}
         ) AS U
         GROUP BY subscriber

@@ -73,8 +73,8 @@ class NewSubscribers(Query):
         EXCEPT
         ({})
         """.format(
-            self.unique_subscribers_focal.get_query(),
-            self.unique_subscribers_bench_mark.get_query(),
+            self.unique_subscribers_focal.tokenize(),
+            self.unique_subscribers_bench_mark.tokenize(),
         )
 
         return sql

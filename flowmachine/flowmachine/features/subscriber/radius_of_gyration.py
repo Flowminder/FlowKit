@@ -133,7 +133,7 @@ class RadiusOfGyration(SubscriberFeature):
                     SELECT subscriber_locs.subscriber,
                            AVG(lon) as av_lon, AVG(lat) as av_lat,
                            ARRAY_AGG(ST_POINT(lon, lat)) as points
-                    FROM ({self.ul.get_query()}) 
+                    FROM ({self.ul.tokenize()}) 
                     AS subscriber_locs
                     GROUP BY subscriber_locs.subscriber
                 ) _

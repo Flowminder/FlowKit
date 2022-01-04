@@ -103,7 +103,7 @@ class MostFrequentLocation(BaseLocation, Query):
         Default query method implemented in the
         metaclass Query().
         """
-        subscriber_query = f"{self.subscriber_locs.get_query()} ORDER BY time"
+        subscriber_query = f"{self.subscriber_locs.tokenize()} ORDER BY time"
 
         relevant_columns = ", ".join(self.spatial_unit.location_id_columns)
 

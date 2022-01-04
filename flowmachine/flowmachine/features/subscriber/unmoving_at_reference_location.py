@@ -64,9 +64,9 @@ class UnmovingAtReferenceLocation(SubscriberFeature):
             sum(not_at_home::int) = 0 as value
         FROM
             (SELECT subscriber, {locs_equal} as not_at_home FROM
-            ({self.reference_locations.get_query()}) homes
+            ({self.reference_locations.tokenize()}) homes
             INNER JOIN
-            ({self.locations.get_query()}) locs            
+            ({self.locations.tokenize()}) locs            
             USING (subscriber)) at_reference
         GROUP BY subscriber
         """

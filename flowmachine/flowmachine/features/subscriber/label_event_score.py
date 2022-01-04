@@ -134,7 +134,7 @@ class LabelEventScore(Query):
     def _make_query(self):
 
         scores_cols = self.scores.column_names
-        scores = f"({self.scores.get_query()}) AS scores"
+        scores = f"({self.scores.tokenize()}) AS scores"
 
         sql = f"""
         SELECT COALESCE(score_bounds.label, 'unknown') as label, scores.* FROM {scores}

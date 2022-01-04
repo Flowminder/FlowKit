@@ -142,7 +142,7 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
                 msisdn_counterpart,
                 events AS events_in,
                 proportion AS proportion_in
-            FROM ({self.contact_in_query.get_query()}) C
+            FROM ({self.contact_in_query.tokenize()}) C
         ) I
         FULL OUTER JOIN (
             SELECT
@@ -150,7 +150,7 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
                 msisdn_counterpart,
                 events AS events_out,
                 proportion AS proportion_out
-            FROM ({self.contact_out_query.get_query()}) C
+            FROM ({self.contact_out_query.tokenize()}) C
         ) O
         ON
             I.subscriber = O.subscriber AND
@@ -201,7 +201,7 @@ class ProportionContactReciprocal(SubscriberFeature):
 
         return f"""
         SELECT subscriber, AVG(reciprocal::int) AS proportion
-        FROM  ({self.contact_reciprocal_query.get_query()}) R
+        FROM  ({self.contact_reciprocal_query.tokenize()}) R
         GROUP BY subscriber
         """
 
@@ -323,12 +323,12 @@ class ProportionEventReciprocal(SubscriberFeature):
             SELECT U.subscriber, COALESCE(reciprocal, FALSE) AS reciprocal
             FROM (
                 SELECT *
-                FROM ({self.unioned_query.get_query()}) U
+                FROM ({self.unioned_query.tokenize()}) U
                 {where_clause}
             ) U
             LEFT JOIN (
                 SELECT subscriber, msisdn_counterpart, reciprocal
-                FROM ({self.contact_reciprocal_query.get_query()}) R
+                FROM ({self.contact_reciprocal_query.tokenize()}) R
             ) R
             {on_clause}
         ) R

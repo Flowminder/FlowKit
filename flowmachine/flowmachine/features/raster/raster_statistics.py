@@ -110,7 +110,7 @@ class RasterStatistics(Query):
         elif self.statistic == "sum":
             # deal with possibility that vector is a query
             try:
-                vector_clause = "({})".format(self.vector.get_query())
+                vector_clause = "({})".format(self.vector.tokenize())
             except AttributeError:
                 raise ValueError("Vector must be a geo-type query")
 

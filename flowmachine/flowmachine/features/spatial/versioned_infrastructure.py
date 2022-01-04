@@ -74,7 +74,7 @@ class VersionedInfrastructure(Query):
     def _make_query(self):
 
         sql = f"""
-            {self.table.get_query()}
+            {self.table.tokenize()}
             WHERE date_of_first_service <= '{self.date}'::date AND
                   (CASE
                       WHEN date_of_last_service IS NOT NULL

@@ -111,13 +111,13 @@ class UniqueSubscribers(Query):
         return self.unioned.column_names
 
     def _make_query(self):
-        return f"SELECT unioned.subscriber FROM ({self.unioned.get_query()}) unioned GROUP BY subscriber"
+        return f"SELECT unioned.subscriber FROM ({self.unioned.tokenize()}) unioned GROUP BY subscriber"
 
     def as_set(self):
         """
         Returns all unique subscribers as a set.
         """
-        return {u[0] for u in get_db().fetch(self.get_query())}
+        return {u[0] for u in get_db().fetch(self.tokenize())}
 
 
 SubsetDates = EventTableSubset  # Backwards compatibility for unpicking queries from db
@@ -223,7 +223,7 @@ class SubscriberLocationSubset(Query):
             subscriber,
             {loc_cols}
         FROM
-            ({self.pslds_subset.get_query()}) _
+            ({self.pslds_subset.tokenize()}) _
         """
 
         return sql

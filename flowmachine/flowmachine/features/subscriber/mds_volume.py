@@ -103,6 +103,6 @@ class MDSVolume(SubscriberFeature):
 
         return f"""
         SELECT subscriber, {self.statistic}(volume_{self.volume}) AS value
-        FROM ({self.unioned_query.get_query()}) U
+        FROM ({self.unioned_query.tokenize()}) U
         GROUP BY subscriber
         """

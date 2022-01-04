@@ -131,10 +131,10 @@ class DistanceSeries(SubscriberFeature):
                     subscriber,
                     time as time_to,
                     ST_Distance(ST_Point{self.reference_location}::geography, ST_Point(lon, lat)::geography) as value_dist
-                FROM ({self.joined.get_query()}) _
+                FROM ({self.joined.tokenize()}) _
                 """
         else:
-            joined = self.joined.get_query()
+            joined = self.joined.tokenize()
 
         if valid_time_buckets.index(self.aggregate_by) > valid_time_buckets.index(
             "hour"

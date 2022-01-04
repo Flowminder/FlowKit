@@ -60,7 +60,7 @@ class MeaningfulLocations(Query):
     def _make_query(self):
         return f"""
         SELECT subscriber, label, cluster, (sum(1) OVER (PARTITION BY subscriber)) as n_clusters FROM 
-            ({self.labelled_subset.get_query()}) clus 
+            ({self.labelled_subset.tokenize()}) clus 
         GROUP BY subscriber, label, cluster
         ORDER BY subscriber
         """

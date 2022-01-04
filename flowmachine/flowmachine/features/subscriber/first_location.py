@@ -116,7 +116,7 @@ class FirstLocation(SubscriberFeature):
             relevant_locs.subscriber,
             min(time) AS time
         FROM
-            (SELECT * FROM ({self.ul.get_query()}) AS subscriber_locs
+            (SELECT * FROM ({self.ul.tokenize()}) AS subscriber_locs
             {clause}) AS relevant_locs
         GROUP BY relevant_locs.subscriber
         """

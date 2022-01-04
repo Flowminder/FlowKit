@@ -100,9 +100,9 @@ class JoinToLocation(Query):
             {left_columns_str},
             {right_columns_str}
         FROM
-            ({self.left.get_query()}) AS l
+            ({self.left.tokenize()}) AS l
         INNER JOIN
-            ({self.spatial_unit.get_query()}) AS sites
+            ({self.spatial_unit.tokenize()}) AS sites
         ON
             l.location_id = sites.location_id
           AND

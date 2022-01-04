@@ -50,9 +50,9 @@ class UnmovingCounts(GeoDataMixin, Query):
         SELECT {location_cols},
         count(*) as value
         FROM
-            ({self.unmoving_subscribers.get_query()}) um
+            ({self.unmoving_subscribers.tokenize()}) um
             INNER JOIN
-            ({self.unmoving_subscribers.locations.get_query()}) locs
+            ({self.unmoving_subscribers.locations.tokenize()}) locs
             USING (subscriber)
         GROUP BY {location_cols}
         """

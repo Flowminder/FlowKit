@@ -40,7 +40,7 @@ class SpatialAggregate(GeoDataMixin, Query):
             {aggregate_cols},
             count(*) AS value
         FROM
-            ({self.locations.get_query()}) AS to_agg
+            ({self.locations.tokenize()}) AS to_agg
         GROUP BY
             {aggregate_cols}
         """

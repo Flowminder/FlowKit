@@ -122,7 +122,7 @@ class ParetoInteractions(SubscriberFeature):
 
         target_qur = f"""
         SELECT b.subscriber, ceil(sum(events*{self.proportion})) as target
-        FROM ({self.contact_balance.get_query()}) b
+        FROM ({self.contact_balance.tokenize()}) b
         GROUP BY b.subscriber
         """
 
@@ -132,7 +132,7 @@ class ParetoInteractions(SubscriberFeature):
          c.subscriber, c.msisdn_counterpart, c.events,
           sum(c.events) OVER (
         PARTITION BY c.subscriber ORDER BY events DESC, c.msisdn_counterpart DESC) AS cum_events
-        FROM ({self.contact_balance.get_query()}) c
+        FROM ({self.contact_balance.tokenize()}) c
         ORDER BY cum_events DESC
         """
 
@@ -150,7 +150,7 @@ class ParetoInteractions(SubscriberFeature):
         SELECT uc.subscriber as subscriber, uc.n_contacts/ud.value::FLOAT as value FROM
         ({subscriber_count}) uc
         LEFT JOIN
-        ({self.subscriber_degree.get_query()}) ud
+        ({self.subscriber_degree.tokenize()}) ud
         ON uc.subscriber = ud.subscriber
         ORDER BY uc.subscriber
         """

@@ -69,9 +69,9 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
     def _make_query(self):
         return f"""
         SELECT jsa.* FROM
-        ({self.joined_spatial_aggregate.get_query()}) as jsa
+        ({self.joined_spatial_aggregate.tokenize()}) as jsa
         INNER JOIN
-        ({self.redacted_spatial_agg.get_query()}) as redact
+        ({self.redacted_spatial_agg.tokenize()}) as redact
         USING ({','.join(self.spatial_unit.location_id_columns)})
         """
 

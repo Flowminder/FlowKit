@@ -22,7 +22,7 @@ class RedactedLocationMetric:
         SELECT
             {self.column_names_as_string_list}
         FROM
-            ({self.redaction_target.get_query()}) AS agged
+            ({self.redaction_target.tokenize()}) AS agged
         WHERE agged.value > 15
         """
 

@@ -83,7 +83,7 @@ class GroupValues(Query):
                  GROUP BY
                     {groups}
               """.format(
-            subset=self.subset.get_query(),
+            subset=self.subset.tokenize(),
             groups=",".join(self.groups),
             agg_values=",".join(agg_values),
         )

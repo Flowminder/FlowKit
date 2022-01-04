@@ -171,7 +171,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
                 ul.subscriber
             ORDER BY value DESC
               """.format(
-            unique_subscribers_table=self.unique_subscribers_table.get_query(),
+            unique_subscribers_table=self.unique_subscribers_table.tokenize(),
             total_periods=self.total_periods,
         )
 

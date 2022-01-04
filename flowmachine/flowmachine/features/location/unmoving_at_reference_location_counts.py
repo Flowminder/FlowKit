@@ -53,9 +53,9 @@ class UnmovingAtReferenceLocationCounts(GeoDataMixin, Query):
         SELECT {location_cols},
         count(*) as value
         FROM
-            ({self.unmoving_subscribers.get_query()}) um
+            ({self.unmoving_subscribers.tokenize()}) um
             INNER JOIN
-            ({self.unmoving_subscribers.reference_locations.get_query()}) locs
+            ({self.unmoving_subscribers.reference_locations.tokenize()}) locs
             USING (subscriber)
         GROUP BY {location_cols}
         """

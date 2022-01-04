@@ -104,8 +104,8 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         loc_list = ", ".join(f"location.{lc}" for lc in location_cols)
         loc_list_no_schema = ", ".join(location_cols)
 
-        metric = self.metric.get_query()
-        location = self.locations.get_query()
+        metric = self.metric.tokenize()
+        location = self.locations.tokenize()
 
         joined = f"""
         SELECT

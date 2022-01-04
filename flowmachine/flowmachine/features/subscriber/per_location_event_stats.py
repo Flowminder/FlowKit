@@ -128,7 +128,7 @@ class PerLocationEventStats(SubscriberFeature):
         SELECT subscriber, {self.statistic}(events) AS value
         FROM (
             SELECT subscriber, {loc_cols}, COUNT(*) AS events
-            FROM ({self.unioned_query.get_query()}) U
+            FROM ({self.unioned_query.tokenize()}) U
             {where_clause}
             GROUP BY subscriber, {loc_cols}
         ) U

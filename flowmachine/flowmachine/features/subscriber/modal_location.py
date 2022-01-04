@@ -46,7 +46,7 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
 
         times_visited = f"""
         SELECT all_locs.subscriber, {location_columns_string}, count(*) AS total, max(all_locs.date) as date
-        FROM ({all_locs.get_query()}) AS all_locs
+        FROM ({all_locs.tokenize()}) AS all_locs
         GROUP BY all_locs.subscriber, {location_columns_string}
         """
 

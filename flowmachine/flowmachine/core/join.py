@@ -160,9 +160,9 @@ class Join(Query):
         SELECT
             {",".join(self._select_targets)}
         FROM
-            ({self.left.get_query()}) AS t1
+            ({self.left.tokenize()}) AS t1
         {self.join_method} JOIN
-            ({self.right.get_query()}) as t2
+            ({self.right.tokenize()}) as t2
         ON
             {join_clause}
         """

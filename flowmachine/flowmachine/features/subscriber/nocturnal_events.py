@@ -114,7 +114,7 @@ class NocturnalEvents(SubscriberFeature):
                     THEN 1
                 ELSE 0
             END AS nocturnal
-            FROM ({self.unioned_query.get_query()}) U
+            FROM ({self.unioned_query.tokenize()}) U
             {where_clause}
         ) U
         GROUP BY subscriber

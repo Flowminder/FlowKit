@@ -111,7 +111,7 @@ class SubscriberCallDurations(SubscriberFeature):
 
         return f"""
         SELECT subscriber, {self.statistic}(duration) as value FROM 
-        ({self.unioned_query.get_query()}) u
+        ({self.unioned_query.tokenize()}) u
         {where_clause}
         GROUP BY subscriber
         """
@@ -220,7 +220,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
 
         return f"""
         SELECT subscriber, {loc_cols}, {self.statistic}(duration) as value 
-        FROM ({self.unioned_query.get_query()}) u
+        FROM ({self.unioned_query.tokenize()}) u
         {where_clause}
         GROUP BY subscriber, {loc_cols}
         """
@@ -310,7 +310,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
     def _make_query(self):
         return f"""
         SELECT subscriber, msisdn_counterpart, {self.statistic}(duration) as value 
-        FROM ({self.unioned_query.get_query()}) u
+        FROM ({self.unioned_query.tokenize()}) u
         WHERE outgoing
         GROUP BY subscriber, msisdn_counterpart
         """
@@ -440,6 +440,6 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
 
         return f"""
         SELECT subscriber, msisdn_counterpart, {loc_cols}, {self.statistic}(duration) as value
-         FROM ({self.joined.get_query()}) u
+         FROM ({self.joined.tokenize()}) u
         GROUP BY subscriber, msisdn_counterpart, {loc_cols}
         """

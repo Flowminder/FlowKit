@@ -63,7 +63,7 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
             all_locs.subscriber, 
             {location_columns_string},
             all_locs.date
-        FROM ({all_locs.get_query()}) AS all_locs
+        FROM ({all_locs.tokenize()}) AS all_locs
         ORDER BY all_locs.subscriber, all_locs.date
         """
 
