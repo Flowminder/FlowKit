@@ -20,14 +20,13 @@ References
 ----------
 [1] Veronique Lefebvre, https://docs.google.com/document/d/1BVOAM8bVacen0U0wXbxRmEhxdRbW8J_lyaOcUtDGhx8/edit
 """
-from typing import List, Tuple, Union, Optional
+from typing import List, Tuple, Union as UnionType, Optional
 
 from flowmachine.core import Query
 from .metaclasses import SubscriberFeature
 from flowmachine.utils import time_period_add, standardise_date
 from ..utilities.sets import UniqueSubscribers
-
-from functools import reduce
+from ...core.union import Union
 
 
 class TotalActivePeriodsSubscriber(SubscriberFeature):
@@ -82,7 +81,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         period_length: int = 1,
         period_unit: str = "days",
         hours: Optional[Tuple[int, int]] = None,
-        table: Union[str, List[str]] = "all",
+        table: UnionType[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
     ):
@@ -129,8 +128,8 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
 
     def _get_unioned_subscribers_list(
         self,
-        hours: Union[str, Tuple[int, int]] = "all",
-        table: Union[str, List[str]] = "all",
+        hours: UnionType[str, Tuple[int, int]] = "all",
+        table: UnionType[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
     ):
@@ -141,18 +140,19 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         (as a query)
         """
 
-        all_subscribers = [
-            UniqueSubscribers(
-                start,
-                stop,
-                hours=hours,
-                table=table,
-                subscriber_identifier=subscriber_identifier,
-                subscriber_subset=subscriber_subset,
-            )
-            for start, stop in zip(self.starts, self.stops)
-        ]
-        return reduce(lambda x, y: x.union(y), all_subscribers)
+        return Union(
+            *[
+                UniqueSubscribers(
+                    start,
+                    stop,
+                    hours=hours,
+                    table=table,
+                    subscriber_identifier=subscriber_identifier,
+                    subscriber_subset=subscriber_subset,
+                )
+                for start, stop in zip(self.starts, self.stops)
+            ]
+        )
 
     @property
     def column_names(self) -> List[str]:
