@@ -445,7 +445,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowmachine-deps-3-{{ checksum "Pipfile.lock" }}
+          key: flowmachine-deps-4-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install graphviz
           command: sudo apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
@@ -650,7 +650,7 @@ jobs:
           path: /home/circleci/project/
       - restore_cache:
           keys:
-            - autoflow-deps-2-{{ checksum "Pipfile.lock" }}
+            - autoflow-deps-4-{{ checksum "Pipfile.lock" }}
       - run: &install_autoflow_deps
           name: Install non-python autoflow dependencies
           command: |
@@ -663,7 +663,7 @@ jobs:
           command: |
             pipenv install --deploy --dev
       - save_cache:
-          key: autoflow-deps-2-{{ checksum "Pipfile.lock" }}
+          key: autoflow-deps-4-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
@@ -726,7 +726,7 @@ jobs:
           command: |
             pipenv install --deploy --dev
       - save_cache:
-          key: flowetl-unit-deps-2-{{ checksum "Pipfile.lock" }}
+          key: flowetl-unit-deps-4-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
@@ -769,7 +769,7 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql
       - save_cache:
-          key: flowetl-deps-1-{{ checksum "Pipfile.lock" }}
+          key: flowetl-deps-4-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
@@ -800,11 +800,11 @@ jobs:
       - attach_workspace:
           at: /home/circleci
       - restore_cache:
-          key: integration-test-deps-2-{{ checksum "Pipfile.lock" }}
+          key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
       - run: *install_autoflow_deps
       - run: pipenv install --deploy --dev
       - save_cache:
-          key: integration-test-deps-2-{{ checksum "Pipfile.lock" }}
+          key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run: *wait_for_flowdb
@@ -875,7 +875,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowkit-docs-deps-2-{{ checksum "Pipfile.lock" }}
+          key: flowkit-docs-deps-4-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install pandoc
           command: |
@@ -959,7 +959,7 @@ jobs:
           path: /home/circleci/project/docs/pg_log.zip
           destination: pg_log
       - save_cache:
-          key: flowkit-docs-deps-2-{{ checksum "Pipfile.lock" }}
+          key: flowkit-docs-deps-4-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
 
