@@ -186,3 +186,26 @@ psql --dbname="$POSTGRES_DB" -c "
                 GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
         GRANT USAGE ON SCHEMA geography TO $FLOWAPI_FLOWDB_USER;
         "
+
+# Create event trigger to change owner of tables under the cache schema
+# Note that we hardcode the schema and username because event trigger functions cannot take params
+
+psql --dbname="$POSTGRES_DB" -c "
+        CREATE OR REPLACE FUNCTION trg_create_in_cache_set_owner_to_flowmachine()
+         RETURNS event_trigger
+         LANGUAGE plpgsql
+        AS \$\$
+        DECLARE
+          obj record;
+        BEGIN
+          FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() WHERE command_tag='CREATE TABLE' AND schema_name='cache'  LOOP
+            EXECUTE format('ALTER TABLE %s OWNER TO flowmachine', obj.object_identity);
+          END LOOP;
+        END;
+        \$\$;
+
+        CREATE EVENT TRIGGER trg_create_in_cache_set_owner_to_flowmachine
+         ON ddl_command_end
+         WHEN tag IN ('CREATE TABLE')
+         EXECUTE PROCEDURE trg_create_in_cache_set_owner_to_flowmachine();
+        "

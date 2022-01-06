@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Tables created under the cache schema in FlowDB will automatically be set to be owned by the `flowmachine` user. [#4714](https://github.com/Flowminder/FlowKit/issues/4714) 
 
 ### Fixed
 
