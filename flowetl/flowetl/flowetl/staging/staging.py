@@ -63,6 +63,21 @@ class ArchiveStep:
         return cursor.execute(self.query)
 
 
+class StagingStep(ArchiveStep):
+    def __init__(self, query_args):
+        super().__init__("../sql/create_and_fill_staging_table.sql", query_args)
+
+
+class OptOutStep(ArchiveStep):
+    def __init__(self, query_args):
+        super().__init__("../sql/opt_out.sql", query_args)
+
+
+class ReduceStep(ArchiveStep):
+    def __init__(self, query_args):
+        super().__init__("../sql/create_and_fill_reduced_table.sql", query_args)
+
+
 class ArchiveManager:
     def __init__(
         self, archive_dir, opt_out_list_path=None, tower_clustering_method=None
@@ -89,19 +104,11 @@ class ArchiveManager:
         date = _parse_date(date)
         self.query_args["date"] = date
 
-        with cd(Path(__file__).parent):
-            staging = ArchiveStep(
-                "sql/create_and_fill_staging_table.sql", self.query_args
-            )
-            opt_out = ArchiveStep("sql/opt_out.sql", self.query_args)
-            reduce = ArchiveStep(
-                "sql/create_and_fill_reduced_table.sql", self.query_args
-            )
         with get_cursor(self.db_con) as cur:
-            staging.execute(cur)
+            StagingStep(self.query_args).execute(cur)
             if self.opt_out_path:
-                opt_out.execute(cur)
+                OptOutStep(self.query_args).execute(cur)
             if self.tower_clustering_method:
                 # This needs to be implemented. Leaving as cellid for now.
                 raise NotImplementedError
-            reduce.execute(cur)
+            ReduceStep(self.query_args).execute(cur)
