@@ -1,1 +1,0 @@
-SELECT max(datetime) FROM {{ final_table }}

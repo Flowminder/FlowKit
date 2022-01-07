@@ -1,1 +1,0 @@
-../calls/count_onnet_msisdns.sql
