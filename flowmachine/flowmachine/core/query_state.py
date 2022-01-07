@@ -356,8 +356,14 @@ class QueryStateMachine:
         (i.e., one of "know", "errored", "completed", "cancelled").
 
         """
-        if self.is_executing or self.is_queued or self.is_resetting:
-            while not (
-                self.is_finished_executing or self.is_cancelled or self.is_known
+        if self.current_query_state in (
+            QueryState.EXECUTING,
+            QueryState.QUEUED,
+            QueryState.RESETTING,
+        ):
+            while self.current_query_state not in (
+                QueryState.COMPLETED,
+                QueryState.CANCELLED,
+                QueryState.KNOWN,
             ):
                 _sleep(sleep_duration)
