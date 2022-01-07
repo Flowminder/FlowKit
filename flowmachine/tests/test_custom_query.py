@@ -16,4 +16,4 @@ def test_custom_query_hash():
 
 def test_custom_query_hash_with_dependents():
     base = CustomQuery("SELECT 1 as col from foo", ["col"])
-    outer = CustomQuery("SELECT col FROM ({base}) as _", ["col"], {"base": base})
+    outer = CustomQuery("SELECT col FROM ({base}) as _", ["col"], base=base)

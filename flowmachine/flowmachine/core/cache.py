@@ -61,7 +61,7 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
     class QStub(Query):
         def __init__(self, deps, qid):
             self.deps = deps
-            self._md5 = qid
+            self._query_id = qid
             super().__init__()
 
         def _make_query(self):

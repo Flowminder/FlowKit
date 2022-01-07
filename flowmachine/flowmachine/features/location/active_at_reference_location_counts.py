@@ -22,6 +22,7 @@ class ActiveAtReferenceLocationCounts(GeoDataMixin, Query):
             Subscriber level active at reference location query
         """
         self.active_at_reference_location = active_at_reference_location
+        self.reference_location = active_at_reference_location.reference_location
         self.spatial_unit = active_at_reference_location.spatial_unit
         super().__init__()
 
@@ -37,7 +38,7 @@ class ActiveAtReferenceLocationCounts(GeoDataMixin, Query):
         sql = f"""
         SELECT {location_columns}, sum(value::int) as value
         FROM
-        ({self.active_at_reference_location.reference_location.tokenize()}) ref
+        ({self.reference_location.tokenize()}) ref
         LEFT JOIN
          ({self.active_at_reference_location.tokenize()}) active
         USING (subscriber)

@@ -18,6 +18,8 @@ from ...core import CustomQuery
 
 import structlog
 
+from ...core.union import Union
+
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
@@ -53,18 +55,21 @@ class MultiLocation:
                 for daily_location in daily_locations
             )
         )
-        self._all_dls = daily_locations
-        logger.info("ModalLocation using {} DailyLocations".format(len(self._all_dls)))
+
+        logger.info(
+            "ModalLocation using {} DailyLocations".format(len(daily_locations))
+        )
         logger.info(
             "{}/{} DailyLocations are pre-calculated.".format(
-                sum(1 for dl in self._all_dls if dl.is_stored), len(self._all_dls)
+                sum(1 for dl in daily_locations if dl.is_stored), len(daily_locations)
             )
         )
 
         # Importing daily_location inputs
         # from first daily_location object.
-        self.spatial_unit = self._all_dls[0].spatial_unit
-        self.subscriber_identifier = self._all_dls[0].subscriber_identifier
+        self.spatial_unit = daily_locations[0].spatial_unit
+        self.subscriber_identifier = daily_locations[0].subscriber_identifier
+        self._all_dls = Union(*[self._append_date(dl) for dl in daily_locations])
         super().__init__()
 
     def _append_date(self, dl):
@@ -79,5 +84,7 @@ class MultiLocation:
         """
 
         date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
-        sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
-        return CustomQuery(sql, self.spatial_unit.location_id_columns + ["date"])
+        sql = f"SELECT *, {date_string} FROM ({{dl}}) AS dl"
+        return CustomQuery(
+            sql, ["subscriber", *self.spatial_unit.location_id_columns, "date"], dl=dl
+        )

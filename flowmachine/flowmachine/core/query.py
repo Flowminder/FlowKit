@@ -283,6 +283,11 @@ class Query(metaclass=ABCMeta):
             qs = {query.query_id: query.get_query() for query in self.dependencies}
             return q_string.format(**qs)
         except Exception as exc:
+            logger.debug(
+                "Failed to get executable sql.",
+                query_id=self.query_id,
+                q_string=q_string,
+            )
             raise exc
 
     def get_dataframe_async(self):
@@ -307,13 +312,13 @@ class Query(metaclass=ABCMeta):
                 try:
                     return self._df.copy()
                 except AttributeError:
-                    qur = f"SELECT {self.column_names_as_string_list} FROM ({self.tokenize()}) _"
+                    qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
                     with get_db().engine.begin():
                         self._df = pd.read_sql_query(qur, con=get_db().engine)
 
                     return self._df.copy()
             else:
-                qur = f"SELECT {self.column_names_as_string_list} FROM ({self.tokenize()}) _"
+                qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
                 with get_db().engine.begin():
                     return pd.read_sql_query(qur, con=get_db().engine)
 
@@ -376,7 +381,7 @@ class Query(metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.tokenize()}) h LIMIT {n};"
+            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
             con = get_db().engine
             with con.begin():
                 df = pd.read_sql_query(Q, con=con)
@@ -752,6 +757,8 @@ class Query(metaclass=ABCMeta):
         for x in self.__dict__.values():
             if isinstance(x, list) or isinstance(x, tuple):
                 lists.append(x)
+            elif isinstance(x, dict):
+                lists.append(x.values())
             else:
                 parent_classes = [cls.__name__ for cls in x.__class__.__mro__]
                 if "SubscriberSubsetterBase" in parent_classes:
@@ -1057,4 +1064,4 @@ class Query(metaclass=ABCMeta):
         return f"{{{self.query_id}}}"
 
     def get_cache_retrieval_query(self):
-        return f"SELECT * FROM cache.{self.table_name}"
+        return f"SELECT {self.column_names_as_string_list} FROM cache.{self.table_name}"

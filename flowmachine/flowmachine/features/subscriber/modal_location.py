@@ -38,15 +38,9 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
         """
         location_columns_string = ", ".join(self.spatial_unit.location_id_columns)
 
-        # This query represents the concatenated locations of the
-        # subscribers
-        all_locs = reduce(
-            lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
-        )
-
         times_visited = f"""
         SELECT all_locs.subscriber, {location_columns_string}, count(*) AS total, max(all_locs.date) as date
-        FROM ({all_locs.tokenize()}) AS all_locs
+        FROM ({self._all_dls.tokenize()}) AS all_locs
         GROUP BY all_locs.subscriber, {location_columns_string}
         """
 

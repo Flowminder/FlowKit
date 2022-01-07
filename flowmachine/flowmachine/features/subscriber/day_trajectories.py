@@ -11,12 +11,11 @@ of events see feature subscriber_locations.
 
 """
 
-from functools import reduce
 from typing import List
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from ..utilities.multilocation import MultiLocation
+from flowmachine.features.utilities.multilocation import MultiLocation
 
 
 class DayTrajectories(MultiLocation, BaseLocation, Query):
@@ -51,19 +50,12 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
         """
         location_columns_string = ", ".join(self.spatial_unit.location_id_columns)
 
-        # This query represents the concatenated locations of the
-        # subscribers. Similar to the first step when calculating
-        # ModalLocations. See modal_locations.py
-        all_locs = reduce(
-            lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
-        )
-
         sql = f"""
         SELECT 
             all_locs.subscriber, 
             {location_columns_string},
             all_locs.date
-        FROM ({all_locs.tokenize()}) AS all_locs
+        FROM ({self._all_dls.tokenize()}) AS all_locs
         ORDER BY all_locs.subscriber, all_locs.date
         """
 
