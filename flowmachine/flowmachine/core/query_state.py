@@ -377,6 +377,10 @@ class QueryStateMachine:
         """
         if self.is_executing or self.is_queued or self.is_resetting:
             while not (
-                self.is_finished_executing or self.is_cancelled or self.is_known
+                self.is_finished_executing
+                or self.is_cancelled
+                or self.is_known
+                or self.is_errored
+                or self.is_errored_in_reset
             ):
                 _sleep(sleep_duration)
