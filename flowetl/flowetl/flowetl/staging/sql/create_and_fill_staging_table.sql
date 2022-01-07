@@ -1,10 +1,12 @@
 BEGIN;
 
+-- From operators/create_foregin_Staging_table_operator.py
+/*
 DROP FOREIGN TABLE IF EXISTS {{{{ staging_table }}}};
 CREATE FOREIGN TABLE {{{{ staging_table }}}} (
 {{{{ params.fields }}}}
 ) SERVER csv_fdw
-OPTIONS ({{% if params.program is defined %}}program {{% else %}}filename {{% endif %}} '{{% if params.program is defined %}}{{{{ params.program }}}} {{% endif %}}{filename}',
+OPTIONS ({{% if params.program is defined %}}program {{% else %}}filename {{% endif %}} '{{% if params.program is defined %}}{{{{ params.program }}}} {{% endif %}}{{filename}}',
        format 'csv',
        delimiter '{{{{ params.delimiter }}}}',
        header '{{{{ params.header }}}}',
@@ -13,12 +15,16 @@ OPTIONS ({{% if params.program is defined %}}program {{% else %}}filename {{% en
        escape '{{{{ params.escape }}}}'
        {{% if params.encoding is defined %}}, {{{{ params.encoding }}}} {{% endif %}}
        );
-
+*/
 
 -- TODO:Replace these with foreign tables
 -- TODO: CSV-ise the event type enum + add loading query
 
-CREATE TEMPORARY TABLE call_table_{date}(
+-- Can probably put this elsewhere, but it can live here while developing
+CREATE SERVER staging_csvs FOREIGN DATA WRAPPER file_fdw;
+
+DROP FOREIGN TABLE IF EXISTS call_table_{date};
+CREATE FOREIGN TABLE call_table_{date}(
 	MSISDN text,
 	IMEI text,
 	IMSI text,
@@ -29,8 +35,11 @@ CREATE TEMPORARY TABLE call_table_{date}(
 	EVENT_TYPE smallint,
 	OTHER_MSISDN text,
 	DURATION real
-);
-CREATE TEMPORARY TABLE sms_table_{date}(
+) SERVER csv_fdw
+OPTIONS (filename '{csv_dir}/{date}_calls.csv', format 'csv' );
+
+DROP FOREIGN TABLE IF EXISTS sms_table_{date};
+CREATE FOREIGN TABLE sms_table_{date}(
 	MSISDN text,
 	IMEI text,
 	IMSI text,
@@ -40,8 +49,11 @@ CREATE TEMPORARY TABLE sms_table_{date}(
 	EVENT_ID int,
 	EVENT_TYPE smallint,
 	OTHER_MSISDN text
-);
-CREATE TEMPORARY TABLE location_table_{date}(
+) SERVER csv_fdw
+OPTIONS (filename '{csv_dir}/{date}_sms.csv', format 'csv' );
+
+DROP FOREIGN TABLE IF EXISTS location_table_{date};
+CREATE FOREIGN TABLE location_table_{date}(
 	MSISDN text,
 	IMEI text,
 	IMSI text,
@@ -49,8 +61,11 @@ CREATE TEMPORARY TABLE location_table_{date}(
 	CELL_ID text,
 	DATE_TIME timestamptz,
 	EVENT_TYPE smallint
-);
-CREATE TEMPORARY TABLE mds_table_{date}(
+) SERVER csv_fdw
+OPTIONS (filename '{csv_dir}/{date}_location.csv', format 'csv' );
+
+DROP FOREIGN TABLE IF EXISTS mds_table_{date};
+CREATE FOREIGN TABLE mds_table_{date}(
 	MSISDN text,
 	IMEI text,
 	IMSI text,
@@ -61,8 +76,11 @@ CREATE TEMPORARY TABLE mds_table_{date}(
 	DATA_VOLUME_UP int,
 	DATA_VOLUME_DOWN int,
 	DURATION real
-);
-CREATE TEMPORARY TABLE topup_table_{date}(
+) SERVER csv_fdw
+OPTIONS (filename '{csv_dir}/{date}_mds.csv', format 'csv' );
+
+DROP FOREIGN TABLE IF EXISTS topup_table_{date};
+CREATE FOREIGN TABLE topup_table_{date}(
 	MSISDN text,
 	IMEI text,
 	IMSI text,
@@ -75,16 +93,10 @@ CREATE TEMPORARY TABLE topup_table_{date}(
 	TAX_AND_FEE real,
 	PRE_EVENT_BALANCE real,
 	POST_EVENT_BALANCE real
-);
+) SERVER csv_fdw
+OPTIONS (filename '{csv_dir}/{date}_topup.csv', format 'csv' );
 
-COPY call_table_{date} FROM '{csv_dir}/{date}_calls.csv' (FORMAT CSV, HEADER TRUE);
-COPY location_table_{date} FROM '{csv_dir}/{date}_locations.csv' (FORMAT CSV, HEADER TRUE);
-COPY sms_table_{date} FROM '{csv_dir}/{date}_sms.csv' (FORMAT CSV, HEADER TRUE);
-COPY mds_table_{date} FROM '{csv_dir}/{date}_mds.csv' (FORMAT CSV, HEADER TRUE);
-COPY topup_table_{date} FROM '{csv_dir}/{date}_topup.csv' (FORMAT CSV, HEADER TRUE);
-
-DROP TABLE staging_table_{date};
-
+DROP TABLE IF EXISTS staging_table_{date};
 CREATE TABLE staging_table_{date} AS(
 	SELECT
 		MSISDN,

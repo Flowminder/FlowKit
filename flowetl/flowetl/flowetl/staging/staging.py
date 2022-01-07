@@ -2,6 +2,8 @@ import datetime as dt
 import re
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Union
+
 import psycopg2
 import os
 
@@ -12,7 +14,7 @@ logger = logging.getLogger("flowdb")
 
 def _parse_date(date):
     if type(date) == dt.date:
-        return dt.date.strftime("%Y_%m_%d")
+        return dt.date.strftime(date, "%Y_%m_%d")
     if type(date) == str:
         try:
             dt.datetime.strptime(date, "%Y_%m_%d")
@@ -44,10 +46,10 @@ def get_cursor(db_con):
 
 
 class ArchiveStep:
-    def __init__(self, query_path, query_args=None):
+    def __init__(self, query_path: Union[os.PathLike, str], query_args=None):
         if query_args is None:
             query_args = {}
-        self.query_path = query_path
+        self.query_path = str(Path(query_path))
         self.query_args = query_args
         self.query_name = Path(query_path).name
         with open(query_path, "r") as query_file:
@@ -65,17 +67,20 @@ class ArchiveStep:
 
 class StagingStep(ArchiveStep):
     def __init__(self, query_args):
-        super().__init__("../sql/create_and_fill_staging_table.sql", query_args)
+        with cd(Path(__file__).parent):
+            super().__init__("sql/create_and_fill_staging_table.sql", query_args)
 
 
 class OptOutStep(ArchiveStep):
     def __init__(self, query_args):
-        super().__init__("../sql/opt_out.sql", query_args)
+        with cd(Path(__file__).parent):
+            super().__init__("sql/opt_out.sql", query_args)
 
 
 class ReduceStep(ArchiveStep):
     def __init__(self, query_args):
-        super().__init__("../sql/create_and_fill_reduced_table.sql", query_args)
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/create_and_fill_reduced_table.sql", query_args)
 
 
 class ArchiveManager:
@@ -100,7 +105,7 @@ class ArchiveManager:
             "opt_out_path": self.opt_out_path,
         }
 
-    def retrieve_csv_on_date(self, date):
+    def load_csv_on_date(self, date):
         date = _parse_date(date)
         self.query_args["date"] = date
 
