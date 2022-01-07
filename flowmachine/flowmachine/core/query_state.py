@@ -365,5 +365,6 @@ class QueryStateMachine:
                 QueryState.COMPLETED,
                 QueryState.CANCELLED,
                 QueryState.KNOWN,
+                QueryState.ERRORED,
             ):
                 _sleep(sleep_duration)
