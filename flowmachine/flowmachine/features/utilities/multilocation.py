@@ -14,11 +14,11 @@ dailylocations objects, although they can be.
 
 from flowmachine.utils import parse_datestring, standardise_date
 
-from ...core import CustomQuery
+from flowmachine.core.custom_query import CustomQuery
 
 import structlog
 
-from ...core.union import Union
+from flowmachine.core.union import Union
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

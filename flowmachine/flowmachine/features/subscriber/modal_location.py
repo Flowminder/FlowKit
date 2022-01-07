@@ -12,7 +12,6 @@ The modal daily location of a subscriber.
 """
 from typing import List
 
-from functools import reduce
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
