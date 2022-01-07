@@ -199,7 +199,7 @@ psql --dbname="$POSTGRES_DB" -c "
           obj record;
         BEGIN
           FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() WHERE command_tag='CREATE TABLE' AND schema_name='cache'  LOOP
-            EXECUTE format('ALTER TABLE %s OWNER TO flowmachine', obj.object_identity);
+            EXECUTE format('ALTER TABLE %s OWNER TO $FLOWMACHINE_FLOWDB_USER', obj.object_identity);
           END LOOP;
         END;
         \$\$;
