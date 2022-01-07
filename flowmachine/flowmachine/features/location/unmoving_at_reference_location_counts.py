@@ -40,6 +40,7 @@ class UnmovingAtReferenceLocationCounts(GeoDataMixin, Query):
 
     def __init__(self, unmoving_at_reference_location: UnmovingAtReferenceLocation):
         self.unmoving_subscribers = unmoving_at_reference_location.subset("value", True)
+        self.reference_locations = self.unmoving_subscribers.reference_locations
         self.spatial_unit = unmoving_at_reference_location.spatial_unit
         super().__init__()
 
@@ -55,7 +56,7 @@ class UnmovingAtReferenceLocationCounts(GeoDataMixin, Query):
         FROM
             ({self.unmoving_subscribers.tokenize()}) um
             INNER JOIN
-            ({self.unmoving_subscribers.reference_locations.tokenize()}) locs
+            ({self.reference_locations.tokenize()}) locs
             USING (subscriber)
         GROUP BY {location_cols}
         """

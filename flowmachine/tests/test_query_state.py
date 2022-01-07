@@ -47,7 +47,11 @@ class DummyQuery(Query):
         return []
 
     def _make_query(self):
+        return ""
+
+    def get_executable_sql(self):
         time.sleep(self.sleep_time)
+        super(DummyQuery, self).get_executable_sql()
 
 
 @pytest.mark.parametrize(

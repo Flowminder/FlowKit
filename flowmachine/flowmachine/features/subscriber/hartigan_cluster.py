@@ -26,7 +26,7 @@ class BaseCluster(GeoDataMixin, Query):
     def _geo_augmented_query(self):
         cols = [c for c in self.column_names if c != "cluster"]
         return (
-            f"SELECT {', '.join(cols)}, cluster as geom, row_number() over() as gid FROM ({self.tokenize()}) q",
+            f"SELECT {', '.join(cols)}, cluster as geom, row_number() over() as gid FROM ({self.get_query()}) q",
             cols + ["geom", "gid"],
         )
 

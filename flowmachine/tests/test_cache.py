@@ -302,7 +302,7 @@ def create_and_store_novel_query_with_dependency():
             return ["value"]
 
         def _make_query(self):
-            return "select 1 as value"
+            return "select 2 as value"
 
     q = NestTestQuery()
     q_id = q.query_id

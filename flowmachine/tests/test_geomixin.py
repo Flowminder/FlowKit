@@ -44,7 +44,7 @@ def test_massive_geojson():
             super().__init__()
 
         def _make_query(self):
-            pass
+            return ""
 
         @property
         def column_names(self) -> List[str]:

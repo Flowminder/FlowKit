@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from flowmachine.features import DayTrajectories, daily_location
+from flowmachine.features import DayTrajectories, daily_location, SubscriberHandsets
 from flowmachine.features.subscriber.majority_location import MajorityLocation
 from flowmachine.features.subscriber.location_visits import LocationVisits
 from flowmachine.features.location.total_events import TotalLocationEvents
@@ -83,7 +83,9 @@ def test_spatial_unit_missing():
     with pytest.raises(ValueError):
         MajorityLocation(
             subscriber_location_weights=HandsetStats(
-                "width", "count", subscriber_handsets=None
+                "width",
+                "count",
+                subscriber_handsets=SubscriberHandsets("2016-01-01", "2016-01-08"),
             ),
             weight_column="value",
         )

@@ -117,10 +117,7 @@ class UniqueSubscribers(Query):
         """
         Returns all unique subscribers as a set.
         """
-        return {u[0] for u in get_db().fetch(self.tokenize())}
-
-
-SubsetDates = EventTableSubset  # Backwards compatibility for unpicking queries from db
+        return {u[0] for u in get_db().fetch(self.get_query())}
 
 
 class SubscriberLocationSubset(Query):

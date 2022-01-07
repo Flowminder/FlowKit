@@ -150,21 +150,15 @@ def subset_numbers_factory(parent_class):
             return self.parent.__getattribute__(name)
 
         def _make_query(self):
-            low = _makesafe(self.low)
-            high = _makesafe(self.high)
-            clause = "parent.{col} BETWEEN {low} AND {high}".format(
-                col=self.col, low=low, high=high
-            )
-            sql = """
+            clause = f"parent.{self.col} BETWEEN {_makesafe(self.low)} AND {_makesafe(self.high)}"
+            sql = f"""
                         SELECT
                             *
                         FROM
-                            ({parent}) AS parent
+                            ({self.parent.tokenize()}) AS parent
                         WHERE
                             {clause}
-                       """.format(
-                parent=self.parent.tokenize(), clause=clause
-            )
+                       """
 
             return sql
 

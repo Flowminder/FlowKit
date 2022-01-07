@@ -112,7 +112,7 @@ class CircleGeometries(GeoDataMixin, Query):
             row_number() over() as gid,
             *
         from
-            ({self.tokenize()}) as t
+            ({self.get_query()}) as t
         """
 
         return sql, ["name", "geom", "gid"]

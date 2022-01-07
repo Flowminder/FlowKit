@@ -116,7 +116,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
         to_clause = self._build_json_agg_clause("out")
 
         agg_qry = f"""
-                WITH flows AS ({self.tokenize()})
+                WITH flows AS ({self.get_query()})
                 SELECT
                     {loc_cols_string},
                     json_strip_nulls(outflows) as outflows,

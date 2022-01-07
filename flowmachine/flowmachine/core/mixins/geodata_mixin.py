@@ -56,7 +56,7 @@ class GeoDataMixin:
         SELECT
             row_number() over() AS gid,
             *
-        FROM ({self.tokenize()}) AS Q
+        FROM ({self.get_query()}) AS Q
         LEFT JOIN ({self.spatial_unit.get_geom_query()}) AS G
         USING ({join_columns_string})
         """

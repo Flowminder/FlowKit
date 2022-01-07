@@ -102,7 +102,7 @@ class Query(metaclass=ABCMeta):
             q_string = self._make_query()
             try:
                 qs = {
-                    query.query_id: query.get_cache_retrieval_query()
+                    query.query_id: query.get_pseudo_sql()
                     for query in self.dependencies
                 }
                 filled = q_string.format(**qs)
@@ -158,7 +158,7 @@ class Query(metaclass=ABCMeta):
 
     def __iter__(self):
         con = get_db().engine
-        qur = self.tokenize()
+        qur = self.get_query()
         with con.begin():
             self._query_object = con.execute(qur)
 
@@ -179,7 +179,7 @@ class Query(metaclass=ABCMeta):
             sql = """
                   SELECT count(*) FROM ({everything}) AS foo
                   """.format(
-                everything=self.tokenize()
+                everything=self.get_query()
             )
             self._len = get_db().fetch(sql)[0][0]
             return self._len
@@ -1063,5 +1063,5 @@ class Query(metaclass=ABCMeta):
     def tokenize(self):
         return f"{{{self.query_id}}}"
 
-    def get_cache_retrieval_query(self):
-        return f"SELECT {self.column_names_as_string_list} FROM cache.{self.table_name}"
+    def get_pseudo_sql(self):
+        return f"SELECT {self.column_names_as_string_list} FROM x{self.query_id}"

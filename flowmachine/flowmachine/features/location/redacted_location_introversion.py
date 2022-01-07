@@ -28,14 +28,14 @@ class RedactedLocationIntroversion(RedactedLocationMetric, GeoDataMixin, Query):
     def __init__(self, *, location_introversion: LocationIntroversion):
         self.redaction_target = location_introversion
         self.spatial_unit = location_introversion.spatial_unit
-
+        self.redaction_target_unioned_query = self.redaction_target.unioned_query
         super().__init__()
 
     def _make_query(self):
         location_columns = self.spatial_unit.location_id_columns
 
         sql = f"""
-        WITH unioned_table AS ({self.redaction_target.unioned_query.tokenize()})
+        WITH unioned_table AS ({self.redaction_target_unioned_query.tokenize()})
         SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as value FROM (
             SELECT
                {', '.join(f'A.{c} as {c}' for c in location_columns)},

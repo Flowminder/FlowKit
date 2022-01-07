@@ -142,7 +142,7 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
             {group_cols},
             count(*) as value
         FROM 
-            ({self.joined.get_query()}) AS joined
+            ({self.joined.tokenize()}) AS joined
         GROUP BY
             {group_cols}
         ORDER BY {group_cols} DESC

@@ -460,7 +460,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if "location_id" in self.location_id_columns:
             columns = [f"{geom_table_alias}.id AS location_id"] + columns
 
-        sql = f"SELECT {','.join(columns)} FROM ({self.geom_table.tokenize()}) AS {geom_table_alias}"
+        sql = f"SELECT {','.join(columns)} FROM ({self.geom_table.get_query()}) AS {geom_table_alias}"
 
         return sql
 
