@@ -1,6 +1,6 @@
 BEGIN;
 
--- From operators/create_foregin_Staging_table_operator.py
+-- From operators/create_foregin_Staging_table_operator.py. 'Filename' fstring param bracketed out.
 /*
 DROP FOREIGN TABLE IF EXISTS {{{{ staging_table }}}};
 CREATE FOREIGN TABLE {{{{ staging_table }}}} (
@@ -21,7 +21,7 @@ OPTIONS ({{% if params.program is defined %}}program {{% else %}}filename {{% en
 -- TODO: CSV-ise the event type enum + add loading query
 
 -- Can probably put this elsewhere, but it can live here while developing
-CREATE SERVER staging_csvs FOREIGN DATA WRAPPER file_fdw;
+CREATE SERVER IF NOT EXISTS staging_csvs FOREIGN DATA WRAPPER file_fdw;
 
 DROP FOREIGN TABLE IF EXISTS call_table_{date};
 CREATE FOREIGN TABLE call_table_{date}(
@@ -36,7 +36,7 @@ CREATE FOREIGN TABLE call_table_{date}(
 	OTHER_MSISDN text,
 	DURATION real
 ) SERVER csv_fdw
-OPTIONS (filename '{csv_dir}/{date}_calls.csv', format 'csv' );
+OPTIONS (filename '{csv_dir}/{date}_call.csv', format 'csv', header 'TRUE');
 
 DROP FOREIGN TABLE IF EXISTS sms_table_{date};
 CREATE FOREIGN TABLE sms_table_{date}(
@@ -50,7 +50,7 @@ CREATE FOREIGN TABLE sms_table_{date}(
 	EVENT_TYPE smallint,
 	OTHER_MSISDN text
 ) SERVER csv_fdw
-OPTIONS (filename '{csv_dir}/{date}_sms.csv', format 'csv' );
+OPTIONS (filename '{csv_dir}/{date}_sms.csv', format 'csv', header 'TRUE');
 
 DROP FOREIGN TABLE IF EXISTS location_table_{date};
 CREATE FOREIGN TABLE location_table_{date}(
@@ -60,9 +60,10 @@ CREATE FOREIGN TABLE location_table_{date}(
 	TAC text,
 	CELL_ID text,
 	DATE_TIME timestamptz,
+	EVENT_ID int,
 	EVENT_TYPE smallint
 ) SERVER csv_fdw
-OPTIONS (filename '{csv_dir}/{date}_location.csv', format 'csv' );
+OPTIONS (filename '{csv_dir}/{date}_location.csv', format 'csv', header 'TRUE');
 
 DROP FOREIGN TABLE IF EXISTS mds_table_{date};
 CREATE FOREIGN TABLE mds_table_{date}(
@@ -72,12 +73,13 @@ CREATE FOREIGN TABLE mds_table_{date}(
 	TAC text,
 	CELL_ID text,
 	DATE_TIME timestamptz,
+	EVENT_ID int,
 	EVENT_TYPE smallint,
 	DATA_VOLUME_UP int,
 	DATA_VOLUME_DOWN int,
 	DURATION real
 ) SERVER csv_fdw
-OPTIONS (filename '{csv_dir}/{date}_mds.csv', format 'csv' );
+OPTIONS (filename '{csv_dir}/{date}_mds.csv', format 'csv', header 'TRUE');
 
 DROP FOREIGN TABLE IF EXISTS topup_table_{date};
 CREATE FOREIGN TABLE topup_table_{date}(
@@ -87,6 +89,7 @@ CREATE FOREIGN TABLE topup_table_{date}(
 	TAC text,
 	CELL_ID text,
 	DATE_TIME timestamptz,
+	EVENT_ID int,
 	EVENT_TYPE smallint,
 	RECHARGE_AMOUNT real,
 	AIRTIME_FEE real,
@@ -94,7 +97,7 @@ CREATE FOREIGN TABLE topup_table_{date}(
 	PRE_EVENT_BALANCE real,
 	POST_EVENT_BALANCE real
 ) SERVER csv_fdw
-OPTIONS (filename '{csv_dir}/{date}_topup.csv', format 'csv' );
+OPTIONS (filename '{csv_dir}/{date}_topup.csv', format 'csv', header 'TRUE');
 
 DROP TABLE IF EXISTS staging_table_{date};
 CREATE TABLE staging_table_{date} AS(

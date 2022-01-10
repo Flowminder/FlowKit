@@ -17,6 +17,7 @@ def flowmachine_env(monkeypatch):
                     monkeypatch.setenv(key, value.strip())
 
 
+# I doubt these fixtures will run happily on the CI, but it's good enough for now
 @pytest.fixture
 def flowdb_container_connection():
     client = docker.from_env()
@@ -42,3 +43,9 @@ def test_csv_ingestion(flowmachine_env, flowdb_with_test_csvs):
 
     archive = ArchiveManager(csv_dir, opt_out_list_path=opt_out_path)
     archive.load_csv_on_date("2021_09_29")
+
+
+def test_staging(flowmachine_env, flowdb_with_test_csvs):
+    query_args = {
+        "date": "2021_09_29",
+    }

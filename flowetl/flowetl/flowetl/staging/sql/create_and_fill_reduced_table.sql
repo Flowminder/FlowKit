@@ -1,14 +1,16 @@
 BEGIN;
 
+CREATE SCHEMA IF NOT EXISTS reduced;
+
 DROP TABLE IF EXISTS reduced.numberedsquashlist_{date};
 
 
 --TODO: msisdn and locationid to bytea from text
 --TODO: Add rowid
 CREATE TABLE reduced.numberedsquashlist_{date}(
-    msisdn bytea NOT NULL,
+    msisdn text NOT NULL, -- change to bytea
     row_id INTEGER NOT NULL,
-    location_id bytea NOT NULL, -- references reduced.cells(cell_id),
+    location_id text NOT NULL, -- references reduced.cells(cell_id),  -- change to bytea
     event_times TIME[],
     event_types smallint[]
 );
