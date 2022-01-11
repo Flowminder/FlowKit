@@ -45,7 +45,7 @@ def get_cursor(db_con):
 # TODO: Full rebuild query (reduced table, cell table, geography table)
 
 
-class ArchiveStep:
+class StagingStep:
     def __init__(self, query_path: Union[os.PathLike, str], query_args=None):
         if query_args is None:
             query_args = {}
@@ -65,27 +65,41 @@ class ArchiveStep:
         return cursor.execute(self.query)
 
 
-class StagingStep(ArchiveStep):
+class FillStagingTableStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
             super().__init__("sql/create_and_fill_staging_table.sql", query_args)
 
 
-class OptOutStep(ArchiveStep):
+class OptOutStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
             super().__init__("sql/opt_out.sql", query_args)
 
 
-class ReduceStep(ArchiveStep):
+class ReduceStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
             super().__init__("./sql/create_and_fill_reduced_table.sql", query_args)
 
 
-class ArchiveManager:
+# Question; where to put the args?
+# My first thought was they get supplied in the construction of these classes.
+# The rationale behind this class design being that we can compose strings of
+# ingestion processes for different scenarios. This also lets us keep a continue
+# point should an ingestion process become interrupted (to be implemented)
+class ExampleClusteringStep(StagingStep):
+    def __init__(self, query_args):
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/example_clustering.sql", query_args)
+
+
+class StagingManager:
     def __init__(
-        self, archive_dir, opt_out_list_path=None, tower_clustering_method=None
+        self,
+        archive_dir,
+        opt_out_list_path: Union[os.PathLike, str] = None,
+        tower_clustering_method: bool = False,
     ):
         # TODO: path validation, input validation
         self.archive_dir = Path(archive_dir).absolute().__str__()
@@ -110,10 +124,9 @@ class ArchiveManager:
         self.query_args["date"] = date
 
         with get_cursor(self.db_con) as cur:
-            StagingStep(self.query_args).execute(cur)
-            if self.opt_out_path:
+            FillStagingTableStep(self.query_args).execute(cur)
+            if self.opt_out_path is not None:
                 OptOutStep(self.query_args).execute(cur)
             if self.tower_clustering_method:
-                # This needs to be implemented. Leaving as cellid for now.
-                raise NotImplementedError
+                ExampleClusteringStep(self.query_args).execute(cur)
             ReduceStep(self.query_args).execute(cur)
