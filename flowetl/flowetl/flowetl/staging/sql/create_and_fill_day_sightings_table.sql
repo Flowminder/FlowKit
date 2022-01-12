@@ -7,11 +7,12 @@ DROP TABLE IF EXISTS reduced.sightings_{date};
 
 --TODO: msisdn and locationid to bytea from text
 CREATE TABLE reduced.sightings_{date}(
+    sighting_date DATE,
     msisdn bytea NOT NULL, -- change to bytea
     sighting_id INTEGER NOT NULL,
     location_id text, --NOT NULL REFERENCES reduced.cell_location_mapping(location_id),  -- change to bytea
     event_times TIME[],
-    event_types smallint[]
+    event_types smallint[] -- change to enum (same amount of space, but probably better)
 );
 
 WITH ranked AS (
@@ -42,7 +43,7 @@ WITH ranked AS (
     ORDER BY msisdn, row_id
 )
 INSERT INTO reduced.sightings_{date}
-    SELECT convert_to(msisdn, 'LATIN1'), row_id, convert_to(cell_id, 'LATIN1'), cons_dates, cons_events
+    SELECT '{date}', convert_to(msisdn, 'LATIN1'), row_id, cell_id, cons_dates, cons_events
     FROM aggregated;
 
 

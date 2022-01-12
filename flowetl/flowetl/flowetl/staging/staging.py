@@ -80,7 +80,9 @@ class OptOutStep(StagingStep):
 class ReduceStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("./sql/create_and_fill_reduced_table.sql", query_args)
+            super().__init__(
+                "./sql/create_and_fill_day_sightings_table.sql", query_args
+            )
 
 
 class ExampleMappingStep(StagingStep):
