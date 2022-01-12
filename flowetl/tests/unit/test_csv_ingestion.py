@@ -52,7 +52,7 @@ def test_csv_with_clustering(flowmachine_env, flowdb_with_test_csvs):
     sm = StagingManager(
         csv_dir, opt_out_list_path=opt_out_path, tower_clustering_method=True
     )
-    sm.load_csv_on_date("2020_09_29")
+    sm.load_csv_on_date("2021_09_29")
 
 
 def test_staging(flowmachine_env, flowdb_with_test_csvs):
