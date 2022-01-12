@@ -44,7 +44,7 @@ def get_cursor(db_con):
 
 # TODO: Full rebuild query (reduced table, cell table, geography table)
 
-
+# Make this an ABC?
 class StagingStep:
     def __init__(self, query_path: Union[os.PathLike, str], query_args=None):
         if query_args is None:
@@ -83,15 +83,29 @@ class ReduceStep(StagingStep):
             super().__init__("./sql/create_and_fill_reduced_table.sql", query_args)
 
 
-# Question; where to put the args?
+class ExampleMappingStep(StagingStep):
+    def __init__(self, query_args):
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/example_location_mapping.sql", query_args)
+
+
+class DefaultMappingStep(StagingStep):
+    def __init__(self, query_args):
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/default_location_mapping.sql", query_args)
+
+
+class ApplyMappingToEvents(StagingStep):
+    def __init__(self, query_args):
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/apply_mapping_to_staged_events.sql", query_args)
+
+
+# Question; where to put query_args?
 # My first thought was they get supplied in the construction of these classes.
 # The rationale behind this class design being that we can compose strings of
 # ingestion processes for different scenarios. This also lets us keep a continue
 # point should an ingestion process become interrupted (to be implemented)
-class ExampleClusteringStep(StagingStep):
-    def __init__(self, query_args):
-        with cd(Path(__file__).parent):
-            super().__init__("./sql/example_clustering.sql", query_args)
 
 
 class StagingManager:
@@ -99,12 +113,12 @@ class StagingManager:
         self,
         archive_dir,
         opt_out_list_path: Union[os.PathLike, str] = None,
-        tower_clustering_method: bool = False,
+        tower_clustering_class=DefaultMappingStep,
     ):
         # TODO: path validation, input validation
         self.archive_dir = Path(archive_dir).absolute().__str__()
         self.opt_out_path = Path(opt_out_list_path).absolute().__str__()
-        self.tower_clustering_method = tower_clustering_method
+        self.tower_clustering_class = tower_clustering_class
         self.db_con = psycopg2.connect(
             host=os.getenv("FLOWDB_HOST"),
             port=os.getenv("FLOWDB_PORT"),
@@ -127,6 +141,8 @@ class StagingManager:
             FillStagingTableStep(self.query_args).execute(cur)
             if self.opt_out_path is not None:
                 OptOutStep(self.query_args).execute(cur)
-            if self.tower_clustering_method:
-                ExampleClusteringStep(self.query_args).execute(cur)
+
+            self.tower_clustering_class(self.query_args).execute(cur)
+            ApplyMappingToEvents(self.query_args).execute(cur)
+
             ReduceStep(self.query_args).execute(cur)

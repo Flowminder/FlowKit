@@ -1,15 +1,15 @@
 BEGIN;
 
+-- TODO: Move to flowdb
 CREATE SCHEMA IF NOT EXISTS reduced;
 
-DROP TABLE IF EXISTS reduced.numberedsquashlist_{date};
+DROP TABLE IF EXISTS reduced.sightings_{date};
 
 --TODO: msisdn and locationid to bytea from text
---TODO: Add rowid
-CREATE TABLE reduced.numberedsquashlist_{date}(
-    msisdn text NOT NULL, -- change to bytea
-    row_id INTEGER NOT NULL,
-    location_id text NOT NULL, -- references reduced.cells(cell_id),  -- change to bytea
+CREATE TABLE reduced.sightings_{date}(
+    msisdn bytea NOT NULL, -- change to bytea
+    sighting_id INTEGER NOT NULL,
+    location_id text, --NOT NULL REFERENCES reduced.cell_location_mapping(location_id),  -- change to bytea
     event_times TIME[],
     event_types smallint[]
 );
@@ -33,7 +33,7 @@ WITH ranked AS (
     SELECT msisdn,
            row_number() OVER ( PARTITION BY msisdn
                                ORDER BY min(date_time), max(date_time)
-                             ) AS row_id,   -- Do we want to keep this in?
+                             ) AS row_id,
            cell_id,
            array_agg(date_time ORDER BY date_time) AS cons_dates,
            array_agg(event_type ORDER BY date_time) AS cons_events
@@ -41,12 +41,11 @@ WITH ranked AS (
     GROUP BY msisdn, cell_id, group_rank
     ORDER BY msisdn, row_id
 )
-INSERT INTO reduced.numberedsquashlist_{date}
-    SELECT msisdn, row_id, cell_id, cons_dates, cons_events
+INSERT INTO reduced.sightings_{date}
+    SELECT convert_to(msisdn, 'LATIN1'), row_id, convert_to(cell_id, 'LATIN1'), cons_dates, cons_events
     FROM aggregated;
 
 
 --TODO: Attach to main numberedsquashlist (or w/e we call it) as partition. Use CHECK clause for perf (see notebook)
-
 
 COMMIT;
