@@ -44,7 +44,7 @@ from flowmachine.core.errors import (
 )
 
 import flowmachine
-from flowmachine.utils import _sleep
+from flowmachine.utils import _sleep, pretty_sql
 from flowmachine.core.dependency_graph import (
     store_all_unstored_dependencies,
     store_queries_in_order,
@@ -287,7 +287,7 @@ class Query(metaclass=ABCMeta):
                 return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
-        return self._make_query()
+        return pretty_sql(self._make_query())
 
     def get_dataframe_async(self):
         """
@@ -659,7 +659,7 @@ class Query(metaclass=ABCMeta):
         opts = ["FORMAT {}".format(format)]
         if analyse:
             opts.append("ANALYZE")
-        Q = "EXPLAIN ({})".format(", ".join(opts)) + self.get_query()
+        Q = "EXPLAIN ({})".format(", ".join(opts)) + self._make_query()
 
         exp = get_db().fetch(Q)
 
