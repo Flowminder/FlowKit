@@ -77,7 +77,13 @@ class OptOutStep(StagingStep):
             super().__init__("sql/opt_out.sql", query_args)
 
 
-class ReduceStep(StagingStep):
+class CreateSightingsTableStep(StagingStep):
+    def __init__(self, query_args):
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/create_sightings_table.sql", query_args)
+
+
+class CreateDaySightingsStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
             super().__init__(
@@ -101,6 +107,12 @@ class ApplyMappingToEvents(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
             super().__init__("./sql/apply_mapping_to_staged_events.sql", query_args)
+
+
+class AddToSightingsPartition(StagingStep):
+    def __init__(self, query_args):
+        with cd(Path(__file__).parent):
+            super().__init__("./sql/append_sightings_to_main_table.sql", query_args)
 
 
 # Question; where to put query_args?
@@ -147,4 +159,5 @@ class StagingManager:
             self.tower_clustering_class(self.query_args).execute(cur)
             ApplyMappingToEvents(self.query_args).execute(cur)
 
-            ReduceStep(self.query_args).execute(cur)
+            CreateSightingsTableStep(self.query_args).execute(cur)
+            CreateDaySightingsStep(self.query_args).execute(cur)

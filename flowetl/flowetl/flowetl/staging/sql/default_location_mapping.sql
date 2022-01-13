@@ -1,6 +1,8 @@
 BEGIN;
 
-DROP TABLE reduced.cell_location_mapping;
+-- TODO: Need some state holding
+
+DROP TABLE IF EXISTS reduced.cell_location_mapping;
 CREATE TABLE reduced.cell_location_mapping(
     cell_id text,
     location_id text

@@ -47,7 +47,7 @@ def test_csv_ingestion(flowmachine_env, flowdb_with_test_csvs):
     with get_cursor(archive.db_con) as cur:
         cur.execute(
             """
-            SELECT * FROM reduced.sightings_2021_09_29
+            SELECT * FROM reduced.sightings
         """
         )
         reduced_records = cur.fetchall()

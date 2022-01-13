@@ -7,13 +7,8 @@ DROP TABLE IF EXISTS reduced.sightings_{date};
 
 --TODO: msisdn and locationid to bytea from text
 CREATE TABLE reduced.sightings_{date}(
-    sighting_date DATE,
-    msisdn bytea NOT NULL, -- change to bytea
-    sighting_id INTEGER NOT NULL,
-    location_id text, --NOT NULL REFERENCES reduced.cell_location_mapping(location_id),  -- change to bytea
-    event_times TIME[],
-    event_types smallint[] -- change to enum (same amount of space, but probably better)
-);
+    CHECK (sighting_date = DATE '{date}')
+) INHERITS (reduced.sightings);
 
 WITH ranked AS (
     SELECT date_time, cell_id, msisdn, event_type,
@@ -47,6 +42,6 @@ INSERT INTO reduced.sightings_{date}
     FROM aggregated;
 
 
---TODO: Attach to main numberedsquashlist (or w/e we call it) as partition. Use CHECK clause for perf (see notebook)
+--TODO: Use CHECK clause for perf (see notebook)
 
 COMMIT;

@@ -1,7 +1,7 @@
 BEGIN;
 
 -- Table is a many-to-one mapping between cell IDs and location IDs
-DROP TABLE reduced.cell_location_mapping;
+DROP TABLE IF EXISTS reduced.cell_location_mapping;
 CREATE TABLE reduced.cell_location_mapping(
     cell_id text,
     location_id text
