@@ -1,0 +1,4 @@
+include versioneer.py
+include flowetl/_version.py
+include flowetl/qa_checks/*/*
+include flowetl/qa_checks/*/*/*

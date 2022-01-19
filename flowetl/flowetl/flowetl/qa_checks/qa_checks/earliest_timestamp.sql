@@ -1,0 +1,1 @@
+SELECT min(datetime) FROM {{ final_table }}
