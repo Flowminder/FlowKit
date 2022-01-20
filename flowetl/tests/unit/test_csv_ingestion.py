@@ -22,7 +22,9 @@ def flowmachine_env(monkeypatch):
 @pytest.fixture
 def flowdb_container_connection():
     client = docker.from_env()
-    flowdb_container = client.containers.list(filters={"name": "flowdb"})[0]
+    flowdb_container = client.containers.list(filters={"name": "flowdb"})[
+        0
+    ]  # Need to find flowdb bind mount
     yield flowdb_container
 
 

@@ -17,7 +17,6 @@ OPTIONS ({{% if params.program is defined %}}program {{% else %}}filename {{% en
        );
 */
 
--- TODO:Replace these with foreign tables
 -- TODO: CSV-ise the event type enum + add loading query
 
 -- Can probably put this elsewhere, but it can live here while developing
@@ -151,5 +150,4 @@ CREATE TABLE staging_table_{date} AS(
 		EVENT_TYPE
 	FROM topup_table_{date}
 	ORDER BY date_time);
-
 COMMIT;

@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import datetime as dt
 import re
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Union
+from typing import Union, Type
 
 import psycopg2
 import os
@@ -122,12 +124,17 @@ class AddToSightingsPartition(StagingStep):
 # point should an ingestion process become interrupted (to be implemented)
 
 
+# TODO: Add subscriberID choice
+
+
 class StagingManager:
     def __init__(
         self,
         archive_dir,
         opt_out_list_path: Union[os.PathLike, str] = None,
-        tower_clustering_class=DefaultMappingStep,
+        tower_clustering_class: Type[
+            DefaultMappingStep | ExampleMappingStep
+        ] = DefaultMappingStep,
     ):
         # TODO: path validation, input validation
         self.archive_dir = Path(archive_dir).absolute().__str__()
@@ -138,7 +145,7 @@ class StagingManager:
             port=os.getenv("FLOWDB_PORT"),
             user=os.getenv(
                 "POSTGRES_USER"
-            ),  # Replace with lesss expansive permissions later
+            ),  # Replace with less expansive permissions later
             password=os.getenv("POSTGRES_PASSWORD"),
             dbname="flowdb",
         )

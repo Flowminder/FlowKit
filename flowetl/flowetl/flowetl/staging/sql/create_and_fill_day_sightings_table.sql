@@ -6,9 +6,12 @@ CREATE SCHEMA IF NOT EXISTS reduced;
 DROP TABLE IF EXISTS reduced.sightings_{date};
 
 --TODO: msisdn and locationid to bytea from text
+-- TODO: Add explicit partition step at end after clustering
 CREATE TABLE reduced.sightings_{date}(
-    CHECK (sighting_date = DATE '{date}')
-) INHERITS (reduced.sightings);
+ LIKE reduced.sightings,
+ CONSTRAINT sightings_{date}_check
+    CHECK (sighting_date >= DATE '{date}' AND sighting_date < DATE '{date}' + 1) -- Switch to range
+);
 
 WITH ranked AS (
     SELECT date_time, cell_id, msisdn, event_type,
@@ -41,6 +44,19 @@ INSERT INTO reduced.sightings_{date}
     SELECT '{date}', convert_to(msisdn, 'LATIN1'), row_id, cell_id, cons_dates, cons_events
     FROM aggregated;
 
+-- Clustering needs indexing; I think we leave it out for the time being
+--CLUSTER reduced.sightings_{date}
+--USING subscriber_id, row_id;
+
+ANALYZE reduced.sightings_{date};
+
+ALTER TABLE reduced.sightings
+ATTACH PARTITION reduced.sightings_{date} FOR VALUES FROM (date('{date}')) TO (date('{date}')+ 1) ;
+
+ALTER TABLE reduced.sightings_{date}
+DROP CONSTRAINT sightings_{date}_check;
+
+ANALYZE reduced.sightings;
 
 --TODO: Use CHECK clause for perf (see notebook)
 
