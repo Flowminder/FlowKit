@@ -6,7 +6,6 @@ CREATE SCHEMA IF NOT EXISTS reduced;
 DROP TABLE IF EXISTS reduced.sightings_{date};
 
 --TODO: msisdn and locationid to bytea from text
--- TODO: Add explicit partition step at end after clustering
 CREATE TABLE reduced.sightings_{date}(
  LIKE reduced.sightings,
  CONSTRAINT sightings_{date}_check

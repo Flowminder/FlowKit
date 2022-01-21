@@ -6,6 +6,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Union, Type
 
+from airflow import DAG
+from airflow.operators.postgres_operator import PostgresOperator
+
 import psycopg2
 import os
 
@@ -127,6 +130,7 @@ class AddToSightingsPartition(StagingStep):
 # TODO: Add subscriberID choice
 
 
+# This will be invalidated by the DAG, but keeping for now for note-taking
 class StagingManager:
     def __init__(
         self,
