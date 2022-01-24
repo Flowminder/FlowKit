@@ -9,6 +9,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
+import jinja2
 from pendulum import Interval
 
 
@@ -290,6 +291,7 @@ def create_dag(
         default_args=args,
         user_defined_macros=macros,
         params=dict(cdr_type=cdr_type),
+        template_undefined=jinja2.Undefined,
     ) as dag:
         if staging_view_sql is not None and source_table is not None:
             create_staging_view = CreateStagingViewOperator(
