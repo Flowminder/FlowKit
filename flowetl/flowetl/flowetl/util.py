@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
 import jinja2
-from pendulum import Interval
+from pendulum import Duration
 
 
 class FluxSensorType(Enum):
@@ -136,7 +136,7 @@ def create_dag(
     end_date: Optional[datetime] = None,
     retries: int = 10,
     retry_delay: timedelta = timedelta(days=1),
-    schedule_interval: Union[str, Interval] = "@daily",
+    schedule_interval: Union[str, Duration] = "@daily",
     indexes: Iterable[str] = ("msisdn_counterpart", "location_id", "datetime", "tac"),
     data_present_poke_interval: int = 60,
     data_present_timeout: int = 60 * 60 * 24 * 7,
@@ -182,7 +182,7 @@ def create_dag(
         Number of times to retry the dag if it fails
     retry_delay : timedelta, default timedelta(days=1)
         Delay between retries
-    schedule_interval : str or Interval, default "@daily"
+    schedule_interval : str or Duration, default "@daily"
         Time interval between execution dates.
     indexes : iterable of str, default ("msisdn_counterpart", "location_id", "datetime", "tac")
         Fields to create indexes on.
