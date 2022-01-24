@@ -4,7 +4,7 @@
 
 
 def test_wrapped_sql():
-    from airflow.operators.postgres_operator import PostgresOperator
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
     from flowetl.mixins.wrapping_sql_mixin import wrapped_sql_operator
 

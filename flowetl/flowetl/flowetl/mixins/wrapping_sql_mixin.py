@@ -28,7 +28,7 @@ def wrapped_sql_operator(*, class_name: str, sql: str) -> Type:
 
     """
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
-    from airflow.operators.postgres_operator import PostgresOperator
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
 
     return type(
         class_name,

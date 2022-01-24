@@ -4,7 +4,7 @@
 
 
 def test_fixed_sql_with_params():
-    from airflow.operators.postgres_operator import PostgresOperator
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
     from airflow.sensors.sql_sensor import SqlSensor
 
     from flowetl.mixins.fixed_sql_with_params_mixin import (

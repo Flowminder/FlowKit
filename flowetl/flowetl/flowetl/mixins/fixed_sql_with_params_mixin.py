@@ -46,7 +46,9 @@ def fixed_sql_operator_with_params(
     if is_sensor:
         from airflow.sensors.sql_sensor import SqlSensor as op_base
     else:
-        from airflow.operators.postgres_operator import PostgresOperator as op_base
+        from airflow.providers.postgres.operators.postgres import (
+            PostgresOperator as op_base,
+        )
 
     return type(
         class_name,
