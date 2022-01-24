@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-apache-airflow = {extras = ['crypto'],version = "==1.10.15"}
-apache-airflow-backport-providers-postgres = "*"
+apache-airflow = {extras = ['crypto'],version = "*"}
+apache-airflow-providers-postgres = "*"
 sqlalchemy = "*"
 click = "*"
 apache-airflow-upgrade-check = "*"
