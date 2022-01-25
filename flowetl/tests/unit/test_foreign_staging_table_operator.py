@@ -26,7 +26,11 @@ def test_foreign_staging_table_program_param(program, expected):
     op = CreateForeignStagingTableOperator(
         task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), program=program
     )
-    assert op.params.get("program", False) == expected
+    out = op.params.get("program", False)
+    if out:
+        assert out.resolve() == expected
+    else:
+        assert out == expected
 
 
 @pytest.mark.parametrize("encoding, expected", [(None, False), ("foo", "foo")])
@@ -38,4 +42,8 @@ def test_foreign_staging_table_encoding_param(encoding, expected):
     op = CreateForeignStagingTableOperator(
         task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), encoding=encoding
     )
-    assert op.params.get("encoding", False) == expected
+    out = op.params.get("encoding", False)
+    if out:
+        assert out.resolve() == expected
+    else:
+        assert out == expected

@@ -76,9 +76,6 @@ def get_qa_checks(
         *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
     )
     template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
-    from pprint import pprint
-
-    pprint(template_paths)
     return [
         QACheckOperator(
             task_id=tmpl.stem
