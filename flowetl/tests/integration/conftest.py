@@ -504,7 +504,7 @@ def jinja_env():
     import flowetl.qa_checks
 
     loader = jinja2.FileSystemLoader(
-        searchpath=str(Path(list(flowetl.qa_checks.__path__)[0]) / "qa_checks")
+        searchpath=str(Path(list(flowetl.qa_checks.__path__)[0]))
     )
     yield jinja2.Environment(loader=loader)
 
