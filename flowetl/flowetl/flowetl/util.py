@@ -57,7 +57,7 @@ def get_qa_checks(
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
     # Add the default QA checks to the template path
-    default_checks = Path(__file__).parent / "qa_checks" / "qa_checks"
+    default_checks = Path(__file__).parent / "qa_checks"
     dag.template_searchpath = [
         *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
@@ -65,12 +65,12 @@ def get_qa_checks(
         str(default_checks),
     ]
     jinja_env = dag.get_template_env()
-    templates = [
+    templates = set(
         Path(tmpl)
         for tmpl in jinja_env.list_templates(
             filter_func=lambda tmpl: "qa_checks" in tmpl and tmpl.endswith(".sql")
         )
-    ]
+    )
     valid_stems = (
         "qa_checks",
         *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
