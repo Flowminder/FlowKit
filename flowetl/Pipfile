@@ -8,15 +8,15 @@ apache-airflow = {extras = ['crypto'],version = "*"}
 apache-airflow-providers-postgres = "*"
 sqlalchemy = "*"
 click = "*"
-apache-airflow-upgrade-check = "*"
 wtforms = "<3.0.0"
+pandas = "==1.1"
 
 [dev-packages]
 structlog = "*"
 flowetl = {editable = true,path = "./flowetl"}
 pytest = "*"
 "psycopg2-binary" = "*"
-pandas = "*"
+pandas = "==1.1"
 docker = "*"
 versioneer = "*"
 pytest-cov = "*"
