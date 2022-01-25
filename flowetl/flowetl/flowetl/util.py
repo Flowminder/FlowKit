@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import pdb
 import warnings
 
 from datetime import datetime, timedelta
@@ -50,9 +50,10 @@ def get_qa_checks(
     """
     from flowetl.operators.qa_check_operator import QACheckOperator
     from airflow import settings
+    from airflow.models.dag import DagContext
 
     if dag is None:
-        dag = settings.CONTEXT_MANAGER_DAG
+        dag = DagContext.get_current_dag()
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
     # Add the default QA checks to the template path
@@ -242,7 +243,7 @@ def create_dag(
     """
 
     from airflow import DAG
-    from airflow.operators.latest_only_operator import LatestOnlyOperator
+    from airflow.operators.latest_only import LatestOnlyOperator
     from flowetl.operators.add_constraints_operator import AddConstraintsOperator
     from flowetl.operators.analyze_operator import AnalyzeOperator
     from flowetl.operators.attach_operator import AttachOperator
