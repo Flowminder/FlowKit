@@ -8,7 +8,6 @@ from airflow.utils.decorators import apply_defaults
 
 
 class FixedSQLMixin:
-    @apply_defaults
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(sql=self.fixed_sql, *args, **kwargs)
 
