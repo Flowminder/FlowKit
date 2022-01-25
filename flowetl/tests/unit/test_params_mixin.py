@@ -21,7 +21,7 @@ def test_fixed_sql_with_params():
     assert isinstance(new_instance, PostgresOperator)
     assert isinstance(new_instance, TableNameMacrosMixin)
     assert type(new_instance).__name__ == "DUMMY_TYPE"
-    assert new_instance.params == dict(DUMMY_PARAM="DUMMY_PARAM_VALUE")
+    assert new_instance.params.dump() == dict(DUMMY_PARAM="DUMMY_PARAM_VALUE")
 
     new_type = fixed_sql_operator_with_params(
         class_name="DUMMY_TYPE", sql="FIXED_SQL", params=["DUMMY_PARAM"], is_sensor=True
@@ -34,4 +34,4 @@ def test_fixed_sql_with_params():
     assert isinstance(new_instance, SqlSensor)
     assert isinstance(new_instance, TableNameMacrosMixin)
     assert type(new_instance).__name__ == "DUMMY_TYPE"
-    assert new_instance.params == dict(DUMMY_PARAM="DUMMY_PARAM_VALUE")
+    assert new_instance.params.dump() == dict(DUMMY_PARAM="DUMMY_PARAM_VALUE")
