@@ -585,7 +585,7 @@ def dag_status(flowetl_container):
     """
 
     def dag_status(*, dag_id, exec_date):
-        status_cmd = ["airflow", "dag_state", dag_id, exec_date]
+        status_cmd = ["airflow", "dags", "state", dag_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield dag_status
@@ -602,7 +602,7 @@ def task_status(flowetl_container):
     """
 
     def task_status(*, dag_id, task_id, exec_date):
-        status_cmd = ["airflow", "task_state", dag_id, task_id, exec_date]
+        status_cmd = ["airflow", "tasks", "state", dag_id, task_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield task_status
