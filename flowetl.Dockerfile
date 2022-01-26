@@ -22,7 +22,10 @@ ENV HOME ${AIRFLOW_HOME}
 # running under a different user for development purposes. Related uses:
 # https://github.com/docker-library/postgres/issues/359
 # https://cwrap.org/nss_wrapper.html
+
+# Keyserver is for missing mysql key - suspect this is transient.
 RUN set -eux; \
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29; \
         apt-get update; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
