@@ -564,7 +564,7 @@ def run_dag(flowetl_container):
     """
 
     def trigger_dag(*, dag_id, exec_date, run_id=None):
-        trigger_cmd = ["airflow", "trigger_dag", "-e", exec_date]
+        trigger_cmd = ["airflow", "dags", "trigger", "-e", exec_date]
         if run_id is not None:
             trigger_cmd += ["-r", run_id]
 
