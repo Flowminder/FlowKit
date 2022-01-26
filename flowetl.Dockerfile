@@ -23,9 +23,7 @@ ENV HOME ${AIRFLOW_HOME}
 # https://github.com/docker-library/postgres/issues/359
 # https://cwrap.org/nss_wrapper.html
 
-# Keyserver is for missing mysql key - suspect this is transient.
 RUN set -eux; \
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29; \
         apt-get update; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
@@ -37,7 +35,7 @@ RUN set -eux; \
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-ENV PATH=${PATH};/opt/airflow/local/bin
+ENV PATH="${PATH}:/opt/airflow/.local/bin:"
 WORKDIR /${SOURCE_TREE}/flowetl
 
 COPY . /${SOURCE_TREE}/
