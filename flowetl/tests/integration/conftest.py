@@ -549,7 +549,7 @@ def run_task(flowetl_container):
     """
 
     yield lambda dag_id, task_id, exec_date: flowetl_container.exec_run(
-        f"airflow test {dag_id} {task_id} {exec_date}", user="airflow"
+        f"airflow tasks test {dag_id} {task_id} {exec_date}", user="airflow"
     )
 
 
