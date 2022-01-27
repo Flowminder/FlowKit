@@ -35,7 +35,7 @@ RUN set -eux; \
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-ENV PATH="${PATH}:/opt/airflow/.local/bin:"
+ENV PATH=${PATH}:/opt/airflow/.local/bin
 WORKDIR /${SOURCE_TREE}/flowetl
 
 COPY . /${SOURCE_TREE}/
