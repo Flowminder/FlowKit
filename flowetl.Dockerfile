@@ -83,7 +83,7 @@ EXPOSE 8080
 ENV FLOWETL_PORT=8080
 
 # Putting this here till I figure out how to not need to.
-RUN pushd flowetl && pipenv run airflow db upgrade
+RUN pushd /${SOURCE_TREE}/flowetl && pipenv run airflow db upgrade && popd
 
 CMD ["webserver"]
 
