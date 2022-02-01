@@ -746,6 +746,7 @@ jobs:
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
+      FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS: "TRUE"
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
