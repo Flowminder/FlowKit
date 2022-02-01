@@ -35,7 +35,7 @@ RUN set -eux; \
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-ENV PATH=${PATH}:/opt/airflow/.local/bin
+ENV PATH=/opt/airflow/.local/bin:${PATH}
 WORKDIR /${SOURCE_TREE}/flowetl
 
 COPY . /${SOURCE_TREE}/
@@ -57,7 +57,7 @@ RUN apt-get update && \
 
 # Deal with old bind mounts to /usr/local/airflow
 
-RUN ln -s /opt/airflow /usr/local/airflow
+# RUN ln -s /opt/airflow /usr/local/airflow
 
 # Needed on $AIRFLOW_HOME so that different users passed through --user
 # have the permission to create and use their files for Airflow
