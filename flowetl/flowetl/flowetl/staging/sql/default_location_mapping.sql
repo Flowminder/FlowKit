@@ -10,7 +10,7 @@ CREATE TABLE reduced.cell_location_mapping(
 
 -- A one-to-one mapping
 WITH cells AS (
-    SELECT DISTINCT cell_id FROM staging_table_{date}
+    SELECT DISTINCT cell_id FROM staging_table_{{date}}
 )
 INSERT INTO reduced.cell_location_mapping(
     SELECT
