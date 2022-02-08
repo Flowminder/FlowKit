@@ -1,11 +1,6 @@
 from airflow import DAG
 
 # TODO Tomorrow: Design the ingestion DAG
-from ..operators.create_and_fill_day_sightings_table import (
-    CreateAndFillDaySightingsTable,
-)
-from ..operators.create_sightings_table import CreateSightingsTable
-from ..operators.default_location_mapping import DefaultLocationMapping
 
 
 def csv_ingestion_dag(csvs, date):
@@ -13,6 +8,11 @@ def csv_ingestion_dag(csvs, date):
         "append_sightings_to_main_table",
         params={"csv_dir": csvs, "date": date},
     ) as dag:
+        from ..operators.create_and_fill_day_sightings_table import (
+            CreateAndFillDaySightingsTable,
+        )
+        from ..operators.create_sightings_table import CreateSightingsTable
+        from ..operators.default_location_mapping import DefaultLocationMapping
         from ..operators.append_sightings_to_main_table import (
             AppendSightingsToMainTable,
         )

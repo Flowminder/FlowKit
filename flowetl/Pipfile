@@ -9,13 +9,13 @@ sqlalchemy = "<=1.3.23"
 click = "*"
 apache-airflow-upgrade-check = "*"
 wtforms = "<3.0.0"
+pytest-pgsql = "*"
 
 [dev-packages]
 structlog = "*"
 flowetl = {editable = true,path = "./flowetl"}
 pytest = "*"
 sqlalchemy = "<=1.3.23"
-"psycopg2-binary" = "*"
 pandas = "*"
 docker = "*"
 versioneer = "*"

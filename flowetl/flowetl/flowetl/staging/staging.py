@@ -73,51 +73,57 @@ class StagingStep:
 class FillStagingTableStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("sql/create_and_fill_staging_table.sql", query_args)
+            super().__init__(
+                "operators/sql/create_and_fill_staging_table.sql", query_args
+            )
 
 
 class OptOutStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("sql/opt_out.sql", query_args)
+            super().__init__("operators/sql/opt_out.sql", query_args)
 
 
 class CreateSightingsTableStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("./sql/create_sightings_table.sql", query_args)
+            super().__init__("operators/sql/create_sightings_table.sql", query_args)
 
 
 class CreateDaySightingsStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
             super().__init__(
-                "./sql/create_and_fill_day_sightings_table.sql", query_args
+                "operators/sql/create_and_fill_day_sightings_table.sql", query_args
             )
 
 
 class ExampleMappingStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("./sql/example_location_mapping.sql", query_args)
+            super().__init__("operators/sql/example_location_mapping.sql", query_args)
 
 
 class DefaultMappingStep(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("./sql/default_location_mapping.sql", query_args)
+            super().__init__("operators/sql/default_location_mapping.sql", query_args)
 
 
 class ApplyMappingToEvents(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("./sql/apply_mapping_to_staged_events.sql", query_args)
+            super().__init__(
+                "operators/sql/apply_mapping_to_staged_events.sql", query_args
+            )
 
 
 class AddToSightingsPartition(StagingStep):
     def __init__(self, query_args):
         with cd(Path(__file__).parent):
-            super().__init__("./sql/append_sightings_to_main_table.sql", query_args)
+            super().__init__(
+                "operators/sql/append_sightings_to_main_table.sql", query_args
+            )
 
 
 # Question; where to put query_args?

@@ -14,7 +14,7 @@ CREATE TEMPORARY TABLE to_be_removed(
 
 COPY to_be_removed FROM '{{opt_out_path}}' (FORMAT CSV, HEADER TRUE);
 
-DELETE FROM staging_table_{{date}}
+DELETE FROM staging_table_{{params.date}}
     WHERE msisdn IN (SELECT msisdn FROM to_be_removed);
 
 COMMIT;

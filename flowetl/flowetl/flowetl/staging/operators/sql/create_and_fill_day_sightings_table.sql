@@ -3,13 +3,13 @@ BEGIN;
 -- TODO: Move to flowdb
 CREATE SCHEMA IF NOT EXISTS reduced;
 
-DROP TABLE IF EXISTS reduced.sightings_{{date}};
+DROP TABLE IF EXISTS reduced.sightings_{{params.date}};
 
 --TODO: msisdn and locationid to bytea from text
-CREATE TABLE reduced.sightings_{{date}}(
+CREATE TABLE reduced.sightings_{{params.date}}(
  LIKE reduced.sightings,
- CONSTRAINT sightings_{{date}}_check
-    CHECK (sighting_date >= DATE '{{date}}' AND sighting_date < DATE '{{date}}' + 1) -- Switch to range
+ CONSTRAINT sightings_{{params.date}}_check
+    CHECK (sighting_date >= DATE '{{params.date}}' AND sighting_date < DATE '{{params.date}}' + 1) -- Switch to range
 );
 
 WITH ranked AS (
@@ -20,7 +20,7 @@ WITH ranked AS (
            dense_rank() OVER ( PARTITION BY msisdn
                                ORDER BY date_time
                              ) AS date_rank
-    FROM staging_table_{{date}}
+    FROM staging_table_{{params.date}}
     ORDER BY date_time
 ), group_ranked AS (
     SELECT date_time, cell_id, msisdn, cell_id_rank, date_rank,
@@ -39,21 +39,21 @@ WITH ranked AS (
     GROUP BY msisdn, cell_id, group_rank
     ORDER BY msisdn, row_id
 )
-INSERT INTO reduced.sightings_{{date}}
-    SELECT '{{date}}', convert_to(msisdn, 'LATIN1'), row_id, cell_id, cons_dates, cons_events
+INSERT INTO reduced.sightings_{{params.date}}
+    SELECT '{{params.date}}', convert_to(msisdn, 'LATIN1'), row_id, cell_id, cons_dates, cons_events
     FROM aggregated;
 
 -- Clustering needs indexing; I think we leave it out for the time being
---CLUSTER reduced.sightings_{{date}}
+--CLUSTER reduced.sightings_{{params.date}}
 --USING subscriber_id, row_id;
 
-ANALYZE reduced.sightings_{{date}};
+ANALYZE reduced.sightings_{{params.date}};
 
 ALTER TABLE reduced.sightings
-ATTACH PARTITION reduced.sightings_{{date}} FOR VALUES FROM (date('{{date}}')) TO (date('{{date}}')+ 1) ;
+ATTACH PARTITION reduced.sightings_{{params.date}} FOR VALUES FROM (date('{{params.date}}')) TO (date('{{params.date}}')+ 1) ;
 
-ALTER TABLE reduced.sightings_{{date}}
-DROP CONSTRAINT sightings_{{date}}_check;
+ALTER TABLE reduced.sightings_{{params.date}}
+DROP CONSTRAINT sightings_{{params.date}}_check;
 
 ANALYZE reduced.sightings;
 
