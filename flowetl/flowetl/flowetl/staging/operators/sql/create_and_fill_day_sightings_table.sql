@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS reduced.sightings_{{params.date}};
 CREATE TABLE reduced.sightings_{{params.date}}(
  LIKE reduced.sightings,
  CONSTRAINT sightings_{{params.date}}_check
-    CHECK (sighting_date >= DATE '{{params.date}}' AND sighting_date < DATE '{{params.date}}' + 1) -- Switch to range
+    CHECK (sighting_date >= DATE '{{params.date}}' AND sighting_date < DATE '{{params.date}}' + 1)
 );
 
 WITH ranked AS (
@@ -48,14 +48,6 @@ INSERT INTO reduced.sightings_{{params.date}}
 --USING subscriber_id, row_id;
 
 ANALYZE reduced.sightings_{{params.date}};
-
-ALTER TABLE reduced.sightings
-ATTACH PARTITION reduced.sightings_{{params.date}} FOR VALUES FROM (date('{{params.date}}')) TO (date('{{params.date}}')+ 1) ;
-
-ALTER TABLE reduced.sightings_{{params.date}}
-DROP CONSTRAINT sightings_{{params.date}}_check;
-
-ANALYZE reduced.sightings;
 
 --TODO: Use CHECK clause for perf (see notebook)
 

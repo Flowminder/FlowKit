@@ -44,11 +44,11 @@ def test_create_and_fill_staging_table(mock_staging_dag, dummy_db_conn):
     assert out.rowcount == 39
 
 
-def test_append_sightings_to_main_table(
-    mock_staging_dag, staged_data_conn, sightings_table_conn
-):
+def test_append_sightings_to_main_table(mock_staging_dag, day_sightings_table_conn):
     # Needs sightings table to exist
     run_task(AppendSightingsToMainTable(dag=mock_staging_dag), mock_staging_dag)
+    out = day_sightings_table_conn.execute("SELECT * FROM reduced.sightings")
+    assert out.rowcount == 37
 
 
 def test_apply_mapping_to_staged_events(

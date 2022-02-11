@@ -6,3 +6,4 @@ CREATE TABLE IF NOT EXISTS reduced.sightings(
     event_times TIME[],
     event_types smallint[] -- change to enum
 ) PARTITION BY RANGE (sighting_date);
+CREATE INDEX ON reduced.sightings(sighting_date);
