@@ -166,7 +166,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-            image: cimg/python3.9.9/  #  Oh no we might need to change this too
+            image: cimg/python:3.9  #  Oh no we might need to change this too
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -265,7 +265,7 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-        image: cimg/python3.9.9/
+        image: cimg/python:3.9
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
@@ -687,7 +687,7 @@ jobs:
       component_path:
         type: string
     machine:
-            image: cimg/python3.9.9/ 
+            image: cimg/python:3.9 
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -742,7 +742,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-            image: cimg/python3.9.9/    # Check version later
+            image: cimg/python:3.9    # Check version later
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
@@ -828,7 +828,7 @@ jobs:
         enum: ["", "examples smaller_data"]
         default: ""
     machine:
-            image: cimg/python3.9.9/
+            image: cimg/python:3.9
     working_directory: /home/circleci/project
     steps:
       - checkout:
