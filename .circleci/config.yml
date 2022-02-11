@@ -177,8 +177,8 @@ jobs:
             echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
       - attach_workspace:
           at: /home/circleci/
-          #- restore_cache:
-          #key: flowdb-deps-4-{{ checksum "flowdb/tests/Pipfile.lock"}}
+      - restore_cache:
+          key: flowdb-deps-4-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
           name: "Switch to Python v3.9.4"
           command: |
@@ -279,8 +279,8 @@ jobs:
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
-          #- restore_cache:
-          #key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock"}}
+      - restore_cache:
+          key: flowdb-deps-1-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -387,8 +387,8 @@ jobs:
     working_directory: /home/circleci/project
     steps:
       - checkout
-        #- restore_cache:
-        # key: flowmachine-deps-4-{{ checksum "flowmachine/Pipfile.lock" }}
+      - restore_cache:
+          key: flowmachine-deps-4-{{ checksum "flowmachine/Pipfile.lock" }}
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
       - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
@@ -403,8 +403,8 @@ jobs:
     working_directory: /home/circleci/project
     steps:
       - checkout
-        #- restore_cache:
-        #  key: flowmachine-deps-4-{{ checksum "flowmachine/Pipfile.lock" }}
+      - restore_cache:
+          key: flowmachine-deps-4-{{ checksum "flowmachine/Pipfile.lock" }}
       - run:
           name: Linting files with black
           # Installed the version of Black from flowmachine's lockfile
@@ -417,9 +417,9 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-          #- restore_cache:
-          #keys:
-          #  - flowauth-deps-4-{{ checksum "package.json" }}
+      - restore_cache:
+          keys:
+            - flowauth-deps-4-{{ checksum "package.json" }}
       - run:
           name: Install deps
           command: npm ci
@@ -444,8 +444,8 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci/
-          #- restore_cache:
-          #key: flowmachine-deps-4-{{ checksum "Pipfile.lock" }}
+      - restore_cache:
+          key: flowmachine-deps-4-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install graphviz
           command: sudo apt-get update && sudo apt-get install -y xvfb libgraphviz-dev graphviz
@@ -594,9 +594,9 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-          #- restore_cache:
-          #keys:
-          #  - flowauth-deps-4-{{ checksum "package.json" }}
+      - restore_cache:
+          keys:
+            - flowauth-deps-4-{{ checksum "package.json" }}
       - run:
           name: Cypress setup
           command: npm ci
@@ -648,9 +648,9 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-          #- restore_cache:
-          #keys:
-          #  - autoflow-deps-4-{{ checksum "Pipfile.lock" }}
+      - restore_cache:
+          keys:
+            - autoflow-deps-4-{{ checksum "Pipfile.lock" }}
       - run: &install_autoflow_deps
           name: Install non-python autoflow dependencies
           command: |
@@ -716,8 +716,8 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-          #- restore_cache:
-          #key: flowetl-unit-deps-4-{{ checksum "Pipfile.lock"}}
+      - restore_cache:
+          key: flowetl-unit-deps-4-{{ checksum "Pipfile.lock"}}
       - run:
           name: Install pipenv
           command: pip install --upgrade pipenv
@@ -750,8 +750,8 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-          #- restore_cache:
-          #key: flowetl-deps-4-{{ checksum "Pipfile.lock"}}
+      - restore_cache:
+          key: flowetl-deps-4-{{ checksum "Pipfile.lock"}}
       - run:
           name: Set python version
           command: |
@@ -799,8 +799,8 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-          #- restore_cache:
-          #key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
+      - restore_cache:
+          key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
       - run: *install_autoflow_deps
       - run: pipenv install --deploy --dev
       - save_cache:
@@ -874,8 +874,8 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci/
-          #- restore_cache:
-          #key: flowkit-docs-deps-4-{{ checksum "Pipfile.lock" }}
+      - restore_cache:
+          key: flowkit-docs-deps-4-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install pandoc
           command: |
