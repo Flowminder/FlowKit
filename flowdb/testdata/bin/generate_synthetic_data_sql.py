@@ -160,7 +160,6 @@ if __name__ == "__main__":
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
             echo=False,
-            strategy="threadlocal",
             pool_size=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
             pool_timeout=None,
         )
