@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
+import os
+import shutil
 import sys
 
 from airflow import DAG
@@ -10,18 +12,18 @@ from pathlib import Path
 import jinja2
 
 
-CSV_FOLDER = Path(__file__).parent.parent / "static_csvs"
+CSV_FOLDER = Path(__file__).parent.parent.parent / "mounts" / "files" / "static_csvs"
 SQL_FOLDER = (
     Path(__file__).parent.parent.parent
     / "flowetl"
     / "flowetl"
-    / "staging"
     / "operators"
+    / "staging"
     / "sql"
 )
 TEST_DATE = datetime.datetime(year=2021, month=9, day=29)
-TEST_DATE_STR = "2021_09_29"
-TEST_PARAMS = {"date": TEST_DATE_STR, "csv_dir": str(CSV_FOLDER)}
+TEST_DATE_STR = "20210929"
+TEST_PARAMS = {"flowetl_csv_dir": str(CSV_FOLDER), "flowdb_csv_dir": str(CSV_FOLDER)}
 
 sql_env = jinja2.Environment(loader=jinja2.FileSystemLoader(SQL_FOLDER))
 
@@ -55,7 +57,7 @@ def dummy_db_conn(postgresql_db, monkeypatch):
 @pytest.fixture()
 def staged_data_conn(dummy_db_conn):
     st_fill = sql_env.get_template("create_and_fill_staging_table.sql")
-    query = st_fill.render(params=TEST_PARAMS)
+    query = st_fill.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     dummy_db_conn.execute(query)
     yield dummy_db_conn
 
@@ -63,7 +65,7 @@ def staged_data_conn(dummy_db_conn):
 @pytest.fixture()
 def sightings_table_conn(staged_data_conn):
     sight_setup = sql_env.get_template("create_sightings_table.sql")
-    query = sight_setup.render(params=TEST_PARAMS)
+    query = sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     staged_data_conn.execute(query)
     yield staged_data_conn
 
@@ -71,7 +73,7 @@ def sightings_table_conn(staged_data_conn):
 @pytest.fixture()
 def default_mapping_table_conn(staged_data_conn):
     map_setup = sql_env.get_template("default_location_mapping.sql")
-    query = map_setup.render(params=TEST_PARAMS)
+    query = map_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     staged_data_conn.execute(query)
     yield staged_data_conn
 
@@ -79,7 +81,7 @@ def default_mapping_table_conn(staged_data_conn):
 @pytest.fixture()
 def day_sightings_table_conn(sightings_table_conn, staged_data_conn):
     day_sight_setup = sql_env.get_template("create_and_fill_day_sightings_table.sql")
-    query = day_sight_setup.render(params=TEST_PARAMS)
+    query = day_sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     staged_data_conn.execute(query)
     yield sightings_table_conn
 
@@ -103,10 +105,7 @@ def mock_staging_dag(real_airflow_conn, dummy_db_conn):
             "start_date": datetime.datetime(2021, 9, 29),
             "postgres_conn_id": "testdb",
         },
-        params={
-            "date": datetime.datetime(2021, 9, 29).strftime("%Y_%m_%d"),
-            "csv_dir": str(Path(__file__).parent.parent / "static_csvs"),
-        },
+        params=TEST_PARAMS,
         schedule_interval=datetime.timedelta(days=1),
-        template_searchpath="/home/john/projects/flowkit_1/FlowKit/flowetl/flowetl/flowetl/staging/",
+        template_searchpath=str(SQL_FOLDER),
     )

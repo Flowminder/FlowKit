@@ -9,9 +9,11 @@ Conftest for flowetl integration tests
 import os
 import random
 import string
+import tarfile
 import warnings
 from pathlib import Path
 from subprocess import Popen, run
+from tempfile import NamedTemporaryFile
 from threading import Event, Thread
 from time import sleep
 
@@ -120,6 +122,8 @@ def container_env(ensure_required_env_vars_are_set):
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
         "AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC": 10,
+        "FLOWETL_CSV_DIR": "/files/static_csvs",  # Do we need checks for these?
+        "FLOWDB_CSV_DIR": "/tmp/csvs",
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}
@@ -369,10 +373,11 @@ def flowetl_container(
         flowdb_container()
         flowetl_db_container()
         logger.info("Started FlowETL container")
+
         yield container
 
         save_airflow_logs = (
-            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
+            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRF" "LOW_LOGS", "FALSE").upper()
             == "TRUE"
         )
         if save_airflow_logs:
@@ -585,7 +590,7 @@ def dag_status(flowetl_container):
     """
 
     def dag_status(*, dag_id, exec_date):
-        status_cmd = ["airflow", "dag_state", dag_id, exec_date]
+        status_cmd = ["airflow", "dags", "state", dag_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield dag_status

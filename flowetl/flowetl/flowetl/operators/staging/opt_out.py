@@ -5,11 +5,6 @@
 from airflow.operators.postgres_operator import PostgresOperator
 
 
-class DefaultLocationMapping(PostgresOperator):
+class OptOut(PostgresOperator):
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            task_id="DefaultLocationMapping",
-            sql="operators/sql/default_location_mapping.sql",
-            **kwargs
-        )
+        super().__init__(*args, task_id="OptOut", sql="opt_out.sql", **kwargs)

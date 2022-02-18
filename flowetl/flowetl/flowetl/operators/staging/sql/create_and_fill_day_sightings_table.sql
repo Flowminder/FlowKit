@@ -3,13 +3,13 @@ BEGIN;
 -- TODO: Move to flowdb
 CREATE SCHEMA IF NOT EXISTS reduced;
 
-DROP TABLE IF EXISTS reduced.sightings_{{params.date}};
+DROP TABLE IF EXISTS reduced.sightings_{{ds_nodash}};
 
 --TODO: msisdn and locationid to bytea from text
-CREATE TABLE reduced.sightings_{{params.date}}(
+CREATE TABLE reduced.sightings_{{ds_nodash}}(
  LIKE reduced.sightings,
- CONSTRAINT sightings_{{params.date}}_check
-    CHECK (sighting_date >= DATE '{{params.date}}' AND sighting_date < DATE '{{params.date}}' + 1)
+ CONSTRAINT sightings_{{ds_nodash}}_check
+    CHECK (sighting_date >= DATE '{{ds_nodash}}' AND sighting_date < DATE '{{ds_nodash}}' + 1)
 );
 
 WITH ranked AS (
@@ -20,7 +20,7 @@ WITH ranked AS (
            dense_rank() OVER ( PARTITION BY msisdn
                                ORDER BY date_time
                              ) AS date_rank
-    FROM staging_table_{{params.date}}
+    FROM staging_table_{{ds_nodash}}
     ORDER BY date_time
 ), group_ranked AS (
     SELECT date_time, cell_id, msisdn, cell_id_rank, date_rank,
@@ -39,15 +39,15 @@ WITH ranked AS (
     GROUP BY msisdn, cell_id, group_rank
     ORDER BY msisdn, row_id
 )
-INSERT INTO reduced.sightings_{{params.date}}
-    SELECT '{{params.date}}', convert_to(msisdn, 'LATIN1'), row_id, cell_id, cons_dates, cons_events
+INSERT INTO reduced.sightings_{{ds_nodash}}
+    SELECT '{{ds_nodash}}', convert_to(msisdn, 'LATIN1'), row_id, cell_id, cons_dates, cons_events
     FROM aggregated;
 
 -- Clustering needs indexing; I think we leave it out for the time being
---CLUSTER reduced.sightings_{{params.date}}
+--CLUSTER reduced.sightings_{{ds_nodash}}
 --USING subscriber_id, row_id;
 
-ANALYZE reduced.sightings_{{params.date}};
+ANALYZE reduced.sightings_{{ds_nodash}};
 
 --TODO: Use CHECK clause for perf (see notebook)
 

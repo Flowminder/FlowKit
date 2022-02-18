@@ -10,7 +10,7 @@ CREATE TABLE reduced.cell_location_mapping(
 -- Can we drop this at this stage? We don't need the cell IDs anymore.
 
 WITH cells AS (
-    SELECT DISTINCT cell_id FROM staging_table_{{params.date}} AS cell_id
+    SELECT DISTINCT cell_id FROM staging_table_{{ds_nodash}} AS cell_id
 )
 INSERT INTO reduced.cell_location_mapping(
     -- In practice, this would be a far more complex cell-clustering algorithm

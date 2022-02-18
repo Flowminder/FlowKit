@@ -5,11 +5,11 @@
 from airflow.operators.postgres_operator import PostgresOperator
 
 
-class ExampleLocationMapping(PostgresOperator):
+class ApplyMappingToStagedEvents(PostgresOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,
-            task_id="ExampleLocationMapping",
-            sql="operators/sql/example_location_mapping.sql",
+            task_id="ApplyMappingToStagedEvents",
+            sql="apply_mapping_to_staged_events.sql",
             **kwargs
         )

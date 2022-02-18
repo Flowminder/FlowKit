@@ -14,6 +14,9 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 ENV AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.deny_all
 ENV AIRFLOW__WEBSERVER__RBAC=True
 USER root
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
+
+# Flowdb connections
 
 # Needed for custom users passed through docker's --user argument, otherwise it's /
 ENV HOME ${AIRFLOW_HOME}
@@ -38,12 +41,14 @@ WORKDIR /${SOURCE_TREE}/flowetl
 
 COPY . /${SOURCE_TREE}/
 
-RUN apt-get update && \
+
+RUN     apt-get update && \
         apt-get install -y --no-install-recommends git build-essential && \
         pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
         apt-get -y remove git build-essential && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
+RUN echo $PWD && ls $PWD && ls $PWD/flowetl
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
         cd flowetl && \
@@ -51,7 +56,8 @@ RUN apt-get update && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/* && \
-        mv /${SOURCE_TREE}/flowetl/entrypoint.sh /
+        mv /${SOURCE_TREE}/flowetl/entrypoint.sh / && \
+	cp /${SOURCE_TREE}/flowetl/mounts/dags/*.py /opt/airflow/dags/
 
 # Deal with old bind mounts to /usr/local/airflow
 

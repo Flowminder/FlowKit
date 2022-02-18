@@ -5,8 +5,11 @@
 from airflow.operators.postgres_operator import PostgresOperator
 
 
-class OptOut(PostgresOperator):
+class CreateAndFillDaySightingsTable(PostgresOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(
-            *args, task_id="OptOut", sql="operators/sql/opt_out.sql", **kwargs
+            *args,
+            task_id="CreateAndFillDaySightingsTable",
+            sql="create_and_fill_day_sightings_table.sql",
+            **kwargs
         )

@@ -150,6 +150,8 @@ COPY --chown=postgres ./flowdb/bin/build/* /docker-entrypoint-initdb.d/
 #  ingested by PostgreSQL on build-time.
 #
 ADD --chown=postgres ./flowdb/data/* /docker-entrypoint-initdb.d/data/csv/
+
+
 # Need to make postgres owner
 RUN chown -R postgres /docker-entrypoint-initdb.d
 

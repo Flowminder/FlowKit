@@ -1,26 +1,44 @@
+import os
+from pathlib import Path
+
 from airflow import DAG
 from datetime import datetime
 
 from airflow.operators.dummy_operator import DummyOperator
 
+# Hack to make sure the template path follows the import around
+from flowetl.operators.staging.sql import __file__ as template_path
+
+template_folder = (
+    "/" + os.getenv("SOURCE_TREE") + "/flowetl/flowetl/flowetl/operators/staging/sql"
+)
+
 with DAG(
     dag_id="load_records_from_staging_dag",
-    start_date=datetime(2016, 3, 1),
+    start_date=datetime(2021, 9, 29),  # Put this back before pr
+    end_date=datetime(2021, 9, 29),
+    # Defined in the docker-config.yml
+    default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
+    params={
+        "flowetl_csv_dir": os.getenv("FLOWETL_CSV_DIR"),
+        "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
+    },
+    template_searchpath=template_folder,
 ) as dag:
-    from flowetl.staging.operators.create_and_fill_day_sightings_table import (
+    from flowetl.operators.staging.create_and_fill_day_sightings_table import (
         CreateAndFillDaySightingsTable,
     )
-    from flowetl.staging.operators.create_sightings_table import CreateSightingsTable
-    from flowetl.staging.operators.default_location_mapping import (
+    from flowetl.operators.staging.create_sightings_table import CreateSightingsTable
+    from flowetl.operators.staging.default_location_mapping import (
         DefaultLocationMapping,
     )
-    from flowetl.staging.operators.append_sightings_to_main_table import (
+    from flowetl.operators.staging.append_sightings_to_main_table import (
         AppendSightingsToMainTable,
     )
-    from flowetl.staging.operators.apply_mapping_to_staged_events import (
+    from flowetl.operators.staging.apply_mapping_to_staged_events import (
         ApplyMappingToStagedEvents,
     )
-    from flowetl.staging.operators.create_and_fill_staging_table import (
+    from flowetl.operators.staging.create_and_fill_staging_table import (
         CreateAndFillStagingTable,
     )
 
@@ -30,6 +48,8 @@ with DAG(
     create_sightings_table = CreateSightingsTable()
     create_day_sightings_table = CreateAndFillDaySightingsTable()
     append_sightings = AppendSightingsToMainTable()
+
+    # Todo: Add cleanup step (CSVs and foreign tables)
 
     append_sightings << [create_day_sightings_table, create_sightings_table]
     (

@@ -5,11 +5,11 @@
 from airflow.operators.postgres_operator import PostgresOperator
 
 
-class CreateAndValidateSchema(PostgresOperator):
+class AppendSightingsToMainTable(PostgresOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,
-            task_id="CreateAndValidateSchema",
-            sql="operators/sql/create_and_validate_schema.sql",
+            task_id="AppendSightingsToMainTable",
+            sql="append_sightings_to_main_table.sql",
             **kwargs
         )

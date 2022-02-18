@@ -32,7 +32,7 @@ def flowdb_container_connection():
 def flowdb_with_test_csvs(flowdb_container_connection):
     with NamedTemporaryFile() as tmp:
         with tarfile.open(tmp.name, "w") as tfile:
-            for csv_file in Path("../static_csvs").iterdir():
+            for csv_file in Path("../../mounts/files/static_csvs").iterdir():
                 tfile.add(csv_file)
         flowdb_container_connection.exec_run("mkdir -p /test_data/static_csvs")
         flowdb_container_connection.put_archive("/test_data/static_csvs", tmp)

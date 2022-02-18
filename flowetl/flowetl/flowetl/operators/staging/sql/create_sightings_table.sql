@@ -1,3 +1,4 @@
+CREATE SCHEMA IF NOT EXISTS reduced;
 CREATE TABLE IF NOT EXISTS reduced.sightings(
     sighting_date DATE ,  -- Actually partition
     sub_id bytea NOT NULL, -- change to bytea
@@ -6,4 +7,4 @@ CREATE TABLE IF NOT EXISTS reduced.sightings(
     event_times TIME[],
     event_types smallint[] -- change to enum
 ) PARTITION BY RANGE (sighting_date);
-CREATE INDEX ON reduced.sightings(sighting_date);
+CREATE INDEX IF NOT EXISTS sighting_date_ind ON reduced.sightings(sighting_date);

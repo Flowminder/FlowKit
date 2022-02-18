@@ -5,11 +5,11 @@
 from airflow.operators.postgres_operator import PostgresOperator
 
 
-class AppendSightingsToMainTable(PostgresOperator):
+class ExampleLocationMapping(PostgresOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,
-            task_id="AppendSightingsToMainTable",
-            sql="operators/sql/append_sightings_to_main_table.sql",
+            task_id="ExampleLocationMapping",
+            sql="example_location_mapping.sql",
             **kwargs
         )

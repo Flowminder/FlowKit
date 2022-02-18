@@ -5,11 +5,11 @@
 from airflow.operators.postgres_operator import PostgresOperator
 
 
-class CreateAndFillDaySightingsTable(PostgresOperator):
+class DefaultLocationMapping(PostgresOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,
-            task_id="CreateAndFillDaySightingsTable",
-            sql="operators/sql/create_and_fill_day_sightings_table.sql",
+            task_id="DefaultLocationMapping",
+            sql="default_location_mapping.sql",
             **kwargs
         )
