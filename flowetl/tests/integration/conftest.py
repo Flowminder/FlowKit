@@ -123,7 +123,7 @@ def container_env(ensure_required_env_vars_are_set):
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
         "AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC": 10,
         "FLOWETL_CSV_DIR": "/files/static_csvs",  # Do we need checks for these?
-        "FLOWDB_CSV_DIR": "/tmp/csvs",
+        "FLOWDB_CSV_DIR": "/files/static_csvs",
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}

@@ -24,6 +24,7 @@ with DAG(
         "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
     },
     template_searchpath=template_folder,
+    is_paused_upon_creation=True,
 ) as dag:
     from flowetl.operators.staging.create_and_fill_day_sightings_table import (
         CreateAndFillDaySightingsTable,
@@ -58,7 +59,3 @@ with DAG(
         << location_mapping
         << create_and_fill_staging_table
     )
-
-
-with DAG(dag_id="test_dag", start_date=datetime(2016, 1, 1)) as dag_2:
-    op = DummyOperator(task_id="foo")
