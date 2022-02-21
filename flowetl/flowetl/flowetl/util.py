@@ -390,3 +390,74 @@ def create_dag(
         ]
     globals()[dag_id] = dag
     return dag
+
+
+def create_staging_dag(start_date: datetime, event_types: List[str], end_date=None):
+    from airflow import DAG
+    import os
+
+    template_folder = (
+        "/"
+        + os.getenv("SOURCE_TREE")
+        + "/flowetl/flowetl/flowetl/operators/staging/sql"
+    )
+
+    with DAG(
+        dag_id="load_records_from_staging_dag",
+        start_date=start_date,  # Put this back before pr
+        end_date=end_date,
+        # Defined in the docker-config.yml
+        default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
+        params={
+            "flowetl_csv_dir": os.getenv("FLOWETL_CSV_DIR"),
+            "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
+        },
+        template_searchpath=template_folder,
+        is_paused_upon_creation=True,
+    ) as dag:
+        from flowetl.operators.staging.create_and_fill_day_sightings_table import (
+            CreateAndFillDaySightingsTable,
+        )
+        from flowetl.operators.staging.create_sightings_table import (
+            CreateSightingsTable,
+        )
+        from flowetl.operators.staging.default_location_mapping import (
+            DefaultLocationMapping,
+        )
+        from flowetl.operators.staging.append_sightings_to_main_table import (
+            AppendSightingsToMainTable,
+        )
+        from flowetl.operators.staging.apply_mapping_to_staged_events import (
+            ApplyMappingToStagedEvents,
+        )
+        from flowetl.operators.staging.create_and_fill_staging_table import (
+            CreateAndFillStagingTable,
+        )
+        from flowetl.operators.staging.cleanup_staging_table import CleanupStagingTable
+        from flowetl.operators.staging.mount_event_operator_factory import (
+            create_mount_event_operator,
+        )
+
+        event_mount_operators = [
+            create_mount_event_operator(event_type=event_type)
+            for event_type in event_types
+        ]
+        create_and_fill_staging_table = CreateAndFillStagingTable(event_types)
+        location_mapping = DefaultLocationMapping()
+        apply_mapping_to_staged_events = ApplyMappingToStagedEvents()
+        create_sightings_table = CreateSightingsTable()
+        create_day_sightings_table = CreateAndFillDaySightingsTable()
+        append_sightings = AppendSightingsToMainTable()
+        cleanup_staging_table = CleanupStagingTable()
+
+        create_and_fill_staging_table << [*event_mount_operators]
+
+        append_sightings << [create_day_sightings_table, create_sightings_table]
+        (
+            create_day_sightings_table
+            << apply_mapping_to_staged_events
+            << location_mapping
+            << create_and_fill_staging_table
+        )
+        cleanup_staging_table << append_sightings
+    return dag

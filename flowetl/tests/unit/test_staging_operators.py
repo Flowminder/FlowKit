@@ -17,6 +17,8 @@ from flowetl.operators.staging.cleanup_staging_table import CleanupStagingTable
 from airflow.operators.bash_operator import BashOperator
 
 from operators.staging.example_location_mapping import ExampleLocationMapping
+from operators.staging.mount_event_table import create_mount_event_operator
+from operators.staging.event_columns import event_column_mappings
 
 
 def run_task(task, dag):
@@ -120,3 +122,22 @@ def test_staging_cleanup(mock_staging_dag, staged_data_conn):
     ).fetchall()
     after_table_names = [row["table_name"] for row in table_list]
     assert all(st not in after_table_names for st in staging_tables)
+
+
+def test_mount_event_table(mock_staging_dag, dummy_db_conn):
+    sms_operator = create_mount_event_operator(event_type="sms")
+    run_task(sms_operator(dag=mock_staging_dag), mock_staging_dag)
+    columns = dummy_db_conn.execute(
+        f"""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'sms_table_20210929'
+        """
+    ).fetchall()
+    returned_column_names = [row["column_name"].upper() for row in columns]
+    assert all(
+        [
+            column_name in returned_column_names
+            for column_name in event_column_mappings["sms"].keys()
+        ]
+    )
