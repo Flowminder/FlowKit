@@ -13,8 +13,6 @@ def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transac
     #     exec_date=test_date
     # )
     # print(output.decode('utf-8'))
-    _, config = flowetl_container.exec_run("airflow config")
-    print(config.decode())
     exit_code, unpause_out = flowetl_container.exec_run(
         "airflow dags unpause load_records_from_staging_dag"
     )
@@ -28,19 +26,6 @@ def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transac
         if b"running" not in status:
             break
         sleep(1)
-    exit_code, logs = flowetl_container.exec_run(
-        "airflow dags list-runs -d load_records_from_staging_dag"
-    )
-    # assert b"success" in status
-
-    # Check staging table was created properly
-    staged_record_count = flowdb_transaction.execute(
-        f"SELECT count(*) FROM staging_table_{test_date};"
-    ).fetchall()[0][
-        0
-    ]  # gotta be a better way
-    print(f"Staged records: {staged_record_count}")
-    assert staged_record_count == 39
 
     # Check correct data is in reduced table
     record_count = flowdb_transaction.execute(
@@ -59,4 +44,20 @@ def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transac
     ).fetchall()
     assert ("reduced.sightings_20210929",) in partition_list
 
-    # Check staging files have been cleared up
+    # Check staging table has been cleared up
+    table_list = flowdb_transaction.execute(
+        f"""
+        SELECT table_name
+        FROM information_schema.tables
+        """
+    )
+    table_names = [row["table_name"] for row in table_list]
+    staging_tables = [
+        f"staging_table_{test_date}" f"call_table_{test_date}",
+        f"sms_table_{test_date}",
+        f"location_table_{test_date}",
+        f"mds_table_{test_date}",
+        f"topup_table_{test_date}",
+    ]
+
+    assert all(st not in table_names for st in staging_tables)

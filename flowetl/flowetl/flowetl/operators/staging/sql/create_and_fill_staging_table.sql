@@ -1,7 +1,5 @@
 BEGIN;
 
-
-
 -- TODO: CSV-ise the event type enum + add loading query
 
 -- Can probably put this elsewhere, but it can live here while developing

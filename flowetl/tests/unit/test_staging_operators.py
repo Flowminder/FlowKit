@@ -12,6 +12,7 @@ from flowetl.operators.staging.apply_mapping_to_staged_events import (
 from flowetl.operators.staging.create_and_fill_staging_table import (
     CreateAndFillStagingTable,
 )
+from flowetl.operators.staging.cleanup_staging_table import CleanupStagingTable
 
 from airflow.operators.bash_operator import BashOperator
 
@@ -85,3 +86,37 @@ def test_default_location_mapping(mock_staging_dag, staged_data_conn):
 
 def test_example_location_mapping(mock_staging_dag, staged_data_conn):
     run_task(ExampleLocationMapping(dag=mock_staging_dag), mock_staging_dag)
+
+
+def test_staging_cleanup(mock_staging_dag, staged_data_conn):
+    test_date = "20210929"
+    staging_tables = [
+        f"staging_table_{test_date}",
+        f"call_table_{test_date}",
+        f"sms_table_{test_date}",
+        f"location_table_{test_date}",
+        f"mds_table_{test_date}",
+        f"topup_table_{test_date}",
+    ]
+
+    # Check staging tables exist
+    table_list = staged_data_conn.execute(
+        f"""
+        SELECT table_name
+        FROM information_schema.tables
+        """
+    )
+    before_table_names = [row["table_name"] for row in table_list]
+    assert all(st in before_table_names for st in staging_tables)
+
+    run_task(CleanupStagingTable(dag=mock_staging_dag), mock_staging_dag)
+
+    # Check staging tables have been cleared up
+    table_list = staged_data_conn.execute(
+        f"""
+        SELECT table_name
+        FROM information_schema.tables
+        """
+    ).fetchall()
+    after_table_names = [row["table_name"] for row in table_list]
+    assert all(st not in after_table_names for st in staging_tables)

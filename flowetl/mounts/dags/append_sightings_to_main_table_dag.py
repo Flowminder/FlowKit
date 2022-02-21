@@ -42,6 +42,7 @@ with DAG(
     from flowetl.operators.staging.create_and_fill_staging_table import (
         CreateAndFillStagingTable,
     )
+    from flowetl.operators.staging.cleanup_staging_table import CleanupStagingTable
 
     create_and_fill_staging_table = CreateAndFillStagingTable()
     location_mapping = DefaultLocationMapping()
@@ -49,6 +50,7 @@ with DAG(
     create_sightings_table = CreateSightingsTable()
     create_day_sightings_table = CreateAndFillDaySightingsTable()
     append_sightings = AppendSightingsToMainTable()
+    cleanup_staging_table = CleanupStagingTable()
 
     # Todo: Add cleanup step (CSVs and foreign tables)
 
@@ -59,3 +61,4 @@ with DAG(
         << location_mapping
         << create_and_fill_staging_table
     )
+    cleanup_staging_table << append_sightings
