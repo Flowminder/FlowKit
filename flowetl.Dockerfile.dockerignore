@@ -17,3 +17,4 @@
 !flowetl/entrypoint.sh
 !flowetl/Pipfile
 !flowetl/Pipfile.lock
+!flowetl/init.sh

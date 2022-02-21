@@ -23,7 +23,7 @@ from docker.types import Mount
 from requests.exceptions import RequestException
 
 import pytest
-from pendulum import Interval, now
+from pendulum import duration, now
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -322,7 +322,7 @@ def flowetl_container(
     """
 
     def wait_for_container(
-        *, time_out=Interval(minutes=3), time_out_per_request=Interval(seconds=1)
+        *, time_out=duration(minutes=3), time_out_per_request=duration(seconds=1)
     ):
         # Tries to make constant requests to the health check endpoint for quite
         # arbitrarily 3 minutes.. Fails with a TimeoutError if it can't reach the
@@ -350,7 +350,7 @@ def flowetl_container(
                     "missing config settings or syntax errors in one of its task."
                 )
 
-    user = f"{os.getuid()}:{os.getgid()}"
+    user = f"{os.getuid()}:0"
     logger.info("Starting FlowETL container")
     container = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
@@ -368,6 +368,10 @@ def flowetl_container(
         wait_for_container()
         flowdb_container()
         flowetl_db_container()
+        container.exec_run(
+            "bash -c /init.sh",
+            user=user,
+        )
         logger.info("Started FlowETL container")
         yield container
 

@@ -9,7 +9,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
-from pendulum import Interval
+from pendulum import Duration
 
 
 class FluxSensorType(Enum):
@@ -48,14 +48,16 @@ def get_qa_checks(
     list of QACheckOperator
     """
     from flowetl.operators.qa_check_operator import QACheckOperator
+    from airflow.models.dag import DagContext
     from airflow import settings
 
     if dag is None:
-        dag = settings.CONTEXT_MANAGER_DAG
+        dag = DagContext.get_current_dag()
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
     # Add the default QA checks to the template path
     default_checks = Path(__file__).parent / "qa_checks"
+
     dag.template_searchpath = [
         *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
@@ -73,8 +75,14 @@ def get_qa_checks(
         "qa_checks",
         *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
     )
-    template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
-
+    template_paths = {
+        tmpl.stem
+        if tmpl.parent.stem == "qa_checks"
+        else f"{tmpl.stem}.{tmpl.parent.stem}": tmpl
+        for tmpl in templates
+        if tmpl.parent.stem in valid_stems
+    }
+    print(template_paths)
     return [
         QACheckOperator(
             task_id=tmpl.stem
@@ -83,7 +91,7 @@ def get_qa_checks(
             sql=str(tmpl),
             dag=dag,
         )
-        for tmpl in sorted(template_paths)
+        for tmpl in sorted(template_paths.values())
     ]
 
 
@@ -135,7 +143,7 @@ def create_dag(
     end_date: Optional[datetime] = None,
     retries: int = 10,
     retry_delay: timedelta = timedelta(days=1),
-    schedule_interval: Union[str, Interval] = "@daily",
+    schedule_interval: Union[str, Duration] = "@daily",
     indexes: Iterable[str] = ("msisdn_counterpart", "location_id", "datetime", "tac"),
     data_present_poke_interval: int = 60,
     data_present_timeout: int = 60 * 60 * 24 * 7,
@@ -181,7 +189,7 @@ def create_dag(
         Number of times to retry the dag if it fails
     retry_delay : timedelta, default timedelta(days=1)
         Delay between retries
-    schedule_interval : str or Interval, default "@daily"
+    schedule_interval : str or Duration, default "@daily"
         Time interval between execution dates.
     indexes : iterable of str, default ("msisdn_counterpart", "location_id", "datetime", "tac")
         Fields to create indexes on.
@@ -241,7 +249,7 @@ def create_dag(
     """
 
     from airflow import DAG
-    from airflow.operators.latest_only_operator import LatestOnlyOperator
+    from airflow.operators.latest_only import LatestOnlyOperator
     from flowetl.operators.add_constraints_operator import AddConstraintsOperator
     from flowetl.operators.analyze_operator import AnalyzeOperator
     from flowetl.operators.attach_operator import AttachOperator
@@ -261,12 +269,6 @@ def create_dag(
     from flowetl.sensors.table_flux_sensor import TableFluxSensor
 
     # Choose flux sensor
-    if use_file_flux_sensor is not None:
-        message = "The 'use_file_flux_sensor' argument is deprecated."
-        if use_flux_sensor == True:
-            use_flux_sensor = "file" if use_file_flux_sensor else "table"
-            message = f"{message} Set use_flux_sensor='{use_flux_sensor}' instead."
-        warnings.warn(message, DeprecationWarning)
     flux_sensor_type = choose_flux_sensor(use_flux_sensor, filename is not None)
 
     args = {
