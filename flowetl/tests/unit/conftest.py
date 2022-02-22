@@ -55,11 +55,19 @@ def dummy_db_conn(postgresql_db, monkeypatch):
 
 
 @pytest.fixture()
-def staged_data_conn(dummy_db_conn):
-    st_fill = sql_env.get_template("create_and_fill_staging_table.sql")
-    query = st_fill.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
+def mounted_events_conn(dummy_db_conn):
+    mount_fill = sql_env.get_template("test_mount_all.sql")
+    query = mount_fill.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     dummy_db_conn.execute(query)
     yield dummy_db_conn
+
+
+@pytest.fixture()
+def staged_data_conn(mounted_events_conn):
+    st_fill = sql_env.get_template("test_stage_all.sql")
+    query = st_fill.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
+    mounted_events_conn.execute(query)
+    yield mounted_events_conn
 
 
 @pytest.fixture()

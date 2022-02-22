@@ -124,6 +124,8 @@ def container_env(ensure_required_env_vars_are_set):
         "AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC": 10,
         "FLOWETL_CSV_DIR": "/files/static_csvs",  # Do we need checks for these?
         "FLOWDB_CSV_DIR": "/files/static_csvs",
+        "FLOWETL_CSV_START_DATE": "2021-09-29",
+        "FLOWETL_EVENT_TYPES": "call,sms,location,mds,topup",
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}

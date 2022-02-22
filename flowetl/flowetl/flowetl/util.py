@@ -403,6 +403,7 @@ def create_staging_dag(start_date: datetime, event_types: List[str], end_date=No
     )
 
     with DAG(
+        # How do we want to trigger this? Ask James./Jono
         dag_id="load_records_from_staging_dag",
         start_date=start_date,  # Put this back before pr
         end_date=end_date,
