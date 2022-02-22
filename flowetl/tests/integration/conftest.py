@@ -374,10 +374,10 @@ def flowetl_container(
     )
     container_network.connect(container, aliases=["flowetl"])
     try:
-        logger.info("Waiting for container to be healthy.")
-        wait_for_container()
         flowdb_container()
         flowetl_db_container()
+        logger.info("Waiting for container to be healthy.")
+        wait_for_container()
         logger.info("Running init.")
         container.exec_run(
             "bash -c /init.sh",
