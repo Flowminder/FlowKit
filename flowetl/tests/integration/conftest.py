@@ -337,9 +337,11 @@ def flowetl_container(
                 ).json()
 
                 # retry if scheduler is still not healthy
+                logger.info(f"Healthcheck response: {resp}")
                 if resp["scheduler"]["status"] == "healthy":
                     healthy = True
-            except RequestException:
+            except RequestException as exc:
+                logger.error(f"Request failed: {exc}")
                 pass
 
             sleep(0.1)
@@ -365,9 +367,11 @@ def flowetl_container(
     )
     container_network.connect(container, aliases=["flowetl"])
     try:
+        logger.info("Waiting for container to be healthy.")
         wait_for_container()
         flowdb_container()
         flowetl_db_container()
+        logger.info("Running init.")
         container.exec_run(
             "bash -c /init.sh",
             user=user,
