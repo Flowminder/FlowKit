@@ -1,5 +1,5 @@
 from airflow.operators.postgres_operator import PostgresOperator
-from operators.staging.event_columns import event_column_mappings
+from flowetl.operators.staging.event_columns import event_column_mappings
 
 
 def create_mount_event_operator(*, event_type: str):
