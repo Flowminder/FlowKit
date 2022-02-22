@@ -26,8 +26,15 @@ import pytest
 from pendulum import duration, now
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import logging
+import sys
 
 here = Path(__file__).parent
+logging.basicConfig(
+    format="%(message)s",
+    stream=sys.stdout,
+    level=logging.INFO,
+)
 logger = structlog.get_logger("flowetl-tests")
 
 
