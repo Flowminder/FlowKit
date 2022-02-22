@@ -1,7 +1,5 @@
 BEGIN;
 
--- TODO: CSV-ise the event type enum + add loading query
-
 -- Can probably put this elsewhere, but it can live here while developing
 CREATE SERVER IF NOT EXISTS csv_fdw FOREIGN DATA WRAPPER file_fdw;
 
@@ -81,56 +79,4 @@ CREATE FOREIGN TABLE topup_table_{{ds_nodash}}(
 ) SERVER csv_fdw
 OPTIONS (filename '{{params.flowdb_csv_dir}}/{{ds_nodash}}_topup.csv', format 'csv', header 'TRUE');
 
-DROP TABLE IF EXISTS staging_table_{{ds_nodash}};
-CREATE TABLE staging_table_{{ds_nodash}} AS(
-	SELECT
-		MSISDN,
-		IMEI,
-		IMSI,
-		TAC,
-		CELL_ID,
-		DATE_TIME,
-		EVENT_TYPE
-	FROM call_table_{{ds_nodash}}
-	UNION ALL
-	SELECT
-		MSISDN,
-		IMEI,
-		IMSI,
-		TAC,
-		CELL_ID,
-		DATE_TIME,
-		EVENT_TYPE
-	FROM location_table_{{ds_nodash}}
-	UNION ALL
-	SELECT
-		MSISDN,
-		IMEI,
-		IMSI,
-		TAC,
-		CELL_ID,
-		DATE_TIME,
-		EVENT_TYPE
-	FROM sms_table_{{ds_nodash}}
-	UNION ALL
-	SELECT
-		MSISDN,
-		IMEI,
-		IMSI,
-		TAC,
-		CELL_ID,
-		DATE_TIME,
-		EVENT_TYPE
-	FROM mds_table_{{ds_nodash}}
-	UNION ALL
-	SELECT
-		MSISDN,
-		IMEI,
-		IMSI,
-		TAC,
-		CELL_ID,
-		DATE_TIME,
-		EVENT_TYPE
-	FROM topup_table_{{ds_nodash}}
-	ORDER BY date_time);
 COMMIT;
