@@ -6,6 +6,10 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class CleanupStagingTable(PostgresOperator):
+    """
+    Drops staging_table_DATE and all foreign file mount tables.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,

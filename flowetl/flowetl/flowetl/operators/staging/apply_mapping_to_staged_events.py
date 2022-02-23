@@ -6,6 +6,10 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class ApplyMappingToStagedEvents(PostgresOperator):
+    """
+    Replaces the cell IDs in the staged events table with their counterparts from the location mapping table.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,

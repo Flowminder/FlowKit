@@ -6,6 +6,11 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class CreateSightingsTable(PostgresOperator):
+    """
+    Creates (if not present) the schema reduced, the table reduced.sightings and an index on date in
+    reduced.sightings
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,

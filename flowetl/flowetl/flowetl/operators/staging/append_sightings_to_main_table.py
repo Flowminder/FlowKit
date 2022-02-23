@@ -6,6 +6,11 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class AppendSightingsToMainTable(PostgresOperator):
+    """
+    Attaches reduced.sightings_DATE to the main reduced.sightings table as a partition, dropping the date
+    constraint as it does so.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,

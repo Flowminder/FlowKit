@@ -1,3 +1,8 @@
+"""
+A dictionary of the columns that will be present in each event CSV type - also serves as a list of
+valid event types
+"""
+
 event_column_mappings = {
     "call": {
         "MSISDN": "text",

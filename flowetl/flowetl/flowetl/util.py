@@ -393,6 +393,24 @@ def create_dag(
 
 
 def create_staging_dag(start_date: datetime, event_types: List[str], end_date=None):
+    """
+    Returns a DAG for moving data from event-CSVs a given day to the reduced sightings format.
+    See individual operators for details.
+
+    Parameters
+    ----------
+    start_date: datetime
+        Date to start mounting CSVs from.
+    event_types: List[str]
+        Event types available for staging. Can be call,sms,location,mds,topup.
+    end_date: datetime
+        Date to stop mounting CSVs on. Leave blank for present day.
+
+    Returns
+    -------
+    dag: DAG
+        The staging DAG.
+    """
     from airflow import DAG
     import os
 

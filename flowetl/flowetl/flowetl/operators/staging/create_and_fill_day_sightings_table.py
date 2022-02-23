@@ -6,6 +6,8 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class CreateAndFillDaySightingsTable(PostgresOperator):
+    """Reworks the data in the staging table from CRD rows into merged consecutive sighting format (REF: SOMEWHERE)"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,

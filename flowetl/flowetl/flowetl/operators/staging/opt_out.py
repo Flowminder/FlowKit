@@ -6,5 +6,7 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class OptOut(PostgresOperator):
+    """Drops users who have opted out of tracking. Not currently used."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, task_id="OptOut", sql="opt_out.sql", **kwargs)

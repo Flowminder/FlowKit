@@ -6,6 +6,10 @@ from airflow.operators.postgres_operator import PostgresOperator
 
 
 class ExampleLocationMapping(PostgresOperator):
+    """
+    An example of a more sophisticated location reduction
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,
