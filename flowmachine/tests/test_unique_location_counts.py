@@ -18,7 +18,7 @@ def test_returns_errors():
 
 
 def test_column_names_unique_location_counts(exemplar_spatial_unit_param):
-    """ Test that column_names property matches head(0) for UniqueLocationCounts"""
+    """Test that column_names property matches head(0) for UniqueLocationCounts"""
     lv = UniqueLocationCounts(
         "2016-01-01",
         "2016-01-02",

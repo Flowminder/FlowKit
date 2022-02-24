@@ -272,8 +272,5 @@ def test_load_query_from_params():
         ),
     )
     assert type(_load_query_from_params(action_params)) == "ExposedSpatialAggregate"
-    bench_params = dict(
-        query_kind="benchmark",
-        benchmark_target=action_params
-    )
+    bench_params = dict(query_kind="benchmark", benchmark_target=action_params)
     assert type(_load_query_from_params(bench_params)) == "ExposedBenchmark"

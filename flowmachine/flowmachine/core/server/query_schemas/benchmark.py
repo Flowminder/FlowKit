@@ -1,7 +1,10 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from flowmachine.core.server.query_schemas import BaseExposedQuery, FlowmachineQuerySchema
+from flowmachine.core.server.query_schemas import (
+    BaseExposedQuery,
+    FlowmachineQuerySchema,
+)
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 from flowmachine.features.benchmark.benchmark import BenchmarkQuery
 
@@ -42,7 +45,7 @@ from .unmoving_at_reference_location_counts import (
 )
 from .unmoving_counts import UnmovingCountsSchema
 
-BENCHABLE_SCHEMA =[
+BENCHABLE_SCHEMA = [
     JoinedSpatialAggregateSchema,
     SpatialAggregateSchema,
     HistogramAggregateSchema,
@@ -64,7 +67,7 @@ BENCHABLE_SCHEMA =[
     DFSTotalMetricAmountSchema,
     UniqueVisitorCountsSchema,
     UnmovingAtReferenceLocationCountsSchema,
-    UnmovingCountsSchema
+    UnmovingCountsSchema,
 ]
 
 
@@ -80,5 +83,7 @@ class BenchmarkQueryExposed(BaseExposedQuery):
 
 class BenchmarkSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf(["benchmark"]))
-    benchmark_target = fields.Nested(lambda: FlowmachineQuerySchema(exclude="benchmark"))
+    benchmark_target = fields.Nested(
+        lambda: FlowmachineQuerySchema(exclude="benchmark")
+    )
     __model__ = BenchmarkQueryExposed

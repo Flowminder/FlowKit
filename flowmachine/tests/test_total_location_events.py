@@ -17,7 +17,7 @@ from flowmachine.features import TotalLocationEvents
 def test_total_location_events_column_names(
     exemplar_spatial_unit_param, interval, direction
 ):
-    """ Test that column_names property of TotalLocationEvents matches head(0)"""
+    """Test that column_names property of TotalLocationEvents matches head(0)"""
     tle = TotalLocationEvents(
         "2016-01-01",
         "2016-01-04",

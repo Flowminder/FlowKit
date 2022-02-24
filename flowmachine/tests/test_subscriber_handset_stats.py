@@ -44,7 +44,7 @@ def test_handset_stats(get_dataframe, characteristic, statistic, msisdn, want):
 
 @pytest.mark.parametrize("kwarg", ["characteristic", "statistic"])
 def test_handset_stats_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in HandsetStats. """
+    """Test ValueError is raised for non-compliant kwarg in HandsetStats."""
 
     if kwarg == "characteristic":
         kwargs = {"characteristic": "error"}
