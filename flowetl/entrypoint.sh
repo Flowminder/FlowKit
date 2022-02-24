@@ -44,4 +44,5 @@ export \
   AIRFLOW__CORE__SQL_ALCHEMY_CONN \
   AIRFLOW__WEBSERVER__SECRET_KEY
 
+echo "Running airflow entrypoint."
 exec /entrypoint "${@}"
