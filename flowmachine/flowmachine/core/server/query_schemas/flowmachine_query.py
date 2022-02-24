@@ -43,6 +43,7 @@ from .unmoving_counts import UnmovingCountsSchema
 from .labelled_spatial_aggregate import LabelledSpatialAggregateSchema
 from .benchmark import BenchmarkSchema
 
+
 class FlowmachineQuerySchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {

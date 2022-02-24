@@ -10,6 +10,7 @@ Tests for benchmark functions, including verification of correctness of tables a
 import pytest
 from flowmachine.features.benchmark.benchmark import run_benchmark
 
+
 @pytest.mark.usefixtures("create_test_tables")
 def test_run_benchmark(cursor, test_tables):
     """run_benchmark should produce a set of metrics, but leave the database untouched afterwards"""
@@ -18,4 +19,3 @@ def test_run_benchmark(cursor, test_tables):
     final_hash = hash(test_tables)
     assert initial_hash == final_hash
     assert bench
-

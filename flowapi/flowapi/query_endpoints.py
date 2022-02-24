@@ -415,20 +415,20 @@ async def run_benchmark():
     # TODO: Add permission to run benchmark to FlowAuth
     current_app.query_run_logger.info("run_benchmark")
     request.socket.send_json(
-        {"request_id": request.request_id,
-         "action": "run_benchmark"})
+        {"request_id": request.request_id, "action": "run_benchmark"}
+    )
 
     reply = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
         f"Recieved reply {reply}", request_id=request.request_id
     )
     if reply["status"] == "success":
-      return {"benchmark": reply["payload"]}, 200
+        return {"benchmark": reply["payload"]}, 200
     else:
-      assert reply["status"] == "error"
-      return {"status": "error", "msg": reply["msg"]}
+        assert reply["status"] == "error"
+        return {"status": "error", "msg": reply["msg"]}
     # There should only ever be one benchmark running at a time, so it keeps one endpoint
 
 
 if __name__ == "__main__":
-  run_benchmark()
+    run_benchmark()

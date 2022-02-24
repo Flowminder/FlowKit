@@ -10,7 +10,7 @@ from sqlalchemy.schema import MetaData
 from sqlalchemy import Table, Column, Integer, inspect, Text
 
 
-class BenchmarkQuery():
+class BenchmarkQuery:
     """
     A class that runs a query but does not return the regular output;
     instead, a set of benchmarks are retuned.
@@ -59,7 +59,6 @@ def test_benchmark():
     """Test for the BenchmarkQuery class"""
     # Set up:
     # Get connection
-    
 
     bench_query = BenchmarkQuery()
     time = bench_query.run_benchmark()
