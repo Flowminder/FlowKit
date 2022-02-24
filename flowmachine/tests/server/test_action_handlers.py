@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import pdb
 from asyncio import sleep
 
 import pytest
@@ -25,9 +24,6 @@ from flowmachine.core.server.action_handlers import (
     action_handler__get_query_params,
     action_handler__get_sql,
     action_handler__run_query,
-    action_handler__run_benchmark,
-    action_handler__bench_query,
-    action_handler__poll_query,
     get_action_handler,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
@@ -232,35 +228,3 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.payload["query_state"] == query_state
     redis_connection.reset(redis_reset)
-
-
-@pytest.mark.asyncio
-async def test_action_handler__run_benchmark(server_config):
-    reply = await action_handler__run_benchmark(server_config)
-    assert reply.payload is float
-
-
-@pytest.mark.asyncio
-async def test_action_handler__bench_query(server_config, real_connections):
-    action_params=dict(
-            query_kind="spatial_aggregate",
-            locations=dict(
-                query_kind="daily_location",
-                date="2016-01-01",
-                method="last",
-                aggregation_unit="admin3",
-            ),
-        )
-
-    reply = await action_handler__bench_query(server_config, **action_params)
-    query_id = reply.payload["query_id"]
-    qsm = QueryStateMachine(get_redis(), query_id, get_db().conn_id)
-    while qsm.current_query_state == QueryState.EXECUTING:
-        pass
-    assert qsm.current_query_state == QueryState.COMPLETED
-    result = await action_handler__poll_query(server_config, query_id)
-    assert result.payload["query_state"] == "completed"
-    params = await action_handler__get_query_params(server_config, query_id)
-    #out_sql = await action_handler__get_sql(server_config, query_id)
-    #assert out_sql
-    pass
