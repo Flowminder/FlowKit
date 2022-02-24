@@ -32,7 +32,7 @@ class BenchmarkQuery(Query):
     # I'm using because I can't see a way to do arbitrary benchmarks without building a parallel
     # infrastructure; the advantage of this route is that it takes advantage of the run-poll
     # model that the real queries run on
-    _explain_func = """
+    _explain_func="""
 DROP FUNCTION estimate_cost(text);
 CREATE OR REPLACE FUNCTION estimate_cost(
 	IN query text, 
@@ -55,21 +55,18 @@ $BODY$
 LANGUAGE plpgsql;
     """
 
-    def __init__(
-        self,
-        benchmark_target: Query,
-    ):
+    def __init__(self,
+                 benchmark_target : Query,
+                 ):
         super().__init__(cache=False)
         self.benchmark_target = benchmark_target
 
     def _make_query(self):
         # NOTE: Beware the string delimiters here! Making this a bound query or similar would be much better!
         escaped_query = self.benchmark_target.get_query().replace(r"'", r"''")
-        if (
-            "INSERT" in escaped_query
-            or "UPDATE" in escaped_query
-            or "DROP" in escaped_query
-        ):
+        if "INSERT" in escaped_query \
+        or "UPDATE" in escaped_query \
+        or "DROP" in escaped_query:
             raise BenchSideEffectError("Data modification detected in benchmark target")
         return f""" 
         SELECT execution_time, planning_time FROM estimate_cost('{escaped_query}')
@@ -81,11 +78,10 @@ LANGUAGE plpgsql;
 
     # We need to override _make_sql to define the stored query
     # _before_ we run the rest of the expression
-    def _make_sql(self, name: str, schema: Union[str, None] = None):
+    def _make_sql(self, name:str, schema: Union[str, None] = None):
         query_list = super()._make_sql(name, schema)
         query_list = [self._explain_func] + query_list
         return query_list
-
 
 # Not remving this completly, but commenting out for now
 
