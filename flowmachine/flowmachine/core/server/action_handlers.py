@@ -29,23 +29,19 @@ from flowmachine.core.query_info_lookup import (
     UnkownQueryIdError,
     QueryInfoLookupError,
 )
-from flowmachine.core.server.server_config import FlowmachineServerConfig
-from flowmachine.core.server.query_schemas import BaseExposedQuery
 from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema, GeographySchema
 from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
+from ...features.benchmark.benchmark import BenchmarkQuery
 __all__ = ["perform_action"]
 
 from ..dependency_graph import query_progress
-from ..errors.flowmachine_errors import LoadQueryError
 
 
-async def action_handler__ping(
-        config: FlowmachineServerConfig
-) -> ZMQReply:
+async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
     """
     Handler for 'ping' action.
 
@@ -79,21 +75,15 @@ async def action_handler__get_query_schemas(
     return ZMQReply(status="success", payload={"query_schemas": get_query_schema()})
 
 
-def _load_query_from_params(action_params: dict) -> BaseExposedQuery:
+async def action_handler__run_query(
+    config: "FlowmachineServerConfig", **action_params: dict
+) -> ZMQReply:
     """
-    Validates action_params using FlowmachineQuerySchema, and returns an appropriate Query object
+    Handler for the 'run_query' action.
 
-    Parameters
-    ----------
-    action_params: dict
-        Dictionary that can be pased to FlowmachineQuerySchema
-
-    Returns
-    -------
-    Subclass of BaseExposedQuery
-
-    Raises
-
+    Constructs a flowmachine query object, sets it running and returns the query_id.
+    For this action handler the `action_params` are exactly the query kind plus the
+    parameters needed to construct the query.
     """
     try:
         query_obj = FlowmachineQuerySchema().load(action_params)
@@ -105,7 +95,11 @@ def _load_query_from_params(action_params: dict) -> BaseExposedQuery:
             f"Internal flowmachine server error: could not create query object using query schema. "
             f"The original error was: '{orig_error_msg}'"
         )
-        raise LoadQueryError(error_msg, orig_error_msg)
+        return ZMQReply(
+            status="error",
+            msg=error_msg,
+            payload={"params": action_params, "orig_error_msg": orig_error_msg},
+        )
     except ValidationError as exc:
         # The dictionary of marshmallow errors can contain integers as keys,
         # which will raise an error when converting to JSON (where the keys
@@ -122,33 +116,8 @@ def _load_query_from_params(action_params: dict) -> BaseExposedQuery:
             f"The action parameters were:\n{action_params_as_text}.\n\n"
             f"Validation error messages:\n{validation_errors_as_text}.\n\n"
         )
-        raise LoadQueryError(error_msg, validation_error_messages)
-    return query_obj
-
-
-async def _register_and_start_query(
-        query_obj: BaseExposedQuery,
-        action_params: dict,
-        config: "FlowmachineServerConfig",
-        store_dependencies: Union[bool, None] = None
-) -> str:
-    """
-
-    Parameters
-    ----------
-    query_obj
-    action_params
-    config
-    store_dependencies
-
-    Returns
-    -------
-    query_id: str
-        The ID of the query in Redis
-
-    """
-    if store_dependencies is None:
-        store_dependencies = config.store_dependencies
+        payload = {"validation_error_messages": validation_error_messages}
+        return ZMQReply(status="error", msg=error_msg, payload=payload)
 
     q_info_lookup = QueryInfoLookup(get_redis())
     try:
@@ -164,58 +133,31 @@ async def _register_and_start_query(
                 reset = qsm.reset()
                 finish = qsm.finish_resetting()
             raise QueryInfoLookupError
-
     except QueryInfoLookupError:
-        # Set the query running (it's safe to call this even if the query was set running before)
-        query_id = await asyncio.get_running_loop().run_in_executor(
-            executor=config.server_thread_pool,
-            func=partial(
-                copy_context().run,
-                partial(
-                    query_obj.store_async,
-                    store_dependencies=store_dependencies
+        try:
+            # Set the query running (it's safe to call this even if the query was set running before)
+            query_id = await asyncio.get_running_loop().run_in_executor(
+                executor=config.server_thread_pool,
+                func=partial(
+                    copy_context().run,
+                    partial(
+                        query_obj.store_async,
+                        store_dependencies=config.store_dependencies,
+                    ),
                 ),
-            ),
-        )
+            )
+        except Exception as e:
+            return ZMQReply(
+                status="error",
+                msg="Unable to create query object.",
+                payload={"exception": str(e)},
+            )
 
         # Register the query as "known" (so that we can later look up the query kind
         # and its parameters from the query_id).
+
         q_info_lookup.register_query(query_id, action_params)
 
-    return query_id
-
-
-async def action_handler__run_query(
-    config: "FlowmachineServerConfig", **action_params: dict
-) -> ZMQReply:
-    """
-    Handler for the 'run_query' action.
-
-    Constructs a flowmachine query object, sets it running and returns the query_id.
-    For this action handler the `action_params` are exactly the query kind plus the
-    parameters needed to construct the query.
-    """
-    try:
-        query_obj = _load_query_from_params(action_params)
-        query_id = await _register_and_start_query(
-            query_obj,
-            action_params,
-            config
-        )
-
-    except LoadQueryError as err:
-        return ZMQReply(
-            status="error",
-            msg=err.error_msg,
-            payload={"params": action_params, "orig_error_msg": err.base_error_msg},
-        )
-    except Exception as err:
-        return ZMQReply(
-            status="error",
-            msg="Unable to create query object",
-            payload={"exception": str(err)}
-        )
-
     return ZMQReply(
         status="success",
         payload={
@@ -223,47 +165,6 @@ async def action_handler__run_query(
             "progress": query_progress(query_obj._flowmachine_query_obj),
         },
     )
-
-
-async def action_handler__bench_query(
-        config: "FlowmachineServerConfig", **benchmark_target: dict
-) -> ZMQReply:
-
-    action_params = {
-        "query_kind": "benchmark",
-        "benchmark_target": benchmark_target
-    }
-    try:
-        query_obj = _load_query_from_params(action_params)
-        query_id = await _register_and_start_query(
-            query_obj,
-            action_params,
-            config,
-            store_dependencies=False
-        )
-
-    except LoadQueryError as err:
-        return ZMQReply(
-            status="error",
-            msg=err.error_msg,
-            payload={"params": action_params, "orig_error_msg": err.base_error_msg},
-        )
-    except Exception as err:
-        return ZMQReply(
-            status="error",
-            msg="Unable to create query object",
-            payload={"exception": str(err)}
-        )
-
-    return ZMQReply(
-        status="success",
-        payload={
-            "query_id": query_id,
-            "progress": query_progress(query_obj._flowmachine_query_obj),
-        },
-    )
-
-
 
 
 def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
@@ -505,6 +406,44 @@ async def action_handler__get_available_dates(
         for (event_type, dates) in conn.available_dates.items()
     }
     return ZMQReply(status="success", payload=available_dates)
+
+
+async def action_handler__run_benchmark(
+    config: "FlowmachineServerConfig"
+) -> ZMQReply:
+    """
+
+    Parameters
+    ----------
+    config
+
+    Returns
+    -------
+
+    """
+    from ...features.benchmark.benchmark import BenchmarkQuery
+    bench_query = BenchmarkQuery()
+    time = bench_query.run_benchmark()  # Again, run_benchmark is presently blocking
+    return ZMQReply(status="success", payload={"time":time})
+
+
+async def action_handler__bench_query(
+        config: "FlowmachineServerConfig", **benchmark_target: dict
+) -> ZMQReply:
+
+    # TODO here:
+    # -Copy run_query with tweaks
+    # -Need to invalidate the cache for the benchmark before running, else it'll just return nothing
+    # -Even with store dependencies=false, will still use cached queries that have already been cached
+    # -Feature to add; ignore cache flag on get_query()
+    # -Can we just sum up the cache table perform. values?
+
+    action_params = {
+        "query_kind": "benchmark",
+        "benchmark_target": benchmark_target
+    }
+    out = await action_handler__run_query(config, **action_params)
+    return out
 
 
 def get_action_handler(action: str) -> Callable:
