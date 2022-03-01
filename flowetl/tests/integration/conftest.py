@@ -562,7 +562,7 @@ def run_task(flowetl_container):
     """
 
     yield lambda dag_id, task_id, exec_date: flowetl_container.exec_run(
-        f"airflow test {dag_id} {task_id} {exec_date}", user="airflow"
+        f"airflow tasks test {dag_id} {task_id} {exec_date}", user="airflow"
     )
 
 
@@ -577,11 +577,13 @@ def run_dag(flowetl_container):
     """
 
     def trigger_dag(*, dag_id, exec_date, run_id=None):
-        trigger_cmd = ["airflow", "trigger_dag", "-e", exec_date]
+        trigger_cmd = ["airflow", "dags", "trigger", "-e", exec_date]
         if run_id is not None:
             trigger_cmd += ["-r", run_id]
 
-        flowetl_container.exec_run(["airflow", "unpause", dag_id], user="airflow")
+        flowetl_container.exec_run(
+            ["airflow", "dags", "unpause", dag_id], user="airflow"
+        )
         return flowetl_container.exec_run([*trigger_cmd, dag_id], user="airflow")
 
     yield trigger_dag
@@ -598,7 +600,7 @@ def dag_status(flowetl_container):
     """
 
     def dag_status(*, dag_id, exec_date):
-        status_cmd = ["airflow", "dag_state", dag_id, exec_date]
+        status_cmd = ["airflow", "dags", "state", dag_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield dag_status
