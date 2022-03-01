@@ -25,7 +25,9 @@ ENV HOME ${AIRFLOW_HOME}
 # running under a different user for development purposes. Related uses:
 # https://github.com/docker-library/postgres/issues/359
 # https://cwrap.org/nss_wrapper.html
+# Also contains workaround for bad postgres keyserver in airflow image
 RUN set -eux; \
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29; \
         apt-get update; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
