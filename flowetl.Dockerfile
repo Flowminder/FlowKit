@@ -14,6 +14,8 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 ENV AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.deny_all
 ENV AIRFLOW__WEBSERVER__RBAC=True
 USER root
+
+# Wordaround for postgres key error in airflow image
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
 
 # Flowdb connections
@@ -27,7 +29,6 @@ ENV HOME ${AIRFLOW_HOME}
 # https://cwrap.org/nss_wrapper.html
 # Also contains workaround for bad postgres keyserver in airflow image
 RUN set -eux; \
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29; \
         apt-get update; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
@@ -44,13 +45,12 @@ WORKDIR /${SOURCE_TREE}/flowetl
 COPY . /${SOURCE_TREE}/
 
 
-RUN     apt-get update && \
-        apt-get install -y --no-install-recommends git build-essential && \
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends git build-essential && \
         pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
         apt-get -y remove git build-essential && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
-RUN echo $PWD && ls $PWD && ls $PWD/flowetl
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
         cd flowetl && \

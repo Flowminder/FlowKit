@@ -9,7 +9,7 @@ sqlalchemy = "<=1.3.23"
 click = "*"
 apache-airflow-upgrade-check = "*"
 wtforms = "<3.0.0"
-pytest-pgsql = "*"
+
 
 [dev-packages]
 structlog = "*"
@@ -20,6 +20,7 @@ pandas = "*"
 docker = "*"
 versioneer = "*"
 pytest-cov = "*"
+pytest-pgsql = "*"
 
 [requires]
 python_version = "3.8"
