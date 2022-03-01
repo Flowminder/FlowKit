@@ -59,7 +59,7 @@ RUN apt-get update && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/* && \
         mv /${SOURCE_TREE}/flowetl/entrypoint.sh / && \
-	cp /${SOURCE_TREE}/flowetl/mounts/dags/*.py /opt/airflow/dags/
+	cp /${SOURCE_TREE}/flowetl/mounts/dags/ /opt/airflow/dags/
 
 # Deal with old bind mounts to /usr/local/airflow
 
