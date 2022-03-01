@@ -10,6 +10,7 @@ click = "*"
 markupsafe="==2.0.1"
 apache-airflow-upgrade-check = "*"
 wtforms = "<3.0.0"
+pyparsing = "==2.4.2"
 
 [dev-packages]
 structlog = "*"
