@@ -2,13 +2,10 @@ from flowetl.operators.staging.create_and_fill_day_sightings_table import (
     CreateAndFillDaySightingsTable,
 )
 from flowetl.operators.staging.create_sightings_table import CreateSightingsTable
-from flowetl.operators.staging.default_location_mapping import DefaultLocationMapping
 from flowetl.operators.staging.append_sightings_to_main_table import (
     AppendSightingsToMainTable,
 )
-from flowetl.operators.staging.apply_mapping_to_staged_events import (
-    ApplyMappingToStagedEvents,
-)
+
 from flowetl.operators.staging.create_and_fill_staging_table import (
     CreateAndFillStagingTable,
 )
@@ -16,7 +13,6 @@ from flowetl.operators.staging.cleanup_staging_table import CleanupStagingTable
 
 from airflow.operators.bash_operator import BashOperator
 
-from operators.staging.example_location_mapping import ExampleLocationMapping
 from operators.staging.mount_event_operator_factory import create_mount_event_operator
 from operators.staging.event_columns import event_column_mappings
 
