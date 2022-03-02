@@ -1,8 +1,12 @@
+from typing import Literal
+
 from airflow.operators.postgres_operator import PostgresOperator
 from flowetl.operators.staging.event_columns import event_column_mappings
 
 
-def create_mount_event_operator(*, event_type: str):
+def create_mount_event_operator(
+    *, event_type: Literal["call", "sms", "location", "mds", "topup"]
+):
     """
     A class factory function that produces an Airflow operator for mounting a foreign table containing data of
     event_type.
@@ -11,13 +15,14 @@ def create_mount_event_operator(*, event_type: str):
     event_type:str
         One of call,sms,location,mds,topup.
     """
-    if event_type not in event_column_mappings.keys():
-        raise KeyError(f"{event_type} must be one of {event_column_mappings.keys()}")
 
-    columns = ",\n".join(
-        f"{col_name} {col_dtype}"
-        for col_name, col_dtype in event_column_mappings[event_type].items()
-    )
+    try:
+        columns = ",\n".join(
+            f"{col_name} {col_dtype}"
+            for col_name, col_dtype in event_column_mappings[event_type].items()
+        )
+    except KeyError:
+        raise KeyError(f"{event_type} must be one of {event_column_mappings.keys()}")
 
     sql = f"""
     BEGIN;
