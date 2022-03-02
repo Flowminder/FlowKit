@@ -9,11 +9,9 @@ Conftest for flowetl integration tests
 import os
 import random
 import string
-import tarfile
 import warnings
 from pathlib import Path
-from subprocess import Popen, run
-from tempfile import NamedTemporaryFile
+from subprocess import Popen
 from threading import Event, Thread
 from time import sleep
 
