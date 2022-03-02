@@ -20,11 +20,9 @@ class CreateAndFillStagingTable(PostgresOperator):
 
     def __init__(self, *args, event_type_list: List[str], **kwargs):
 
-        for event_type in event_type_list:
-            if event_type not in event_column_mappings.keys():
-                raise KeyError(
-                    f"{event_type} not one of {event_column_mappings.keys()}"
-                )
+        if notin := set(event_type_list).difference(set(event_column_mappings.keys())):
+            # TODO: testme
+            raise KeyError(f"{notin} not found in {event_column_mappings.keys()}")
 
         unions = "\nUNION ALL\n".join(
             f"""
