@@ -75,13 +75,6 @@ def test_append_sightings_to_main_table(mock_staging_dag, day_sightings_table_co
     assert out.rowcount == 37
 
 
-def test_apply_mapping_to_staged_events(
-    mock_staging_dag, staged_data_conn, default_mapping_table_conn
-):
-    # Needs mapping table + staged events to exist
-    run_task(ApplyMappingToStagedEvents(dag=mock_staging_dag), mock_staging_dag)
-
-
 def test_create_and_fill_day_sightings_table(mock_staging_dag, sightings_table_conn):
     # Needs staging table + reduced sightings
     run_task(CreateAndFillDaySightingsTable(dag=mock_staging_dag), mock_staging_dag)
@@ -101,14 +94,6 @@ def test_create_sightings_table(mock_staging_dag, dummy_db_conn):
         "event_times",
         "event_types",
     ]
-
-
-def test_default_location_mapping(mock_staging_dag, staged_data_conn):
-    run_task(DefaultLocationMapping(dag=mock_staging_dag), mock_staging_dag)
-
-
-def test_example_location_mapping(mock_staging_dag, staged_data_conn):
-    run_task(ExampleLocationMapping(dag=mock_staging_dag), mock_staging_dag)
 
 
 def test_staging_cleanup(mock_staging_dag, staged_data_conn):
