@@ -383,28 +383,33 @@ def flowetl_container(
 
         logger.info("Started FlowETL container")
         yield container
-
-        save_airflow_logs = (
-            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
-            == "TRUE"
-        )
-        if save_airflow_logs:
-            logger.info(
-                "Saving airflow logs to /mounts/logs/ and outputting to stdout "
-                "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
-            )
-            container.exec_run(
-                "bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'", user="airflow"
-            )
-            airflow_logs = container.exec_run(
-                "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
-            )
-            logger.info(airflow_logs)
     except TimeoutError as exc:
         raise TimeoutError(
             f"Flowetl container did not start properly. This may be due to missing config settings or syntax errors in one of its task. Logs: {container.logs()}"
         )
     finally:
+        try:
+            save_airflow_logs = (
+                os.getenv(
+                    "FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE"
+                ).upper()
+                == "TRUE"
+            )
+            if save_airflow_logs:
+                logger.info(
+                    "Saving airflow logs to /mounts/logs/ and outputting to stdout "
+                    "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
+                )
+                container.exec_run(
+                    "bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'", user="airflow"
+                )
+                airflow_logs = container.exec_run(
+                    "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
+                )
+                logger.info("Airflow logs follow.")
+                logger.info(airflow_logs)
+        except Exception as exc:
+            logger.error(f"Failed to get logs: {exc}")
         container.kill()
         container.remove()
 
@@ -617,7 +622,7 @@ def task_status(flowetl_container):
     """
 
     def task_status(*, dag_id, task_id, exec_date):
-        status_cmd = ["airflow", "task_state", dag_id, task_id, exec_date]
+        status_cmd = ["airflow", "tasks", "state", dag_id, task_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield task_status

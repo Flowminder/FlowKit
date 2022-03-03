@@ -24,6 +24,7 @@ def test_uid(docker_client, container_tag):
         },
         auto_remove=True,
     )
+    print(out)
     assert out.decode("utf-8").strip() == "1002"
 
 

@@ -55,14 +55,23 @@ def get_qa_checks(
         dag = DagContext.get_current_dag()
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
-    # Add the default QA checks to the template path
-    default_checks = Path(__file__).parent / "qa_checks"
 
+    # The issue is that the file folder is getting added to the search path
+    # here, this will be this file's parent
+    # but later, it will be the dags folder by the look of it
+    # even worse, airflow is actually setting this to the folder containing the file
+    # of the caller of this function, so we want to use that if called from this file
+    # and otherwise explicitly add the qa checks dir?
+    default_path = (
+        dag.folder
+        if dag.fileloc == str(Path(__file__))
+        else Path(__file__).parent / "qa_checks"
+    )
     dag.template_searchpath = [
         *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
+        default_path,  # Contains the default checks
         settings.DAGS_FOLDER,
-        str(default_checks),
     ]
     jinja_env = dag.get_template_env()
     templates = [
@@ -75,14 +84,7 @@ def get_qa_checks(
         "qa_checks",
         *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
     )
-    template_paths = {
-        tmpl.stem
-        if tmpl.parent.stem == "qa_checks"
-        else f"{tmpl.stem}.{tmpl.parent.stem}": tmpl
-        for tmpl in templates
-        if tmpl.parent.stem in valid_stems
-    }
-    print(template_paths)
+    template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
     return [
         QACheckOperator(
             task_id=tmpl.stem
@@ -91,7 +93,7 @@ def get_qa_checks(
             sql=str(tmpl),
             dag=dag,
         )
-        for tmpl in sorted(template_paths.values())
+        for tmpl in sorted(template_paths)
     ]
 
 
