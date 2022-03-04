@@ -6,7 +6,7 @@ CREATE SCHEMA IF NOT EXISTS reduced;
 DROP TABLE IF EXISTS reduced.sightings_{{ds_nodash}};
 
 --TODO: msisdn and locationid to bytea from text
-CREATE TABLE reduced.sightings_{{ds_nodash}}(
+CREATE UNLOGGED TABLE reduced.sightings_{{ds_nodash}}(
  LIKE reduced.sightings,
  CONSTRAINT sightings_{{ds_nodash}}_check
     CHECK (sighting_date >= DATE '{{ds_nodash}}' AND sighting_date < DATE '{{ds_nodash}}' + 1)

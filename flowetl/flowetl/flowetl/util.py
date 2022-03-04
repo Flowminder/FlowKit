@@ -9,6 +9,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
+from airflow.operators.postgres_operator import PostgresOperator
 from pendulum import Interval
 
 
@@ -433,19 +434,9 @@ def create_staging_dag(start_date: datetime, event_types: List[str], end_date=No
         template_searchpath=template_folder,
         is_paused_upon_creation=True,
     ) as dag:
-        from flowetl.operators.staging.create_and_fill_day_sightings_table import (
-            CreateAndFillDaySightingsTable,
-        )
-        from flowetl.operators.staging.create_sightings_table import (
-            CreateSightingsTable,
-        )
-        from flowetl.operators.staging.append_sightings_to_main_table import (
-            AppendSightingsToMainTable,
-        )
         from flowetl.operators.staging.create_and_fill_staging_table import (
             CreateAndFillStagingTable,
         )
-        from flowetl.operators.staging.cleanup_staging_table import CleanupStagingTable
         from flowetl.operators.staging.mount_event_operator_factory import (
             create_mount_event_operator,
         )
@@ -458,10 +449,19 @@ def create_staging_dag(start_date: datetime, event_types: List[str], end_date=No
         create_and_fill_staging_table = CreateAndFillStagingTable(
             event_type_list=event_types
         )
-        create_sightings_table = CreateSightingsTable()
-        create_day_sightings_table = CreateAndFillDaySightingsTable()
-        append_sightings = AppendSightingsToMainTable()
-        cleanup_staging_table = CleanupStagingTable()
+        create_sightings_table = PostgresOperator(
+            sql="create_sightings_table.sql", task_id="create_sightings_table"
+        )
+        create_day_sightings_table = PostgresOperator(
+            sql="create_and_fill_day_sightings_table.sql",
+            task_id="create_day_sightings_table",
+        )
+        append_sightings = PostgresOperator(
+            sql="append_sightings_to_main_table.sql", task_id="append_sightings"
+        )
+        cleanup_staging_table = PostgresOperator(
+            sql="cleanup_staging_table.sql", task_id="append_sightings"
+        )
 
         create_and_fill_staging_table << [*event_mount_instantiations]
 
