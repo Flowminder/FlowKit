@@ -377,7 +377,7 @@ def flowetl_container(
         yield container
 
         save_airflow_logs = (
-            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRF" "LOW_LOGS", "FALSE").upper()
+            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
             == "TRUE"
         )
         if save_airflow_logs:
