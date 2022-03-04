@@ -11,6 +11,7 @@ import pytest
 from pathlib import Path
 import jinja2
 
+from operators.staging.event_columns import event_column_mappings
 
 CSV_FOLDER = Path(__file__).parent.parent.parent / "mounts" / "files" / "static_csvs"
 SQL_FOLDER = (
@@ -23,7 +24,7 @@ SQL_FOLDER = (
 )
 TEST_DATE = datetime.datetime(year=2021, month=9, day=29)
 TEST_DATE_STR = "20210929"
-TEST_PARAMS = {"flowetl_csv_dir": str(CSV_FOLDER), "flowdb_csv_dir": str(CSV_FOLDER)}
+TEST_PARAMS = {"flowdb_csv_dir": str(CSV_FOLDER), "column_dict": event_column_mappings}
 
 sql_env = jinja2.Environment(loader=jinja2.FileSystemLoader(SQL_FOLDER))
 
@@ -104,6 +105,7 @@ def mock_staging_dag(real_airflow_conn, dummy_db_conn):
             "owner": "airflow",
             "start_date": datetime.datetime(2021, 9, 29),
             "postgres_conn_id": "testdb",
+            "column_dict": event_column_mappings,
         },
         params=TEST_PARAMS,
         schedule_interval=datetime.timedelta(days=1),

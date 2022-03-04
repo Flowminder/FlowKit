@@ -1,3 +1,5 @@
+from airflow.operators.postgres_operator import PostgresOperator
+
 from flowetl.operators.staging.create_and_fill_day_sightings_table import (
     CreateAndFillDaySightingsTable,
 )
@@ -35,8 +37,13 @@ def test_mock_dag(mock_staging_dag):
 
 
 def test_mount_event_table(mock_staging_dag, dummy_db_conn):
-    sms_operator = create_mount_event_operator(event_type="sms")
-    run_task(sms_operator(dag=mock_staging_dag), mock_staging_dag)
+    sms_operator = PostgresOperator(
+        sql="mount_event.sql",
+        task_id="mount_event",
+        params={"event_type": "sms"},
+        dag=mock_staging_dag,
+    )
+    run_task(sms_operator, mock_staging_dag)
     columns = dummy_db_conn.execute(
         f"""
         SELECT column_name
@@ -54,10 +61,14 @@ def test_mount_event_table(mock_staging_dag, dummy_db_conn):
 
 
 def test_create_and_fill_staging_table(mock_staging_dag, mounted_events_conn):
+    fill_operator = PostgresOperator(
+        sql="stage_events.sql",
+        task_id="stage_events",
+        params={"event_types": ["call", "sms"]},
+        dag=mock_staging_dag,
+    )
     run_task(
-        CreateAndFillStagingTable(
-            dag=mock_staging_dag, event_type_list=["call", "sms"]
-        ),
+        fill_operator,
         mock_staging_dag,
     )
     out = mounted_events_conn.execute("SELECT * FROM staging_table_20210929")

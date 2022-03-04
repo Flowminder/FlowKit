@@ -9,7 +9,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
-from airflow.operators.postgres_operator import PostgresOperator
+
 from pendulum import Interval
 
 
@@ -434,20 +434,21 @@ def create_staging_dag(start_date: datetime, event_types: List[str], end_date=No
         template_searchpath=template_folder,
         is_paused_upon_creation=True,
     ) as dag:
-        from flowetl.operators.staging.create_and_fill_staging_table import (
-            CreateAndFillStagingTable,
-        )
-        from flowetl.operators.staging.mount_event_operator_factory import (
-            create_mount_event_operator,
-        )
 
-        event_mount_operator_classes = [
-            create_mount_event_operator(event_type=event_type)
+        from airflow.operators.postgres_operator import PostgresOperator
+
+        event_mounts = [
+            PostgresOperator(
+                sql="mount_event.sql",
+                task_id=f"mount_{event_type}",
+                params={"event_type": event_type},
+            )
             for event_type in event_types
         ]
-        event_mount_instantiations = [op() for op in event_mount_operator_classes]
-        create_and_fill_staging_table = CreateAndFillStagingTable(
-            event_type_list=event_types
+        create_and_fill_staging_table = PostgresOperator(
+            sql="stage_events.sql",
+            task_id="stage_events.sql",
+            params={"events": event_types},
         )
         create_sightings_table = PostgresOperator(
             sql="create_sightings_table.sql", task_id="create_sightings_table"
@@ -463,7 +464,7 @@ def create_staging_dag(start_date: datetime, event_types: List[str], end_date=No
             sql="cleanup_staging_table.sql", task_id="append_sightings"
         )
 
-        create_and_fill_staging_table << [*event_mount_instantiations]
+        create_and_fill_staging_table << [*event_mounts]
 
         append_sightings << [create_day_sightings_table, create_sightings_table]
         (create_day_sightings_table << create_and_fill_staging_table)
