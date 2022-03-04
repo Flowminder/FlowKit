@@ -539,11 +539,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:356f4fd795fbf5a7a97bdeb7ca908b5051d0e6e4c0499b2b7c30b743a6938a7e",
-                "sha256:c1bcc4989c7e0b6c3301df10b6285c09ee0a1d75fa4cebd936f0d17312294e36"
+                "sha256:16521d8cf062461b158433d820fff509f98fb997ae6c28740eda061d9cba7d5e",
+                "sha256:556d07f24a8789db3b2dca78e0fe764c5a97a75ca800b1b7e5c4cfb7c3da2ea1"
             ],
             "index": "pypi",
-            "version": "==0.16.2"
+            "version": "==0.16.3"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1469,11 +1469,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:356f4fd795fbf5a7a97bdeb7ca908b5051d0e6e4c0499b2b7c30b743a6938a7e",
-                "sha256:c1bcc4989c7e0b6c3301df10b6285c09ee0a1d75fa4cebd936f0d17312294e36"
+                "sha256:16521d8cf062461b158433d820fff509f98fb997ae6c28740eda061d9cba7d5e",
+                "sha256:556d07f24a8789db3b2dca78e0fe764c5a97a75ca800b1b7e5c4cfb7c3da2ea1"
             ],
             "index": "pypi",
-            "version": "==0.16.2"
+            "version": "==0.16.3"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1535,9 +1535,9 @@
         "sanitized-package": {
             "editable": true,
             "extras": [
-                "pytest"
+
             ],
-            "path": "./../flowkit_jwt_generator"
+            "path": "."
         },
         "semver": {
             "hashes": [
