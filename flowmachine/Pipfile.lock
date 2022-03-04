@@ -1294,10 +1294,10 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:e69d5aeac4e371986f94e8ad06e56d70633870d026f2306fca44051f02fcb688"
+                "sha256:d50caba2ae83bf5d44682191023d7d6ca4017d1cf6e974a1e53258ef103fbc11"
             ],
             "index": "pypi",
-            "version": "==1.2.2"
+            "version": "==1.3.0"
         },
         "python-dateutil": {
             "hashes": [
