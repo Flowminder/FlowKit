@@ -527,11 +527,11 @@
     "develop": {
         "approvaltests": {
             "hashes": [
-                "sha256:e21d1b3ec392b3cb685c707a8a2828cecc118e82886cddb1632132ccfb37f1de",
-                "sha256:e5b89218dc3422bd5d96ab75c73c34bce4adaa60737077c5cdd7af950c09e239"
+                "sha256:976e7a5799a414f76dfb658e30ceb58bd8f2b2e45a0363461ca3812de37731d7",
+                "sha256:c49c01b75db834e2a6fbe4b83c7caf54c4b02d5f018dbafc9eea41207df21bbb"
             ],
             "index": "pypi",
-            "version": "==3.3.2"
+            "version": "==4.0.0"
         },
         "asttokens": {
             "hashes": [
@@ -581,12 +581,6 @@
             ],
             "index": "pypi",
             "version": "==21.12b0"
-        },
-        "bs4": {
-            "hashes": [
-                "sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a"
-            ],
-            "version": "==0.0.1"
         },
         "cachey": {
             "hashes": [
@@ -644,7 +638,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:03e2a7826086b91ef345ff18742ee9fc47a6839ccd517061ef8fa1976e652ce9",
@@ -1244,9 +1238,9 @@
         },
         "pyperclip": {
             "hashes": [
-                "sha256:a3cb6df5d8f1557ca8fc514d94fabf50dc5a97042c90e5ba4f3611864fed3fc5"
+                "sha256:105254a8b04934f0bc84e9c24eb360a591aaf6535c9def5f29d92af107a9bf57"
             ],
-            "version": "==1.5.27"
+            "version": "==1.8.2"
         },
         "pyproj": {
             "hashes": [
