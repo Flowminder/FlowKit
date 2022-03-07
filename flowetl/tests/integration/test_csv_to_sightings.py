@@ -6,16 +6,10 @@ from pprint import pprint
 
 def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transaction):
     test_date = "20210929"
-    foo, bar = flowetl_container.exec_run("airflow dags report")
-    print(bar.decode())
-    # exit_code, output = run_dag(
-    #     dag_id="load_records_from_staging_dag",
-    #     exec_date=test_date
-    # )
-    # print(output.decode('utf-8'))
     exit_code, unpause_out = flowetl_container.exec_run(
         "airflow dags unpause load_records_from_staging_dag"
     )
+
     print(unpause_out.decode())
     assert exit_code == 0
     for check_attempt in range(100):

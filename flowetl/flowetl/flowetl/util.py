@@ -393,7 +393,7 @@ def create_dag(
     return dag
 
 
-def create_staging_dag(start_date: datetime, event_types: List[str], end_date=None):
+def create_staging_dag(start_date: datetime, end_date=None):
     """
     Returns a DAG for moving data from event-CSVs a given day to the reduced sightings format.
     See individual operators for details.
@@ -436,6 +436,10 @@ def create_staging_dag(start_date: datetime, event_types: List[str], end_date=No
     ) as dag:
 
         from airflow.operators.postgres_operator import PostgresOperator
+
+        event_types = os.getenv(
+            "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
+        ).split(",")
 
         event_mounts = [
             PostgresOperator(
