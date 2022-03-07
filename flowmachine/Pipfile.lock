@@ -80,11 +80,11 @@
         },
         "networkx": {
             "hashes": [
-                "sha256:80b6b89c77d1dfb64a4c7854981b60aeea6360ac02c6d4e4913319e0a313abef",
-                "sha256:c0946ed31d71f1b732b5aaa6da5a0388a345019af232ce2f49c766e2d6795c51"
+                "sha256:011e85d277c89681e8fa661cf5ff0743443445049b0b68789ad55ef09340c6e0",
+                "sha256:d1194ba753e5eed07cdecd1d23c5cd7a3c772099bd8dbd2fea366788cf4de7ba"
             ],
             "index": "pypi",
-            "version": "==2.6.3"
+            "version": "==2.7.1"
         },
         "numpy": {
             "hashes": [
