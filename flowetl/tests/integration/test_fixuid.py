@@ -26,7 +26,7 @@ def test_uid(
         network=container_network.name,
     )
     print(out)
-    assert out.decode("utf-8").strip() == "1002"
+    assert out.decode("utf-8").strip().split().pop() == "1002"
 
 
 def test_uid_is_airflow(
@@ -45,4 +45,4 @@ def test_uid_is_airflow(
         environment=container_env["flowetl"],
         network=container_network.name,
     )
-    assert out.decode("utf-8").strip() == "airflow"
+    assert out.decode("utf-8").strip().split().pop() == "airflow"
