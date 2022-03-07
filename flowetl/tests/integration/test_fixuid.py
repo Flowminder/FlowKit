@@ -45,4 +45,4 @@ def test_uid_is_airflow(
         environment=container_env["flowetl"],
         network=container_network.name,
     )
-    assert out.decode("utf-8").strip().split().pop() == "airflow"
+    assert out.decode("utf-8").strip().split().pop() == "default"
