@@ -4,6 +4,8 @@
 
 from typing import Type
 
+from jinja2 import TemplateNotFound
+
 
 class WrappingSQLMixin:
     def prepare_template(self) -> None:
@@ -11,7 +13,7 @@ class WrappingSQLMixin:
             # See if the sql to be wrapped lives in a file
             jinja_env = self.dag.get_template_env()
             sql = jinja_env.loader.get_source(jinja_env, self.sql)[0]
-        except:
+        except TemplateNotFound:
             sql = self.sql
         self.sql = self.wrapper_sql.format(sql=sql)
 

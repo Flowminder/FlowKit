@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-def test_wrapped_sql():
+def test_wrapped_sql(mock_basic_dag):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
     from flowetl.mixins.wrapping_sql_mixin import wrapped_sql_operator
 
     new_type = wrapped_sql_operator(class_name="DUMMY_TYPE", sql="WRAPS({sql})")
-    new_instance = new_type(sql="WRAPPED", task_id="DUMMY")
+    new_instance = new_type(sql="WRAPPED", task_id="DUMMY", dag=mock_basic_dag)
     assert new_type.wrapper_sql == "WRAPS({sql})"
     assert isinstance(new_instance, PostgresOperator)
     assert isinstance(new_instance, TableNameMacrosMixin)
