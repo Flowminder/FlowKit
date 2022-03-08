@@ -643,11 +643,11 @@
         },
         "versioneer": {
             "hashes": [
-                "sha256:1b4900f17b84ce76dbc5d462fe06522ea2ec400945c46dc751abad12db2e7ca6",
-                "sha256:64f2dbcbbed15f9a6da2b85f643997db729cf496cafdb97670fb2fa73a7d8e20"
+                "sha256:9f0e9a2cb5ef521cbfd104d43a208dd9124dfb4accfa72d694e0d0430a0142bc",
+                "sha256:dee243f8f084351a1d79eabefc2e55d58aa8a2af086a7e41602a6aafbd972a34"
             ],
             "index": "pypi",
-            "version": "==0.21"
+            "version": "==0.22"
         },
         "wcwidth": {
             "hashes": [
