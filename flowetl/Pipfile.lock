@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b86bac385b21e2dd04996540cec282abb3051fa452eb079f3bf42e2bedf2c6de"
+            "sha256": "68dc4fc3d8057e6c3822d2ce17d9cc55129f24ac1218f2cb7f35cdd0734e9b63"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -34,8 +34,7 @@
         },
         "apache-airflow": {
             "extras": [
-                "crypto",
-                "postgres"
+                "crypto"
             ],
             "hashes": [
                 "sha256:35a3da3b7cf3f5757935162bd6cabb52522dafdb8fab876213e495e2834642e8",
@@ -73,6 +72,7 @@
                 "sha256:449028d830b8dacf7d18d8a361cba6a32f68e2126a5301b957186a2683849fc3",
                 "sha256:cf2a87365f887d264512d526d512e3b2a349c955c1ff53c7f6f97271e2cd2473"
             ],
+            "index": "pypi",
             "version": "==3.0.0"
         },
         "apache-airflow-providers-sqlite": {
@@ -83,14 +83,6 @@
             "markers": "python_version ~= '3.6'",
             "version": "==2.1.0"
         },
-        "apache-airflow-upgrade-check": {
-            "hashes": [
-                "sha256:26ce6d55fc792a116729a008d2dcceac5afceaa9f11ba0a5b77d9bc22e130f77",
-                "sha256:9a26c4e62ae42a42c4d8e537fdc977ff47741791da6a0ebcd54360bbba95b5ba"
-            ],
-            "index": "pypi",
-            "version": "==1.4.0"
-        },
         "apispec": {
             "extras": [
                 "yaml"
@@ -99,7 +91,7 @@
                 "sha256:a1df9ec6b2cd0edf45039ef025abd7f0660808fa2edf737d3ba1cf5ef1a4625b",
                 "sha256:d23ebd5b71e541e031b02a19db10b5e6d5ef8452c552833e3e1afc836b40b1ad"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==3.3.2"
         },
         "argcomplete": {
@@ -348,7 +340,7 @@
                 "sha256:bcda8acbc7508e31e50f63e9b1ab83185b446f6b6318bd9dd1d45626fba2e903",
                 "sha256:cf19b722fcebc2ba03e4ae7c55b532ed53f0cbf683ce36fafe5e881789a01c00"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==1.10.1"
         },
         "flask-jwt-extended": {
@@ -461,7 +453,7 @@
                 "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e",
                 "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==20.1.0"
         },
         "h11": {
@@ -517,7 +509,7 @@
                 "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417",
                 "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==0.5.1"
         },
         "iso8601": {
@@ -893,7 +885,7 @@
                 "sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65",
                 "sha256:4e426f72023d88d03b2fa258de560726ce890ff3b630f88c21cbb8b2503b8c6a"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==2.11.2"
         },
         "pyjwt": {
@@ -1092,7 +1084,7 @@
                 "sha256:471b71698eac1c2112a40ce2752bb2f4a4814c22a54a3eed3676bc0f5ca9f663",
                 "sha256:c4666eecec1d3f50960c6bdf61ab7bc350648da6c126e3cf6898d8cd4ddcd3de"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==1.2.0"
         },
         "sqlalchemy": {
@@ -1141,7 +1133,7 @@
                 "sha256:766d0b25bdebf53f67ccfaf9975987f921965987b37bae3a95ba6e7855afe98b",
                 "sha256:db129c0e79f6b3c61ca88b340363e2cc2023a187a40b9992dfee33bc75c3a02c"
             ],
-            "markers": "python_full_version >= '3.5.0'",
+            "markers": "python_version >= '3.5'",
             "version": "==1.0.0"
         },
         "sqlalchemy-utils": {
