@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from airflow import DAG
+
 
 def test_wrapped_sql(mock_basic_dag):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
