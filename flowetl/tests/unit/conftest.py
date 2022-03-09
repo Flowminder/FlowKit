@@ -5,7 +5,6 @@ import sys
 from datetime import datetime, timedelta
 
 import pytest
-from airflow import DAG
 
 
 @pytest.fixture(autouse=True)
@@ -26,13 +25,14 @@ def unload_airflow():
 
 @pytest.fixture()
 def mock_basic_dag():
+    from airflow import DAG
 
-    return DAG(
+    dag = DAG(
         "test_dag",
         default_args={
             "owner": "airflow",
             "start_date": datetime(2021, 9, 29),
-            "postgres_conn_id": "testdb",
         },
         schedule_interval=timedelta(days=1),
     )
+    yield dag
