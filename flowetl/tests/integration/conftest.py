@@ -121,8 +121,8 @@ def container_env(ensure_required_env_vars_are_set):
     flowetl = {
         "AIRFLOW__CORE__EXECUTOR": "LocalExecutor",
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
-        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
-        "AIRFLOW_CONN_FLOWDB": f"postgres://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
+        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgresql://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
+        "AIRFLOW_CONN_FLOWDB": f"postgresql://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
         "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging,
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
