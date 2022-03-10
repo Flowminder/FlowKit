@@ -152,7 +152,6 @@ def create_dag(
     flux_check_poke_interval: int = 60,
     flux_check_wait_interval: int = 60,
     flux_check_timeout: int = 60 * 60 * 24 * 7,
-    use_flux_sensor: Union[bool, str] = True,
     source_table: Optional[str] = None,
     staging_view_sql: Optional[str] = None,
     cluster_field: Optional[str] = None,
