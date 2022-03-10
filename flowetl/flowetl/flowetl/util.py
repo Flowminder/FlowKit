@@ -167,7 +167,6 @@ def create_dag(
     escape: str = '"',
     encoding: Optional[str] = None,
     additional_qa_check_paths: Optional[List[str]] = None,
-    use_file_flux_sensor: None = None,
     **kwargs,
 ) -> "DAG":
     """
