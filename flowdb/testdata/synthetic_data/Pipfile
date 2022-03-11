@@ -4,7 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "<=1.3.23"
+sqlalchemy = "<=1.3.23"  # Pinned due to deprecation of 'threadlocal' execution strategy (https://github.com/Flowminder/FlowKit/issues/4863)
+pandas = "<=1.3.5"       # Pinned due to requirement of sqlalchemy >=1.4 for pandas >=1.4 (https://github.com/Flowminder/FlowKit/issues/4863)
 "psycopg2-binary" = "*"
 structlog = "*"
 tohu = "==0.6.7"
