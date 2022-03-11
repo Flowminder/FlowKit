@@ -62,7 +62,7 @@ services:
       # Note: By setting a variable called "AIRFLOW_CONN_<some_database_name>" airflow will
       # automatically define a connection for the given database.
       # See: https://airflow.readthedocs.io/en/latest/howto/connection/index.html#creating-a-connection-with-environment-variables
-      AIRFLOW_CONN_FLOWDB: postgres://${FLOWDB_ADMIN_USER}:${FLOWDB_ADMIN_PASSWORD}@flowdb:5432/flowdb
+      AIRFLOW_CONN_FLOWDB: postgresql://${FLOWDB_ADMIN_USER}:${FLOWDB_ADMIN_PASSWORD}@flowdb:5432/flowdb
       FLOWETL_RUNTIME_CONFIG: ${FLOWETL_RUNTIME_CONFIG:?Must set FLOWETL_RUNTIME_CONFIG env var}
       FLOWETL_AIRFLOW_ADMIN_USERNAME: ${FLOWETL_AIRFLOW_ADMIN_USERNAME:?}
       FLOWETL_AIRFLOW_ADMIN_PASSWORD: ${FLOWETL_AIRFLOW_ADMIN_PASSWORD:?}

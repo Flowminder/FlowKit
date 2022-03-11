@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 mkdocs = "*"
-black = {extras = ["jupyter"],version = "==21.10b0"}
+black = {extras = ["jupyter"],version = "==21.12b0"}
 jupyter-client = "*"
 nbconvert = "*"
 pygments = "*"

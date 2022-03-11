@@ -4,10 +4,18 @@
 
 from typing import Type
 
+from jinja2 import TemplateNotFound
+
 
 class WrappingSQLMixin:
     def prepare_template(self) -> None:
-        self.sql = self.wrapper_sql.format(sql=self.sql)
+        try:
+            # See if the sql to be wrapped lives in a file
+            jinja_env = self.dag.get_template_env()
+            sql = jinja_env.loader.get_source(jinja_env, self.sql)[0]
+        except TemplateNotFound:
+            sql = self.sql
+        self.sql = self.wrapper_sql.format(sql=sql)
 
 
 def wrapped_sql_operator(*, class_name: str, sql: str) -> Type:
@@ -28,10 +36,12 @@ def wrapped_sql_operator(*, class_name: str, sql: str) -> Type:
 
     """
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
-    from airflow.operators.postgres_operator import PostgresOperator
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
 
     return type(
         class_name,
         (TableNameMacrosMixin, WrappingSQLMixin, PostgresOperator),
-        dict(wrapper_sql=sql),
+        dict(
+            wrapper_sql=sql,
+        ),
     )

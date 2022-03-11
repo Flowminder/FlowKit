@@ -15,7 +15,7 @@ def test_required_env_var(env_var_to_remove, docker_client, container_tag):
     Test that an error is raised when one of the required env vars is not set.
     """
     env = {
-        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB",
+        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgresql://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB",
     }
     env.pop(env_var_to_remove)
     with pytest.raises(
