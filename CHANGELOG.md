@@ -9,12 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- __Action Needed__ Airflow updated to version 2.3.3; **backup flowetl_db before applying update** [#4940](https://github.com/Flowminder/FlowKit/pull/4940)
 - Tables created under the cache schema in FlowDB will automatically be set to be owned by the `flowmachine` user. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
 - `Query.explain` will now explain the query even where it is already stored. [#1285](https://github.com/Flowminder/FlowKit/issues/1285)
 
 ### Fixed
 
 ### Removed
+- `use_file_flux_sensor` removed entirely. [#2812](https://github.com/Flowminder/FlowKit/issues/2812)
 
 ## [1.16.0]
 
