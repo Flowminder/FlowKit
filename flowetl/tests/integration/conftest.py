@@ -23,11 +23,18 @@ from docker.types import Mount
 from requests.exceptions import RequestException
 
 import pytest
-from pendulum import Interval, now
+from pendulum import duration, now
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import logging
+import sys
 
 here = Path(__file__).parent
+logging.basicConfig(
+    format="%(message)s",
+    stream=sys.stdout,
+    level=logging.INFO,
+)
 logger = structlog.get_logger("flowetl-tests")
 
 
@@ -114,8 +121,8 @@ def container_env(ensure_required_env_vars_are_set):
     flowetl = {
         "AIRFLOW__CORE__EXECUTOR": "LocalExecutor",
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
-        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
-        "AIRFLOW_CONN_FLOWDB": f"postgres://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
+        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgresql://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
+        "AIRFLOW_CONN_FLOWDB": f"postgresql://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
         "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging,
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
@@ -322,7 +329,7 @@ def flowetl_container(
     """
 
     def wait_for_container(
-        *, time_out=Interval(minutes=3), time_out_per_request=Interval(seconds=1)
+        *, time_out=duration(minutes=3), time_out_per_request=duration(seconds=1)
     ):
         # Tries to make constant requests to the health check endpoint for quite
         # arbitrarily 3 minutes.. Fails with a TimeoutError if it can't reach the
@@ -337,9 +344,11 @@ def flowetl_container(
                 ).json()
 
                 # retry if scheduler is still not healthy
+                logger.info(f"Healthcheck response: {resp}")
                 if resp["scheduler"]["status"] == "healthy":
                     healthy = True
-            except RequestException:
+            except RequestException as exc:
+                logger.error(f"Request failed: {exc}")
                 pass
 
             sleep(0.1)
@@ -350,7 +359,7 @@ def flowetl_container(
                     "missing config settings or syntax errors in one of its task."
                 )
 
-    user = f"{os.getuid()}:{os.getgid()}"
+    user = f"{os.getuid()}:0"
     logger.info("Starting FlowETL container")
     container = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
@@ -365,33 +374,42 @@ def flowetl_container(
     )
     container_network.connect(container, aliases=["flowetl"])
     try:
-        wait_for_container()
         flowdb_container()
         flowetl_db_container()
+        logger.info("Running init.")
+        logger.info(container.exec_run("bash -c /init.sh", user=user, detach=True))
+        logger.info("Waiting for container to be healthy.")
+        wait_for_container()
+
         logger.info("Started FlowETL container")
         yield container
-
-        save_airflow_logs = (
-            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
-            == "TRUE"
-        )
-        if save_airflow_logs:
-            logger.info(
-                "Saving airflow logs to /mounts/logs/ and outputting to stdout "
-                "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
-            )
-            container.exec_run(
-                "bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'", user="airflow"
-            )
-            airflow_logs = container.exec_run(
-                "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
-            )
-            logger.info(airflow_logs)
     except TimeoutError as exc:
         raise TimeoutError(
             f"Flowetl container did not start properly. This may be due to missing config settings or syntax errors in one of its task. Logs: {container.logs()}"
         )
     finally:
+        try:
+            save_airflow_logs = (
+                os.getenv(
+                    "FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE"
+                ).upper()
+                == "TRUE"
+            )
+            if save_airflow_logs:
+                logger.info(
+                    "Saving airflow logs to /mounts/logs/ and outputting to stdout "
+                    "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
+                )
+                container.exec_run(
+                    "bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'", user="airflow"
+                )
+                airflow_logs = container.exec_run(
+                    "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
+                )
+                logger.info("Airflow logs follow.")
+                logger.info(airflow_logs)
+        except Exception as exc:
+            logger.error(f"Failed to get logs: {exc}")
         container.kill()
         container.remove()
 
@@ -549,7 +567,7 @@ def run_task(flowetl_container):
     """
 
     yield lambda dag_id, task_id, exec_date: flowetl_container.exec_run(
-        f"airflow test {dag_id} {task_id} {exec_date}", user="airflow"
+        f"airflow tasks test {dag_id} {task_id} {exec_date}", user="airflow"
     )
 
 
@@ -564,11 +582,13 @@ def run_dag(flowetl_container):
     """
 
     def trigger_dag(*, dag_id, exec_date, run_id=None):
-        trigger_cmd = ["airflow", "trigger_dag", "-e", exec_date]
+        trigger_cmd = ["airflow", "dags", "trigger", "-e", exec_date]
         if run_id is not None:
             trigger_cmd += ["-r", run_id]
 
-        flowetl_container.exec_run(["airflow", "unpause", dag_id], user="airflow")
+        flowetl_container.exec_run(
+            ["airflow", "dags", "unpause", dag_id], user="airflow"
+        )
         return flowetl_container.exec_run([*trigger_cmd, dag_id], user="airflow")
 
     yield trigger_dag
@@ -585,7 +605,7 @@ def dag_status(flowetl_container):
     """
 
     def dag_status(*, dag_id, exec_date):
-        status_cmd = ["airflow", "dag_state", dag_id, exec_date]
+        status_cmd = ["airflow", "dags", "state", dag_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield dag_status
@@ -602,7 +622,7 @@ def task_status(flowetl_container):
     """
 
     def task_status(*, dag_id, task_id, exec_date):
-        status_cmd = ["airflow", "task_state", dag_id, task_id, exec_date]
+        status_cmd = ["airflow", "tasks", "state", dag_id, task_id, exec_date]
         return flowetl_container.exec_run(status_cmd, user="airflow")
 
     yield task_status

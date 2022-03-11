@@ -71,6 +71,6 @@ def get_config():
         FLOWAPI_LOG_LEVEL=log_level,
         FLOWMACHINE_HOST=flowmachine_host,
         FLOWMACHINE_PORT=flowmachine_port,
-        FLOWDB_DSN=f"postgres://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",
+        FLOWDB_DSN=f"postgresql://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",
         JWT_DECODE_AUDIENCE=flowapi_server_id,
     )

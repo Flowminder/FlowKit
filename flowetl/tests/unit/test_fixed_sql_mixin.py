@@ -4,8 +4,8 @@
 
 
 def test_fixed_sql():
-    from airflow.operators.postgres_operator import PostgresOperator
-    from airflow.sensors.sql_sensor import SqlSensor
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+    from airflow.sensors.sql import SqlSensor
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
     from flowetl.mixins.fixed_sql_mixin import fixed_sql_operator
 
