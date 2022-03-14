@@ -105,6 +105,7 @@ if __name__ == "__main__":
         ):
             with log_duration("Migrating day.", day=date):
                 partition_period = f"FROM ({date.strftime('%Y%M%d')}) TO ({(date + datetime.timedelta(days=1)).strftime('%Y%M%d')})"
+                print(partition_period)
                 with log_duration("Creating partitions.", day=date):
                     with engine.begin() as trans:
                         trans.execute(
