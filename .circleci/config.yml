@@ -38,7 +38,7 @@ defaults:
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
-      dockerize -wait tcp://localhost:5432 -timeout 10m
+      dockerize -wait tcp://localhost:5432 -timeout 20m
   - &run_always_org_context
     context: org-global
     filters:
@@ -818,6 +818,7 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "testdata"
       python_version: "3.8.5"
+      num_days: 7 # To avoid overriding fixed number of days
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
