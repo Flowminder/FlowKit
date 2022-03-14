@@ -1318,8 +1318,8 @@ async def test_point_mapping_table(connection, universal_access_token, flowapi_u
         result = await query.get_result()
     except TypeError:
         result = query.get_result()
-    assert set(result.lon.tolist()) == pytest.approx({26.669991})
-    assert set(result.lat.tolist()) == pytest.approx({87.85779897})
+    assert sorted(set(result.lon.tolist())) == pytest.approx([26.669991])
+    assert sorted(set(result.lat.tolist())) == pytest.approx([87.85779897])
 
 
 @pytest.mark.asyncio
