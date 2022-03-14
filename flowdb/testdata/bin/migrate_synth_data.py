@@ -31,6 +31,13 @@ except ImportError:
     logger.setLevel("DEBUG")
 
 
+def log(msg, **kwargs):
+    try:
+        logger.info(msg, **kwargs)
+    except:
+        logger.info(f"{msg}: {kwargs}")
+
+
 @contextmanager
 def log_duration(job: str, **kwargs):
     """
@@ -44,22 +51,14 @@ def log_duration(job: str, **kwargs):
         Any kwargs will be shown in the log as "key":"value"
     """
     start_time = datetime.datetime.now()
-    try:
-        logger.info("Started", job=job, **kwargs)
-    except:
-        logger.info(f"Started {job}: {kwargs}")
+    log("Started", job=job, **kwargs)
     yield
-    try:
-        logger.info(
-            "Finished",
-            job=job,
-            runtime=str(datetime.datetime.now() - start_time),
-            **kwargs,
-        )
-    except:
-        logger.info(
-            f"Finished {job}. runtime={str(datetime.datetime.now() - start_time)}, {kwargs}"
-        )
+    log(
+        "Finished",
+        job=job,
+        runtime=str(datetime.datetime.now() - start_time),
+        **kwargs,
+    )
 
 
 parser = argparse.ArgumentParser(description="Flowminder Synthetic CDR Migrator\n")
@@ -80,7 +79,7 @@ if __name__ == "__main__":
             pool_size=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
             pool_timeout=None,
         )
-        logger.info(
+        log(
             "Connected.",
             num_connections=min(cpu_count(), int(os.getenv("MAX_CPUS", cpu_count()))),
         )
@@ -91,11 +90,11 @@ if __name__ == "__main__":
                 with engine.begin() as trans:
                     res = trans.execute(sql)
                     try:
-                        logger.info(f"SQL result", job=msg, result=res.fetchall())
+                        log(f"SQL result", job=msg, result=res.fetchall())
                     except ResourceClosedError:
                         pass  # Nothing to do here
                     except Exception as exc:
-                        logger.error("Hit an issue.", exc=exc)
+                        log("Hit an issue.", exc=exc)
                         raise exc
 
         start_time = datetime.datetime.now()
