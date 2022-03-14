@@ -10,6 +10,7 @@ import re
 import textwrap
 import IPython
 from io import StringIO
+from unittest.mock import Mock
 
 from flowmachine.core import CustomQuery
 from flowmachine.core.context import get_db
@@ -120,6 +121,42 @@ def test_unstored_dependencies_graph():
         assert (
             graph.nodes[f"x{query.query_id}"]["query_object"].query_id == query.query_id
         )
+
+
+def test_unstored_dependencies_graph_handles_query_state(monkeypatch, dummy_redis):
+    """
+    Test that the unstored_dependencies_graph does not block while queries execute,
+    and excludes unstored dependencies that are queued or executing.
+    """
+    wait_mock = Mock()
+    monkeypatch.setattr(QueryStateMachine, "wait_until_complete", wait_mock)
+    dummy1 = DummyQuery(dummy_param=["dummy1"])
+    dummy2 = DummyQuery(dummy_param=["dummy2", dummy1])
+    dummy3 = DummyQuery(dummy_param=["dummy3"])
+    dummy4 = DummyQuery(dummy_param=["dummy4", dummy2, dummy3])
+    qsm = QueryStateMachine(dummy_redis, dummy2.query_id, get_db().conn_id)
+    # Before enqueuing dummy2, dependencies should be included
+    assert qsm.is_known
+    assert len(unstored_dependencies_graph(dummy2)) == 1
+    assert len(unstored_dependencies_graph(dummy4)) == 3
+    # While dummy2 is enqueued, dependencies should not be included
+    qsm.enqueue()
+    assert qsm.is_queued
+    assert len(unstored_dependencies_graph(dummy2)) == 0
+    assert len(unstored_dependencies_graph(dummy4)) == 1
+    # While dummy2 is executing, dependencies should not be included
+    qsm.execute()
+    assert qsm.is_executing
+    assert len(unstored_dependencies_graph(dummy2)) == 0
+    assert len(unstored_dependencies_graph(dummy4)) == 1
+    # While dummy2 is resetting, dependencies should be included
+    qsm.finish()
+    qsm.reset()
+    assert qsm.is_resetting
+    assert len(unstored_dependencies_graph(dummy2)) == 1
+    assert len(unstored_dependencies_graph(dummy4)) == 3
+    # Check that unstored_dependencies_graph did not attempt to block at any point
+    wait_mock.assert_not_called()
 
 
 def test_unstored_dependencies_graph_for_stored_query():

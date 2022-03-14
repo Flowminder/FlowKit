@@ -13,7 +13,6 @@ of postgres.
 
 
 from concurrent.futures import Future
-from time import sleep
 
 from typing import List, Union, Any, Optional, Dict
 
@@ -22,13 +21,12 @@ from sqlalchemy.engine import Engine
 
 from flowmachine.core.cache import write_query_to_cache
 from flowmachine.core.context import get_db, get_redis, submit_to_executor
-from flowmachine.core.errors.flowmachine_errors import (
-    QueryCancelledException,
-    QueryErroredException,
-)
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.core.query import Query
-from flowmachine.core.dependency_graph import store_all_unstored_dependencies
+from flowmachine.core.dependency_graph import (
+    store_queries_in_order,
+    unstored_dependencies_graph,
+)
 
 import structlog
 
@@ -179,10 +177,20 @@ class ModelResult(Query):
 
         def write_model_result(query_ddl_ops: List[str], connection: Engine) -> float:
             if store_dependencies:
-                store_all_unstored_dependencies(self)
+                # If store_dependencies==True, wait for dependencies to finish executing before storing this query
+                # (for consistency with other query kinds, although we don't need the dependencies' stored results here)
+                for dep in self.dependencies:
+                    QueryStateMachine(
+                        get_redis(), dep.query_id, get_db().conn_id
+                    ).wait_until_complete()
             self._df.to_sql(name, connection, schema=schema, index=False)
             QueryStateMachine(get_redis(), self.query_id, get_db().conn_id).finish()
             return self._runtime
+
+        if store_dependencies:
+            store_queries_in_order(
+                unstored_dependencies_graph(self)
+            )  # Need to ensure we're behind our deps in the queue
 
         current_state, changed_to_queue = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
