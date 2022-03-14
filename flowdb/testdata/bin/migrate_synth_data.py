@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import os
@@ -27,6 +28,7 @@ try:
 except ImportError:
     import logging
 
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     logger = logging.getLogger(__name__)
     logger.setLevel("DEBUG")
 
@@ -104,19 +106,18 @@ if __name__ == "__main__":
             for i in range(num_days)
         ):
             with log_duration("Migrating day.", day=date):
-                partition_period = f"FROM ({date.strftime('%Y%M%d')}) TO ({(date + datetime.timedelta(days=1)).strftime('%Y%M%d')})"
-                print(partition_period)
+                partition_period = f"FROM ({date.strftime('%Y%m%d')}) TO ({(date + datetime.timedelta(days=1)).strftime('%Y%m%d')})"
                 with log_duration("Creating partitions.", day=date):
                     with engine.begin() as trans:
                         trans.execute(
-                            f"CREATE TABLE interactions.events_supertable_{date.strftime('%Y%M%d')} PARTITION OF interactions.event_supertable FOR VALUES {partition_period};"
+                            f"CREATE TABLE interactions.events_supertable_{date.strftime('%Y%m%d')} PARTITION OF interactions.event_supertable FOR VALUES {partition_period};"
                         )
                         trans.execute(
-                            f"CREATE TABLE interactions.subscriber_sightings_{date.strftime('%Y%M%d')} PARTITION OF interactions.subscriber_sightings FOR VALUES {partition_period};"
+                            f"CREATE TABLE interactions.subscriber_sightings_{date.strftime('%Y%m%d')} PARTITION OF interactions.subscriber_sightings FOR VALUES {partition_period};"
                         )
                         for event_type in ("calls", "sms", "mds", "topup"):
                             trans.execute(
-                                f"CREATE TABLE interactions.{event_type}_{date.strftime('%Y%M%d')} PARTITION OF interactions.{event_type} FOR VALUES {partition_period};"
+                                f"CREATE TABLE interactions.{event_type}_{date.strftime('%Y%m%d')} PARTITION OF interactions.{event_type} FOR VALUES {partition_period};"
                             )
         with log_duration("Migrate subscribers."):
             with engine.begin() as trans:
