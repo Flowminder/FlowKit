@@ -12,4 +12,4 @@ export PGUSER="$POSTGRES_USER"
 #  Migrate synthetic data.
 #
 
-python3 migrate_synth_data.py
+python3 /docker-entrypoint-initdb.d/migrate_synth_data.py
