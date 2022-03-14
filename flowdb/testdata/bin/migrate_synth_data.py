@@ -113,7 +113,7 @@ if __name__ == "__main__":
                         trans.execute(
                             f"CREATE TABLE interactions.subscriber_sightings_{date.strftime('%Y%M%d')} PARTITION OF interactions.subscriber_sightings FOR VALUES {partition_period};"
                         )
-                        for event_type in ("calls", "sms", "mds", "topups"):
+                        for event_type in ("calls", "sms", "mds", "topup"):
                             trans.execute(
                                 f"CREATE TABLE interactions.{event_type}_{date.strftime('%Y%M%d')} PARTITION OF interactions.{event_type} FOR VALUES {partition_period};"
                             )
