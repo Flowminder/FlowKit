@@ -115,7 +115,7 @@ if __name__ == "__main__":
                         )
                         for event_type in ("calls", "sms", "mds", "topups"):
                             trans.execute(
-                                f"CREATE TABLE interactions.calls_{date.strftime('%Y%M%d')} PARTITION OF interactions.{event_type} FOR VALUES {partition_period};"
+                                f"CREATE TABLE interactions.{event_type}_{date.strftime('%Y%M%d')} PARTITION OF interactions.{event_type} FOR VALUES {partition_period};"
                             )
         with log_duration("Migrate subscribers."):
             with engine.begin() as trans:
