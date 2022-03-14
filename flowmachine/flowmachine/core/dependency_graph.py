@@ -230,7 +230,7 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
             get_redis(), query_obj.query_id, get_db().conn_id
         )
         # Add dependencies to graph only if this query is not yet in line to be stored
-        if not q_state_machine.is_queued or q_state_machine.is_executing:
+        if not (q_state_machine.is_queued or q_state_machine.is_executing):
             openlist = list(
                 zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
             )
@@ -245,7 +245,7 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
                         get_redis(), x.query_id, get_db().conn_id
                     )
                     # Add dependencies to graph only if this query is not yet in line to be stored
-                    if not q_state_machine.is_queued or q_state_machine.is_executing:
+                    if not (q_state_machine.is_queued or q_state_machine.is_executing):
                         deps.append((y, x))
                         openlist += list(zip([x] * len(x.dependencies), x.dependencies))
 
