@@ -184,7 +184,7 @@ if __name__ == "__main__":
                             FROM public.gambia_admin2;"""
                     )
                 except:
-                    pass # No gambia table
+                    pass  # No gambia table
             with engine.begin() as trans:
                 # Populate the geobridge
                 trans.execute(
