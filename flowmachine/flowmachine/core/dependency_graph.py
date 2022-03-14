@@ -353,31 +353,6 @@ def store_queries_in_order(dependency_graph: nx.DiGraph) -> Dict[str, "Future"]:
     return store_futures
 
 
-def store_all_unstored_dependencies(query_obj: "Query") -> None:
-    """
-    Store all of the unstored dependencies of a query.
-
-    Parameters
-    ----------
-    query_obj : Query
-        Query object whose dependencies will be stored.
-
-    Notes
-    -----
-    This function stores only the unstored dependencies of a query, and not the
-    query itself.
-    This is a blocking function. Storing the dependencies happens in background threads,
-    but this function will not return until all the dependencies are stored.
-    """
-    logger.debug(
-        f"Creating background threads to store dependencies of query '{query_obj.query_id}'."
-    )
-    dependency_futures = store_queries_in_order(unstored_dependencies_graph(query_obj))
-
-    logger.debug(f"Waiting for dependencies to finish executing...")
-    wait(list(dependency_futures.values()))
-
-
 def dependencies_eligible_for_store(query_obj: "Query") -> Set["Query"]:
     """
     Get the set of dependencies for this query which may be stored before it is run.
