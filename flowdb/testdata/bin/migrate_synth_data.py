@@ -9,20 +9,26 @@ from multiprocessing import cpu_count
 
 import sqlalchemy as sqlalchemy
 from sqlalchemy.exc import ResourceClosedError
-
-import structlog
 import json
 
-structlog.configure(
-    processors=[
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(serializer=json.dumps),
-    ]
-)
-logger = structlog.get_logger(__name__)
+try:
+    import structlog
+
+    structlog.configure(
+        processors=[
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.JSONRenderer(serializer=json.dumps),
+        ]
+    )
+    logger = structlog.get_logger(__name__)
+except ImportError:
+    import logging
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel("DEBUG")
 
 
 @contextmanager
@@ -38,11 +44,22 @@ def log_duration(job: str, **kwargs):
         Any kwargs will be shown in the log as "key":"value"
     """
     start_time = datetime.datetime.now()
-    logger.info("Started", job=job, **kwargs)
+    try:
+        logger.info("Started", job=job, **kwargs)
+    except:
+        logger.info(f"Started {job}: {kwargs}")
     yield
-    logger.info(
-        "Finished", job=job, runtime=str(datetime.datetime.now() - start_time), **kwargs
-    )
+    try:
+        logger.info(
+            "Finished",
+            job=job,
+            runtime=str(datetime.datetime.now() - start_time),
+            **kwargs,
+        )
+    except:
+        logger.info(
+            f"Finished {job}. runtime={str(datetime.datetime.now() - start_time)}, {kwargs}"
+        )
 
 
 parser = argparse.ArgumentParser(description="Flowminder Synthetic CDR Migrator\n")
