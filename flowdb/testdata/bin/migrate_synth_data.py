@@ -85,7 +85,7 @@ if __name__ == "__main__":
         )
 
         def do_exec(args):
-            msg, sql = args
+            sql, msg = args
             with log_duration(msg):
                 with engine.begin() as trans:
                     res = trans.execute(sql)
