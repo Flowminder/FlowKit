@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 apache-airflow = "2.2.4"
+apache-airflow-providers-postgres = "*"
 sqlalchemy = "*"
 click = "*"
 markupsafe="==2.0.1"
