@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+apache-airflow = "2.2.4"
 sqlalchemy = "*"
 click = "*"
 markupsafe="==2.0.1"
