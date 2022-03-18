@@ -4,8 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-apache-airflow = {extras = ["crypto","celery"],version = "==2.2.3"}
-apache-airflow-providers-postgres = "*"
 sqlalchemy = "*"
 click = "*"
 markupsafe="==2.0.1"
@@ -23,4 +21,4 @@ versioneer = "*"
 pytest-cov = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"

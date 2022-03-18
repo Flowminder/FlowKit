@@ -16,6 +16,7 @@ networks:
 
 
 
+
 services:
 
   flowdb:
@@ -143,49 +144,5 @@ services:
       redis:
         aliases:
           - redis
-
-  flowetl:
-    container_name: flowetl
-    image: flowminder/flowetl:${CONTAINER_TAG:-latest}
-    restart: always
-    tty: true
-    stdin_open: true
-    ports:
-      - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
-    volumes:
-      - ${HOST_DAGS_DIR:?Must set HOST_DAGS_DIR env var}:/opt/airflow/dags:ro
-
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${SQL_ALCHEMY_CONN:?Must set SQL_ALCHEMY_CONN env var}
-      AIRFLOW_CONN_FLOWDB: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@flowdb:5432/flowdb
-      AIRFLOW__CORE__FERNET_KEY:  ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
-      POSTGRES_HOST: flowetl_db
-      FLOWETL_AIRFLOW_ADMIN_USERNAME: "admin"
-      FLOWETL_AIRFLOW_ADMIN_PASSWORD: "password"
-      FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT: 4
-
-    networks:
-      - db
-      - flowetl_db
-
-  flowetl_db:
-    image: postgres:11.0
-    container_name: flowetl_db
-
-    tty: true
-    stdin_open: true
-    restart: always
-
-    ports:
-      - ${FLOWETL_POSTGRES_PORT:?Must set FLOWETL_POSTGRES_PORT env var}:5432
-
-    environment:
-      POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
-      POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
-      POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
-
-    networks:
-      - flowetl_db
 
 
