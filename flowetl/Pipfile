@@ -10,6 +10,7 @@ markupsafe="==2.0.1"
 wtforms = "<3.0.0"
 pyparsing = "==2.4.2"
 jinja2 = "*"
+pendulum = "*"
 
 [dev-packages]
 structlog = "*"
