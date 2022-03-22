@@ -5,7 +5,7 @@
 # DOCKER COMPOSE FOR FLOWKIT
 #
 
-version: '3.5'
+version: '3.9'
 
 x-flowetl-common:
   &flowetl-common
@@ -24,10 +24,8 @@ x-flowetl-common:
     AIRFLOW_CONN_FLOWDB: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@flowdb:5432/flowdb
     AIRFLOW__CORE__FERNET_KEY: ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
     AIRFLOW__CELERY__RESULT_BACKEND: ${CELERY_CONN:?Must set CELERY_CONN env var}
-    AIRFLOW__CELERY__BROKER_URL: redis://:@flowetl_redis:6379/0
+    AIRFLOW__CELERY__BROKER_URL: redis://:${FLOWETL_REDIS_PASSWORD:?Must set FLOWETL_REDIS_PASSWORD}@flowetl_redis:6379/0
     POSTGRES_HOST: flowetl_db
-    FLOWETL_AIRFLOW_ADMIN_USERNAME: "admin"
-    FLOWETL_AIRFLOW_ADMIN_PASSWORD: "password"
     FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT: 4
 
   depends_on:
@@ -46,8 +44,6 @@ networks:
   zero:
   flowetl:
   api:
-
-
 
 
 services:
@@ -178,7 +174,7 @@ services:
         aliases:
           - redis
 
-  # Flowetl components
+  # Flowetl components (scheduler, redis, worker(s), postgres db, webserver, triggerer,
   flowetl_scheduler:
     << : *flowetl-common
     container_name: flowetl_scheduler
@@ -210,7 +206,9 @@ services:
 
   flowetl_redis:
     container_name: flowetl_redis
-    image: redis:latest
+    image: bitnami/redis:latest
+    environment:
+      - REDIS_PASSWORD=${FLOWETL_REDIS_PASSWORD:?Must set FLOWETL_REDIS_PASSWORD env var}
     expose:
       - 6379
     healthcheck:
@@ -243,8 +241,6 @@ services:
       - flowetl
     environment:
       <<: *flowetl-envs
-      _AIRFLOW_WWW_USER_USERNAME: admin
-      _AIRFLOW_WWW_USER_PASSWORD: password
 
   flowetl_flower:
     container_name: flowetl_flower
@@ -267,7 +263,7 @@ services:
   flowetl_init:
     container_name: flowetl_init
     <<: *flowetl-common
-    entrypoint: /bin/bash -c "airflow db init && airflow users create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin"
+    entrypoint: /bin/bash -c "airflow db init && airflow users create --role Admin --username admin --email admin --firstname admin --lastname admin --password ${FLOWETL_WEBSERVER_PASSWORD:?Must set FLOWETL_WEBSERVER_PASSWORD env var}"
     networks:
       - flowetl
     depends_on:

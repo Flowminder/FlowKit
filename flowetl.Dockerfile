@@ -24,7 +24,7 @@ ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowetl
 
-COPY --chown=airflow:1 . /${SOURCE_TREE}/
+COPY --chown=airflow . /${SOURCE_TREE}/
 
 RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system
 
