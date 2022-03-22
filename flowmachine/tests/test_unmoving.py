@@ -8,20 +8,17 @@ from flowmachine.features.subscriber.unmoving import Unmoving
 
 
 def test_unmoving_column_names(get_column_names_from_run):
-    assert (
-        get_column_names_from_run(
-            Unmoving(
-                locations=UniqueLocations(
-                    SubscriberLocations(
-                        "2016-01-01",
-                        "2016-01-01 10:00",
-                        spatial_unit=make_spatial_unit("admin", level=3),
-                    )
+    assert get_column_names_from_run(
+        Unmoving(
+            locations=UniqueLocations(
+                SubscriberLocations(
+                    "2016-01-01",
+                    "2016-01-01 10:00",
+                    spatial_unit=make_spatial_unit("admin", level=3),
                 )
             )
         )
-        == ["subscriber", "value"]
-    )
+    ) == ["subscriber", "value"]
 
 
 def test_unmoving_values(get_dataframe):
