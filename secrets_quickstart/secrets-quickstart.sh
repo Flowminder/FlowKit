@@ -38,69 +38,100 @@ if [ "$limit" -lt 0 ]; then
 fi
 
 
+rand_string_secrets=(
+  FLOWAUTH_DB_PASSWORD
+  FLOWAUTH_ADMIN_PASSWORD
+  FLOWAUTH_REDIS_PASSWORD
+  FLOWMACHINE_FLOWDB_PASSWORD
+  REDIS_PASSWORD
+  FLOWAPI_FLOWDB_PASSWORD
+  FLOWDB_POSTGRES_PASSWORD
+  FLOWETL_POSTGRES_PASSWORD
+  FLOWETL_CELERY_PASSWORD
+  FLOWETL_REDIS_PASSWORD
+  )
+
+rand_int_secrets=(
+  SECRET_KEY
+)
+
+declare -A hard_secrets
+hard_secrets=(
+  [FLOWATUH_ADMIN_USERNAME]="admin"
+  [FLOWMACHINE_FLOWDB_USER]="flowmachine"
+  [FLOWAPI_FLOWDB_USER]="flowapi"
+  [FLOWAPI_IDENTIFIER]="flowapi_server"
+  [FLOWETL_POSTGRES_USER]="flowetl"
+  [FLOWETL_CELERY_USER]="flowetl"
+)
+
+fernet_secrets=(
+  FLOWAUTH_FERNET_KEY
+  AIRFLOW__CORE__FERNET_KEY
+)
+
+other_secrets=(
+  cert-flowkit.pem
+  key-flowkit.pem
+  PRIVATE_JWT_SIGNING_KEY
+  PUBLIC_JWT_SIGNING_KEY
+)
+
+all_secrets=(
+  "${rand_string_secrets[*]}"
+  "${rand_int_secrets[*]}"
+  "${!hard_secrets[*]}"
+  "${fernet_secrets[*]}"
+  "${other_secrets[*]}"
+)
+
 # Remove existing secrets
-echo "Removing existing secrets"
+echo "Removing existing secrets..."
 
-docker secret rm FLOWMACHINE_FLOWDB_PASSWORD || true
-docker secret rm FLOWMACHINE_FLOWDB_USER || true
-docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
-docker secret rm FLOWAPI_FLOWDB_USER || true
-docker secret rm FLOWDB_POSTGRES_PASSWORD || true
-docker secret rm cert-flowkit.pem || true
-docker secret rm key-flowkit.pem || true
-docker secret rm REDIS_PASSWORD || true
-docker secret rm FLOWAPI_IDENTIFIER || true
-docker secret rm FLOWAUTH_ADMIN_USERNAME || true
-docker secret rm FLOWAUTH_ADMIN_PASSWORD || true
-docker secret rm FLOWAUTH_DB_PASSWORD || true
-docker secret rm PRIVATE_JWT_SIGNING_KEY || true
-docker secret rm PUBLIC_JWT_SIGNING_KEY || true
-docker secret rm FLOWAUTH_FERNET_KEY || true
-docker secret rm SECRET_KEY || true
-docker secret rm FLOWAUTH_REDIS_PASSWORD || true
-docker secret rm AIRFLOW__CORE__FERNET_KEY || true
-docker secret rm AIRFLOW__CORE__SQL_ALCHEMY_CONN || true
-docker secret rm FLOWETL_POSTGRES_PASSWORD || true
-docker secret rm AIRFLOW_CONN_FLOWDB || true
+for secret in ${all_secrets[*]} ; do
+    docker secret rm $secret || true
+done
 
-# Add new secrets
+echo "Generating random string secrets..."
+for secret_name in ${rand_string_secrets[*]} ; do
+  echo "Generating $secret_name"
+  this_pass=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+  echo "$this_pass" | docker secret create $secret_name -
+done
 
-echo "Adding secrets"
-# Flowauth
-openssl genrsa -out tokens-private-key.key 4096
-FLOWAUTH_DB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWAUTH_DB_PASSWORD" | docker secret create FLOWAUTH_DB_PASSWORD -
-FLOWAUTH_ADMIN_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWAUTH_ADMIN_PASSWORD"| docker secret create FLOWAUTH_ADMIN_PASSWORD -
-FLOWAUTH_REDIS_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWAUTH_REDIS_PASSWORD"| docker secret create FLOWAUTH_REDIS_PASSWORD -
-SECRET_KEY=$(openssl rand -base64 64)
-echo "$SECRET_KEY"| docker secret create SECRET_KEY -
-echo "admin" | docker secret create FLOWAUTH_ADMIN_USERNAME -
+echo "Generating random int secrets..."
+for secret_name in ${rand_int_secrets[*]} ; do
+  echo "Generating $secret_name"
+  this_pass=$(openssl rand -base64 64)
+  echo "$this_pass" | docker secret create $secret_name -
+done
+
+echo "Setting hard-coded secrets..."
+for secret_name in ${!hard_secrets[*]} ; do
+  secret_val=${hard_secrets[${secret_name}]}
+  echo "Setting $secret_name to $secret_val"
+  echo "$secret_val" | docker secret create $secret_name -
+done
+
+echo "Setting up Fernet key generation..."
 pip install cryptography
-FLOWAUTH_FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
-echo "$FLOWAUTH_FERNET_KEY"| docker secret create FLOWAUTH_FERNET_KEY -
 
+echo "Generating Fernet keys..."
+for secret_name in ${fernet_secrets[*]} ; do
+  echo "Generating $secret_name"
+  f_key=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+  echo "$f_key" | docker secret create $secret_name -
+done
 
-# Flowmachine
-FLOWMACHINE_FLOWDB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWMACHINE_FLOWDB_PASSWORD" | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
-echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
-echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
-REDIS_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$REDIS_PASSWORD"| docker secret create REDIS_PASSWORD -
+echo "Generating Flowauth RSA key"
+openssl genrsa -out tokens-private-key.key 4096
 
-# FlowDB
-FLOWAPI_FLOWDB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWAPI_FLOWDB_PASSWORD" | docker secret create FLOWAPI_FLOWDB_PASSWORD -
-FLOWDB_POSTGRES_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWDB_POSTGRES_PASSWORD" | docker secret create FLOWDB_POSTGRES_PASSWORD -
-
-# FlowAPI
+echo "Generating FlowAPI public-private key pair"
 openssl rsa -pubout -in  tokens-private-key.key -out tokens-public-key.pub
 docker secret create PRIVATE_JWT_SIGNING_KEY tokens-private-key.key
 docker secret create PUBLIC_JWT_SIGNING_KEY tokens-public-key.pub
-echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
+
+echo "Generating FlowAPI SSL cert"
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
     -config <( \
@@ -118,15 +149,9 @@ fi
 docker secret create cert-flowkit.pem cert-flowkit.pem
 docker secret create key-flowkit.pem key-flowkit.pem
 
-# FlowETL
-AIRFLOW__CORE__FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
-echo "AIRFLOW__CORE__FERNET_KEY"| docker secret create AIRFLOW__CORE__FERNET_KEY -
 
-FLOWETL_POSTGRES_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-echo "$FLOWETL_POSTGRES_PASSWORD" | docker secret create FLOWETL_POSTGRES_PASSWORD -
-AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgres://flowetl:$FLOWETL_POSTGRES_PASSWORD@flowetl_db:5432/flowetl"
-echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
-echo "postgres://flowdb:$FLOWDB_POSTGRES_PASSWORD@flowdb:5432/flowdb" | docker secret create AIRFLOW_CONN_FLOWDB -
+echo "Secret gen complete"
+
 export FLOWETL_HOST_GROUP_ID=$(id -g)
 export FLOWETL_HOST_USER_ID=$(id -u)
 
