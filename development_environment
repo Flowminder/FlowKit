@@ -129,7 +129,7 @@ FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 
 # FlowETL
 SQL_ALCHEMY_CONN=postgresql://flowetl:flowetl@flowetl_db:5432/flowetl
-CELERY_CONN=db+postgresql://flowetl:flowetl@flowetl_db:5432/flowetl
+FLOWETL_CELERY_CONN=db+postgresql://flowetl:flowetl@flowetl_db:5432/flowetl
 FLOWETL_FERNET_KEY=ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=
 FLOWETL_PORT=8080
 FLOWETL_POSTGRES_PASSWORD=flowetl
