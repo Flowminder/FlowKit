@@ -11,7 +11,8 @@ docker swarm init || true
 
 
 # Remove existing stack deployment
-echo "Removing existing secrets_test_stack"
+echo "
+Removing existing secrets_test_stack"
 docker stack rm secrets_test
 
 # Wait for 'docker stack rm' to finish (see https://github.com/moby/moby/issues/30942)
@@ -37,8 +38,9 @@ if [ "$limit" -lt 0 ]; then
     exit 1
 fi
 
-
+# Secrets that are a random string
 rand_string_secrets=(
+  POSTGRES_PASSWORD
   FLOWAUTH_DB_PASSWORD
   FLOWAUTH_ADMIN_PASSWORD
   FLOWAUTH_REDIS_PASSWORD
@@ -49,15 +51,19 @@ rand_string_secrets=(
   FLOWETL_POSTGRES_PASSWORD
   FLOWETL_CELERY_PASSWORD
   FLOWETL_REDIS_PASSWORD
-  )
+  FLOWETL_WEBSERVER_PASSWORD
+)
 
+#Secrets that are a random integer
 rand_int_secrets=(
   SECRET_KEY
 )
 
+# Secrets that are hard-set here
 declare -A hard_secrets
 hard_secrets=(
-  [FLOWATUH_ADMIN_USERNAME]="admin"
+  [POSTGRES_USER]="flowdb"
+  [FLOWAUTH_ADMIN_USERNAME]="admin"
   [FLOWMACHINE_FLOWDB_USER]="flowmachine"
   [FLOWAPI_FLOWDB_USER]="flowapi"
   [FLOWAPI_IDENTIFIER]="flowapi_server"
@@ -65,16 +71,23 @@ hard_secrets=(
   [FLOWETL_CELERY_USER]="flowetl"
 )
 
+# Secrets that use python.cryptography to generate a Fernet key
 fernet_secrets=(
   FLOWAUTH_FERNET_KEY
   AIRFLOW__CORE__FERNET_KEY
 )
 
+# Secrets with specific means of generation or compounds of other secrets
 other_secrets=(
   cert-flowkit.pem
   key-flowkit.pem
   PRIVATE_JWT_SIGNING_KEY
   PUBLIC_JWT_SIGNING_KEY
+  AIRFLOW__CORE__SQL_ALCHEMY_CONN
+  AIRFLOW__CELERY__RESULT_BACKEND
+  AIRFLOW__CELERY__BROKER_URL
+  AIRFLOW_CONN_FLOWDB
+  FLOWETL_CELERY_CONN
 )
 
 all_secrets=(
@@ -86,52 +99,66 @@ all_secrets=(
 )
 
 # Remove existing secrets
-echo "Removing existing secrets..."
+echo "
+Removing existing secrets..."
 
 for secret in ${all_secrets[*]} ; do
     docker secret rm $secret || true
 done
 
-echo "Generating random string secrets..."
+# Each of these loops:
+# -Generates the relevent type of secret
+# -Exports the name and value of the secret to the local environment
+# By the end, each secret should be in docker and the local env
+
+echo "
+Generating random string secrets..."
 for secret_name in ${rand_string_secrets[*]} ; do
   echo "Generating $secret_name"
-  this_pass=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
-  echo "$this_pass" | docker secret create $secret_name -
+  declare "${secret_name}"="$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')"
+  echo "${!secret_name}}" | docker secret create "${secret_name}" -
 done
 
-echo "Generating random int secrets..."
+echo "
+Generating random int secrets..."
 for secret_name in ${rand_int_secrets[*]} ; do
   echo "Generating $secret_name"
-  this_pass=$(openssl rand -base64 64)
-  echo "$this_pass" | docker secret create $secret_name -
+  declare "${secret_name}"="$(openssl rand -base64 64)"
+  echo "${!secret_name}" | docker secret create "${secret_name}" -
 done
 
-echo "Setting hard-coded secrets..."
+echo "
+Setting hard-coded secrets..."
 for secret_name in ${!hard_secrets[*]} ; do
-  secret_val=${hard_secrets[${secret_name}]}
-  echo "Setting $secret_name to $secret_val"
-  echo "$secret_val" | docker secret create $secret_name -
+  declare "${secret_name}"="${hard_secrets[${secret_name}]}"
+  echo "Setting ${secret_name} to ${!secret_name}"
+  echo "${!secret_name}" | docker secret create "${secret_name}" -
 done
 
-echo "Setting up Fernet key generation..."
+echo "
+Setting up Fernet key generation..."
 pip install cryptography
 
-echo "Generating Fernet keys..."
+echo "
+Generating Fernet keys..."
 for secret_name in ${fernet_secrets[*]} ; do
   echo "Generating $secret_name"
-  f_key=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
-  echo "$f_key" | docker secret create $secret_name -
+  declare "${secret_name}"="$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")"
+  echo "${!secret_name}" | docker secret create "${secret_name}" -
 done
 
-echo "Generating Flowauth RSA key"
+echo "
+Generating Flowauth RSA key"
 openssl genrsa -out tokens-private-key.key 4096
 
-echo "Generating FlowAPI public-private key pair"
+echo "
+Generating FlowAPI public-private key pair"
 openssl rsa -pubout -in  tokens-private-key.key -out tokens-public-key.pub
 docker secret create PRIVATE_JWT_SIGNING_KEY tokens-private-key.key
 docker secret create PUBLIC_JWT_SIGNING_KEY tokens-public-key.pub
 
-echo "Generating FlowAPI SSL cert"
+echo "
+Generating FlowAPI SSL cert"
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
     -config <( \
@@ -149,6 +176,18 @@ fi
 docker secret create cert-flowkit.pem cert-flowkit.pem
 docker secret create key-flowkit.pem key-flowkit.pem
 
+echo "
+Generating compound secrets..."
+AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql://${FLOWETL_POSTGRES_USER:?}:${FLOWETL_POSTGRES_PASSWORD:?}@flowetl_db:5432/flowetl"
+echo "${AIRFLOW__CORE__SQL_ALCHEMY_CONN}" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
+AIRFLOW__CELERY__RESULT_BACKEND="db+${AIRFLOW__CORE__SQL_ALCHEMY_CONN:?}"
+echo "$AIRFLOW__CELERY__RESULT_BACKEND" | docker secret create AIRFLOW__CELERY__RESULT_BACKEND -
+AIRFLOW__CELERY__BROKER_URL="redis://:${FLOWETL_REDIS_PASSWORD:?}@flowetl_redis:6379/0"
+echo "$AIRFLOW__CELERY__BROKER_URL" | docker secret create AIRFLOW__CELERY__BROKER_URL -
+AIRFLOW_CONN_FLOWDB="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@flowdb:5432/flowdb"
+echo "$AIRFLOW_CONN_FLOWDB" | docker secret create AIRFLOW_CONN_FLOWDB -
+FLOWETL_CELERY_CONN=$AIRFLOW__CELERY__RESULT_BACKEND
+echo "$FLOWETL_CELERY_CONN" | docker secret create FLOWETL_CELERY_CONN -
 
 echo "Secret gen complete"
 
@@ -163,7 +202,6 @@ export FLOWETL_HOST_PORT=8080
 export REDIS_HOST_PORT=6379
 
 # Bind mounts
-
 export FLOWDB_HOST_GROUP_ID=$(id -g)
 export FLOWDB_HOST_USER_ID=$(id -u)
 export FLOWDB_DATA_DIR=./flowdb_pgdata
@@ -219,6 +257,9 @@ $AIRFLOW__CORE__SQL_ALCHEMY_CONN
 
 FlowDB data dir
 $FLOWDB_DATA_DIR
+
+Airflow flowdb connection
+$AIRFLOW_CONN_FLOWDB
 
 ===============
 "
