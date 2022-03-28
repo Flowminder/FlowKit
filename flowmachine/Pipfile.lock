@@ -547,13 +547,21 @@
         }
     },
     "develop": {
+        "allpairspy": {
+            "hashes": [
+                "sha256:66dbcb30c22a2c73e1cccae9ae7093f8e18bdf542e4ba2864ce822463735b5b4",
+                "sha256:9358484c91abe74ba18daf9d6d6904c5be7cc8818397d05248c9d336023c28b1"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==2.5.0"
+        },
         "approvaltests": {
             "hashes": [
-                "sha256:976e7a5799a414f76dfb658e30ceb58bd8f2b2e45a0363461ca3812de37731d7",
-                "sha256:c49c01b75db834e2a6fbe4b83c7caf54c4b02d5f018dbafc9eea41207df21bbb"
+                "sha256:7297d41434e13c07c2cd11a22e4ec75c1ed7d151dd0e7f37906b4a7e099ed531",
+                "sha256:ec0dd437350fd6a66db7a38b1b98201bd250ccc0cd096112f0777127344c25ec"
             ],
             "index": "pypi",
-            "version": "==4.0.0"
+            "version": "==4.1.0"
         },
         "asttokens": {
             "hashes": [
@@ -683,7 +691,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:03e2a7826086b91ef345ff18742ee9fc47a6839ccd517061ef8fa1976e652ce9",
