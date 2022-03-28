@@ -13,6 +13,8 @@ secrets:
     external: true
   AIRFLOW__CORE__FERNET_KEY:
     external: true
+  AIRFLOW__WEBSERVER__SECRET_KEY:
+    external: true
   AIRFLOW_CONN_FLOWDB:
     external: true
   FLOWETL_POSTGRES_USER:
@@ -21,7 +23,7 @@ secrets:
     external: true
   FLOWETL_REDIS_PASSWORD:
     external: true
-  FLOWETL_CELERY_CONN:
+  AIRFLOW__CELERY__RESULT_BACKEND:
     external: true
   FLOWETL_CELERY_USER:
     external: true
@@ -71,9 +73,10 @@ services:
     secrets:
       - REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
-      - FLOWETL_CELERY_CONN
+      - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
-      - POSTGRES_PASSWORD
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     command: scheduler
     networks:
       - flowetl
@@ -89,6 +92,8 @@ services:
     secrets:
       - FLOWETL_POSTGRES_USER
       - FLOWETL_POSTGRES_PASSWORD
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     environment:
       POSTGRES_DB: flowetl_db
     healthcheck:
@@ -106,6 +111,8 @@ services:
     image: bitnami/redis:latest
     secrets:
       - REDIS_PASSWORD
+    environment:
+      REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
     expose:
       - 6379
     healthcheck:
@@ -127,11 +134,13 @@ services:
     secrets:
       - REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
-      - FLOWETL_CELERY_CONN
+      - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - AIRFLOW_CONN_FLOWDB
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     networks:
       - flowetl
       - flowdb
@@ -145,9 +154,11 @@ services:
     secrets:
       - REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
-      - FLOWETL_CELERY_CONN
+      - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - FLOWETL_POSTGRES_PASSWORD
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     networks:
       - flowetl
     environment:
@@ -159,13 +170,15 @@ services:
     secrets:
       - REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
-      - FLOWETL_CELERY_CONN
+      - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - POSTGRES_PASSWORD
       - FLOWETL_CELERY_USER
       - FLOWETL_CELERY_PASSWORD
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     environment:
-      AIRFLOW__CELERY__FLOWER_BASIC_AUTH_CMD: "echo $$(cat /run/secrets/FLOWETL_CELERY_USER),$$:(cat /run/secrets/FLOWETL_CELERY_PASSWORD)"
+      AIRFLOW__CELERY__FLOWER_BASIC_AUTH_CMD: "echo $$(cat /run/secrets/FLOWETL_CELERY_USER),$$(cat /run/secrets/FLOWETL_CELERY_PASSWORD)"
     command: celery flower
     ports:
       - ${FLOWETL_CELERY_PORT:?Must set FLOWETL_CELERY_PORT env var}:5555
@@ -180,9 +193,11 @@ services:
     secrets:
       - REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
-      - FLOWETL_CELERY_CONN
+      - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - POSTGRES_PASSWORD
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     restart: always
     networks:
       - flowetl
@@ -193,10 +208,12 @@ services:
     secrets:
       - REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
-      - FLOWETL_CELERY_CONN
+      - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - POSTGRES_PASSWORD
       - FLOWETL_WEBSERVER_PASSWORD
+      - AIRFLOW__WEBSERVER__SECRET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     command: bash -c "airflow db init && airflow users create --role Admin --username admin --email admin --firstname admin --lastname admin --password $$(cat /run/secrets/FLOWETL_WEBSERVER_PASSWORD)"
     networks:
       - flowetl

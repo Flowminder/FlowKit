@@ -52,6 +52,9 @@ rand_string_secrets=(
   FLOWETL_CELERY_PASSWORD
   FLOWETL_REDIS_PASSWORD
   FLOWETL_WEBSERVER_PASSWORD
+  FLOWETL_SECRET_KEY
+  AIRFLOW__WEBSERVER__SECRET_KEY
+
 )
 
 #Secrets that are a random integer
@@ -87,7 +90,6 @@ other_secrets=(
   AIRFLOW__CELERY__RESULT_BACKEND
   AIRFLOW__CELERY__BROKER_URL
   AIRFLOW_CONN_FLOWDB
-  FLOWETL_CELERY_CONN
 )
 
 all_secrets=(
@@ -178,16 +180,18 @@ docker secret create key-flowkit.pem key-flowkit.pem
 
 echo "
 Generating compound secrets..."
+echo "Setting AIRFLOW__CORE__SQL_ALCHEMY_CONN"
 AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql://${FLOWETL_POSTGRES_USER:?}:${FLOWETL_POSTGRES_PASSWORD:?}@flowetl_db:5432/flowetl"
 echo "${AIRFLOW__CORE__SQL_ALCHEMY_CONN}" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
+echo "Setting AIRFLOW__CELERY__RESULT_BACKEND"
 AIRFLOW__CELERY__RESULT_BACKEND="db+${AIRFLOW__CORE__SQL_ALCHEMY_CONN:?}"
 echo "$AIRFLOW__CELERY__RESULT_BACKEND" | docker secret create AIRFLOW__CELERY__RESULT_BACKEND -
+echo "Setting AIRFLOW__CELERY__BROKER_URL"
 AIRFLOW__CELERY__BROKER_URL="redis://:${FLOWETL_REDIS_PASSWORD:?}@flowetl_redis:6379/0"
 echo "$AIRFLOW__CELERY__BROKER_URL" | docker secret create AIRFLOW__CELERY__BROKER_URL -
+echo "AIRFLOW_CONN_FLOWDB"
 AIRFLOW_CONN_FLOWDB="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@flowdb:5432/flowdb"
 echo "$AIRFLOW_CONN_FLOWDB" | docker secret create AIRFLOW_CONN_FLOWDB -
-FLOWETL_CELERY_CONN=$AIRFLOW__CELERY__RESULT_BACKEND
-echo "$FLOWETL_CELERY_CONN" | docker secret create FLOWETL_CELERY_CONN -
 
 echo "Secret gen complete"
 
