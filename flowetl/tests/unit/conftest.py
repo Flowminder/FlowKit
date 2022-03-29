@@ -2,17 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
-import os
-import shutil
 import sys
 from datetime import datetime, timedelta
 
-from airflow import DAG
 import pytest
 from pathlib import Path
 import jinja2
 
-from operators.staging.event_columns import event_column_mappings
+from flowetl.operators.staging.event_columns import event_column_mappings
 
 CSV_FOLDER = Path(__file__).parent.parent.parent / "mounts" / "files" / "static_csvs"
 SQL_FOLDER = (
@@ -23,7 +20,7 @@ SQL_FOLDER = (
     / "staging"
     / "sql"
 )
-TEST_DATE = datetime.datetime(year=2021, month=9, day=29)
+TEST_DATE = datetime(year=2021, month=9, day=29)
 TEST_DATE_STR = "20210929"
 TEST_PARAMS = {"flowdb_csv_dir": str(CSV_FOLDER), "column_dict": event_column_mappings}
 
@@ -114,16 +111,16 @@ def real_airflow_conn(monkeypatch):
 # From https://godatadriven.com/blog/testing-and-debugging-apache-airflow/
 @pytest.fixture()
 def mock_staging_dag(real_airflow_conn, dummy_db_conn):
-
+    from airflow import DAG
     return DAG(
         "test_dag",
         default_args={
             "owner": "airflow",
-            "start_date": datetime.datetime(2021, 9, 29),
+            "start_date": datetime(2021, 9, 29),
             "postgres_conn_id": "testdb",
             "column_dict": event_column_mappings,
         },
         params=TEST_PARAMS,
-        schedule_interval=datetime.timedelta(days=1),
+        schedule_interval=timedelta(days=1),
         template_searchpath=str(SQL_FOLDER),
     )

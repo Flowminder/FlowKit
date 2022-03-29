@@ -1,6 +1,6 @@
-from airflow.operators.postgres_operator import PostgresOperator
-from airflow.operators.bash_operator import BashOperator
-from operators.staging.event_columns import event_column_mappings
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.operators.bash import BashOperator
+from flowetl.operators.staging.event_columns import event_column_mappings
 
 
 def run_task(task, dag):

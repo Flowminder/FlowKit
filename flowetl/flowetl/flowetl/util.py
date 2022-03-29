@@ -437,7 +437,7 @@ def create_staging_dag(start_date: datetime, end_date=None):
         is_paused_upon_creation=True,
     ) as dag:
 
-        from airflow.operators.postgres_operator import PostgresOperator
+        from airflow.providers.postgres.operators.postgres import PostgresOperator
 
         event_types = os.getenv(
             "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
