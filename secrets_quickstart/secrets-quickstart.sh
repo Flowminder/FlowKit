@@ -272,5 +272,11 @@ $FLOWDB_DATA_DIR
 
 Airflow flowdb connection
 $AIRFLOW_CONN_FLOWDB
+
+Airflow webserver user
+admin
+
+Airflow webserver password
+$FLOWETL_WEBSERVER_PASSWORD
 ===============
 "
