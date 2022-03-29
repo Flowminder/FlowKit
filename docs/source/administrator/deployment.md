@@ -6,6 +6,9 @@ We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/
 
 ## Deployment scenarios
 
+!!! warning
+    If updating from FlowKit v. 1.16 or earlier, it is **strongly recommended** that you take a backup of the flowetl_db database. Airflow has been bumped to v2 from v1.
+
 ### FlowDB and FlowETL only
 
 FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.

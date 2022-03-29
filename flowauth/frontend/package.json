@@ -8,13 +8,13 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/pickers": "^3.3.10",
     "classnames": "^2.3.1",
-    "date-fns": "^2.27.0",
+    "date-fns": "^2.28.0",
     "generate-password": "^1.7.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-qr-svg": "^2.4.0",
     "react-scripts": "^4.0.3",
-    "rsuite": "^5.4.4",
+    "rsuite": "^5.6.6",
     "zxcvbn": "^4.4.2"
   },
   "homepage": "http://site.com/static",
@@ -28,12 +28,12 @@
     "cy:verify": "cypress verify"
   },
   "devDependencies": {
-    "cypress": "^9.2.1",
+    "cypress": "^9.5.2",
     "cypress-plugin-retries": "^1.5.2",
     "husky": "^7.0.4",
     "otp-cli": "^0.2.0",
-    "prettier": "^2.5.1",
-    "pretty-quick": "^3.1.2"
+    "prettier": "^2.6.1",
+    "pretty-quick": "^3.1.3"
   },
   "browserslist": [
     ">0.2%",

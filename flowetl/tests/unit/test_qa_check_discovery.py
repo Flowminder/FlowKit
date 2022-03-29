@@ -121,7 +121,7 @@ def test_module_path_added_to_dag_template_locations():
     dag = DAG("DUMMY_DAG", start_date=datetime.now())
     get_qa_checks(dag=dag)
     assert (
-        str(Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks")
+        Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
         in dag.template_searchpath
     )
 
@@ -133,7 +133,7 @@ def test_uses_context_dag():
     with DAG("DUMMY_DAG", start_date=datetime.now()) as dag:
         get_qa_checks()
     assert (
-        str(Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks")
+        Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
         in dag.template_searchpath
     )
 

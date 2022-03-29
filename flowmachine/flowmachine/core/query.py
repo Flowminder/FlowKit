@@ -46,7 +46,6 @@ from flowmachine.core.errors import (
 import flowmachine
 from flowmachine.utils import _sleep, pretty_sql
 from flowmachine.core.dependency_graph import (
-    store_all_unstored_dependencies,
     store_queries_in_order,
     unstored_dependencies_graph,
 )

@@ -204,6 +204,8 @@ def get_dependency_links(
 def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
     """
     Produce a dependency graph of the unstored queries on which this query depends.
+    If a dependency is stored, or is in the queue to be stored, the dependencies of
+    that dependency will not be included in the graph.
 
     Parameters
     ----------
@@ -224,23 +226,28 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
     deps = []
 
     if not query_obj.is_stored:
-        openlist = list(
-            zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
+        q_state_machine = QueryStateMachine(
+            get_redis(), query_obj.query_id, get_db().conn_id
         )
-
-        while openlist:
-            y, x = openlist.pop()
-            if y is query_obj:
-                # We don't want to include this query in the graph, only its dependencies.
-                y = None
-            # Wait for query to complete before checking whether it's stored.
-            q_state_machine = QueryStateMachine(
-                get_redis(), x.query_id, get_db().conn_id
+        # Add dependencies to graph only if this query is not yet in line to be stored
+        if not (q_state_machine.is_queued or q_state_machine.is_executing):
+            openlist = list(
+                zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
             )
-            q_state_machine.wait_until_complete()
-            if not x.is_stored:
-                deps.append((y, x))
-                openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+
+            while openlist:
+                y, x = openlist.pop()
+                if y is query_obj:
+                    # We don't want to include this query in the graph, only its dependencies.
+                    y = None
+                if not x.is_stored:
+                    q_state_machine = QueryStateMachine(
+                        get_redis(), x.query_id, get_db().conn_id
+                    )
+                    # Add dependencies to graph only if this query is not yet in line to be stored
+                    if not (q_state_machine.is_queued or q_state_machine.is_executing):
+                        deps.append((y, x))
+                        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
 
     def get_node_attrs(q):
         attrs = {}
@@ -344,31 +351,6 @@ def store_queries_in_order(dependency_graph: nx.DiGraph) -> Dict[str, "Future"]:
             # Some queries cannot be stored
             pass
     return store_futures
-
-
-def store_all_unstored_dependencies(query_obj: "Query") -> None:
-    """
-    Store all of the unstored dependencies of a query.
-
-    Parameters
-    ----------
-    query_obj : Query
-        Query object whose dependencies will be stored.
-
-    Notes
-    -----
-    This function stores only the unstored dependencies of a query, and not the
-    query itself.
-    This is a blocking function. Storing the dependencies happens in background threads,
-    but this function will not return until all the dependencies are stored.
-    """
-    logger.debug(
-        f"Creating background threads to store dependencies of query '{query_obj.query_id}'."
-    )
-    dependency_futures = store_queries_in_order(unstored_dependencies_graph(query_obj))
-
-    logger.debug(f"Waiting for dependencies to finish executing...")
-    wait(list(dependency_futures.values()))
 
 
 def dependencies_eligible_for_store(query_obj: "Query") -> Set["Query"]:

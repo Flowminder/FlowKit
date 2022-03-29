@@ -5,6 +5,7 @@ import datetime
 import os
 import shutil
 import sys
+from datetime import datetime, timedelta
 
 from airflow import DAG
 import pytest
@@ -43,6 +44,21 @@ def unload_airflow():
         for module in list(sys.modules.keys()):
             if "airflow" in module or "flowetl" in module:
                 del sys.modules[module]
+
+
+@pytest.fixture()
+def mock_basic_dag():
+    from airflow import DAG
+
+    dag = DAG(
+        "test_dag",
+        default_args={
+            "owner": "airflow",
+            "start_date": datetime(2021, 9, 29),
+        },
+        schedule_interval=timedelta(days=1),
+    )
+    yield dag
 
 
 # In hindsight, these could have been a factory or partial. Ho hum.

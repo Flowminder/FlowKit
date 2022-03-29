@@ -11,21 +11,18 @@ from flowmachine.features.subscriber.unmoving_at_reference_location import (
 
 
 def test_unmoving_at_reference_location_column_names(get_column_names_from_run):
-    assert (
-        get_column_names_from_run(
-            UnmovingAtReferenceLocation(
-                locations=UniqueLocations(
-                    SubscriberLocations(
-                        "2016-01-01",
-                        "2016-01-01 10:00",
-                        spatial_unit=make_spatial_unit("admin", level=3),
-                    )
-                ),
-                reference_locations=LastLocation("2016-01-01", "2016-01-02"),
-            )
+    assert get_column_names_from_run(
+        UnmovingAtReferenceLocation(
+            locations=UniqueLocations(
+                SubscriberLocations(
+                    "2016-01-01",
+                    "2016-01-01 10:00",
+                    spatial_unit=make_spatial_unit("admin", level=3),
+                )
+            ),
+            reference_locations=LastLocation("2016-01-01", "2016-01-02"),
         )
-        == ["subscriber", "value"]
-    )
+    ) == ["subscriber", "value"]
 
 
 def test_spatial_unit_mismatch_error():

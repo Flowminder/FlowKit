@@ -8,57 +8,41 @@ Tests that fixuid works as expected
 """
 
 
-def test_uid(docker_client, container_tag):
+def test_uid(
+    flowetl_db_container, docker_client, container_tag, container_network, container_env
+):
     """
     test that we can run the flowetl container with a specific user.
     Check UID is correct.
     """
-
-    user = "1002:1003"
+    flowetl_db_container()
+    user = "1002:0"
     out = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
         "bash -c 'id -u'",
         user=user,
-        environment={
-            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
-        },
+        environment=container_env["flowetl"],
         auto_remove=True,
+        network=container_network.name,
     )
-    assert out.decode("utf-8").strip() == "1002"
+    print(out)
+    assert out.decode("utf-8").strip().split().pop() == "1002"
 
 
-def test_gid(docker_client, container_tag):
-    """
-    test that we can run the flowetl container with a specific user.
-    Check GID is correct.
-    """
-
-    user = "1002:1003"
-    out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}",
-        "bash -c 'id -g'",
-        user=user,
-        environment={
-            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
-        },
-        auto_remove=True,
-    )
-    assert out.decode("utf-8").strip() == "1003"
-
-
-def test_uid_is_airflow(docker_client, container_tag):
+def test_uid_is_airflow(
+    flowetl_db_container, docker_client, container_tag, container_network, container_env
+):
     """
     Test that the user we run the container with is the airflow user.
     """
-
-    user = "1002:1003"
+    flowetl_db_container()
+    user = "1002:0"
     out = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
         "bash -c 'id -u | id -nu'",
         user=user,
-        environment={
-            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
-        },
         auto_remove=True,
+        environment=container_env["flowetl"],
+        network=container_network.name,
     )
-    assert out.decode("utf-8").strip() == "airflow"
+    assert out.decode("utf-8").strip().split().pop() == "default"

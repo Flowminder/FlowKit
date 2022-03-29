@@ -37,7 +37,7 @@ updates:
     timezone: Europe/London
   pull-request-branch-name:
     separator: "-"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0
   labels:
   - tests
   allow:
@@ -51,7 +51,7 @@ updates:
     timezone: Europe/London
   pull-request-branch-name:
     separator: "-"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0
   labels:
   - docs
   allow:

@@ -161,22 +161,3 @@ def test_invalid_flux_sensor_error():
             source_table="DUMMY_SOURCE_TABLE",
             use_flux_sensor="file",
         )
-
-
-def test_use_file_flux_sensor_deprecated():
-    """
-    Setting 'use_file_flux_sensor=False' produces deprecation warning and uses TableFluxSensor
-    """
-    with pytest.deprecated_call(
-        match="The 'use_file_flux_sensor' argument is deprecated. Set use_flux_sensor='table' instead."
-    ):
-        dag = create_dag(
-            dag_id="TEST",
-            cdr_type="TEST",
-            start_date=datetime.now(),
-            extract_sql="DUMMY SQL",
-            filename="DUMMY FILE PATTERN",
-            fields=dict(DUMMY_FIELD="DUMMY_TYPE"),
-            use_file_flux_sensor=False,
-        )
-    assert dag.task_dict["check_not_in_flux"].__class__.__name__ == "TableFluxSensor"

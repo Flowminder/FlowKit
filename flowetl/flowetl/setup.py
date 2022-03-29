@@ -35,7 +35,7 @@ setup(
     install_requires=["Click"],
     extras_require={
         "test": ["pytest", "coverage"],
-        "airflow": ["apache-airflow[postgres, crypto]"],
+        "airflow": ["apache-airflow[postgres, crypto] >= 2.2.3"],
     },
     python_requires=">=3.6",
 )

@@ -1,8 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from airflow.operators.sensors import SqlSensor
-from airflow.utils.decorators import apply_defaults
+from airflow.sensors.sql import SqlSensor
 from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
 
@@ -26,7 +25,6 @@ class FileFluxSensor(TableNameMacrosMixin, SqlSensor):
     airflow.operators.sensors.SqlSensor
     """
 
-    @apply_defaults
     def __init__(
         self, *, conn_id: str, flux_check_interval: int, filename: str, **kwargs
     ) -> None:
