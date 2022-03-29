@@ -220,6 +220,8 @@ services:
     depends_on:
       - flowetl_db
       - flowetl_redis
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: "none"
 
 
