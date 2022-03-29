@@ -69,9 +69,8 @@ services:
 
   flowetl_scheduler:
     << : *flowetl-common
-    container_name: flowetl_scheduler
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
@@ -83,10 +82,8 @@ services:
 
   flowetl_db:
     image: postgres:11.0
-    container_name: flowetl_db
     tty: true
     stdin_open: true
-    restart: always
     ports:
       - ${FLOWETL_POSTGRES_PORT:?Must set FLOWETL_POSTGRES_PORT env var}:5432
     secrets:
@@ -107,20 +104,16 @@ services:
           - flowetl_db
 
   flowetl_redis:
-    container_name: flowetl_redis
     image: bitnami/redis:latest
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
     environment:
-      REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
-    expose:
-      - 6379
+      REDIS_PASSWORD_FILE: /run/secrets/FLOWETL_REDIS_PASSWORD
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 30s
       retries: 50
-    restart: always
     networks:
       flowetl:
         aliases:
@@ -132,7 +125,7 @@ services:
     deploy:
       replicas: ${FLOWETL_WORKER_COUNT:-1}
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
@@ -146,13 +139,12 @@ services:
       - flowdb
 
   flowetl_webserver:
-    container_name: flowetl_webserver
     <<: *flowetl-common
     ports:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
     command: webserver
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
@@ -165,10 +157,9 @@ services:
       <<: *flowetl-envs
 
   flowetl_flower:
-    container_name: flowetl_flower
     <<: *flowetl-common
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
@@ -182,31 +173,27 @@ services:
     command: celery flower
     ports:
       - ${FLOWETL_CELERY_PORT:?Must set FLOWETL_CELERY_PORT env var}:5555
-    restart: always
     networks:
       - flowetl
 
   flowetl_triggerer:
-    container_name: flowetl_triggerer
     <<: *flowetl-common
     command: triggerer
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - POSTGRES_PASSWORD
       - AIRFLOW__WEBSERVER__SECRET_KEY
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN
-    restart: always
     networks:
       - flowetl
 
   flowetl_init:
-    container_name: flowetl_init
     <<: *flowetl-common
     secrets:
-      - REDIS_PASSWORD
+      - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
