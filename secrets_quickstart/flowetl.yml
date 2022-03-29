@@ -95,7 +95,7 @@ services:
     volumes:
       - data_volume_flowetl_airflow_db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-U", "airflow"]
+      test: ["CMD-SHELL", "pg_isready", "-U", "flowetl"]
       interval: 5s
       timeout: 30s
       retries: 10
@@ -199,7 +199,7 @@ services:
       <<: *flowetl-envs
       _AIRFLOW_DB_UPGRADE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
-      _AIRFLOW_WWW_USER_PASSWORD_CMD: "$$(cat /run/secrets/FLOWETL_WEBSERVER_PASSWORD)"
+      _AIRFLOW_WWW_USER_PASSWORD_CMD: "cat /run/secrets/FLOWETL_WEBSERVER_PASSWORD"
     secrets:
       - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
