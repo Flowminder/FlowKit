@@ -6,6 +6,11 @@
 set -eu
 set -o pipefail
 
+if [ "${BASH_VERSINFO:-0}" -le 3 ]; then
+  echo "This script requires bash version 4 or above." >/dev/stderr
+  exit 1
+fi
+
 # Ensure this docker node is in swarm mode
 docker swarm init || true
 
