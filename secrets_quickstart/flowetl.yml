@@ -41,7 +41,6 @@ secrets:
 x-flowetl-common:
   &flowetl-common
   image: flowminder/flowetl:${CONTAINER_TAG:-latest}
-  restart: always
   tty: true
   stdin_open: true
 
@@ -89,10 +88,12 @@ services:
     secrets:
       - FLOWETL_POSTGRES_USER
       - FLOWETL_POSTGRES_PASSWORD
-      - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
     environment:
-      POSTGRES_DB: flowetl_db
+      POSTGRES_USER: flowetl
+      POSTGRES_PASSWORD_FILE: /run/secrets/FLOWETL_POSTGRES_PASSWORD
+      POSTGRES_DB: flowetl
+    volumes:
+      - data_volume_flowetl_airflow_db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -190,8 +191,15 @@ services:
     networks:
       - flowetl
 
-  flowetl_init:
-    <<: *flowetl-common
+  flowetl_init_db:
+    image: flowminder/flowetl:${CONTAINER_TAG:-latest}
+    volumes:
+      - ${FLOWETL_HOST_DAG_DIR:?Must set FLOWETL_HOST_DAG_DIR env var}:/opt/airflow/dags:ro
+    environment:
+      <<: *flowetl-envs
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_PASSWORD_CMD: "$$(cat /run/secrets/FLOWETL_WEBSERVER_PASSWORD)"
     secrets:
       - FLOWETL_REDIS_PASSWORD
       - AIRFLOW__CORE__FERNET_KEY
@@ -201,7 +209,7 @@ services:
       - FLOWETL_WEBSERVER_PASSWORD
       - AIRFLOW__WEBSERVER__SECRET_KEY
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN
-    command: bash -c "airflow db init && airflow users create --role Admin --username admin --email admin --firstname admin --lastname admin --password $$(cat /run/secrets/FLOWETL_WEBSERVER_PASSWORD)"
+    command: version
     networks:
       - flowetl
     depends_on:
