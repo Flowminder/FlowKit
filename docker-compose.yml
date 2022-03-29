@@ -263,7 +263,12 @@ services:
   flowetl_init:
     container_name: flowetl_init
     <<: *flowetl-common
-    command: bash -c "airflow db init && airflow users create --role Admin --username admin --email admin --firstname admin --lastname admin --password ${FLOWETL_WEBSERVER_PASSWORD:?Must set FLOWETL_WEBSERVER_PASSWORD env var}"
+    environment:
+      <<: *flowetl-envs
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_PASSWORD: ${FLOWETL_WEBSERVER_PASSWORD:?Must set FLOWETL_WEBSERVER_PASSWORD env var}
+    command: version
     networks:
       - flowetl
     depends_on:
