@@ -123,7 +123,7 @@ Generating random string secrets..."
 for secret_name in ${rand_string_secrets[*]} ; do
   echo "Generating $secret_name"
   declare "${secret_name}"="$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')"
-  echo "${!secret_name}}" | docker secret create "${secret_name}" -
+  echo "${!secret_name}" | docker secret create "${secret_name}" -
 done
 
 echo "
@@ -186,7 +186,7 @@ docker secret create key-flowkit.pem key-flowkit.pem
 echo "
 Generating compound secrets..."
 echo "Setting AIRFLOW__CORE__SQL_ALCHEMY_CONN"
-AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql://${FLOWETL_POSTGRES_USER:?}:${FLOWETL_POSTGRES_PASSWORD:?}@flowetl_db:5432/flowetl"
+AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql://$FLOWETL_POSTGRES_USER:$FLOWETL_POSTGRES_PASSWORD@flowetl_db:5432/flowetl"
 echo "${AIRFLOW__CORE__SQL_ALCHEMY_CONN}" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
 echo "Setting AIRFLOW__CELERY__RESULT_BACKEND"
 AIRFLOW__CELERY__RESULT_BACKEND="db+${AIRFLOW__CORE__SQL_ALCHEMY_CONN:?}"
@@ -258,6 +258,9 @@ $FLOWAUTH_REDIS_PASSWORD
 FlowMachine redis password
 $REDIS_PASSWORD
 
+FlowETL redis password
+$FLOWETL_REDIS_PASSWORD
+
 FlowETL Fernet Key
 $AIRFLOW__CORE__FERNET_KEY
 
@@ -269,7 +272,5 @@ $FLOWDB_DATA_DIR
 
 Airflow flowdb connection
 $AIRFLOW_CONN_FLOWDB
-
 ===============
 "
-
