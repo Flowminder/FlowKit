@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 tohu = "*"
 "geoalchemy2" = "*"
+requests = "*"
 
 [dev-packages]
 

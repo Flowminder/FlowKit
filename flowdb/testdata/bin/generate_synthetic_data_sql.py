@@ -26,6 +26,7 @@ import sqlalchemy as sqlalchemy
 from sqlalchemy.exc import ResourceClosedError
 
 import structlog
+import requests
 import json
 
 structlog.configure(
@@ -129,6 +130,38 @@ def log_duration(job: str, **kwargs):
     )
 
 
+def get_boundary_record(country, level):
+    return requests.get(
+        f"https://www.geoboundaries.org/gbRequest.html?ISO={country}&ADM=ADM{level}"
+    ).json[0]
+
+
+def get_boundary_url(country, level):
+    return get_boundary_record(country, level)["gjDownloadURL"]
+
+
+def get_boundary_json(country, level):
+    return requests.get(get_boundary_url(country, level)).json()
+
+
+def import_boundary(db_conn, country, level):
+    with db_conn.begin() as trans:
+        trans.execute(
+            f"CREATE SERVER adm FOREIGN DATA WRAPPER ogr_fdw OPTIONS (datasource '{get_boundary_url(country, level)}', format 'GeoJSON');"
+        )
+        trans.execute("CREATE SCHEMA fgdball;")
+        trans.execute("IMPORT FOREIGN SCHEMA ogr_all FROM SERVER adm INTO fgdball;")
+        trans.execute(
+            f"""
+            INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
+              SELECT shapeiso as short_name, shapename as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom,
+                json_build_object('parent',GID_{level - 1}) as additional_metadata
+                FROM fgdball.geoboundaries_3_0_0_{country}_adm{level};"""
+        )
+        trans.execute("DROP SCHEMA fgdball CASCADE;")
+        trans.execute("DROP SERVER adm;")
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
     with log_duration("Generating synthetic data..", **vars(args)):
@@ -171,11 +204,6 @@ if __name__ == "__main__":
 
         start_time = datetime.datetime.now()
 
-        # Load geography
-        available_files = list(
-            Path("/docker-entrypoint-initdb.d/data/geo").glob("*[0-9].shp")
-        )
-        logger.info("Found shapefiles", file=available_files)
         homes_level = 0
         with engine.begin() as trans:
             trans.execute("TRUNCATE TABLE geography.geoms CASCADE;")
@@ -185,76 +213,26 @@ if __name__ == "__main__":
                     trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
                 except Exception as exc:
                     logger.error("Couldn't drop geo table.", level=level, exc=exc)
-        with engine.begin() as trans:
-            with log_duration(job="Load shape data."):
-                for shape_file in available_files:
-                    level = int(shape_file.stem[-1])
-                    homes_level = max(homes_level, level)
-                    with log_duration(
-                        job=f"Loading admin level.", admin_level=level, file=shape_file
-                    ):
-                        trans.execute(
-                            f"DROP SERVER IF EXISTS admin{level}_boundaries CASCADE;"
-                        )
-                        trans.execute(
-                            f"""
-                        CREATE SERVER admin{level}_boundaries
-                          FOREIGN DATA WRAPPER ogr_fdw
-                          OPTIONS (
-                            datasource '{shape_file}',
-                            format 'ESRI Shapefile' );
-                        """
-                        )
-                        if level > 0:
-                            trans.execute(
-                                f"""
-                            CREATE FOREIGN TABLE admin{level} (
-                              GID_{level} text,
-                              GID_{level-1}  text,
-                              NAME_{level} text,
-                              geom geometry(MultiPolygon, 4326)
-                            ) SERVER "admin{level}_boundaries"
-                            OPTIONS (layer 'gadm36_{country}_{level}');
-                            """
-                            )
-                            trans.execute(
-                                f"""
-                                INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
-                                  SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom,
-                                    json_build_object('parent',GID_{level-1}) as additional_metadata
-                                    FROM admin{level};"""
-                            )
-                        else:
-                            trans.execute(
-                                f"""
-                                CREATE FOREIGN TABLE admin{level} (
-                                  NAME_{level} text,
-                                  geom geometry(MultiPolygon, 4326)
-                                ) SERVER "admin{level}_boundaries"
-                                OPTIONS (layer 'gadm36_{country}_{level}');
-                                """
-                            )
-                            trans.execute(
-                                f"""
-                                INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom)
-                                  SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom
-                                    FROM admin{level};"""
-                            )
-
-                        trans.execute(
-                            f"""DROP VIEW IF EXISTS geography.admin{level};"""
-                        )
-                        trans.execute(
-                            f"""
-                        CREATE VIEW geography.admin{level} AS
-                            SELECT row_number() over() as gid,
-                            short_name as admin{level}pcod,
-                            long_name as admin{level}name,
-                            additional_metadata ->> 'parent' as parent_pcod,
-                            geom from geography.geoms where spatial_resolution={level};
-                        """
-                        )
-        homes_level = min(homes_level, 3)  # Admin3 homes at most
+        with log_duration(job="Load boundaries"):
+            for level in range(4):
+                try:
+                    import_boundary(engine, country, level)
+                    homes_level = level
+                except IndexError:
+                    pass  # No boundaries at this resolution
+            with engine.begin() as trans:
+                trans.execute(f"""DROP VIEW IF EXISTS geography.admin{level};""")
+                trans.execute(
+                    f"""
+                    CREATE VIEW geography.admin{level} AS
+                        SELECT row_number() over() as gid,
+                        short_name as admin{level}pcod,
+                        long_name as admin{level}name,
+                        additional_metadata ->> 'parent' as parent_pcod,
+                        geom from geography.geoms where spatial_resolution={level};
+                    """
+                )
+        homes_level = 3
 
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
