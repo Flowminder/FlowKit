@@ -8,6 +8,6 @@ def test_create_staging_dag(monkeypatch):
     monkeypatch.setenv("SOURCE_TREE", "foo")
     monkeypatch.setenv("FLOWDB_CSV_DIR", "bar")
     dag = create_staging_dag(
-        start_date = datetime.datetime(2021, 9, 29, tzinfo=datetime.timezone.utc)
+        start_date=datetime.datetime(2021, 9, 29, tzinfo=datetime.timezone.utc)
     )
     assert dag

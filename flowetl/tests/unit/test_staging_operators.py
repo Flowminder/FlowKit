@@ -1,40 +1,70 @@
 import pytest
-from airflow.providers.postgres.operators.postgres import PostgresOperator
-from airflow.operators.bash import BashOperator
-from airflow.utils.state import DagRunState
-from airflow.utils.types import DagRunType
-from flowetl.operators.staging.event_columns import event_column_mappings
-from conftest import TEST_DATE
 
-def run_task(task, dag):
+from conftest import TEST_DATE, TEST_PARAMS, SQL_FOLDER
+from datetime import timedelta, datetime
+
+from operators.staging.event_columns import event_column_mappings
+
+
+def run_task(task):
+
+    from airflow import DAG
+    from airflow.utils.state import DagRunState
+    from airflow.utils.types import DagRunType
+
+    dag = DAG(
+        f"test_{task.task_id}",
+        default_args={
+            "owner": "airflow",
+            "start_date": datetime(2021, 9, 29),
+            "column_dict": event_column_mappings,
+        },
+        params=TEST_PARAMS,
+        schedule_interval=timedelta(days=1),
+        template_searchpath=str(SQL_FOLDER),
+        is_paused_upon_creation=True,
+    )
+
     dag.add_task(task)
     dagrun = dag.create_dagrun(
+        run_id=f"test_{task.task_id}_run",
         state=DagRunState.RUNNING,
-        execution_date=dag.default_args["start_date"],
-        start_date=dag.default_args["start_date"],
-        run_type=DagRunType.MANUAL
+        execution_date=TEST_DATE,
+        data_interval=(TEST_DATE, TEST_DATE + timedelta(days=1)),
+        start_date=TEST_DATE + timedelta(days=1),
+        run_type=DagRunType.MANUAL,
     )
-    task_instance = dagrun.get_task_instance(task.task_id)
-    task_instance.run(ignore_ti_state=True)
+    ti = dagrun.get_task_instance(task_id=task.task_id)
+    ti.task = dag.get_task(
+        task_id=task.task_id
+    )  # you'd think this would be there already, but no.
+    ti.run(ignore_ti_state=True)
+    assert ti.state == DagRunState.SUCCESS
     dag.clear()
 
-def test_mock_dag(mock_staging_dag):
+
+def test_mock_dag():
+    from airflow.operators.bash import BashOperator
+
     run_task(
         BashOperator(
             task_id="bash_test", bash_command="echo $PWD", start_date=TEST_DATE
         ),
-        mock_staging_dag,
     )
 
 
-def test_mount_event_table(mock_staging_dag, dummy_flowdb_conn):
+def test_mount_event_table(dummy_flowdb_conn):
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+    from flowetl.operators.staging.event_columns import event_column_mappings
+
     sms_operator = PostgresOperator(
         sql="mount_event.sql",
         task_id="mount_event",
         params={"event_type": "sms"},
-        dag=mock_staging_dag,
+        postgres_conn_id="testdb",
+        start_date=TEST_DATE,
     )
-    run_task(sms_operator, mock_staging_dag)
+    run_task(sms_operator)
     columns = dummy_flowdb_conn.execute(
         f"""
         SELECT column_name
@@ -51,52 +81,63 @@ def test_mount_event_table(mock_staging_dag, dummy_flowdb_conn):
     )
 
 
-def test_create_and_fill_staging_table(mock_staging_dag, mounted_events_conn):
+def test_create_and_fill_staging_table(mounted_events_conn):
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+
     fill_operator = PostgresOperator(
         sql="stage_events.sql",
         task_id="stage_events",
         params={"event_types": ["call", "sms"]},
-        dag=mock_staging_dag,
+        postgres_conn_id="testdb",
+        start_date=TEST_DATE,
     )
     run_task(
         fill_operator,
-        mock_staging_dag,
     )
     out = mounted_events_conn.execute("SELECT * FROM staging_table_20210929")
     assert out.rowcount == 20
 
 
-def test_append_sightings_to_main_table(mock_staging_dag, day_sightings_table_conn):
+def test_append_sightings_to_main_table(day_sightings_table_conn):
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+
     # Needs sightings table to exist
     append_operator = PostgresOperator(
         sql="append_sightings_to_main_table.sql",
         task_id="append_sightings_to_main_table",
-        dag=mock_staging_dag,
+        postgres_conn_id="testdb",
+        start_date=TEST_DATE,
     )
-    run_task(append_operator, mock_staging_dag)
+    run_task(append_operator)
     out = day_sightings_table_conn.execute("SELECT * FROM reduced.sightings")
     assert out.rowcount == 37
 
 
-def test_create_and_fill_day_sightings_table(mock_staging_dag, sightings_table_conn):
+def test_create_and_fill_day_sightings_table(sightings_table_conn):
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+
     # Needs staging table + reduced sightings
     day_sightings = PostgresOperator(
         sql="create_and_fill_day_sightings_table.sql",
         task_id="create_and_fill_day_sightings_table",
-        dag=mock_staging_dag,
+        postgres_conn_id="testdb",
+        start_date=TEST_DATE,
     )
-    run_task(day_sightings, mock_staging_dag)
+    run_task(day_sightings)
     out = sightings_table_conn.execute("SELECT * FROM reduced.sightings_20210929")
     assert out.rowcount == 37  # two merged
 
 
-def test_create_sightings_table(mock_staging_dag, dummy_flowdb_conn):
+def test_create_sightings_table(dummy_flowdb_conn):
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+
     create_sightings = PostgresOperator(
         sql="create_sightings_table.sql",
         task_id="create_sightings_table",
-        dag=mock_staging_dag,
+        postgres_conn_id="testdb",
+        start_date=TEST_DATE,
     )
-    run_task(create_sightings, mock_staging_dag)
+    run_task(create_sightings)
     out = dummy_flowdb_conn.execute("SELECT * FROM reduced.sightings")
     assert out.rowcount == 0
     assert out.keys() == [
@@ -109,7 +150,9 @@ def test_create_sightings_table(mock_staging_dag, dummy_flowdb_conn):
     ]
 
 
-def test_staging_cleanup(mock_staging_dag, staged_data_conn):
+def test_staging_cleanup(staged_data_conn):
+    from airflow.providers.postgres.operators.postgres import PostgresOperator
+
     test_date = "20210929"
     staging_tables = [
         f"staging_table_{test_date}",
@@ -133,9 +176,10 @@ def test_staging_cleanup(mock_staging_dag, staged_data_conn):
     cleanup = PostgresOperator(
         sql="cleanup_staging_table.sql",
         task_id="cleanup_staging_table",
-        dag=mock_staging_dag,
+        postgres_conn_id="testdb",
+        start_date=TEST_DATE,
     )
-    run_task(cleanup, mock_staging_dag)
+    run_task(cleanup)
 
     # Check staging tables have been cleared up
     table_list = staged_data_conn.execute(

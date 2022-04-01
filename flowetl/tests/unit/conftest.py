@@ -9,6 +9,8 @@ import pytest
 from pathlib import Path
 import jinja2
 
+import importlib
+
 from flowetl.operators.staging.event_columns import event_column_mappings
 
 
@@ -28,9 +30,28 @@ TEST_PARAMS = {"flowdb_csv_dir": str(CSV_FOLDER), "column_dict": event_column_ma
 sql_env = jinja2.Environment(loader=jinja2.FileSystemLoader(SQL_FOLDER))
 
 
-@pytest.fixture(autouse=True)
-def airflow_home(tmpdir, monkeypatch):
-    monkeypatch.setenv("AIRFLOW_HOME", str(tmpdir))
+# From https://github.com/pytest-dev/pytest/issues/1872
+# I don't like depending on a _pytest func, but can't see much choice...
+@pytest.fixture(scope="session")
+def monkeypatch_session():
+    from _pytest.monkeypatch import MonkeyPatch
+
+    m = MonkeyPatch()
+    yield m
+    m.undo()
+
+
+@pytest.fixture(autouse=True, scope="session")
+def airflow_home(tmpdir_factory, monkeypatch_session):
+    tmpdir = tmpdir_factory.mktemp("airflow")
+    monkeypatch_session.setenv("AIRFLOW_HOME", str(tmpdir))
+    monkeypatch_session.setenv("AIRFLOW__CORE__LOAD_EXAMPLES", "False")
+    import airflow
+
+    importlib.reload(airflow)
+    from airflow.utils import db
+
+    db.initdb()
     yield tmpdir
 
 
@@ -42,6 +63,7 @@ def unload_airflow():
         for module in list(sys.modules.keys()):
             if "airflow" in module or "flowetl" in module:
                 del sys.modules[module]
+
 
 @pytest.fixture()
 def mock_basic_dag():
@@ -58,29 +80,31 @@ def mock_basic_dag():
     yield dag
 
 
-# In hindsight, these could have been a factory or partial. Ho hum.
+# Adapted from airflow.cli.commands.connection_command.py
 @pytest.fixture()
-def dummy_flowdb_conn(postgresql_db, monkeypatch):
+def dummy_flowdb_conn(postgresql_db):
+    # Create connection
+    from airflow.utils.session import create_session
+    from airflow.models.connection import Connection
+
     postgresql_db.install_extension("file_fdw")
     postgresql_db.create_schema("reduced")
     with postgresql_db.engine.connect() as conn:
-        monkeypatch.setenv("AIRFLOW_CONN_TESTDB", str(conn.engine.url))
-        yield conn
-
-@pytest.fixture()
-def dummy_flowetl_conn(postgresql_db, monkeypatch):
-    with postgresql_db.engine.connect() as conn:
-        monkeypatch.setenv(
-            "AIRFLOW__CORE__SQL_ALCHEMY_CONN", str(conn.engine.url)
+        new_conn = Connection(
+            conn_id="testdb",
+            description="Temporary mock of flowdb",
+            uri=str(conn.engine.url),
         )
+        with create_session() as session:
+            session.add(new_conn)
+
         yield conn
 
+        with create_session() as session:
+            session.delete(
+                session.query(Connection).filter(Connection.conn_id == "testdb").one()
+            )
 
-@pytest.fixture()
-def dummy_airflow_session(dummy_flowdb_conn, dummy_flowetl_conn):
-    foo = dummy_flowetl_conn
-    bar     = dummy_flowdb_conn
-    pass
 
 @pytest.fixture()
 def mounted_events_conn(dummy_flowdb_conn):
@@ -112,34 +136,3 @@ def day_sightings_table_conn(sightings_table_conn, staged_data_conn):
     query = day_sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     staged_data_conn.execute(query)
     yield sightings_table_conn
-
-
-@pytest.fixture()
-def real_airflow_conn(monkeypatch):
-    monkeypatch.setenv(
-        "AIRFLOW__CORE__SQL_ALCHEMY_CONN",
-        "postgres://flowetl:flowetl@localhost:9001/flowetl",
-    )
-
-
-# From https://godatadriven.com/blog/testing-and-debugging-apache-airflow/
-@pytest.fixture()
-def mock_staging_dag(dummy_airflow_session):
-    print(airflow_home)
-    from airflow import DAG
-    dag = DAG(
-        "test_dag",
-        default_args={
-            "owner": "airflow",
-            "start_date": datetime(2021, 9, 29),
-            "postgres_conn_id": "testdb",
-            "column_dict": event_column_mappings,
-        },
-        params=TEST_PARAMS,
-        schedule_interval=timedelta(days=1),
-        template_searchpath=str(SQL_FOLDER),
-        is_paused_upon_creation=True
-    )
-    dag.clear()
-    yield dag
-    dag.clear()
