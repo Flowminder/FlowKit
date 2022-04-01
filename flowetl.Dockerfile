@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM apache/airflow:2.2.4rc2-python3.8
+FROM apache/airflow:2.2.4-python3.9
 
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES False
@@ -24,7 +24,7 @@ ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowetl
 
-COPY --chown=airflow . /${SOURCE_TREE}/
+COPY --chown=airflow:5000 . /${SOURCE_TREE}/
 
 
 RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system

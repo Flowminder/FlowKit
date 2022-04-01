@@ -1,26 +1,33 @@
+import pytest
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.operators.bash import BashOperator
+from airflow.utils.state import DagRunState
+from airflow.utils.types import DagRunType
 from flowetl.operators.staging.event_columns import event_column_mappings
-
+from conftest import TEST_DATE
 
 def run_task(task, dag):
-    dag.clear()
-    task.run(
+    dag.add_task(task)
+    dagrun = dag.create_dagrun(
+        state=DagRunState.RUNNING,
+        execution_date=dag.default_args["start_date"],
         start_date=dag.default_args["start_date"],
-        end_date=dag.default_args["start_date"],
+        run_type=DagRunType.MANUAL
     )
-
+    task_instance = dagrun.get_task_instance(task.task_id)
+    task_instance.run(ignore_ti_state=True)
+    dag.clear()
 
 def test_mock_dag(mock_staging_dag):
     run_task(
         BashOperator(
-            task_id="bash_test", bash_command="echo $PWD", dag=mock_staging_dag
+            task_id="bash_test", bash_command="echo $PWD", start_date=TEST_DATE
         ),
         mock_staging_dag,
     )
 
 
-def test_mount_event_table(mock_staging_dag, dummy_db_conn):
+def test_mount_event_table(mock_staging_dag, dummy_flowdb_conn):
     sms_operator = PostgresOperator(
         sql="mount_event.sql",
         task_id="mount_event",
@@ -28,7 +35,7 @@ def test_mount_event_table(mock_staging_dag, dummy_db_conn):
         dag=mock_staging_dag,
     )
     run_task(sms_operator, mock_staging_dag)
-    columns = dummy_db_conn.execute(
+    columns = dummy_flowdb_conn.execute(
         f"""
         SELECT column_name
         FROM information_schema.columns
@@ -83,14 +90,14 @@ def test_create_and_fill_day_sightings_table(mock_staging_dag, sightings_table_c
     assert out.rowcount == 37  # two merged
 
 
-def test_create_sightings_table(mock_staging_dag, dummy_db_conn):
+def test_create_sightings_table(mock_staging_dag, dummy_flowdb_conn):
     create_sightings = PostgresOperator(
         sql="create_sightings_table.sql",
         task_id="create_sightings_table",
         dag=mock_staging_dag,
     )
     run_task(create_sightings, mock_staging_dag)
-    out = dummy_db_conn.execute("SELECT * FROM reduced.sightings")
+    out = dummy_flowdb_conn.execute("SELECT * FROM reduced.sightings")
     assert out.rowcount == 0
     assert out.keys() == [
         "sighting_date",

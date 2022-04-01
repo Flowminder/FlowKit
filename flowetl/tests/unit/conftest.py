@@ -3,13 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from pathlib import Path
 import jinja2
 
 from flowetl.operators.staging.event_columns import event_column_mappings
+
 
 CSV_FOLDER = Path(__file__).parent.parent.parent / "mounts" / "files" / "static_csvs"
 SQL_FOLDER = (
@@ -20,7 +21,7 @@ SQL_FOLDER = (
     / "staging"
     / "sql"
 )
-TEST_DATE = datetime(year=2021, month=9, day=29)
+TEST_DATE = datetime(year=2021, month=9, day=29, tzinfo=timezone.utc)
 TEST_DATE_STR = "20210929"
 TEST_PARAMS = {"flowdb_csv_dir": str(CSV_FOLDER), "column_dict": event_column_mappings}
 
@@ -42,7 +43,6 @@ def unload_airflow():
             if "airflow" in module or "flowetl" in module:
                 del sys.modules[module]
 
-
 @pytest.fixture()
 def mock_basic_dag():
     from airflow import DAG
@@ -60,20 +60,34 @@ def mock_basic_dag():
 
 # In hindsight, these could have been a factory or partial. Ho hum.
 @pytest.fixture()
-def dummy_db_conn(postgresql_db, monkeypatch):
+def dummy_flowdb_conn(postgresql_db, monkeypatch):
     postgresql_db.install_extension("file_fdw")
     postgresql_db.create_schema("reduced")
     with postgresql_db.engine.connect() as conn:
         monkeypatch.setenv("AIRFLOW_CONN_TESTDB", str(conn.engine.url))
         yield conn
 
+@pytest.fixture()
+def dummy_flowetl_conn(postgresql_db, monkeypatch):
+    with postgresql_db.engine.connect() as conn:
+        monkeypatch.setenv(
+            "AIRFLOW__CORE__SQL_ALCHEMY_CONN", str(conn.engine.url)
+        )
+        yield conn
+
 
 @pytest.fixture()
-def mounted_events_conn(dummy_db_conn):
+def dummy_airflow_session(dummy_flowdb_conn, dummy_flowetl_conn):
+    foo = dummy_flowetl_conn
+    bar     = dummy_flowdb_conn
+    pass
+
+@pytest.fixture()
+def mounted_events_conn(dummy_flowdb_conn):
     mount_fill = sql_env.get_template("test_mount_all.sql")
     query = mount_fill.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
-    dummy_db_conn.execute(query)
-    yield dummy_db_conn
+    dummy_flowdb_conn.execute(query)
+    yield dummy_flowdb_conn
 
 
 @pytest.fixture()
@@ -110,9 +124,10 @@ def real_airflow_conn(monkeypatch):
 
 # From https://godatadriven.com/blog/testing-and-debugging-apache-airflow/
 @pytest.fixture()
-def mock_staging_dag(real_airflow_conn, dummy_db_conn):
+def mock_staging_dag(dummy_airflow_session):
+    print(airflow_home)
     from airflow import DAG
-    return DAG(
+    dag = DAG(
         "test_dag",
         default_args={
             "owner": "airflow",
@@ -123,4 +138,8 @@ def mock_staging_dag(real_airflow_conn, dummy_db_conn):
         params=TEST_PARAMS,
         schedule_interval=timedelta(days=1),
         template_searchpath=str(SQL_FOLDER),
+        is_paused_upon_creation=True
     )
+    dag.clear()
+    yield dag
+    dag.clear()

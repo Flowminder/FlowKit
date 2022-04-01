@@ -467,7 +467,7 @@ def create_staging_dag(start_date: datetime, end_date=None):
             sql="append_sightings_to_main_table.sql", task_id="append_sightings"
         )
         cleanup_staging_table = PostgresOperator(
-            sql="cleanup_staging_table.sql", task_id="append_sightings"
+            sql="cleanup_staging_table.sql", task_id="cleanup_staging_table"
         )
 
         create_and_fill_staging_table << [*event_mounts]
