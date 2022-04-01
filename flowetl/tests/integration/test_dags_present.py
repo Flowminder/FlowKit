@@ -20,12 +20,15 @@ def test_dags_present():
     """
     from airflow.models import DagBag
 
-    assert set(
-        DagBag(
-            dag_folder=dag_folder,
-            include_examples=False,
-        ).dag_ids
-    ) == set(["remote_table_dag", "filesystem_dag"])
+    assert (
+        set(
+            DagBag(
+                dag_folder=dag_folder,
+                include_examples=False,
+            ).dag_ids
+        )
+        == set(["remote_table_dag", "filesystem_dag", "test_dag"])
+    )
 
 
 @pytest.mark.usefixtures("airflow_local_setup")
@@ -111,6 +114,7 @@ def test_dags_present():
                 "wait_for_data",
             },
         ),
+        ("test_dag", {"flowetl_install_test_op", "flowdb_connect_test_op"}),
     ],
 )
 def test_correct_tasks(airflow_local_setup, dag_name, expected_task_list):
