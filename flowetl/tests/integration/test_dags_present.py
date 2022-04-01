@@ -20,15 +20,12 @@ def test_dags_present():
     """
     from airflow.models import DagBag
 
-    assert (
-        set(
-            DagBag(
-                dag_folder=dag_folder,
-                include_examples=False,
-            ).dag_ids
-        )
-        == set(["remote_table_dag", "filesystem_dag", "test_dag"])
-    )
+    assert set(
+        DagBag(
+            dag_folder=dag_folder,
+            include_examples=False,
+        ).dag_ids
+    ) == set(["remote_table_dag", "filesystem_dag", "test_dag"])
 
 
 @pytest.mark.usefixtures("airflow_local_setup")
