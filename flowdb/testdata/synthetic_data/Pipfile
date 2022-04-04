@@ -9,6 +9,7 @@ pandas = "<=1.3.5"       # Pinned due to requirement of sqlalchemy >=1.4 for pan
 "psycopg2-binary" = "*"
 structlog = "*"
 tohu = "==0.6.7"
+requests = "*"
 
 [dev-packages]
 
