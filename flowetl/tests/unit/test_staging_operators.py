@@ -3,7 +3,7 @@ import pytest
 from conftest import TEST_DATE, TEST_PARAMS, SQL_FOLDER
 from datetime import timedelta, datetime
 
-from operators.staging.event_columns import event_column_mappings
+from flowetl.operators.staging.event_columns import event_column_mappings
 
 
 def run_task(task):

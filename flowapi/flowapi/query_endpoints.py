@@ -407,5 +407,3 @@ async def get_available_dates():
     else:
         assert reply["status"] == "error"
         return {"status": "error", "msg": reply["msg"]}, 500
-
-
