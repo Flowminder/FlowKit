@@ -153,9 +153,8 @@ def import_boundary(db_conn, country, level):
         trans.execute("IMPORT FOREIGN SCHEMA ogr_all FROM SERVER adm INTO fgdball;")
         trans.execute(
             f"""
-            INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
-              SELECT shapeiso as short_name, shapename as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom,
-                json_build_object('parent',GID_{level - 1}) as additional_metadata
+            INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom)
+              SELECT shapeiso as short_name, shapename as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom
                 FROM fgdball.geoboundaries_3_0_0_{country}_adm{level};"""
         )
         trans.execute("DROP SCHEMA fgdball CASCADE;")
@@ -228,7 +227,7 @@ if __name__ == "__main__":
                         SELECT row_number() over() as gid,
                         short_name as admin{level}pcod,
                         long_name as admin{level}name,
-                        additional_metadata ->> 'parent' as parent_pcod,
+                        null as parent_pcod,
                         geom from geography.geoms where spatial_resolution={level};
                     """
                 )
