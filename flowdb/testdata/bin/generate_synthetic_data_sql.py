@@ -133,7 +133,7 @@ def log_duration(job: str, **kwargs):
 def get_boundary_record(country, level):
     return requests.get(
         f"https://www.geoboundaries.org/gbRequest.html?ISO={country}&ADM=ADM{level}"
-    ).json[0]
+    ).json()[0]
 
 
 def get_boundary_url(country, level):
