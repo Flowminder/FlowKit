@@ -725,6 +725,10 @@ jobs:
           name: Install python dependencies
           command: |
             pipenv install --deploy --dev
+      - run:
+          name: Install flowetl test dependencies
+          command: |
+            sudo apt-get install postgresql
       - save_cache:
           key: flowetl-unit-deps-5-{{ checksum "Pipfile.lock" }}
           paths:
