@@ -728,7 +728,7 @@ jobs:
       - run:
           name: Install flowetl test dependencies
           command: |
-            sudo apt-get install postgresql
+            sudo apt-get update && sudo apt-get install postgresql
       - save_cache:
           key: flowetl-unit-deps-5-{{ checksum "Pipfile.lock" }}
           paths:
