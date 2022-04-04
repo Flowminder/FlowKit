@@ -41,7 +41,6 @@ from .unmoving_at_reference_location_counts import (
 )
 from .unmoving_counts import UnmovingCountsSchema
 from .labelled_spatial_aggregate import LabelledSpatialAggregateSchema
-from .benchmark import BenchmarkSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
