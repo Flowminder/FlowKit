@@ -16,12 +16,11 @@ pyparsing = "==3.0.7"
 structlog = "*"
 flowetl = {editable = true,path = "./flowetl"}
 pytest = "*"
-"psycopg2-binary" = "*"
 pandas = "*"
 docker = "*"
 versioneer = "*"
 pytest-cov = "*"
-pytest-pgsql = "*"
+pytest-postgresql = "*"
 
 [requires]
 python_version = "3.8"

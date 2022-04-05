@@ -11,6 +11,8 @@ import jinja2
 
 import importlib
 
+from sqlalchemy import create_engine
+
 from flowetl.operators.staging.event_columns import event_column_mappings
 
 
@@ -82,21 +84,28 @@ def mock_basic_dag():
 
 # Adapted from airflow.cli.commands.connection_command.py
 @pytest.fixture()
-def dummy_flowdb_conn(postgresql_db):
+def dummy_flowdb_conn(postgresql):
     # Create connection
     from airflow.utils.session import create_session
     from airflow.models.connection import Connection
 
-    postgresql_db.install_extension("file_fdw")
-    postgresql_db.create_schema("reduced")
-    with postgresql_db.engine.connect() as conn:
-        new_conn = Connection(
+
+    with postgresql as conn:
+        conn.execute('CREATE EXTENSION IF NOT EXISTS file_fdw;')
+        conn.execute("CREATE SCHEMA IF NOT EXISTS reduced;")
+        conn.commit()
+        testdb = Connection(
             conn_id="testdb",
             description="Temporary mock of flowdb",
-            uri=str(conn.engine.url),
+            conn_type="postgresql",
+            host=conn.info.host,
+            login = conn.info.user,
+            password = conn.info.password,
+            port = conn.info.port,
+            schema="tests"
         )
         with create_session() as session:
-            session.add(new_conn)
+            session.add(testdb)
 
         yield conn
 
