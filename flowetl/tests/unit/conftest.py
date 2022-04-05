@@ -89,9 +89,8 @@ def dummy_flowdb_conn(postgresql):
     from airflow.utils.session import create_session
     from airflow.models.connection import Connection
 
-
     with postgresql as conn:
-        conn.execute('CREATE EXTENSION IF NOT EXISTS file_fdw;')
+        conn.execute("CREATE EXTENSION IF NOT EXISTS file_fdw;")
         conn.execute("CREATE SCHEMA IF NOT EXISTS reduced;")
         conn.commit()
         testdb = Connection(
@@ -99,10 +98,10 @@ def dummy_flowdb_conn(postgresql):
             description="Temporary mock of flowdb",
             conn_type="postgresql",
             host=conn.info.host,
-            login = conn.info.user,
-            password = conn.info.password,
-            port = conn.info.port,
-            schema="tests"
+            login=conn.info.user,
+            password=conn.info.password,
+            port=conn.info.port,
+            schema="tests",
         )
         with create_session() as session:
             session.add(testdb)

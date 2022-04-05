@@ -72,7 +72,7 @@ def test_mount_event_table(dummy_flowdb_conn):
         WHERE table_name = 'sms_table_20210929'
         """
     ).fetchall()
-    returned_column_names = [row["column_name"].upper() for row in columns]
+    returned_column_names = [row[0].upper() for row in columns]
     assert all(
         [
             column_name in returned_column_names
@@ -125,7 +125,7 @@ def test_create_and_fill_day_sightings_table(sightings_table_conn):
     )
     run_task(day_sightings)
     out = sightings_table_conn.execute("SELECT * FROM reduced.sightings_20210929")
-    assert out.rowcount == 37  # two merged
+    assert out.rowcount == 37
 
 
 def test_create_sightings_table(dummy_flowdb_conn):
@@ -138,9 +138,9 @@ def test_create_sightings_table(dummy_flowdb_conn):
         start_date=TEST_DATE,
     )
     run_task(create_sightings)
-    out = dummy_flowdb_conn.execute("SELECT * FROM reduced.sightings")
-    assert out.rowcount == 0
-    assert out.keys() == [
+    out = dummy_flowdb_conn.execute("SELECT * FROM reduced.sightings").fetchall()
+    assert len(out) == 0
+    target_column_names = [
         "sighting_date",
         "sub_id",
         "sighting_id",
@@ -148,6 +148,17 @@ def test_create_sightings_table(dummy_flowdb_conn):
         "event_times",
         "event_types",
     ]
+    columns = dummy_flowdb_conn.execute(
+        f"""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'sightings' AND table_schema = 'reduced'
+        """
+    ).fetchall()
+    returned_column_names = [row[0] for row in columns]
+    assert all(
+        [column_name in returned_column_names for column_name in target_column_names]
+    )
 
 
 def test_staging_cleanup(staged_data_conn):
@@ -170,7 +181,7 @@ def test_staging_cleanup(staged_data_conn):
         FROM information_schema.tables
         """
     )
-    before_table_names = [row["table_name"] for row in table_list]
+    before_table_names = [row[0] for row in table_list]
     assert all(st in before_table_names for st in staging_tables)
 
     cleanup = PostgresOperator(
@@ -188,5 +199,5 @@ def test_staging_cleanup(staged_data_conn):
         FROM information_schema.tables
         """
     ).fetchall()
-    after_table_names = [row["table_name"] for row in table_list]
+    after_table_names = [row[0] for row in table_list]
     assert all(st not in after_table_names for st in staging_tables)
