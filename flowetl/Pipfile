@@ -21,6 +21,7 @@ docker = "*"
 versioneer = "*"
 pytest-cov = "*"
 pytest-postgresql = "*"
+# Dev also needs psycopg-binary; not installable through pipenv for reasons arcane.
 
 [requires]
 python_version = "3.8"

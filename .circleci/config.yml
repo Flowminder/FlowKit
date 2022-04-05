@@ -718,17 +718,20 @@ jobs:
           path: /home/circleci/project/
       - restore_cache:
           key: flowetl-unit-deps-6-{{ checksum "Pipfile.lock"}}
+
+      - run:
+          name: Install postgres
+          command: sudo apt-get update && sudo apt-get install postgresql
       - run:
           name: Install pipenv
           command: pip install --upgrade pipenv
+
       - run:
           name: Install python dependencies
           command: |
-            pipenv install --deploy --dev
-      - run:
-          name: Install flowetl test dependencies
-          command: |
-            sudo apt-get update && sudo apt-get install postgresql && sudo ln /usr/lib/postgresql/12/bin/initdb /bin/initdb
+            # Pip run a workaround for psycopg-binary v3 not playing well with pipenv
+            pipenv install --deploy --dev && pipenv run pip install psycopg[binary] 
+
       - save_cache:
           key: flowetl-unit-deps-6-{{ checksum "Pipfile.lock" }}
           paths:
