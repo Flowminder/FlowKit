@@ -9,12 +9,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+
+### Fixed
+
+### Removed
+
+## [1.17.0]
+
+### Changed
 - __Action Needed__ Airflow updated to version 2.3.3; **backup flowetl_db before applying update** [#4940](https://github.com/Flowminder/FlowKit/pull/4940)
 - Tables created under the cache schema in FlowDB will automatically be set to be owned by the `flowmachine` user. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
 - `Query.explain` will now explain the query even where it is already stored. [#1285](https://github.com/Flowminder/FlowKit/issues/1285)
 - `unstored_dependencies_graph` no longer blocks until dependencies are in a determinate state. [#4949](https://github.com/Flowminder/FlowKit/issues/4949)
-
-### Fixed
 
 ### Removed
 - `use_file_flux_sensor` removed entirely. [#2812](https://github.com/Flowminder/FlowKit/issues/2812)
@@ -923,7 +929,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added Python 3.6 support for FlowClient
 
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.16.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.17.0...master
+[1.17.0]: https://github.com/Flowminder/FlowKit/compare/1.16.0...1.17.0
 [1.16.0]: https://github.com/Flowminder/FlowKit/compare/1.15.0...1.16.0
 [1.15.0]: https://github.com/Flowminder/FlowKit/compare/1.14.6...1.15.0
 [1.14.6]: https://github.com/Flowminder/FlowKit/compare/1.14.5...1.14.6
