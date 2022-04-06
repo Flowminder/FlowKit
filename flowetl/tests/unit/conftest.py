@@ -45,26 +45,19 @@ def monkeypatch_session():
 
 @pytest.fixture(autouse=True, scope="session")
 def airflow_home(tmpdir_factory, monkeypatch_session):
-    tmpdir = tmpdir_factory.mktemp("airflow")
+    tmpdir = tmpdir_factory.mktemp("data")
     monkeypatch_session.setenv("AIRFLOW_HOME", str(tmpdir))
-    monkeypatch_session.setenv("AIRFLOW__CORE__LOAD_EXAMPLES", "False")
-    import airflow
-
-    importlib.reload(airflow)
-    from airflow.utils import db
-
-    db.initdb()
     yield tmpdir
 
 
-@pytest.fixture(autouse=True)
-def unload_airflow():
-    try:
-        yield
-    finally:
-        for module in list(sys.modules.keys()):
-            if "airflow" in module or "flowetl" in module:
-                del sys.modules[module]
+# @pytest.fixture(scope="function", autouse=True)
+# def unload_airflow():
+#     try:
+#         yield
+#     finally:
+#         for module in list(sys.modules.keys()):
+#             if "airflow" in module or "flowetl" in module:
+#                 del sys.modules[module]
 
 
 @pytest.fixture()

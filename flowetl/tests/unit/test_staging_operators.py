@@ -1,9 +1,17 @@
 import pytest
-
+import sys
 from conftest import TEST_DATE, TEST_PARAMS, SQL_FOLDER
 from datetime import timedelta, datetime
-
+import importlib
 from flowetl.operators.staging.event_columns import event_column_mappings
+
+
+@pytest.fixture(autouse=True, scope="module")
+def clean_airflow_db(monkeypatch_session, airflow_home):
+    from airflow.utils import db
+
+    monkeypatch_session.setenv("AIRFLOW__CORE__LOAD_EXAMPLES", "False")
+    db.initdb()
 
 
 def run_task(task):
