@@ -739,7 +739,9 @@ jobs:
       - run:
           name: run flowetl module unit tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=flowetl \
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml \
+            -vvvvv \
+            --cov=flowetl \
             --cov-report xml \
             --cov-report term-missing ./tests/unit
       - store_test_results:
