@@ -72,6 +72,8 @@ def test_additional_checks_collected_from_home():
 
     assert len(check_operators) > len(qa_checks)
 
+    (checks_folder / "DUMMY_CHECK.sql").unlink()
+
 
 def test_additional_checks_collected_in_subdirs(tmpdir):
     from airflow import DAG
