@@ -408,6 +408,14 @@ async def action_handler__get_available_dates(
     return ZMQReply(status="success", payload=available_dates)
 
 
+def get_action_handler(action: str) -> Callable:
+    """Exception should be raised for handlers that don't exist."""
+    try:
+        return ACTION_HANDLERS[action]
+    except KeyError:
+        raise FlowmachineServerError(f"Unknown action: '{action}'")
+
+
 async def perform_action(
     action_name: str, action_params: dict, *, config: "FlowmachineServerConfig"
 ) -> ZMQReply:
