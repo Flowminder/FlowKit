@@ -426,9 +426,8 @@ def create_staging_dag(start_date: datetime, end_date=None):
     with DAG(
         # How do we want to trigger this? Ask James./Jono
         dag_id="load_records_from_staging_dag",
-        start_date=start_date,  # Put this back before pr
+        start_date=start_date,
         end_date=end_date,
-        # Defined in the docker-config.yml
         default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
         params={
             "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
@@ -439,6 +438,7 @@ def create_staging_dag(start_date: datetime, end_date=None):
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
 
+        # Todo; tests for this being changed on the fly
         event_types = os.getenv(
             "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
         ).split(",")
@@ -456,6 +456,33 @@ def create_staging_dag(start_date: datetime, end_date=None):
             task_id="stage_events.sql",
             params={"events": event_types},
         )
+
+        create_and_fill_staging_table << [*event_mounts]
+
+        append_sightings << [create_day_sightings_table, create_sightings_table]
+        (create_day_sightings_table << create_and_fill_staging_table)
+        cleanup_staging_table << append_sightings
+    globals()["load_records_from_staging_dag"] = dag
+    return dag
+
+
+def create_reduced_dag(start_date: datetime, end_date=None):
+
+    with DAG(
+        # How do we want to trigger this? Ask James./Jono
+        dag_id="load_records_from_staging_dag",
+        start_date=start_date,
+        end_date=end_date,
+        default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
+        params={
+            "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
+        },
+        template_searchpath=template_folder,
+        is_paused_upon_creation=True,
+    ) as dag:
+
+        from airflow.providers.postgres.operators.postgres import PostgresOperator
+
         create_sightings_table = PostgresOperator(
             sql="create_sightings_table.sql", task_id="create_sightings_table"
         )
@@ -466,14 +493,3 @@ def create_staging_dag(start_date: datetime, end_date=None):
         append_sightings = PostgresOperator(
             sql="append_sightings_to_main_table.sql", task_id="append_sightings"
         )
-        cleanup_staging_table = PostgresOperator(
-            sql="cleanup_staging_table.sql", task_id="cleanup_staging_table"
-        )
-
-        create_and_fill_staging_table << [*event_mounts]
-
-        append_sightings << [create_day_sightings_table, create_sightings_table]
-        (create_day_sightings_table << create_and_fill_staging_table)
-        cleanup_staging_table << append_sightings
-    globals()["load_records_from_staging_dag"] = dag
-    return dag
