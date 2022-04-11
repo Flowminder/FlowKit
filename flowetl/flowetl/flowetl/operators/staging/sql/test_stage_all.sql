@@ -5,8 +5,8 @@ BEGIN;
 
 
 
-DROP TABLE IF EXISTS staging_table_{{ds_nodash}};
-CREATE TABLE staging_table_{{ds_nodash}} AS(
+DROP TABLE IF EXISTS staging.staging_table_{{ds_nodash}};
+CREATE TABLE staging.staging_table_{{ds_nodash}} AS(
 	SELECT
 		MSISDN,
 		IMEI,

@@ -20,7 +20,7 @@ WITH ranked AS (
            dense_rank() OVER ( PARTITION BY msisdn
                                ORDER BY date_time
                              ) AS date_rank
-    FROM staging_table_{{ds_nodash}}
+    FROM staging.staging_table_{{ds_nodash}}
     ORDER BY date_time
 ), group_ranked AS (
     SELECT date_time, cell_id, msisdn, cell_id_rank, date_rank,

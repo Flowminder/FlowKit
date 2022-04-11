@@ -70,3 +70,12 @@ COMMENT ON TABLE etl.post_etl_queries
         IS 'Records outcomes of queries (e.g. simple quality checks) that are run '
            'as part of the regular ETL process, after data has been ingested.';
 
+
+/*
+
+Schema used for holding daily staging tables extracted from CSV storage.
+Tables are defined on the fly by Airflow staging operators.
+
+*/
+CREATE SCHEMA IF NOT EXISTS staging;
+

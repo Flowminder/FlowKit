@@ -16,6 +16,8 @@ def clean_airflow_db(monkeypatch_session, airflow_home):
 
 def run_task(task):
 
+    # Adapted from https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#unit-tests
+
     from airflow import DAG
     from airflow.utils.state import DagRunState
     from airflow.utils.types import DagRunType
@@ -43,9 +45,7 @@ def run_task(task):
         run_type=DagRunType.MANUAL,
     )
     ti = dagrun.get_task_instance(task_id=task.task_id)
-    ti.task = dag.get_task(
-        task_id=task.task_id
-    )  # you'd think this would be there already, but no.
+    ti.task = dag.get_task(task_id=task.task_id)
     ti.run(ignore_ti_state=True)
     assert ti.state == DagRunState.SUCCESS
     dag.clear()
@@ -102,7 +102,7 @@ def test_create_and_fill_staging_table(mounted_events_conn):
     run_task(
         fill_operator,
     )
-    out = mounted_events_conn.execute("SELECT * FROM staging_table_20210929")
+    out = mounted_events_conn.execute("SELECT * FROM staging.staging_table_20210929")
     assert out.rowcount == 20
 
 

@@ -47,7 +47,7 @@ def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transac
     )
     table_names = [row["table_name"] for row in table_list]
     staging_tables = [
-        f"staging_table_{test_date}" f"call_table_{test_date}",
+        f"staging.staging_table_{test_date}" f"call_table_{test_date}",
         f"sms_table_{test_date}",
         f"location_table_{test_date}",
         f"mds_table_{test_date}",
