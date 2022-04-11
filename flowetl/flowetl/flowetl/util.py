@@ -440,6 +440,7 @@ def create_staging_dag(start_date: datetime, end_date=None):
     ) as dag:
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
+        from flowetl.operators.analyze_operator import AnalyzeOperator
 
         # Todo; tests for this being changed on the fly
         event_types = os.getenv(
@@ -459,8 +460,12 @@ def create_staging_dag(start_date: datetime, end_date=None):
             task_id="stage_events.sql",
             params={"events": event_types},
         )
+        analyze_staging_table = AnalyzeOperator(
+            task_id="analyze_staging_table", target="staging_table_{{ds_nodash}}"
+        )
 
         create_and_fill_staging_table << [*event_mounts]
+        analyze_staging_table << create_and_fill_staging_table
 
     globals()["load_records_from_staging_dag"] = dag
     return dag
@@ -472,6 +477,7 @@ def create_sighting_dag(start_date: datetime, end_date=None):
     """
     from airflow import DAG
     import os
+    from flowetl.operators.analyze_operator import AnalyzeOperator
 
     template_folder = (
         Path(os.getenv("SOURCE_TREE"))
@@ -504,7 +510,11 @@ def create_sighting_dag(start_date: datetime, end_date=None):
         append_sightings = PostgresOperator(
             sql="append_sightings_to_main_table.sql", task_id="append_sightings"
         )
+        anazlyse_sightings = AnalyzeOperator(
+            task_id="analyze_sightings_table", target="reduced.sightings"
+        )
 
         append_sightings << create_day_sightings_table
+        anazlyse_sightings << append_sightings
     globals()["staging_to_sighting_dag"] = dag
     return dag

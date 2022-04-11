@@ -7,6 +7,4 @@ ATTACH PARTITION reduced.sightings_{{ds_nodash}} FOR VALUES FROM (date('{{ds_nod
 ALTER TABLE reduced.sightings_{{ds_nodash}}
 DROP CONSTRAINT sightings_{{ds_nodash}}_check;
 
-ANALYZE reduced.sightings;
-
 COMMIT;
