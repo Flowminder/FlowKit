@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS reduced.sightings(
     sub_id bytea NOT NULL, -- change to bytea
     sighting_id INTEGER NOT NULL,
     location_id text, --NOT NULL REFERENCES reduced.cell_location_mapping(location_id),  -- change to bytea
-    event_times TIME[],
+    event_times timestamptz[],
     event_types smallint[] -- change to enum
 ) PARTITION BY RANGE (sighting_date);
 CREATE INDEX IF NOT EXISTS sighting_date_ind ON reduced.sightings(sighting_date);
