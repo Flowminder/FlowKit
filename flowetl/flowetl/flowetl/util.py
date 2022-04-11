@@ -417,9 +417,13 @@ def create_staging_dag(start_date: datetime, end_date=None):
     import os
 
     template_folder = (
-        "/"
-        + os.getenv("SOURCE_TREE")
-        + "/flowetl/flowetl/flowetl/operators/staging/sql"
+        Path(os.getenv("SOURCE_TREE"))
+        / "flowetl"
+        / "flowetl"
+        / "flowetl"
+        / "operators"
+        / "staging"
+        / "sql"
     )
 
     with DAG(
@@ -466,6 +470,18 @@ def create_sighting_dag(start_date: datetime, end_date=None):
     """
     DAG for moving from the staging table to the sightings table format
     """
+    from airflow import DAG
+    import os
+
+    template_folder = (
+        Path(os.getenv("SOURCE_TREE"))
+        / "flowetl"
+        / "flowetl"
+        / "flowetl"
+        / "operators"
+        / "staging"
+        / "sql"
+    )
 
     with DAG(
         # How do we want to trigger this? Ask James./Jono
@@ -491,4 +507,4 @@ def create_sighting_dag(start_date: datetime, end_date=None):
 
         append_sightings << create_day_sightings_table
     globals()["staging_to_sighting_dag"] = dag
-    return dag()
+    return dag
