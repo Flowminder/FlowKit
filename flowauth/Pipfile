@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 flask = "*"
-sqlalchemy = "<1.4.33"
+sqlalchemy = "<1.4.36"
 flask-sqlalchemy = "*"
 flask-login = "*"
 flask-principal = "*"
