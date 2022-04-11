@@ -38,6 +38,7 @@ setup(
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",
+        "werkzeug <= 2.0.3",  # Pinned due to incompatibility with quart-jwt-extended (https://github.com/greenape/quart-jwt-extended/issues/3)"
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )
