@@ -395,7 +395,17 @@ def create_dag(
     return dag
 
 
-def create_staging_dag(start_date: datetime, end_date=None):
+def create_staging_dag(
+    *,
+    start_date: datetime,
+    end_date: Optional[datetime] = None,
+    schedule_interval: Union[str, Duration] = "@daily",
+    timeout: timedelta = timedelta(days=1),
+    catchup: bool = False,
+    max_active_runs=1,  # Conservative default
+    max_active_tasks: int = 5,  # default is one per event type
+):
+
     """
     Returns a DAG for moving data from event-CSVs a given day to the staging table format
 
@@ -403,10 +413,21 @@ def create_staging_dag(start_date: datetime, end_date=None):
     ----------
     start_date: datetime
         Date to start mounting CSVs from.
-    event_types: List[str]
-        Event types available for staging. Can be call,sms,location,mds,topup.
     end_date: datetime
-        Date to stop mounting CSVs on. Leave blank for present day.
+        Date to stop mounting CSVs on. Leave blank for no stopping.
+    schedule_interval : str or Duration, default "@daily"
+        Time interval between execution dates.
+    timeout: timedelta, default timedelta(days=1)
+        Timeout period on time delta
+    catchup: bool, default False
+        Whether this bool should run catchups from start_date
+    max_active_runs: int, default 1
+        Number of parallel runs of this DAG that can occur
+    max_active_tasks: int, default 5
+        Number of parallel tasks per DAG run check.
+        Defaults to 5; one per default event type
+
+
 
     Returns
     -------
@@ -437,6 +458,11 @@ def create_staging_dag(start_date: datetime, end_date=None):
         },
         template_searchpath=template_folder,
         is_paused_upon_creation=True,
+        schedule_interval=schedule_interval,
+        dagrun_timeout=timeout,
+        catchup=catchup,
+        max_active_runs=max_active_runs,
+        max_active_tasks=max_active_tasks,
     ) as dag:
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
@@ -471,9 +497,41 @@ def create_staging_dag(start_date: datetime, end_date=None):
     return dag
 
 
-def create_sighting_dag(start_date: datetime, end_date=None):
+def create_sighting_dag(
+    *,
+    start_date: datetime,
+    end_date: Optional[datetime] = None,
+    schedule_interval: Union[str, Duration] = "@daily",
+    timeout: timedelta = timedelta(days=1),
+    catchup: bool = False,
+    max_active_runs=1,  # Conservative default
+    max_active_tasks: int = 1,  # Conservative default
+):
     """
-    DAG for moving from the staging table to the sightings table format
+    Returns a DAG for moving data from the daily staging tables to the main sighting table
+
+    Parameters
+    ----------
+    start_date: datetime
+        Date to start mounting CSVs from.
+    end_date: datetime
+        Date to stop mounting CSVs on. Leave blank for no stopping.
+    schedule_interval : str or Duration, default "@daily"
+        Time interval between execution dates.
+    timeout: timedelta, default timedelta(days=1)
+        Timeout period on time delta
+    catchup: bool, default False
+        Whether this bool should run catchups from start_date
+    max_active_runs: int, default 1
+        Number of parallel runs of this DAG that can occur
+    max_active_tasks: int, default 5
+        Number of parallel tasks per DAG run check.
+        Defaults to 5; one per default event type
+
+    Returns
+    -------
+    dag: DAG
+        The staging DAG.
     """
     from airflow import DAG
     import os
@@ -497,6 +555,11 @@ def create_sighting_dag(start_date: datetime, end_date=None):
         default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
         template_searchpath=template_folder,
         is_paused_upon_creation=True,
+        schedule_interval=schedule_interval,
+        dagrun_timeout=timeout,
+        catchup=catchup,
+        max_active_runs=max_active_runs,
+        max_active_tasks=max_active_tasks,
     ) as dag:
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
