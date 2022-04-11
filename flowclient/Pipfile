@@ -16,7 +16,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 asynctest = "*"
 versioneer = "*"
-black = {extras = ["jupyter"],version = "==22.1.0"}
+black = {extras = ["jupyter"],version = "==22.3.0"}
 respx = "*"
 ipython = "*"
 ipdb = "*"
