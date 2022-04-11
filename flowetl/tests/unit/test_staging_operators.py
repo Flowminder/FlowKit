@@ -136,39 +136,6 @@ def test_create_and_fill_day_sightings_table(sightings_table_conn):
     assert out.rowcount == 37
 
 
-def test_create_sightings_table(dummy_flowdb_conn):
-    from airflow.providers.postgres.operators.postgres import PostgresOperator
-
-    create_sightings = PostgresOperator(
-        sql="create_sightings_table.sql",
-        task_id="create_sightings_table",
-        postgres_conn_id="testdb",
-        start_date=TEST_DATE,
-    )
-    run_task(create_sightings)
-    out = dummy_flowdb_conn.execute("SELECT * FROM reduced.sightings").fetchall()
-    assert len(out) == 0
-    target_column_names = [
-        "sighting_date",
-        "sub_id",
-        "sighting_id",
-        "location_id",
-        "event_times",
-        "event_types",
-    ]
-    columns = dummy_flowdb_conn.execute(
-        f"""
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_name = 'sightings' AND table_schema = 'reduced'
-        """
-    ).fetchall()
-    returned_column_names = [row[0] for row in columns]
-    assert all(
-        [column_name in returned_column_names for column_name in target_column_names]
-    )
-
-
 def test_staging_cleanup(staged_data_conn):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
 
