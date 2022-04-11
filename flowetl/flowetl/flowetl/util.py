@@ -397,8 +397,7 @@ def create_dag(
 
 def create_staging_dag(start_date: datetime, end_date=None):
     """
-    Returns a DAG for moving data from event-CSVs a given day to the reduced sightings format.
-    See individual operators for details.
+    Returns a DAG for moving data from event-CSVs a given day to the staging table format
 
     Parameters
     ----------
@@ -459,33 +458,29 @@ def create_staging_dag(start_date: datetime, end_date=None):
 
         create_and_fill_staging_table << [*event_mounts]
 
-        append_sightings << [create_day_sightings_table, create_sightings_table]
-        (create_day_sightings_table << create_and_fill_staging_table)
-        cleanup_staging_table << append_sightings
     globals()["load_records_from_staging_dag"] = dag
     return dag
 
 
-def create_reduced_dag(start_date: datetime, end_date=None):
+def create_sighting_dag(start_date: datetime, end_date=None):
+    """
+    DAG for moving from the staging table to the sightings table format
+    """
 
     with DAG(
         # How do we want to trigger this? Ask James./Jono
-        dag_id="load_records_from_staging_dag",
+        dag_id="staging_to_sighting_dag",
         start_date=start_date,
         end_date=end_date,
         default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
-        params={
-            "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
-        },
         template_searchpath=template_folder,
         is_paused_upon_creation=True,
     ) as dag:
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-        create_sightings_table = PostgresOperator(
-            sql="create_sightings_table.sql", task_id="create_sightings_table"
-        )
+        # Check to make sure staging table is present
+
         create_day_sightings_table = PostgresOperator(
             sql="create_and_fill_day_sightings_table.sql",
             task_id="create_day_sightings_table",
@@ -493,3 +488,7 @@ def create_reduced_dag(start_date: datetime, end_date=None):
         append_sightings = PostgresOperator(
             sql="append_sightings_to_main_table.sql", task_id="append_sightings"
         )
+
+        append_sightings << create_day_sightings_table
+    globals()["staging_to_sighting_dag"] = dag
+    return dag()
