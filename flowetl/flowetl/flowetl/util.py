@@ -487,8 +487,7 @@ def create_staging_dag(
             params={"events": event_types},
         )
         analyze_staging_table = AnalyzeOperator(
-            task_id="analyze_staging_table",
-            target="staging.staging_table_{{ds_nodash}}",
+            task_id="analyze_staging_table", target="staging_table_{{ds_nodash}}"
         )
 
         create_and_fill_staging_table << [*event_mounts]
