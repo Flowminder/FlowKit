@@ -85,6 +85,7 @@ def dummy_flowdb_conn(postgresql):
     with postgresql as conn:
         conn.execute("CREATE EXTENSION IF NOT EXISTS file_fdw;")
         conn.execute("CREATE SCHEMA IF NOT EXISTS reduced;")
+        conn.execute("CREATE SCHEMA IF NOT EXISTS etl;")
         conn.commit()
         testdb = Connection(
             conn_id="testdb",

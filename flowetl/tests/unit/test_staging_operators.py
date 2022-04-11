@@ -102,7 +102,7 @@ def test_create_and_fill_staging_table(mounted_events_conn):
     run_task(
         fill_operator,
     )
-    out = mounted_events_conn.execute("SELECT * FROM staging_table_20210929")
+    out = mounted_events_conn.execute("SELECT * FROM etl.staging_table_20210929")
     assert out.rowcount == 20
 
 

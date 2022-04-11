@@ -1,7 +1,7 @@
 BEGIN;
 
-DROP TABLE IF EXISTS staging_table_{{ds_nodash}};
-CREATE TABLE staging_table_{{ds_nodash}} AS (
+DROP TABLE IF EXISTS etl.staging_table_{{ds_nodash}};
+CREATE TABLE etl.staging_table_{{ds_nodash}} AS (
     {% set union = joiner('\nUNION ALL\n') %}
     {% for event in params.event_types %}
     {{ union() }}
