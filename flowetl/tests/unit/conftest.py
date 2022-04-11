@@ -125,14 +125,6 @@ def staged_data_conn(mounted_events_conn):
 
 
 @pytest.fixture()
-def sightings_table_conn(staged_data_conn):
-    sight_setup = sql_env.get_template("create_sightings_table.sql")
-    query = sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
-    staged_data_conn.execute(query)
-    yield staged_data_conn
-
-
-@pytest.fixture()
 def day_sightings_table_conn(sightings_table_conn, staged_data_conn):
     day_sight_setup = sql_env.get_template("create_and_fill_day_sightings_table.sql")
     query = day_sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
