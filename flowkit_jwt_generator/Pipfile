@@ -15,7 +15,7 @@ simplejson = "*"
 versioneer = "*"
 pytest-cov = "*"
 flowkit-jwt-generator = {editable = true,path = ".", extras=["pytest", "cli"]}
-black = {extras = ["jupyter"],version = "==22.1.0"}
+black = {extras = ["jupyter"],version = "==22.3.0"}
 
 [requires]
 python_version = "3.8"
