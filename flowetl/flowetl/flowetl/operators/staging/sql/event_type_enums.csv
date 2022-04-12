@@ -1,8 +1,6 @@
 event_type_string, enum
-caller, 0
-callee, 1
-texter, 2
-textee, 3
+call, 0
+text, 1
 mds, 4
 location, 5
 topup, 6
