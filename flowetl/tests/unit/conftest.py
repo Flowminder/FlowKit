@@ -126,8 +126,17 @@ def staged_data_conn(mounted_events_conn):
 
 @pytest.fixture()
 def sightings_table_conn(staged_data_conn):
-    sight_setup = sql_env.get_template("test_create_sightings_table.sql")
-    query = sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
+    with open(
+        (
+            Path(__file__).parent.parent.parent.parent
+            / "flowdb"
+            / "bin"
+            / "build"
+            / "0020_schema_reduced.sql"
+        ),
+        "r",
+    ) as staged_schema:
+        query = staged_schema.read()
     staged_data_conn.execute(query)
     yield staged_data_conn
 
