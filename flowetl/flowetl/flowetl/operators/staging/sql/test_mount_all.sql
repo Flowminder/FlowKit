@@ -13,6 +13,7 @@ CREATE FOREIGN TABLE call_table_{{ds_nodash}}(
 	DATE_TIME timestamptz,
 	EVENT_ID int,
 	EVENT_TYPE smallint,
+	IS_INCOMING bool,
 	OTHER_MSISDN text,
 	DURATION real
 ) SERVER csv_fdw
@@ -28,6 +29,7 @@ CREATE FOREIGN TABLE sms_table_{{ds_nodash}}(
 	DATE_TIME timestamptz,
 	EVENT_ID int,
 	EVENT_TYPE smallint,
+	IS_INCOMING bool,
 	OTHER_MSISDN text
 ) SERVER csv_fdw
 OPTIONS (filename '{{params.flowdb_csv_dir}}/{{ds_nodash}}_sms.csv', format 'csv', header 'TRUE');

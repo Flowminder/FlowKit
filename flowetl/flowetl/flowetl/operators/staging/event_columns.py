@@ -13,6 +13,7 @@ event_column_mappings = {
         "DATE_TIME": "timestamptz",
         "EVENT_ID": "int",
         "EVENT_TYPE": "smallint",
+        "IS_INCOMING": "bool",
         "OTHER_MSISDN": "text",
         "DURATION": "real",
     },
@@ -25,6 +26,7 @@ event_column_mappings = {
         "DATE_TIME": "timestamptz",
         "EVENT_ID": "int",
         "EVENT_TYPE": "smallint",
+        "IS_INCOMING": "bool",
         "OTHER_MSISDN": "text",
     },
     "location": {
