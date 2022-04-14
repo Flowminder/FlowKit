@@ -466,11 +466,18 @@ def create_staging_dag(
         from airflow.providers.postgres.operators.postgres import PostgresOperator
         from flowetl.operators.analyze_operator import AnalyzeOperator
         from airflow.operators.dummy import DummyOperator
+        from airflow.sensors.filesystem import FileSensor
 
         # Todo; tests for this being changed on the fly
         event_types = os.getenv(
             "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
         ).split(",")
+
+        file_sensor = FileSensor(
+            filepath=f'{os.getenv("FLOWDB_CSV_DIR")}/*.csv',
+            mode="rechedule",
+            poke_interval=60 * 60,
+        )
 
         event_mounts = [
             PostgresOperator(
@@ -499,6 +506,7 @@ def create_staging_dag(
                 task_id="one_success_gate", trigger_rule="one_success"
             )
 
+            file_sensor >> [*event_mounts]
             [*event_mounts] >> all_done_operator
             [*event_mounts] >> one_success_operator
             [all_done_operator, one_success_operator] >> create_and_fill_staging_table
@@ -547,7 +555,6 @@ def create_sighting_dag(
         The staging DAG.
     """
     from airflow import DAG
-    import os
     from flowetl.operators.analyze_operator import AnalyzeOperator
 
     template_folder = str(
@@ -571,8 +578,6 @@ def create_sighting_dag(
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-        # Check to make sure staging table is present
-
         create_day_sightings_table = PostgresOperator(
             sql="create_and_fill_day_sightings_table.sql",
             task_id="create_day_sightings_table",
@@ -584,7 +589,6 @@ def create_sighting_dag(
             task_id="analyze_sightings_table", target="reduced.sightings"
         )
 
-        append_sightings << create_day_sightings_table
-        anazlyse_sightings << append_sightings
+        create_day_sightings_table >> append_sightings >> anazlyse_sightings
     globals()["staging_to_sighting_dag"] = dag
     return dag
