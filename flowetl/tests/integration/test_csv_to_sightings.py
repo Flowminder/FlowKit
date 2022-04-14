@@ -4,7 +4,7 @@ from pathlib import Path
 from pprint import pprint
 
 
-def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transaction):
+def test_csv_to_staged(flowetl_container, run_dag, dag_status, flowdb_transaction):
     test_date = "20210929"
     exit_code, unpause_out = flowetl_container.exec_run(
         "airflow dags unpause load_records_from_staging_dag"
@@ -21,9 +21,9 @@ def test_csv_to_sightings(flowetl_container, run_dag, dag_status, flowdb_transac
             break
         sleep(1)
 
-    # Check correct data is in reduced table
+    # Check correct data is in staging table
     record_count = flowdb_transaction.execute(
-        f"SELECT count(*) FROM reduced.sightings WHERE sighting_date = date '{test_date}'"
+        f"SELECT count(*) FROM etl.staging_{test_date}"
     ).fetchall()[0][0]
     assert record_count == 37
 

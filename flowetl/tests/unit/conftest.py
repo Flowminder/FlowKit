@@ -9,10 +9,6 @@ import pytest
 from pathlib import Path
 import jinja2
 
-import importlib
-
-from sqlalchemy import create_engine
-
 from flowetl.operators.staging.event_columns import event_column_mappings
 
 
@@ -47,6 +43,10 @@ def monkeypatch_session():
 def airflow_home(tmpdir_factory, monkeypatch_session):
     tmpdir = tmpdir_factory.mktemp("data")
     monkeypatch_session.setenv("AIRFLOW_HOME", str(tmpdir))
+    monkeypatch_session.setenv(
+        "AIRFLOW__LOGGING__BASE_LOG_FOLDER", str((Path(__file__) / "logs").absolute())
+    )
+    monkeypatch_session.setenv("AIRFLOW__CORE__LOAD_EXAMPLES", "False")
     yield tmpdir
 
 
@@ -147,3 +147,10 @@ def day_sightings_table_conn(sightings_table_conn, staged_data_conn):
     query = day_sight_setup.render(params=TEST_PARAMS, ds_nodash=TEST_DATE_STR)
     staged_data_conn.execute(query)
     yield sightings_table_conn
+
+
+@pytest.fixture(scope="session")
+def clean_airflow_db(monkeypatch_session, airflow_home):
+    from airflow.utils import db
+
+    db.initdb()

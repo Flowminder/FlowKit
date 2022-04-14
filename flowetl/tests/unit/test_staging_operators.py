@@ -6,14 +6,6 @@ import importlib
 from flowetl.operators.staging.event_columns import event_column_mappings
 
 
-@pytest.fixture(autouse=True, scope="module")
-def clean_airflow_db(monkeypatch_session, airflow_home):
-    from airflow.utils import db
-
-    monkeypatch_session.setenv("AIRFLOW__CORE__LOAD_EXAMPLES", "False")
-    db.initdb()
-
-
 def run_task(task):
 
     from airflow import DAG
@@ -61,7 +53,7 @@ def test_mock_dag():
     )
 
 
-def test_mount_event_table(dummy_flowdb_conn):
+def test_mount_event_table(clean_airflow_db, dummy_flowdb_conn):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
     from flowetl.operators.staging.event_columns import event_column_mappings
 
@@ -89,7 +81,7 @@ def test_mount_event_table(dummy_flowdb_conn):
     )
 
 
-def test_create_and_fill_staging_table(mounted_events_conn):
+def test_create_and_fill_staging_table(clean_airflow_db, mounted_events_conn):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
 
     fill_operator = PostgresOperator(
@@ -106,7 +98,7 @@ def test_create_and_fill_staging_table(mounted_events_conn):
     assert out.rowcount == 20
 
 
-def test_append_sightings_to_main_table(day_sightings_table_conn):
+def test_append_sightings_to_main_table(clean_airflow_db, day_sightings_table_conn):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
 
     # Needs sightings table to exist
@@ -121,7 +113,7 @@ def test_append_sightings_to_main_table(day_sightings_table_conn):
     assert out.rowcount == 37
 
 
-def test_create_and_fill_day_sightings_table(sightings_table_conn):
+def test_create_and_fill_day_sightings_table(clean_airflow_db, sightings_table_conn):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
 
     # Needs staging table + reduced sightings
@@ -136,7 +128,7 @@ def test_create_and_fill_day_sightings_table(sightings_table_conn):
     assert out.rowcount == 37
 
 
-def test_staging_cleanup(staged_data_conn):
+def test_staging_cleanup(clean_airflow_db, staged_data_conn):
     from airflow.providers.postgres.operators.postgres import PostgresOperator
 
     test_date = "20210929"
