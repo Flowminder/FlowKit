@@ -404,6 +404,7 @@ def create_staging_dag(
     catchup: bool = False,
     max_active_runs=1,  # Conservative default
     max_active_tasks: int = 5,  # default is one per event type
+    allow_missing_csvs: bool = True,
 ):
 
     """
@@ -426,6 +427,9 @@ def create_staging_dag(
     max_active_tasks: int, default 5
         Number of parallel tasks per DAG run check.
         Defaults to 5; one per default event type
+    allow_missing_csvs: bool, default True
+        If True, the DAG will run to completion if at least one CSV is present for each date.
+        If False, the DAG will fail if one of the CSVs is missing.
 
 
 
@@ -437,14 +441,8 @@ def create_staging_dag(
     from airflow import DAG
     import os
 
-    template_folder = (
-        Path(os.getenv("SOURCE_TREE"))
-        / "flowetl"
-        / "flowetl"
-        / "flowetl"
-        / "operators"
-        / "staging"
-        / "sql"
+    template_folder = str(
+        (Path(__file__).parent / "operators" / "staging" / "sql").absolute()
     )
 
     with DAG(
@@ -467,6 +465,7 @@ def create_staging_dag(
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
         from flowetl.operators.analyze_operator import AnalyzeOperator
+        from airflow.operators.dummy import DummyOperator
 
         # Todo; tests for this being changed on the fly
         event_types = os.getenv(
@@ -490,8 +489,22 @@ def create_staging_dag(
             task_id="analyze_staging_table", target="etl.staging_table_{{ds_nodash}}"
         )
 
-        create_and_fill_staging_table << [*event_mounts]
-        analyze_staging_table << create_and_fill_staging_table
+        if allow_missing_csvs:
+            # We need to build a gate that waits for all_done AND one_success
+            all_done_operator = DummyOperator(
+                task_id="all_done_gate", trigger_rule="all_done"
+            )
+
+            one_success_operator = DummyOperator(
+                task_id="one_success_gate", trigger_rule="one_success"
+            )
+
+            [*event_mounts] >> all_done_operator
+            [*event_mounts] >> one_success_operator
+            [all_done_operator, one_success_operator] >> create_and_fill_staging_table
+        else:
+            [*event_mounts] >> create_and_fill_staging_table
+        create_and_fill_staging_table >> analyze_staging_table
 
     globals()["load_records_from_staging_dag"] = dag
     return dag
@@ -537,14 +550,8 @@ def create_sighting_dag(
     import os
     from flowetl.operators.analyze_operator import AnalyzeOperator
 
-    template_folder = (
-        Path(os.getenv("SOURCE_TREE"))
-        / "flowetl"
-        / "flowetl"
-        / "flowetl"
-        / "operators"
-        / "staging"
-        / "sql"
+    template_folder = str(
+        (Path(__file__).parent / "operators" / "staging" / "sql").absolute()
     )
 
     with DAG(
