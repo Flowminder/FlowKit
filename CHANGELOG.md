@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `unstored_dependencies_graph` no longer blocks until dependencies are in a determinate state. [#4949](https://github.com/Flowminder/FlowKit/issues/4949)
 
 ### Fixed
+- FlowDB trigger to alter ownership of cache tables is now triggered when a flowmachine query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
 
 ### Removed
 - `use_file_flux_sensor` removed entirely. [#2812](https://github.com/Flowminder/FlowKit/issues/2812)
