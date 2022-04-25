@@ -13,7 +13,7 @@ CREATE TABLE etl.staging_table_{{ds_nodash}} AS (
 		CAST (CELL_ID AS  bytea) AS CELL_ID,
 		CAST (DATE_TIME AS timestamptz) AS DATE_TIME,
 		CAST (EVENT_TYPE AS int) AS EVENT_TYPE
-	FROM call_table_{{ds_nodash}}
+	FROM {{event}}_table_{{ds_nodash}}
 	{% endfor %}
 	ORDER BY date_time
     );
