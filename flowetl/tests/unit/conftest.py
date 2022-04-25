@@ -40,7 +40,7 @@ def monkeypatch_session():
 
 
 @pytest.fixture(autouse=True, scope="session")
-def airflow_home(tmpdir_factory, monkeypatch_session):
+def airflow_session_env(tmpdir_factory, monkeypatch_session):
     tmpdir = tmpdir_factory.mktemp("data")
     monkeypatch_session.setenv("AIRFLOW_HOME", str(tmpdir))
     monkeypatch_session.setenv(
@@ -150,7 +150,7 @@ def day_sightings_table_conn(sightings_table_conn, staged_data_conn):
 
 
 @pytest.fixture(scope="session")
-def clean_airflow_db(monkeypatch_session, airflow_home):
+def clean_airflow_db(monkeypatch_session, airflow_session_env):
     from airflow.utils import db
 
     db.initdb()

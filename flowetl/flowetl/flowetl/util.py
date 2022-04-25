@@ -440,10 +440,14 @@ def create_staging_dag(
     """
     from airflow import DAG
     import os
+    from flowetl.operators.staging.event_columns import event_column_mappings
 
     template_folder = str(
         (Path(__file__).parent / "operators" / "staging" / "sql").absolute()
     )
+    print("******TEMPLATE FOLDER AT**********")
+    print(template_folder)
+    print("**********************************")
 
     with DAG(
         # How do we want to trigger this? Ask James./Jono
@@ -453,6 +457,8 @@ def create_staging_dag(
         default_args={"owner": "airflow", "postgres_conn_id": "flowdb"},
         params={
             "flowdb_csv_dir": os.getenv("FLOWDB_CSV_DIR"),
+            "column_dict": event_column_mappings,
+            "event_types": list(event_column_mappings.keys()),
         },
         template_searchpath=template_folder,
         is_paused_upon_creation=True,
@@ -473,11 +479,12 @@ def create_staging_dag(
             "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
         ).split(",")
 
-        file_sensor = FileSensor(
-            filepath=f'{os.getenv("FLOWDB_CSV_DIR")}/*.csv',
-            mode="rechedule",
-            poke_interval=60 * 60,
-        )
+        # file_sensor = FileSensor(
+        #     task_id = "csv_sensor",
+        #     filepath=f'{os.getenv("FLOWDB_CSV_DIR")}/*.csv',
+        #     mode="reschedule",
+        #     poke_interval=60 * 60,
+        # )
 
         event_mounts = [
             PostgresOperator(
@@ -506,7 +513,7 @@ def create_staging_dag(
                 task_id="one_success_gate", trigger_rule="one_success"
             )
 
-            file_sensor >> [*event_mounts]
+            # file_sensor >> [*event_mounts]
             [*event_mounts] >> all_done_operator
             [*event_mounts] >> one_success_operator
             [all_done_operator, one_success_operator] >> create_and_fill_staging_table
