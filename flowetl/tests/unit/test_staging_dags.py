@@ -3,16 +3,19 @@ from time import sleep
 
 import pytest
 
+import pdb
+
+import logging
 
 from conftest import TEST_DATE, TEST_DATE_STR, TEST_PARAMS
 
 
 @pytest.fixture()
 def dag_env(monkeypatch):
-    monkeypatch.setenv()
+    monkeypatch.setenv("FLOWETL_CSV_START_DATE", TEST_DATE_STR)
 
 
-def test_create_staging_dag(clean_airflow_db, dummy_flowdb_conn):
+def test_create_staging_dag(clean_airflow_db, dummy_flowdb_conn, dag_env):
     from flowetl.util import create_staging_dag
     from airflow.exceptions import BackfillUnfinished
     from airflow.utils.state import DagRunState
@@ -23,12 +26,12 @@ def test_create_staging_dag(clean_airflow_db, dummy_flowdb_conn):
         include_examples=False,
     )
     dag = create_staging_dag(start_date=TEST_DATE, catchup=False)
-    globals()[dag.dag_id] = dag  # really, airflow?
-    test_dagbag.process_file("../../mounts/dags/append_sightings_to_main_table_dag.py")
-    print(test_dagbag.dagbag_report())
-    print(test_dagbag.dagbag_stats)
+    test_dagbag.bag_dag(dag, None)
+    test_dagbag.sync_to_db()
+    pass
+    # globals()[dag.dag_id] = dag  # really, airflow?
     try:
-        dag.run(
+        test_dagbag.dags[dag.dag_id].run(
             end_date=TEST_DATE,
             start_date=TEST_DATE,
             verbose=True,
@@ -40,6 +43,16 @@ def test_create_staging_dag(clean_airflow_db, dummy_flowdb_conn):
         dagrun = dag.get_dagrun(execution_date=TEST_DATE)
         for ti in dagrun.get_task_instances():
             print(ti.log)
+            pass
+        pytest.fail()
+
+    timeout_count = 0
+    while dagrun.get_state() == DagRunState.RUNNING:
+        dagrun.update_state()
+        timeout_count += 1
+        if timeout_count >= 10000000:
+            break
+        pass
     assert dagrun.get_state() == DagRunState.SUCCESS
     record_count = dummy_flowdb_conn.execute(
         f"SELECT count(*) FROM etl.staging_{TEST_DATE_STR}"

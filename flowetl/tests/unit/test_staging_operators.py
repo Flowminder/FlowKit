@@ -43,7 +43,7 @@ def run_task(task):
     dag.clear()
 
 
-def test_mock_dag():
+def test_mock_dag(clean_airflow_db):
     from airflow.operators.bash import BashOperator
 
     run_task(

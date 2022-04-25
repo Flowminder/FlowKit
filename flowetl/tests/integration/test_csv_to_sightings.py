@@ -6,6 +6,8 @@ from pprint import pprint
 
 def test_csv_to_staged(flowetl_container, run_dag, dag_status, flowdb_transaction):
     test_date = "20210929"
+    exit_code, dag_report_out = flowetl_container.exec_run("airflow dags report")
+    print(dag_report_out.decode())
     exit_code, unpause_out = flowetl_container.exec_run(
         "airflow dags unpause load_records_from_staging_dag"
     )
