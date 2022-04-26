@@ -470,7 +470,6 @@ def create_staging_dag(
     ) as dag:
 
         from airflow.providers.postgres.operators.postgres import PostgresOperator
-        from flowetl.operators.analyze_operator import AnalyzeOperator
         from airflow.operators.dummy import DummyOperator
         from airflow.sensors.filesystem import FileSensor
 
@@ -499,8 +498,9 @@ def create_staging_dag(
             task_id="stage_events.sql",
             params={"events": event_types},
         )
-        analyze_staging_table = AnalyzeOperator(
-            task_id="analyze_staging_table", target="etl.staging_table_{{ds_nodash}}"
+        analyze_staging_table = PostgresOperator(
+            task_id="analyze_staging_table",
+            sql="ANALYZE etl.staging_table_{{ds_nodash}}",
         )
 
         if allow_missing_csvs:

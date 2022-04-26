@@ -23,6 +23,8 @@ def test_csv_to_staged(flowetl_container, run_dag, dag_status, flowdb_transactio
             break
         sleep(1)
 
+    assert exit_code == 0
+
     # Check correct data is in staging table
     record_count = flowdb_transaction.execute(
         f"SELECT count(*) FROM etl.staging_{test_date}"
@@ -35,10 +37,10 @@ def test_csv_to_staged(flowetl_container, run_dag, dag_status, flowdb_transactio
         f"""
         SELECT inhrelid::regclass AS child
         FROM   pg_catalog.pg_inherits
-        WHERE  inhparent = 'reduced.sightings'::regclass;
+        WHERE  inhparent = 'etl.sightings'::regclass;
         """
     ).fetchall()
-    assert ("reduced.sightings_20210929",) in partition_list
+    assert ("etl.sightings_20210929",) in partition_list
 
     # Check staging table has been cleared up
     table_list = flowdb_transaction.execute(

@@ -187,7 +187,7 @@ def mounts(tmpdir_factory, flowetl_mounts_dir):
     )
     files_mount = Mount(
         "/files",
-        str(Path(__file__).parent.parent.parent / "mounts" / "files"),
+        str(f"{flowetl_mounts_dir}/files"),
         type="bind",
     )
     flowdb_mounts = [data_mount, files_mount]
