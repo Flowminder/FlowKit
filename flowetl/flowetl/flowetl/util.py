@@ -477,13 +477,13 @@ def create_staging_dag(
             "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
         ).split(",")
 
-        file_sensor = FileSensor(
-            task_id="csv_sensor",
-            filepath=f'{os.getenv("FLOWETL_CSV_DIR")}',
-            mode="reschedule",
-            poke_interval=60 * 60,  # seconds
-            timeout=60,  # seconds
-        )
+        # file_sensor = FileSensor(
+        #     task_id="csv_sensor",
+        #     filepath=f'{os.getenv("FLOWETL_CSV_DIR")}',
+        #     mode="reschedule",
+        #     poke_interval=60 * 60,  # seconds, 1 hour
+        #     timeout=60 * 60 * 24,  # seconds, 1 day
+        # )
 
         event_mounts = [
             PostgresOperator(
@@ -513,7 +513,7 @@ def create_staging_dag(
                 task_id="one_success_gate", trigger_rule="one_success"
             )
 
-            file_sensor >> [*event_mounts]
+            # file_sensor >> [*event_mounts]
             [*event_mounts] >> all_done_operator
             [*event_mounts] >> one_success_operator
             [all_done_operator, one_success_operator] >> create_and_fill_staging_table
