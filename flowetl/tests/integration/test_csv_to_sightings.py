@@ -27,7 +27,7 @@ def test_csv_to_staged(flowetl_container, run_dag, dag_status, flowdb_transactio
 
     # Check correct data is in staging table
     record_count = flowdb_transaction.execute(
-        f"SELECT count(*) FROM etl.staging_{test_date}"
+        f"SELECT count(*) FROM etl.staging_table_{test_date}"
     ).fetchall()[0][0]
     assert record_count == 37
 

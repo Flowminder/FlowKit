@@ -404,7 +404,7 @@ def create_staging_dag(
     catchup: bool = False,
     max_active_runs=1,  # Conservative default
     max_active_tasks: int = 5,  # default is one per event type
-    allow_missing_csvs: bool = True,
+    # allow_missing_csvs: bool = False,
 ):
 
     """
@@ -427,7 +427,8 @@ def create_staging_dag(
     max_active_tasks: int, default 5
         Number of parallel tasks per DAG run check.
         Defaults to 5; one per default event type
-    allow_missing_csvs: bool, default True
+    allow_missing_csvs: bool, default False
+        Currently not implemented
         If True, the DAG will run to completion if at least one CSV is present for each date.
         If False, the DAG will fail if one of the CSVs is missing.
 
@@ -438,6 +439,7 @@ def create_staging_dag(
     dag: DAG
         The staging DAG.
     """
+    allow_missing_csvs = False
     from airflow import DAG
     import os
     from flowetl.operators.staging.event_columns import event_column_mappings
@@ -445,9 +447,6 @@ def create_staging_dag(
     template_folder = str(
         (Path(__file__).parent / "operators" / "staging" / "sql").absolute()
     )
-    print("******TEMPLATE FOLDER AT**********")
-    print(template_folder)
-    print("**********************************")
 
     with DAG(
         # How do we want to trigger this? Ask James./Jono
@@ -478,12 +477,13 @@ def create_staging_dag(
             "FLOWETL_EVENT_TYPES", "call,location,sms,mds,topup"
         ).split(",")
 
-        # file_sensor = FileSensor(
-        #     task_id = "csv_sensor",
-        #     filepath=f'{os.getenv("FLOWDB_CSV_DIR")}/*.csv',
-        #     mode="reschedule",
-        #     poke_interval=60 * 60,
-        # )
+        file_sensor = FileSensor(
+            task_id="csv_sensor",
+            filepath=f'{os.getenv("FLOWETL_CSV_DIR")}',
+            mode="reschedule",
+            poke_interval=60 * 60,  # seconds
+            timeout=60,  # seconds
+        )
 
         event_mounts = [
             PostgresOperator(
@@ -513,7 +513,7 @@ def create_staging_dag(
                 task_id="one_success_gate", trigger_rule="one_success"
             )
 
-            # file_sensor >> [*event_mounts]
+            file_sensor >> [*event_mounts]
             [*event_mounts] >> all_done_operator
             [*event_mounts] >> one_success_operator
             [all_done_operator, one_success_operator] >> create_and_fill_staging_table
