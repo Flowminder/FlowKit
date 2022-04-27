@@ -5,7 +5,7 @@
 from click.testing import CliRunner
 
 
-def test_copies_to_dag_folder(tmpdir, airflow_local_setup):
+def test_copies_to_dag_folder(tmpdir):
     runner = CliRunner()
     from flowetl.cli import main
 
