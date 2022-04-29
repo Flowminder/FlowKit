@@ -52,3 +52,8 @@ def test_union_raises_with_not_enough_queries():
     """
     with pytest.raises(ValueError):
         Union(*[])
+
+
+def test_union_warns_on_single():
+    with pytest.warns(UserWarning, match="Single queries are not deduped by Union."):
+        Union(Table(schema="events", name="calls", columns=["msisdn"]), all=False)
