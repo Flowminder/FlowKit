@@ -17,3 +17,31 @@ def test_all_above_threshold(get_dataframe):
         ).value
         > 15
     )
+
+
+def test_in_above_threshold(get_dataframe):
+    """
+    Test that inflows redacts correctly
+    """
+    assert all(
+        get_dataframe(
+            RedactedFlows(
+                flows=Flows(daily_location("2016-01-01"), daily_location("2016-01-01"))
+            ).inflow()
+        ).value
+        > 15
+    )
+
+
+def test_out_above_threshold(get_dataframe):
+    """
+    Test that outflows redacts correctly
+    """
+    assert all(
+        get_dataframe(
+            RedactedFlows(
+                flows=Flows(daily_location("2016-01-01"), daily_location("2016-01-01"))
+            ).outflow()
+        ).value
+        > 15
+    )

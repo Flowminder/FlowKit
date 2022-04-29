@@ -54,6 +54,7 @@ class InflowsExposed(BaseExposedQuery):
     def __init__(self, *, from_location, to_location, join_type):
         self.from_location = from_location
         self.to_location = to_location
+        self.join_type = join_type
 
     def _flowmachine_query_obj(self):
         loc1 = self.to_location._flowmachine_query_obj
