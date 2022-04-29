@@ -59,6 +59,8 @@ def test_get_available_queries(zmq_host, zmq_port):
             "available_queries": [
                 "dummy_query",
                 "flows",
+                "inflows",
+                "outflows",
                 "meaningful_locations_aggregate",
                 "meaningful_locations_between_label_od_matrix",
                 "meaningful_locations_between_dates_od_matrix",
