@@ -911,7 +911,7 @@ jobs:
                   curl http://localhost:9090/api/0/spec/openapi.json -o source/_static/openapi.json
                   echo "Starting build."
                   # Note: the DOCS_BRANCH variable is used by `mkdocs.yml` to pick up the correct git repositories for building API docs
-                  DOCS_BRANCH=${CIRCLE_BRANCH:="master"} PIPENV_DONT_LOAD_ENV=1 pipenv run mike deploy --push --update-aliases ${CIRCLE_TAG:=$(git describe --tags --always)} latest
+                  DOCS_BRANCH=${CIRCLE_BRANCH:="master"} PIPENV_DONT_LOAD_ENV=1 pipenv run mike deploy --push --update-aliases ${CIRCLE_TAG:="master"} latest
       - unless:
           condition: << parameters.deploy >>
           steps:
