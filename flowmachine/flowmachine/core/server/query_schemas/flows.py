@@ -50,27 +50,16 @@ class FlowsExposed(BaseExposedQuery):
         return RedactedFlows(flows=Flows(loc1, loc2, join_type=self.join_type))
 
 
-class InflowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location, join_type):
-        self.from_location = from_location
-        self.to_location = to_location
-        self.join_type = join_type
-
+class InflowsExposed(FlowsExposed):
+    @property
     def _flowmachine_query_obj(self):
-        loc1 = self.to_location._flowmachine_query_obj
-        loc2 = self.from_location._flowmachine_query_obj
-        return RedactedFlows(flows=Flows(loc1, loc2, self.join_type)).inflow()
+        return super()._flowmachine_query_obj.inflow()
 
 
-class OutflowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location, join_type):
-        self.from_location = from_location
-        self.to_location = to_location
-
+class OutflowsExposed(FlowsExposed):
+    @property
     def _flowmachine_query_obj(self):
-        loc1 = self.to_location._flowmachine_query_obj
-        loc2 = self.from_location._flowmachine_query_obj
-        return RedactedFlows(flows=Flows(loc1, loc2, self.join_type)).outflow()
+        return super()._flowmachine_query_obj.outflow()
 
 
 class FlowsSchema(BaseSchema):
@@ -83,19 +72,11 @@ class FlowsSchema(BaseSchema):
     __model__ = FlowsExposed
 
 
-class InflowsSchema(BaseSchema):
-    query_kind = fields.String(validate=OneOf(["flows"]))
-    from_location = fields.Nested(InputToFlowsSchema, required=True)
-    to_location = fields.Nested(InputToFlowsSchema, required=True)
-    join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
-
+class InflowsSchema(FlowsSchema):
+    query_kind = fields.String(validate=OneOf(["inflows"]))
     __model__ = InflowsExposed
 
 
-class OutflowsSchema(BaseSchema):
-    query_kind = fields.String(validate=OneOf(["flows"]))
-    from_location = fields.Nested(InputToFlowsSchema, required=True)
-    to_location = fields.Nested(InputToFlowsSchema, required=True)
-    join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
-
+class OutflowsSchema(FlowsSchema):
+    query_kind = fields.String(validate=OneOf(["outflows"]))
     __model__ = OutflowsExposed
