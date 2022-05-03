@@ -5,7 +5,7 @@
 
 from flowmachine.core import Query
 from flowmachine.features import Flows
-from flowmachine.features.location.flows import FlowLike
+from flowmachine.features.location.flows import FlowLike, InFlow, OutFlow
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
@@ -27,4 +27,18 @@ class RedactedFlows(RedactedLocationMetric, FlowLike, Query):
         self.redaction_target = flows
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = flows.spatial_unit
+        super().__init__()
+
+
+class RedactedInFlow(RedactedLocationMetric, FlowLike, Query):
+    def __init__(self, *, inflow: InFlow):
+        self.redaction_target = inflow
+        self.spatial_unit = inflow.spatial_unit
+        super().__init__()
+
+
+class RedactedOutFlow(RedactedLocationMetric, FlowLike, Query):
+    def __init__(self, *, outflow: OutFlow):
+        self.redaction_target = outflow
+        self.spatial_unit = outflow.spatial_unit
         super().__init__()
