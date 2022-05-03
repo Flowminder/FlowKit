@@ -38,4 +38,4 @@ class RedactedInOutFlow(RedactedLocationMetric, BaseInOutFlow, Query):
         self.redaction_target = flows
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = flows.spatial_unit
-        super().__init__()
+        super().__init__(flows.flow)

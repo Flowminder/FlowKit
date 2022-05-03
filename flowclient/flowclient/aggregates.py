@@ -725,6 +725,34 @@ def flows_spec(
     }
 
 
+def inflows_spec(
+    *,
+    from_location: Dict[str, Union[str, Dict[str, str]]],
+    to_location: Dict[str, Union[str, Dict[str, str]]],
+    join_type: str = "inner",
+) -> dict:
+    return {
+        "query_kind": "inflows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "join_type": join_type,
+    }
+
+
+def outflows_spec(
+    *,
+    from_location: Dict[str, Union[str, Dict[str, str]]],
+    to_location: Dict[str, Union[str, Dict[str, str]]],
+    join_type: str = "inner",
+) -> dict:
+    return {
+        "query_kind": "outflows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "join_type": join_type,
+    }
+
+
 @merge_args(flows_spec)
 def flows(*, connection: Connection, **kwargs) -> APIQuery:
     """
@@ -748,6 +776,16 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
 
     """
     return connection.make_api_query(parameters=flows_spec(**kwargs))
+
+
+@merge_args(inflows_spec)
+def inflows(*, connection: Connection, **kwargs) -> APIQuery:
+    return connection.make_api_query(parameters=inflows_spec(**kwargs))
+
+
+@merge_args(outflows_spec)
+def outflows(*, connection: Connection, **kwargs) -> APIQuery:
+    return connection.make_api_query(parameters=outflows_spec(**kwargs))
 
 
 def labelled_flows_spec(
