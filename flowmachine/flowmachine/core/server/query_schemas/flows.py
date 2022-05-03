@@ -8,7 +8,10 @@ from marshmallow_oneofschema import OneOfSchema
 
 
 from flowmachine.features import Flows
-from flowmachine.features.location.redacted_flows import RedactedFlowsLike
+from flowmachine.features.location.redacted_flows import (
+    RedactedFlows,
+    RedactedInOutFlow,
+)
 from flowmachine.core.join import Join
 from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
@@ -47,7 +50,7 @@ class FlowsExposed(BaseExposedQuery):
         """
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
-        return RedactedFlowsLike(flows=Flows(loc1, loc2, join_type=self.join_type))
+        return RedactedFlows(flows=Flows(loc1, loc2, join_type=self.join_type))
 
 
 class InflowsExposed(FlowsExposed):
@@ -55,7 +58,7 @@ class InflowsExposed(FlowsExposed):
     def _flowmachine_query_obj(self):
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
-        return RedactedFlowsLike(
+        return RedactedInOutFlow(
             flows=Flows(loc1, loc2, join_type=self.join_type).inflow()
         )
 
@@ -65,7 +68,7 @@ class OutflowsExposed(FlowsExposed):
     def _flowmachine_query_obj(self):
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
-        return RedactedFlowsLike(
+        return RedactedInOutFlow(
             flows=Flows(loc1, loc2, join_type=self.join_type).outflow()
         )
 
