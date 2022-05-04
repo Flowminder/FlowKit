@@ -780,11 +780,52 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
 
 @merge_args(inflows_spec)
 def inflows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Given a set of from- and to- locations, returns a count of every user that travelled *to* each *destination* location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Inflows query
+
+    """
     return connection.make_api_query(parameters=inflows_spec(**kwargs))
 
 
 @merge_args(outflows_spec)
 def outflows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Given a set of from- and to- locations, returns a count of every user that travelled *from* each *origin* location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Outflows query
+
+    """
+
     return connection.make_api_query(parameters=outflows_spec(**kwargs))
 
 
