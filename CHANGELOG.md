@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- `inflows` and `outflows` exposed via API endpoint + added to flowclient [#2029](https://github.com/Flowminder/FlowKit/issues/2029)
 
 ### Changed
 - __Action Needed__ Airflow updated to version 2.3.3; **backup flowetl_db before applying update** [#4940](https://github.com/Flowminder/FlowKit/pull/4940)
