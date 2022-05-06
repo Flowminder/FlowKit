@@ -9,7 +9,7 @@ import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location
-from flowmachine.features.location.flows import *
+from flowmachine.features.location.flows import Flows, InFlow, OutFlow
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
