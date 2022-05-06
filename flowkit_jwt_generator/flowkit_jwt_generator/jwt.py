@@ -210,6 +210,7 @@ def squashed_scopes(scopes: List[str]) -> Iterable[str]:
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
+    flowauth_identifier: Optional[str] = None,
     username: str,
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
@@ -251,12 +252,14 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=compress_claims(claims) if compress else claims,
+        scopes=compress_claims(claims) if compress else claims,
         sub=username,
         exp=now + lifetime,
     )
     if flowapi_identifier is not None:
         token_data["aud"] = flowapi_identifier
+    if flowauth_identifier is not None:
+        token_data["iss"] = flowauth_identifier
     return jwt.encode(
         payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
     )
