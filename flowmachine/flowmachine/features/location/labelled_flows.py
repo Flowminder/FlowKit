@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+from abc import ABCMeta
 
 from typing import List
 
@@ -10,6 +11,7 @@ from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.location.flows import (
     FlowLike,
+    Direction,
 )
 
 
@@ -149,3 +151,72 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         """
 
         return grouped
+
+    def outflow(self):
+        """
+        Returns
+        -------
+        LablledOutFlow
+            An outflows object. This is the total number of flows that
+            originate from one locations, regardless of their destination.
+        """
+
+        return LabelledInOutFlow(self, "from")
+
+    def inflow(self):
+        """
+        Returns
+        -------
+        LabelledInFlow
+            An inflows object. This is the total number of flows that
+            go to one locations, regardless of their origin.
+        """
+
+        return LabelledInOutFlow(self, "to")
+
+
+class LabelledInOutFlow(GeoDataMixin, Query):
+    """
+    An inflow or outflow from a LabelledFlows - sums by the to or from, and label columns.
+
+    Parameters
+    ----------
+    flow : LabelledFlows
+        LabelledFlows object to derive an in/out flow from
+    direction : {'to', 'from'}
+        One of to (for inflows) or out (for outflows)
+    """
+
+    def __init__(self, flow: LabelledFlows, direction: str):
+        self.flow = flow
+        self.spatial_unit = flow.spatial_unit
+        self.direction = Direction(direction)
+        super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return [
+            *self.spatial_unit.location_id_columns,
+            *self.flow.out_label_columns,
+            "value",
+        ]
+
+    @property
+    def index_cols(self):
+        return [*self.spatial_unit.location_id_columns, *self.flow.out_label_columns]
+
+    def _make_query(self):
+        aliased_cols = ", ".join(
+            f"{col}_{self.direction} as {col}"
+            for col in self.spatial_unit.location_id_columns
+        )
+        directed_cols = ", ".join(
+            f"{col}_{self.direction}" for col in self.spatial_unit.location_id_columns
+        )
+        label_columns = ", ".join(self.flow.out_label_columns)
+
+        return f"""
+        SELECT {aliased_cols}, {label_columns}, sum(value) AS value
+        FROM ({self.flow.get_query()}) AS flow
+        GROUP BY {directed_cols}, {label_columns} ORDER BY {directed_cols} DESC, {label_columns} DESC
+        """
