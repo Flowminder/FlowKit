@@ -252,7 +252,7 @@ def generate_token(
         nbf=now,
         jti=str(uuid.uuid4()),
         user_claims=compress_claims(claims) if compress else claims,
-        identity=username,
+        sub=username,
         exp=now + lifetime,
     )
     if flowapi_identifier is not None:
