@@ -12,7 +12,7 @@ class InflowsExposed(FlowsExposed):
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
         return RedactedInOutFlow(
-            flows=Flows(loc1, loc2, join_type=self.join_type).inflow()
+            in_out_flows=Flows(loc1, loc2, join_type=self.join_type).inflow()
         )
 
 

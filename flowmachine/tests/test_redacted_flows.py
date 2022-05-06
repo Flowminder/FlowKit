@@ -27,7 +27,7 @@ def test_in_above_threshold(get_dataframe):
     assert all(
         get_dataframe(
             RedactedInOutFlow(
-                in_out_flow=Flows(
+                in_out_flows=Flows(
                     daily_location("2016-01-01"), daily_location("2016-01-01")
                 ).inflow()
             )
@@ -43,7 +43,7 @@ def test_out_above_threshold(get_dataframe):
     assert all(
         get_dataframe(
             RedactedInOutFlow(
-                in_out_flow=Flows(
+                in_out_flows=Flows(
                     daily_location("2016-01-01"), daily_location("2016-01-01")
                 ).outflow()
             )

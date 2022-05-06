@@ -16,8 +16,8 @@ class RedactedInOutFlow(RedactedLocationMetric, BaseInOutFlow, Query):
         The underlying Inflow or Outflow to redact; normally created from `flows.inflow` or `flows.outflow`
     """
 
-    def __init__(self, *, flows: BaseInOutFlow):
-        self.redaction_target = flows
+    def __init__(self, *, in_out_flows: BaseInOutFlow):
+        self.redaction_target = in_out_flows
         # self.spatial_unit is used in self._geo_augmented_query
-        self.spatial_unit = flows.spatial_unit
-        super().__init__(flows.flow)
+        self.spatial_unit = in_out_flows.spatial_unit
+        super().__init__(in_out_flows.flow)
