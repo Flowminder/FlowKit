@@ -18,7 +18,9 @@ from .histogram_aggregate import HistogramAggregateSchema
 from .active_at_reference_location_counts import ActiveAtReferenceLocationCountsSchema
 from .consecutive_trips_od_matrix import ConsecutiveTripsODMatrixSchema
 from .dummy_query import DummyQuerySchema
-from .flows import FlowsSchema, InflowsSchema, OutflowsSchema
+from .flows import FlowsSchema
+from .outflows import OutflowsSchema
+from .inflows import InflowsSchema
 from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
     MeaningfulLocationsBetweenLabelODMatrixSchema,
