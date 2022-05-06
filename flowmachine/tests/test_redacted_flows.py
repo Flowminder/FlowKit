@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.features import daily_location, Flows
 from flowmachine.features.location.redacted_flows import RedactedFlows
+from flowmachine.features.location.redacted_in_out_flows import RedactedInOutFlow
 
 
 def test_all_above_threshold(get_dataframe):
@@ -25,8 +26,8 @@ def test_in_above_threshold(get_dataframe):
     """
     assert all(
         get_dataframe(
-            RedactedFlows(
-                flows=Flows(
+            RedactedInOutFlow(
+                in_out_flow=Flows(
                     daily_location("2016-01-01"), daily_location("2016-01-01")
                 ).inflow()
             )
@@ -41,8 +42,8 @@ def test_out_above_threshold(get_dataframe):
     """
     assert all(
         get_dataframe(
-            RedactedFlows(
-                flows=Flows(
+            RedactedInOutFlow(
+                in_out_flow=Flows(
                     daily_location("2016-01-01"), daily_location("2016-01-01")
                 ).outflow()
             )
