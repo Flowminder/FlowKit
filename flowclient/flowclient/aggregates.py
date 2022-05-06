@@ -787,11 +787,11 @@ def inflows(*, connection: Connection, **kwargs) -> APIQuery:
     ----------
     connection : Connection
         FlowKit API connection
-    from_location: dict
+    from_location : dict
         Query which maps individuals to single location for the "origin" period of interest.
-    to_location: dict
+    to_location : dict
         Query which maps individuals to single location for the "destination" period of interest.
-    join_type: str default "inner"
+    join_type : str, default "inner"
         Join type to use to build the flows
 
     Returns
