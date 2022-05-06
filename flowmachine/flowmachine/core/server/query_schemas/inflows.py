@@ -3,7 +3,7 @@ from marshmallow.validate import OneOf
 
 from flowmachine.core.server.query_schemas.flows import FlowsExposed, FlowsSchema
 from flowmachine.features import Flows
-from flowmachine.features.location.redacted_flows import RedactedInOutFlow
+from flowmachine.features.location.redacted_in_out_flows import RedactedInOutFlow
 
 
 class InflowsExposed(FlowsExposed):
