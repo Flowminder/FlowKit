@@ -29,6 +29,30 @@ group_memberships = db.Table(
     db.Column("group_id", db.Integer, db.ForeignKey("group.id"), primary_key=True),
 )
 
+scopes_in_role = db.Table(
+    "scopes_in_role",
+    db.Column("scope_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
+)
+
+roles_in_server = db.Table(
+    "roles_in_server",
+    db.Column("server_id", db.Integer, db.ForeignKey("server.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
+)
+
+users_with_roles = db.Table(
+    "users_with_roles",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
+)
+
+scopes_in_server = db.Table(
+    "scopes_in_server",
+    db.Column("scope_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
+    db.Column("server_id", db.Integer, db.ForeignKey("server.id"), primary_key=True),
+)
+
 
 class User(db.Model):
     """
@@ -47,6 +71,12 @@ class User(db.Model):
     )
     tokens = db.relationship(
         "Token", back_populates="owner", cascade="all, delete, delete-orphan"
+    )
+    roles = db.relationship(
+        "Roles",
+        secondary=users_with_roles,
+        lazy="subquery",
+        backref=db.backref("users", lazy=True),
     )
     two_factor_auth = db.relationship(
         "TwoFactorAuth",
@@ -474,6 +504,12 @@ class Server(db.Model):
         back_populates="server",
         cascade="all, delete, delete-orphan",
     )
+    scopes = db.relationship(
+        "Scope",
+        secondary=scopes_in_server,
+        lazy="subquery",  # Not sure what this is yet
+        backref=db.backref("servers", lazy=True),
+    )
 
     def __repr__(self) -> str:
         return f"<Server {self.name}>"
@@ -582,6 +618,34 @@ class Group(db.Model):
 
     def __repr__(self) -> str:
         return f"<Group {self.name}>"
+
+
+class Role(db.Model):
+    """
+    A role assigned to one or more users, providing them with one or more scopes.
+    """
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(75), unique=True, nullable=False)
+    scopes = db.relationship(
+        "Scope",
+        secondary=scopes_in_role,
+        lazy="subquery",
+        backref=db.backref("roles", lazy=True),
+    )
+
+
+class Scope(db.Model):
+    """
+    A scope of actions permitted, represented by a colon-delineated string (fields depend on scope)
+    For example, the scope permitting daily locations at admin 3 would be locations:daily_location:admin3
+    """
+
+    # OK, here's the heart of it.
+    # Each role has a collection of these referred to.
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    scope = db.Column(db.String, unique=True)
 
 
 def init_db(force: bool = False) -> None:
