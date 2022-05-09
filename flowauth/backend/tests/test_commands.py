@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowauth.cli import add_admin_command, demo_data, init_db_command
-from flowauth.models import Group, User, db
+from flowauth.cli import add_admin_command, demo_data, init_db_command, add_role_command
+from flowauth.models import Group, User, db, Role
 
 
 def test_add_admin(app):
@@ -106,3 +106,14 @@ def test_demo_data(app):
         result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
         assert len(Group.query.all()) == 3
+
+
+def test_add_role(app):
+    """
+    Test that we can use the CLI to add a role
+    """
+    with app.app_context():
+        runner = app.test_cli_runner()
+        app.config["DB_IS_SET_UP"].set()
+        result = runner.invoke(add_role_command, ["DUMMY_ROLE", "DUMMY_SCOPE"])
+        assert len(Role.query.all()) == 1
