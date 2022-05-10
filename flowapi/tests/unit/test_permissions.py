@@ -33,7 +33,7 @@ def test_valid_tree_walks(tree, expected):
         ({}, ["get_result&available_dates"]),
         (
             {"properties": {"query_kind": {"enum": ["dummy"]}}},
-            ["get_result&dummy", "run&dummy", "get_result&available_dates"],
+            ["dummy"],
         ),
         (
             {
@@ -43,17 +43,14 @@ def test_valid_tree_walks(tree, expected):
                 }
             },
             [
-                "get_result&dummy.aggregation_unit.DUMMY_UNIT",
-                "run&dummy.aggregation_unit.DUMMY_UNIT",
-                "get_result&dummy.aggregation_unit.DUMMY_UNIT_2",
-                "run&dummy.aggregation_unit.DUMMY_UNIT_2",
-                "get_result&available_dates",
+                "dummy:DUMMY_UNIT",
+                "dummy:DUMMY_UNIT_2",
             ],
         ),
-        ({"oneOf": []}, ["get_result&available_dates"]),
+        ({"oneOf": []}, []),
         (
             {"oneOf": [{"properties": {"query_kind": {"enum": ["dummy"]}}}]},
-            ["get_result&dummy", "run&dummy", "get_result&available_dates"],
+            ["dummy"],
         ),
         (
             {
@@ -69,9 +66,8 @@ def test_valid_tree_walks(tree, expected):
                 ]
             },
             [
-                "get_result&dummy.dummy_param.nested_dummy",
-                "run&dummy.dummy_param.nested_dummy",
-                "get_result&available_dates",
+                "dummy:dummy_param",
+                "nested_dummy",
             ],
         ),
         (
@@ -91,9 +87,8 @@ def test_valid_tree_walks(tree, expected):
                 ]
             },
             [
-                "get_result&dummy.dummy_param.nested_dummy",
-                "run&dummy.dummy_param.nested_dummy",
-                "get_result&available_dates",
+                "dummy",
+                "nested_dummy:DUMMY_UNIT",
             ],
         ),
         (
@@ -123,15 +118,11 @@ def test_valid_tree_walks(tree, expected):
                 ]
             },
             [
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "get_result&available_dates",
+                "dummy",
+                "nested_dummy:DUMMY_UNIT",
+                "nested_dummy:DUMMY_UNIT_2",
+                "nested_dummy_2:DUMMY_UNIT_2",
+                "nested_dummy_2:DUMMY_UNIT_3",
             ],
         ),
     ],

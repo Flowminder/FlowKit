@@ -242,6 +242,8 @@ def per_query_scopes(
     yield "get_result&available_dates"
 
 
+# This is the one that's causing the issue.
+# At present, it yields
 def schema_to_scopes(schema: dict) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
