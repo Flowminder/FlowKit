@@ -10,7 +10,7 @@ sqlalchemy = "*"
 click = "*"
 markupsafe="==2.0.1"
 wtforms = "<3.0.0"
-pyparsing = "==3.0.8"
+pyparsing = "==3.0.9"
 
 [dev-packages]
 structlog = "*"
