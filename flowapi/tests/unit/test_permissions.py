@@ -5,6 +5,9 @@ from flowapi.permissions import (
     per_query_scopes,
     tree_walk_to_scope_list,
     valid_tree_walks,
+    is_flat,
+    flatten,
+    flatten_on_key,
 )
 
 import pytest
@@ -30,7 +33,7 @@ def test_valid_tree_walks(tree, expected):
 @pytest.mark.parametrize(
     "tree, expected",
     [
-        ({}, ["get_result&available_dates"]),
+        ({}, []),
         (
             {"properties": {"query_kind": {"enum": ["dummy"]}}},
             ["dummy"],
@@ -128,41 +131,6 @@ def test_valid_tree_walks(tree, expected):
     ],
 )
 def test_per_query_scopes(tree, expected):
-
-    if tree == {
-        "properties": {
-            "query_kind": {"enum": ["dummy"]},
-            "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
-        }
-    } or tree == {
-        "oneOf": [
-            {
-                "properties": {
-                    "query_kind": {"enum": ["dummy"]},
-                    "dummy_param": {
-                        "properties": {
-                            "query_kind": {"enum": ["nested_dummy"]},
-                            "aggregation_unit": {
-                                "enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]
-                            },
-                        }
-                    },
-                    "dummy_param_2": {
-                        "properties": {
-                            "query_kind": {"enum": ["nested_dummy_2"]},
-                            "aggregation_unit": {
-                                "enum": ["DUMMY_UNIT_2", "DUMMY_UNIT_3"]
-                            },
-                        },
-                    },
-                },
-            }
-        ]
-    }:
-        pytest.xfail(
-            "Under new schema rules, cannot presently mix admin levels in the same query. See bug #4649"
-        )
-
     assert list(per_query_scopes(queries=tree)) == expected
 
 
@@ -177,3 +145,88 @@ def test_per_query_scopes(tree, expected):
 )
 def test_tree_walk_to_scope_list(walk, expected):
     assert list(tree_walk_to_scope_list(walk)) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ({"flat": "dict"}, True),
+        ({"flat": "dict", "multi": "keys"}, True),
+        ({"outer": {"inner": "dict"}}, False),
+        ({"outer": ["inner", "list"]}, False),
+        (["flat", "list"], True),
+        (["nested", {"inner": "dict"}], False),
+        (["nested", ["list"]], False),
+        ({"outer": {"middle": {"inner": "dict"}}}, False),
+    ],
+)
+def test_is_flat(input, expected):
+    assert is_flat(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ({"flat": "dict"}, [{"flat": "dict"}]),
+        (["flat", "list"], ["flat", "list"]),
+        (
+            {"outer1": {"inner": "1"}, "outer2": {"inner": "2"}},
+            [{"inner": "1"}, {"inner": "2"}],
+        ),
+        (
+            {"outer_0": {"flat": "1"}, "outer_2": {"middle": {"flat": "2"}}},
+            [{"flat": "1"}, {"flat": "2"}],
+        ),
+    ],
+)
+def test_flatten(input, expected):
+    assert (flatten(input)) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        (
+            {"oneOf": [{"properties": {"query_kind": {"enum": ["dummy"]}}}]},
+            [{"query_kind": {"enum": ["dummy"]}}],
+        ),
+        (
+            # input
+            {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "query_kind": {"enum": ["dummy"]},
+                            "dummy_param_1": {
+                                "properties": {
+                                    "query_kind": {"enum": ["nested_dummy"]},
+                                    "aggregation_unit": {"enum": ["DUMMY_UNIT"]},
+                                }
+                            },
+                            "dummy_param_2": {
+                                "properties": {
+                                    "query_kind": {"enum": ["nested_dummy_2"]},
+                                    "aggregation_unit": {"enum": ["DUMMY_UNIT_2"]},
+                                }
+                            },
+                        }
+                    }
+                ]
+            },
+            # expected
+            [
+                {
+                    "query_kind": {"enum": ["nested_dummy"]},
+                    "aggregation_unit": {"enum": ["DUMMY_UNIT"]},
+                },
+                {
+                    "query_kind": {"enum": ["nested_dummy_2"]},
+                    "aggregation_unit": {"enum": ["DUMMY_UNIT_2"]},
+                },
+                {"query_kind": {"enum": ["dummy"]}},
+            ],
+        ),
+    ],
+)
+def test_flatten_on_key(input, expected):
+    assert flatten_on_key(input, key="properties") == expected
