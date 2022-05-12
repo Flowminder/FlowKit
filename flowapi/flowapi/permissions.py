@@ -6,6 +6,7 @@ from itertools import product, repeat
 from typing import Iterable, List, Optional, Tuple, Union
 
 from prance import ResolvingParser
+import jmespath
 from rapidjson import dumps
 
 
@@ -200,6 +201,106 @@ def _(tree_walk: tuple) -> str:
         yield from tree_walk_to_scope_list(walk)
 
 
+def is_flat(in_iter):
+    """
+    Returns True if in_iter is flat (contains no dicts or lists)
+    """
+    if type(in_iter) is dict:
+        in_iter = in_iter.values()
+    return all(type(item) not in [dict, list] for item in in_iter)
+
+
+@functools.singledispatch
+def _flatten_inner(root, running_list):
+    # This should be overridden by the registered overwrites
+    raise TypeError("_flatten_inner should only take dict or list types")
+
+
+@_flatten_inner.register(dict)
+def _(root: dict, running_list: list, key_of_interest=None, _=None):
+    for node, value in root.items():
+        if is_flat(value):
+            running_list.append(value)
+        else:
+            yield from _flatten_inner(value, running_list)
+
+
+@_flatten_inner.register(list)
+def _(root: list, running_list: list, _, __):
+    for node in root:
+        if is_flat(node):
+            running_list.append(node)
+        else:
+            yield from _flatten_inner(node, running_list)
+
+
+@functools.singledispatch
+def _flatten_on_key_inner(root, running_list, key_of_interest, depth):
+    raise TypeError
+
+
+@_flatten_on_key_inner.register(dict)
+def _(root, running_list, key_of_interest):
+    for node, value in root.items():
+        if is_flat(value):
+            pass
+        else:
+            yield from _flatten_on_key_inner(value, running_list, key_of_interest)
+            if node == key_of_interest:
+                # We cannot change the size of a dict mid-run, so instead we mark it for
+                # deletion post-run
+                root[node] = {}
+                yield value
+
+
+# This needs a rethink, in the morning.
+
+
+@_flatten_on_key_inner.register(list)
+def _(root, running_list, key_of_interest):
+    for value in root:
+        yield from _flatten_on_key_inner(value, running_list, key_of_interest)
+
+
+def _pop_to_accumulator(collection, element, accumulator):
+    accumulator.append(collection.pop(element))
+    return accumulator[-1][element]
+
+
+def is_key_of_interest(root: dict, key_of_interest):
+    """Returns True if the only key in a dictionary is the key of interest"""
+    return root.keys() == [key_of_interest]
+
+
+def flatten(in_iter):
+    """
+    When provided with a collection that contains other collections, returns a
+    list of the innermost dictionaries or elements of that collection
+    """
+    out_list = []
+
+    try:
+        next(_flatten_inner(in_iter, out_list))
+    except StopIteration:
+        pass
+    return out_list
+
+
+def _clean_empties(in_dict, marker):
+    out = {}
+    for key, value in in_dict.items():
+        if value != {marker: {}}:
+            # I'm having deja-vu to async issues here
+            out[key] = value
+    return out
+
+
+def flatten_on_key(in_iter, key):
+    out = list(_flatten_on_key_inner(in_iter, _, key))
+    clean_out = [_clean_empties(flattened, key) for flattened in out]
+    return clean_out
+
+
 def per_query_scopes(
     *, queries: dict, argument_names_to_extract: List[str] = ["aggregation_unit"]
 ) -> Iterable[str]:
@@ -234,12 +335,46 @@ def per_query_scopes(
     nested_qs = paths_to_nested_dict(
         queries=queries, argument_names_to_extract=argument_names_to_extract
     )
-    yield from (
-        "&".join([action, *tree_walk_to_scope_list(scope_list)])
-        for scope_list in valid_tree_walks(nested_qs)
-        for action in ("get_result", "run")
-    )
-    yield "get_result&available_dates"
+    # What we want here;
+    # 1: Find every 'properties' node in the tree
+    # 2: Extract the query_type from each property
+    # 3: If present, extract the 'aggregation_unit' from each property
+
+    def child_queries(in_dict: dict) -> Union[dict, None]:
+        try:
+            return in_dict["properties"]
+        except KeyError:
+            return None
+
+    def has_properties(in_dict: dict) -> bool:
+        return "properties" in in_dict.keys()
+
+    # I wish I had a pen and paper
+    # OK, let's think this through
+    # We have a dict-of-lists-of-dicts-of-dicts, to a finite but unknown depth
+    # For top dict: Look through values, get values that have type 'dict'
+    # Glue that into the accumulator list
+    # For each value that is type 'dict', pass to the next recursion
+
+    def flatten_tree(tree):
+        acc_dict = []
+        tree = walk_tree(tree, acc_dict)
+        try:
+            _, acc_dict = next(tree)
+        except StopIteration:
+            pass
+        return acc_dict
+
+    queries = flatten_tree(queries)
+
+    return queries
+
+    # yield from (
+    #     "&".join([action, *tree_walk_to_scope_list(scope_list)])
+    #     for scope_list in valid_tree_walks(nested_qs)
+    #     for action in ("get_result", "run")
+    # )
+    # yield "get_result&available_dates"
 
 
 # This is the one that's causing the issue.
@@ -269,6 +404,28 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     >>> list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
     ["get_result&dummy", "run&dummy", "get_result&available_dates"],
     """
+
+    # Note from meeting; this will need to be per-role check, as all permissions for a query have to be contained in
+    # a single role
+
+    # Example query scopes:
+    # "run",
+    #  "read",
+    #  "spatial_aggregate",
+    #  "locations:admin_1",
+    #  "locations:admin_3",
+    #  "event_dates:1990-02-01:1992-03-04"
+    #  "event_type:mds",
+    #  "event_type:sms",
+    #  "subscriber_subset"
+
+    # Boolean permissions:
+    # Check run
+    # Check read
+    # Check subscriber subset
+    # Check event types
+    # Check query tree
+    # Check dates
     yield from per_query_scopes(
         queries=ResolvingParser(spec_string=dumps(schema)).specification["components"][
             "schemas"
