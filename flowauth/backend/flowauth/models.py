@@ -35,22 +35,10 @@ scopes_in_role = db.Table(
     db.Column("role_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
 )
 
-roles_in_server = db.Table(
-    "roles_in_server",
-    db.Column("server_id", db.Integer, db.ForeignKey("server.id"), primary_key=True),
-    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
-)
-
 users_with_roles = db.Table(
     "users_with_roles",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
-)
-
-scopes_in_server = db.Table(
-    "scopes_in_server",
-    db.Column("scope_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
-    db.Column("server_id", db.Integer, db.ForeignKey("server.id"), primary_key=True),
 )
 
 
@@ -504,6 +492,7 @@ class Server(db.Model):
         back_populates="server",
         cascade="all, delete, delete-orphan",
     )
+    # Make this one-to-many
     scopes = db.relationship(
         "Scope",
         secondary=scopes_in_server,
@@ -627,6 +616,7 @@ class Role(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(75), unique=True, nullable=False)
+    # Make this _within a server_
     scopes = db.relationship(
         "Scope",
         secondary=scopes_in_role,
