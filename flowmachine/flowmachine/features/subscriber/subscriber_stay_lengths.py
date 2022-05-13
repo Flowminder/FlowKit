@@ -7,6 +7,7 @@ from typing import List
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.utils import get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -60,7 +61,7 @@ class SubscriberStayLengths(SubscriberFeature):
 
         # Find stay lengths using gaps-and-islands approach
         sql = f"""
-        SELECT subscriber, {self.statistic}(stay_length) AS value
+        SELECT subscriber, {get_stat(self.statistic, "stay_length")} AS value
         FROM (
             SELECT subscriber, count(*) AS stay_length
             FROM (

@@ -12,7 +12,7 @@ from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.core import Query
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, get_stat
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -159,7 +159,7 @@ class Displacement(SubscriberFeature):
         sql = f"""
         SELECT 
             subscriber,
-            {self.statistic}(COALESCE(value_dist, 0) * {multiplier}) as value
+            {get_stat(self.statistic, f'COALESCE(value_dist, 0) * {multiplier}')} as value
         FROM 
             ({self.joined.get_query()}) _
         GROUP BY 

@@ -7,7 +7,7 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.utils import parse_datestring
+from flowmachine.utils import parse_datestring, get_stat
 
 
 class JoinedSpatialAggregate(GeoDataMixin, Query):
@@ -142,16 +142,10 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             grouped = f"WITH joined AS ({joined}) {grouped}"
 
         else:
-
-            if self.method == "mode":
-                av_cols = ", ".join(
-                    f"pg_catalog.mode() WITHIN GROUP(ORDER BY {mc}) AS {mc}"
-                    for mc in metric_cols_no_subscriber
-                )
-            else:
-                av_cols = ", ".join(
-                    f"{self.method}({mc}) AS {mc}" for mc in metric_cols_no_subscriber
-                )
+            av_cols = ", ".join(
+                f"{get_stat(self.method, mc)} AS {mc}"
+                for mc in metric_cols_no_subscriber
+            )
 
             # Now do the group by bit
             grouped = f"""

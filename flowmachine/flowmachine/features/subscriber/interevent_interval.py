@@ -14,7 +14,7 @@ from flowmachine.core import Query
 from flowmachine.features.utilities import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
+from flowmachine.utils import make_where, standardise_date, get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -126,11 +126,9 @@ class IntereventInterval(SubscriberFeature):
 
         # Postgres does not support the following three operations with intervals
         if self.statistic in {"median", "stddev", "variance"}:
-            statistic_clause = (
-                f"MAKE_INTERVAL(secs => {self.statistic}(EXTRACT(EPOCH FROM delta)))"
-            )
+            statistic_clause = f"MAKE_INTERVAL(secs => {get_stat(self.statistic, 'EXTRACT(EPOCH FROM delta)')})"
         else:
-            statistic_clause = f"{self.statistic}(delta)"
+            statistic_clause = get_stat(self.statistic, "delta")
 
         sql = f"""
         SELECT

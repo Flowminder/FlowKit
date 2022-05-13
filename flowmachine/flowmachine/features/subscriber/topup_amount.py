@@ -12,7 +12,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -97,7 +97,7 @@ class TopUpAmount(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic}(recharge_amount) AS value
+        SELECT subscriber, {get_stat(self.statistic, "recharge_amount")} AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """

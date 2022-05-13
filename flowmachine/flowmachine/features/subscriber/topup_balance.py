@@ -12,7 +12,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, get_stat
 
 valid_stats = {
     "count",
@@ -20,7 +20,6 @@ valid_stats = {
     "avg",
     "max",
     "min",
-    "median",
     "mode",
     "stddev",
     "variance",
@@ -146,13 +145,13 @@ class TopUpBalance(SubscriberFeature):
 
         if self.statistic in {"max", "min"}:
             sql = f"""
-            SELECT subscriber, {self.statistic}(balance) AS value
+            SELECT subscriber, {get_stat(self.statistic, "balance")} AS value
             FROM (
-                SELECT subscriber, {self.statistic}(pre_event_balance) AS balance
+                SELECT subscriber, {get_stat(self.statistic, "pre_event_balance")} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
                 UNION ALL
-                SELECT subscriber, {self.statistic}(post_event_balance) AS balance
+                SELECT subscriber, {get_stat(self.statistic, "post_event_balance")} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
             ) U

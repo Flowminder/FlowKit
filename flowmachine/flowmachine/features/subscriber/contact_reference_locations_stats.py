@@ -9,8 +9,19 @@ location and its contacts' modal location.
 """
 
 from .metaclasses import SubscriberFeature
+from ...utils import get_stat
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+valid_stats = {
+    "count",
+    "sum",
+    "avg",
+    "max",
+    "min",
+    "median",
+    "mode",
+    "stddev",
+    "variance",
+}
 
 
 class ContactReferenceLocationStats(SubscriberFeature):
@@ -110,7 +121,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
                 ST_Distance(subscriber_geom_point::geography, msisdn_counterpart_geom_point::geography) / 1000 AS distance
             FROM (SELECT DISTINCT subscriber_geom_point, msisdn_counterpart_geom_point FROM L) L
         )
-        SELECT subscriber, {self.statistic}(distance) AS value
+        SELECT subscriber, {get_stat(self.statistic, "distance")} AS value
         FROM (
             SELECT C.subscriber, C.msisdn_counterpart, D.distance
             FROM ({self.contact_balance_query.get_query()}) C, L, D

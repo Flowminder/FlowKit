@@ -17,6 +17,50 @@ from time import sleep
 from typing import Union, Tuple
 
 
+def get_stat_function(stat: str):
+    """
+    Get a postgres statistics function by name as a function you can apply to column names.
+
+    Parameters
+    ----------
+    stat : {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+        Statistic to get a function for
+
+    Returns
+    -------
+    function
+        A function which applies the statistic to a column name, returning a postgres
+        formatted function string
+
+    """
+    return lambda column_name: get_stat(stat, column_name)
+
+
+def get_stat(stat: str, column_name: str):
+    """
+    Get a postgres statistics function by name.
+
+    Parameters
+    ----------
+    stat : {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+        Statistic to get the function form for
+    column_name : str
+        Column to aggregate
+    Returns
+    -------
+    str
+        A postgres format function call string
+
+    """
+    stat = stat.lower()
+    if stat == "mode":
+        return f"pg_catalog.mode() WITHIN GROUP(ORDER BY {column_name})"
+    elif stat == "median":
+        return f"percentile_cont(0.5) WITHIN GROUP (ORDER BY {column_name})"
+    else:
+        return f"{stat}({column_name})"
+
+
 def parse_datestring(
     datestring: Union[str, datetime.datetime, datetime.date]
 ) -> datetime.datetime:

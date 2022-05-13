@@ -6,6 +6,7 @@
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
+from ...utils import get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -58,7 +59,7 @@ class PerContactEventStats(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic}(events) AS value
+        SELECT subscriber, {get_stat(self.statistic, "events")} AS value
         FROM ({self.contact_balance.get_query()}) C
         GROUP BY subscriber
         """

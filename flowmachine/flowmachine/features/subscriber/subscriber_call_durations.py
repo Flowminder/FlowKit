@@ -17,7 +17,7 @@ from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
+from flowmachine.utils import make_where, standardise_date, get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -110,7 +110,7 @@ class SubscriberCallDurations(SubscriberFeature):
         where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
-        SELECT subscriber, {self.statistic}(duration) as value FROM 
+        SELECT subscriber, {get_stat(self.statistic, "duration")} as value FROM 
         ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber
@@ -219,7 +219,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
-        SELECT subscriber, {loc_cols}, {self.statistic}(duration) as value 
+        SELECT subscriber, {loc_cols}, {get_stat(self.statistic, "duration")} as value 
         FROM ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber, {loc_cols}
@@ -309,7 +309,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
 
     def _make_query(self):
         return f"""
-        SELECT subscriber, msisdn_counterpart, {self.statistic}(duration) as value 
+        SELECT subscriber, msisdn_counterpart, {get_stat(self.statistic, "duration")} as value 
         FROM ({self.unioned_query.get_query()}) u
         WHERE outgoing
         GROUP BY subscriber, msisdn_counterpart
@@ -439,7 +439,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         loc_cols = ", ".join(loc_cols)
 
         return f"""
-        SELECT subscriber, msisdn_counterpart, {loc_cols}, {self.statistic}(duration) as value
+        SELECT subscriber, msisdn_counterpart, {loc_cols}, {get_stat(self.statistic, "duration")} as value
          FROM ({self.joined.get_query()}) u
         GROUP BY subscriber, msisdn_counterpart, {loc_cols}
         """

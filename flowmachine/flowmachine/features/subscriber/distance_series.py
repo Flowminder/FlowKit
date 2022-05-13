@@ -11,7 +11,7 @@ from typing import List, Optional, Union, Tuple
 from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, get_stat
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
 valid_time_buckets = [
@@ -147,7 +147,7 @@ class DistanceSeries(SubscriberFeature):
             SELECT 
                 subscriber,
                 date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
-                {self.statistic}(COALESCE(value_dist, 0)) as value
+                {get_stat(self.statistic, "COALESCE(value_dist, 0)")} as value
             FROM 
                 ({joined}) _
             GROUP BY 

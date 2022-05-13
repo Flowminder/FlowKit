@@ -190,3 +190,17 @@ def test_sort_recursively():
     }
 
     assert d_sorted_expected == sort_recursively(d)
+
+
+@pytest.mark.parametrize(
+    "stat, expected",
+    [
+        ("mode", "pg_catalog.mode() WITHIN GROUP (ORDER BY column)"),
+        ("median", "percentile_cont(0.5) WITHIN GROUP (ORDER BY column)"),
+        ("SUM", "sum(column)"),
+        ("sum", "sum(column)"),
+        ("NOT A STAT", "not a stat(column)"),
+    ],
+)
+def test_standardise_date_to_datetime(stat, expected):
+    assert get_stat(stat, "column") == expected

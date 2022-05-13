@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+valid_stats = {"count", "sum", "avg", "max", "min", "stddev", "variance"}
 valid_characteristics = {
     "width",
     "height",

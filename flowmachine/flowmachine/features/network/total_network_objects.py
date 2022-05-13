@@ -19,7 +19,7 @@ from ...core import location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, get_stat
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 valid_periods = ["second", "minute", "hour", "day", "month", "year"]
@@ -218,12 +218,9 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     def _make_query(self):
         group_cols = ",".join(self.spatial_unit.location_id_columns)
-        if self.statistic == "mode":
-            av_call = f"pg_catalog.mode() WITHIN GROUP(ORDER BY z.value)"
-        else:
-            av_call = f"{self.statistic}(z.value)"
+
         sql = f"""
-        SELECT {group_cols}, {av_call} as value,
+        SELECT {group_cols}, {get_stat(self.statistic, "z.value")} as value,
         date_trunc('{self.aggregate_by}', z.datetime) as datetime FROM 
             ({self.total_objs.get_query()}) z
         GROUP BY {group_cols}, date_trunc('{self.aggregate_by}', z.datetime)

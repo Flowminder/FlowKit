@@ -10,7 +10,7 @@ from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
+from flowmachine.utils import make_where, standardise_date, get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -125,7 +125,7 @@ class PerLocationEventStats(SubscriberFeature):
         where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
-        SELECT subscriber, {self.statistic}(events) AS value
+        SELECT subscriber, {get_stat(self.statistic, "events")} AS value
         FROM (
             SELECT subscriber, {loc_cols}, COUNT(*) AS events
             FROM ({self.unioned_query.get_query()}) U

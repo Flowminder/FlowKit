@@ -12,7 +12,7 @@ from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.spatial.distance_matrix import DistanceMatrix
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
+from flowmachine.utils import make_where, standardise_date, get_stat
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -135,7 +135,7 @@ class DistanceCounterparts(SubscriberFeature):
         sql = f"""
         SELECT
             U.subscriber AS subscriber,
-            {self.statistic}(D.value) AS value
+            {get_stat(self.statistic, "D.value")} AS value
         FROM
             (
                 SELECT A.subscriber, A.location_id AS location_id_from, B.location_id AS location_id_to FROM
