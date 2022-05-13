@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import functools
+import itertools
 from itertools import product, repeat
 from typing import Iterable, List, Optional, Tuple, Union
 
@@ -235,41 +236,28 @@ def _(root: list, running_list: list, _, __):
 
 
 @functools.singledispatch
-def _flatten_on_key_inner(root, running_list, key_of_interest, depth):
+def _flatten_on_key_inner(root, key_of_interest):
     raise TypeError
 
 
 @_flatten_on_key_inner.register(dict)
-def _(root, running_list, key_of_interest):
+def _(root, key_of_interest):
     for node, value in root.items():
         if is_flat(value):
             pass
         else:
-            yield from _flatten_on_key_inner(value, running_list, key_of_interest)
+            yield from _flatten_on_key_inner(value, key_of_interest)
             if node == key_of_interest:
-                # We cannot change the size of a dict mid-run, so instead we mark it for
-                # deletion post-run
+                # We cannot change the size of a dict mid-iterate, so instead we mark it for
+                # deletion post-iterate
                 root[node] = {}
                 yield value
 
 
-# This needs a rethink, in the morning.
-
-
 @_flatten_on_key_inner.register(list)
-def _(root, running_list, key_of_interest):
+def _(root, key_of_interest):
     for value in root:
-        yield from _flatten_on_key_inner(value, running_list, key_of_interest)
-
-
-def _pop_to_accumulator(collection, element, accumulator):
-    accumulator.append(collection.pop(element))
-    return accumulator[-1][element]
-
-
-def is_key_of_interest(root: dict, key_of_interest):
-    """Returns True if the only key in a dictionary is the key of interest"""
-    return root.keys() == [key_of_interest]
+        yield from _flatten_on_key_inner(value, key_of_interest)
 
 
 def flatten(in_iter):
@@ -290,13 +278,12 @@ def _clean_empties(in_dict, marker):
     out = {}
     for key, value in in_dict.items():
         if value != {marker: {}}:
-            # I'm having deja-vu to async issues here
             out[key] = value
     return out
 
 
 def flatten_on_key(in_iter, key):
-    out = list(_flatten_on_key_inner(in_iter, _, key))
+    out = list(_flatten_on_key_inner(in_iter, key))
     clean_out = [_clean_empties(flattened, key) for flattened in out]
     return clean_out
 
@@ -426,11 +413,23 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     # Check event types
     # Check query tree
     # Check dates
-    yield from per_query_scopes(
-        queries=ResolvingParser(spec_string=dumps(schema)).specification["components"][
-            "schemas"
-        ]["FlowmachineQuerySchema"]
-    )
+
+    query_list = flatten_on_key(schema, "properties")
+    if query_list == []:
+        return []
+    out = list(set.union(*(scopes_from_query(query) for query in query_list)))
+    return sorted(out)
+
+
+def scopes_from_query(query) -> set:
+    query_kind = query["query_kind"]["enum"][0]
+    out = {query_kind}
+    try:
+        agg_units = query["aggregation_unit"]["enum"]
+        out = out | {":".join([query_kind, agg_unit]) for agg_unit in agg_units}
+    except KeyError:
+        pass
+    return out
 
 
 def expand_scopes(*, scopes: List[str]) -> str:

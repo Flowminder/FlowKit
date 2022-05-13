@@ -17,6 +17,7 @@ apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
 prance = {extras = ["osv"],version = "*"}
 werkzeug = "<=2.0.3" # Pinned due to incompatibility with quart-jwt-extended (https://github.com/greenape/quart-jwt-extended/issues/3)
+jmespath = "*"
 
 [dev-packages]
 pytest = "*"
