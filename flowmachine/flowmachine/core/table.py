@@ -119,7 +119,8 @@ class Table(Query):
         if not q_state_machine.is_completed:
             q_state_machine.enqueue()
             q_state_machine.execute()
-            write_cache_metadata(get_db(), self, compute_time=0)
+            with get_db().engine.begin() as trans:
+                write_cache_metadata(trans, self, compute_time=0)
             q_state_machine.finish()
 
     def __format__(self, fmt):

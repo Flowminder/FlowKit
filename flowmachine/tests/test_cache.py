@@ -39,7 +39,8 @@ def test_do_cache_simple(flowmachine_connect):
 
     """
     dl1 = daily_location("2016-01-01")
-    write_cache_metadata(get_db(), dl1)
+    with get_db().engine.begin() as trans:
+        write_cache_metadata(trans, dl1)
     assert cache_table_exists(get_db(), dl1.query_id)
 
 
@@ -50,7 +51,8 @@ def test_do_cache_multi(flowmachine_connect):
     """
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    write_cache_metadata(get_db(), hl1)
+    with get_db().engine.begin() as trans:
+        write_cache_metadata(trans, hl1)
 
     assert cache_table_exists(get_db(), hl1.query_id)
 
@@ -63,7 +65,8 @@ def test_do_cache_nested(flowmachine_connect):
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
-    write_cache_metadata(get_db(), flow)
+    with get_db().engine.begin() as trans:
+        write_cache_metadata(trans, flow)
 
     assert cache_table_exists(get_db(), flow.query_id)
 
