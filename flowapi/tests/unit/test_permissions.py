@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowapi.permissions import (
-    per_query_scopes,
-    tree_walk_to_scope_list,
-    valid_tree_walks,
     is_flat,
     flatten,
     flatten_on_key,
@@ -13,23 +10,6 @@ from flowapi.permissions import (
 )
 
 import pytest
-
-
-@pytest.mark.parametrize(
-    "tree, expected",
-    [
-        ({}, []),
-        ({1: {}}, [[1]]),
-        ({1: {2: {}}}, [[1, 2]]),
-        ({1: {2: {}}, 3: {}}, [[1, 2], [3]]),
-        (
-            {1: {2: [1, 2, 3, 4]}, "3": "A"},
-            [[1, 2, 1], [1, 2, 2], [1, 2, 3], [1, 2, 4], ["3", "A"]],
-        ),
-    ],
-)
-def test_valid_tree_walks(tree, expected):
-    assert list(valid_tree_walks(tree)) == expected
 
 
 @pytest.mark.parametrize(
@@ -134,23 +114,11 @@ def test_valid_tree_walks(tree, expected):
                 "nested_dummy_2:DUMMY_UNIT_3",
             ],
         ),
+        ({"not_a_query": "empty"}, []),
     ],
 )
 def test_schema_to_scopes(tree, expected):
     assert schema_to_scopes(tree) == expected
-
-
-@pytest.mark.parametrize(
-    "walk, expected",
-    [
-        ("DUMMY", ["DUMMY"]),
-        (["DUMMY", "DUMMY"], ["DUMMY.DUMMY"]),
-        ((["DUMMY", "DUMMY"], ["DUMMY", "DUMMY"]), ["DUMMY.DUMMY", "DUMMY.DUMMY"]),
-        ((["DUMMY", "DUMMY"], (["DUMMY", "DUMMY"])), ["DUMMY.DUMMY", "DUMMY.DUMMY"]),
-    ],
-)
-def test_tree_walk_to_scope_list(walk, expected):
-    assert list(tree_walk_to_scope_list(walk)) == expected
 
 
 @pytest.mark.parametrize(
@@ -164,6 +132,11 @@ def test_tree_walk_to_scope_list(walk, expected):
         (["nested", {"inner": "dict"}], False),
         (["nested", ["list"]], False),
         ({"outer": {"middle": {"inner": "dict"}}}, False),
+        ({}, True),
+        ({"none_type": None, "bool_type": True}, True),
+        ({"none_type": None, "nested": {"inner": "dict"}}, False),
+        (None, True),
+        (True, True),
     ],
 )
 def test_is_flat(input, expected):

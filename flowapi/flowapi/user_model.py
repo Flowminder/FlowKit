@@ -9,7 +9,7 @@ from quart_jwt_extended.exceptions import UserClaimsVerificationError
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from flowapi.jwt import decompress_claims
-from flowapi.permissions import expand_scopes, query_to_scope_list
+from flowapi.permissions import expand_scopes, scopes_from_query
 from flowapi.utils import get_query_parameters_from_flowmachine
 from quart import current_app, request
 
@@ -35,7 +35,7 @@ class UserObject:
     def has_access(self, *, actions: List[str], query_json: dict) -> bool:
 
         try:
-            scopes = set(query_to_scope_list(query_json))
+            scopes = set(scopes_from_query(query_json))
         except Exception as exc:
             raise BadQueryError
         if "query_kind" not in query_json:
