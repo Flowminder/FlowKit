@@ -1,14 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import collections
 import functools
-import itertools
-from itertools import product, repeat
-from typing import Iterable, List, Optional, Tuple, Union
-
-from prance import ResolvingParser
-import jmespath
-from rapidjson import dumps
+from copy import deepcopy
+from itertools import product
+from typing import Iterable, List, Optional, Tuple, Union, Set, Any
 
 
 def enum_paths(
@@ -206,8 +203,11 @@ def is_flat(in_iter):
     """
     Returns True if in_iter is flat (contains no dicts or lists)
     """
-    if type(in_iter) is dict:
+    if not isinstance(in_iter, collections.Container):
+        return True
+    if isinstance(in_iter, dict):
         in_iter = in_iter.values()
+    # Think there's a slightly better way of doing type introspection here
     return all(type(item) not in [dict, list] for item in in_iter)
 
 
@@ -282,86 +282,12 @@ def _clean_empties(in_dict, marker):
     return out
 
 
-def flatten_on_key(in_iter, key):
+def flatten_on_key(in_iter, key, _in_place=False):
+    if not _in_place:
+        in_iter = deepcopy(in_iter)
     out = list(_flatten_on_key_inner(in_iter, key))
     clean_out = [_clean_empties(flattened, key) for flattened in out]
     return clean_out
-
-
-def per_query_scopes(
-    *, queries: dict, argument_names_to_extract: List[str] = ["aggregation_unit"]
-) -> Iterable[str]:
-    """
-    Constructs and yields query scopes of the form:
-    <query_kind>:<arg_name>:<arg_val>
-    where arg_val may be a query kind, or the name of an aggregation unit if applicable.
-
-    One scope is yielded for each viable query structure, so for queries which contain two child queries
-    two scopes are yielded. If that query has 3 possible aggregation units, then 6 scopes are yielded altogether.
-
-    Parameters
-    ----------
-    tree : dict
-        Dict of nested queries
-    all_queries : dict
-        All queries
-
-    Yields
-    ------
-    str
-        Query scope of the form <query_kind>:<arg_name>:<arg_val>
-
-    Examples
-    --------
-    >>>list(make_per_query_scopes(queries={"DUMMY": {}}))
-    ["dummy"]
-    >>>list(make_per_query_scopes(queries={"DUMMY": {}}))
-    ["dummy:aggregation_unit:DUMMY_UNIT",]
-
-    """
-    nested_qs = paths_to_nested_dict(
-        queries=queries, argument_names_to_extract=argument_names_to_extract
-    )
-    # What we want here;
-    # 1: Find every 'properties' node in the tree
-    # 2: Extract the query_type from each property
-    # 3: If present, extract the 'aggregation_unit' from each property
-
-    def child_queries(in_dict: dict) -> Union[dict, None]:
-        try:
-            return in_dict["properties"]
-        except KeyError:
-            return None
-
-    def has_properties(in_dict: dict) -> bool:
-        return "properties" in in_dict.keys()
-
-    # I wish I had a pen and paper
-    # OK, let's think this through
-    # We have a dict-of-lists-of-dicts-of-dicts, to a finite but unknown depth
-    # For top dict: Look through values, get values that have type 'dict'
-    # Glue that into the accumulator list
-    # For each value that is type 'dict', pass to the next recursion
-
-    def flatten_tree(tree):
-        acc_dict = []
-        tree = walk_tree(tree, acc_dict)
-        try:
-            _, acc_dict = next(tree)
-        except StopIteration:
-            pass
-        return acc_dict
-
-    queries = flatten_tree(queries)
-
-    return queries
-
-    # yield from (
-    #     "&".join([action, *tree_walk_to_scope_list(scope_list)])
-    #     for scope_list in valid_tree_walks(nested_qs)
-    #     for action in ("get_result", "run")
-    # )
-    # yield "get_result&available_dates"
 
 
 # This is the one that's causing the issue.
@@ -372,7 +298,6 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     <action>:<query_kind>:<arg_name>:<arg_val>
     where arg_val may be a query kind, or the name of an aggregation unit if applicable, and <action> is run or get_result.
     Additionally yields the "get_result&available_dates" scope.
-
     One scope is yielded for each viable query structure, so for queries which contain two child queries
     five scopes are yielded. If that query has 3 possible aggregation units, then 13 scopes are yielded altogether.
 
@@ -414,15 +339,21 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     # Check query tree
     # Check dates
 
+    # A note here: flatten_on_key _will_ affect schema. This doesn't seem like
+    # an issue right now, but may add a copy()
     query_list = flatten_on_key(schema, "properties")
     if query_list == []:
         return []
-    out = list(set.union(*(scopes_from_query(query) for query in query_list)))
-    return sorted(out)
+    scopes_generator = (scopes_from_query(query) for query in query_list)
+    unique_scopes = list(set.union(*scopes_generator))
+    return sorted(unique_scopes)
 
 
 def scopes_from_query(query) -> set:
-    query_kind = query["query_kind"]["enum"][0]
+    try:
+        query_kind = query["query_kind"]["enum"][0]
+    except KeyError:
+        return set()
     out = {query_kind}
     try:
         agg_units = query["aggregation_unit"]["enum"]
@@ -451,57 +382,3 @@ def expand_scopes(*, scopes: List[str]) -> str:
         parts = scope.strip().split("&")
         ps = (x.split(",") for x in parts)
         yield from (set(x) for x in product(*ps))
-
-
-@functools.singledispatch
-def query_to_scope_list(tree, paths=None, keep=["aggregation_unit"]) -> str:
-    """
-
-    Parameters
-    ----------
-    tree : list of dict or dict
-    paths : tuple
-    keep : list of str
-        List of fields to include in scope strings
-
-    Yields
-    ------
-    str
-        Scope string
-
-
-    """
-    yield from ()
-
-
-@query_to_scope_list.register
-def _(tree: list, paths=None, keep=["aggregation_unit"]) -> str:
-    if paths is None:
-        paths = tuple()
-    for v in tree:
-        yield from query_to_scope_list(v, paths, keep=keep)
-
-
-@query_to_scope_list.register
-def _(tree: dict, paths=None, keep=["aggregation_unit"]) -> str:
-    if paths is None:
-        paths = tuple()
-    try:
-        q_kind = tree["query_kind"]
-        paths = (*paths, q_kind)
-    except KeyError:
-        pass
-
-    yielded_any = False
-    for k, v in sorted(tree.items(), key=lambda x: x[0]):
-        if k == "query_kind":
-            continue
-        if k in keep:
-            yield ".".join((*paths, k, v))
-            yielded_any = True
-        elif isinstance(v, (dict, list)):
-            for t in query_to_scope_list(v, (*paths, k), keep=keep):
-                yield t
-                yielded_any = True
-    if not yielded_any and "query_kind" in tree:
-        yield ".".join(paths)

@@ -53,13 +53,14 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
         ),
     )
     spec.components.schemas.update(flowmachine_query_schemas)
-    scopes = [
-        scope.format(aggregation_unit=agg_unit)
-        for scope in schema_to_scopes(spec.to_dict())
-        for agg_unit in flowmachine_query_schemas["DummyQuery"]["properties"][
-            "aggregation_unit"
-        ]["enum"]
-    ]
+    # scopes = [
+    #     scope.format(aggregation_unit=agg_unit)
+    #     for scope in schema_to_scopes(spec.to_dict())
+    #     for agg_unit in flowmachine_query_schemas["DummyQuery"]["properties"][
+    #         "aggregation_unit"
+    #     ]["enum"]
+    # ]
+    scopes = schema_to_scopes(spec.to_dict()["components"])  # Don't like this here
     spec.components.security_scheme(
         "token",
         {
