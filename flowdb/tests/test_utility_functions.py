@@ -39,15 +39,6 @@ def test_tables():
 
 
 @pytest.mark.usefixtures("create_test_tables")
-def test_median(cursor):
-    """median() function returns correct value."""
-    sql = "SELECT median(n) FROM test_table"
-    cursor.execute(sql)
-    results = [i["median"] for i in cursor.fetchall()]
-    assert results[0] == 4.5
-
-
-@pytest.mark.usefixtures("create_test_tables")
 def test_isnumeric(cursor):
     """isnumeric() function returns correct casting."""
     sql = "SELECT isnumeric(text_number) AS result FROM test_table"
