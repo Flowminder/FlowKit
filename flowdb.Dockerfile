@@ -29,6 +29,8 @@ ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
 ENV TDS_FDW_VERSION=2.0.2-3.pgdg110+1
 
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
+RUN echo "deb http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main\ndeb-src http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" > /etc/apt/sources.list.d/pgdg-archive.list
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
