@@ -290,8 +290,6 @@ def flatten_on_key(in_iter, key, _in_place=False):
     return clean_out
 
 
-# This is the one that's causing the issue.
-# At present, it yields
 def schema_to_scopes(schema: dict) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
@@ -350,6 +348,10 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
 
 
 def scopes_from_query(query) -> set:
+    """
+    Given a single query, returns the scopes needed for that query
+    only
+    """
     try:
         query_kind = query["query_kind"]["enum"][0]
     except KeyError:

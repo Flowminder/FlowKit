@@ -60,12 +60,6 @@ class User(db.Model):
     tokens = db.relationship(
         "Token", back_populates="owner", cascade="all, delete, delete-orphan"
     )
-    roles = db.relationship(
-        "Roles",
-        secondary=users_with_roles,
-        lazy="subquery",
-        backref=db.backref("users", lazy=True),
-    )
     two_factor_auth = db.relationship(
         "TwoFactorAuth",
         back_populates="user",
@@ -405,6 +399,42 @@ class TwoFactorBackup(db.Model):
         self._backup_code = argon2.hash(plaintext)
 
 
+class Server(db.Model):
+    """
+    A server. Has a name, and a secret key, and upper bounds on token expiry and lifetime.
+    A server has some set of available capabilities.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(75), unique=True, nullable=False)
+    latest_token_expiry = db.Column(db.DateTime, nullable=False)
+    longest_token_life = db.Column(db.Integer, nullable=False)
+    tokens = db.relationship(
+        "Token", back_populates="server", cascade="all, delete, delete-orphan"
+    )
+    capabilities = db.relationship(
+        "ServerCapability",
+        back_populates="server",
+        cascade="all, delete, delete-orphan",
+    )
+    group_token_limits = db.relationship(
+        "GroupServerTokenLimits",
+        back_populates="server",
+        cascade="all, delete, delete-orphan",
+    )
+    #    scopes = db.relationship(
+    #        "Scope",
+    #        backref=db.backref("parent"),
+    #    )
+
+    roles = db.relationship(
+        "Role", backref="server", cascade="all, delete, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<Server {self.name}>"
+
+
 class Token(db.Model):
     """
     An instance of a token.
@@ -467,41 +497,6 @@ class Token(db.Model):
 
     def __repr__(self) -> str:
         return f"<Token {self.owner}:{self.server}>"
-
-
-class Server(db.Model):
-    """
-    A server. Has a name, and a secret key, and upper bounds on token expiry and lifetime.
-    A server has some set of available capabilities.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(75), unique=True, nullable=False)
-    latest_token_expiry = db.Column(db.DateTime, nullable=False)
-    longest_token_life = db.Column(db.Integer, nullable=False)
-    tokens = db.relationship(
-        "Token", back_populates="server", cascade="all, delete, delete-orphan"
-    )
-    capabilities = db.relationship(
-        "ServerCapability",
-        back_populates="server",
-        cascade="all, delete, delete-orphan",
-    )
-    group_token_limits = db.relationship(
-        "GroupServerTokenLimits",
-        back_populates="server",
-        cascade="all, delete, delete-orphan",
-    )
-    # Make this one-to-many
-    scopes = db.relationship(
-        "Scope",
-        secondary=scopes_in_server,
-        lazy="subquery",  # Not sure what this is yet
-        backref=db.backref("servers", lazy=True),
-    )
-
-    def __repr__(self) -> str:
-        return f"<Server {self.name}>"
 
 
 class ServerCapability(db.Model):
@@ -616,6 +611,8 @@ class Role(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(75), unique=True, nullable=False)
+    server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
+
     # Make this _within a server_
     scopes = db.relationship(
         "Scope",
@@ -628,7 +625,7 @@ class Role(db.Model):
 class Scope(db.Model):
     """
     A scope of actions permitted, represented by a colon-delineated string (fields depend on scope)
-    For example, the scope permitting daily locations at admin 3 would be locations:daily_location:admin3
+    For example, the scope permitting daily locations at admin 3 would be daily_location:admin3
     """
 
     # OK, here's the heart of it.
@@ -719,8 +716,18 @@ def make_demodata():
     groups[1].members.append(users[1])
     for user in users:
         groups[2].members.append(user)
-    for x in users + groups:
+
+    scopes = [
+        reader_scope := Scope(scope="read"),
+        runner_scope := Scope(
+            scope="run",
+        ),
+        example_geo_scope := Scope(scope="dummy_query:admin_3"),
+    ]
+
+    for x in users + groups + scopes:
         db.session.add(x)
+
     # Add some things that you can do
     with open(Path(__file__).parent / "demo_data" / "api_scopes.txt") as fin:
         caps = [x.strip() for x in fin.readlines()]
@@ -733,6 +740,18 @@ def make_demodata():
     )
 
     db.session.add(test_server)
+
+    # Add roles to test server
+    roles = [
+        viewer_role := Role(
+            server=test_server, scopes=[reader_scope, example_geo_scope]
+        ),
+        runner_role := Role(
+            server=test_server, scopes=[runner_scope, example_geo_scope]
+        ),
+    ]
+    for role in roles:
+        db.session.add(test_server)
 
     # Add some things that you can do on the servers
     scs = []
