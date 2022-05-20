@@ -344,6 +344,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
         return []
     scopes_generator = (scopes_from_query(query) for query in query_list)
     unique_scopes = list(set.union(*scopes_generator))
+    # When do we add on the run/read scope?
     return sorted(unique_scopes)
 
 
