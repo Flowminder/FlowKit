@@ -4,14 +4,14 @@
 
 import pytest
 
-from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber.subscriber_call_durations import *
+from flowmachine.utils import Statistic
 
 
 @pytest.mark.parametrize(
     "query", [SubscriberCallDurations, PairedSubscriberCallDurations]
 )
-@pytest.mark.parametrize("stat", valid_stats)
+@pytest.mark.parametrize("stat", Statistic)
 def test_subscriber_call_durations_column_names(query, stat):
     """
     Test that column_names property matches head(0)
@@ -24,7 +24,7 @@ def test_subscriber_call_durations_column_names(query, stat):
     "query",
     [PairedPerLocationSubscriberCallDurations, PerLocationSubscriberCallDurations],
 )
-@pytest.mark.parametrize("stat", valid_stats)
+@pytest.mark.parametrize("stat", Statistic)
 def test_per_location_subscriber_call_durations_column_names(
     query, exemplar_spatial_unit_param, stat
 ):

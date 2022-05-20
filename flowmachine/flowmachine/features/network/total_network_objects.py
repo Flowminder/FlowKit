@@ -19,9 +19,9 @@ from ...core import location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
-from flowmachine.utils import standardise_date, get_stat
+from flowmachine.utils import standardise_date, Statistic
 
-valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+
 valid_periods = ["second", "minute", "hour", "day", "month", "year"]
 
 
@@ -180,15 +180,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     def __init__(self, *, total_network_objects, statistic="avg", aggregate_by=None):
         self.total_objs = total_network_objects
-        statistic = statistic.lower()
-        if statistic in valid_stats:
-            self.statistic = statistic
-        else:
-            raise ValueError(
-                "{} is not a valid statistic use one of {!r}".format(
-                    statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
         if aggregate_by is None:
             if self.total_objs.total_by == "second":
                 self.aggregate_by = "minute"
@@ -220,7 +212,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         group_cols = ",".join(self.spatial_unit.location_id_columns)
 
         sql = f"""
-        SELECT {group_cols}, {get_stat(self.statistic, "z.value")} as value,
+        SELECT {group_cols}, {self.statistic:z.value} as value,
         date_trunc('{self.aggregate_by}', z.datetime) as datetime FROM 
             ({self.total_objs.get_query()}) z
         GROUP BY {group_cols}, date_trunc('{self.aggregate_by}', z.datetime)

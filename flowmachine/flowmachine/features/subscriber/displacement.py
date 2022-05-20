@@ -12,9 +12,7 @@ from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.core import Query
-from flowmachine.utils import standardise_date, get_stat
-
-valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class Displacement(SubscriberFeature):
@@ -110,13 +108,7 @@ class Displacement(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         if not isinstance(reference_location, BaseLocation):
             raise ValueError(
@@ -159,7 +151,7 @@ class Displacement(SubscriberFeature):
         sql = f"""
         SELECT 
             subscriber,
-            {get_stat(self.statistic, f'COALESCE(value_dist, 0) * {multiplier}')} as value
+            {self.statistic:{f'COALESCE(value_dist, 0) * {multiplier}'}} as value
         FROM 
             ({self.joined.get_query()}) _
         GROUP BY 

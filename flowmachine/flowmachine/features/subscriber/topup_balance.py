@@ -12,19 +12,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date, get_stat
-
-valid_stats = {
-    "count",
-    "sum",
-    "avg",
-    "max",
-    "min",
-    "mode",
-    "stddev",
-    "variance",
-    "median",
-}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class TopUpBalance(SubscriberFeature):
@@ -101,15 +89,8 @@ class TopUpBalance(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
-        self.statistic = statistic.lower()
+        self.statistic = Statistic(statistic.lower())
         self.tables = "events.topups"
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
 
         column_list = [
             self.subscriber_identifier,
@@ -146,13 +127,13 @@ class TopUpBalance(SubscriberFeature):
 
         if self.statistic in {"max", "min"}:
             sql = f"""
-            SELECT subscriber, {get_stat(self.statistic, "balance")} AS value
+            SELECT subscriber, {self.statistic:balance} AS value
             FROM (
-                SELECT subscriber, {get_stat(self.statistic, "pre_event_balance")} AS balance
+                SELECT subscriber, {self.statistic:{"pre_event_balance"}} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
                 UNION ALL
-                SELECT subscriber, {get_stat(self.statistic, "post_event_balance")} AS balance
+                SELECT subscriber, {self.statistic:{"post_event_balance"}} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
             ) U

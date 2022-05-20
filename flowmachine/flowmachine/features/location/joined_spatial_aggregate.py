@@ -7,7 +7,7 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.utils import parse_datestring, get_stat
+from flowmachine.utils import parse_datestring, Statistic
 
 
 class JoinedSpatialAggregate(GeoDataMixin, Query):
@@ -66,6 +66,8 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = locations.spatial_unit
         self.method = method.lower()
+        if self.method != "distr":
+            self.method = Statistic(self.method)
         if self.method not in self.allowed_methods:
             raise ValueError(
                 f"{method} is not recognised method, must be one of {self.allowed_methods}"
@@ -143,8 +145,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
 
         else:
             av_cols = ", ".join(
-                f"{get_stat(self.method, mc)} AS {mc}"
-                for mc in metric_cols_no_subscriber
+                f"{self.method:{mc}} AS {mc}" for mc in metric_cols_no_subscriber
             )
 
             # Now do the group by bit

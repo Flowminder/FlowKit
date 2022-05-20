@@ -9,19 +9,7 @@ location and its contacts' modal location.
 """
 
 from .metaclasses import SubscriberFeature
-from ...utils import get_stat
-
-valid_stats = {
-    "count",
-    "sum",
-    "avg",
-    "max",
-    "min",
-    "median",
-    "mode",
-    "stddev",
-    "variance",
-}
+from ...utils import Statistic
 
 
 class ContactReferenceLocationStats(SubscriberFeature):
@@ -63,13 +51,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
         self, contact_balance, contact_locations, statistic="avg", geom_column=None
     ):
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         self.contact_locations_query = contact_locations
         self.contact_balance_query = contact_balance
@@ -121,7 +103,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
                 ST_Distance(subscriber_geom_point::geography, msisdn_counterpart_geom_point::geography) / 1000 AS distance
             FROM (SELECT DISTINCT subscriber_geom_point, msisdn_counterpart_geom_point FROM L) L
         )
-        SELECT subscriber, {get_stat(self.statistic, "distance")} AS value
+        SELECT subscriber, {self.statistic:distance} AS value
         FROM (
             SELECT C.subscriber, C.msisdn_counterpart, D.distance
             FROM ({self.contact_balance_query.get_query()}) C, L, D

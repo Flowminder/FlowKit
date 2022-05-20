@@ -3,8 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+from ...utils import Statistic
 
-valid_stats = {"count", "sum", "avg", "max", "min", "stddev", "variance", "median"}
+
 valid_characteristics = {
     "width",
     "height",
@@ -14,9 +15,7 @@ valid_characteristics = {
     "display_height",
 }
 
-from ...core import Table
 from .metaclasses import SubscriberFeature
-from .subscriber_tacs import SubscriberHandsets
 
 
 class HandsetStats(SubscriberFeature):
@@ -68,12 +67,9 @@ class HandsetStats(SubscriberFeature):
 
     def __init__(self, characteristic, statistic="avg", *, subscriber_handsets):
         self.characteristic = characteristic.lower()
-        self.statistic = statistic.lower()
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                f"{self.statistic} is not a valid statistic. Use one of {valid_stats}"
-            )
+        self.statistic = Statistic(statistic.lower())
+        if self.statistic == "mode":
+            raise ValueError("HandsetStats does not support weighted mode.")
 
         if self.characteristic not in valid_characteristics:
             raise ValueError(

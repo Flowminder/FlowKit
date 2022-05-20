@@ -8,6 +8,7 @@ import datetime
 
 from marshmallow import fields, Schema, validates_schema, ValidationError, post_load
 from marshmallow.validate import Range, Length, OneOf
+from flowmachine.utils import Statistic as ValidStats
 
 
 class Hours(Schema):
@@ -127,7 +128,7 @@ class Statistic(fields.String):
             )
 
         validate = OneOf(
-            ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+            [f"{stat}" for stat in ValidStats]
         )  # see total_network_objects.py
         super().__init__(required=required, validate=validate, **kwargs)
 

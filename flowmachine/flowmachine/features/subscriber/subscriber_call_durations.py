@@ -17,9 +17,7 @@ from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date, get_stat
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import make_where, standardise_date, Statistic
 
 
 class SubscriberCallDurations(SubscriberFeature):
@@ -78,13 +76,7 @@ class SubscriberCallDurations(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.direction = Direction(direction)
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         column_list = [
             self.subscriber_identifier,
@@ -110,7 +102,7 @@ class SubscriberCallDurations(SubscriberFeature):
         where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
-        SELECT subscriber, {get_stat(self.statistic, "duration")} as value FROM 
+        SELECT subscriber, {self.statistic:duration} as value FROM 
         ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber
@@ -179,13 +171,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
             self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
             self.spatial_unit = spatial_unit
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         column_list = [
             self.subscriber_identifier,
@@ -219,7 +205,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
-        SELECT subscriber, {loc_cols}, {get_stat(self.statistic, "duration")} as value 
+        SELECT subscriber, {loc_cols}, {self.statistic:duration} as value 
         FROM ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber, {loc_cols}
@@ -277,13 +263,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         column_list = [
             self.subscriber_identifier,
@@ -309,7 +289,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
 
     def _make_query(self):
         return f"""
-        SELECT subscriber, msisdn_counterpart, {get_stat(self.statistic, "duration")} as value 
+        SELECT subscriber, msisdn_counterpart, {self.statistic:duration} as value 
         FROM ({self.unioned_query.get_query()}) u
         WHERE outgoing
         GROUP BY subscriber, msisdn_counterpart
@@ -381,13 +361,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
             self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
             self.spatial_unit = spatial_unit
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         column_list = [
             "id",
@@ -439,7 +413,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         loc_cols = ", ".join(loc_cols)
 
         return f"""
-        SELECT subscriber, msisdn_counterpart, {loc_cols}, {get_stat(self.statistic, "duration")} as value
+        SELECT subscriber, msisdn_counterpart, {loc_cols}, {self.statistic:duration} as value
          FROM ({self.joined.get_query()}) u
         GROUP BY subscriber, msisdn_counterpart, {loc_cols}
         """

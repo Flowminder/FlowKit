@@ -4,11 +4,8 @@
 
 # -*- coding: utf-8 -*-
 
-from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from ...utils import get_stat
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from ...utils import Statistic
 
 
 class PerContactEventStats(SubscriberFeature):
@@ -43,14 +40,9 @@ class PerContactEventStats(SubscriberFeature):
 
     def __init__(self, contact_balance, statistic="avg"):
         self.contact_balance = contact_balance
-        self.statistic = statistic
+        self.statistic = Statistic(statistic.lower())
 
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        super(PerContactEventStats, self).__init__()
 
     @property
     def column_names(self):
@@ -59,7 +51,7 @@ class PerContactEventStats(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {get_stat(self.statistic, "events")} AS value
+        SELECT subscriber, {self.statistic:events} AS value
         FROM ({self.contact_balance.get_query()}) C
         GROUP BY subscriber
         """

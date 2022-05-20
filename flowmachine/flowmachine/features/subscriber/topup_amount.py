@@ -12,9 +12,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date, get_stat
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class TopUpAmount(SubscriberFeature):
@@ -66,15 +64,8 @@ class TopUpAmount(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
-        self.statistic = statistic.lower()
+        self.statistic = Statistic(statistic.lower())
         self.tables = "events.topups"
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
 
         column_list = [self.subscriber_identifier, "recharge_amount"]
 
@@ -97,7 +88,7 @@ class TopUpAmount(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {get_stat(self.statistic, "recharge_amount")} AS value
+        SELECT subscriber, {self.statistic:{"recharge_amount"}} AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """

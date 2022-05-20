@@ -7,9 +7,7 @@ from typing import List
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.core.errors import InvalidSpatialUnitError
-from flowmachine.utils import get_stat
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import Statistic
 
 
 class SubscriberStayLengths(SubscriberFeature):
@@ -38,11 +36,8 @@ class SubscriberStayLengths(SubscriberFeature):
             raise InvalidSpatialUnitError(
                 "SubscriberStayLengths requires all input locations to have the same spatial unit"
             )
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                f"'{self.statistic}' is not a valid statistic. Use one of {valid_stats}"
-            )
+        self.statistic = Statistic(statistic.lower())
+
         super().__init__()
 
     @property
@@ -61,7 +56,7 @@ class SubscriberStayLengths(SubscriberFeature):
 
         # Find stay lengths using gaps-and-islands approach
         sql = f"""
-        SELECT subscriber, {get_stat(self.statistic, "stay_length")} AS value
+        SELECT subscriber, {self.statistic:{"stay_length"}} AS value
         FROM (
             SELECT subscriber, count(*) AS stay_length
             FROM (

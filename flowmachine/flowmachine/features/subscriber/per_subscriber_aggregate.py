@@ -6,7 +6,7 @@
 
 from typing import List
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
-from flowmachine.utils import get_stat
+from flowmachine.utils import Statistic
 
 agg_methods = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -79,7 +79,7 @@ class PerSubscriberAggregate(SubscriberFeature):
 
     def _make_query(self):
         sql = f"""
-        SELECT subscriber, {get_stat(self.agg_method, self.agg_column)} AS value
+        SELECT subscriber, {Statistic(self.agg_method, self.agg_column)} AS value
         FROM ({self.subscriber_query.get_query()}) AS sub_table
         GROUP BY subscriber
         """

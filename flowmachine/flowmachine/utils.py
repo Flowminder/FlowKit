@@ -6,6 +6,7 @@
 """
 Various simple utilities.
 """
+from enum import Enum
 
 import datetime
 import re
@@ -17,29 +18,41 @@ from time import sleep
 from typing import Union, Tuple
 
 
-def get_stat(stat: str, column_name: str):
-    """
-    Get a postgres statistics function by name.
+class Statistic(str, Enum):
+    COUNT = "count"
+    SUM = "sum"
+    AVG = "avg"
+    MAX = "max"
+    MIN = "min"
+    MEDIAN = "median"
+    STDDEV = "stddev"
+    VARIANCE = "variance"
+    MODE = "mode"
 
-    Parameters
-    ----------
-    stat : {"count", "sum", "avg", "max", "min", "median", "stddev", "variance", "mode"}
-        Statistic to get the function form for
-    column_name : str
-        Column to aggregate
-    Returns
-    -------
-    str
-        A postgres format function call string
+    def __format__(self, column_name=""):
+        """
+        Get a postgres statistics function by name.
 
-    """
-    stat = stat.lower()
-    if stat == "mode":
-        return f"pg_catalog.mode() WITHIN GROUP (ORDER BY {column_name})"
-    elif stat == "median":
-        return f"percentile_cont(0.5) WITHIN GROUP (ORDER BY {column_name})"
-    else:
-        return f"{stat}({column_name})"
+        Parameters
+        ----------
+        stat : {"count", "sum", "avg", "max", "min", "median", "stddev", "variance", "mode"}
+            Statistic to get the function form for
+        column_name : str
+            Column to aggregate
+        Returns
+        -------
+        str
+            A postgres format function call string
+
+        """
+        if column_name == "":
+            return str(self.value)
+        if self == "mode":
+            return f"pg_catalog.mode() WITHIN GROUP (ORDER BY {column_name})"
+        elif self == "median":
+            return f"percentile_cont(0.5) WITHIN GROUP (ORDER BY {column_name})"
+        else:
+            return f"{self}({column_name})"
 
 
 def parse_datestring(

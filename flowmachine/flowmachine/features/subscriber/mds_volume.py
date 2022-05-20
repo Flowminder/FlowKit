@@ -10,9 +10,7 @@ from typing import Optional, Tuple
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date, get_stat
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class MDSVolume(SubscriberFeature):
@@ -68,15 +66,8 @@ class MDSVolume(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.volume = volume
-        self.statistic = statistic.lower()
+        self.statistic = Statistic(statistic.lower())
         self.tables = "events.mds"
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
 
         if self.volume not in {"total", "upload", "download"}:
             raise ValueError(f"{self.volume} is not a valid volume.")
@@ -102,7 +93,7 @@ class MDSVolume(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {get_stat(self.statistic, f'volume_{self.volume}')} AS value
+        SELECT subscriber, {self.statistic:{f'volume_{self.volume}'}} AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """
