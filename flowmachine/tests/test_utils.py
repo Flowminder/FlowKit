@@ -202,5 +202,5 @@ def test_sort_recursively():
         ("NOT A STAT", "not a stat(column)"),
     ],
 )
-def test_standardise_date_to_datetime(stat, expected):
+def test_get_stat(stat, expected):
     assert get_stat(stat, "column") == expected
