@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-valid_stats = {"count", "sum", "avg", "max", "min", "stddev", "variance"}
+valid_stats = {"count", "sum", "avg", "max", "min", "stddev", "variance", "median"}
 valid_characteristics = {
     "width",
     "height",
@@ -149,6 +149,7 @@ class HandsetStats(SubscriberFeature):
         WHERE cume_dist = 1
         """
 
+        # Weighted sum, mean, standard deviation and variance
         if self.statistic in {"sum", "avg", "stddev", "variance"}:
             sql = f"""
             SELECT subscriber, {statistic_clause} AS value
@@ -157,7 +158,8 @@ class HandsetStats(SubscriberFeature):
             """
             return sql
 
-        sql = f"""
+        # Weighted median
+        return f"""
         WITH W AS ({weight_extraction_query})
         SELECT DISTINCT ON (subscriber) A.subscriber, A.value
         FROM (
@@ -172,5 +174,3 @@ class HandsetStats(SubscriberFeature):
         ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
         ORDER BY A.subscriber, A.weight
         """
-
-        return sql

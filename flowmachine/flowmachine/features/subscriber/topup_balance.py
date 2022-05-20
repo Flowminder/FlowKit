@@ -23,6 +23,7 @@ valid_stats = {
     "mode",
     "stddev",
     "variance",
+    "median",
 }
 
 
@@ -227,7 +228,7 @@ class TopUpBalance(SubscriberFeature):
             return sql
 
         if self.statistic in {"mode"}:
-            sql = f"""
+            return f"""
             SELECT DISTINCT ON (subscriber) subscriber, balance AS value
             FROM (
                 SELECT subscriber, balance, SUM(weight * balance) AS total_weight
@@ -237,6 +238,7 @@ class TopUpBalance(SubscriberFeature):
             ) U
             """
 
+        # Weighted median
         sql = f"""
         WITH W AS ({weight_extraction_query})
         SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS value
