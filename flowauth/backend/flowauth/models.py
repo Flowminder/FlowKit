@@ -431,6 +431,10 @@ class Server(db.Model):
         "Role", backref="server", cascade="all, delete, delete-orphan"
     )
 
+    scopes = db.relationship(
+        "Scope", backref="server", cascade="all, delete, delete-orphan"
+    )
+
     def __repr__(self) -> str:
         return f"<Server {self.name}>"
 
@@ -613,7 +617,6 @@ class Role(db.Model):
     name = db.Column(db.String(75), unique=True, nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
 
-    # Make this _within a server_
     scopes = db.relationship(
         "Scope",
         secondary=scopes_in_role,
@@ -632,7 +635,8 @@ class Scope(db.Model):
     # Each role has a collection of these referred to.
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    scope = db.Column(db.String, unique=True)
+    scope = db.Column(db.String)
+    server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
 
 
 def init_db(force: bool = False) -> None:
@@ -744,14 +748,14 @@ def make_demodata():
     # Add roles to test server
     roles = [
         viewer_role := Role(
-            server=test_server, scopes=[reader_scope, example_geo_scope]
+            name="viewer", server=test_server, scopes=[reader_scope, example_geo_scope]
         ),
         runner_role := Role(
-            server=test_server, scopes=[runner_scope, example_geo_scope]
+            name="runner", server=test_server, scopes=[runner_scope, example_geo_scope]
         ),
     ]
     for role in roles:
-        db.session.add(test_server)
+        db.session.add(role)
 
     # Add some things that you can do on the servers
     scs = []

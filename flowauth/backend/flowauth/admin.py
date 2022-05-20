@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 
-from flowauth.models import Token
+from flowauth.models import Token, current_app
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))

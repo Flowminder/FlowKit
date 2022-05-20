@@ -1,13 +1,16 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask import Blueprint, jsonify, request
+import datetime
+from hashlib import md5
+
+from flask import Blueprint, jsonify, request, current_app
 
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 
-from .invalid_usage import InvalidUsage
-from .models import *
+from flowauth.invalid_usage import InvalidUsage
+from flowauth.models import Role, Server, Scope, ServerCapability, db
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -36,6 +39,54 @@ def get_server(server_id):
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
     return jsonify({"id": server.id, "name": server.name})
+
+
+@blueprint.route("/servers/<server_id>/roles")
+@login_required
+@admin_permission.require(http_exception=401)
+def get_roles(server_id):
+    """
+    Gets the id, name and scopes granted on a role in a server
+
+    Notes
+    -----
+    Responds with {"id":<role_id>, "name":<role_name>, "scopes":[<list of scopes>]
+    """
+    server = Server.query.filter(Server.id == server_id).first_or_404()
+    return jsonify(
+        list(
+            {
+                "id": role.id,
+                "name": role.name,
+                "scopes": [scope.scope for scope in role.scopes],
+            }
+            for role in server.roles
+        )
+    )
+
+
+@blueprint.route("/servers/<server_id>/roles", methods=["POST"])
+@login_required
+@admin_permission.require(http_exception=401)
+def add_role(server_id):
+    server = Server.query.filter_by(id=server_id).first_or_404()
+    json = request.get_json()
+    role_scopes = [Scope(scope=scope, server=server) for scope in json["scopes"]]
+    new_role = Role(name=json["name"], scopes=role_scopes, server_id=server.id)
+    db.session.add(new_role)
+    db.session.commit()
+    return get_roles(server_id)
+
+
+@blueprint.route("/servers/<server_id>/scopes")
+@login_required
+@admin_permission.require(http_exception=401)
+def list_scopes(server_id):
+    """
+    Returns the list of available scopes on a server
+    """
+    server = Server.query.filter_by(id=server_id).first_or_404()
+    return jsonify({scope.id: scope.scope for scope in server.scopes})
 
 
 @blueprint.route("/servers/<server_id>/capabilities")
