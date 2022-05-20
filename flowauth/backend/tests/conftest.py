@@ -23,6 +23,8 @@ from flowauth.models import (
     TwoFactorBackup,
     User,
     db,
+    Scope,
+    Role,
 )
 from flowauth.user_settings import generate_backup_codes, md5
 
@@ -152,6 +154,58 @@ def test_group(app):
         db.session.add(group)
         db.session.commit()
         return TestGroup(group.id, group.name)
+
+
+@pytest.fixture
+def test_servers(app):
+    with app.app_context():
+        # Add some servers
+        dummy_server_a = Server(
+            name="DUMMY_SERVER_A",
+            longest_token_life=2,
+            latest_token_expiry=datetime.datetime.now().date()
+            + datetime.timedelta(days=365),
+        )
+        dummy_server_b = Server(
+            name="DUMMY_SERVER_B",
+            longest_token_life=2,
+            latest_token_expiry=datetime.datetime.now().date()
+            + datetime.timedelta(days=700),
+        )
+        db.session.add(dummy_server_a)
+        db.session.add(dummy_server_b)
+        db.session.commit()
+        return (dummy_server_a, dummy_server_b)
+
+
+@pytest.fixture
+def test_scopes(app, test_servers):
+    with app.app_context():
+        dummy_server_a, dummy_server_b = test_servers
+        scopes = [
+            read_scope_a := Scope(scope="read", server=dummy_server_a),
+            read_scope_b := Scope(scope="read", server=dummy_server_b),
+            run_scope := Scope(scope="run", server=dummy_server_a),
+            dummy_query_scope := Scope(
+                scope="dummy_query:admin_level_1", server=dummy_server_a
+            ),
+        ]
+        db.session.add_all(scopes)
+        db.session.commit()
+        return scopes
+
+
+@pytest.fixture
+def test_roles(app, test_scopes, test_servers):
+    read_a, read_b, run, dummy_query = test_scopes
+    server_a, server_b = test_servers
+    with app.app_context():
+        runner = Role(name="runner", scopes=[run, read_a, dummy_query], server=server_a)
+        reader = Role(name="reader", scopes=[read_a], server=server_a)
+        db.session.add(runner)
+        db.session.add(reader)
+        db.session.commit()
+        return runner, reader
 
 
 @pytest.fixture
