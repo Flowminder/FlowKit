@@ -9,7 +9,7 @@ from quart_jwt_extended.exceptions import UserClaimsVerificationError
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from flowapi.jwt import decompress_claims
-from flowapi.permissions import expand_scopes, scopes_from_query
+from flowapi.permissions import expand_scopes, scopes_from_query, schema_to_scopes
 from flowapi.utils import get_query_parameters_from_flowmachine
 from quart import current_app, request
 
@@ -24,7 +24,7 @@ class UserObject:
     ----------
     username : str
         Name of the user
-    claims : dict
+    scopes : List[str]
         Dictionary giving a whitelist of the user's claims
     """
 
@@ -35,15 +35,15 @@ class UserObject:
     def has_access(self, *, actions: List[str], query_json: dict) -> bool:
 
         try:
-            scopes = set(scopes_from_query(query_json))
+            requested_scopes = set(schema_to_scopes(query_json))
         except Exception as exc:
             raise BadQueryError
+        requested_scopes.add(*actions)
         if "query_kind" not in query_json:
             raise MissingQueryKindError
 
-        for action in actions:
-            if {*scopes, action} in self.scopes:
-                return True
+        if all(requested_scopes) in self.scopes:
+            return True
         raise UserClaimsVerificationError
 
     def can_run(self, *, query_json: dict) -> bool:
