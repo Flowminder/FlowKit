@@ -122,7 +122,7 @@ class IntereventInterval(SubscriberFeature):
                 f"MAKE_INTERVAL(secs => {self.statistic:{'EXTRACT(EPOCH FROM delta)'}})"
             )
         else:
-            statistic_clause = self.statistic.format("delta")
+            statistic_clause = f"{self.statistic:delta}"
 
         sql = f"""
         SELECT
