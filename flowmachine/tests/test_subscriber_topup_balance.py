@@ -20,7 +20,7 @@ import pytest
         ("max", "DELmRj9Vvl346G50", 529.73),
         ("min", "9vXy462Ej8V1kpWl", 442),
         ("median", "KXVqP6JyVDGzQa3b", 435.94),
-        ("mode", "EkpjZe5z37W70QKA", 113.73),
+        ("mode", "EkpjZe5z37W70QKA", 122.53),
         ("stddev", "EkpjZe5z37W70QKA", 15.095_273),
         ("variance", "JNK7mk5G1Dy6M2Ya", 505.767),
     ],
