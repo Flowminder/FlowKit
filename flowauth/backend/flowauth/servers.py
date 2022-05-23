@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
+import logging
 from hashlib import md5
 
 from flask import Blueprint, jsonify, request, current_app
@@ -177,7 +178,7 @@ def add_server():
     Notes
     -----
     Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ>, "secret_key":<key>,
-    "longest_token_life":<int>, "name":<server_name>}
+    "longest_token_life":<int>, "name":<server_name>, "scopes"[<list of scopes>]}
     """
     json = request.get_json()
     json["latest_token_expiry"] = datetime.datetime.strptime(
@@ -195,7 +196,26 @@ def add_server():
         raise InvalidUsage(
             "Server with this name already exists.", payload={"bad_field": "name"}
         )
-    server = Server(**json)
+
+    # TODO: Scope validation of some kind?
+    # I didn't like injecting all params straight into server; feels like a scope
+    # for escalation if someone can pretend to be a server successfully
+    try:
+        server = Server(
+            name=json["name"],
+            latest_token_expiry=json["latest_token_expiry"],
+            longest_token_life=json["longest_token_life"],
+        )
+    except KeyError as e:
+        raise InvalidUsage from e
+    try:
+        scopes_list = [
+            Scope(scope=scope_str, server=server) for scope_str in json["scopes"]
+        ]
+        server.scopes = scopes_list
+    except KeyError:
+        logging.warning(f"No scopes set for {server.name}")
+        pass
     db.session.add(server)
     db.session.commit()
     return jsonify({"id": server.id})
