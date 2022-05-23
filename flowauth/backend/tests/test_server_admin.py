@@ -61,11 +61,16 @@ def test_create_server(client, auth, test_admin):
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
             "name": "DUMMY_SERVER_Z",
+            "scopes": ["run", "read", "dummy_scope_1"],
         },
     )
     assert 200 == response.status_code
     response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert [{"id": 1, "name": "DUMMY_SERVER_Z"}] == response.get_json()
+    response = client.get(
+        "/admin/servers/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
+    )
+    assert {"1": "run", "2": "read", "3": "dummy_scope_1"} == response.get_json()
 
 
 def test_create_server_errors_with_missing_name(client, auth, test_admin):
