@@ -140,7 +140,7 @@ def test_invalid_statistic_raises_error():
     """
     Test that passing an invalid statistic raises an error.
     """
-    with pytest.raises(ValueError, match="'NOT_A_STATISTIC' is not a valid statistic"):
+    with pytest.raises(ValueError, match="'not_a_statistic' is not a valid statistic"):
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
                 "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
