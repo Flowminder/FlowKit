@@ -215,7 +215,7 @@ class TopUpBalance(SubscriberFeature):
                 SELECT subscriber, balance, SUM(weight * balance) AS total_weight
                 FROM ({weight_extraction_query}) U
                 GROUP BY subscriber, balance
-                ORDER BY subscriber, DESC total_weight
+                ORDER BY subscriber DESC, total_weight
             ) U
             """
 
