@@ -39,11 +39,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -399,11 +401,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -2188,11 +2192,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -2245,11 +2251,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
