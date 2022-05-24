@@ -108,7 +108,7 @@ class JoinedSpatialAggregateSchema(BaseSchema):
         ]
         categorical_metrics = ["handset"]
         if data["metric"]["query_kind"] in continuous_metrics:
-            validate = OneOf(Statistic)
+            validate = OneOf([f"{stat}" for stat in Statistic])
         elif data["metric"]["query_kind"] in categorical_metrics:
             validate = OneOf(["distr"])
         else:

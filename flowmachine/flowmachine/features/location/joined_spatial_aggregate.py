@@ -49,7 +49,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    allowed_methods = [*Statistic, "distr"]
+    allowed_methods = [*[f"{stat}" for stat in Statistic], "distr"]
 
     def __init__(
         self, *, metric, locations, method: Union[Statistic, str] = Statistic.AVG
