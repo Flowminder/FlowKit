@@ -21,10 +21,10 @@ werkzeug = "<=2.0.3" # Pinned due to incompatibility with quart-jwt-extended (ht
 [dev-packages]
 pytest = "*"
 pytest-asyncio = "*"
-pytest-cov = "*"
+"pytest-cov" = "*"
 asynctest = "*"
 black = {extras = ["jupyter"],version = "==22.3.0"}
-flowkit-jwt-generator = {editable = "True",path = "./../flowkit_jwt_generator", extras=["pytest"]}
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 flowapi = {editable = true, path = "."}
 
 [requires]
