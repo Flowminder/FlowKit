@@ -17,15 +17,14 @@ apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
 prance = {extras = ["osv"],version = "*"}
 werkzeug = "<=2.0.3" # Pinned due to incompatibility with quart-jwt-extended (https://github.com/greenape/quart-jwt-extended/issues/3)
-jmespath = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-asyncio = "*"
-"pytest-cov" = "*"
+pytest-cov = "*"
 asynctest = "*"
 black = {extras = ["jupyter"],version = "==22.3.0"}
-flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
+flowkit-jwt-generator = {editable = "True",path = "./../flowkit_jwt_generator", extras=["pytest"]}
 flowapi = {editable = true, path = "."}
 
 [requires]
