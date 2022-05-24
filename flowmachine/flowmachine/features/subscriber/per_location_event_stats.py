@@ -24,7 +24,7 @@ class PerLocationEventStats(SubscriberFeature):
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    statistic : Statistic, default Statistic.AVG
         Defaults to avg, aggregation statistic over the durations.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
@@ -65,7 +65,7 @@ class PerLocationEventStats(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours: Optional[Tuple[int, int]] = None,

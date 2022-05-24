@@ -11,7 +11,7 @@ at the network level.
 
 """
 
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from ...core.context import get_db
 from ...core.mixins import GeoDataMixin
@@ -157,8 +157,8 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
     ----------
     total_network_objects : TotalNetworkObjects
 
-    statistic : {'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}
-        Statistic to calculate, defaults to 'avg'.
+    statistic : Statistic
+        Statistic to calculate, defaults to Statistic.AVG
 
     aggregate_by : {'second', 'minute', 'hour', 'day', 'month', 'year', 'century'}
         A period definition to calculate statistics over, defaults to the one
@@ -178,7 +178,13 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     """
 
-    def __init__(self, *, total_network_objects, statistic="avg", aggregate_by=None):
+    def __init__(
+        self,
+        *,
+        total_network_objects,
+        statistic: Union[Statistic, str] = Statistic.AVG,
+        aggregate_by=None,
+    ):
         self.total_objs = total_network_objects
         self.statistic = Statistic(statistic.lower())
         if aggregate_by is None:

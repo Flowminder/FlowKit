@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+from typing import Union
+
 from ...utils import Statistic
 
 
@@ -43,7 +45,7 @@ class HandsetStats(SubscriberFeature):
     ----------
     characteristic: {"width", "height", "depth", "weight", "display_width", "display_height"}
         Numeric handset characteristics present in the TAC table.
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
+    statistic : Statistic, default Statistic.SUM
         Defaults to sum, aggregation statistic over the durations.
     subscriber_handsets: flowmachine.features.subscriber_tacs.SubscriberHandsets
         An instance of SubscriberHandsets listing the handsets associated with
@@ -65,7 +67,13 @@ class HandsetStats(SubscriberFeature):
                      ...        ...
     """
 
-    def __init__(self, characteristic, statistic="avg", *, subscriber_handsets):
+    def __init__(
+        self,
+        characteristic,
+        statistic: Union[Statistic, str] = Statistic.SUM,
+        *,
+        subscriber_handsets,
+    ):
         self.characteristic = characteristic.lower()
         self.statistic = Statistic(statistic.lower())
         if self.statistic == "mode":
@@ -155,18 +163,19 @@ class HandsetStats(SubscriberFeature):
             return sql
 
         # Weighted median
-        return f"""
-        WITH W AS ({weight_extraction_query})
-        SELECT DISTINCT ON (subscriber) A.subscriber, A.value
-        FROM (
-            SELECT
-                subscriber,
-                value,
-                weight,
-                SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
-            FROM W
-        ) A
-        JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
-        ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
-        ORDER BY A.subscriber, A.weight
-        """
+        if self.statistic == Statistic.MEDIAN:
+            return f"""
+            WITH W AS ({weight_extraction_query})
+            SELECT DISTINCT ON (subscriber) A.subscriber, A.value
+            FROM (
+                SELECT
+                    subscriber,
+                    value,
+                    weight,
+                    SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
+                FROM W
+            ) A
+            JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
+            ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
+            ORDER BY A.subscriber, A.weight
+            """

@@ -23,8 +23,8 @@ class TopUpAmount(SubscriberFeature):
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
-        Defaults to sum, aggregation statistic over the durations.
+    statistic : Statistic, default Statistic.AVG
+        Defaults to avg, aggregation statistic over the durations.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
@@ -54,7 +54,7 @@ class TopUpAmount(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         subscriber_identifier="msisdn",
         hours: Optional[Tuple[int, int]] = None,

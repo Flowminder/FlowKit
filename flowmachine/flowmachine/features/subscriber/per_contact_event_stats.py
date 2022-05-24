@@ -5,6 +5,7 @@
 # -*- coding: utf-8 -*-
 
 from .metaclasses import SubscriberFeature
+from .. import ContactBalance
 from ...utils import Statistic
 
 
@@ -20,7 +21,7 @@ class PerContactEventStats(SubscriberFeature):
     contact_balance: flowmachine.features.ContactBalance
         An instance of `ContactBalance` which lists the contacts of the
         targeted subscribers along with the number of events between them.
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    statistic : Statistic, default Statistic.AVG
         Defaults to avg, aggregation statistic over the durations.
 
     Examples
@@ -38,7 +39,11 @@ class PerContactEventStats(SubscriberFeature):
                  ...        ...
     """
 
-    def __init__(self, contact_balance, statistic="avg"):
+    def __init__(
+        self,
+        contact_balance: ContactBalance,
+        statistic: Statistic = Statistic.AVG,
+    ):
         self.contact_balance = contact_balance
         self.statistic = Statistic(statistic.lower())
 

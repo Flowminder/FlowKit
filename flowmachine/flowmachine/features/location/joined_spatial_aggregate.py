@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import warnings
-from typing import List
+from typing import List, Union
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
@@ -28,7 +28,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     locations : Query
         A query object that represents the locations of subscribers.
         Must have a 'subscriber' column, and a 'spatial_unit' attribute.
-    method : {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}
+    method : Statistic, or "distr"
             Method of aggregation.
 
     Examples
@@ -49,18 +49,11 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    allowed_methods = {
-        "avg",
-        "max",
-        "min",
-        "median",
-        "mode",
-        "stddev",
-        "variance",
-        "distr",
-    }
+    allowed_methods = [*Statistic, "distr"]
 
-    def __init__(self, *, metric, locations, method="avg"):
+    def __init__(
+        self, *, metric, locations, method: Union[Statistic, str] = Statistic.AVG
+    ):
         self.metric = metric
         self.locations = locations
         # self.spatial_unit is used in self._geo_augmented_query

@@ -37,9 +37,8 @@ class Displacement(SubscriberFeature):
         The set of home locations from which to calculate displacement.
         If not given then ModalLocation Query wil be created over period
         start -> stop.
-    statistic : str
-        the statistic to calculate one of 'sum', 'avg', 'max', 'min',
-        'median', 'stddev' or 'variance'
+    statistic : Statistic, default Statistic.AVG
+        The statistic to calculate.
     unit : {'km', 'm'}, default 'km'
         Unit with which to express the answers, currently the choices
         are kilometres ('km') or metres ('m')
@@ -83,7 +82,7 @@ class Displacement(SubscriberFeature):
         start: str,
         stop: str,
         reference_location: BaseLocation,
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         unit: str = "km",
         hours: Union[str, Tuple[int, int]] = "all",
         table: Union[str, List[str]] = "all",

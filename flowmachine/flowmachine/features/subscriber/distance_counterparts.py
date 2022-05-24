@@ -40,7 +40,7 @@ class DistanceCounterparts(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    statistic :  Statistic, default Statistic.AVG
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
         Defaults to sum, aggregation statistic over the durations.
@@ -66,7 +66,7 @@ class DistanceCounterparts(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="avg",
+        statistic: Union[Statistic, str] = Statistic.AVG,
         *,
         hours: Optional[Tuple[int, int]] = None,
         tables="all",

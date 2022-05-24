@@ -21,7 +21,7 @@ class PerSubscriberAggregate(SubscriberFeature):
             A query with a `subscriber` column
         agg_column: str
             The name of the column in `subscriber_query` to aggregate. Cannot be 'subscriber'.
-        agg_method: {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"} default "avg"
+        agg_method: Statistic, default Statistic.AVG
             The method of aggregation to perform
 
         Examples
@@ -54,7 +54,7 @@ class PerSubscriberAggregate(SubscriberFeature):
         *,
         subscriber_query: SubscriberFeature,
         agg_column: str,
-        agg_method: str = "avg",
+        agg_method: Statistic = Statistic.AVG,
     ):
         if "subscriber" not in subscriber_query.column_names:
             raise ValueError("'subscriber' column not in subscriber_query")
@@ -66,6 +66,7 @@ class PerSubscriberAggregate(SubscriberFeature):
         self.subscriber_query = subscriber_query
         self.agg_column = agg_column
         self.agg_method = Statistic(agg_method.lower())
+        super(PerSubscriberAggregate, self).__init__()
 
     @property
     def column_names(self) -> List[str]:

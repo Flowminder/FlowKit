@@ -7,6 +7,7 @@
 Statistics for the distance between subscriber's own modal
 location and its contacts' modal location.
 """
+from typing import Union
 
 from .metaclasses import SubscriberFeature
 from ...utils import Statistic
@@ -25,7 +26,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
         A flowmachine Query instance that contains a subscriber column. In
         addition to that the query must have a spatial unit or the target
         geometry column that contains the subscribers' reference locations.
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
+    statistic : Statistic, default Statistic.SUM
         Defaults to sum, aggregation statistic over the durations.
     geom_column:
         The column containing the subscribers' reference locations. This is
@@ -48,7 +49,11 @@ class ContactReferenceLocationStats(SubscriberFeature):
     """
 
     def __init__(
-        self, contact_balance, contact_locations, statistic="avg", geom_column=None
+        self,
+        contact_balance,
+        contact_locations,
+        statistic: Union[Statistic, str] = Statistic.SUM,
+        geom_column=None,
     ):
 
         self.statistic = Statistic(statistic.lower())

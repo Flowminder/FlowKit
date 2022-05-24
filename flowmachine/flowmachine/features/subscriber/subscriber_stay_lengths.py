@@ -26,11 +26,13 @@ class SubscriberStayLengths(SubscriberFeature):
         per subscriber (or NULL location for subscribers that are active but
         unlocatable). The list is assumed to be sorted into ascending
         chronological order.
-    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'stddev', 'variance'}, default 'max'
+    statistic :  Statistic, default Statistic.MAX
         Aggregation statistic over the stay lengths. Defaults to max.
     """
 
-    def __init__(self, *, locations: List[BaseLocation], statistic: str = "max"):
+    def __init__(
+        self, *, locations: List[BaseLocation], statistic: Statistic = Statistic.MAX
+    ):
         self.locations = locations
         if len(set(l.spatial_unit for l in self.locations)) > 1:
             raise InvalidSpatialUnitError(

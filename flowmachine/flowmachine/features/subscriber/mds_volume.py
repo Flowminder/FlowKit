@@ -23,7 +23,7 @@ class MDSVolume(SubscriberFeature):
          iso-format start and stop datetimes
     volume: {"total", "upload", "download"}, default "total"
         The type of volume.
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
+    statistic : Statistic, default Statistic.SUM
         Defaults to sum, aggregation statistic over the durations.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
@@ -55,7 +55,7 @@ class MDSVolume(SubscriberFeature):
         start,
         stop,
         volume="total",
-        statistic="sum",
+        statistic: Statistic = Statistic.SUM,
         *,
         subscriber_identifier="msisdn",
         hours: Optional[Tuple[int, int]] = None,

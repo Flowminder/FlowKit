@@ -67,7 +67,7 @@ class SubscriberCallDurations(SubscriberFeature):
         *,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.OUT,
-        statistic="sum",
+        statistic: Statistic = Statistic.SUM,
         hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
@@ -133,7 +133,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
+    statistic : Statistic, default Statistic.SUM
         Defaults to sum, aggregation statistic over the durations.
 
 
@@ -158,7 +158,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         *,
         subscriber_identifier="msisdn",
         direction: Union[str, Direction] = Direction.OUT,
-        statistic="sum",
+        statistic: Statistic = Statistic.SUM,
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
@@ -255,7 +255,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         stop,
         *,
         subscriber_identifier="msisdn",
-        statistic="sum",
+        statistic: Statistic = Statistic.SUM,
         hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
@@ -349,7 +349,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         stop,
         *,
         subscriber_identifier="msisdn",
-        statistic="sum",
+        statistic: Statistic = Statistic.SUM,
         spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,

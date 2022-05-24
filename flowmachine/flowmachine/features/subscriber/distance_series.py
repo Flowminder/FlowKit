@@ -45,9 +45,8 @@ class DistanceSeries(SubscriberFeature):
     reference_location : BaseLocation or tuple of int, default (0, 0)
         The set of home locations from which to calculate distance at each sighting, or a tuple
         of lon-lat in WS84 projection.
-    statistic : str
-        the statistic to calculate one of 'sum', 'avg', 'max', 'min',
-        'median', 'stddev' or 'variance'
+    statistic : Statistic
+        the statistic to calculate.
     time_bucket : {"second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"}, default "day"
         Time bucket to calculate the statistic over.
 
@@ -68,7 +67,7 @@ class DistanceSeries(SubscriberFeature):
         *,
         subscriber_locations: SubscriberLocations,
         reference_location: Union[BaseLocation, Tuple[float, float]] = (0, 0),
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         time_bucket: str = "day",
     ):
         subscriber_locations.spatial_unit.verify_criterion("has_geography")

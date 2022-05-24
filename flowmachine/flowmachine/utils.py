@@ -19,6 +19,14 @@ from typing import Union, Tuple
 
 
 class Statistic(str, Enum):
+    """
+    Valid statistics for use with postgres.
+
+    Convert a column name to a stat by doing f"{statistic:column_name}".
+
+    For columns defined as a variable, do f"{statistic:'{column_name_variable}'}"
+    """
+
     COUNT = "count"
     SUM = "sum"
     AVG = "avg"
@@ -35,8 +43,6 @@ class Statistic(str, Enum):
 
         Parameters
         ----------
-        stat : {"count", "sum", "avg", "max", "min", "median", "stddev", "variance", "mode"}
-            Statistic to get the function form for
         column_name : str
             Column to aggregate
         Returns

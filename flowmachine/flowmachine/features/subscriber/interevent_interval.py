@@ -44,8 +44,8 @@ class IntereventInterval(SubscriberFeature):
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
         subscriber tables
-    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
-        Defaults to sum, aggregation statistic over the durations.
+    statistic :  Statistic, default Statistic.AVG
+        Defaults to avg, aggregation statistic over the durations.
 
     Examples
     --------
@@ -73,7 +73,7 @@ class IntereventInterval(SubscriberFeature):
         self,
         start: str,
         stop: str,
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         hours: Union[str, Tuple[int, int]] = "all",
         tables: Union[str, List[str]] = "all",

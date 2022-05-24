@@ -13,6 +13,7 @@ from flowmachine.core import Query
 from flowmachine.features.subscriber.interevent_interval import IntereventInterval
 from .metaclasses import SubscriberFeature
 from ..utilities.direction_enum import Direction
+from ...utils import Statistic
 
 time_resolutions = dict(
     second=1, minute=60, hour=3600, day=86400, month=2592000, year=31557600
@@ -74,7 +75,7 @@ class IntereventPeriod(SubscriberFeature):
         self,
         start: str,
         stop: str,
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         time_resolution: str = "hour",
         hours: Union[str, Tuple[int, int]] = "all",

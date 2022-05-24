@@ -31,6 +31,7 @@ from flowmachine.features.location.joined_spatial_aggregate import (
 from flowmachine.features.location.redacted_joined_spatial_aggregate import (
     RedactedJoinedSpatialAggregate,
 )
+from flowmachine.utils import Statistic
 from .base_exposed_query import BaseExposedQuery
 
 
@@ -107,9 +108,7 @@ class JoinedSpatialAggregateSchema(BaseSchema):
         ]
         categorical_metrics = ["handset"]
         if data["metric"]["query_kind"] in continuous_metrics:
-            validate = OneOf(
-                ["avg", "max", "min", "median", "mode", "stddev", "variance"]
-            )
+            validate = OneOf(Statistic)
         elif data["metric"]["query_kind"] in categorical_metrics:
             validate = OneOf(["distr"])
         else:
