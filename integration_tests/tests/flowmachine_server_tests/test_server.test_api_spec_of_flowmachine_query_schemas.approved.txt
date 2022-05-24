@@ -997,12 +997,14 @@
       "method": {
         "enum": [
           "avg",
+          "count",
           "distr",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
