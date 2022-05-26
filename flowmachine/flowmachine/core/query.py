@@ -276,13 +276,7 @@ class Query(metaclass=ABCMeta):
             if state_machine.is_completed and get_db().has_table(
                 schema=schema, name=name
             ):
-                try:
-                    touch_cache(get_db(), self.query_id)
-                except ValueError:
-                    pass  # Cache record not written yet, which can happen for Models
-                    # which will call through to this method from their `_make_query` method while writing metadata.
-                # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
-                # as the cache metadata transaction isn't complete!
+                touch_cache(get_db(), self.query_id)
                 return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
