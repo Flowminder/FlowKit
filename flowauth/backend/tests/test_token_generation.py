@@ -31,23 +31,25 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_generation(client, auth, app, test_user, public_key):
+def test_token_generation(client, auth, app, test_user_with_roles, public_key):
     # Log in first
-    uid, uname, upass = test_user
+    uid, uname, upass = test_user_with_roles
     response, csrf_cookie = auth.login(uname, upass)
+    assert response.status_code == 200
     expiry = datetime.datetime.now() + datetime.timedelta(minutes=2)
     token_eq = {
         "name": "DUMMY_TOKEN",
         "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "claims": [
-            "run&DUMMY_ROUTE_A.aggregation_unit.admin0",
-            "get_result&DUMMY_ROUTE_A.aggregation_unit.admin0",
+            "run",
+            "get_result",
+            "dummy_query:admin_level_1",
         ],
     }
     response = client.post(
         "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
-    assert 200 == response.status_code
+    assert response.status_code == 200
     token_json = response.get_json()
     decoded_token = jwt.decode(
         jwt=token_json["token"].encode(),
@@ -55,9 +57,9 @@ def test_token_generation(client, auth, app, test_user, public_key):
         algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
-    assert [
-        "get_result,run&DUMMY_ROUTE_A.aggregation_unit.admin0"
-    ] == decompress_claims(decoded_token["user_claims"])
+    assert decompress_claims(decoded_token["scopes"]) == [
+        "dummy_query:admin_level_1,get_result,run"
+    ]
     assert "TEST_USER" == decoded_token["sub"]
     assert approx(expiry.timestamp()) == decoded_token["exp"]
 

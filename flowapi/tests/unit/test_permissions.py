@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowapi.permissions import (
     is_flat,
-    flatten,
     flatten_on_key,
     scopes_from_query,
     schema_to_scopes,
@@ -141,25 +140,6 @@ def test_schema_to_scopes(tree, expected):
 )
 def test_is_flat(input, expected):
     assert is_flat(input) == expected
-
-
-@pytest.mark.parametrize(
-    "input, expected",
-    [
-        ({"flat": "dict"}, [{"flat": "dict"}]),
-        (["flat", "list"], ["flat", "list"]),
-        (
-            {"outer1": {"inner": "1"}, "outer2": {"inner": "2"}},
-            [{"inner": "1"}, {"inner": "2"}],
-        ),
-        (
-            {"outer_0": {"flat": "1"}, "outer_2": {"middle": {"flat": "2"}}},
-            [{"flat": "1"}, {"flat": "2"}],
-        ),
-    ],
-)
-def test_flatten(input, expected):
-    assert (flatten(input)) == expected
 
 
 @pytest.mark.parametrize(
