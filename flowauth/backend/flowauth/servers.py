@@ -11,7 +11,7 @@ from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 
 from flowauth.invalid_usage import InvalidUsage
-from flowauth.models import Role, Server, Scope, ServerCapability, db
+from flowauth.models import Role, Server, Scope, db
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -90,67 +90,6 @@ def list_scopes(server_id):
     return jsonify({scope.id: scope.scope for scope in server.scopes})
 
 
-@blueprint.route("/servers/<server_id>/capabilities")
-@login_required
-@admin_permission.require(http_exception=401)
-def list_server_capabilities(server_id):
-    """
-    Get a list of all the capabilities enabled on a server.
-
-    Notes
-    -----
-    Responds with {<capability_name>: <enabled>}
-    """
-    server = Server.query.filter(Server.id == server_id).first_or_404()
-    return jsonify({cap.capability: cap.enabled for cap in server.capabilities})
-
-
-@blueprint.route("/servers/<server_id>/capabilities", methods=["PATCH"])
-@login_required
-@admin_permission.require(http_exception=401)
-def edit_server_capabilities(server_id):
-    """
-    Alter the capabilities enabled on a server.
-
-    Notes
-    -----
-    Expects json of the form {<capability_name>: bool}
-
-    Any capabilities not included are removed.
-    """
-    server_obj = Server.query.filter_by(id=server_id).first_or_404()
-    json = request.get_json()
-
-    to_remove = []
-    caps = []
-    for x in server_obj.capabilities:
-        try:
-            x.enabled = json.pop(x.capability)
-            caps.append(x)
-        except KeyError:
-            to_remove.append(x)
-    current_app.logger.debug(
-        "Editing capabilities for server", server_id=server_obj, new_permissions=json
-    )
-
-    caps += [
-        ServerCapability(
-            server_id=server_id,
-            capability=cap,
-            capability_hash=md5(cap.encode()).hexdigest(),
-            enabled=enabled,
-        )
-        for cap, enabled in json.items()
-    ]
-    db.session.bulk_save_objects(caps)
-
-    for cap in to_remove:
-        db.session.delete(cap)
-
-    db.session.commit()
-    return jsonify({"poll": "OK"})
-
-
 @blueprint.route("/servers/<server_id>/time_limits")
 @login_required
 @admin_permission.require(http_exception=401)
@@ -197,9 +136,6 @@ def add_server():
             "Server with this name already exists.", payload={"bad_field": "name"}
         )
 
-    # TODO: Scope validation of some kind?
-    # I didn't like injecting all params straight into server; feels like a scope
-    # for escalation if someone can pretend to be a server successfully
     try:
         server = Server(
             name=json["name"],

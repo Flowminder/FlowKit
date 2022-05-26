@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 
 from flask import Blueprint, jsonify, request
 
@@ -153,12 +154,19 @@ def add_token(server):
     latest_lifetime = current_user.latest_token_expiry(server)
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
-    allowed_claims = current_user.allowed_claims(server)
+    # Gotta find all roles that _could_ allow this actio
+    claims = json["claims"]
+    allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
 
-    current_app.logger.debug("New token request", allowed_claims=allowed_claims)
-    for claim in json["claims"]:
-        if claim not in allowed_claims:
-            raise Unauthorized(f"You do not have access to {claim} on {server.name}")
+    if not any(allowed_roles.values()):
+        raise Unauthorized(
+            f"No roles for {current_user.username} permit the requested scopes."
+        )
+
+    allowed_roles = dict(filter(lambda x: x[1] is True, allowed_roles.items())).keys()
+    current_app.logger.debug(
+        f"Token granted for {current_user.username} via roles {allowed_roles}"
+    )
 
     token_string = generate_token(
         username=current_user.username,
@@ -168,13 +176,4 @@ def add_token(server):
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
     )
 
-    token = Token(
-        name=json["name"],
-        token=token_string,
-        expires=expiry,
-        owner=current_user,
-        server=server,
-    )
-    db.session.add(token)
-    db.session.commit()
-    return jsonify({"token": token_string, "id": token.id})
+    return jsonify({"token": token_string})

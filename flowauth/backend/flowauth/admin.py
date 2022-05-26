@@ -7,32 +7,33 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 
-from flowauth.models import Token, current_app
+from flowauth.models import current_app
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))
 
-
-@blueprint.route("/tokens")
-@login_required
-@admin_permission.require(http_exception=401)
-def list_all_tokens():
-    """
-    Get all the tokens.
-    """
-    return jsonify(
-        [
-            {
-                "id": token.id,
-                "name": token.name,
-                "token": token.decrypted_token,
-                "expires": token.expires,
-                "server_name": token.server.name,
-                "username": token.owner.username,
-            }
-            for token in Token.query.all()
-        ]
-    )
+#
+# @blueprint.route("/tokens")
+# @login_required
+# @admin_permission.require(http_exception=401)
+# def list_all_tokens():
+#     """
+#     Get all the tokens.
+#     """
+#     return jsonify(
+#         [
+#             {
+#                 "id": token.id,
+#                 "name": token.name,
+#                 "token": token.decrypted_token,
+#                 "expires": token.expires,
+#                 "server_name": token.server.name,
+#                 "username": token.owner.username,
+#             }
+#             for token in Token.query.all()
+#         ]
+#     )
+#
 
 
 @blueprint.route("/public_key")

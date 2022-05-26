@@ -9,7 +9,7 @@ from quart_jwt_extended.exceptions import UserClaimsVerificationError
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from flowapi.jwt import decompress_claims
-from flowapi.permissions import expand_scopes, scopes_from_query, schema_to_scopes
+from flowapi.permissions import schema_to_scopes
 from flowapi.utils import get_query_parameters_from_flowmachine
 from quart import current_app, request
 
@@ -31,20 +31,6 @@ class UserObject:
     def __init__(self, username: str, scopes: List[str]) -> None:
         self.username = username
         self.scopes = scopes
-
-    def has_access(self, *, actions: List[str], query_json: dict) -> bool:
-
-        try:
-            requested_scopes = set(schema_to_scopes(query_json))
-        except Exception as exc:
-            raise BadQueryError
-        requested_scopes.add(*actions)
-        if "query_kind" not in query_json:
-            raise MissingQueryKindError
-
-        if all(requested_scopes) in self.scopes:
-            return True
-        raise UserClaimsVerificationError
 
     def can_run(self, *, query_json: dict) -> bool:
         """
@@ -222,4 +208,4 @@ def user_loader_callback(identity):
     )
     current_app.access_logger.info("Loaded user", **log_dict)
 
-    return UserObject(username=identity, scopes=list(expand_scopes(scopes=claims)))
+    return UserObject(username=identity, scopes=list(schema_to_scopes(scopes=claims)))
