@@ -150,7 +150,7 @@ class Displacement(SubscriberFeature):
         sql = f"""
         SELECT 
             subscriber,
-            {self.statistic:{f'COALESCE(value_dist, 0) * {multiplier}'}} as value
+            {self.statistic:COALESCE(value_dist, 0) * {multiplier}} as value
         FROM 
             ({self.joined.get_query()}) _
         GROUP BY 

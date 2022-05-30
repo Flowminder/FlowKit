@@ -129,11 +129,11 @@ class TopUpBalance(SubscriberFeature):
             sql = f"""
             SELECT subscriber, {self.statistic:balance} AS value
             FROM (
-                SELECT subscriber, {self.statistic:{"pre_event_balance"}} AS balance
+                SELECT subscriber, {self.statistic:pre_event_balance} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
                 UNION ALL
-                SELECT subscriber, {self.statistic:{"post_event_balance"}} AS balance
+                SELECT subscriber, {self.statistic:post_event_balance} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
             ) U

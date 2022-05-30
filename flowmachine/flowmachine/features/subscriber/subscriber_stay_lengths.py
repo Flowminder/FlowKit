@@ -58,7 +58,7 @@ class SubscriberStayLengths(SubscriberFeature):
 
         # Find stay lengths using gaps-and-islands approach
         sql = f"""
-        SELECT subscriber, {self.statistic:{"stay_length"}} AS value
+        SELECT subscriber, {self.statistic:stay_length} AS value
         FROM (
             SELECT subscriber, count(*) AS stay_length
             FROM (

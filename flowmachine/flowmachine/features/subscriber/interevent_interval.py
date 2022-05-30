@@ -119,7 +119,7 @@ class IntereventInterval(SubscriberFeature):
         # Postgres does not support the following three operations with intervals
         if self.statistic in {"median", "stddev", "variance"}:
             statistic_clause = (
-                f"MAKE_INTERVAL(secs => {self.statistic:{'EXTRACT(EPOCH FROM delta)'}})"
+                f"MAKE_INTERVAL(secs => {self.statistic:EXTRACT(EPOCH FROM delta)})"
             )
         else:
             statistic_clause = f"{self.statistic:delta}"

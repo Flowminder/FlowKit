@@ -93,7 +93,7 @@ class MDSVolume(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic:{f'volume_{self.volume}'}} AS value
+        SELECT subscriber, {self.statistic:volume_{self.volume}} AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """

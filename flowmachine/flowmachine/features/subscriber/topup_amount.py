@@ -88,7 +88,7 @@ class TopUpAmount(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic:{"recharge_amount"}} AS value
+        SELECT subscriber, {self.statistic:recharge_amount} AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """

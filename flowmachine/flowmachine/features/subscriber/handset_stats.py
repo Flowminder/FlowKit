@@ -179,4 +179,4 @@ class HandsetStats(SubscriberFeature):
             ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
             ORDER BY A.subscriber, A.weight
             """
-        raise NotImplemented(f"{self.statistic} is not implemented for HandsetStats")
+        raise NotImplementedError(f"{self.statistic} is not implemented for HandsetStats")

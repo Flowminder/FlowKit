@@ -142,7 +142,7 @@ class DistanceSeries(SubscriberFeature):
             SELECT 
                 subscriber,
                 date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
-                {self.statistic:{"COALESCE(value_dist, 0)"}} as value
+                {self.statistic:COALESCE(value_dist, 0)} as value
             FROM 
                 ({joined}) _
             GROUP BY 
