@@ -190,3 +190,20 @@ def test_sort_recursively():
     }
 
     assert d_sorted_expected == sort_recursively(d)
+
+
+@pytest.mark.parametrize(
+    "stat, expected",
+    [
+        ("mode", "pg_catalog.mode() WITHIN GROUP (ORDER BY column)"),
+        ("median", "percentile_cont(0.5) WITHIN GROUP (ORDER BY column)"),
+        ("sum", "sum(column)"),
+    ],
+)
+def test_get_stat(stat, expected):
+    assert f"{Statistic(stat):column}" == expected
+
+
+def test_bad_stat():
+    with pytest.raises(ValueError):
+        Statistic("foo")

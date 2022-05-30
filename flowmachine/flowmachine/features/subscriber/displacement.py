@@ -12,9 +12,7 @@ from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.core import Query
-from flowmachine.utils import standardise_date
-
-valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class Displacement(SubscriberFeature):
@@ -39,9 +37,8 @@ class Displacement(SubscriberFeature):
         The set of home locations from which to calculate displacement.
         If not given then ModalLocation Query wil be created over period
         start -> stop.
-    statistic : str
-        the statistic to calculate one of 'sum', 'avg', 'max', 'min',
-        'median', 'stddev' or 'variance'
+    statistic : Statistic, default Statistic.AVG
+        The statistic to calculate.
     unit : {'km', 'm'}, default 'km'
         Unit with which to express the answers, currently the choices
         are kilometres ('km') or metres ('m')
@@ -85,7 +82,7 @@ class Displacement(SubscriberFeature):
         start: str,
         stop: str,
         reference_location: BaseLocation,
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         unit: str = "km",
         hours: Union[str, Tuple[int, int]] = "all",
         table: Union[str, List[str]] = "all",
@@ -110,13 +107,7 @@ class Displacement(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         if not isinstance(reference_location, BaseLocation):
             raise ValueError(
@@ -159,7 +150,7 @@ class Displacement(SubscriberFeature):
         sql = f"""
         SELECT 
             subscriber,
-            {self.statistic}(COALESCE(value_dist, 0) * {multiplier}) as value
+            {self.statistic:COALESCE(value_dist, 0) * {multiplier}} as value
         FROM 
             ({self.joined.get_query()}) _
         GROUP BY 

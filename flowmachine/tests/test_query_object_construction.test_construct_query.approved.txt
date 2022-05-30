@@ -418,7 +418,7 @@
       }
     }
   },
-  "a6d8b8265d03ee10615fc2711148c924": {
+  "613c5189cb45f34869dc991664534bc2": {
     "query_kind": "labelled_spatial_aggregate",
     "locations": {
       "query_kind": "coalesced_location",
@@ -628,7 +628,7 @@
       "stay_length_threshold": 2
     }
   },
-  "10f98d433f8d071ed9745dd4e3e83045": {
+  "db32e4a7c5209c86a341425a3451dc75": {
     "query_kind": "labelled_flows",
     "from_location": {
       "query_kind": "coalesced_location",

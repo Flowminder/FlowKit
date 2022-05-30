@@ -12,9 +12,7 @@ from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.spatial.distance_matrix import DistanceMatrix
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import make_where, standardise_date, Statistic
 
 
 class DistanceCounterparts(SubscriberFeature):
@@ -42,7 +40,7 @@ class DistanceCounterparts(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    statistic :  Statistic, default Statistic.AVG
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
         Defaults to sum, aggregation statistic over the durations.
@@ -68,7 +66,7 @@ class DistanceCounterparts(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="avg",
+        statistic: Union[Statistic, str] = Statistic.AVG,
         *,
         hours: Optional[Tuple[int, int]] = None,
         tables="all",
@@ -83,13 +81,7 @@ class DistanceCounterparts(SubscriberFeature):
         self.direction = Direction(direction)
         self.exclude_self_calls = exclude_self_calls
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         column_list = ["msisdn", "msisdn_counterpart", "id", "location_id", "outgoing"]
         self.tables = tables
@@ -135,7 +127,7 @@ class DistanceCounterparts(SubscriberFeature):
         sql = f"""
         SELECT
             U.subscriber AS subscriber,
-            {self.statistic}(D.value) AS value
+            {self.statistic:D.value} AS value
         FROM
             (
                 SELECT A.subscriber, A.location_id AS location_id_from, B.location_id AS location_id_to FROM
