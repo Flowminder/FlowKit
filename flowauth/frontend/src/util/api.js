@@ -220,14 +220,14 @@ export async function editServer(
   server_id,
   server_name,
   latest_token_expiry,
-  longest_token_life
+  longest_token_life_minutes
 ) {
   var dat = {
     method: "PATCH",
     body: JSON.stringify({
       name: server_name,
       latest_token_expiry: latest_token_expiry,
-      longest_token_life: longest_token_life,
+      longest_token_life_minutes: longest_token_life_minutes,
     }),
   };
   return await getResponse("/admin/servers/" + server_id, dat);
@@ -236,14 +236,14 @@ export async function editServer(
 export async function createServer(
   server_name,
   latest_token_expiry,
-  longest_token_life
+  longest_token_life_minutes
 ) {
   var dat = {
     method: "POST",
     body: JSON.stringify({
       name: server_name,
       latest_token_expiry: latest_token_expiry,
-      longest_token_life: longest_token_life,
+      longest_token_life_minutes: longest_token_life_minutes,
     }),
   };
   return await getResponse("/admin/servers", dat);

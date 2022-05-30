@@ -9,9 +9,11 @@ import jwt
 import pytest
 from flowauth.jwt import decompress_claims
 from pytest import approx
+from freezegun import freeze_time
 
 
 @pytest.mark.usefixtures("test_data")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
 def test_reject_when_claim_not_allowed(client, auth, test_user):
     uid, uname, upass = test_user
     # Log in first
@@ -31,13 +33,20 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_generation(client, auth, app, test_user_with_roles, public_key):
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_generation(
+    client, auth, app, test_user_with_roles, public_key, test_servers
+):
+
     # Log in first
     uid, uname, upass = test_user_with_roles
     response, csrf_cookie = auth.login(uname, upass)
     assert response.status_code == 200
-    expiry = datetime.datetime.now() + datetime.timedelta(minutes=2)
-    token_eq = {
+
+    expiry = datetime.datetime(year=2020, month=12, day=31) + datetime.timedelta(
+        minutes=2
+    )
+    token_req = {
         "name": "DUMMY_TOKEN",
         "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "claims": [
@@ -47,9 +56,10 @@ def test_token_generation(client, auth, app, test_user_with_roles, public_key):
         ],
     }
     response = client.post(
-        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
     )
     assert response.status_code == 200
+
     token_json = response.get_json()
     decoded_token = jwt.decode(
         jwt=token_json["token"].encode(),
@@ -65,6 +75,7 @@ def test_token_generation(client, auth, app, test_user_with_roles, public_key):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
 def test_token_rejected_for_expiry(client, auth, app, test_user):
 
     # Log in first

@@ -60,6 +60,10 @@ def get_roles(server_id):
                 "id": role.id,
                 "name": role.name,
                 "scopes": [scope.scope for scope in role.scopes],
+                "latest_token_expiry": role.latest_token_expiry.strftime(
+                    "%Y-%m-%dT%H:%M:%S.%fZ"
+                ),
+                "longest_token_life_minutes": role.longest_token_life_minutes,
             }
             for role in server.roles
         )
@@ -72,8 +76,17 @@ def get_roles(server_id):
 def add_role(server_id):
     server = Server.query.filter_by(id=server_id).first_or_404()
     json = request.get_json()
+    json["latest_token_expiry"] = datetime.datetime.strptime(
+        json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
     role_scopes = [Scope(scope=scope, server=server) for scope in json["scopes"]]
-    new_role = Role(name=json["name"], scopes=role_scopes, server_id=server.id)
+    new_role = Role(
+        name=json["name"],
+        scopes=role_scopes,
+        server_id=server.id,
+        latest_token_expiry=json["latest_token_expiry"],
+        longest_token_life_minutes=json["longest_token_life_minutes"],
+    )
     db.session.add(new_role)
     db.session.commit()
     return get_roles(server_id)
@@ -99,9 +112,11 @@ def list_server_time_limits(server_id):
     on a server.
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
+    # I have no idea why this test is failing, it's been like this since before
+    # I started messing with stuff
     return jsonify(
         {
-            "longest_token_life": server.longest_token_life,
+            "longest_token_life_minutes": server.longest_token_life_minutes,
             "latest_token_expiry": server.latest_token_expiry,
         }
     )
@@ -117,7 +132,7 @@ def add_server():
     Notes
     -----
     Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ>, "secret_key":<key>,
-    "longest_token_life":<int>, "name":<server_name>, "scopes"[<list of scopes>]}
+    "longest_token_life_minutes":<int>, "name":<server_name>, "scopes"[<list of scopes>]}
     """
     json = request.get_json()
     json["latest_token_expiry"] = datetime.datetime.strptime(
@@ -140,7 +155,7 @@ def add_server():
         server = Server(
             name=json["name"],
             latest_token_expiry=json["latest_token_expiry"],
-            longest_token_life=json["longest_token_life"],
+            longest_token_life_minutes=json["longest_token_life_minutes"],
         )
     except KeyError as e:
         raise InvalidUsage from e
@@ -167,7 +182,7 @@ def edit_server(server_id):
     Notes
     -----
     Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ>, "secret_key":<key>,
-    "longest_token_life":<int>, "name":<server_name>}
+    "longest_token_life_minutes":<int>, "name":<server_name>}
 
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
@@ -188,8 +203,6 @@ def edit_server(server_id):
 def rm_server(server_id):
     """Remove a server."""
     server = Server.query.filter_by(id=server_id).first_or_404()
-    for cap in server.capabilities:
-        db.session.delete(cap)
     db.session.delete(server)
     db.session.commit()
     return jsonify({"poll": "OK"})

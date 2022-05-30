@@ -25,6 +25,7 @@ itsdangerous = "*"
 redis = "*"
 structlog = "*"
 simplejson = "*"
+freezegun = "*"
 
 [dev-packages]
 pytest = "*"

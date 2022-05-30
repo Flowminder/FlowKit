@@ -111,7 +111,7 @@ class User(db.Model):
         limits = self.token_limits(server)
         life = limits["longest_life"]
         end = limits["latest_end"]
-        hypothetical_max = datetime.datetime.now() + life
+        hypothetical_max = datetime.datetime.now() + datetime.timedelta(minutes=life)
         return min(end, hypothetical_max)
 
     def token_limits(
@@ -135,15 +135,15 @@ class User(db.Model):
         ).scalar()
 
         longest = db.session.execute(
-            db.select(Role.longest_token_life)
+            db.select(Role.longest_token_life_minutes)
             .where(Role.server_id == server.id)
             .join(User.roles)
-            .order_by(Role.longest_token_life.desc())
+            .order_by(Role.longest_token_life_minutes.desc())
         ).scalar()
 
         return {
             "latest_end": min(server.latest_token_expiry, latest),
-            "longest_life": min(server.longest_token_life, longest),
+            "longest_life": min(server.longest_token_life_minutes, longest),
         }
 
     @hybrid_property
@@ -370,7 +370,7 @@ class Server(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(75), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
-    longest_token_life = db.Column(db.Interval, nullable=False)
+    longest_token_life_minutes = db.Column(db.Integer, nullable=False)
 
     roles = db.relationship(
         "Role", backref="server", cascade="all, delete, delete-orphan"
@@ -393,7 +393,7 @@ class Role(db.Model):
     name = db.Column(db.String(75), unique=True, nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
-    longest_token_life = db.Column(db.Interval, nullable=False)
+    longest_token_life_minutes = db.Column(db.Integer, nullable=False)
 
     scopes = db.relationship(
         "Scope",
@@ -511,9 +511,14 @@ def make_demodata():
     current_app.logger.debug("Creating demo data.")
     db.drop_all()
     db.create_all()
-    users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
-    for user in users:
-        user.password = "DUMMY_PASSWORD"
+
+    # Add some servers
+    test_server = Server(
+        name="TEST_SERVER",
+        longest_token_life_minutes=2880,
+        latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+    )
+    db.session.add(test_server)
 
     scopes = [
         reader_scope := Scope(scope="read"),
@@ -522,67 +527,35 @@ def make_demodata():
         ),
         example_geo_scope := Scope(scope="dummy_query:admin_3"),
     ]
-
-    for x in users + scopes:
-        db.session.add(x)
-
-    # Add some things that you can do
-    with open(Path(__file__).parent / "demo_data" / "api_scopes.txt") as fin:
-        caps = [x.strip() for x in fin.readlines()]
-
-    # Add some servers
-    test_server = Server(
-        name="TEST_SERVER",
-        longest_token_life=2880,
-        latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-    )
-
-    db.session.add(test_server)
+    db.session.add_all(scopes)
 
     # Add roles to test server
     roles = [
-        viewer_role := Role(
+        Role(
             name="viewer",
             server=test_server,
             scopes=[reader_scope, example_geo_scope],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-            longest_token_life=datetime.timedelta(days=30),
+            longest_token_life_minutes=30 * 24 * 60,
         ),
-        runner_role := Role(
+        Role(
             name="runner",
             server=test_server,
             scopes=[runner_scope, example_geo_scope],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-            longest_token_life=datetime.timedelta(days=30),
+            longest_token_life_minutes=30 * 24 * 60,
         ),
     ]
-    for role in roles:
-        db.session.add(role)
+    db.session.add_all(roles)
 
-    # Add some things that you can do on the servers
-    scs = []
-    for cap in caps:
-        sc = ServerCapability(
-            capability=cap,
-            server=test_server,
-            enabled=True,
-            capability_hash=md5(cap.encode()).hexdigest(),
-        )
-        scs.append(sc)
-        db.session.add(sc)
+    users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
 
-    # Give bob group permissions on test server
-    for sc in test_server.capabilities:
-        gsp = GroupServerPermission(group=groups[0], server_capability=sc)
-        db.session.add(gsp)
-    db.session.add(
-        GroupServerTokenLimits(
-            group=groups[0],
-            longest_life=1440,
-            latest_end=datetime.datetime.now() + datetime.timedelta(days=28),
-            server=test_server,
-        )
-    )
+    for user in users:
+        user.password = "DUMMY_PASSWORD"
+        user.roles += roles
+
+    db.session.add_all(users)
+
     db.session.commit()
     current_app.config["DB_IS_SET_UP"].set()
     current_app.logger.debug("Made demo data.")

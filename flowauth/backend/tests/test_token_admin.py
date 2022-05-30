@@ -7,15 +7,15 @@ from flowkit_jwt_generator import load_public_key
 
 import pytest
 
-
-@pytest.mark.usefixtures("test_data")
-def test_list_tokens_for_server(client, auth, test_admin):
-    uid, uname, upass = test_admin
-    # Log in first
-    response, csrf_cookie = auth.login(uname, upass)
-    response = client.get("/admin/tokens", headers={"X-CSRF-Token": csrf_cookie})
-    assert 200 == response.status_code
-    assert 1 == len(response.get_json())
+#
+# @pytest.mark.usefixtures("test_data")
+# def test_list_tokens_for_server(client, auth, test_admin):
+#     uid, uname, upass = test_admin
+#     # Log in first
+#     response, csrf_cookie = auth.login(uname, upass)
+#     response = client.get("/admin/tokens", headers={"X-CSRF-Token": csrf_cookie})
+#     assert 200 == response.status_code
+#     assert 1 == len(response.get_json())
 
 
 @pytest.mark.usefixtures("test_data")

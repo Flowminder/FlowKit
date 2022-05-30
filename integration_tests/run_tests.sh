@@ -22,7 +22,7 @@ if [ "$CI" != "true" ]; then
     echo "Bringing up new ones."
     (pushd .. &&  make down && make up && popd)
     echo "Waiting for flowdb to be ready"
-    docker exec flowdb bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
+    docker exec flowdb bash -c 'i=0; until [ $i -ge 240 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
 echo "Installing."
 bundle install
