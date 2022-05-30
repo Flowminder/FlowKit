@@ -27,7 +27,9 @@ logging.getLogger().setLevel(logging.ERROR)
 
 
 def format_dict(x):
-    return f'><div class="codehilite"><pre>{pprint.pformat(x)}</pre></div>'
+    return f"""```python
+    {pprint.pformat(x)}
+```"""
 
 
 get_ipython().display_formatter.formatters["text/markdown"].for_type(dict, format_dict)
