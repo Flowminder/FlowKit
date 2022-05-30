@@ -121,7 +121,6 @@ def create_app(test_config=None):
     )
     from .admin import blueprint as admin_blueprint
     from .users import blueprint as users_blueprint
-    from .groups import blueprint as groups_blueprint
     from .servers import blueprint as servers_blueprint
     from .token_management import blueprint as token_management_blueprint
     from .login import blueprint as login_blueprint
@@ -159,7 +158,6 @@ def create_app(test_config=None):
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(admin_blueprint, url_prefix="/admin")
-    app.register_blueprint(groups_blueprint, url_prefix="/admin")
     app.register_blueprint(servers_blueprint, url_prefix="/admin")
     app.register_blueprint(users_blueprint, url_prefix="/admin")
     app.register_blueprint(token_management_blueprint, url_prefix="/tokens")

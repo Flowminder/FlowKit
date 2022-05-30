@@ -10,8 +10,13 @@
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
     "generate-password": "^1.7.0",
+<<<<<<< HEAD
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+=======
+    "react": "^17.0.0",
+    "react-dom": "^17.1.0",
+>>>>>>> Test rework in progress
     "react-qr-svg": "^2.4.0",
     "react-scripts": "^4.0.3",
     "rsuite": "^5.20.0",

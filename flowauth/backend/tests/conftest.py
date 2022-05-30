@@ -30,7 +30,30 @@ TestTwoFactorUser = namedtuple(
 
 
 @pytest.fixture
-def app(tmpdir):
+def test_date(monkeypatch):
+
+    # Adapted from https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test /
+    TEST_DATE = datetime.datetime(year=2020, month=12, day=31)
+
+    class test_datetime(datetime.datetime):
+        @classmethod
+        def now(cls, *args, **kwargs):
+            return TEST_DATE
+
+        @classmethod
+        def utcnow(cls, *args, **kwargs):
+            return cls.now()
+
+    monkeypatch.setattr(datetime, "datetime", test_datetime)
+    return TEST_DATE
+
+
+def test_test_date_fixture(test_date):
+    assert datetime.datetime.now() == test_date
+
+
+@pytest.fixture
+def app(tmpdir, test_date):
     """Per test app"""
     db_path = tmpdir / "db.db"
     print(f"DB path: {db_path}")
@@ -133,23 +156,22 @@ def test_two_factor_auth_user(app, get_two_factor_code):
 def test_admin(app):
     with app.app_context():
         user = User.query.filter(User.username == app.config["ADMIN_USER"]).first()
+    return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
-        return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
-
-@pytest.fixture
+@pytest.fixture  # (scope="session")
 def test_servers(app):
     with app.app_context():
         # Add some servers
         dummy_server_a = Server(
             name="DUMMY_SERVER_A",
-            longest_token_life=datetime.timedelta(days=30),
+            longest_token_life_minutes=2880,
             latest_token_expiry=datetime.datetime.now().date()
             + datetime.timedelta(days=365),
         )
         dummy_server_b = Server(
             name="DUMMY_SERVER_B",
-            longest_token_life=datetime.timedelta(days=30),
+            longest_token_life_minutes=2880,
             latest_token_expiry=datetime.datetime.now().date()
             + datetime.timedelta(days=700),
         )
@@ -159,7 +181,7 @@ def test_servers(app):
         return (dummy_server_a, dummy_server_b)
 
 
-@pytest.fixture
+@pytest.fixture  # (scope="session")
 def test_scopes(app, test_servers):
     with app.app_context():
         dummy_server_a, dummy_server_b = test_servers
@@ -179,7 +201,7 @@ def test_scopes(app, test_servers):
         return scopes
 
 
-@pytest.fixture
+@pytest.fixture  # (scope="session")
 def test_roles(app, test_scopes, test_servers):
     read_a, read_b, run, dummy_query = test_scopes
     server_a, server_b = test_servers
@@ -188,17 +210,15 @@ def test_roles(app, test_scopes, test_servers):
             name="runner",
             scopes=[run, read_a, dummy_query],
             server=server_a,
-            longest_token_life=datetime.timedelta(days=30),
-            latest_token_expiry=datetime.datetime.now().date()
-            + datetime.timedelta(days=365),
+            longest_token_life_minutes=2880,
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
         )
         reader = Role(
             name="reader",
             scopes=[read_a],
             server=server_a,
-            longest_token_life=datetime.timedelta(days=30),
-            latest_token_expiry=datetime.datetime.now().date()
-            + datetime.timedelta(days=365),
+            longest_token_life_minutes=2880,
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
         )
         db.session.add(runner)
         db.session.add(reader)
@@ -206,7 +226,7 @@ def test_roles(app, test_scopes, test_servers):
         return runner, reader
 
 
-@pytest.fixture
+@pytest.fixture  # (scope="session")
 def test_user_with_roles(test_user, test_roles):
     uid, uname, upass = test_user
     role_a, role_b = test_roles

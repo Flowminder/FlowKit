@@ -14,21 +14,6 @@ from .models import *
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 
 
-@blueprint.route("/groups")
-@login_required
-def list_my_groups():
-    """
-    Get a list of the groups the logged in user is a member of.
-
-    Notes
-    -----
-    Returns a list of json objects with "id" and "group_name" keys.
-    """
-    return jsonify(
-        [{"id": group.id, "group_name": group.name} for group in current_user.groups]
-    )
-
-
 @blueprint.route("/servers")
 @login_required
 def list_my_servers():
@@ -39,7 +24,10 @@ def list_my_servers():
     -----
     Produces a list of json objects with "id" and "server_name" fields.
     """
-    servers = set()
+    servers = db.session.execute(
+        db.select(Server).join(current_user.roles.server)
+    ).all()
+
     for group in current_user.groups:
         for server_token_limit in group.server_token_limits:
             servers.add(server_token_limit.server)
@@ -81,45 +69,46 @@ def my_access(server_id):
     )
 
 
-@blueprint.route("/tokens")
-@login_required
-def list_all_my_tokens():
-    """Get a list of all the logged in user's tokens."""
-    return jsonify(
-        [
-            {
-                "id": token.id,
-                "name": token.name,
-                "token": token.decrypted_token,
-                "expires": token.expires,
-                "server_name": token.server.name,
-                "username": token.owner.username,
-            }
-            for token in Token.query.filter(Token.owner == current_user)
-        ]
-    )
-
-
-@blueprint.route("/tokens/<server>")
-@login_required
-def list_my_tokens(server):
-    """Get a list of all the logged in user's tokens on a specific server."""
-    server = Server.query.filter(Server.id == server).first_or_404()
-    return jsonify(
-        [
-            {
-                "id": token.id,
-                "name": token.name,
-                "token": token.decrypted_token,
-                "expires": token.expires,
-                "server_name": token.server.name,
-                "username": token.owner.username,
-            }
-            for token in Token.query.filter(
-                Token.owner == current_user, Token.server == server
-            )
-        ]
-    )
+#
+# @blueprint.route("/tokens")
+# @login_required
+# def list_all_my_tokens():
+#     """Get a list of all the logged in user's tokens."""
+#     return jsonify(
+#         [
+#             {
+#                 "id": token.id,
+#                 "name": token.name,
+#                 "token": token.decrypted_token,
+#                 "expires": token.expires,
+#                 "server_name": token.server.name,
+#                 "username": token.owner.username,
+#             }
+#             for token in Token.query.filter(Token.owner == current_user)
+#         ]
+#     )
+#
+#
+# @blueprint.route("/tokens/<server>")
+# @login_required
+# def list_my_tokens(server):
+#     """Get a list of all the logged in user's tokens on a specific server."""
+#     server = Server.query.filter(Server.id == server).first_or_404()
+#     return jsonify(
+#         [
+#             {
+#                 "id": token.id,
+#                 "name": token.name,
+#                 "token": token.decrypted_token,
+#                 "expires": token.expires,
+#                 "server_name": token.server.name,
+#                 "username": token.owner.username,
+#             }
+#             for token in Token.query.filter(
+#                 Token.owner == current_user, Token.server == server
+#             )
+#         ]
+#     )
 
 
 @blueprint.route("/tokens/<server>", methods=["POST"])
@@ -154,10 +143,10 @@ def add_token(server):
     latest_lifetime = current_user.latest_token_expiry(server)
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
+
     # Gotta find all roles that _could_ allow this actio
     claims = json["claims"]
     allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
-
     if not any(allowed_roles.values()):
         raise Unauthorized(
             f"No roles for {current_user.username} permit the requested scopes."
@@ -165,7 +154,7 @@ def add_token(server):
 
     allowed_roles = dict(filter(lambda x: x[1] is True, allowed_roles.items())).keys()
     current_app.logger.debug(
-        f"Token granted for {current_user.username} via roles {allowed_roles}"
+        f"Token granted for {current_user.username} via roles {list(allowed_roles)}"
     )
 
     token_string = generate_token(
