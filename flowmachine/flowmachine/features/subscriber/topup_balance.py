@@ -118,15 +118,14 @@ class TopUpBalance(SubscriberFeature):
     def _make_query(self):
 
         if self.statistic in {"count"}:
-            sql = f"""
+            return f"""
             SELECT subscriber, COUNT(*) AS value
             FROM ({self.unioned_query.get_query()}) AS U
             GROUP BY subscriber
             """
-            return sql
 
         if self.statistic in {"max", "min"}:
-            sql = f"""
+            return f"""
             SELECT subscriber, {self.statistic:balance} AS value
             FROM (
                 SELECT subscriber, {self.statistic:pre_event_balance} AS balance
@@ -139,7 +138,6 @@ class TopUpBalance(SubscriberFeature):
             ) U
             GROUP BY subscriber
             """
-            return sql
 
         weighted_sum = f"SUM(weight * balance)"
         weighted_avg = f"{weighted_sum} / SUM(weight)"
@@ -201,12 +199,11 @@ class TopUpBalance(SubscriberFeature):
         """
 
         if self.statistic in {"sum", "avg", "stddev", "variance"}:
-            sql = f"""
+            return f"""
             SELECT subscriber, {statistic_clause} AS value
             FROM ({weight_extraction_query}) U
             GROUP BY subscriber
             """
-            return sql
 
         if self.statistic in {"mode"}:
             return f"""
@@ -220,20 +217,23 @@ class TopUpBalance(SubscriberFeature):
             """
 
         # Weighted median
-        sql = f"""
-        WITH W AS ({weight_extraction_query})
-        SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS value
-        FROM (
-            SELECT
-                subscriber,
-                balance,
-                weight,
-                SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
-            FROM W
-        ) A
-        JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
-        ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
-        ORDER BY A.subscriber, A.weight
-        """
+        if self.statistic == Statistic.MEDIAN:
+            return f"""
+            WITH W AS ({weight_extraction_query})
+            SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS value
+            FROM (
+                SELECT
+                    subscriber,
+                    balance,
+                    weight,
+                    SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
+                FROM W
+            ) A
+            JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
+            ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
+            ORDER BY A.subscriber, A.weight
+            """
 
-        return sql
+        raise NotImplementedError(
+            f"{self.statistic} is not implemented for TopupBalance"
+        )
