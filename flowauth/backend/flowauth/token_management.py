@@ -144,6 +144,9 @@ def add_token(server):
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
 
+    if expiry < datetime.datetime.now():
+        raise Unauthorized(f"Token for {current_user.username} expired")
+
     # Gotta find all roles that _could_ allow this actio
     claims = json["claims"]
     allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}

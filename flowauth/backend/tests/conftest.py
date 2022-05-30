@@ -227,11 +227,16 @@ def test_roles(app, test_scopes, test_servers):
 
 
 @pytest.fixture  # (scope="session")
-def test_user_with_roles(test_user, test_roles):
-    uid, uname, upass = test_user
-    role_a, role_b = test_roles
-    test_user_orm = db.session.execute(db.select(User).where(User.id == uid)).first()[0]
-    test_user_orm.roles += [role_a, role_b]
+def test_user_with_roles(app, test_user, test_roles):
+    with app.app_context():
+        uid, uname, upass = test_user
+        role_a, role_b = test_roles
+        test_user_orm = db.session.execute(
+            db.select(User).where(User.id == uid)
+        ).first()[0]
+        test_user_orm.roles += [role_a, role_b]
+        db.session.add(test_user_orm)
+        db.session.commit()
     return uid, uname, upass
 
 
