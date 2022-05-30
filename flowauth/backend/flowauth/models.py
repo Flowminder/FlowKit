@@ -141,6 +141,9 @@ class User(db.Model):
             .order_by(Role.longest_token_life_minutes.desc())
         ).scalar()
 
+        if not latest or not longest:
+            raise Unauthorized(f"No roles for {self.username} on {Server.name}")
+
         return {
             "latest_end": min(server.latest_token_expiry, latest),
             "longest_life": min(server.longest_token_life_minutes, longest),
