@@ -18,7 +18,7 @@ set -e
 #               This user is mainly designed for ingesting 
 #               data into the events table.
 #
-#   * $FLOWMACHINE_FLOWDB_USER:  for users that need access to raw data.
+#   * flowmachine:  for users that need access to raw data.
 #               They can read all data available in the database and 
 #               can write to most tables. Can't write to the tables under 
 #               the events schema.
@@ -66,9 +66,9 @@ psql --dbname="$POSTGRES_DB" -c "REVOKE CONNECT ON DATABASE $POSTGRES_DB FROM PU
 
 if [[ $FLOWMACHINE_FLOWDB_PASSWORD ]]
     then
-        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWMACHINE_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWMACHINE_FLOWDB_PASSWORD';"
+        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE flowmachine WITH LOGIN PASSWORD '$FLOWMACHINE_FLOWDB_PASSWORD';"
     else
-        echo "No password supplied for '$FLOWMACHINE_FLOWDB_USER' user: $FLOWMACHINE_FLOWDB_PASSWORD"
+        echo "No password supplied for 'flowmachine' user: $FLOWMACHINE_FLOWDB_PASSWORD"
         exit 1
 fi
 
@@ -84,9 +84,9 @@ fi
 #  Roles can connect and create tables and
 #  schemas.
 #
-psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWMACHINE_FLOWDB_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO flowmachine;"
 psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWAPI_FLOWDB_USER;"
-psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWMACHINE_FLOWDB_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO flowmachine;"
 psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWAPI_FLOWDB_USER;"
 
 #
@@ -95,32 +95,32 @@ psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWA
 declare -a schema_list_permissive=("cache" "geography" "population" "elevation")
 for schema in "${schema_list_permissive[@]}"
 do
-    echo "Granting permissions to $FLOWMACHINE_FLOWDB_USER on $schema."
+    echo "Granting permissions to flowmachine on $schema."
     psql --dbname="$POSTGRES_DB" -c "
         BEGIN;
             ALTER DEFAULT PRIVILEGES
                 IN SCHEMA $schema
-                GRANT ALL ON TABLES TO $FLOWMACHINE_FLOWDB_USER;
+                GRANT ALL ON TABLES TO flowmachine;
 
-            ALTER DEFAULT PRIVILEGES FOR ROLE $FLOWMACHINE_FLOWDB_USER
+            ALTER DEFAULT PRIVILEGES FOR ROLE flowmachine
                 IN SCHEMA $schema
-                GRANT ALL ON TABLES TO $FLOWMACHINE_FLOWDB_USER;
+                GRANT ALL ON TABLES TO flowmachine;
 
             GRANT ALL PRIVILEGES 
                 ON ALL TABLES 
-                IN SCHEMA $schema TO $FLOWMACHINE_FLOWDB_USER;
+                IN SCHEMA $schema TO flowmachine;
 
             GRANT USAGE
                 ON SCHEMA $schema
-                TO $FLOWMACHINE_FLOWDB_USER;
+                TO flowmachine;
 
             GRANT ALL  
                 ON ALL TABLES 
-                IN SCHEMA $schema TO $FLOWMACHINE_FLOWDB_USER;
+                IN SCHEMA $schema TO flowmachine;
             
             GRANT CREATE
                 ON SCHEMA $schema
-                TO $FLOWMACHINE_FLOWDB_USER;
+                TO flowmachine;
         COMMIT;
         "
 done
@@ -128,32 +128,32 @@ done
 declare -a schema_list_restricted=("events" "dfs" "infrastructure" "routing" "interactions" "etl")
 for schema in "${schema_list_restricted[@]}"
 do
-    echo "Restricting permissions to $FLOWMACHINE_FLOWDB_USER on $schema."
+    echo "Restricting permissions to flowmachine on $schema."
     psql --dbname="$POSTGRES_DB" -c "
         BEGIN;
             GRANT USAGE
                 ON SCHEMA $schema
-                TO $FLOWMACHINE_FLOWDB_USER;
+                TO flowmachine;
 
             GRANT SELECT
                 ON ALL TABLES 
-                IN SCHEMA $schema TO $FLOWMACHINE_FLOWDB_USER;
+                IN SCHEMA $schema TO flowmachine;
 
             ALTER DEFAULT PRIVILEGES 
                 IN SCHEMA $schema
-                GRANT SELECT ON SEQUENCES TO $FLOWMACHINE_FLOWDB_USER;
+                GRANT SELECT ON SEQUENCES TO flowmachine;
 
             ALTER DEFAULT PRIVILEGES 
                 IN SCHEMA $schema
-                GRANT SELECT ON TABLES TO $FLOWMACHINE_FLOWDB_USER;
+                GRANT SELECT ON TABLES TO flowmachine;
         END;
         "
 done
 
-echo "Give $FLOWMACHINE_FLOWDB_USER role read and update access to cache_touches sequence"
+echo "Give flowmachine role read and update access to cache_touches sequence"
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;
-        GRANT USAGE, SELECT, UPDATE ON SEQUENCE cache.cache_touches TO $FLOWMACHINE_FLOWDB_USER;
+        GRANT USAGE, SELECT, UPDATE ON SEQUENCE cache.cache_touches TO flowmachine;
     COMMIT;
     "
 
@@ -166,7 +166,7 @@ psql --dbname="$POSTGRES_DB" -c "
         ALTER DEFAULT PRIVILEGES
             IN SCHEMA cache
             GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
-        ALTER DEFAULT PRIVILEGES FOR ROLE $FLOWMACHINE_FLOWDB_USER
+        ALTER DEFAULT PRIVILEGES FOR ROLE flowmachine
             IN SCHEMA cache
             GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
     END;
@@ -199,7 +199,7 @@ psql --dbname="$POSTGRES_DB" -c "
           obj record;
         BEGIN
           FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() WHERE command_tag IN ('CREATE TABLE', 'CREATE TABLE AS') AND schema_name='cache'  LOOP
-            EXECUTE format('ALTER TABLE %s OWNER TO $FLOWMACHINE_FLOWDB_USER', obj.object_identity);
+            EXECUTE format('ALTER TABLE %s OWNER TO flowmachine', obj.object_identity);
           END LOOP;
         END;
         \$\$;

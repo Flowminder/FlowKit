@@ -9,7 +9,7 @@ Test for the database roles.
 The database has three different roles:
 
     * `flowdb`: database super user.
-    * `$FLOWMACHINE_FLOWDB_USER`: FlowMachine user with read access to raw tables.
+    * `flowmachine`: FlowMachine user with read access to raw tables.
     * `$FLOWAPI_FLOWDB_USER`: has read access to public tables only and
                   reference tables.
 """
