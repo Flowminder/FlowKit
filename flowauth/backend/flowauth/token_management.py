@@ -25,7 +25,7 @@ def list_my_servers():
     Produces a list of json objects with "id" and "server_name" fields.
     """
     servers = db.session.execute(
-        db.select(Server).join(current_user.roles.server)
+        db.select(Server).join(current_user.roles).join(Role.server)
     ).all()
 
     for group in current_user.groups:

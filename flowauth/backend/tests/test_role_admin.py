@@ -1,34 +1,31 @@
 import pytest
+from freezegun import freeze_time
 
 
-@pytest.mark.usefixtures("test_data_with_access_rights")
-@pytest.fixture
-def logged_in_session(client, auth, app):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
-
-
+@freeze_time("2020-12-31")
 def test_list_roles(client, auth, app, test_roles, test_scopes):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
-    response = client.get(
-        "/admin/servers/1/roles", headers={"X-CSRF-Token": csrf_cookie}
-    )
-    assert response.status_code == 200
-    assert [
-        {
-            "id": 1,
-            "name": "runner",
-            "scopes": ["run", "get_result", "dummy_query:admin_level_1"],
-            "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
-            "longest_token_life_minutes": 2880,
-        },
-        {
-            "id": 2,
-            "name": "reader",
-            "scopes": ["get_result"],
-            "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
-            "longest_token_life_minutes": 2880,
-        },
-    ] == response.get_json()
+    with app.app_context():
+        response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+        response = client.get(
+            "/admin/servers/1/roles", headers={"X-CSRF-Token": csrf_cookie}
+        )
+        assert response.status_code == 200
+        assert [
+            {
+                "id": 1,
+                "name": "runner",
+                "scopes": ["run", "get_result", "dummy_query:admin_level_1"],
+                "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+                "longest_token_life_minutes": 2880,
+            },
+            {
+                "id": 2,
+                "name": "reader",
+                "scopes": ["get_result"],
+                "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+                "longest_token_life_minutes": 2880,
+            },
+        ] == response.get_json()
 
 
 def test_add_role(client, auth, app, test_scopes):

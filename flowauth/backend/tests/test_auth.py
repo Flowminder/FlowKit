@@ -6,25 +6,26 @@ import pytest
 from flask import g, session
 
 
-def test_login(client, auth, test_user):
-    """Test that we can log in by posting a username and password as json"""
-    # test that signin route doesn't accept a get
-    assert client.get("/signin").status_code == 405
-    uid, username, password = test_user
-    # test that successful login redirects to the index page
-    response, _ = auth.login(username, password)
-    assert {
-        "logged_in": True,
-        "is_admin": False,
-        "require_two_factor_setup": False,
-    } == response.get_json()
+def test_login(app, client, auth, test_user):
+    with app.app_context():
+        """Test that we can log in by posting a username and password as json"""
+        # test that signin route doesn't accept a get
+        assert client.get("/signin").status_code == 405
+        uid, username, password = test_user
+        # test that successful login redirects to the index page
+        response, _ = auth.login(username, password)
+        assert {
+            "logged_in": True,
+            "is_admin": False,
+            "require_two_factor_setup": False,
+        } == response.get_json()
 
-    # login request set the user_id in the session
-    # check that the user is loaded from the session
-    with client:
-        client.get("/")
-        assert session["identity.id"] == uid
-        assert g.user.username == username
+        # login request set the user_id in the session
+        # check that the user is loaded from the session
+        with client:
+            client.get("/")
+            assert session["identity.id"] == uid
+            assert g.user.username == username
 
 
 @pytest.mark.parametrize(
@@ -52,11 +53,12 @@ def test_is_logged_in(client):
         assert client.get("/is_signed_in").status_code == 401
 
 
-def test_logout(client, auth, test_user):
-    """Test that we can log out"""
-    uid, username, password = test_user
-    auth.login(username, password)
+def test_logout(app, client, auth, test_user):
+    with app.app_context():
+        """Test that we can log out"""
+        uid, username, password = test_user
+        auth.login(username, password)
 
-    with client:
-        auth.logout()
-        assert "user_id" not in session
+        with client:
+            auth.logout()
+            assert "user_id" not in session
