@@ -12,6 +12,7 @@ import pickle
 from contextvars import copy_context
 from concurrent.futures import Executor, TimeoutError
 from functools import partial
+from sqlalchemy.exc import ResourceClosedError
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
@@ -88,6 +89,47 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
         )
 
 
+def run_ops_list_and_return_execution_time(
+    query_ddl_ops: List[str], connection: Engine
+) -> float:
+    """
+    Run a list of sql operations which may begin with explain analyze
+    and return the overall execution time of the first op if available.
+
+    Parameters
+    ----------
+    query_ddl_ops : list of str
+        List of SQL commands to execute
+    connection : Engine
+        SQLAlchemy engine to execute with
+
+    Returns
+    -------
+    float
+        The execution time of the query if available or 0
+    """
+    plan_time = 0
+    ddl_op_results = []
+    for ddl_op in query_ddl_ops:
+        try:
+            ddl_op_result = connection.execute(ddl_op)
+        except Exception as e:
+            logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
+            raise e
+        try:
+            ddl_op_results.append(ddl_op_result.fetchall())
+        except ResourceClosedError:
+            pass  # Nothing to do here
+        for ddl_op_result in ddl_op_results:
+            try:
+                plan = ddl_op_result[0][0][0]  # Should be a query plan
+                plan_time += plan["Execution Time"]
+            except (IndexError, KeyError):
+                pass  # Not an explain result
+    logger.debug("Executed queries.")
+    return plan_time
+
+
 def write_query_to_cache(
     *,
     name: str,
@@ -95,7 +137,6 @@ def write_query_to_cache(
     query: "Query",
     connection: "Connection",
     ddl_ops_func: Callable[[str, str], List[str]],
-    write_func: Callable[[List[str], Engine], float],
     schema: Optional[str] = "cache",
     sleep_duration: Optional[int] = 1,
 ) -> "Query":
@@ -118,10 +159,6 @@ def write_query_to_cache(
     ddl_ops_func : Callable[[str, str], List[str]]
         Function that will be called to generate a list of SQL statements to run. Should accept name and
         schema as arguments and return a list of SQL strings.
-    write_func : Callable[[List[str], Engine], float]
-        Function which will be called with the result of ddl_ops_func to perform the actual write.
-        Should take a list of SQL strings and an SQLAlchemy Engine as arguments and return the runtime
-        of the query.
     schema : str, default "cache"
         Name of the schema to write to
     sleep_duration : int, default 1
@@ -162,7 +199,7 @@ def write_query_to_cache(
         con = connection.engine
         with con.begin():
             try:
-                plan_time = write_func(query_ddl_ops, con)
+                plan_time = run_ops_list_and_return_execution_time(query_ddl_ops, con)
                 logger.debug("Executed queries.")
             except Exception as exc:
                 q_state_machine.raise_error()

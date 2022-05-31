@@ -577,7 +577,6 @@ def test_cache_ddl_op_error(dummy_redis):
             query=query_mock,
             connection=Mock(conn_id="DUMMY_CONNECTION"),
             ddl_ops_func=Mock(side_effect=TestException),
-            write_func=Mock(),
         )
     assert qsm.current_query_state == QueryState.ERRORED
 
