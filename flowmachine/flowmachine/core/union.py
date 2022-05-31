@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import warnings
 
 from typing import List
 
@@ -17,7 +18,7 @@ class Union(Query):
     queries : flowmachine.Query object
         Queries to union
     all : bool, default: True
-        If True, queries will be deduped, if set to False, duplicate rows will be preserved.
+        If False, queries will be deduped, if set to True, duplicate rows will be preserved.
     """
 
     def __init__(self, *queries: Query, all: bool = True):
@@ -26,8 +27,10 @@ class Union(Query):
         column_set = set(tuple(query.column_names) for query in queries)
         if len(column_set) > 1:
             raise ValueError("Inconsistent columns.")
-        if len(queries) < 2:
-            raise ValueError("Union requires at least two queries.")
+        if len(queries) < 1:
+            raise ValueError("Union requires at least one query.")
+        if (len(queries) == 1) and (not all):
+            warnings.warn("Single queries are not deduped by Union.")
 
         super().__init__()
 

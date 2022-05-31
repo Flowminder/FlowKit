@@ -17,6 +17,7 @@ from functools import reduce
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from ..utilities.multilocation import MultiLocation
+from ...core.union import Union
 
 
 class ModalLocation(MultiLocation, BaseLocation, Query):
@@ -40,9 +41,7 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
 
         # This query represents the concatenated locations of the
         # subscribers
-        all_locs = reduce(
-            lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
-        )
+        all_locs = Union(*[self._append_date(dl) for dl in self._all_dls])
 
         times_visited = f"""
         SELECT all_locs.subscriber, {location_columns_string}, count(*) AS total, max(all_locs.date) as date
