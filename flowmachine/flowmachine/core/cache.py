@@ -181,33 +181,37 @@ def write_query_to_cache(
     """
     logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
     q_state_machine = QueryStateMachine(redis, query.query_id, connection.conn_id)
-    current_state, this_thread_is_owner = q_state_machine.execute()
-    if this_thread_is_owner:
-        logger.debug(f"In charge of executing '{query.query_id}'.")
-        try:
-            query_ddl_ops = ddl_ops_func(name, schema)
-        except Exception as exc:
-            q_state_machine.raise_error()
-            logger.error(f"Error generating SQL. Error was {exc}")
-            raise exc
-        logger.debug("Made SQL.")
-        con = connection.engine
-        with con.begin():
+    try:
+        current_state, this_thread_is_owner = q_state_machine.execute()
+        if this_thread_is_owner:
+            logger.debug(f"In charge of executing '{query.query_id}'.")
             try:
-                plan_time = run_ops_list_and_return_execution_time(query_ddl_ops, con)
-                logger.debug("Executed queries.")
-            except Exception as exc:
+                query_ddl_ops = ddl_ops_func(name, schema)
+            except BaseException as exc:
                 q_state_machine.raise_error()
-                logger.error(f"Error executing SQL. Error was {exc}")
+                logger.error(f"Error generating SQL. Error was {exc}")
                 raise exc
-            if schema == "cache":
+            logger.debug("Made SQL.")
+            con = connection.engine
+            with con.begin():
                 try:
-                    write_cache_metadata(connection, query, compute_time=plan_time)
-                except Exception as exc:
+                    plan_time = run_ops_list_and_return_execution_time(query_ddl_ops, con)
+                    logger.debug("Executed queries.")
+                except BaseException as exc:
                     q_state_machine.raise_error()
-                    logger.error(f"Error writing cache metadata. Error was {exc}")
+                    logger.error(f"Error executing SQL. Error was {exc}")
                     raise exc
-        q_state_machine.finish()
+                if schema == "cache":
+                    try:
+                        write_cache_metadata(connection, query, compute_time=plan_time)
+                    except BaseException as exc:
+                        q_state_machine.raise_error()
+                        logger.error(f"Error writing cache metadata. Error was {exc}")
+                        raise exc
+            q_state_machine.finish()
+    except BaseException as exc:
+        q_state_machine.raise_error()
+        raise exc
 
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
     if q_state_machine.is_completed:
