@@ -210,7 +210,22 @@ def test_list_scopes(client, auth, test_scopes, test_servers, test_admin):
     )
     assert response.status_code == 200
     assert response.json == {
-        "1": "get_result",
-        "3": "run",
-        "4": "dummy_query:admin_level_1",
+        "get_result": True,
+        "run": True,
+        "dummy_query:admin_level_1": True,
+    }
+
+
+def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
+    uid, uname, password = test_admin
+    response, csrf_cookie = auth.login(uname, password)
+    json = {"dummy_query:admin_level_1": False}
+    response = client.patch(
+        "/admin/servers/1/scopes", json=json, headers={"X-CSRF-Token": csrf_cookie}
+    )
+    assert response.status_code == 200
+    assert response.json == {
+        "get_result": True,
+        "run": True,
+        "dummy_query:admin_level_1": False,
     }
