@@ -100,7 +100,31 @@ def list_scopes(server_id):
     Returns the list of available scopes on a server
     """
     server = Server.query.filter_by(id=server_id).first_or_404()
-    return jsonify({scope.id: scope.scope for scope in server.scopes})
+    return jsonify({scope.scope: scope.enabled for scope in server.scopes})
+
+
+@blueprint.route("/servers/<server_id>/scopes", methods=["PATCH"])
+@login_required
+@admin_permission.require(http_exception=401)
+def edit_scope_activation(server_id):
+    """
+    Bulk activates/deactivates scopes on a server
+    Expects a json of the form {scope_string:True/False}
+
+    """
+    server = Server.query.filter_by(id=server_id).first_or_404()
+    json = request.get_json()
+    scopes_to_edit = (
+        db.session.query(Scope)
+        .join(Server)
+        .filter(Scope.server_id == server_id)
+        .filter(Scope.scope.in_(json.keys()))
+    )
+    for scope in scopes_to_edit:
+        scope.enabled = json[scope.scope]
+        db.session.add(scope)
+    db.session.commit()
+    return list_scopes(server_id)
 
 
 @blueprint.route("/servers/<server_id>/time_limits")

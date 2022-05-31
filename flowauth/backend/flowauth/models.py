@@ -440,11 +440,9 @@ class Scope(db.Model):
     For example, the scope permitting daily locations at admin 3 would be daily_location:admin3
     """
 
-    # OK, here's the heart of it.
-    # Each role has a collection of these referred to.
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     scope = db.Column(db.String)
+    enabled = db.Column(db.Boolean, default=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
 
 
