@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from freezegun import freeze_time
 from time import sleep
 
 from functools import partial
@@ -28,32 +29,33 @@ TestTwoFactorUser = namedtuple(
     "TestTwoFactorUser", TestUser._fields + ("otp_generator", "backup_codes")
 )
 
+#
+# @pytest.fixture
+# def test_date(monkeypatch):
+#
+#     # Adapted from https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test /
+#     TEST_DATE = datetime.datetime(year=2020, month=12, day=31)
+#
+#     class test_datetime(datetime.datetime):
+#         @classmethod
+#         def now(cls, *args, **kwargs):
+#             return TEST_DATE
+#
+#         @classmethod
+#         def utcnow(cls, *args, **kwargs):
+#             return cls.now()
+#
+#     monkeypatch.setattr(datetime, "datetime", test_datetime)
+#         return TEST_DATE
+#
+#
+# def test_test_date_fixture(test_date):
+#     assert datetime.datetime.now() == test_date
+#
+
 
 @pytest.fixture
-def test_date(monkeypatch):
-
-    # Adapted from https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test /
-    TEST_DATE = datetime.datetime(year=2020, month=12, day=31)
-
-    class test_datetime(datetime.datetime):
-        @classmethod
-        def now(cls, *args, **kwargs):
-            return TEST_DATE
-
-        @classmethod
-        def utcnow(cls, *args, **kwargs):
-            return cls.now()
-
-    monkeypatch.setattr(datetime, "datetime", test_datetime)
-    return TEST_DATE
-
-
-def test_test_date_fixture(test_date):
-    assert datetime.datetime.now() == test_date
-
-
-@pytest.fixture
-def app(tmpdir, test_date):
+def app(tmpdir):
     """Per test app"""
     db_path = tmpdir / "db.db"
     print(f"DB path: {db_path}")
@@ -156,10 +158,11 @@ def test_two_factor_auth_user(app, get_two_factor_code):
 def test_admin(app):
     with app.app_context():
         user = User.query.filter(User.username == app.config["ADMIN_USER"]).first()
-    return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
+        return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
 
 @pytest.fixture  # (scope="session")
+@freeze_time("2020-12-31")
 def test_servers(app):
     with app.app_context():
         # Add some servers
@@ -173,7 +176,7 @@ def test_servers(app):
             name="DUMMY_SERVER_B",
             longest_token_life_minutes=2880,
             latest_token_expiry=datetime.datetime.now().date()
-            + datetime.timedelta(days=700),
+            + datetime.timedelta(days=365),
         )
         db.session.add(dummy_server_a)
         db.session.add(dummy_server_b)
@@ -202,6 +205,7 @@ def test_scopes(app, test_servers):
 
 
 @pytest.fixture  # (scope="session")
+@freeze_time("2020-12-31")
 def test_roles(app, test_scopes, test_servers):
     read_a, read_b, run, dummy_query = test_scopes
     server_a, server_b = test_servers
@@ -237,7 +241,7 @@ def test_user_with_roles(app, test_user, test_roles):
         test_user_orm.roles += [role_a, role_b]
         db.session.add(test_user_orm)
         db.session.commit()
-    return uid, uname, upass
+        return uid, uname, upass
 
 
 @pytest.fixture

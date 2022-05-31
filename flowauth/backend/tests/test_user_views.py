@@ -2,13 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import datetime
-
 import pytest
-from pytest import approx
-from werkzeug.http import http_date
 
 
+@pytest.mark.skip(reason="Users do not have direct access to servers anymore")
 @pytest.mark.usefixtures("test_data")
 def test_server_access(client, auth, test_user):
     uid, uname, upass = test_user

@@ -3,6 +3,7 @@
 # file, You can obtain one at http.//mozilla.org/MPL/2.0/.
 import datetime
 
+from freezegun import freeze_time
 from werkzeug.http import http_date
 
 import pytest
@@ -33,6 +34,7 @@ def test_get_server(client, auth, app):
     assert {"id": 1, "name": "DUMMY_SERVER_A"} == response.get_json()
 
 
+@freeze_time("2020-12-31")
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_get_server_time_limits(client, auth, app):
 
