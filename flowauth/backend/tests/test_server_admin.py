@@ -72,7 +72,7 @@ def test_create_server(client, auth, test_admin):
     response = client.get(
         "/admin/servers/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
     )
-    assert {"1": "run", "2": "read", "3": "dummy_scope_1"} == response.get_json()
+    assert {"run": True, "read": True, "dummy_scope_1": True} == response.get_json()
 
 
 def test_create_server_errors_with_missing_name(client, auth, test_admin):
