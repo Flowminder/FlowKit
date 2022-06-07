@@ -1,5 +1,6 @@
 import datetime
 import logging
+import sys
 import uuid
 from functools import partial
 
@@ -52,6 +53,13 @@ def connect_logger():
 
     current_app.logger = structlog.wrap_logger(logger)
     current_app.logger.info("Started")
+
+
+def connect_audit_logger():
+    channel = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter(
+        "{date}; Request: {request_id}; Event {message}", style="{"
+    )
 
 
 def set_xsrf_cookie(response):
