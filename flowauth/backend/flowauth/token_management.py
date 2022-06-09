@@ -24,13 +24,8 @@ def list_my_servers():
     -----
     Produces a list of json objects with "id" and "server_name" fields.
     """
-    servers = db.session.execute(
-        db.select(Server).join(current_user.roles).join(Role.server)
-    ).all()
-
-    for group in current_user.groups:
-        for server_token_limit in group.server_token_limits:
-            servers.add(server_token_limit.server)
+    # is this the sqlalchemy way to do this?
+    servers = {role.server for role in current_user.roles}
 
     return jsonify(
         sorted(
