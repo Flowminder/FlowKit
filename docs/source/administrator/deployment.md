@@ -102,6 +102,12 @@ To run FlowETL, you will need to provide the following secrets:
 | AIRFLOW_CONN_FLOWDB | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
 | FLOWETL_POSTGRES_PASSWORD | Superuser password for FlowETL's backing database | |
 
+We recommend running FlowETL using the celery scheduler, in which case you will also need to provide additional environment variables and secrets as described in the [main airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html). 
+
+!!!note
+    Any environment variable can be provided as a secret with the same name for the FlowETL container.
+
+
 !!!note 
     Generating Fernet keys
     
@@ -137,6 +143,8 @@ You can find a sample FlowETL stack file [here](https://github.com/Flowminder/Fl
 | FLOWETL_HOST_USER_ID | uid of the host user for FlowETL |
 | FLOWETL_HOST_GROUP_ID | gid of the host user for FlowETL |
 | FLOWETL_HOST_DAG_DIR | Path on the host to a directory where dag files will be stored |
+| FLOWETL_WORKER_COUNT | The number of workers which will be available to run tasks |
+| FLOWETL_CELERY_PORT | Port which the Celery user interface will be available on |
 
 Once your stack has come up, you will be able to access FlowETL's web user interface which allows you to monitor the progress of ETL tasks. 
 
