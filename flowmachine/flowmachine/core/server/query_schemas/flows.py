@@ -53,26 +53,6 @@ class FlowsExposed(BaseExposedQuery):
         return RedactedFlows(flows=Flows(loc1, loc2, join_type=self.join_type))
 
 
-class InflowsExposed(FlowsExposed):
-    @property
-    def _flowmachine_query_obj(self):
-        loc1 = self.from_location._flowmachine_query_obj
-        loc2 = self.to_location._flowmachine_query_obj
-        return RedactedInOutFlow(
-            flows=Flows(loc1, loc2, join_type=self.join_type).inflow()
-        )
-
-
-class OutflowsExposed(FlowsExposed):
-    @property
-    def _flowmachine_query_obj(self):
-        loc1 = self.from_location._flowmachine_query_obj
-        loc2 = self.to_location._flowmachine_query_obj
-        return RedactedInOutFlow(
-            flows=Flows(loc1, loc2, join_type=self.join_type).outflow()
-        )
-
-
 class FlowsSchema(BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["flows"]))
@@ -81,13 +61,3 @@ class FlowsSchema(BaseSchema):
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
 
     __model__ = FlowsExposed
-
-
-class InflowsSchema(FlowsSchema):
-    query_kind = fields.String(validate=OneOf(["inflows"]))
-    __model__ = InflowsExposed
-
-
-class OutflowsSchema(FlowsSchema):
-    query_kind = fields.String(validate=OneOf(["outflows"]))
-    __model__ = OutflowsExposed
