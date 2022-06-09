@@ -6,22 +6,23 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     afm (0.2.2)
     asciidoctor (2.0.17)
-    asciidoctor-pdf (1.6.2)
+    asciidoctor-pdf (2.0.8)
       asciidoctor (~> 2.0)
       concurrent-ruby (~> 1.1)
+      matrix (~> 0.4)
       prawn (~> 2.4.0)
       prawn-icon (~> 3.0.0)
       prawn-svg (~> 0.32.0)
       prawn-table (~> 0.2.0)
       prawn-templates (~> 0.1.0)
-      safe_yaml (~> 1.0.0)
       treetop (~> 1.6.0)
-    concurrent-ruby (1.1.9)
+    concurrent-ruby (1.1.10)
     css_parser (1.11.0)
       addressable
     hashery (2.1.2)
+    matrix (0.4.2)
     pdf-core (0.9.0)
-    pdf-reader (2.8.0)
+    pdf-reader (2.10.0)
       Ascii85 (~> 1.0)
       afm (~> 0.2.1)
       hashery (~> 2.0)
@@ -42,10 +43,9 @@ GEM
     prawn-templates (0.1.2)
       pdf-reader (~> 2.0)
       prawn (~> 2.2)
-    public_suffix (4.0.6)
+    public_suffix (4.0.7)
     rexml (3.2.5)
     ruby-rc4 (0.1.5)
-    safe_yaml (1.0.5)
     treetop (1.6.11)
       polyglot (~> 0.3)
     ttfunk (1.7.0)
@@ -55,7 +55,7 @@ PLATFORMS
 
 DEPENDENCIES
   asciidoctor
-  asciidoctor-pdf (~> 1.6.2)
+  asciidoctor-pdf (~> 2.0.8)
 
 BUNDLED WITH
    2.2.33
