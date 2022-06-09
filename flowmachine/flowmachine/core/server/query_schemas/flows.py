@@ -10,7 +10,6 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import (
     RedactedFlows,
-    RedactedInOutFlow,
 )
 from flowmachine.core.join import Join
 from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
