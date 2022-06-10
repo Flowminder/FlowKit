@@ -6,6 +6,8 @@ version: '3.7'
 secrets:
   REDIS_PASSWORD: # Redis password
     external: true
+  FLOWMACHINE_FLOWDB_USER: # Database user for FlowMachine
+    external: true
 networks:
   flowdb:
   redis:

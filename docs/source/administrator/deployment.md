@@ -21,7 +21,6 @@ FlowDB is distributed as a docker container. To run it, you will need to provide
 | ----------- | -------------- | ----- |
 | FLOWAPI_FLOWDB_USER | Database user used by FlowAPI | Role with _read_ access to tables under the cache and geography schemas | 
 | FLOWAPI_FLOWDB_PASSWORD | Password for the FlowAPI database user | |
-| FLOWMACHINE_FLOWDB_USER | Database user for FlowMachine | Role with _write_ access to tables under the cache schema, and _read_ access to events, infrastructure, cache and geography schemas |
 | FLOWMACHINE_FLOWDB_PASSWORD | Password for flowmachine user | |
 | FLOWDB_POSTGRES_PASSWORD | Postgres superuser password for flowdb | Username `flowdb`, user with super user access to flowdb database |
 
@@ -232,7 +231,7 @@ Once you have FlowAuth, FlowDB, and FlowETL running, you are ready to add FlowMa
 
 ##### FlowMachine
 
-The FlowMachine server requires one additional secret: `REDIS_PASSWORD`, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the `FLOWMACHINE_FLOWDB_USER` and `FLOWMACHINE_FLOWDB_PASSWORD` secrets defined for FlowDB.
+The FlowMachine server requires one additional secret: `REDIS_PASSWORD`, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the `FLOWMACHINE_FLOWDB_PASSWORD` secrets defined for FlowDB.
 
 You may also set the following environment variables:
 

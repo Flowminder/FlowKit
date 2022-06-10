@@ -40,7 +40,6 @@ def test_tables(env):
         "cache.blah": f"""
             CREATE TABLE IF NOT EXISTS
                 cache.blah();
-            ALTER TABLE cache.blah OWNER TO {env["FLOWMACHINE_FLOWDB_USER"]};
             """,
         "geography.admin0": """
             CREATE TABLE IF NOT EXISTS 

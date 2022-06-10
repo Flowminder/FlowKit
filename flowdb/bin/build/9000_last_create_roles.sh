@@ -38,12 +38,6 @@ then
     exit 1
 fi
 
-if [ -e /run/secrets/FLOWMACHINE_FLOWDB_USER ];
-then
-    echo "Using secrets for flowmachine user."
-    FLOWMACHINE_FLOWDB_USER=$(< /run/secrets/FLOWMACHINE_FLOWDB_USER)
-fi
-
 if [ -e /run/secrets/FLOWMACHINE_FLOWDB_PASSWORD ];
 then
     echo "Using secrets for flowmachine user password."
