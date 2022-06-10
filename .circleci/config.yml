@@ -901,12 +901,17 @@ jobs:
       - when:
           condition: << parameters.deploy >>
           steps:
+            - run: git fetch origin gh-pages --depth=1
             - run:
                 name: Mkdocs Deploy
                 # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
                 # .env for local build usage
                 command: |
-                  PIPENV_DONT_LOAD_ENV=1 pipenv run deploy
+                  echo "Retrieving API spec"
+                  curl http://localhost:9090/api/0/spec/openapi.json -o source/_static/openapi.json
+                  echo "Starting build."
+                  # Note: the DOCS_BRANCH variable is used by `mkdocs.yml` to pick up the correct git repositories for building API docs
+                  DOCS_BRANCH=${CIRCLE_BRANCH:="master"} PIPENV_DONT_LOAD_ENV=1 pipenv run mike deploy --push --update-aliases ${CIRCLE_TAG:="master"} latest
       - unless:
           condition: << parameters.deploy >>
           steps:
@@ -1212,6 +1217,5 @@ workflows:
       - build_docs:
           name: Deploy docs
           deploy: true
-          requires:
-            - retag_tagged_build
-          <<: *tag_only_org_context
+          requires: *retag_requirements
+          <<: *tag_and_master_only_org_context

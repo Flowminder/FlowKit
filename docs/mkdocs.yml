@@ -5,6 +5,7 @@ docs_dir: source
 site_dir: flowkit-docs
 edit_uri: ""
 plugins:
+  - mike
   - mktheapidocs:
       modules:
         flowmachine:
@@ -69,6 +70,7 @@ nav:
         - administrator/management/logging.md
         - administrator/management/users.md
   - license.md
+  - changelog.md
 
 theme:
   name: "material"
@@ -135,3 +137,5 @@ extra:
       link: "https://github.com/Flowminder"
     - icon: fontawesome/brands/twitter
       link: "https://twitter.com/Flowminder"
+  version:
+    provider: mike
