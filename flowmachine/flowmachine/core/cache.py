@@ -181,6 +181,7 @@ def write_query_to_cache(
     """
     logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
     q_state_machine = QueryStateMachine(redis, query.query_id, connection.conn_id)
+    this_thread_is_owner = False
     try:
         current_state, this_thread_is_owner = q_state_machine.execute()
         if this_thread_is_owner:
@@ -195,7 +196,9 @@ def write_query_to_cache(
             con = connection.engine
             with con.begin():
                 try:
-                    plan_time = run_ops_list_and_return_execution_time(query_ddl_ops, con)
+                    plan_time = run_ops_list_and_return_execution_time(
+                        query_ddl_ops, con
+                    )
                     logger.debug("Executed queries.")
                 except BaseException as exc:
                     q_state_machine.raise_error()
@@ -210,7 +213,8 @@ def write_query_to_cache(
                         raise exc
             q_state_machine.finish()
     except BaseException as exc:
-        q_state_machine.raise_error()
+        if this_thread_is_owner:
+            q_state_machine.raise_error()
         raise exc
 
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
