@@ -5,7 +5,7 @@ from flowmachine.features.location.redacted_location_metric import (
 )
 
 
-class RedactedInOutFlow(RedactedLocationMetric, InOutFlow, Query):
+class RedactedInOutFlow(RedactedLocationMetric, Query):
     """
     An object representing the redacted summation of all movement into or out of
     a set of locations
@@ -20,4 +20,4 @@ class RedactedInOutFlow(RedactedLocationMetric, InOutFlow, Query):
         self.redaction_target = in_out_flows
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = in_out_flows.spatial_unit
-        super().__init__(flow=in_out_flows.flow)
+        super().__init__()
