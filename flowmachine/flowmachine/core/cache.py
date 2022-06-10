@@ -259,9 +259,12 @@ def write_cache_metadata(
 
     try:
         in_cache = bool(
-            len(connection.execute(
-                f"SELECT * FROM cache.cached WHERE query_id='{query.query_id}'"
-            ).fetchall()) > 0
+            len(
+                connection.execute(
+                    f"SELECT * FROM cache.cached WHERE query_id='{query.query_id}'"
+                ).fetchall()
+            )
+            > 0
         )
         if not in_cache:
             try:
