@@ -109,7 +109,6 @@ def run_ops_list_and_return_execution_time(
         The execution time of the query if available or 0
     """
     plan_time = 0
-    ddl_op_results = []
     for ddl_op in query_ddl_ops:
         try:
             ddl_op_result = connection.execute(ddl_op)
@@ -117,15 +116,11 @@ def run_ops_list_and_return_execution_time(
             logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
             raise e
         try:
-            ddl_op_results.append(ddl_op_result.fetchall())
+            plan_time += ddl_op_result.fetchall()[0][0][0]["Execution Time"]
         except ResourceClosedError:
             pass  # Nothing to do here
-        for ddl_op_result in ddl_op_results:
-            try:
-                plan = ddl_op_result[0][0][0]  # Should be a query plan
-                plan_time += plan["Execution Time"]
-            except (IndexError, KeyError):
-                pass  # Not an explain result
+        except (IndexError, KeyError):
+            pass  # Not an explain result
     logger.debug("Executed queries.")
     return plan_time
 
