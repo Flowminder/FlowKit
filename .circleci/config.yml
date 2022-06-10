@@ -903,6 +903,11 @@ jobs:
           steps:
             - run: git fetch origin gh-pages --depth=1
             - run:
+                name: Set git committer
+                command: |
+                  git config user.name $GIT_COMMITTER_NAME
+                  git config user.email $GIT_COMMITTER_EMAIL
+            - run:
                 name: Mkdocs Deploy
                 # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
                 # .env for local build usage
