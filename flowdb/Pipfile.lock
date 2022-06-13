@@ -233,11 +233,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:68e45d17c9281ba25dc0104eadd2647172b3472d9e01f911efa57965e8d51a36",
-                "sha256:a43bdedf853c670e5fed28e5623403bad2f73cf02f9a2774e91def6bda8265a7"
+                "sha256:5a844ad6e190dccc67d6d7411d119c5152ce01f7c76be4d8a1eaa314501bba77",
+                "sha256:bf8a748ac98b09d32c9a64a995a6b25921c96cc5743c1efa82763ba80ff54e91"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==62.3.2"
+            "version": "==62.4.0"
         },
         "six": {
             "hashes": [
@@ -271,11 +271,11 @@
         },
         "traitlets": {
             "hashes": [
-                "sha256:70815ecb20ec619d1af28910ade523383be13754283aef90528eb3d47b77c5db",
-                "sha256:f44b708d33d98b0addb40c29d148a761f44af740603a8fd0e2f8b5b27cf0f087"
+                "sha256:1530d04badddc6a73d50b7ee34667d4b96914da352109117b4280cb56523a51b",
+                "sha256:74803a1baa59af70f023671d86d5c7a834c931186df26d50d362ee6a1ff021fd"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==5.2.1.post0"
+            "version": "==5.2.2.post1"
         },
         "typing-extensions": {
             "hashes": [
