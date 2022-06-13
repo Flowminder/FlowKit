@@ -9,6 +9,8 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TokenList from "./TokenList";
 import TokenDetails from "./TokenDetails";
+import Rolelist from "./RoleList";
+import RoleDetails from "./RoleDetails";
 
 const styles = (theme) => ({
   root: {
@@ -39,7 +41,7 @@ class UserServer extends React.Component {
   getBody = () => {
     if (this.state.editing) {
       return (
-        <TokenDetails
+        <RoleDetails
           classes={this.props.classes}
           onClick={this.toggleEdit}
           serverID={this.props.serverID}
@@ -48,7 +50,7 @@ class UserServer extends React.Component {
       );
     } else {
       return (
-        <TokenList
+        <RoleList
           nickName={this.props.serverName}
           serverID={this.props.serverID}
           editAction={this.toggleEdit}

@@ -137,7 +137,7 @@ export async function getGroupsForUser(user_id) {
 }
 
 export async function getMyServers() {
-  return await getResponseDefault("/tokens/servers");
+  return await getResponseDefault("tokens/servers");
 }
 
 export async function getMyTokensForServer(server_id) {
@@ -293,6 +293,38 @@ export async function createGroup(group_name) {
     body: JSON.stringify({ name: group_name }),
   };
   return await getResponse("/admin/groups", dat);
+}
+
+export async function getRole(server_id, role_id) {
+  return await getResponseDefault("/servers/"+server_id+"/roles/"+role_id)
+}
+
+
+export async function createRole(role_name) {
+  var dat = {
+    method: "POST",
+      body: JSON.stringify({ name: role_name }),
+    };
+    return await getResponse("/admin/roles", dat);
+}
+
+export async function deleteRole(role_id) {
+  var dat = {
+    method: "DELETE",
+  };
+  return await getResponse("/users/roles/"+role_id, dat);
+}
+
+export async function getRoles(server_id) {
+  return await getResponseDefault("/servers/"+server_id+"/roles")
+}
+
+export async function renameRole(role_id, new_name) {
+  var dat = {
+    method: "PATCH",
+    body: JSON.stringify({ name: new_name })
+  };
+  return await getResponse("/admin/roles/" + role_id);
 }
 
 export async function createToken(name, server_id, expiry, claims) {
