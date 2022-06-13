@@ -18,6 +18,8 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import UserServer from "./UserServer";
 import UserServerList from "./UserServerList";
+import RoleList from "./RoleList"
+import RoleDetails from "./RoleDetails"
 import GroupList from "./GroupList";
 import UserList from "./UserList";
 import ServerList from "./ServerList";
@@ -26,6 +28,7 @@ import UserDetails from "./UserDetails";
 import PublicKey from "./PublicKey";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { logout } from "./util/api";
+import TokenBuilder from "./TokenBuilder"
 
 const drawerWidth = 240;
 
@@ -142,7 +145,7 @@ class Dashboard extends React.Component {
     switch (page) {
       case "server":
         return (
-          <UserServer
+          <TokenBuilder
             serverID={this.state.activeServer}
             serverName={this.state.activeServerName}
           />
@@ -151,12 +154,17 @@ class Dashboard extends React.Component {
         return <ServerList />;
       case "user_admin":
         return <UserList />;
-      case "group_admin":
-        return <GroupList />;
+      // case "group_admin":
+      //   return <GroupList />;
       case "user_details":
         return <UserDetails />;
       case "public_key_admin":
         return <PublicKey />;
+      case "role_admin":
+        return <RoleList 
+          serverID={this.state.activeServer}
+          serverName={this.state.activeServerName}
+        />;
       default:
         return <div />;
     }

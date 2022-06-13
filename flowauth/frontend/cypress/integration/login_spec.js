@@ -12,7 +12,8 @@ describe("Login screen", function () {
     cy.get("#username").type("TEST_USER");
     cy.get("#password").type("DUMMY_PASSWORD");
     cy.get("button").click();
-    cy.contains("TEST_SERVER").should("exist");
+    cy.contains("viewer").should("exist");
+    cy.contains("runner").should("exist");
     cy.getCookie("session").should("exist");
     cy.getCookie("X-CSRF").should("exist");
   });

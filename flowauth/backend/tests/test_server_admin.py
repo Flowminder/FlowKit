@@ -234,15 +234,8 @@ def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
 def test_list_servers_for_user(client, auth, test_user_with_roles):
     uid, uname, password = test_user_with_roles
     response, csrf_cookie = auth.login(uname, password)
-    response = client.get(
-        "/tokens/servers"
-    )
+    response = client.get("/tokens/servers")
     assert response.status_code == 200
     assert response.json == [
-        {
-            "id":1,
-            "server_name":"DUMMY_SERVER_A"
-        },
+        {"id": 1, "server_name": "DUMMY_SERVER_A"},
     ]
-    
-
