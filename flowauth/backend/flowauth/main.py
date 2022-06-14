@@ -134,6 +134,7 @@ def create_app(test_config=None):
     from .login import blueprint as login_blueprint
     from .user_settings import blueprint as user_settings_blueprint
     from .version import blueprint as version_blueprint
+    from .roles import blueprint as roles_blueprint
 
     app = Flask(__name__)
 
@@ -170,6 +171,7 @@ def create_app(test_config=None):
     app.register_blueprint(users_blueprint, url_prefix="/admin")
     app.register_blueprint(token_management_blueprint, url_prefix="/tokens")
     app.register_blueprint(user_settings_blueprint, url_prefix="/user")
+    app.register_blueprint(roles_blueprint, url_prefix="/roles")
 
     app.register_blueprint(version_blueprint)
 
