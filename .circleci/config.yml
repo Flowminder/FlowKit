@@ -800,7 +800,11 @@ jobs:
           at: /home/circleci
       - restore_cache:
           key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
-      - run: *install_autoflow_deps
+      - when:
+          condition:
+            equal: [ "not query_tests", << parameters.pytest_selector >> ]
+          steps:
+            - run: *install_autoflow_deps
       - run: pipenv install --deploy --dev
       - save_cache:
           key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
