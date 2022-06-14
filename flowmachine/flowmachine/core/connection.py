@@ -275,4 +275,4 @@ class Connection:
         """
         Close the connection
         """
-        self.engine.close()
+        self.engine.dispose()
