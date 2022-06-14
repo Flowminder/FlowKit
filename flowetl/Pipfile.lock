@@ -61,43 +61,43 @@
         },
         "apache-airflow-providers-ftp": {
             "hashes": [
-                "sha256:550b60e994024454ebb33a34d0ee486d0b9ccab6a7b6e381c0d4bcbe976423e9",
-                "sha256:a8c97c4e69ee3db1a543f2124f8415e951c9a3a9037321be069f2ce594f8aa3c"
+                "sha256:1d61306597ac234f7e724bf42e10f084b04756ddf3e1cdcdf5af44b5ede5ff01",
+                "sha256:ed6079c23945717a2c98204857c2b23ea843f1c3e983cf3bd076f184f5365fea"
             ],
             "markers": "python_version ~= '3.7'",
-            "version": "==2.1.2"
+            "version": "==3.0.0"
         },
         "apache-airflow-providers-http": {
             "hashes": [
-                "sha256:559b88f2498f9d9745da05baa2c4e14fd83915c4b9f274a1d9854a0b849908ab",
-                "sha256:5f04226bcd5627037d3e903dcb0c0b744cedc903f68d7eeda25c37e8d6d26f36"
+                "sha256:3ad9d15908eda184a7f5b841c0912340f51380aeeb2171d4afd34c460313c4b6",
+                "sha256:e83bc4ba55b81dae353de2b5f431fec66f48eed61474afae8a1580e2374fa0ab"
             ],
             "markers": "python_version ~= '3.7'",
-            "version": "==2.1.2"
+            "version": "==3.0.0"
         },
         "apache-airflow-providers-imap": {
             "hashes": [
-                "sha256:c71a384ac89a2e6930fee1bc85d1e241524c0d5ff7fe0d59365362cbb35b5088",
-                "sha256:e4bc0d84283470913c84b51284e3fbe004ead3509d632e2fa79433f4ba2ee117"
+                "sha256:4139b04e84a40cd4b3204e6fd87f360253e2f2dc877c1f132bd0bd379cdcc918",
+                "sha256:deb631f2b3a62e74ed60ad67da699ada1bb9456c96469842a1be3d14683492cb"
             ],
             "markers": "python_version ~= '3.7'",
-            "version": "==2.2.3"
+            "version": "==3.0.0"
         },
         "apache-airflow-providers-postgres": {
             "hashes": [
-                "sha256:532ba10df5c97c454389eb5212fe6f75a36cace7f85c290bb4f542a42257eea5",
-                "sha256:ea625cb459c964c93b2edcfea8522e01856974749e1e2afa2d132a12a167853e"
+                "sha256:2b28400c452fa692959f8fc2f89de8a5c089c7586cf350c80727f92be6a3de7c",
+                "sha256:58d9da9b19db832d0fc72b194b4d6aae11a12f22bd24c719bedcbf6aa89fb97d"
             ],
             "index": "pypi",
-            "version": "==4.1.0"
+            "version": "==5.0.0"
         },
         "apache-airflow-providers-sqlite": {
             "hashes": [
-                "sha256:270c5a6ae81425a2728c6e04f84eff4d2276ed04e7b0beadc115bf64b55692af",
-                "sha256:ace6ee49817a69d353f5ff7120594c0ecfae7471a730787ab661cf16528d103c"
+                "sha256:519aae61c790400ac82b160cd779b6bb68e7af8bb099bc91bbf970e22731fe2b",
+                "sha256:fb292c8d5e0557410ae95b70972768b5a409c4d3c84a611d53b22cd1c1f89187"
             ],
             "markers": "python_version ~= '3.7'",
-            "version": "==2.1.3"
+            "version": "==3.0.0"
         },
         "apispec": {
             "extras": [
@@ -149,11 +149,11 @@
         },
         "cachelib": {
             "hashes": [
-                "sha256:80fa73dda398672329dab6c8e9e9bad03fd36dc4da40d911d7de308c91e8481e",
-                "sha256:df254f3b900dc8684d8ebdd146c731ddb45edc6233a6cf7e3e834c949f360726"
+                "sha256:e358f6f82cf633891f0dbd3996e300b4657716ac44b301df33b9cb2cfd6eea6d",
+                "sha256:efb94456a4cf91669c4b6e82833b43d20c45e3c2ba8384841854c79cc7175565"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==0.7.0"
+            "version": "==0.8.0"
         },
         "cattrs": {
             "hashes": [
@@ -1767,6 +1767,10 @@
             ],
             "markers": "python_version >= '3.7' and python_full_version < '4.0.0'",
             "version": "==2.28.0"
+        },
+        "sanitized-package": {
+            "editable": true,
+            "path": "./flowetl"
         },
         "six": {
             "hashes": [
