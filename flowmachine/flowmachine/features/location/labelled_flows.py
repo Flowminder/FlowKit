@@ -155,7 +155,7 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         """
         Returns
         -------
-        LablledOutFlow
+        LabelledInOutFlow
             An outflows object. This is the total number of flows that
             originate from one locations, regardless of their destination.
         """
@@ -166,7 +166,7 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         """
         Returns
         -------
-        LabelledInFlow
+        LabelledInOutFlow
             An inflows object. This is the total number of flows that
             go to one locations, regardless of their origin.
         """
@@ -183,7 +183,7 @@ class LabelledInOutFlow(GeoDataMixin, Query):
     flow : LabelledFlows
         LabelledFlows object to derive an in/out flow from
     direction : {'to', 'from'}
-        One of to (for inflows) or out (for outflows)
+        One of to (for inflows) or from (for outflows)
     """
 
     def __init__(self, flow: LabelledFlows, direction: str):
