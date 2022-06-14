@@ -323,7 +323,10 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         The new cache score
     """
     try:
-        return float(connection.fetch(f"SELECT touch_cache('{query_id}')")[0][0])
+        with connection.engine.begin() as trans:
+            return float(
+                trans.execute(f"SELECT touch_cache('{query_id}')").fetchall()[0][0]
+            )
     except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
