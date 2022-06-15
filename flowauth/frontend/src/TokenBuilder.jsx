@@ -2,14 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import React from "react";
+import React, {Fragment, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import Stack from "@material-ui/core/Grid"
-import DatePicker from "@material-ui/pickers/DatePicker"
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers"
+import DateFnsUtils from "@date-io/date-fns";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles"
 import { Button } from "rsuite";
 import UserRoleList from "./UserRoleList";
+import { getDisabledState } from "rsuite/esm/CheckTreePicker/utils";
 
 const styles = (theme) => ({
   root: {
@@ -18,38 +20,35 @@ const styles = (theme) => ({
     paddingBottom: theme.spacing.unit * 2
   }
 })
+function TokenBuilder(props) {
 
-class TokenBuilder extends React.Component {
+  const [selectedDate, handleDateChange] = useState(new Date());
+  const {user, server} = props
 
-  state = {
-    token_date: Date(2020, 1, 1)
-  }
-
-  handleDateChange = (new_date) => {
-    this.setState({token_date:new_date})
-  }
-
-  render() {
     return (
-      <React.Fragment>
+      <Fragment>
         <Grid container xs={8}>
-          <UserRoleList />
-        </Grid>
-        <Grid container xs={4}>
+          <UserRoleList
+            user = {user}
+            server = {server}
+          />
+
           <Stack>
-            <DatePicker
-              label="Expiry date"
-              value = {this.state.token_date}
-              onChange={this.handleDateChange}
-            />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <DateTimePicker
+                label="Expiry date"
+                value = {selectedDate}
+                onChange={handleDateChange}
+              />
+            </MuiPickersUtilsProvider> 
             <Button>
               Get token
             </Button>
           </Stack>
         </Grid>
-      </React.Fragment>
-    )
-  }
+
+      </Fragment>
+    );
 }
 
 export default withStyles(styles)(TokenBuilder)
