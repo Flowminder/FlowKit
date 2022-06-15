@@ -21,6 +21,9 @@ __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
 
 
 class LocationEventCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "location_event_counts"
+
     def __init__(
         self,
         *,
@@ -75,13 +78,13 @@ class LocationEventCountsSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
+    __model__ = LocationEventCountsExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["location_event_counts"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     interval = fields.String(
         required=True, validate=OneOf(TotalLocationEvents.allowed_intervals)
     )
     direction = fields.String(
         required=True, validate=OneOf(["in", "out", "both"])
     )  # TODO: use a globally defined enum for this
-
-    __model__ = LocationEventCountsExposed

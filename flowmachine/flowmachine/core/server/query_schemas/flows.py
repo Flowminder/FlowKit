@@ -4,13 +4,11 @@
 
 from marshmallow import fields
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 
 from flowmachine.features import Flows
 from flowmachine.features.location.redacted_flows import (
     RedactedFlows,
-    RedactedInOutFlow,
 )
 from flowmachine.core.join import Join
 from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
@@ -19,19 +17,22 @@ from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
 from .reference_location import ReferenceLocationSchema
+from .one_of_query import OneOfQuerySchema
 
 from .unique_locations import UniqueLocationsSchema
 
 
-class InputToFlowsSchema(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        **ReferenceLocationSchema.type_schemas,
-        "unique_locations": UniqueLocationsSchema,
-    }
+class InputToFlowsSchema(OneOfQuerySchema):
+    query_schemas = (
+        *ReferenceLocationSchema.query_schemas,
+        UniqueLocationsSchema,
+    )
 
 
 class FlowsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "flows"
+
     def __init__(self, *, from_location, to_location, join_type):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -54,10 +55,10 @@ class FlowsExposed(BaseExposedQuery):
 
 
 class FlowsSchema(BaseSchema):
+    __model__ = FlowsExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["flows"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
-
-    __model__ = FlowsExposed

@@ -9,7 +9,7 @@ from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
 from .field_mixins import StartAndEndField
 from .base_schema import BaseSchema
-from .custom_fields import DFSMetric, ISODateTime
+from .custom_fields import DFSMetric
 from .aggregation_unit import AggregationUnitKind
 
 __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
@@ -18,6 +18,9 @@ from ...spatial_unit import AdminSpatialUnit
 
 
 class DFSTotalMetricAmountExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "dfs_metric_total_amount"
+
     def __init__(
         self, *, metric, start_date, end_date, aggregation_unit: AdminSpatialUnit
     ):
@@ -46,9 +49,9 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
 
 
 class DFSTotalMetricAmountSchema(StartAndEndField, BaseSchema):
+    __model__ = DFSTotalMetricAmountExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     metric = DFSMetric()
     aggregation_unit = AggregationUnitKind()
-
-    __model__ = DFSTotalMetricAmountExposed

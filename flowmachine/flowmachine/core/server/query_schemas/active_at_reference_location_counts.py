@@ -30,6 +30,9 @@ from .unique_locations import UniqueLocationsSchema
 
 
 class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "active_at_reference_location_counts"
+
     def __init__(
         self,
         unique_locations,
@@ -60,9 +63,9 @@ class ActiveAtReferenceLocationCountsExposed(BaseExposedQuery):
 
 
 class ActiveAtReferenceLocationCountsSchema(BaseSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["active_at_reference_location_counts"]))
-    unique_locations = fields.Nested(UniqueLocationsSchema())
-    reference_locations = fields.Nested(ReferenceLocationSchema())
-
     __model__ = ActiveAtReferenceLocationCountsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    unique_locations = fields.Nested(UniqueLocationsSchema(), required=True)
+    reference_locations = fields.Nested(ReferenceLocationSchema(), required=True)

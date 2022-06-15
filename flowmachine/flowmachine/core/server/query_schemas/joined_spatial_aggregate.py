@@ -4,7 +4,6 @@
 
 from marshmallow import fields, pre_load, ValidationError
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
@@ -38,28 +37,31 @@ from .base_exposed_query import BaseExposedQuery
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 from .base_schema import BaseSchema
+from .one_of_query import OneOfQuerySchema
 from .reference_location import ReferenceLocationSchema
 from .total_active_periods import TotalActivePeriodsSchema
 
 
-class JoinableMetrics(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "radius_of_gyration": RadiusOfGyrationSchema,
-        "unique_location_counts": UniqueLocationCountsSchema,
-        "topup_balance": TopUpBalanceSchema,
-        "subscriber_degree": SubscriberDegreeSchema,
-        "topup_amount": TopUpAmountSchema,
-        "event_count": EventCountSchema,
-        "handset": HandsetSchema,
-        "pareto_interactions": ParetoInteractionsSchema,
-        "nocturnal_events": NocturnalEventsSchema,
-        "displacement": DisplacementSchema,
-        "total_active_periods": TotalActivePeriodsSchema,
-    }
+class JoinableMetrics(OneOfQuerySchema):
+    query_schemas = (
+        RadiusOfGyrationSchema,
+        UniqueLocationCountsSchema,
+        TopUpBalanceSchema,
+        SubscriberDegreeSchema,
+        TopUpAmountSchema,
+        EventCountSchema,
+        HandsetSchema,
+        ParetoInteractionsSchema,
+        NocturnalEventsSchema,
+        DisplacementSchema,
+        TotalActivePeriodsSchema,
+    )
 
 
 class JoinedSpatialAggregateExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "joined_spatial_aggregate"
+
     def __init__(self, *, locations, metric, method):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -86,8 +88,10 @@ class JoinedSpatialAggregateExposed(BaseExposedQuery):
 
 
 class JoinedSpatialAggregateSchema(BaseSchema):
+    __model__ = JoinedSpatialAggregateExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     locations = fields.Nested(ReferenceLocationSchema, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
     method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
@@ -117,5 +121,3 @@ class JoinedSpatialAggregateSchema(BaseSchema):
             )
         validate(data["method"])
         return data
-
-    __model__ = JoinedSpatialAggregateExposed

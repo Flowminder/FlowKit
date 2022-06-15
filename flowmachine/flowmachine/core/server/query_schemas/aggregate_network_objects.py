@@ -15,6 +15,9 @@ __all__ = ["AggregateNetworkObjectsSchema", "AggregateNetworkObjectsExposed"]
 
 
 class AggregateNetworkObjectsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "aggregate_network_objects"
+
     def __init__(self, *, total_network_objects, statistic, aggregate_by):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -41,10 +44,10 @@ class AggregateNetworkObjectsExposed(BaseExposedQuery):
 
 
 class AggregateNetworkObjectsSchema(BaseSchema):
+    __model__ = AggregateNetworkObjectsExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["aggregate_network_objects"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     total_network_objects = fields.Nested(TotalNetworkObjectsSchema, required=True)
     statistic = Statistic()
     aggregate_by = AggregateBy()
-
-    __model__ = AggregateNetworkObjectsExposed

@@ -21,6 +21,9 @@ __all__ = ["RadiusOfGyrationSchema", "RadiusOfGyrationExposed"]
 
 
 class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "radius_of_gyration"
+
     def __init__(
         self,
         *,
@@ -65,7 +68,7 @@ class RadiusOfGyrationSchema(
     HoursField,
     BaseQueryWithSamplingSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
-
     __model__ = RadiusOfGyrationExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

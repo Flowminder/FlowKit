@@ -21,6 +21,9 @@ __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
 
 
 class NocturnalEventsExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "nocturnal_events"
+
     def __init__(
         self,
         *,
@@ -65,10 +68,11 @@ class NocturnalEventsSchema(
     SubscriberSubsetField,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
+    __model__ = NocturnalEventsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     night_start_hour = fields.Integer(
         validate=Range(0, 23)
     )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
     night_end_hour = fields.Integer(validate=Range(0, 23))
-
-    __model__ = NocturnalEventsExposed

@@ -20,6 +20,9 @@ from flowmachine.features.subscriber.filtered_reference_location import (
 
 
 class CoalescedLocationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "coalesced_location"
+
     def __init__(
         self,
         preferred_location,
@@ -53,7 +56,10 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
     query as the fallback location
     """
 
-    query_kind = fields.String(validate=OneOf(["coalesced_location"]))
+    __model__ = CoalescedLocationExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     preferred_location = fields.Nested(MajorityLocationSchema, required=True)
     fallback_location = fields.Nested(MajorityLocationSchema, required=True)
     subscriber_location_weights = fields.Nested(LocationVisitsSchema, required=True)
@@ -82,5 +88,3 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
             ]
         if errors:
             raise ValidationError(errors)
-
-    __model__ = CoalescedLocationExposed

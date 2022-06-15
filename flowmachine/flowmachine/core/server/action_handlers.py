@@ -347,7 +347,9 @@ async def action_handler__get_geography(
     Returns SQL to get geography for the given `aggregation_unit` as GeoJSON.
     """
     try:
-        query_obj = GeographySchema().load({"aggregation_unit": aggregation_unit})
+        query_obj = GeographySchema().load(
+            {"query_kind": "geography", "aggregation_unit": aggregation_unit}
+        )
     except TypeError as exc:
         # We need to catch TypeError here, otherwise they propagate up to
         # perform_action() and result in a very misleading error message.

@@ -6,8 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TopUpBalance
-from .custom_fields import Statistic, ISODateTime
-from .subscriber_subset import SubscriberSubset
+from .custom_fields import Statistic
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -15,7 +14,6 @@ from .base_query_with_sampling import (
 from .field_mixins import (
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
 
@@ -23,6 +21,9 @@ __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
 
 class TopUpBalanceExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "topup_balance"
+
     def __init__(
         self,
         *,
@@ -66,7 +67,8 @@ class TopUpBalanceSchema(
     HoursField,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["topup_balance"]))
-    statistic = Statistic()
-
     __model__ = TopUpBalanceExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    statistic = Statistic()

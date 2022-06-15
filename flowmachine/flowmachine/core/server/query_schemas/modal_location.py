@@ -4,21 +4,23 @@
 
 from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import OneOf, Length
-from marshmallow_oneofschema import OneOfSchema
 
 from .daily_location import DailyLocationSchema
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .one_of_query import OneOfQuerySchema
 
 
-class InputToModalLocationSchema(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {"daily_location": DailyLocationSchema}
+class InputToModalLocationSchema(OneOfQuerySchema):
+    query_schemas = (DailyLocationSchema,)
 
 
 class ModalLocationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "modal_location"
+
     def __init__(self, locations, *, sampling=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -42,8 +44,10 @@ class ModalLocationExposed(BaseExposedQueryWithSampling):
 
 
 class ModalLocationSchema(BaseQueryWithSamplingSchema):
+    __model__ = ModalLocationExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["modal_location"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     locations = fields.List(
         fields.Nested(InputToModalLocationSchema), validate=Length(min=1)
     )
@@ -54,5 +58,3 @@ class ModalLocationSchema(BaseQueryWithSamplingSchema):
             raise ValidationError(
                 "All inputs to modal_locations should have the same aggregation unit"
             )
-
-    __model__ = ModalLocationExposed

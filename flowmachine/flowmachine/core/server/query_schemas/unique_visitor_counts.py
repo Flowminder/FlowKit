@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.unique_visitor_counts import UniqueVisitorCounts
@@ -20,6 +20,9 @@ __all__ = [
 
 
 class UniqueVisitorCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "unique_visitor_counts"
+
     def __init__(
         self,
         active_at_reference_location_counts,
@@ -47,11 +50,13 @@ class UniqueVisitorCountsExposed(BaseExposedQuery):
 
 
 class UniqueVisitorCountsSchema(BaseSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unique_visitor_counts"]))
-    active_at_reference_location_counts = fields.Nested(
-        ActiveAtReferenceLocationCountsSchema()
-    )
-    unique_subscriber_counts = fields.Nested(UniqueSubscriberCountsSchema())
-
     __model__ = UniqueVisitorCountsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    active_at_reference_location_counts = fields.Nested(
+        ActiveAtReferenceLocationCountsSchema(), required=True
+    )
+    unique_subscriber_counts = fields.Nested(
+        UniqueSubscriberCountsSchema(), required=True
+    )

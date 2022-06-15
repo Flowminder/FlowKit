@@ -2,12 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberHandsetCharacteristic
-from .custom_fields import EventTypes, ISODateTime, Hours
-from .subscriber_subset import SubscriberSubset
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -23,6 +21,9 @@ __all__ = ["HandsetSchema", "HandsetExposed"]
 
 
 class HandsetExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "handset"
+
     def __init__(
         self,
         *,
@@ -73,13 +74,13 @@ class HandsetSchema(
     HoursField,
     BaseQueryWithSamplingSchema,
 ):
+    __model__ = HandsetExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["handset"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     characteristic = fields.String(
         validate=OneOf(
             ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
         )
     )
     method = fields.String(validate=OneOf(["last", "most-common"]))
-
-    __model__ = HandsetExposed

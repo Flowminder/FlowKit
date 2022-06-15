@@ -18,6 +18,9 @@ from flowmachine.features.subscriber.mobility_classification import (
 
 
 class MobilityClassificationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "mobility_classification"
+
     def __init__(self, *, locations, stay_length_threshold, sampling=None):
         self.locations = locations
         self.stay_length_threshold = stay_length_threshold
@@ -32,7 +35,10 @@ class MobilityClassificationExposed(BaseExposedQueryWithSampling):
 
 
 class MobilityClassificationSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["mobility_classification"]))
+    __model__ = MobilityClassificationExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     locations = fields.List(
         fields.Nested(CoalescedLocationSchema), validate=Length(min=1)
     )
@@ -42,5 +48,3 @@ class MobilityClassificationSchema(BaseQueryWithSamplingSchema):
     def validate_locations(self, locations):
         if len(set(location.aggregation_unit for location in locations)) > 1:
             raise ValidationError("All locations must have the same aggregation unit")
-
-    __model__ = MobilityClassificationExposed

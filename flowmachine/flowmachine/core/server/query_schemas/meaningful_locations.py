@@ -28,12 +28,10 @@ from .base_exposed_query import BaseExposedQuery
 from .field_mixins import StartAndEndField, EventTypesField, SubscriberSubsetField
 from .base_schema import BaseSchema
 from .custom_fields import (
-    EventTypes,
     TowerHourOfDayScores,
     TowerDayOfWeekScores,
     ISODateTime,
 )
-from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = [
@@ -49,6 +47,9 @@ from ...spatial_unit import AnySpatialUnit
 
 
 class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "meaningful_locations_aggregate"
+
     def __init__(
         self,
         *,
@@ -110,6 +111,9 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
 
 
 class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "meaningful_locations_between_label_od_matrix"
+
     def __init__(
         self,
         *,
@@ -176,6 +180,9 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
 
 
 class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "meaningful_locations_between_dates_od_matrix"
+
     def __init__(
         self,
         *,
@@ -251,8 +258,10 @@ class MeaningfulLocationsAggregateSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
+    __model__ = MeaningfulLocationsAggregateExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
         required=True, keys=fields.String(), values=fields.Dict()
@@ -261,8 +270,6 @@ class MeaningfulLocationsAggregateSchema(
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
-
-    __model__ = MeaningfulLocationsAggregateExposed
 
 
 def _make_meaningful_locations_object(
@@ -318,9 +325,10 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    query_kind = fields.String(
-        validate=OneOf(["meaningful_locations_between_label_od_matrix"])
-    )
+    __model__ = MeaningfulLocationsBetweenLabelODMatrixExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
     labels = fields.Dict(
@@ -331,15 +339,14 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
 
-    __model__ = MeaningfulLocationsBetweenLabelODMatrixExposed
-
 
 class MeaningfulLocationsBetweenDatesODMatrixSchema(
     EventTypesField, SubscriberSubsetField, AggregationUnitMixin, BaseSchema
 ):
-    query_kind = fields.String(
-        validate=OneOf(["meaningful_locations_between_dates_od_matrix"])
-    )
+    __model__ = MeaningfulLocationsBetweenDatesODMatrixExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     start_date_a = ISODateTime(required=True)
     end_date_a = ISODateTime(required=True)
     start_date_b = ISODateTime(required=True)
@@ -352,5 +359,3 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
-
-    __model__ = MeaningfulLocationsBetweenDatesODMatrixExposed

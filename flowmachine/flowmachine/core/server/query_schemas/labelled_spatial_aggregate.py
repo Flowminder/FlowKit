@@ -27,6 +27,9 @@ __all__ = [
 
 
 class LabelledSpatialAggregateExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "labelled_spatial_aggregate"
+
     def __init__(self, *, locations, labels):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -51,9 +54,9 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
 
 
 class LabelledSpatialAggregateSchema(BaseSchema):
+    __model__ = LabelledSpatialAggregateExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["labelled_spatial_aggregate"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     locations = fields.Nested(CoalescedLocationSchema, required=True)
     labels = fields.Nested(MobilityClassificationSchema, required=True)
-
-    __model__ = LabelledSpatialAggregateExposed

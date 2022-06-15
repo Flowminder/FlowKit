@@ -18,6 +18,9 @@ __all__ = ["UnmovingCountsSchema", "UnmovingCountsExposed"]
 
 
 class UnmovingCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "unmoving_counts"
+
     def __init__(self, locations):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -40,8 +43,8 @@ class UnmovingCountsExposed(BaseExposedQuery):
 
 
 class UnmovingCountsSchema(BaseSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unmoving_counts"]))
-    locations = fields.Nested(UniqueLocationsSchema)
-
     __model__ = UnmovingCountsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    locations = fields.Nested(UniqueLocationsSchema)

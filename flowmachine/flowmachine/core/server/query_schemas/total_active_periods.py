@@ -19,6 +19,9 @@ __all__ = ["TotalActivePeriodsSchema", "TotalActivePeriodsExposed"]
 
 
 class TotalActivePeriodsExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "total_active_periods"
+
     def __init__(
         self,
         *,
@@ -65,8 +68,10 @@ class TotalActivePeriodsExposed(BaseExposedQueryWithSampling):
 class TotalActivePeriodsSchema(
     EventTypesField, SubscriberSubsetField, HoursField, BaseSchema
 ):
+    __model__ = TotalActivePeriodsExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["total_active_periods"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     start_date = ISODateTime(required=True)
     total_periods = fields.Integer(required=True)
     period_length = fields.Integer(missing=1, required=False, default=1)
@@ -76,5 +81,3 @@ class TotalActivePeriodsSchema(
         required=False,
         default="days",
     )
-
-    __model__ = TotalActivePeriodsExposed

@@ -22,6 +22,9 @@ __all__ = ["LabelledFlowsSchema", "LabelledFlowsExposed"]
 
 
 class LabelledFlowsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "labelled_flows"
+
     def __init__(self, *, from_location, to_location, labels, join_type):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -53,11 +56,11 @@ class LabelledFlowsExposed(BaseExposedQuery):
 
 
 class LabelledFlowsSchema(BaseSchema):
+    __model__ = LabelledFlowsExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["labelled_flows"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     from_location = fields.Nested(CoalescedLocationSchema, required=True)
     to_location = fields.Nested(CoalescedLocationSchema, required=True)
     labels = fields.Nested(MobilityClassificationSchema, required=True)
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
-
-    __model__ = LabelledFlowsExposed
