@@ -42,6 +42,9 @@ def enum_paths(
         "enum" in tree.keys()
         and len(tree["enum"]) > 1
         and new_path[-1] in argument_names_to_extract
+        and not (
+            ("readOnly" in tree.keys()) and tree["readOnly"]
+        )  # Workaround - read-only aggregation units will be required for new permissions, but should not be taken into account for current permissions
     ):
         yield (new_path, f"{{{new_path[-1]}}}")
     elif "items" in tree.keys():
