@@ -6,7 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import RoleDetails from "./RoleDetails";
 import { getUserRoles} from "./util/api";
 import { Fragment, useEffect, useState } from "react";
-import {List, Checkbox, ListSubheader } from "@material-ui/core";
+import {List, Checkbox, ListSubheader, ListItem } from "@material-ui/core";
 
 const styles = (theme) => ({
   root: {
@@ -21,19 +21,38 @@ function UserRoleList(props){
   const {user, server} = props
 
   const [roles, setRoleState] = useState([])
+  const [checked, setChecked] = useState([])
+
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked]
+    console.log("box checked")
+    if (currentIndex === -1) {
+      newChecked.push(value)
+    } else {
+      newChecked.splice(currentIndex, 1)
+    }
+    setChecked(newChecked)
+  }
+
   useEffect(() => {
-    getUserRoles(server).then((roles) => setRoleState(roles), (err) => console.log(err))
+    getUserRoles(server)
+    .then((roles) => {setRoleState(roles); console.log(roles)},
+     (err) => console.log(err))
   }, [])
 
   return (
     <Fragment>
       <List>
         <ListSubheader inset>Roles</ListSubheader>
-        {roles.map((this_role) => (
-          <RoleDetails
-            name={this_role.name}
-            scopes={this_role.scopes}
-          />
+        {roles.map((this_role, i) => (
+          <ListItem key={i}>
+          <RoleDetails role={this_role}/>
+          <Checkbox
+                onChange={handleToggle(i)}
+                checked={checked.indexOf(i) !== -1}
+              />
+          </ListItem>
         ))}
       </List>
     </Fragment>
