@@ -1,18 +1,26 @@
-import { List, Typography } from "@material-ui/core"
+import { Divider, List, Typography, ListItem } from "@material-ui/core"
 import { Fragment } from "react"
 
 function RoleDetails(props) {
-  const {name, scopes} = props
+  const {role} = props
+
+
+  
 
   return (
     <Fragment>
-      <Typography varient="h2">{name}</Typography>
+      <ListItem varient="h6">{role.name}
       <List>
-        {scopes.map((scope) =>
-        <Typography varient = "body1" gutterBottom>{scope}</Typography>)}
-
+        {role.scopes.map((scope) =>
+        <ListItem>
+        <Typography varient = "body1" gutterTop>
+          {scope}
+        </Typography>
+        <Divider />
+        </ListItem>)
+        }
       </List>
-      <Typography>{scopes}</Typography>
+      </ ListItem>
     </Fragment>
   )
 
