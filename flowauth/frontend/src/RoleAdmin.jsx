@@ -14,7 +14,7 @@ import {
     getRole,
 } from "./util/api";
 
-class RoleDetails extends React.Component {
+class RoleAdmin extends React.Component {
   state = {
     name: "",
     scopes: [],
@@ -145,4 +145,4 @@ class RoleDetails extends React.Component {
   }
 }
 
-export default RoleDetails;
+export default RoleAdmin;

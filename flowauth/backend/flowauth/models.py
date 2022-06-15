@@ -522,7 +522,7 @@ def make_demodata():
     db.session.add(test_server)
 
     scopes = [
-        reader_scope := Scope(scope="read"),
+        reader_scope := Scope(scope="get_result"),
         runner_scope := Scope(
             scope="run",
         ),

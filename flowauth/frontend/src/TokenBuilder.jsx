@@ -23,14 +23,14 @@ const styles = (theme) => ({
 function TokenBuilder(props) {
 
   const [selectedDate, handleDateChange] = useState(new Date());
-  const {user, server} = props
+  const {user, serverID} = props
 
     return (
       <Fragment>
         <Grid container xs={8}>
           <UserRoleList
             user = {user}
-            server = {server}
+            server = {serverID}
           />
 
           <Stack>
