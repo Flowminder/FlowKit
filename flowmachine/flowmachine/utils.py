@@ -6,6 +6,7 @@
 """
 Various simple utilities.
 """
+from enum import Enum
 
 import datetime
 import re
@@ -15,6 +16,49 @@ from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
 from typing import Union, Tuple
+
+
+class Statistic(str, Enum):
+    """
+    Valid statistics for use with postgres.
+
+    Convert a column name to a stat by doing f"{statistic:column_name}".
+
+    For columns defined as a variable, do f"{statistic:'{column_name_variable}'}"
+    """
+
+    COUNT = "count"
+    SUM = "sum"
+    AVG = "avg"
+    MAX = "max"
+    MIN = "min"
+    MEDIAN = "median"
+    STDDEV = "stddev"
+    VARIANCE = "variance"
+    MODE = "mode"
+
+    def __format__(self, column_name=""):
+        """
+        Get a postgres statistics function by name.
+
+        Parameters
+        ----------
+        column_name : str
+            Column to aggregate
+        Returns
+        -------
+        str
+            A postgres format function call string
+
+        """
+        if column_name == "":
+            return str(self.value)
+        if self == "mode":
+            return f"pg_catalog.mode() WITHIN GROUP (ORDER BY {column_name})"
+        elif self == "median":
+            return f"percentile_cont(0.5) WITHIN GROUP (ORDER BY {column_name})"
+        else:
+            return f"{self}({column_name})"
 
 
 def parse_datestring(

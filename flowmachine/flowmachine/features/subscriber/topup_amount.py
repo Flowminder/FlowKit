@@ -12,9 +12,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class TopUpAmount(SubscriberFeature):
@@ -25,8 +23,8 @@ class TopUpAmount(SubscriberFeature):
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
-        Defaults to sum, aggregation statistic over the durations.
+    statistic : Statistic, default Statistic.AVG
+        Defaults to avg, aggregation statistic over the durations.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
@@ -56,7 +54,7 @@ class TopUpAmount(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         subscriber_identifier="msisdn",
         hours: Optional[Tuple[int, int]] = None,
@@ -66,15 +64,8 @@ class TopUpAmount(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
-        self.statistic = statistic.lower()
+        self.statistic = Statistic(statistic.lower())
         self.tables = "events.topups"
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
 
         column_list = [self.subscriber_identifier, "recharge_amount"]
 
@@ -97,7 +88,7 @@ class TopUpAmount(SubscriberFeature):
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic}(recharge_amount) AS value
+        SELECT subscriber, {self.statistic:recharge_amount} AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """

@@ -39,11 +39,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -399,11 +401,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -542,6 +546,7 @@
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
         "histogram_aggregate": "#/components/schemas/HistogramAggregate",
+        "inflows": "#/components/schemas/Inflows",
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
         "labelled_flows": "#/components/schemas/LabelledFlows",
         "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
@@ -550,6 +555,7 @@
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
+        "outflows": "#/components/schemas/Outflows",
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "trips_od_matrix": "#/components/schemas/TripsODMatrix",
@@ -586,6 +592,9 @@
         "$ref": "#/components/schemas/HistogramAggregate"
       },
       {
+        "$ref": "#/components/schemas/Inflows"
+      },
+      {
         "$ref": "#/components/schemas/JoinedSpatialAggregate"
       },
       {
@@ -608,6 +617,9 @@
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/Outflows"
       },
       {
         "$ref": "#/components/schemas/SpatialAggregate"
@@ -882,6 +894,39 @@
     ],
     "type": "object"
   },
+  "Inflows": {
+    "properties": {
+      "from_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "inflows"
+        ],
+        "type": "string"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      }
+    },
+    "required": [
+      "from_location",
+      "to_location"
+    ],
+    "type": "object"
+  },
   "InputToFlows": {
     "discriminator": {
       "mapping": {
@@ -993,12 +1038,14 @@
       "method": {
         "enum": [
           "avg",
+          "count",
           "distr",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -1824,6 +1871,39 @@
     ],
     "type": "object"
   },
+  "Outflows": {
+    "properties": {
+      "from_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "outflows"
+        ],
+        "type": "string"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      }
+    },
+    "required": [
+      "from_location",
+      "to_location"
+    ],
+    "type": "object"
+  },
   "ParetoInteractions": {
     "properties": {
       "end_date": {
@@ -2188,11 +2268,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -2245,11 +2327,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"

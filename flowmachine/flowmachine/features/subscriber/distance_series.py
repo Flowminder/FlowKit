@@ -11,9 +11,9 @@ from typing import List, Optional, Union, Tuple
 from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
-from flowmachine.utils import standardise_date
+from flowmachine.utils import standardise_date, Statistic
 
-valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
+
 valid_time_buckets = [
     "second",
     "minute",
@@ -45,9 +45,8 @@ class DistanceSeries(SubscriberFeature):
     reference_location : BaseLocation or tuple of int, default (0, 0)
         The set of home locations from which to calculate distance at each sighting, or a tuple
         of lon-lat in WS84 projection.
-    statistic : str
-        the statistic to calculate one of 'sum', 'avg', 'max', 'min',
-        'median', 'stddev' or 'variance'
+    statistic : Statistic
+        the statistic to calculate.
     time_bucket : {"second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"}, default "day"
         Time bucket to calculate the statistic over.
 
@@ -68,7 +67,7 @@ class DistanceSeries(SubscriberFeature):
         *,
         subscriber_locations: SubscriberLocations,
         reference_location: Union[BaseLocation, Tuple[float, float]] = (0, 0),
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         time_bucket: str = "day",
     ):
         subscriber_locations.spatial_unit.verify_criterion("has_geography")
@@ -81,11 +80,7 @@ class DistanceSeries(SubscriberFeature):
                 f"'{time_bucket}' is not a valid value for time_bucket. Use one of {valid_time_buckets}"
             )
 
-        if statistic.lower() not in valid_stats:
-            raise ValueError(
-                f"'{statistic}' is not a valid statistic. Use one of {valid_stats}"
-            )
-        self.statistic = statistic.lower()
+        self.statistic = Statistic(statistic.lower())
         self.start = standardise_date(subscriber_locations.start)
         self.stop = standardise_date(subscriber_locations.stop)
         if isinstance(reference_location, tuple):
@@ -147,7 +142,7 @@ class DistanceSeries(SubscriberFeature):
             SELECT 
                 subscriber,
                 date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
-                {self.statistic}(COALESCE(value_dist, 0)) as value
+                {self.statistic:COALESCE(value_dist, 0)} as value
             FROM 
                 ({joined}) _
             GROUP BY 

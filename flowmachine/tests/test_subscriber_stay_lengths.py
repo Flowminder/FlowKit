@@ -125,7 +125,7 @@ def test_subscriber_stay_lengths_mismatched_spatial_unit_raises():
 
 
 def test_subscriber_stay_lengths_invalid_statistic_raises():
-    with pytest.raises(ValueError, match="'invalid' is not a valid statistic"):
+    with pytest.raises(ValueError, match="'invalid' is not a valid Statistic"):
         """
         Test that SubscriberStayLengths raises an error if the specified statistic
         is not one of valid_stats

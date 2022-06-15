@@ -12,19 +12,7 @@ import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date
-
-valid_stats = {
-    "count",
-    "sum",
-    "avg",
-    "max",
-    "min",
-    "median",
-    "mode",
-    "stddev",
-    "variance",
-}
+from flowmachine.utils import standardise_date, Statistic
 
 
 class TopUpBalance(SubscriberFeature):
@@ -59,7 +47,7 @@ class TopUpBalance(SubscriberFeature):
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
+    statistic : Statistic, default Statistic.SUM
         Defaults to sum, aggregation statistic over the durations.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
@@ -91,7 +79,7 @@ class TopUpBalance(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="sum",
+        statistic: Statistic = Statistic.SUM,
         *,
         subscriber_identifier="msisdn",
         hours: Optional[Tuple[int, int]] = None,
@@ -101,15 +89,8 @@ class TopUpBalance(SubscriberFeature):
         self.stop = standardise_date(stop)
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
-        self.statistic = statistic.lower()
+        self.statistic = Statistic(statistic.lower())
         self.tables = "events.topups"
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
 
         column_list = [
             self.subscriber_identifier,
@@ -137,28 +118,26 @@ class TopUpBalance(SubscriberFeature):
     def _make_query(self):
 
         if self.statistic in {"count"}:
-            sql = f"""
+            return f"""
             SELECT subscriber, COUNT(*) AS value
             FROM ({self.unioned_query.get_query()}) AS U
             GROUP BY subscriber
             """
-            return sql
 
         if self.statistic in {"max", "min"}:
-            sql = f"""
-            SELECT subscriber, {self.statistic}(balance) AS value
+            return f"""
+            SELECT subscriber, {self.statistic:balance} AS value
             FROM (
-                SELECT subscriber, {self.statistic}(pre_event_balance) AS balance
+                SELECT subscriber, {self.statistic:pre_event_balance} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
                 UNION ALL
-                SELECT subscriber, {self.statistic}(post_event_balance) AS balance
+                SELECT subscriber, {self.statistic:post_event_balance} AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
                 GROUP BY subscriber
             ) U
             GROUP BY subscriber
             """
-            return sql
 
         weighted_sum = f"SUM(weight * balance)"
         weighted_avg = f"{weighted_sum} / SUM(weight)"
@@ -220,38 +199,41 @@ class TopUpBalance(SubscriberFeature):
         """
 
         if self.statistic in {"sum", "avg", "stddev", "variance"}:
-            sql = f"""
+            return f"""
             SELECT subscriber, {statistic_clause} AS value
             FROM ({weight_extraction_query}) U
             GROUP BY subscriber
             """
-            return sql
 
         if self.statistic in {"mode"}:
-            sql = f"""
+            return f"""
             SELECT DISTINCT ON (subscriber) subscriber, balance AS value
             FROM (
                 SELECT subscriber, balance, SUM(weight * balance) AS total_weight
                 FROM ({weight_extraction_query}) U
                 GROUP BY subscriber, balance
-                ORDER BY subscriber, DESC total_weight
+                ORDER BY subscriber DESC, total_weight
             ) U
             """
 
-        sql = f"""
-        WITH W AS ({weight_extraction_query})
-        SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS value
-        FROM (
-            SELECT
-                subscriber,
-                balance,
-                weight,
-                SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
-            FROM W
-        ) A
-        JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
-        ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
-        ORDER BY A.subscriber, A.weight
-        """
+        # Weighted median
+        if self.statistic == Statistic.MEDIAN:
+            return f"""
+            WITH W AS ({weight_extraction_query})
+            SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS value
+            FROM (
+                SELECT
+                    subscriber,
+                    balance,
+                    weight,
+                    SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
+                FROM W
+            ) A
+            JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
+            ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
+            ORDER BY A.subscriber, A.weight
+            """
 
-        return sql
+        raise NotImplementedError(
+            f"{self.statistic} is not implemented for TopupBalance"
+        )

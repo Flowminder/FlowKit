@@ -12,7 +12,7 @@
 #  on the official Debian Stretch (9) image.
 #
 
-FROM postgres:12.10@sha256:505d023f030cdea84a42d580c2a4a0e17bbb3e91c30b2aea9c02f2dfb10325ba
+FROM postgres:12.11@sha256:8bff0179347982a6c083e1ed69cf4b65f12b8ae76e61f63b238c8c1ba4714c86
 
 
 ARG POSTGIS_MAJOR=3
@@ -29,18 +29,20 @@ ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
 ENV TDS_FDW_VERSION=2.0.2-3.pgdg110+1
 
-
-RUN apt-get update \
-        && apt-get install -y --no-install-recommends \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION  \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts=$POSTGIS_VERSION \
-        postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
-        postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
-        postgresql-$PG_MAJOR-tds-fdw=$TDS_FDW_VERSION \
-        postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
-        postgis=$POSTGIS_VERSION \
-        && rm -rf /var/lib/apt/lists/* \
-        && apt-get purge -y --auto-remove
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && echo "deb http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" > /etc/apt/sources.list.d/pgdg-archive.list \
+    && echo "deb-src http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" >> /etc/apt/sources.list.d/pgdg-archive.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION  \
+    postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts=$POSTGIS_VERSION \
+    postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
+    postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
+    postgresql-$PG_MAJOR-tds-fdw=$TDS_FDW_VERSION \
+    postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
+    postgis=$POSTGIS_VERSION \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get purge -y --auto-remove
 
 #
 #  Setting up locale settings. This will

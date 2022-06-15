@@ -124,7 +124,7 @@ def test_bad_statistic():
             total_network_objects=TotalNetworkObjects(
                 start="2016-01-01", stop="2016-12-30", table="calls"
             ),
-            statistic="count",
+            statistic="BAD STAT",
         )
 
 

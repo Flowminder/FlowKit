@@ -19,13 +19,9 @@ from concurrent.futures import Future
 import structlog
 from typing import List, Union
 
-import psycopg2
 import pandas as pd
 
 from hashlib import md5
-
-from sqlalchemy.engine import Engine
-from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache, get_obj_or_stub
 from flowmachine.core.context import (
@@ -39,7 +35,6 @@ from abc import ABCMeta, abstractmethod
 
 from flowmachine.core.errors import (
     NameTooLongError,
-    NotConnectedError,
     UnstorableQueryError,
 )
 
@@ -276,13 +271,7 @@ class Query(metaclass=ABCMeta):
             if state_machine.is_completed and get_db().has_table(
                 schema=schema, name=name
             ):
-                try:
-                    touch_cache(get_db(), self.query_id)
-                except ValueError:
-                    pass  # Cache record not written yet, which can happen for Models
-                    # which will call through to this method from their `_make_query` method while writing metadata.
-                # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
-                # as the cache metadata transaction isn't complete!
+                touch_cache(get_db(), self.query_id)
                 return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
@@ -584,34 +573,10 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def write_query(query_ddl_ops: List[str], connection: Engine) -> float:
-            plan_time = 0
-            ddl_op_results = []
-            for ddl_op in query_ddl_ops:
-                try:
-                    ddl_op_result = connection.execute(ddl_op)
-                except Exception as e:
-                    logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
-                    raise e
-                try:
-                    ddl_op_results.append(ddl_op_result.fetchall())
-                except ResourceClosedError:
-                    pass  # Nothing to do here
-                for ddl_op_result in ddl_op_results:
-                    try:
-                        plan = ddl_op_result[0][0][0]  # Should be a query plan
-                        plan_time += plan["Execution Time"]
-                    except (IndexError, KeyError):
-                        pass  # Not an explain result
-            logger.debug("Executed queries.")
-            return plan_time
-
         if store_dependencies:
             store_queries_in_order(
                 unstored_dependencies_graph(self)
             )  # Need to ensure we're behind our deps in the queue
-
-        ddl_ops_func = self._make_sql
 
         current_state, changed_to_queue = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
@@ -619,7 +584,6 @@ class Query(metaclass=ABCMeta):
         logger.debug(
             f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
-        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = submit_to_executor(
             write_query_to_cache,
             name=name,
@@ -627,8 +591,7 @@ class Query(metaclass=ABCMeta):
             query=self,
             connection=get_db(),
             redis=get_redis(),
-            ddl_ops_func=ddl_ops_func,
-            write_func=write_query,
+            ddl_ops_func=self._make_sql,
         )
         return store_future
 

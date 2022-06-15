@@ -10,9 +10,7 @@ from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.utils import make_where, standardise_date, Statistic
 
 
 class PerLocationEventStats(SubscriberFeature):
@@ -26,7 +24,7 @@ class PerLocationEventStats(SubscriberFeature):
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    statistic : Statistic, default Statistic.AVG
         Defaults to avg, aggregation statistic over the durations.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
@@ -67,7 +65,7 @@ class PerLocationEventStats(SubscriberFeature):
         self,
         start,
         stop,
-        statistic="avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours: Optional[Tuple[int, int]] = None,
@@ -83,14 +81,7 @@ class PerLocationEventStats(SubscriberFeature):
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
         self.direction = Direction(direction)
-        self.statistic = statistic
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         column_list = [
             self.subscriber_identifier,
@@ -125,7 +116,7 @@ class PerLocationEventStats(SubscriberFeature):
         where_clause = make_where(self.direction.get_filter_clause())
 
         return f"""
-        SELECT subscriber, {self.statistic}(events) AS value
+        SELECT subscriber, {self.statistic:events} AS value
         FROM (
             SELECT subscriber, {loc_cols}, COUNT(*) AS events
             FROM ({self.unioned_query.get_query()}) U

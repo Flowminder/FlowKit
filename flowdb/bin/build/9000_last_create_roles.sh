@@ -198,7 +198,7 @@ psql --dbname="$POSTGRES_DB" -c "
         DECLARE
           obj record;
         BEGIN
-          FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() WHERE command_tag='CREATE TABLE' AND schema_name='cache'  LOOP
+          FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() WHERE command_tag IN ('CREATE TABLE', 'CREATE TABLE AS') AND schema_name='cache'  LOOP
             EXECUTE format('ALTER TABLE %s OWNER TO $FLOWMACHINE_FLOWDB_USER', obj.object_identity);
           END LOOP;
         END;
@@ -206,6 +206,6 @@ psql --dbname="$POSTGRES_DB" -c "
 
         CREATE EVENT TRIGGER trg_create_in_cache_set_owner_to_flowmachine
          ON ddl_command_end
-         WHEN tag IN ('CREATE TABLE')
+         WHEN tag IN ('CREATE TABLE', 'CREATE TABLE AS')
          EXECUTE PROCEDURE trg_create_in_cache_set_owner_to_flowmachine();
         "
