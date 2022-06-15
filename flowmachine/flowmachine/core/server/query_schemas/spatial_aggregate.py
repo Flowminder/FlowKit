@@ -9,6 +9,7 @@ from flowmachine.features.location.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from .aggregation_unit import AggregationUnitKind
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
 
@@ -30,6 +31,10 @@ class SpatialAggregateExposed(BaseExposedQuery):
         self.locations = locations
 
     @property
+    def aggregation_unit(self):
+        return self.locations.aggregation_unit
+
+    @property
     def _flowmachine_query_obj(self):
         """
         Return the underlying flowmachine object.
@@ -49,4 +54,5 @@ class SpatialAggregateSchema(BaseSchema):
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
     locations = fields.Nested(ReferenceLocationSchema, required=True)

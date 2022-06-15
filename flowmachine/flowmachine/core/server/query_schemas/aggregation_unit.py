@@ -14,13 +14,26 @@ class AggregationUnitKind(String):
     A string representing an aggregation unit (for example: "admin0", "admin1", "admin2", ...)
     """
 
-    def __init__(self, required=True, **kwargs):
+    def __init__(self, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The AggregationUnitKind field provides its own validation "
+                "and thus does not accept a the 'validate' argument."
+            )
         validate = OneOf(["admin0", "admin1", "admin2", "admin3", "lon-lat"])
-        super().__init__(required=required, validate=validate, **kwargs)
+        super().__init__(validate=validate, **kwargs)
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        # This won't serialize the other fields that went into constructing the spatial unit
+        # (e.g. 'mapping_table')
+        try:
+            return value.canonical_name
+        except AttributeError:
+            return super()._serialize(value, attr, obj, **kwargs)
 
 
 class AggregationUnitMixin:
-    aggregation_unit = AggregationUnitKind()
+    aggregation_unit = AggregationUnitKind(required=True)
     mapping_table = String(required=False, allow_none=True)
     geom_table = String(required=False, allow_none=True)
     geom_table_join_column = String(required=False, allow_none=True)
