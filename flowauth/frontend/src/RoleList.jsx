@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 import { withStyles } from "@material-ui/core/styles";
-import RoleDetails from "./RoleDetails";
+import RoleDetails from "./RoleAdmin";
 import Lister from "./Lister";
 import { getRoles, deleteRole } from "./util/api";
 

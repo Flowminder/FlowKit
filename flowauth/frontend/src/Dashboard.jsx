@@ -19,7 +19,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import UserServer from "./UserServer";
 import UserServerList from "./UserServerList";
 import RoleList from "./RoleList"
-import RoleDetails from "./RoleDetails"
+import RoleDetails from "./RoleAdmin"
 import GroupList from "./GroupList";
 import UserList from "./UserList";
 import ServerList from "./ServerList";
