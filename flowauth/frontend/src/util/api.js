@@ -319,6 +319,10 @@ export async function getRoles(server_id) {
   return await getResponseDefault("/servers/"+server_id+"/roles")
 }
 
+export async function getUserRoles(server_id, user_id) {
+  return await getResponseDefault("/roles/server/"+server_id)
+}
+
 export async function renameRole(role_id, new_name) {
   var dat = {
     method: "PATCH",

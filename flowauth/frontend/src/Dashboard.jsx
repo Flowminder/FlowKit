@@ -160,11 +160,11 @@ class Dashboard extends React.Component {
         return <UserDetails />;
       case "public_key_admin":
         return <PublicKey />;
-      case "role_admin":
-        return <RoleList 
-          serverID={this.state.activeServer}
-          serverName={this.state.activeServerName}
-        />;
+      // case "role_admin":
+      //   return <RoleList 
+      //     serverID={this.state.activeServer}
+      //     serverName={this.state.activeServerName}
+        // />;
       default:
         return <div />;
     }

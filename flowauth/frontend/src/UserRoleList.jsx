@@ -3,11 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 import { withStyles } from "@material-ui/core/styles";
-import RoleDetails from "./RoleAdmin";
-import Lister from "./Lister";
-import { getRoles, deleteRole } from "./util/api";
+import RoleDetails from "./RoleDetails";
+import { getUserRoles} from "./util/api";
 import { Fragment, useEffect, useState } from "react";
-import { Checkbox, ListSubheader } from "@material-ui/core";
+import {List, Checkbox, ListSubheader } from "@material-ui/core";
 
 const styles = (theme) => ({
   root: {
@@ -21,17 +20,16 @@ const styles = (theme) => ({
 function UserRoleList(props){
   const {user, server} = props
 
-  const [roles, setRoleState] = useState(new {})
-
+  const [roles, setRoleState] = useState([])
   useEffect(() => {
-    getRoles(server).then((roles) => setRoleState(roles))
+    getUserRoles(server).then((roles) => setRoleState(roles), (err) => console.log(err))
   }, [])
 
   return (
     <Fragment>
       <List>
         <ListSubheader inset>Roles</ListSubheader>
-        {roles.map((this_role, i) => (
+        {roles.map((this_role) => (
           <RoleDetails
             name={this_role.name}
             scopes={this_role.scopes}
