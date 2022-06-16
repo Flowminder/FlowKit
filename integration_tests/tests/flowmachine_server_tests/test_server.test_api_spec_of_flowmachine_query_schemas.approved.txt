@@ -14,6 +14,11 @@
         "$ref": "#/components/schemas/UniqueLocations"
       }
     },
+    "required": [
+      "query_kind",
+      "reference_locations",
+      "unique_locations"
+    ],
     "type": "object"
   },
   "AggregateNetworkObjects": {
@@ -55,6 +60,7 @@
       }
     },
     "required": [
+      "query_kind",
       "statistic",
       "total_network_objects"
     ],
@@ -139,6 +145,7 @@
     "required": [
       "fallback_location",
       "preferred_location",
+      "query_kind",
       "subscriber_location_weights",
       "weight_threshold"
     ],
@@ -214,6 +221,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -258,6 +266,7 @@
       "aggregation_unit",
       "end_date",
       "metric",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -343,7 +352,8 @@
     "required": [
       "aggregation_unit",
       "date",
-      "method"
+      "method",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -419,6 +429,8 @@
     },
     "required": [
       "end_date",
+      "query_kind",
+      "reference_location",
       "start_date",
       "statistic"
     ],
@@ -464,7 +476,8 @@
     },
     "required": [
       "aggregation_unit",
-      "dummy_param"
+      "dummy_param",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -531,6 +544,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -673,6 +687,7 @@
     },
     "required": [
       "from_location",
+      "query_kind",
       "to_location"
     ],
     "type": "object"
@@ -709,7 +724,8 @@
       }
     },
     "required": [
-      "aggregation_unit"
+      "aggregation_unit",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -785,6 +801,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -808,7 +825,8 @@
       }
     },
     "required": [
-      "metric"
+      "metric",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -923,6 +941,7 @@
     },
     "required": [
       "from_location",
+      "query_kind",
       "to_location"
     ],
     "type": "object"
@@ -1062,7 +1081,8 @@
     },
     "required": [
       "locations",
-      "metric"
+      "metric",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -1099,6 +1119,7 @@
     "required": [
       "from_location",
       "labels",
+      "query_kind",
       "to_location"
     ],
     "type": "object"
@@ -1120,7 +1141,8 @@
     },
     "required": [
       "labels",
-      "locations"
+      "locations",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -1212,6 +1234,7 @@
       "direction",
       "end_date",
       "interval",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1294,6 +1317,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1322,6 +1346,9 @@
         "nullable": true
       }
     },
+    "required": [
+      "query_kind"
+    ],
     "type": "object"
   },
   "MajorityLocation": {
@@ -1349,6 +1376,7 @@
       }
     },
     "required": [
+      "query_kind",
       "subscriber_location_weights"
     ],
     "type": "object"
@@ -1449,6 +1477,7 @@
       "end_date",
       "label",
       "labels",
+      "query_kind",
       "start_date",
       "tower_day_of_week_scores",
       "tower_hour_of_day_scores"
@@ -1559,6 +1588,7 @@
       "end_date_a",
       "end_date_b",
       "label",
+      "query_kind",
       "start_date_a",
       "start_date_b",
       "tower_day_of_week_scores",
@@ -1665,6 +1695,7 @@
       "end_date",
       "label_a",
       "label_b",
+      "query_kind",
       "start_date",
       "tower_day_of_week_scores",
       "tower_hour_of_day_scores"
@@ -1699,6 +1730,7 @@
       }
     },
     "required": [
+      "query_kind",
       "stay_length_threshold"
     ],
     "type": "object"
@@ -1727,6 +1759,9 @@
         "nullable": true
       }
     },
+    "required": [
+      "query_kind"
+    ],
     "type": "object"
   },
   "MostFrequentLocation": {
@@ -1807,6 +1842,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1867,6 +1903,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1900,6 +1937,7 @@
     },
     "required": [
       "from_location",
+      "query_kind",
       "to_location"
     ],
     "type": "object"
@@ -1965,6 +2003,7 @@
     "required": [
       "end_date",
       "proportion",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2024,6 +2063,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2118,6 +2158,17 @@
   },
   "SpatialAggregate": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "locations": {
         "$ref": "#/components/schemas/ReferenceLocation"
       },
@@ -2129,7 +2180,8 @@
       }
     },
     "required": [
-      "locations"
+      "locations",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -2196,6 +2248,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2286,6 +2339,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date",
       "statistic"
     ],
@@ -2345,6 +2399,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date",
       "statistic"
     ],
@@ -2408,6 +2463,7 @@
       }
     },
     "required": [
+      "query_kind",
       "start_date",
       "total_periods"
     ],
@@ -2495,6 +2551,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2569,6 +2626,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2643,6 +2701,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2725,6 +2784,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2799,6 +2859,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2818,6 +2879,11 @@
         "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     },
+    "required": [
+      "active_at_reference_location_counts",
+      "query_kind",
+      "unique_subscriber_counts"
+    ],
     "type": "object"
   },
   "UnmovingAtReferenceLocationCounts": {
@@ -2835,6 +2901,11 @@
         "$ref": "#/components/schemas/ReferenceLocation"
       }
     },
+    "required": [
+      "locations",
+      "query_kind",
+      "reference_locations"
+    ],
     "type": "object"
   },
   "UnmovingCounts": {
@@ -2849,6 +2920,9 @@
         "type": "string"
       }
     },
+    "required": [
+      "query_kind"
+    ],
     "type": "object"
   },
   "VisitableLocation": {
@@ -2946,6 +3020,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
