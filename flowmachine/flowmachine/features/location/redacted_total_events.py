@@ -25,6 +25,7 @@ class RedactedTotalEvents(RedactedLocationMetric, GeoDataMixin, Query):
 
     def __init__(self, total_events: TotalLocationEvents):
         self.redaction_target = total_events
+        self.spatial_unit = total_events.spatial_unit
         super().__init__()
 
     def _make_query(self):
