@@ -58,7 +58,7 @@ async def action_handler__get_available_queries(
 
     Returns a list of available flowmachine queries.
     """
-    available_queries = list(FlowmachineQuerySchema.type_schemas.keys())
+    available_queries = list(FlowmachineQuerySchema().type_schemas.keys())
     return ZMQReply(status="success", payload={"available_queries": available_queries})
 
 
