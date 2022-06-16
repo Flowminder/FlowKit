@@ -11,6 +11,7 @@ samples from the database.
 import pytest
 import pickle
 
+from flowmachine.core.errors.flowmachine_errors import PreFlightFailedException
 from flowmachine.core.mixins import GraphMixin
 from flowmachine.features import daily_location, Flows
 from flowmachine.features.utilities.sets import UniqueSubscribers
@@ -233,7 +234,7 @@ def test_system_rows_fail_with_inheritance():
     """
     Test whether the system row method fails if the subscriber queries for random rows on a parent table.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(PreFlightFailedException):
         df = (
             Table(name="events.calls", columns=["msisdn"])
             .random_sample(size=8, sampling_method="system_rows")
