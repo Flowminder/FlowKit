@@ -56,7 +56,7 @@ class EventTypes(fields.List):
     """
     A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
 
-    When deserialised, will be deduped, and prefixed with "events."
+    When deserialised, will be deduped.
     """
 
     def __init__(

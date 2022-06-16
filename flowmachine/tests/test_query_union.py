@@ -44,7 +44,7 @@ def test_union_raises_with_mismatched_columns():
     """
     with pytest.raises(ValueError):
         Table(schema="events", name="calls", columns=["msisdn"]).union(
-            Table(schema="events", name="calls")
+            Table(schema="events", name="calls", columns=["id"])
         )
 
 

@@ -40,7 +40,7 @@ class EventTableSubset(Query):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'events.calls'
+    table : str, default 'calls'
         schema qualified name of the table which the analysis is
         based upon
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'

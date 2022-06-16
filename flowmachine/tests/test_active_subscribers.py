@@ -19,7 +19,7 @@ def test_active_subscribers_one_day(get_dataframe):
         total_major_periods=1,
         minor_period_threshold=3,
         major_period_threshold=1,
-        tables=["events.calls"],
+        tables=["calls"],
     )
     out = get_dataframe(active_subscribers).iloc[0:5]
     print(out)
@@ -44,7 +44,7 @@ def test_active_subscribers_many_days(get_dataframe):
         total_major_periods=4,
         minor_period_threshold=1,
         major_period_threshold=3,
-        tables=["events.calls"],
+        tables=["calls"],
     )
     out = get_dataframe(active_subscribers).iloc[0:5]
     print(out)
@@ -72,7 +72,7 @@ def test_active_subscribers_custom_period(get_dataframe):
         minor_period_threshold=2,
         major_period_threshold=3,
         period_unit="minutes",
-        tables=["events.calls"],
+        tables=["calls"],
     )
     assert len(active_subscribers.major_period_queries) == 4
     assert active_subscribers.major_period_queries[2].start == "2016-01-01 21:00:00"
