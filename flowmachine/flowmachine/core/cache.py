@@ -235,7 +235,7 @@ def write_query_to_cache(
 
 
 def write_cache_metadata(
-    connection: sqlalchemy.engine.Connection,
+    connection: sqlalchemy.engine.Transaction,
     query: "Query",
     compute_time: Optional[float] = None,
 ):
@@ -246,8 +246,8 @@ def write_cache_metadata(
 
     Parameters
     ----------
-    connection : Connection
-        sqlalchemy connection object to use
+    connection : sqlalchemy.engine.Transaction
+        sqlalchemy Transaction to use
     query : Query
         Query object to write metadata about
     compute_time : float, default None
@@ -258,14 +258,9 @@ def write_cache_metadata(
     self_storage = b""
 
     try:
-        in_cache = bool(
-            len(
-                connection.execute(
-                    f"SELECT * FROM cache.cached WHERE query_id='{query.query_id}'"
-                ).fetchall()
-            )
-            > 0
-        )
+        in_cache = connection.execute(
+            f"SELECT EXISTS (SELECT 1 FROM cache.cached WHERE query_id='{query.query_id}' LIMIT 1)"
+        ).fetchall()[0][0]
         if not in_cache:
             try:
                 self_storage = pickle.dumps(query)
@@ -273,36 +268,35 @@ def write_cache_metadata(
                 logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
                 pass
 
-        with connection.begin():
-            cache_record_insert = """
-            INSERT INTO cache.cached 
-            (query_id, version, query, created, access_count, last_accessed, compute_time, 
-            cache_score_multiplier, class, schema, tablename, obj) 
-            VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
-             ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
-            connection.execute(
-                cache_record_insert,
-                (
-                    query.query_id,
-                    __version__,
-                    query._make_query(),
-                    compute_time,
-                    query.__class__.__name__,
-                    *query.fully_qualified_table_name.split("."),
-                    psycopg2.Binary(self_storage),
-                ),
-            )
-            connection.execute("SELECT touch_cache(%s);", query.query_id)
+        cache_record_insert = """
+        INSERT INTO cache.cached 
+        (query_id, version, query, created, access_count, last_accessed, compute_time, 
+        cache_score_multiplier, class, schema, tablename, obj) 
+        VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+         ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
+        connection.execute(
+            cache_record_insert,
+            (
+                query.query_id,
+                __version__,
+                query._make_query(),
+                compute_time,
+                query.__class__.__name__,
+                *query.fully_qualified_table_name.split("."),
+                psycopg2.Binary(self_storage),
+            ),
+        )
+        connection.execute("SELECT touch_cache(%s);", query.query_id)
 
-            if not in_cache:
-                for dep in query._get_stored_dependencies(exclude_self=True):
-                    connection.execute(
-                        "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                        (query.query_id, dep.query_id),
-                    )
-                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
-            else:
-                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
+        if not in_cache:
+            for dep in query._get_stored_dependencies(exclude_self=True):
+                connection.execute(
+                    "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
+                    (query.query_id, dep.query_id),
+                )
+            logger.debug(f"{query.fully_qualified_table_name} added to cache.")
+        else:
+            logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 
