@@ -23,3 +23,7 @@ RUN apt-get update && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
 CMD ["pipenv", "run", "flowmachine"]
+# FlowDB has a default role named flowmachine for use with the flowmachine server
+# when starting the container with a different user, that user must be in the flowmachine
+# role
+ENV FLOWMACHINE_FLOWDB_USER=flowmachine
