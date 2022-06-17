@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.core.query import Query
 from flowmachine.features.location.total_events import TotalLocationEvents
 from flowmachine.features.location.redacted_location_metric import (
@@ -10,7 +10,7 @@ from flowmachine.features.location.redacted_location_metric import (
 from flowmachine.utils import make_where
 
 
-class RedactedTotalEvents(RedactedLocationMetric, Query):
+class RedactedTotalEvents(RedactedLocationMetric, GeoDataMixin, Query):
     """
     Calculates the total number of events on an hourly basis
     per location (such as a tower or admin region),
@@ -25,6 +25,7 @@ class RedactedTotalEvents(RedactedLocationMetric, Query):
 
     def __init__(self, total_events: TotalLocationEvents):
         self.redaction_target = total_events
+        self.spatial_unit = total_events.spatial_unit
         super().__init__()
 
     def _make_query(self):
