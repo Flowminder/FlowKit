@@ -143,6 +143,8 @@ def add_token(server):
         raise Unauthorized(f"Token for {current_user.username} expired")
 
     # Gotta find all roles that _could_ allow this actio
+    if "claims" not in json:
+        raise InvalidUsage("No claims.", payload={"bad_field":"claims"})
     claims = json["claims"]
     allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
     if not any(allowed_roles.values()):
