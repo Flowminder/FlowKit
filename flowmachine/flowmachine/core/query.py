@@ -529,12 +529,15 @@ class Query(metaclass=ABCMeta):
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
         (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
         queries.append(Q)
+        # Make flowmachine user the owner to allow server to cleanup cache tables
+        queries.append(f"ALTER TABLE {full_name} OWNER TO flowmachine;")
         for ix in self.index_cols:
             queries.append(
                 "CREATE INDEX ON {tbl} ({ixen})".format(
                     tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
                 )
             )
+
         return queries
 
     def to_sql(

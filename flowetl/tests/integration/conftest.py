@@ -106,7 +106,6 @@ def container_env(ensure_required_env_vars_are_set):
         "POSTGRES_USER": "flowdb",
         "POSTGRES_PASSWORD": "flowflow",
         "POSTGRES_DB": "flowdb",
-        "FLOWMACHINE_FLOWDB_USER": "flowmachine",
         "FLOWAPI_FLOWDB_USER": "flowapi",
         "FLOWMACHINE_FLOWDB_PASSWORD": "flowmachine",
         "FLOWAPI_FLOWDB_PASSWORD": "flowapi",

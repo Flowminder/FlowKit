@@ -32,7 +32,6 @@ defaults:
     FLOWDB_INGESTION_DIR: /home/circleci/project/flowdb/tests/data
     POSTGRES_PASSWORD: flowflow
     POSTGRES_USER: flowdb
-    FLOWMACHINE_FLOWDB_USER: flowmachine
     FLOWAPI_FLOWDB_USER: flowapi
     FLOWMACHINE_FLOWDB_PASSWORD: foo
     FLOWAPI_FLOWDB_PASSWORD: foo

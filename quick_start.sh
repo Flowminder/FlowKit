@@ -150,7 +150,7 @@ else
         echo "Worked examples ready."
     fi
     echo "All containers ready!"
-    echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=$FLOWMACHINE_FLOWDB_USER PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
+    echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=flowmachine PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
     echo "Access FlowAPI using FlowClient at http://localhost:$FLOWAPI_PORT"
     echo "View the FlowAPI spec at http://localhost:$FLOWAPI_PORT/api/0/spec/redoc"
     echo "Generate FlowAPI access tokens using FlowAuth with user TEST_USER and password DUMMY_PASSWORD at http://localhost:$FLOWAUTH_PORT"
