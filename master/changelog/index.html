@@ -8591,10 +8591,12 @@
 <li><code>Query.explain</code> will now explain the query even where it is already stored. <a href="https://github.com/Flowminder/FlowKit/issues/1285">#1285</a></li>
 <li><code>unstored_dependencies_graph</code> no longer blocks until dependencies are in a determinate state. <a href="https://github.com/Flowminder/FlowKit/issues/4949">#4949</a></li>
 <li>In and out flows no longer return location columns with to/from suffix.</li>
+<li>FlowDB now always creates a role named <code>flowmachine.</code></li>
+<li>Flowmachine will set the state of a query being stored to cancelled if interrupted while the store is running.</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
-<li>FlowDB trigger to alter ownership of cache tables is now triggered when a flowmachine query is <code>store</code>d. <a href="https://github.com/Flowminder/FlowKit/issues/4714">#4714</a></li>
+<li>Flowmachine now makes the built in <code>flowmachine</code> role owner of cache tables as a post-action when a query is <code>store</code>d. <a href="https://github.com/Flowminder/FlowKit/issues/4714">#4714</a></li>
 <li>TopupBalance now returns the weighted mode when requested instead of weighted median <a href="https://github.com/Flowminder/FlowKit/issues/1412">#1412</a></li>
 <li>Fixed in and out flow geojson for multicolumn location types <a href="https://github.com/Flowminder/FlowKit/issues/5132">#5132</a></li>
 </ul>

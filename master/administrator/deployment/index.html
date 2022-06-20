@@ -5749,11 +5749,6 @@
 <td></td>
 </tr>
 <tr>
-<td>FLOWMACHINE_FLOWDB_USER</td>
-<td>Database user for FlowMachine</td>
-<td>Role with <em>write</em> access to tables under the cache schema, and <em>read</em> access to events, infrastructure, cache and geography schemas</td>
-</tr>
-<tr>
 <td>FLOWMACHINE_FLOWDB_PASSWORD</td>
 <td>Password for flowmachine user</td>
 <td></td>
@@ -6113,7 +6108,7 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <h4 id="flowmachine-and-flowapi">FlowMachine and FlowAPI<a class="headerlink" href="#flowmachine-and-flowapi" title="Permanent link">&para;</a></h4>
 <p>Once you have FlowAuth, FlowDB, and FlowETL running, you are ready to add FlowMachine and FlowAPI.</p>
 <h5 id="flowmachine">FlowMachine<a class="headerlink" href="#flowmachine" title="Permanent link">&para;</a></h5>
-<p>The FlowMachine server requires one additional secret: <code>REDIS_PASSWORD</code>, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the <code>FLOWMACHINE_FLOWDB_USER</code> and <code>FLOWMACHINE_FLOWDB_PASSWORD</code> secrets defined for FlowDB.</p>
+<p>The FlowMachine server requires one additional secret: <code>REDIS_PASSWORD</code>, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the <code>FLOWMACHINE_FLOWDB_PASSWORD</code> secrets defined for FlowDB.</p>
 <p>You may also set the following environment variables:</p>
 <table>
 <thead>
