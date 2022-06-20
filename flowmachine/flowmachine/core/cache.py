@@ -188,8 +188,7 @@ def write_query_to_cache(
             logger.debug(f"In charge of executing '{query.query_id}'.")
             try:
                 query_ddl_ops = ddl_ops_func(name, schema)
-            except BaseException as exc:
-                q_state_machine.raise_error()
+            except Exception as exc:
                 logger.error(f"Error generating SQL. Error was {exc}")
                 raise exc
             logger.debug("Made SQL.")
@@ -200,22 +199,23 @@ def write_query_to_cache(
                         query_ddl_ops, con
                     )
                     logger.debug("Executed queries.")
-                except BaseException as exc:
-                    q_state_machine.raise_error()
+                except Exception as exc:
                     logger.error(f"Error executing SQL. Error was {exc}")
                     raise exc
                 if schema == "cache":
                     try:
                         write_cache_metadata(connection, query, compute_time=plan_time)
-                    except BaseException as exc:
-                        q_state_machine.raise_error()
+                    except Exception as exc:
                         logger.error(f"Error writing cache metadata. Error was {exc}")
                         raise exc
             q_state_machine.finish()
-    except BaseException as exc:
+    except Exception as exc:
         if this_thread_is_owner:
             q_state_machine.raise_error()
         raise exc
+    finally:
+        if this_thread_is_owner and not q_state_machine.is_finished_executing:
+            q_state_machine.cancel()
 
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
     if q_state_machine.is_completed:
