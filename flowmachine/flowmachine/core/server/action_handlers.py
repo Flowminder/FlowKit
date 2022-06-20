@@ -31,7 +31,7 @@ from flowmachine.core.query_info_lookup import (
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
-from .exceptions import FlowmachineServerError
+from .exceptions import FlowmachineServerError, QueryLoadError
 from .query_schemas import FlowmachineQuerySchema, GeographySchema
 from .query_schemas.flowmachine_query import get_query_schema
 from .zmq_helpers import ZMQReply
@@ -75,6 +75,44 @@ async def action_handler__get_query_schemas(
     return ZMQReply(status="success", payload={"query_schemas": get_query_schema()})
 
 
+def _load_query_object(params: dict) -> "BaseExposedQuery":
+    try:
+        query_obj = FlowmachineQuerySchema().load(params)
+    except TypeError as exc:
+        # We need to catch TypeError here, otherwise they propagate up to
+        # perform_action() and result in a very misleading error message.
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
+        )
+        raise QueryLoadError(
+            error_msg,
+            params,
+            orig_error_msg=orig_error_msg,
+        )
+    except ValidationError as exc:
+        # The dictionary of marshmallow errors can contain integers as keys,
+        # which will raise an error when converting to JSON (where the keys
+        # must be strings). Therefore we transform the keys to strings here.
+        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+        action_params_as_text = textwrap.indent(json.dumps(params, indent=2), "   ")
+        validation_errors_as_text = textwrap.indent(
+            json.dumps(validation_error_messages, indent=2), "   "
+        )
+        error_msg = (
+            "Parameter validation failed.\n\n"
+            f"The action parameters were:\n{action_params_as_text}.\n\n"
+            f"Validation error messages:\n{validation_errors_as_text}.\n\n"
+        )
+        raise QueryLoadError(
+            error_msg,
+            params,
+            validation_error_messages=validation_error_messages,
+        )
+    return query_obj
+
+
 async def action_handler__run_query(
     config: "FlowmachineServerConfig", **action_params: dict
 ) -> ZMQReply:
@@ -86,38 +124,16 @@ async def action_handler__run_query(
     parameters needed to construct the query.
     """
     try:
-        query_obj = FlowmachineQuerySchema().load(action_params)
-    except TypeError as exc:
-        # We need to catch TypeError here, otherwise they propagate up to
-        # perform_action() and result in a very misleading error message.
-        orig_error_msg = exc.args[0]
-        error_msg = (
-            f"Internal flowmachine server error: could not create query object using query schema. "
-            f"The original error was: '{orig_error_msg}'"
-        )
+        query_obj = _load_query_object(action_params)
+    except QueryLoadError as exc:
         return ZMQReply(
             status="error",
-            msg=error_msg,
-            payload={"params": action_params, "orig_error_msg": orig_error_msg},
+            msg=exc.error_msg,
+            payload=dict(
+                params=action_params,
+                **exc.details,
+            ),
         )
-    except ValidationError as exc:
-        # The dictionary of marshmallow errors can contain integers as keys,
-        # which will raise an error when converting to JSON (where the keys
-        # must be strings). Therefore we transform the keys to strings here.
-        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
-        action_params_as_text = textwrap.indent(
-            json.dumps(action_params, indent=2), "   "
-        )
-        validation_errors_as_text = textwrap.indent(
-            json.dumps(validation_error_messages, indent=2), "   "
-        )
-        error_msg = (
-            "Parameter validation failed.\n\n"
-            f"The action parameters were:\n{action_params_as_text}.\n\n"
-            f"Validation error messages:\n{validation_errors_as_text}.\n\n"
-        )
-        payload = {"validation_error_messages": validation_error_messages}
-        return ZMQReply(status="error", msg=error_msg, payload=payload)
 
     q_info_lookup = QueryInfoLookup(get_redis())
     try:
