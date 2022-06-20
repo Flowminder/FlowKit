@@ -113,6 +113,40 @@ def _load_query_object(params: dict) -> "BaseExposedQuery":
     return query_obj
 
 
+async def action_handler__get_aggregation_unit(
+    config: "FlowmachineServerConfig", **action_params: dict
+) -> ZMQReply:
+    """
+    Handler for the 'get_aggregation_unit' action.
+
+    Returns the aggregation unit associated with the specified query, if it has
+    one, or None otherwise. The purpose of this action is to be able to get the
+    aggregation unit associated with any spatial aggregate query, even if the
+    query does not have an explicit 'aggregation_unit' parameter.
+
+    Note: this action should not require construction of the underlying flowmachine
+    query object - aggregation unit information should be available in the exposed
+    query object produced by deserialising the query parameters.
+    """
+    try:
+        query_obj = _load_query_object(action_params)
+    except QueryLoadError as exc:
+        return ZMQReply(
+            status="error",
+            msg=exc.error_msg,
+            payload=dict(
+                params=action_params,
+                **exc.details,
+            ),
+        )
+    try:
+        aggregation_unit = query_obj.aggregation_unit.canonical_name
+    except AttributeError:
+        # Query does not have an aggregation unit associated with it
+        aggregation_unit = None
+    return ZMQReply(status="success", payload={"aggregation_unit": aggregation_unit})
+
+
 async def action_handler__run_query(
     config: "FlowmachineServerConfig", **action_params: dict
 ) -> ZMQReply:
@@ -485,4 +519,5 @@ ACTION_HANDLERS = {
     "get_geo_sql_for_query_result": action_handler__get_geo_sql,
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
+    "get_aggregation_unit": action_handler__get_aggregation_unit,
 }
