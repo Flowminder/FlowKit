@@ -3,9 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 import { withStyles } from "@material-ui/core/styles";
-import RoleDetails from "./RoleDetails";
-import { Fragment} from "react";
-import {List, Checkbox, ListSubheader, ListItem, Button } from "@material-ui/core";
+import ScopeDetails from "./ScopeDetails";
+import { getUserRoles} from "./util/api";
+import { Fragment, useEffect, useState } from "react";
+import {List, Checkbox, ListSubheader, ListItem, Button, Typography } from "@material-ui/core";
+import { TypeChecker } from "rsuite/esm/utils";
 
 const styles = (theme) => ({
   root: {
@@ -15,24 +17,21 @@ const styles = (theme) => ({
   },
 });
 
-
-function UserRoleList(props){
-  const {roles, checkAll, handleToggle, checked, setRoleState} = props
-
-
+function UserScopesList(props){
+  const {scopes, checkAll, handleToggle, checked} = props
 
   return (
     <Fragment>
       <Button 
-      onClick={checkAll}
+        onClick={checkAll}
       >
         Select all
       </Button>
       <List>
-        <ListSubheader inset>Roles</ListSubheader>
-        {roles.map((this_role, i) => (
-          <ListItem key={i}>
-          <RoleDetails role={this_role}/>
+        <ListSubheader inset>Scopes</ListSubheader>
+        {scopes.map((scope, i) => (
+          <ListItem key={scope.name}>
+          <ScopeDetails scope={scope}/>
           <Checkbox
             onChange={handleToggle(i)}
             checked={checked.indexOf(i) !== -1}
@@ -44,4 +43,4 @@ function UserRoleList(props){
   )
 }
 
-export default withStyles(styles)(UserRoleList);
+export default withStyles(styles)(UserScopesList);

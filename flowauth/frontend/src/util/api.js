@@ -319,7 +319,7 @@ export async function getRoles(server_id) {
   return await getResponseDefault("/servers/"+server_id+"/roles")
 }
 
-export async function getUserRoles(server_id, user_id) {
+export async function getUserRoles(server_id){
   return await getResponseDefault("/roles/server/"+server_id)
 }
 
@@ -332,9 +332,10 @@ export async function renameRole(role_id, new_name) {
 }
 
 export async function createToken(name, server_id, expiry, claims) {
+  const claims_list = claims.map((claim) => claim.name)
   var dat = {
     method: "POST",
-    body: JSON.stringify({ name: name, expiry: expiry, claims: claims }),
+    body: JSON.stringify({ name: name, expiry: expiry, claims: claims_list }),
   };
   return await getResponse("/tokens/tokens/" + server_id, dat);
 }

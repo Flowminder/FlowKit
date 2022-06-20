@@ -2,16 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useState, useEffect} from "react";
 import Grid from "@material-ui/core/Grid";
 import Stack from "@material-ui/core/Grid"
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers"
 import DateFnsUtils from "@date-io/date-fns";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles"
-import UserRoleList from "./UserRoleList";
+import UserScopesList from "./UserScopesList";
 import { getDisabledState } from "rsuite/esm/CheckTreePicker/utils";
-import { Button } from "@material-ui/core";
+import { Button, Dialog, DialogContentText, DialogTitle } from "@material-ui/core";
+import ScopedCssBaseline from "@material-ui/core/ScopedCssBaseline";
+import { scopes_with_roles } from "./util/util";
+import {createToken, getUserRoles} from "./util/api"
 
 const styles = (theme) => ({
   root: {
@@ -24,13 +27,123 @@ function TokenBuilder(props) {
 
   const [selectedDate, handleDateChange] = useState(new Date());
   const {user, serverID} = props
+  
+
+  const [scopes, setScopeState] = useState([])
+  const [activeScopes, setActiveScopes] = useState([])
+
+  const [checked, setChecked] = useState([])
+  const [tokenDialogOpen, setTokenDialogOpen] = useState(false)
+  const [tokenErrorOpen, setTokenErrorOpen] = useState(false)
+  const [token, setToken] = useState("")
+  const [tokenError, setTokenError] = useState("")
+
+  // Run on initial load to get roles
+  useEffect(() => {
+    getUserRoles(serverID)
+    .then((roles) => {
+      setScopeState(scopes_with_roles(roles));
+    }, (err) => console.log(err))
+  }, [])
+
+  // Run when setChecked is updated to make sure that this is reflected in activeScopes
+  useEffect(() => {
+    setActiveScopes(checked.map((scope_index) => scopes[scope_index]))
+    console.log("Active scopes now:")
+    console.log(activeScopes)
+  }, [checked])
+
+
+  // Keeps track of which boxes are toggled
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked]
+    console.log("box checked")
+    if (currentIndex === -1) {
+      newChecked.push(value)
+    } else {
+      newChecked.splice(currentIndex, 1)
+    }
+    setChecked(newChecked)
+  }
+
+  //Pops up a marquee containing the token for copy-and-paste or download
+  const requestToken = () => {
+    console.log("Requesting scopes:")
+    console.log(activeScopes)
+    createToken(
+      "foo",
+      serverID,
+      selectedDate,
+      activeScopes
+    ).then((token) => {
+      console.log("Token got");
+      console.log(token)
+      setToken(token.token)
+      setTokenDialogOpen(true)
+    },(err) => {
+      console.log("Token error")
+      console.log(err)
+      setTokenError(err.message)
+      setTokenErrorOpen(true)
+    })
+  }
+
+  //Checks all tickboxes in the scopes list
+  const checkAll = () => {
+    var i;
+    var all_checked = [];
+    for (i = 0; i < scopes.length; i++){
+      all_checked.push(i)
+    }
+    setChecked(all_checked)
+  }
+
+  //Handles the token dialog box being closed
+  const closeTokenDialog = () => {
+    setTokenDialogOpen(false)
+  }
+
+  //Handles the token error box being closed
+  const closeTokenError = () => {
+    setTokenErrorOpen(false)
+  }
+
 
   return (
     <Fragment>
+
+<Dialog 
+  open = {tokenDialogOpen}
+  onClose = {closeTokenDialog}
+>
+  <DialogTitle>
+    Token
+  </DialogTitle>
+  <DialogContentText>
+    {token}
+  </DialogContentText>
+</Dialog>
+
+<Dialog
+  open = {tokenErrorOpen}
+  onClose = {closeTokenError}
+>
+  <DialogTitle>
+    Error
+  </DialogTitle>
+  <DialogContentText>
+    {tokenError}
+  </DialogContentText>
+</Dialog>
+
       <Grid container xs={8}>
-        <UserRoleList
-          user = {user}
-          server = {serverID}
+        <UserScopesList
+          scopes = {scopes}
+          checkAll = {checkAll}
+          handleToggle = {handleToggle}
+          checked = {checked}
+          setScopeState = {setScopeState}
         />
 
         <Stack>
@@ -41,12 +154,13 @@ function TokenBuilder(props) {
               onChange={handleDateChange}
             />
           </MuiPickersUtilsProvider> 
-          <Button>
+          <Button
+            onClick = {requestToken}
+          >
             Get token
           </Button>
         </Stack>
       </Grid>
-
     </Fragment>
   );
 }

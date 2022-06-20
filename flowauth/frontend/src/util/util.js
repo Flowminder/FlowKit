@@ -103,3 +103,27 @@ export function jsonify(tree, labels, enabled, enabledKeys) {
   }
   return list;
 }
+
+
+export function scopes_with_roles(roles){
+  //Rotates a list of roles-with-scopes to a list of 
+  //scopes-from-roles 
+  const scopes_obj = {};
+  roles.forEach((role) => {
+    role.scopes.forEach((scope) => {
+      if (scopes_obj[scope] == undefined){
+        scopes_obj[scope] = []
+      }
+      scopes_obj[scope].push(role.name);
+    })
+  });
+  const scopes_out = []
+  for (let scope in scopes_obj){
+    scopes_out.push({
+      name: scope,
+      roles : scopes_obj[scope]
+    })
+  }
+  
+  return scopes_out
+}

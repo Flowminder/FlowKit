@@ -88,7 +88,6 @@ def test_token_generation(
         assert approx(expiry.timestamp()) == decoded_token["exp"]
 
 
-# @freeze_time("2020-12-31")
 def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, public_key):
     with app.app_context():
         with freeze_time("2020-12-31") as frozentime:
