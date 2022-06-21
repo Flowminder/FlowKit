@@ -16,20 +16,42 @@ import {
   editMembers,
   renameRole,
 } from "./util/api";
+import { useEffect } from "react";
 
-class GroupDetails extends React.Component {
+function RoleDetails(props) {
   //Properties:
-  //item_id  
+  //item_id
+
+  const {item_id} = props
   
-  state = {
-    name: "",
-    members: [],
-    servers: [],
-    edit_mode: false,
-    name_helper_text: "",
-    pageError: false,
-    errors: { message: "" },
-  };
+  const [role, setRole] = useState({})
+  const [name, setRoleName] = useState("");
+  const [server, setServer] = useState({})
+  const [members, updateMembers] = useState([]);
+  const [edit_mode, setEditMode] = useState(false);
+  const [name_helper_text, setNameHelperText] = useState("")
+  const [errors, setErrors] = useState({message:""})
+  const [is_errored, setIsErrored] = useState(false)
+  
+  useEffect(() => {
+    getRole(item_id).then((role) => {
+      setRole(role);
+
+    },
+    (err) => {
+      if (err.code !== 404){
+        setRole = {}
+        setErrors(err.message)
+        setIsErrored(true)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    setRoleName(role.name);
+    
+  }, setRole)
+
 
   async componentDidMount() {
     try {
