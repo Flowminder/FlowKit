@@ -61,7 +61,7 @@ def get_roles(server_id):
                 "name": role.name,
                 "scopes": [scope.scope for scope in role.scopes],
                 "latest_token_expiry": role.latest_token_expiry.strftime(
-                    "%Y-%m-%dT%H:%M:%S.%fZ"
+                    "%y-%m-%dt%h:%m:%s.%fz"
                 ),
                 "longest_token_life_minutes": role.longest_token_life_minutes,
             }
@@ -70,7 +70,28 @@ def get_roles(server_id):
     )
 
 
-@blueprint.route("/servers/<server_id>/roles", methods=["POST"])
+@blueprint.route("/servers/<server_id>/roles/<role_id>")
+@login_required
+@admin_permission.require(http_excpetion=401)
+def get_role(server_id, role_id):
+    """
+    As get_roles, but returns a single role
+    """
+    role = Role.query.filter(Role.id == role_id).filter(Role.server == server_id)
+    return jsonify(
+        {
+            "id": role.id,
+            "name": role.name,
+            "scopes": [scope.scope for scope in role.scopes],
+            "latest_token_expiry": role.latest_token_expiry.strftime(
+                "%y-%m-%dt%h:%m:%s.%fz"
+            ),
+            "longest_token_life_minutes": role.longest_token_life_minutes,
+        }
+    )
+
+
+@blueprint.route("/servers/<server_id>/roles/<role_id>", methods=["POST"])
 @login_required
 @admin_permission.require(http_exception=401)
 def add_role(server_id):
