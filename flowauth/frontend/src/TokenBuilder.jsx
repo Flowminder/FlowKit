@@ -80,6 +80,7 @@ function TokenBuilder(props) {
     },(err) => {
       console.log("Token error")
       console.log(err)
+      setToken("")
       setTokenError(err.message)
       setTokenErrorOpen(true)
     })
