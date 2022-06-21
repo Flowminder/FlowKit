@@ -138,11 +138,9 @@ class Table(Query):
         return "SELECT {cols} FROM {fqn}".format(fqn=self.fqn, cols=cols)
 
     def get_query(self):
-        with get_db().engine.begin():
-            get_db().engine.execute(
-                "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
-                    self.query_id
-                )
+        with get_db().engine.begin() as trans:
+            trans.execute(
+                f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{self.query_id}'"
             )
         return self._make_query()
 
