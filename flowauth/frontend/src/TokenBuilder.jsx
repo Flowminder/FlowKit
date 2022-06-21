@@ -4,14 +4,15 @@
 
 import React, {Fragment, useState, useEffect} from "react";
 import Grid from "@material-ui/core/Grid";
-import Stack from "@material-ui/core/Grid"
+import Stack from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers"
 import DateFnsUtils from "@date-io/date-fns";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles"
 import UserScopesList from "./UserScopesList";
 import { getDisabledState } from "rsuite/esm/CheckTreePicker/utils";
-import { Button, Dialog, DialogContentText, DialogTitle } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContentText, DialogTitle } from "@material-ui/core";
 import ScopedCssBaseline from "@material-ui/core/ScopedCssBaseline";
 import { scopes_with_roles } from "./util/util";
 import {createToken, getUserRoles} from "./util/api"
@@ -26,19 +27,15 @@ const styles = (theme) => ({
 function TokenBuilder(props) {
 
   const [selectedDate, handleDateChange] = useState(new Date());
-  const {user, serverID} = props
-  
-
+  const {serverID} = props
   const [scopes, setScopeState] = useState([])
   const [activeScopes, setActiveScopes] = useState([])
-
   const [checked, setChecked] = useState([])
-  const [tokenDialogOpen, setTokenDialogOpen] = useState(false)
   const [tokenErrorOpen, setTokenErrorOpen] = useState(false)
   const [token, setToken] = useState("")
   const [tokenError, setTokenError] = useState("")
 
-  // Run on initial load to get roles
+  // Run on initial load to get roles and transform to scopes
   useEffect(() => {
     getUserRoles(serverID)
     .then((roles) => {
@@ -80,7 +77,6 @@ function TokenBuilder(props) {
       console.log("Token got");
       console.log(token)
       setToken(token.token)
-      setTokenDialogOpen(true)
     },(err) => {
       console.log("Token error")
       console.log(err)
@@ -99,11 +95,6 @@ function TokenBuilder(props) {
     setChecked(all_checked)
   }
 
-  //Handles the token dialog box being closed
-  const closeTokenDialog = () => {
-    setTokenDialogOpen(false)
-  }
-
   //Handles the token error box being closed
   const closeTokenError = () => {
     setTokenErrorOpen(false)
@@ -113,29 +104,25 @@ function TokenBuilder(props) {
   return (
     <Fragment>
 
-<Dialog 
-  open = {tokenDialogOpen}
-  onClose = {closeTokenDialog}
->
-  <DialogTitle>
-    Token
-  </DialogTitle>
-  <DialogContentText>
-    {token}
-  </DialogContentText>
-</Dialog>
-
-<Dialog
-  open = {tokenErrorOpen}
-  onClose = {closeTokenError}
->
-  <DialogTitle>
-    Error
-  </DialogTitle>
-  <DialogContentText>
-    {tokenError}
-  </DialogContentText>
-</Dialog>
+      <Dialog
+        open = {tokenErrorOpen}
+        onClose = {closeTokenError}
+      >
+        <DialogTitle>
+          Error
+        </DialogTitle>
+        <DialogContentText>
+          {tokenError}
+        </DialogContentText>
+        <DialogActions>
+          <Button 
+          onClick={closeTokenError}
+          autoFocus
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Grid container xs={8}>
         <UserScopesList
@@ -161,6 +148,13 @@ function TokenBuilder(props) {
           </Button>
         </Stack>
       </Grid>
+      <TextField
+        label='token'
+        fullWidth
+        multiline
+        value={token}
+      />
+
     </Fragment>
   );
 }
