@@ -19,8 +19,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import UserServer from "./UserServer";
 import UserServerList from "./UserServerList";
 import RoleList from "./RoleList"
-import RoleDetails from "./RoleAdmin"
-import GroupList from "./GroupList";
+import RoleDetails from "./RoleDetails"
 import UserList from "./UserList";
 import ServerList from "./ServerList";
 import AdminMenu from "./AdminMenu";
@@ -160,11 +159,8 @@ class Dashboard extends React.Component {
         return <UserDetails />;
       case "public_key_admin":
         return <PublicKey />;
-      // case "role_admin":
-      //   return <RoleList 
-      //     serverID={this.state.activeServer}
-      //     serverName={this.state.activeServerName}
-        // />;
+      case "role_admin":
+        return <RoleList/>;
       default:
         return <div />;
     }

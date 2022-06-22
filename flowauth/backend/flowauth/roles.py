@@ -10,6 +10,29 @@ from .models import Role, Server, User
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 
+admin_permission = Permission(RoleNeed("admin"))
+
+
+def role_to_dict(role):
+    return {
+        "id": role.id,
+        "name": role.name,
+        "scopes": sorted([scope.scope for scope in role.scopes]),
+        "latest_token_expiry": role.latest_token_expiry.strftime(
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+        ),
+        "longest_token_life_minutes": role.longest_token_life_minutes,
+        "server": role.server_id,
+        "users": sorted([user.id for user in role.users]),
+    }
+
+
+@blueprint.route("/")
+@login_required
+@admin_permission.require(http_exception=401)
+def list_roles():
+    return jsonify([role_to_dict(role) for role in Role.query.all()])
+
 
 @blueprint.route("/server/<server_id>", methods=["GET"])
 @login_required
@@ -29,6 +52,7 @@ def list_my_roles_on_server(server_id):
                         "%Y-%m-%dT%H:%M:%S.%fZ"
                     ),
                     "longest_token_life_minutes": role.longest_token_life_minutes,
+                    "server": role.server_id,
                 }
                 for role in roles
             ],
