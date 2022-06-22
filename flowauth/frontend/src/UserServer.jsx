@@ -10,7 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import TokenList from "./TokenList";
 import TokenDetails from "./TokenDetails";
 import Rolelist from "./RoleList";
-import RoleDetails from "./RoleAdmin";
+import RoleDetails from "./RoleDetails";
 
 const styles = (theme) => ({
   root: {

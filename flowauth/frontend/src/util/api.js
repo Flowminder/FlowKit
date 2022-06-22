@@ -295,10 +295,13 @@ export async function createGroup(group_name) {
   return await getResponse("/admin/groups", dat);
 }
 
-export async function getRole(server_id, role_id) {
-  return await getResponseDefault("/servers/"+server_id+"/roles/"+role_id)
+export async function getRoles() {
+  return await getResponseDefault("/roles/")
 }
 
+export async function getRole(role_id) {
+  return await getResponseDefault("/roles/"+role_id)
+}
 
 export async function createRole(role_name) {
   var dat = {
@@ -313,10 +316,6 @@ export async function deleteRole(role_id) {
     method: "DELETE",
   };
   return await getResponse("/users/roles/"+role_id, dat);
-}
-
-export async function getRoles(server_id) {
-  return await getResponseDefault("/servers/"+server_id+"/roles")
 }
 
 export async function getUserRoles(server_id){

@@ -49,7 +49,7 @@ class User(db.Model):
         "Role",
         secondary=users_with_roles,
         lazy="subquery",
-        backref=db.backref("roles", lazy=True),
+        backref=db.backref("users", lazy=True),
     )
 
     two_factor_auth = db.relationship(

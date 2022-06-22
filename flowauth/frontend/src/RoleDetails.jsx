@@ -8,60 +8,69 @@ import Grid from "@material-ui/core/Grid";
 import { createGroup as createRole } from "./util/api";
 import Typography from "@material-ui/core/Typography";
 import GroupMembersPicker from "./GroupMembersPicker";
-import GroupServerPermissions from "./GroupServerPermissions";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
   getRole,
   editMembers,
+  editScopes,
   renameRole,
-} from "./util/api";
-import { useEffect } from "react";
+} from "./util/api"
+import { useEffect, useState } from "react";
 
 function RoleDetails(props) {
   //Properties:
   //item_id
 
-  const {item_id} = props
+  const {item_id, classes, onClick} = props
   
   const [role, setRole] = useState({})
   const [name, setRoleName] = useState("");
   const [server, setServer] = useState({})
-  const [members, updateMembers] = useState([]);
+  const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
   const [name_helper_text, setNameHelperText] = useState("")
   const [errors, setErrors] = useState({message:""})
   const [is_errored, setIsErrored] = useState(false)
+  const [pageErrored, setPageErrored] = useState(false)
   
-  useEffect(() => {
-    getRole(item_id).then((role) => {
-      setRole(role);
-
-    },
-    (err) => {
-      if (err.code !== 404){
-        setRole = {}
-        setErrors(err.message)
-        setIsErrored(true)
+  // get appropriate Role on load
+  useEffect(
+    () => {
+      (async () => {
+        await getRole(item_id)
+        .then((role) => {
+          console.log(role);
+          setRole(role);
+       },
+       (err) => {
+         if (err.code !== 404){
+           setRole = {};
+           setErrors(err.message)
+           setIsErrored(true)
+           setEditMode(false)
+         }
+        }
+      )
       }
-    })
+    )
   }, [])
 
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
   useEffect(() => {
     setRoleName(role.name);
-    setRoleServer(role.server);
-    updateMembers(role.members);
-    
+    setServer(role.server);
+    setMembers(role.members);
   }, setRole)
 
-  useEffect((rolename) => {
+  //Validate Rolename on change
+  useEffect(() => {
     var letters = /^[A-Za-z0-9_]+$/;
-    if (rolename.match(letters)) {
-      this.setState({ name_helper_text: "" });
-    } else if (rolename.length === 0) {
-      this.setState({ name_helper_text: "Group name can not be blank." });
+    if (name.match(letters)) {
+      setNameHelperText("");
+    } else if (name.length === 0) {
+      setNameHelperText("Group name can not be blank.");
     } else {
       this.setState({
         name_helper_text:
@@ -70,38 +79,16 @@ function RoleDetails(props) {
     }
   }, setRoleName)
 
+  //Throw error on error
+  // useEffect((error) => {
+  //   if (error !== {message:""}){
+  //     throw error
+  //   }
+  // }, setErrors)
 
-  async componentDidMount() {
-    try {
-      const role = await getRole(this.props.item_id);
-      this.setState({ ...role, edit_mode: true });
-    } catch (err) {
-      if (err.code !== 404) {
-        this.setState({ hasError: true, error: err });
-      }
-    }
-  }
-
-  handleChange = (name) => (event) => {
-    this.setState({
-      pageError: false,
-      errors: "",
-    });
-    this.setState({
-      [name]: event.target.value,
-    });
-    if (name === "name") {
-    }
-  };
-  updateMembers = (members) => {
-    this.setState({ members: members });
-  };
-  updateServers = (servers) => {
-    this.setState({ servers: servers });
-  };
-  handleSubmit = async () => {
-    const { name_helper_text, members, edit_mode, name } = this.state;
-    const { item_id, onClick } = this.props;
+ const handleSubmit = async () => {
+ //   const { name_helper_text, members, edit_mode, name }
+ //   const { item_id, onClick } = this.props;
 
     if (name_helper_text === "") {
       const group = edit_mode
@@ -120,59 +107,45 @@ function RoleDetails(props) {
     }
   };
 
-  
-  render() {
-    if (this.state.hasError) throw this.state.error;
+return (
+    <React.Fragment>
+      <Grid xs={12}>
+        <Typography variant="h5" component="h1">
+          {(edit_mode && "Edit Group") || "New Group"}
+        </Typography>
+      </Grid>
+      <Grid xs={12}>
+        <TextField
+          id="name"
+          label="Name"
+          className={classes.textField}
+          required={true}
+          value={name}
+          margin="normal"
+          error={name_helper_text}
+          helperText={name_helper_text}
+        />
+      </Grid>
 
-    const { classes, onClick, item_id } = this.props;
-    const { name, servers } = this.state;
-
-    return (
-      <React.Fragment>
-        <Grid xs={12}>
-          <Typography variant="h5" component="h1">
-            {(this.state.edit_mode && "Edit Group") || "New Group"}
-          </Typography>
-        </Grid>
-        <Grid xs={12}>
-          <TextField
-            id="name"
-            label="Name"
-            className={classes.textField}
-            required={true}
-            value={name}
-            margin="normal"
-            error={this.state.name_helper_text}
-            helperText={this.state.name_helper_text}
-          />
-        </Grid>
-
-        <Grid xs={12}>
-          <Typography variant="h5" component="h1">
-            Members
-          </Typography>
-        </Grid>
-        <Grid xs={12}>
-          <GroupMembersPicker
-            group_id={item_id}
-            updateMembers={this.updateMembers}
-          />
-        </Grid>
-        <GroupServerPermissions
+      <Grid xs={12}>
+        <Typography variant="h5" component="h1">
+          Members
+        </Typography>
+      </Grid>
+      <Grid xs={12}>
+        <GroupMembersPicker
           group_id={item_id}
-          updateServers={this.updateServers}
-          servers={servers}
-          classes={classes}
+          updateMembers={setMembers}
         />
-        <ErrorDialog
-          open={this.state.pageError}
-          message={this.state.errors.message}
-        />
-        <Grid item xs={12} />
-        <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
-      </React.Fragment>
-    );
-  }
+      </Grid>
+      <ErrorDialog
+        open={pageErrored}
+        message={errors.message}
+      />
+      <Grid item xs={12} />
+      <SubmitButtons handleSubmit={handleSubmit} onClick={onClick} />
+    </React.Fragment>
+  );
 }
 
-export default GroupDetails;
+export default RoleDetails;
