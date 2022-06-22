@@ -47,12 +47,28 @@ function RoleDetails(props) {
     })
   }, [])
 
+  //When Role changes, replace role.name, role.server and role.members with 
+  //the parts from the others.
   useEffect(() => {
     setRoleName(role.name);
     setRoleServer(role.server);
     updateMembers(role.members);
     
   }, setRole)
+
+  useEffect((rolename) => {
+    var letters = /^[A-Za-z0-9_]+$/;
+    if (rolename.match(letters)) {
+      this.setState({ name_helper_text: "" });
+    } else if (rolename.length === 0) {
+      this.setState({ name_helper_text: "Group name can not be blank." });
+    } else {
+      this.setState({
+        name_helper_text:
+          "Group name may only contain letters, numbers and underscores.",
+      });
+    }
+  }, setRoleName)
 
 
   async componentDidMount() {
@@ -75,18 +91,6 @@ function RoleDetails(props) {
       [name]: event.target.value,
     });
     if (name === "name") {
-      var letters = /^[A-Za-z0-9_]+$/;
-      let rolename = event.target.value;
-      if (rolename.match(letters)) {
-        this.setState({ name_helper_text: "" });
-      } else if (rolename.length === 0) {
-        this.setState({ name_helper_text: "Group name can not be blank." });
-      } else {
-        this.setState({
-          name_helper_text:
-            "Group name may only contain letters, numbers and underscores.",
-        });
-      }
     }
   };
   updateMembers = (members) => {
@@ -137,7 +141,6 @@ function RoleDetails(props) {
             className={classes.textField}
             required={true}
             value={name}
-            onChange={this.handleChange("name")}
             margin="normal"
             error={this.state.name_helper_text}
             helperText={this.state.name_helper_text}
