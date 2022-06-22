@@ -49,6 +49,8 @@ function RoleDetails(props) {
 
   useEffect(() => {
     setRoleName(role.name);
+    setRoleServer(role.server);
+    updateMembers(role.members);
     
   }, setRole)
 
