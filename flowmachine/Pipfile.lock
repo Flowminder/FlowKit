@@ -729,7 +729,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:01c5615d13f3dd3aa8543afc069e5319cfa0c7d712f6e04b920431e5c564a749",
@@ -905,11 +905,11 @@
         },
         "geopandas": {
             "hashes": [
-                "sha256:1722853464441b603d9be3d35baf8bde43831424a891e82a8545eb8997b65d6c",
-                "sha256:efbf47e70732e25c3727222019c92b39b2e0a66ebe4fe379fbe1aa43a2a871db"
+                "sha256:0991f279d4f9e3a04e3666f32b1ac64d6ba439933da3d9654a26031e0ccea5dc",
+                "sha256:562fe7dc19a6e0f61532d654c4752f7bf46e0714990c5844fe3de3f9c99cb873"
             ],
             "index": "pypi",
-            "version": "==0.10.2"
+            "version": "==0.11.0"
         },
         "heapdict": {
             "hashes": [
