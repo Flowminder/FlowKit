@@ -444,6 +444,7 @@ class Scope(db.Model):
     scope = db.Column(db.String)
     enabled = db.Column(db.Boolean, default=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
+    # TODO: Make sure scopes are unique within server
 
 
 def init_db(force: bool = False) -> None:

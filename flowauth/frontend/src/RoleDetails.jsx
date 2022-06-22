@@ -38,8 +38,10 @@ function RoleDetails(props) {
   useEffect(
     () => {
       (async () => {
+        console.log(item_id);
         await getRole(item_id)
         .then((role) => {
+          console.log("Role fetched")
           console.log(role);
           setRole(role);
        },
@@ -59,25 +61,26 @@ function RoleDetails(props) {
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
   useEffect(() => {
-    setRoleName(role.name);
-    setServer(role.server);
-    setMembers(role.members);
-  }, setRole)
+    console.log(role)
+    setRoleName(role.name ? role.name : "");
+    setServer(role.server ? role.server : []);
+    setMembers(role.members ? role.members : []);
+  }, [setRole])
 
   //Validate Rolename on change
-  useEffect(() => {
+  useEffect((name) => {
     var letters = /^[A-Za-z0-9_]+$/;
     if (name.match(letters)) {
       setNameHelperText("");
     } else if (name.length === 0) {
-      setNameHelperText("Group name can not be blank.");
+      setNameHelperText("Role name can not be blank.");
     } else {
       this.setState({
         name_helper_text:
-          "Group name may only contain letters, numbers and underscores.",
+          "Role name may only contain letters, numbers and underscores.",
       });
     }
-  }, setRoleName)
+  }, [setRoleName])
 
   //Throw error on error
   // useEffect((error) => {
@@ -111,7 +114,7 @@ return (
     <React.Fragment>
       <Grid xs={12}>
         <Typography variant="h5" component="h1">
-          {(edit_mode && "Edit Group") || "New Group"}
+          {(edit_mode && "Edit Role") || "New Role"}
         </Typography>
       </Grid>
       <Grid xs={12}>
