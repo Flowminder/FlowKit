@@ -72,7 +72,7 @@ def get_roles(server_id):
 
 @blueprint.route("/servers/<server_id>/roles/<role_id>")
 @login_required
-@admin_permission.require(http_excpetion=401)
+@admin_permission.require(http_exception=401)
 def get_role(server_id, role_id):
     """
     As get_roles, but returns a single role
