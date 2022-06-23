@@ -91,26 +91,7 @@ def get_role(server_id, role_id):
     )
 
 
-@blueprint.route("/servers/<server_id>/roles/<role_id>", methods=["POST"])
-@login_required
-@admin_permission.require(http_exception=401)
-def add_role(server_id):
-    server = Server.query.filter_by(id=server_id).first_or_404()
-    json = request.get_json()
-    json["latest_token_expiry"] = datetime.datetime.strptime(
-        json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
-    role_scopes = [Scope(scope=scope, server=server) for scope in json["scopes"]]
-    new_role = Role(
-        name=json["name"],
-        scopes=role_scopes,
-        server_id=server.id,
-        latest_token_expiry=json["latest_token_expiry"],
-        longest_token_life_minutes=json["longest_token_life_minutes"],
-    )
-    db.session.add(new_role)
-    db.session.commit()
-    return get_roles(server_id)
+
 
 
 @blueprint.route("/servers/<server_id>/scopes")

@@ -12,7 +12,7 @@ import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
   getRole,
-  editMembers,
+  editRoleMembers,
   editScopes,
   renameRole,
 } from "./util/api"
@@ -44,8 +44,8 @@ function RoleDetails(props) {
           console.log("Role fetched")
           console.log(role);
           setRole(role);
-       },
-       (err) => {
+       })
+       .catch((err) => {
          if (err.code !== 404){
            setRole = {};
            setErrors(err.message)
@@ -99,7 +99,7 @@ function RoleDetails(props) {
         ? renameRole(item_id, name)
         : createRole(name, []);
       try {
-        await editMembers((await group).id, members);
+        await editRoleMembers(role.id, members);
         onClick();
       } catch (err) {
         if (err.code === 400) {
