@@ -101,6 +101,31 @@ def test_add_role(client, auth, app, test_scopes):
     ]
 
 
+def test_update_role(auth, client, test_roles):
+    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+    response = client.patch(
+        "/roles/1",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "name": "runner_patched",
+            "users": [1]
+        },
+    )
+    assert response.status_code == 200
+    response = client.get(
+        "/roles/1", headers={"X-CSRF-Token": csrf_cookie}
+    )
+    assert response.json == {
+        "id": 1,
+        "name": "runner_patched",
+        "scopes": [1, 3, 4],
+        "server": 1,
+        "longest_token_life_minutes": 2880,
+        "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+        "users": [1],
+    }   
+
+
 @pytest.mark.skip(
     reason="Scopes are included in regular listing now; not needed anymore"
 )
