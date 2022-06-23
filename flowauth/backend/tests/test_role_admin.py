@@ -2,7 +2,7 @@ from urllib import response
 import pytest
 from freezegun import freeze_time
 
-from flowauth.roles import list_my_roles_on_server
+from flowauth.roles import list_my_roles_on_server, role_to_dict
 
 
 @freeze_time("2020-12-31")
@@ -45,6 +45,7 @@ def test_list_roles_user(client, auth, app, test_servers, test_user_with_roles):
                 "scopes": ["dummy_query:admin_level_1", "get_result", "run"],
                 "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
                 "longest_token_life_minutes": 2880,
+                "server":1
             },
             {
                 "id": 2,
@@ -52,8 +53,27 @@ def test_list_roles_user(client, auth, app, test_servers, test_user_with_roles):
                 "scopes": ["get_result"],
                 "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
                 "longest_token_life_minutes": 2880,
+                "server": 1
             },
         ] == response.get_json()
+
+
+def test_get_role(client, auth, app, test_user_with_roles):
+    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+    uid, _, _ = test_user_with_roles
+    response = client.get(
+        "/roles/1",
+        headers = {"X-CSRF_Token":csrf_cookie}
+    )
+    assert response.json == {
+            "id": 1,
+            "name":"runner",
+            "scopes":["get_result", "read_a", "dummy_query"],
+            "server":1,
+            "longest_token_life_minutes":2880,
+            "latest_token_expiry":"2021-12-31T00:00:00.00000Z",
+            "users":[uid]
+        }
 
 
 def test_add_role(client, auth, app, test_scopes):
@@ -101,3 +121,4 @@ def test_list_scopes_in_role(client, auth, test_scopes, test_roles):
     assert [
         "DUMMY_SCOPE_2",
     ] == response.get_json()
+

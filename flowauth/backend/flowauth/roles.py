@@ -1,12 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 
 from flask_login import current_user, login_required
 from flask_principal import Permission, RoleNeed
 
-from .models import Role, Server, User
+from .models import Role, Server, User, db
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 
@@ -27,12 +27,18 @@ def role_to_dict(role):
     }
 
 
-@blueprint.route("/")
+@blueprint.route("/", methods=["GET"])
 @login_required
 @admin_permission.require(http_exception=401)
 def list_roles():
     return jsonify([role_to_dict(role) for role in Role.query.all()])
 
+@blueprint.route("/<role_id>", methods=["GET"])
+@login_required
+@admin_permission.require(http_exception=401)
+def get_role(role_id):
+    role = Role.query.filter(Role.id == role_id).first()  # First or error?
+    return jsonify(role_to_dict(role))
 
 @blueprint.route("/server/<server_id>", methods=["GET"])
 @login_required
