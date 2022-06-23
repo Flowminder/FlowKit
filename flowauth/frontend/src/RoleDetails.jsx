@@ -62,13 +62,14 @@ function RoleDetails(props) {
   //the parts from the others.
   useEffect(() => {
     console.log(role)
-    setRoleName(role.name ? role.name : "");
-    setServer(role.server ? role.server : []);
-    setMembers(role.members ? role.members : []);
+    setRoleName(role ? role.name : "");
+    setServer(role ? role.server : []);
+    setMembers(role ? role.members : []);
   }, [setRole])
 
   //Validate Rolename on change
   useEffect((name) => {
+    console.log("Name:" + name)
     var letters = /^[A-Za-z0-9_]+$/;
     if (name.match(letters)) {
       setNameHelperText("");

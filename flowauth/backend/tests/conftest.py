@@ -12,6 +12,7 @@ from itertools import product
 
 import pyotp
 import pytest
+import sqlalchemy
 from flowauth.main import create_app
 from flowauth.models import (
     Server,
@@ -52,7 +53,6 @@ TestTwoFactorUser = namedtuple(
 # def test_test_date_fixture(test_date):
 #     assert datetime.datetime.now() == test_date
 #
-
 
 @pytest.fixture
 def app(tmpdir):
