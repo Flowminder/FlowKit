@@ -5,6 +5,7 @@
 """
 Tests for query caching functions.
 """
+from typing import List
 
 import pytest
 
@@ -14,7 +15,9 @@ from flowmachine.core.cache import (
     get_obj_or_stub,
 )
 from flowmachine.core.context import get_db
+from flowmachine.core.errors.flowmachine_errors import QueryCancelledException
 from flowmachine.core.query import Query
+from flowmachine.core.query_state import QueryState
 from flowmachine.features import daily_location, ModalLocation, Flows
 
 
@@ -358,3 +361,20 @@ def test_retrieve_all():
     assert dl1.query_id in from_cache
     assert hl1.query_id in from_cache
     assert flow.query_id in from_cache
+
+
+def test_interrupt_cancels():
+    class Dummy(Query):
+        @property
+        def column_names(self) -> List[str]:
+            return ["dummy"]
+
+        def _make_query(self):
+            raise KeyboardInterrupt
+
+    interrupted_dummy = Dummy()
+    try:
+        interrupted_dummy.store().result()
+    except KeyboardInterrupt:
+        pass
+    assert interrupted_dummy.query_state == QueryState.CANCELLED

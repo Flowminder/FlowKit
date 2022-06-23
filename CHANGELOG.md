@@ -15,9 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `Query.explain` will now explain the query even where it is already stored. [#1285](https://github.com/Flowminder/FlowKit/issues/1285)
 - `unstored_dependencies_graph` no longer blocks until dependencies are in a determinate state. [#4949](https://github.com/Flowminder/FlowKit/issues/4949)
 - In and out flows no longer return location columns with to/from suffix.
+- FlowDB now always creates a role named `flowmachine.`
+- Flowmachine will set the state of a query being stored to cancelled if interrupted while the store is running.
 
 ### Fixed
-- FlowDB trigger to alter ownership of cache tables is now triggered when a flowmachine query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
+- Flowmachine now makes the built in `flowmachine` role owner of cache tables as a post-action when a query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
 - TopupBalance now returns the weighted mode when requested instead of weighted median [#1412](https://github.com/Flowminder/FlowKit/issues/1412)
 - Fixed in and out flow geojson for multicolumn location types [#5132](https://github.com/Flowminder/FlowKit/issues/5132)
 
