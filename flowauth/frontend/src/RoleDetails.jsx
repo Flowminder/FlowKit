@@ -5,9 +5,9 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import { createGroup as createRole } from "./util/api";
+import { createRole } from "./util/api";
 import Typography from "@material-ui/core/Typography";
-import GroupMembersPicker from "./GroupMembersPicker";
+import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
@@ -47,7 +47,7 @@ function RoleDetails(props) {
        })
        .catch((err) => {
          if (err.code !== 404){
-           setRole = {};
+           setRole({});
            setErrors(err.message)
            setIsErrored(true)
            setEditMode(false)
@@ -61,14 +61,17 @@ function RoleDetails(props) {
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
   useEffect(() => {
+    console.log("Trying to update the UI using the following role...")
     console.log(role)
-    setRoleName(role ? role.name : "");
-    setServer(role ? role.server : []);
-    setMembers(role ? role.members : []);
+    if (role == undefined){  // Pretty sure we want '==' and not '===' here
+      setRoleName(role.name);
+      setServer(role.server);
+      setMembers(role.members);
+    }
   }, [setRole])
 
   //Validate Rolename on change
-  useEffect((name) => {
+  useEffect(() => {
     console.log("Name:" + name)
     var letters = /^[A-Za-z0-9_]+$/;
     if (name.match(letters)) {
@@ -95,7 +98,7 @@ function RoleDetails(props) {
  //   const { item_id, onClick } = this.props;
 
     if (name_helper_text === "") {
-      const group = edit_mode
+      const role = edit_mode
         ? renameRole(item_id, name)
         : createRole(name, []);
       try {
@@ -137,8 +140,8 @@ return (
         </Typography>
       </Grid>
       <Grid xs={12}>
-        <GroupMembersPicker
-          group_id={item_id}
+        <RoleMembersPicker
+          role_id={item_id}
           updateMembers={setMembers}
         />
       </Grid>

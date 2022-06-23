@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { getUsers, getGroupMembers } from "./util/api";
+import { getUsers, getRoleMembers } from "./util/api";
 import Picker from "./Picker";
 
-class GroupMembersPicker extends React.Component {
+class RoleMembersPicker extends React.Component {
   state = {
     members: [],
     all_users: [],
@@ -20,7 +20,7 @@ class GroupMembersPicker extends React.Component {
   componentDidMount() {
     var members;
     var all_users;
-    getGroupMembers(this.props.group_id)
+    getRoleMembers(this.props.role_id)
       .then((json) => {
         members = json;
       })
@@ -73,4 +73,4 @@ class GroupMembersPicker extends React.Component {
   }
 }
 
-export default GroupMembersPicker;
+export default RoleMembersPicker;
