@@ -54,6 +54,7 @@ TestTwoFactorUser = namedtuple(
 #     assert datetime.datetime.now() == test_date
 #
 
+
 @pytest.fixture
 def app(tmpdir):
     """Per test app"""
