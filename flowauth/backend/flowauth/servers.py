@@ -91,9 +91,6 @@ def get_role(server_id, role_id):
     )
 
 
-
-
-
 @blueprint.route("/servers/<server_id>/scopes")
 @login_required
 @admin_permission.require(http_exception=401)

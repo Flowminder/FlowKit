@@ -327,7 +327,27 @@ export async function renameRole(role_id, new_name) {
     method: "PATCH",
     body: JSON.stringify({ name: new_name })
   };
-  return await getResponse("/admin/roles/" + role_id);
+  return await getResponse("/roles/" + role_id);
+}
+
+export async function getRoleMembers(role_id) {
+  return await getResponseDefault("roles/"+role_id+"/members")
+}
+
+export async function editRoleMembers(role_id, new_members) {
+  var dat = {
+    method: "PATCH",
+    body: JSON.stringify({ users: new_members})
+  };
+  return await getResponse("/roles/" + role_id)
+}
+
+export async function editRoleScopes(role_id, new_scopes) {
+  var dat = {
+    method: "PATCH",
+    body: JSON.stringify({ scopes: new_scopes})
+  };
+  return await getResponse("/roles/" + role_id)
 }
 
 export async function createToken(name, server_id, expiry, claims) {

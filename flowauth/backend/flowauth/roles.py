@@ -67,13 +67,13 @@ def add_role(server_id):
 
 # NOTES FOR REVIEW: I wondered whether to have this merge lists of users and scopes
 # when updated, but in the end I think that it's cleaner to have that on the frontend
-# and 
+# and
 @blueprint.route("/<role_id>", methods=["PATCH"])
 @login_required
 @admin_permission.require(http_exception=401)
 def edit_role(role_id):
     edits = request.get_json()
-    role = Role.query.filter(Role.id == role_id).first()
+    role = Role.query.filter(Role.id == role_id).first_or_404()
     for key, value in edits.items():
         if key == "id":
             current_app.logger.warning("Cannot change role ID; ignoring")
@@ -92,6 +92,14 @@ def edit_role(role_id):
     current_app.logger.info(f"Role {role_id} updated with {edits}")
     # TODO: Add audit log here
     return get_role(role_id)
+
+
+@blueprint.route("/<role_id>/members")
+@login_required
+@admin_permission.require(http_exception=401)
+def get_role_members(role_id):
+    role = Role.query.filter(Role.id == role_id).first_or_404()
+    return jsonify([user.id for user in role.users])
 
 
 @blueprint.route("/server/<server_id>", methods=["GET"])
