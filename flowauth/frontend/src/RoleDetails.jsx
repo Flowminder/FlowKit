@@ -30,6 +30,7 @@ function RoleDetails(props) {
   const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
   const [name_helper_text, setNameHelperText] = useState("")
+  const [nameIsValid, setNameIsValid] = useState(true)
   const [errors, setErrors] = useState({message:""})
   const [is_errored, setIsErrored] = useState(false)
   const [pageErrored, setPageErrored] = useState(false)
@@ -46,6 +47,7 @@ function RoleDetails(props) {
       })
       .catch((err) => {
         if (err.code !== 404){
+          console.log("Error:" + err)
           setRole({});
           setErrors(err.message)
           setIsErrored(true)
@@ -59,12 +61,12 @@ function RoleDetails(props) {
   useEffect(() => {
     console.log("Trying to update the UI using the following role...")
     console.log(role)
-    if (role == undefined){  // Pretty sure we want '==' and not '===' here
+    if (role !== undefined){  // Pretty sure we want '==' and not '===' here
       setRoleName(role.name);
       setServer(role.server);
       setMembers(role.members);
     }
-  }, [setRole])
+  }, setRole)
 
   //Validate Rolename on change
   useEffect(() => {
@@ -72,15 +74,22 @@ function RoleDetails(props) {
     var letters = /^[A-Za-z0-9_]+$/;
     if (name.match(letters)) {
       setNameHelperText("");
+      setNameIsValid(true)
     } else if (name.length === 0) {
       setNameHelperText("Role name can not be blank.");
+      setNameIsValid(false)
     } else {
-      this.setState({
-        name_helper_text:
-          "Role name may only contain letters, numbers and underscores.",
-      });
-    }
-  }, [setRoleName])
+      setNameHelperText(
+        "Role name may only contain letters, numbers and underscores.",
+      )
+      setNameIsValid(false)
+    };
+  }, setRoleName)
+  
+  const handleNameChange = (event) => {
+    console.log("Name change event handled")
+    setRoleName(event.target.output)
+  }
 
   //Throw error on error
   // useEffect((error) => {
@@ -93,7 +102,7 @@ function RoleDetails(props) {
  //   const { name_helper_text, members, edit_mode, name }
  //   const { item_id, onClick } = this.props;
 
-    if (name_helper_text === "") {
+    if (nameIsValid) {
       const role = edit_mode
         ? renameRole(item_id, name)
         : createRole(name, []);
@@ -101,10 +110,11 @@ function RoleDetails(props) {
         await editRoleMembers(role.id, members);
         onClick();
       } catch (err) {
+        setErrors(err)
         if (err.code === 400) {
-          this.setState({ pageError: true, errors: err });
+          setPageErrored(true)
         } else {
-          this.setState({ hasError: true, error: err });
+          setIsErrored(true)
         }
       }
     }
@@ -124,8 +134,9 @@ return (
           className={classes.textField}
           required={true}
           value={name}
+          onChange={handleNameChange}
           margin="normal"
-          error={name_helper_text}
+          error={nameIsValid}
           helperText={name_helper_text}
         />
       </Grid>
