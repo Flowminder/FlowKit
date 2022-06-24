@@ -6,6 +6,7 @@ import React from "react";
 import { getUsers, getRoleMembers } from "./util/api";
 import Picker from "./Picker";
 
+// Component for picking members for a role
 class RoleMembersPicker extends React.Component {
   state = {
     members: [],

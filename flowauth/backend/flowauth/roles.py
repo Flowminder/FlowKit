@@ -99,7 +99,8 @@ def edit_role(role_id):
 @admin_permission.require(http_exception=401)
 def get_role_members(role_id):
     role = Role.query.filter(Role.id == role_id).first_or_404()
-    return jsonify([user.id for user in role.users])
+    
+    return jsonify([{"name": user.username, "id":user.id} for user in role.users])
 
 
 @blueprint.route("/server/<server_id>", methods=["GET"])
