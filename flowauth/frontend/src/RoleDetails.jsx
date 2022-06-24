@@ -37,23 +37,19 @@ function RoleDetails(props) {
   // get appropriate Role on load
   useEffect(
     () => {
-      (async () => {
-        console.log(item_id);
-        await getRole(item_id)
-        .then((role) => {
-          console.log("Role fetched")
-          console.log(role);
-          setRole(role);
-       })
-       .catch((err) => {
-         if (err.code !== 404){
-           setRole({});
-           setErrors(err.message)
-           setIsErrored(true)
-           setEditMode(false)
-         }
+      console.log(item_id);
+      getRole(item_id)
+      .then((role) => {
+        console.log("Role fetched")
+        console.log(role);
+        setRole(role);
+      })
+      .catch((err) => {
+        if (err.code !== 404){
+          setRole({});
+          setErrors(err.message)
+          setIsErrored(true)
         }
-      )
       }
     )
   }, [])
