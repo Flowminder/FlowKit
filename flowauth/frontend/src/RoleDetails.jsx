@@ -77,7 +77,7 @@ function RoleDetails(props) {
       setMembers([])
       setEditMode(false)
     }
-  }, [setRole])
+  }, [role])
 
   //Validate Rolename on change
   useEffect(() => {
@@ -95,7 +95,7 @@ function RoleDetails(props) {
       )
       setNameIsValid(false)
     };
-  }, [setRoleName])
+  }, [name])
   
   const handleNameChange = (event) => {
     console.log("Name change event handled")
