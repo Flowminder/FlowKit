@@ -199,7 +199,9 @@ def write_query_to_cache(
             con = connection.engine
             with con.begin() as trans:
                 try:
-                    plan_time = run_ops_list_and_return_execution_time(query_ddl_ops, trans)
+                    plan_time = run_ops_list_and_return_execution_time(
+                        query_ddl_ops, trans
+                    )
                     logger.debug("Executed queries.")
                 except Exception as exc:
                     q_state_machine.raise_error()
@@ -278,7 +280,6 @@ def write_cache_metadata(
                 logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
                 pass
 
-<<<<<<< HEAD
         cache_record_insert = """
         INSERT INTO cache.cached 
         (query_id, version, query, created, access_count, last_accessed, compute_time, 
@@ -297,6 +298,7 @@ def write_cache_metadata(
                 psycopg2.Binary(self_storage),
             ),
         )
+        logger.debug("Touching cache.", query_id=query.query_id, query=str(query))
         connection.exec_driver_sql(
             "SELECT touch_cache(%(ident)s);", dict(ident=query.query_id)
         )
@@ -310,39 +312,6 @@ def write_cache_metadata(
             logger.debug(f"{query.fully_qualified_table_name} added to cache.")
         else:
             logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
-=======
-        with con.begin():
-            cache_record_insert = """
-            INSERT INTO cache.cached 
-            (query_id, version, query, created, access_count, last_accessed, compute_time, 
-            cache_score_multiplier, class, schema, tablename, obj) 
-            VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
-             ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
-            con.execute(
-                cache_record_insert,
-                (
-                    query.query_id,
-                    __version__,
-                    query._make_query(),
-                    compute_time,
-                    query.__class__.__name__,
-                    *query.fully_qualified_table_name.split("."),
-                    psycopg2.Binary(self_storage),
-                ),
-            )
-            logger.debug("Touching cache.", query_id=query.query_id, query=str(query))
-            con.execute("SELECT touch_cache(%s);", query.query_id)
-
-            if not in_cache:
-                for dep in query._get_stored_dependencies(exclude_self=True):
-                    con.execute(
-                        "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                        (query.query_id, dep.query_id),
-                    )
-                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
-            else:
-                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
->>>>>>> 5b45f1582 (Match cache half life)
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 
@@ -363,17 +332,13 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         The new cache score
     """
     try:
-<<<<<<< HEAD
+        logger.debug("Touching cache.", query_id=query_id)
         with connection.engine.begin() as trans:
             return float(
                 trans.exec_driver_sql(f"SELECT touch_cache('{query_id}')").fetchall()[
                     0
                 ][0]
             )
-=======
-        logger.debug("Touching cache.", query_id=query_id)
-        return float(connection.fetch(f"SELECT touch_cache('{query_id}')")[0][0])
->>>>>>> 5b45f1582 (Match cache half life)
     except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
@@ -515,6 +480,18 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
+def _get_protected_classes():
+    from flowmachine.core.events_table import events_table_map
+    from flowmachine.core.infrastructure_table import infrastructure_table_map
+
+    return [
+        "Table",
+        "GeoTable",
+        *[cls.__name__ for cls in events_table_map.values()],
+        *[cls.__name__ for cls in infrastructure_table_map.values()],
+    ]
+
+
 def get_cached_query_objects_ordered_by_score(
     connection: "Connection",
     protected_period: Optional[int] = None,
@@ -542,11 +519,9 @@ def get_cached_query_objects_ordered_by_score(
         if protected_period is not None
         else " AND NOW()-created > (cache_protected_period()*INTERVAL '1 seconds')"
     )
-    qry = f"""
-        WITH no_score AS (SELECT array_agg(object_class) as classes FROM cache.zero_cache)
-        SELECT query_id, table_size(tablename, schema) as table_size
+    qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE NOT (cached.class=ANY((SELECT classes FROM no_score)::TEXT[]))
+        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
@@ -726,11 +701,9 @@ def get_size_of_cache(connection: "Connection") -> int:
         Number of bytes in total used by cache tables
 
     """
-    sql = f"""
-        WITH no_score AS (SELECT array_agg(object_class) as classes FROM cache.zero_cache) 
-        SELECT sum(table_size(tablename, schema)) as total_bytes 
+    sql = f"""SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE NOT (cached.class=ANY((SELECT classes FROM no_score)::TEXT[]))"""
+        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
