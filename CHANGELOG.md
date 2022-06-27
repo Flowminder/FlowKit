@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - In and out flows no longer return location columns with to/from suffix.
 - FlowDB now always creates a role named `flowmachine.`
 - Flowmachine will set the state of a query being stored to cancelled if interrupted while the store is running.
+- Flowmachine now supports sqlalchemy >=1.4 [#5140](https://github.com/Flowminder/FlowKit/issues/5140)
 
 ### Fixed
 - Flowmachine now makes the built in `flowmachine` role owner of cache tables as a post-action when a query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
