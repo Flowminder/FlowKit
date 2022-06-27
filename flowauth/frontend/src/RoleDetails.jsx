@@ -26,47 +26,58 @@ function RoleDetails(props) {
   
   const [role, setRole] = useState({})
   const [name, setRoleName] = useState("");
-  const [server, setServer] = useState({})
+  const [server, setServer] = useState({});
   const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
-  const [name_helper_text, setNameHelperText] = useState("")
-  const [nameIsValid, setNameIsValid] = useState(true)
-  const [errors, setErrors] = useState({message:""})
-  const [is_errored, setIsErrored] = useState(false)
-  const [pageErrored, setPageErrored] = useState(false)
+  const [name_helper_text, setNameHelperText] = useState("");
+  const [nameIsValid, setNameIsValid] = useState(true);
+  const [errors, setErrors] = useState({message:""});
+  const [is_errored, setIsErrored] = useState(false);
+  const [pageErrored, setPageErrored] = useState(false);
   
   // get appropriate Role on load
   useEffect(
     () => {
-      console.log(item_id);
-      getRole(item_id)
-      .then((role) => {
-        console.log("Role fetched")
-        console.log(role);
-        setRole(role);
-      })
-      .catch((err) => {
-        if (err.code !== 404){
-          console.log("Error:" + err)
-          setRole({});
-          setErrors(err.message)
-          setIsErrored(true)
+      if (item_id >= 0){
+        console.log(item_id);
+        const fetch_role = async () => {
+          const role = await getRole(item_id);
+          console.log("Role fetched");
+          console.log(role);
+          setRole(role);
         }
+
+        fetch_role()
+        .catch((err) => {
+          if (err.code !== 404){
+            console.log("Error:" + err)
+            setRole({});
+            setErrors(err.message)
+            setIsErrored(true)
+          }
+        })
       }
-    )
-  }, [])
+    }, [])
 
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
   useEffect(() => {
     console.log("Trying to update the UI using the following role...")
     console.log(role)
-    if (role !== undefined){  // Pretty sure we want '==' and not '===' here
+    if (Object.keys(role).length !== 0){   //ffs, Javascript
+      console.log("Role not empty")
       setRoleName(role.name);
       setServer(role.server);
       setMembers(role.members);
+      setEditMode(true)
+    } else {
+      console.log("Role empty, setting defaults")
+      setRoleName("");
+      setServer({})
+      setMembers([])
+      setEditMode(false)
     }
-  }, setRole)
+  }, [setRole])
 
   //Validate Rolename on change
   useEffect(() => {
@@ -84,14 +95,14 @@ function RoleDetails(props) {
       )
       setNameIsValid(false)
     };
-  }, setRoleName)
+  }, [setRoleName])
   
   const handleNameChange = (event) => {
     console.log("Name change event handled")
-    setRoleName(event.target.output)
+    setRoleName(event.target.value)
   }
 
-  //Throw error on error
+  // // Throw error on error
   // useEffect((error) => {
   //   if (error !== {message:""}){
   //     throw error
@@ -101,7 +112,6 @@ function RoleDetails(props) {
  const handleSubmit = async () => {
  //   const { name_helper_text, members, edit_mode, name }
  //   const { item_id, onClick } = this.props;
-
     if (nameIsValid) {
       const role = edit_mode
         ? renameRole(item_id, name)
@@ -153,7 +163,7 @@ return (
         />
       </Grid>
       <ErrorDialog
-        open={pageErrored}
+        open={is_errored}
         message={errors.message}
       />
       <Grid item xs={12} />
