@@ -249,6 +249,10 @@ export async function createServer(
   return await getResponse("/admin/servers", dat);
 }
 
+export async function getServerScopes(server_id){
+  return await getResponseDefault("/admin/servers/" + server_id + "/scopes/")
+}
+
 export async function deleteServer(server_id) {
   var dat = {
     method: "DELETE",
@@ -303,19 +307,34 @@ export async function getRole(role_id) {
   return await getResponseDefault("/roles/"+role_id)
 }
 
-export async function createRole(role_name) {
+export async function createRole(
+  role_name,
+  server_id,
+  scopes,
+  users,
+  latest_token_expiry,
+  longest_token_life_minutes) {
+    console.log("Creating role " + role_nam)
   var dat = {
     method: "POST",
-      body: JSON.stringify({ name: role_name }),
-    };
-    return await getResponse("/admin/roles", dat);
+      body: JSON.stringify({ 
+        name: role_name,
+        server: server_id,
+        scopes: scopes,
+        users: users,
+        longest_token_life_minutes: longest_token_life_minutes,
+        latest_token_expiry: latest_token_expiry
+      }
+    ),
+  };
+  return await getResponse("/roles/", dat);
 }
 
 export async function deleteRole(role_id) {
   var dat = {
     method: "DELETE",
   };
-  return await getResponse("/users/roles/"+role_id, dat);
+  return await getResponse("/roles/"+role_id, dat);
 }
 
 export async function getUserRoles(server_id){
@@ -323,15 +342,20 @@ export async function getUserRoles(server_id){
 }
 
 export async function renameRole(role_id, new_name) {
+  console.log("Renaming role" + role_id + " to " + new_name)
   var dat = {
     method: "PATCH",
     body: JSON.stringify({ name: new_name })
   };
-  return await getResponse("/roles/" + role_id);
+  return await getResponse("/roles/" + role_id, dat);
 }
 
 export async function getRoleMembers(role_id) {
   return await getResponseDefault("roles/"+role_id+"/members")
+}
+
+export async function getRoleScopes(role_id) {
+  return await getResponseDefault("roles/"+role_id+"/scopes")
 }
 
 export async function editRoleMembers(role_id, new_members) {
@@ -339,7 +363,7 @@ export async function editRoleMembers(role_id, new_members) {
     method: "PATCH",
     body: JSON.stringify({ users: new_members})
   };
-  return await getResponse("/roles/" + role_id)
+  return await getResponse("/roles/" + role_id, dat)
 }
 
 export async function editRoleScopes(role_id, new_scopes) {
@@ -347,7 +371,7 @@ export async function editRoleScopes(role_id, new_scopes) {
     method: "PATCH",
     body: JSON.stringify({ scopes: new_scopes})
   };
-  return await getResponse("/roles/" + role_id)
+  return await getResponse("/roles/" + role_id, dat)
 }
 
 export async function createToken(name, server_id, expiry, claims) {
