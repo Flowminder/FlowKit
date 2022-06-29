@@ -52,7 +52,9 @@ def add_role():
         json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
     server = Server.query.filter(Server.id == json["server_id"])
-    role_scopes = [Scope(scope=scope, server=json["server_id"]) for scope in json["scopes"]]
+    role_scopes = [
+        Scope(scope=scope, server=json["server_id"]) for scope in json["scopes"]
+    ]
     new_role = Role(
         name=json["name"],
         scopes=role_scopes,
@@ -109,7 +111,6 @@ def get_role_members(role_id):
 def get_role_scopes(role_id):
     role = Role.query.filter(Role.id == role_id).first_or_404()
     return jsonify([{"name": scope.scope, "id": scope.id} for scope in role.scopes])
-
 
 
 @blueprint.route("/server/<server_id>", methods=["GET"])
