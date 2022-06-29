@@ -5,7 +5,7 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import { createRole, editRoleScopes, getServers } from "./util/api";
+import { createRole, editRoleScopes, getServers, getServerScopes } from "./util/api";
 import Typography from "@material-ui/core/Typography";
 import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
@@ -20,8 +20,8 @@ import { useEffect, useState } from "react";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import RoleScopePicker from "./RoleScopePicker";
-import { Dropdown } from "rsuite";
-import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { FormControl, MenuItem, Select, ListItem, InputLabel } from "@material-ui/core";
+import { Form } from "rsuite";
 
 function RoleDetails(props) {
   //Properties:
@@ -45,54 +45,72 @@ function RoleDetails(props) {
   const [lifetimeIsValid, setLifetimeIsValid] = useState(true)
   const [scopes, setScopes] = useState([])
   const [serverList, setServerList] = useState([])
+  const [selServerIndex, setSelSeverIndex] = useState('')
   
   // get appropriate Role on load
   useEffect( 
     () => {
       if (item_id >= 0){
         console.log(item_id);
-        const fetch_role = async () => {
+
+        const fetch_role = (async () => {
           const role = await getRole(item_id);
           console.log("Role fetched");
           console.log(role);
           setRole(role);
+        });
+        const fetch_servers = (async () => {
           const servers = await getServers();
+          console.log("Servers:");
+          console.log(servers);
           setServerList(servers);
-        }
+        });
 
         fetch_role()
         .catch((err) => {
+          console.log("Role err:" + err)
           if (err.code !== 404){
-            console.log("Error:" + err)
             setRole({});
-            setErrors(err.message)
+            setErrors(err.message);
+            setIsErrored(true);
+          }
+        })
+        .then(fetch_servers())
+        .catch((err) => {
+          console.log("Server list error:" + err)
+          if (err.code !== 404){
+            setServerList([]);
+            setErrors(err.message);
             setIsErrored(true)
           }
         })
-      }
-    }, [])
+    }
+  }, [])
 
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
   useEffect(() => {
-    console.log("Trying to update the UI using the following role...")
-    console.log(role)
-    if (Object.keys(role).length !== 0){   //ffs, Javascript
-      console.log("Role not empty")
-      setRoleName(role.name);
-      setServer(role.server);
-      setMembers(role.members);
-      setExpiryDate(role.latest_token_expiry);
-      setMaxLifetime(String(role.longest_token_life_minutes));
-      setEditMode(true);
-    } else {
-      console.log("Role empty, setting defaults")
-      setRoleName("");
-      setServer(-1)
-      setMembers([])
-      setEditMode(false)
+      if (serverList !== []){
+      console.log("Trying to update the UI using the following role...")
+      console.log(role)
+      if (Object.keys(role).length !== 0){   //ffs, Javascript
+        console.log("Role not empty")
+        setRoleName(role.name);
+        setServer(role.server);
+        setMembers(role.members);
+        setExpiryDate(role.latest_token_expiry);
+        setMaxLifetime(String(role.longest_token_life_minutes));
+        setScopes(role.scopes)
+        setEditMode(true);
+      } else {
+        console.log("Role empty, setting defaults")
+        setRoleName("");
+        setServer(-1);
+        setMembers([]);
+        setEditMode(false);
     }
-  }, [role])
+    }
+  }, [role, serverList])
 
   //Validate Rolename on change
   useEffect(() => {
@@ -127,7 +145,7 @@ function RoleDetails(props) {
       setLifetimeIsValid(false)
     }
   }, [maxLifetime])
-  
+
   const handleNameChange = (event) => {
     console.log("Name change event handled")
     setRoleName(event.target.value)
@@ -138,16 +156,14 @@ function RoleDetails(props) {
     setMaxLifetime(event.target.value)
   }
 
-  // // Throw error on error
-  // useEffect((error) => {
-  //   if (error !== {message:""}){
-  //     throw error
-  //   }
-  // }, setErrors)
+  const handleServerChange = (event) => {
+    console.log("Server picker event handled");
+    const index = event.target.value
+    setServer(index)
+  }
 
+ //Either update or create a new role on 'submit' button
  const handleSubmit = async () => {
- //   const { name_helper_text, members, edit_mode, name }
- //   const { item_id, onClick } = this.props;
   console.log("Role form submitted")
     if (nameIsValid && lifetimeIsValid) {
       const submitFunc = edit_mode
@@ -168,14 +184,36 @@ function RoleDetails(props) {
     }
   };
 
+console.log("Prerendering:")
+console.log(server)
+console.log(JSON.stringify(serverList))
+
 return (
     <React.Fragment>
-      <Grid xs={12}>
+
+      {/* Server picker */}
+      <FormControl>
+        <InputLabel id="arrrrrghghghghg">Server</InputLabel>
+        <Select 
+          labelId="server_label"
+          options={serverList.map(this_server => this_server.id)}
+          id="server" 
+          value={server !== -1 ? server.toString() : ""}
+          label="Server"
+          onChange={handleServerChange}
+          // native={false}
+        >
+          {serverList.map( (this_server)=> {
+            return <MenuItem label={this_server.id} key={this_server.id} value={this_server.id}>{this_server.name}</MenuItem>
+          })}
+        </Select>
+      </FormControl>
+      <Grid item xs={12}>
         <Typography variant="h5" component="h1">
           {(edit_mode && "Edit Role") || "New Role"}
         </Typography>
       </Grid>
-      <Grid xs={12}>
+      <Grid item xs={12}>
         <TextField
           id="name"
           label="Name"
@@ -188,7 +226,7 @@ return (
           helperText={name_helper_text}
         />
       </Grid>
-      <Grid xs={12}>
+      <Grid item xs={12}>
         <Typography variant="h5" component="h1">
           Members
         </Typography>
@@ -219,38 +257,17 @@ return (
           updateMembers={setMembers}
         />
       </Grid>
-
-      {/* Server picker */}
       <Grid xs={12}>
-        <FormControl disabled={edit_mode}>
-        <Select 
-          labelId="server_label"
-          id="server"
-          value={server}
-          label="server"
-          onChange={setServer}
-        >
-          {
-            serverList.map( (this_server) => {
-                <MenuItem value={this_server.id}>{this_server.name}</MenuItem>
-              }
-            )
-          }
-        </Select>
-        </FormControl>
-      </Grid>
 
+      </Grid>
+      <Grid item xs={12}>
       {/* Scope picker */}
-      <Grid xs={12}>
-        <FormControl disabled={server===-1}>
-        <RoleScopePicker
+        {/* <RoleScopePicker
           role_id={role.id}
-          server_id={role.server}
+          server_id={server}
           updateScopes={setScopes}
-        />
-        </FormControl>
+        /> */}
       </Grid>
-
       <ErrorDialog
         open={is_errored}
         message={errors.message}
