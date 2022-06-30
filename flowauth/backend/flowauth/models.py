@@ -523,13 +523,8 @@ def make_demodata():
     db.session.add(test_server)
 
     scopes = [
-        reader_scope := Scope(
-            name="get_result",
-            server=test_server),
-        runner_scope := Scope(
-            name="run",
-            server=test_server
-        ),
+        reader_scope := Scope(name="get_result", server=test_server),
+        runner_scope := Scope(name="run", server=test_server),
         example_geo_scope := Scope(name="dummy_query:admin_3", server=test_server),
     ]
     db.session.add_all(scopes)
