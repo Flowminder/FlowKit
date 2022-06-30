@@ -250,7 +250,7 @@ export async function createServer(
 }
 
 export async function getServerScopes(server_id){
-  return await getResponseDefault("/admin/servers/" + server_id + "/scopes/")
+  return await getResponseDefault("/admin/servers/" + server_id + "/scopes")
 }
 
 export async function deleteServer(server_id) {

@@ -191,13 +191,13 @@ def test_scopes(app, test_servers):
         dummy_server_a, dummy_server_b = test_servers
         scopes = [
             read_scope_a := Scope(
-                scope="get_result",
+                name="get_result",
                 server=dummy_server_a,
             ),
-            read_scope_b := Scope(scope="get_result", server=dummy_server_b),
-            run_scope := Scope(scope="run", server=dummy_server_a),
+            read_scope_b := Scope(name="get_result", server=dummy_server_b),
+            run_scope := Scope(name="run", server=dummy_server_a),
             dummy_query_scope := Scope(
-                scope="dummy_query:admin_level_1", server=dummy_server_a
+                name="dummy_query:admin_level_1", server=dummy_server_a
             ),
         ]
         db.session.add_all(scopes)
