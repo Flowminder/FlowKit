@@ -13,6 +13,8 @@ function RoleScopePicker (props) {
 
   const [roleScopes, setRoleScopes] = useState([])
   const [serverScopes, setServerScopes] = useState([])
+  const [hasError, setHasError] = useState(false)
+  const [error, setError] = useState({})
 
   useEffect(() => {
     const fetch_role_scopes =(async () => {
@@ -53,23 +55,16 @@ function RoleScopePicker (props) {
     updateScopes(event.target.value);
   };
 
-  if (roleScopes.length >0  && serverScopes.length > 0){
-    return (
-      <Picker
-        objs={roleScopes}
-        all_objs={serverScopes}
-        hasError={hasError}
-        error={error}
-        handleChange={handleChange}
-        label={"Scopes"}
-      />
-    );
-  }
-  else {
-    return(
-      <text>Please select a server</text>
-    )
-  }
+  return (
+    <Picker
+      objs={roleScopes}
+      all_objs={serverScopes}
+      hasError={hasError}
+      error={error}
+      handleChange={handleChange}
+      label={"Scopes"}
+    />
+  );
 }
 
 export default RoleScopePicker

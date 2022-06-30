@@ -100,7 +100,12 @@ def list_scopes(server_id):
     """
     server = Server.query.filter_by(id=server_id).first()
     current_app.logger.debug(f"Fetching scopes for server {server}")
-    return jsonify({scope.id: {"name": scope.name, "enabled":scope.enabled} for scope in server.scopes})
+    return jsonify(
+        [
+            {"id": scope.id, "name": scope.name, "enabled": scope.enabled}
+            for scope in server.scopes
+        ]
+    )
 
 
 @blueprint.route("/servers/<server_id>/scopes", methods=["PATCH"])

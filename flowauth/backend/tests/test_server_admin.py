@@ -210,19 +210,10 @@ def test_list_scopes(client, auth, test_scopes, test_servers, test_admin):
     )
     assert response.status_code == 200
     assert response.json == {
-            0:{
-                "name":"get_result",
-                "enabled":"true"
-            },
-            1:{
-                "name":"run",
-                "enabled":"true"
-            },
-            2:{
-                "name":"dummy_query:admin_level_1",
-                "enabled":"true"
-            }
-        }
+        0: {"name": "get_result", "enabled": "true"},
+        1: {"name": "run", "enabled": "true"},
+        2: {"name": "dummy_query:admin_level_1", "enabled": "true"},
+    }
 
 
 def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
