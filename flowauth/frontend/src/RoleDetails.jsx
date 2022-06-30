@@ -21,7 +21,6 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import RoleScopePicker from "./RoleScopePicker";
 import { FormControl, MenuItem, Select, ListItem, InputLabel } from "@material-ui/core";
-import { Form } from "rsuite";
 
 function RoleDetails(props) {
   //Properties:
@@ -191,7 +190,7 @@ function RoleDetails(props) {
 console.log("Prerendering:")
 console.log("server: ",server)
 console.log("Server list: ",JSON.stringify(serverList))
-http://localhost:3000/static
+
 return (
     <React.Fragment>
 

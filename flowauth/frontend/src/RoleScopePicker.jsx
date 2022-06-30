@@ -3,75 +3,73 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
+import {useEffect, useState} from "react"
 import { getServerScopes, getRoleScopes } from "./util/api";
 import Picker from "./Picker";
 
 // Component for picking scopes for a role
-class RoleScopePicker extends React.Component {
-  state = {
-    role_scopes: [],
-    all_scopes: [],
-  };
+function RoleScopePicker (props) {
+  const {role_id, server_id, updateScopes} = props
 
-  handleChange = (event) => {
-    this.setState({ role_scopes: event.target.value });
-    this.props.updateScopes(event.target.value);
-  };
+  const [roleScopes, setRoleScopes] = useState([])
+  const [serverScopes, setServerScopes] = useState([])
 
-  componentDidUpdate() {
-    var role_scopes;
-    var all_scopes;
-    getRoleScopes(this.props.role_id)
-      .then((json) => {
-        role_scopes = json;
+  useEffect(() => {
+    const fetch_role_scopes =(async () => {
+      console.log("Fetching role scopes...")
+      const role_scopes = await getRoleScopes(role_id);
+      console.log("Role scopes fetched: ", role_scopes)
+      setRoleScopes(role_scopes);
+    })
+    const fetch_server_scopes = (async() => {
+      console.log("Fetching server scopes....")
+      const server_scopes = await getServerScopes(server_id);
+      console.log("Server scopes fetched: ", server_scopes)
+      setServerScopes(server_scopes)
+    })
+    
+     if (role_id >= 0 && server_id >= 0){
+       fetch_role_scopes()
+       .catch((err) => {
+         if (err.code === 404) {
+           setRoleScopes([]);
+          } else {
+            throw err;
+          }
+        })
+        fetch_server_scopes()
+        .catch((err) => {
+          if (err.code === 404) {
+            setServerScopes([]);
+          } else {
+            throw err;
+          }
       })
-      .catch((err) => {
-        if (err.code === 404) {
-          role_scopes = [];
-        } else {
-          throw err;
-        }
-      })
-      .then(() => {
-        return getServerScopes(this.props.server_id);
-      })
-      .then((json) => {
-        all_scopes = json;
-      })
-      .catch((err) => {
-        if (err.code === 404) {
-          all_scopes = [];
-        } else {
-          throw err;
-        }
-      })
-      .then(() => {
-        this.setState({
-          role_scopes: role_scopes.map(
-            (member) =>
-              all_scopes[all_scopes.map((scope) => scope.id).indexOf(member.id)]
-          ),
-          all_scopes: all_scopes,
-        });
-      })
-      .catch((err) => {
-        this.setState({ hasError: true, error: err });
-      });
   }
+  }, [role_id, server_id])
 
-  render() {
-    const { role_scopes, all_scopes, hasError, error } = this.state;
+  const handleChange = (event) => {
+    setRoleScopes(event.target.value)
+    updateScopes(event.target.value);
+  };
+
+  if (roleScopes.length >0  && serverScopes.length > 0){
     return (
       <Picker
-        objs={role_scopes}
-        all_objs={all_scopes}
+        objs={roleScopes}
+        all_objs={serverScopes}
         hasError={hasError}
         error={error}
-        handleChange={this.handleChange}
+        handleChange={handleChange}
         label={"Scopes"}
       />
     );
   }
+  else {
+    return(
+      <text>Please select a server</text>
+    )
+  }
 }
 
-export default RoleScopePicker;
+export default RoleScopePicker

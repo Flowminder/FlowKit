@@ -91,15 +91,16 @@ def get_role(server_id, role_id):
     )
 
 
-@blueprint.route("/servers/<server_id>/scopes")
+@blueprint.route("/servers/<server_id>/scopes", methods=["GET"])
 @login_required
 @admin_permission.require(http_exception=401)
 def list_scopes(server_id):
     """
     Returns the list of available scopes on a server
     """
-    server = Server.query.filter_by(id=server_id).first_or_404()
-    return jsonify({scope.name: scope.enabled for scope in server.scopes})
+    server = Server.query.filter_by(id=server_id).first()
+    current_app.logger.debug(f"Fetching scopes for server {server}")
+    return jsonify({scope.id: {"name": scope.name, "enabled":scope.enabled} for scope in server.scopes})
 
 
 @blueprint.route("/servers/<server_id>/scopes", methods=["PATCH"])
