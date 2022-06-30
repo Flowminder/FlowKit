@@ -110,7 +110,7 @@ def get_role_members(role_id):
 @admin_permission.require(http_exception=401)
 def get_role_scopes(role_id):
     role = Role.query.filter(Role.id == role_id).first_or_404()
-    return jsonify([{"name": scope.scope, "id": scope.id} for scope in role.scopes])
+    return jsonify([{"name": scope.name, "id": scope.id} for scope in role.scopes])
 
 
 @blueprint.route("/server/<server_id>", methods=["GET"])
@@ -126,7 +126,7 @@ def list_my_roles_on_server(server_id):
                 {
                     "id": role.id,
                     "name": role.name,
-                    "scopes": sorted([scope.scope for scope in role.scopes]),
+                    "scopes": sorted([scope.name for scope in role.scopes]),
                     "latest_token_expiry": role.latest_token_expiry.strftime(
                         "%Y-%m-%dT%H:%M:%S.%fZ"
                     ),

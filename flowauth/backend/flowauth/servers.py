@@ -59,7 +59,7 @@ def get_roles(server_id):
             {
                 "id": role.id,
                 "name": role.name,
-                "scopes": [scope.scope for scope in role.scopes],
+                "scopes": [scope.name for scope in role.scopes],
                 "latest_token_expiry": role.latest_token_expiry.strftime(
                     "%y-%m-%dt%h:%m:%s.%fz"
                 ),
@@ -82,7 +82,7 @@ def get_role(server_id, role_id):
         {
             "id": role.id,
             "name": role.name,
-            "scopes": [scope.scope for scope in role.scopes],
+            "scopes": [scope.name for scope in role.scopes],
             "latest_token_expiry": role.latest_token_expiry.strftime(
                 "%y-%m-%dt%h:%m:%s.%fz"
             ),
@@ -99,7 +99,7 @@ def list_scopes(server_id):
     Returns the list of available scopes on a server
     """
     server = Server.query.filter_by(id=server_id).first_or_404()
-    return jsonify({scope.scope: scope.enabled for scope in server.scopes})
+    return jsonify({scope.name: scope.enabled for scope in server.scopes})
 
 
 @blueprint.route("/servers/<server_id>/scopes", methods=["PATCH"])
@@ -117,10 +117,10 @@ def edit_scope_activation(server_id):
         db.session.query(Scope)
         .join(Server)
         .filter(Scope.server_id == server_id)
-        .filter(Scope.scope.in_(json.keys()))
+        .filter(Scope.name.in_(json.keys()))
     )
     for scope in scopes_to_edit:
-        scope.enabled = json[scope.scope]
+        scope.enabled = json[scope.name]
         db.session.add(scope)
     db.session.commit()
     return list_scopes(server_id)
