@@ -18,7 +18,7 @@ class RoleScopePicker extends React.Component {
     this.props.updateScopes(event.target.value);
   };
 
-  componentDidMount() {
+  componentDidUpdate() {
     var role_scopes;
     var all_scopes;
     getRoleScopes(this.props.role_id)

@@ -426,7 +426,7 @@ class Role(db.Model):
         Returns true if this role permits this combination of claims, else return false.
         """
 
-        scope_strings = [scope.scope for scope in self.scopes]
+        scope_strings = [scope.name for scope in self.scopes]
 
         for claim in claims:
             if claim not in scope_strings:
@@ -441,7 +441,7 @@ class Scope(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    scope = db.Column(db.String)
+    name = db.Column(db.String)
     enabled = db.Column(db.Boolean, default=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
     # TODO: Make sure scopes are unique within server
@@ -523,11 +523,11 @@ def make_demodata():
     db.session.add(test_server)
 
     scopes = [
-        reader_scope := Scope(scope="get_result"),
+        reader_scope := Scope(name="get_result"),
         runner_scope := Scope(
-            scope="run",
+            name="run",
         ),
-        example_geo_scope := Scope(scope="dummy_query:admin_3"),
+        example_geo_scope := Scope(name="dummy_query:admin_3"),
     ]
     db.session.add_all(scopes)
 

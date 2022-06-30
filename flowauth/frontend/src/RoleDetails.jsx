@@ -50,22 +50,34 @@ function RoleDetails(props) {
   // get appropriate Role on load
   useEffect( 
     () => {
+
+      const fetch_role = (async () => {
+        const role = await getRole(item_id);
+        console.log("Role fetched");
+        console.log(role);
+        setRole(role);
+      });
+
+      const fetch_servers = (async () => {
+        console.log("Fetching servers")
+        const servers = await getServers();
+        console.log("Servers:");
+        console.log(servers);
+        setServerList(servers);
+      });
+      
+      fetch_servers()
+      .catch((err) => {
+        console.log("Server list error:" + err)
+        if (err.code !== 404){
+          setServerList([]);
+          setErrors(err.message);
+          setIsErrored(true)
+        }
+      })
+
       if (item_id >= 0){
         console.log(item_id);
-
-        const fetch_role = (async () => {
-          const role = await getRole(item_id);
-          console.log("Role fetched");
-          console.log(role);
-          setRole(role);
-        });
-        const fetch_servers = (async () => {
-          const servers = await getServers();
-          console.log("Servers:");
-          console.log(servers);
-          setServerList(servers);
-        });
-
         fetch_role()
         .catch((err) => {
           console.log("Role err:" + err)
@@ -75,16 +87,8 @@ function RoleDetails(props) {
             setIsErrored(true);
           }
         })
-        .then(fetch_servers())
-        .catch((err) => {
-          console.log("Server list error:" + err)
-          if (err.code !== 404){
-            setServerList([]);
-            setErrors(err.message);
-            setIsErrored(true)
-          }
-        })
-    }
+     }
+    
   }, [])
 
   //When Role changes, replace role.name, role.server and role.members with 
@@ -185,29 +189,12 @@ function RoleDetails(props) {
   };
 
 console.log("Prerendering:")
-console.log(server)
-console.log(JSON.stringify(serverList))
-
+console.log("server: ",server)
+console.log("Server list: ",JSON.stringify(serverList))
+http://localhost:3000/static
 return (
     <React.Fragment>
 
-      {/* Server picker */}
-      <FormControl>
-        <InputLabel id="arrrrrghghghghg">Server</InputLabel>
-        <Select 
-          labelId="server_label"
-          options={serverList.map(this_server => this_server.id)}
-          id="server" 
-          value={server !== -1 ? server.toString() : ""}
-          label="Server"
-          onChange={handleServerChange}
-          // native={false}
-        >
-          {serverList.map( (this_server)=> {
-            return <MenuItem label={this_server.id} key={this_server.id} value={this_server.id}>{this_server.name}</MenuItem>
-          })}
-        </Select>
-      </FormControl>
       <Grid item xs={12}>
         <Typography variant="h5" component="h1">
           {(edit_mode && "Edit Role") || "New Role"}
@@ -257,16 +244,35 @@ return (
           updateMembers={setMembers}
         />
       </Grid>
-      <Grid xs={12}>
-
-      </Grid>
       <Grid item xs={12}>
-      {/* Scope picker */}
-        {/* <RoleScopePicker
+
+      {/* Server picker */}
+      <FormControl disabled = {edit_mode}>
+        <InputLabel id="server_picker">Server</InputLabel>
+        <Select 
+          labelId="server_label"
+          options={serverList.map(this_server => this_server.id)}
+          id="server" 
+          value={server}
+          label="Server"
+          onChange={handleServerChange}
+          // native={false}
+        >
+          <MenuItem label={-1} key={-1} value={-1}>-</MenuItem>
+          {serverList.map( (this_server)=> {
+            return <MenuItem label={this_server.id} key={this_server.id} value={this_server.id}>{this_server.name}</MenuItem>
+          })}
+        </Select>
+      </FormControl>
+      </Grid>
+
+      <Grid item xs={12}>
+      {/* Scope picker */} 
+        <RoleScopePicker
           role_id={role.id}
           server_id={server}
           updateScopes={setScopes}
-        /> */}
+        />
       </Grid>
       <ErrorDialog
         open={is_errored}
