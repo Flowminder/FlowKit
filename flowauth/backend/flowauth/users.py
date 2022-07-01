@@ -142,6 +142,8 @@ def edit_user(user_id):
         and user.two_factor_auth is not None
     ):
         db.session.delete(user.two_factor_auth)
+    if "roles" in edits:
+        user.roles = Role.filter(Role.id.in_(edits["roles"]))
     db.session.add(user)
     db.session.commit()
     return jsonify({"id": user.id})

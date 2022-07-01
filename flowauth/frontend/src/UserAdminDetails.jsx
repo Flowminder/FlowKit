@@ -5,14 +5,13 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import { createUser } from "./util/api";
+import { createUser, editRoleMembers } from "./util/api";
 import { generate } from "generate-password";
 import Typography from "@material-ui/core/Typography";
-import UserGroupsPicker from "./UserGroupsPicker";
+import UserRolesPicker from "./UserRolesPicker";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import GroupServerPermissions from "./GroupServerPermissions";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import LockIcon from "@material-ui/icons/Lock";
@@ -35,9 +34,7 @@ class UserAdminDetails extends React.Component {
     password_helper_text: "",
     require_two_factor: false,
     edit_mode: false,
-    groups: [],
-    servers: [],
-    group_id: null,
+    roles: [],
     is_admin: false,
     password_strength: null,
     has_two_factor: false,
@@ -68,15 +65,19 @@ class UserAdminDetails extends React.Component {
       password_strength: passStrength.score,
     });
   };
+
   setTwoFactorRequired = (event) => {
     this.setState({ require_two_factor: event.target.checked });
   };
+
   setHasTwoFactor = (event) => {
     this.setState({ has_two_factor: event.target.checked });
   };
+
   setAdmin = (event) => {
     this.setState({ is_admin: event.target.checked });
   };
+
   handleChange = (name) => (event) => {
     this.setState({
       pageError: false,
@@ -111,20 +112,18 @@ class UserAdminDetails extends React.Component {
       });
     }
   };
-  updateGroups = (groups) => {
-    this.setState({ groups: groups });
+
+  updateRoles = (roles) => {
+    this.setState({ roles: roles });
   };
-  updateServers = (servers) => {
-    this.setState({ servers: servers });
-  };
+
   handleSubmit = async () => {
     const { item_id, onClick } = this.props;
     const {
       edit_mode,
       name,
       password,
-      servers,
-      groups,
+      roles,
       is_admin,
       username_helper_text,
       password_strength,
@@ -143,12 +142,10 @@ class UserAdminDetails extends React.Component {
               password.length > 0 ? password : undefined,
               is_admin,
               require_two_factor,
-              has_two_factor
+              has_two_factor,
+              roles
             )
-          : createUser(name, password, is_admin, require_two_factor));
-
-        await editGroupServers(user.group_id, servers);
-        await editGroupMemberships(user.id, groups);
+          : createUser(name, password, is_admin, require_two_factor, roles));
         onClick();
       } catch (err) {
         if (err.code === 400) {
@@ -167,8 +164,6 @@ class UserAdminDetails extends React.Component {
     const {
       name,
       password,
-      group_id,
-      servers,
       edit_mode,
       password_strength,
       require_two_factor,
@@ -287,17 +282,11 @@ class UserAdminDetails extends React.Component {
           </Typography>
         </Grid>
         <Grid xs={12}>
-          <UserGroupsPicker
+          <UserRolesPicker
             user_id={item_id}
-            updateGroups={this.updateGroups}
+            updateRoles={this.updateRoles}
           />
         </Grid>
-        <GroupServerPermissions
-          group_id={group_id}
-          updateServers={this.updateServers}
-          servers={servers}
-          classes={classes}
-        />
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}
