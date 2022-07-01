@@ -841,6 +841,88 @@ def test_construct_query(diff_reporter):
     diff_reporter(query_ids_and_specs_as_json_string)
 
 
+# TODO: Need one of these for every spatial aggregate kind
+@pytest.mark.parametrize(
+    "params, expected_aggregation_unit",
+    [
+        (
+            dict(
+                query_kind="spatial_aggregate",
+                locations=dict(
+                    query_kind="modal_location",
+                    locations=[
+                        dict(
+                            query_kind="daily_location",
+                            date="2016-01-01",
+                            method="last",
+                            aggregation_unit="admin3",
+                        )
+                    ],
+                ),
+            ),
+            "admin3",
+        ),
+        (
+            dict(
+                query_kind="flows",
+                from_location=dict(
+                    query_kind="visited_most_days",
+                    start_date="2016-01-01",
+                    end_date="2016-01-07",
+                    aggregation_unit="admin2",
+                ),
+                to_location=dict(
+                    query_kind="unique_locations",
+                    start_date="2016-01-07",
+                    end_date="2016-01-08",
+                    aggregation_unit="admin2",
+                ),
+            ),
+            "admin2",
+        ),
+        (
+            dict(
+                query_kind="unique_subscriber_counts",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                aggregation_unit="lon-lat",
+            ),
+            "lon-lat",
+        ),
+        (
+            dict(
+                query_kind="joined_spatial_aggregate",
+                locations=dict(
+                    query_kind="daily_location",
+                    date="2016-01-01",
+                    method="last",
+                    aggregation_unit="admin3",
+                ),
+                metric=dict(
+                    query_kind="displacement",
+                    start_date="2016-01-01",
+                    end_date="2016-01-02",
+                    statistic="avg",
+                    reference_location=dict(
+                        query_kind="daily_location",
+                        date="2016-01-01",
+                        method="last",
+                        aggregation_unit="lon-lat",
+                    ),
+                ),
+            ),
+            "admin3",
+        ),
+    ],
+)
+def test_aggregation_unit_attribute(params, expected_aggregation_unit):
+    """
+    Test that spatially aggregated query kinds have the correct aggregation unit when deserialised
+    """
+    loaded_query = FlowmachineQuerySchema().load(params)
+    assert loaded_query.aggregation_unit.canonical_name == expected_aggregation_unit
+
+
 # TODO: we should re-think how we want to test invalid values, now that these are validated using marshmallow
 def test_wrong_geography_aggregation_unit_raises_error():
     """

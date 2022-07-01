@@ -248,3 +248,36 @@ def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
     # occur when we reset the cache before the next test
     # (see https://github.com/Flowminder/FlowKit/issues/1245).
     poll_until_done(zmq_port, expected_query_id)
+
+
+def test_get_aggregation_unit(zmq_host, zmq_port):
+    """
+    'get_aggregation_unit' action returns correct aggregation unit
+    """
+    msg = {
+        "action": "get_aggregation_unit",
+        "params": {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "method": "last",
+                        "aggregation_unit": "admin3",
+                    }
+                ],
+            },
+        },
+        "request_id": "DUMMY_ID",
+    }
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
+    expected_reply = {
+        "status": "success",
+        "msg": "",
+        "payload": {
+            "aggregation_unit": "admin3",
+        },
+    }
+    assert expected_reply == reply
