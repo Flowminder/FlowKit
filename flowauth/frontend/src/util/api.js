@@ -85,7 +85,8 @@ export async function editUser(
   password,
   is_admin,
   require_two_factor,
-  has_two_factor
+  has_two_factor,
+  roles
 ) {
   var dat = {
     method: "PATCH",
@@ -95,6 +96,7 @@ export async function editUser(
       is_admin: is_admin,
       require_two_factor: require_two_factor,
       has_two_factor: has_two_factor,
+      roles: roles
     }),
   };
   return await getResponse("/admin/users/" + user_id, dat);
