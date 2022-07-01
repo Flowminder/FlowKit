@@ -5,16 +5,15 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import { createRole, editRoleScopes, getServers, getServerScopes } from "./util/api";
 import Typography from "@material-ui/core/Typography";
 import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
+  createRole,
+  getServers,
   getRole,
-  editRoleMembers,
-  editScopes,
-  renameRole,
+  editRole,
 } from "./util/api"
 import { useEffect, useState } from "react";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -37,14 +36,15 @@ function RoleDetails(props) {
   const [nameIsValid, setNameIsValid] = useState(true);
   const [errors, setErrors] = useState({message:""});
   const [is_errored, setIsErrored] = useState(false);
-  const [pageErrored, setPageErrored] = useState(false);
   const [expiryDate, setExpiryDate] = useState(new Date());
   const [maxLifetime, setMaxLifetime] = useState("")
   const [lifetimeHelperText, setLifetimeHelperText] = useState("")
   const [lifetimeIsValid, setLifetimeIsValid] = useState(true)
   const [scopes, setScopes] = useState([])
   const [serverList, setServerList] = useState([])
-  const [selServerIndex, setSelSeverIndex] = useState('')
+  const [formIsValid, setFormIsValid] = useState(false)
+
+  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members, server]
   
   // get appropriate Role on load
   useEffect( 
@@ -110,6 +110,7 @@ function RoleDetails(props) {
         setRoleName("");
         setServer(-1);
         setMembers([]);
+        setScopes([])
         setEditMode(false);
     }
     }
@@ -149,6 +150,19 @@ function RoleDetails(props) {
     }
   }, [maxLifetime])
 
+  //Make sure entire form is valid on change for any relevant members
+  useEffect(() => {
+    const valid_vars = validation_vars.map(v => typeof(v))
+    if (valid_vars.includes("undefined")){
+      setFormIsValid(false)
+    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0 && members.length > 0 && server >= 0){
+      console.log("Form is valid")
+      setFormIsValid(true)
+    } else {
+      setFormIsValid(false)
+    }
+  }, validation_vars)
+
   const handleNameChange = (event) => {
     console.log("Name change event handled")
     setRoleName(event.target.value)
@@ -168,22 +182,32 @@ function RoleDetails(props) {
  //Either update or create a new role on 'submit' button
  const handleSubmit = async () => {
   console.log("Role form submitted")
-    if (nameIsValid && lifetimeIsValid) {
-      const submitFunc = edit_mode
-        ? () => renameRole(role.id, name)
-        : () => createRole(name, server.id, [], []);
-      submitFunc().then(
-        editRoleMembers(role.id, role.members)
-      ).then(editRoleScopes(role.id, scopes))
-      .catch((err) => {
-        console.log("Update errored")
-        setErrors(err)
-        if (err.code === 400) {
-          setPageErrored(true)
-        } else {
+     if (formIsValid) {
+      if (edit_mode){
+        editRole(
+          role.id,
+          name,
+          members.map((m) => m.id),
+          scopes.map((s) => s.id),
+          expiryDate,
+          maxLifetime)
+        .catch((err)=>{
           setIsErrored(true)
-        }
-      })
+          setErrors(err)
+        })
+      } else {
+        createRole(
+          name,
+          server,
+          scopes.map((s) => s.id),
+          members.map((m) => m.id),
+          expiryDate,
+          maxLifetime)
+        .catch((err) => {
+          setIsErrored(true)
+          setErrors(err)
+        })
+      }
     }
   };
 
@@ -211,11 +235,6 @@ return (
           error={!nameIsValid}
           helperText={name_helper_text}
         />
-      </Grid>
-      <Grid item xs={12}>
-        <Typography variant="h5" component="h1">
-          Members
-        </Typography>
       </Grid>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DateTimePicker

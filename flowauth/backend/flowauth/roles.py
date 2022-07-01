@@ -51,19 +51,20 @@ def add_role():
     json["latest_token_expiry"] = datetime.datetime.strptime(
         json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
-    server = Server.query.filter(Server.id == json["server_id"])
-    role_scopes = [
-        Scope(scope=scope, server=json["server_id"]) for scope in json["scopes"]
-    ]
+    server = Server.query.filter(Server.id == json["server_id"]).first()
+    role_scopes = Scope.query.filter(Scope.id.in_(json["scopes"])).all()
+    role_users = User.query.filter(User.id.in_(json["users"])).all()
     new_role = Role(
         name=json["name"],
         scopes=role_scopes,
+        users=role_users,
         server=server,
         latest_token_expiry=json["latest_token_expiry"],
         longest_token_life_minutes=json["longest_token_life_minutes"],
     )
     db.session.add(new_role)
     db.session.commit()
+    current_app.logger.info(f"Created role {new_role.name}")
     return get_role(new_role.id)
 
 
@@ -93,7 +94,18 @@ def edit_role(role_id):
     db.session.commit()
     current_app.logger.info(f"Role {role_id} updated with {edits}")
     # TODO: Add audit log here
-    return get_role(role_id)
+    return list_roles()
+
+
+@blueprint.route("/<role_id>", methods=["DELETE"])
+@login_required
+@admin_permission.require(http_exception=401)
+def delete_role(role_id):
+    role = Role.query.filter(Role.id == role_id).first_or_404()
+    db.session.delete(role)
+    db.session.commit()
+    current_app.logger.info(f"Role {role_id} deleted.")
+    return jsonify({"state": "done"})
 
 
 @blueprint.route("/<role_id>/members")

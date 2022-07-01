@@ -30,7 +30,7 @@ function RoleScopePicker (props) {
       setServerScopes(server_scopes)
     })
     
-     if (role_id >= 0 && server_id >= 0){
+     if (server_id >= 0){
        fetch_role_scopes()
        .catch((err) => {
          if (err.code === 404) {
