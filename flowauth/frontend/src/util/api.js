@@ -314,12 +314,12 @@ export async function createRole(
   users,
   latest_token_expiry,
   longest_token_life_minutes) {
-    console.log("Creating role " + role_nam)
+    console.log("Creating role " + role_name)
   var dat = {
     method: "POST",
       body: JSON.stringify({ 
         name: role_name,
-        server: server_id,
+        server_id: server_id,
         scopes: scopes,
         users: users,
         longest_token_life_minutes: longest_token_life_minutes,
@@ -339,6 +339,21 @@ export async function deleteRole(role_id) {
 
 export async function getUserRoles(server_id){
   return await getResponseDefault("/roles/server/"+server_id)
+}
+
+export async function editRole(role_id, role_name, scopes, users, latest_token_expiry, longest_token_life_minutes) {
+  console.log("Editing role " + role_id)
+  var dat = {
+    method: "PATCH",
+    body: JSON.stringify({
+        name: role_name,
+        scopes: scopes,
+        users: users,
+        longest_token_life_minutes: longest_token_life_minutes,
+        latest_token_expiry: latest_token_expiry
+    })
+  }
+  return await getResponse("/roles/"+role_id, dat)
 }
 
 export async function renameRole(role_id, new_name) {
