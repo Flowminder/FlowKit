@@ -54,7 +54,19 @@ class ModalLocationSchema(BaseQueryWithSamplingSchema):
 
     @validates("locations")
     def validate_locations(self, values):
-        if len(set(value.aggregation_unit for value in values)) > 1:
+        # Filtering out locations with no aggregation_unit attribute -
+        # validation errors for these should be raised when validating the
+        # individual location query specs
+        if (
+            len(
+                set(
+                    value.aggregation_unit
+                    for value in values
+                    if hasattr(value, "aggregation_unit")
+                )
+            )
+            > 1
+        ):
             raise ValidationError(
-                "All inputs to modal_locations should have the same aggregation unit"
+                "All inputs to modal_location should have the same aggregation unit"
             )

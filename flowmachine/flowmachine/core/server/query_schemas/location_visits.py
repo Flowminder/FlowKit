@@ -47,5 +47,17 @@ class LocationVisitsSchema(BaseQueryWithSamplingSchema):
 
     @validates("locations")
     def validate_locations(self, locations):
-        if len(set(location.aggregation_unit for location in locations)) > 1:
+        # Filtering out locations with no aggregation_unit attribute -
+        # validation errors for these should be raised when validating the
+        # individual location query specs
+        if (
+            len(
+                set(
+                    location.aggregation_unit
+                    for location in locations
+                    if hasattr(location, "aggregation_unit")
+                )
+            )
+            > 1
+        ):
             raise ValidationError("All locations must have the same aggregation unit")

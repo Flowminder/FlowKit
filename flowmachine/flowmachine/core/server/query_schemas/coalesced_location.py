@@ -72,19 +72,27 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
         subscriber_location_weights all have the same aggregation unit
         """
         errors = {}
-        if (
-            data["fallback_location"].aggregation_unit
-            != data["preferred_location"].aggregation_unit
-        ):
-            errors["fallback_location"] = [
-                "fallback_location must have the same aggregation_unit as preferred_location"
-            ]
-        if (
-            data["subscriber_location_weights"].aggregation_unit
-            != data["fallback_location"].aggregation_unit
-        ):
-            errors["subscriber_location_weights"] = [
-                "subscriber_location_weights must have the same aggregation_unit as fallback_location"
-            ]
+        try:
+            if (
+                data["fallback_location"].aggregation_unit
+                != data["preferred_location"].aggregation_unit
+            ):
+                errors["fallback_location"] = [
+                    "fallback_location must have the same aggregation_unit as preferred_location"
+                ]
+        except AttributeError:
+            # Nested schema was invalid - appropriate ValidationError will be raised from elsewhere
+            pass
+        try:
+            if (
+                data["subscriber_location_weights"].aggregation_unit
+                != data["fallback_location"].aggregation_unit
+            ):
+                errors["subscriber_location_weights"] = [
+                    "subscriber_location_weights must have the same aggregation_unit as fallback_location"
+                ]
+        except AttributeError:
+            # Nested schema was invalid - appropriate ValidationError will be raised from elsewhere
+            pass
         if errors:
             raise ValidationError(errors)
