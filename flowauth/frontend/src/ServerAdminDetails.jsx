@@ -14,8 +14,8 @@ import ErrorDialog from "./ErrorDialog";
 import {
   createServer,
   editServer,
-  editServerCapabilities,
-  getCapabilities,
+  editServerRoles,
+  getRoles,
   getServer,
   getTimeLimits,
 } from "./util/api";

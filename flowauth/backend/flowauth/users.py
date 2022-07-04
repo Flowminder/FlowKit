@@ -128,7 +128,7 @@ def edit_user(user_id):
             and user.is_admin
             and len(User.query.filter(User.is_admin).all()) == 1
         ):
-            raise InvalidUsage(
+                raise InvalidUsage(
                 "Removing this user's admin rights would leave no admins.",
                 payload={"bad_field": "is_admin"},
             )
@@ -143,7 +143,7 @@ def edit_user(user_id):
     ):
         db.session.delete(user.two_factor_auth)
     if "roles" in edits:
-        user.roles = Role.filter(Role.id.in_(edits["roles"]))
+        user.roles = Role.query.filter(Role.id.in_(edits["roles"])).all()
     db.session.add(user)
     db.session.commit()
     return jsonify({"id": user.id})
