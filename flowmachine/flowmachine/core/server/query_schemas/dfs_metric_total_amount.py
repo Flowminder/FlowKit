@@ -29,7 +29,7 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
         self.metric = metric
         self.start_date = start_date
         self.end_date = end_date
-        self.aggregation_unit = aggregation_unit.canonical_name
+        self.aggregation_unit = aggregation_unit
 
     @property
     def _flowmachine_query_obj(self):
@@ -44,7 +44,7 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
             metric=self.metric,
             start_date=self.start_date,
             end_date=self.end_date,
-            aggregation_unit=self.aggregation_unit,
+            aggregation_unit=self.aggregation_unit.canonical_name,
         )
 
 
