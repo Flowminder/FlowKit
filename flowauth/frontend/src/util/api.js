@@ -126,17 +126,6 @@ export async function getServer(server_id) {
   return await getResponseDefault("/admin/servers/" + server_id);
 }
 
-export async function getGroup(group_id) {
-  return await getResponseDefault("/admin/groups/" + group_id);
-}
-
-export async function getGroupMembers(group_id) {
-  return await getResponseDefault("/admin/groups/" + group_id + "/members");
-}
-
-export async function getGroupsForUser(user_id) {
-  return await getResponseDefault("/admin/users/" + user_id + "/groups");
-}
 
 export async function getMyServers() {
   return await getResponseDefault("tokens/servers");
@@ -150,26 +139,14 @@ export async function getMyRightsForServer(server_id) {
   return await getResponseDefault("/tokens/servers/" + server_id);
 }
 
-export async function getCapabilities(server_id) {
+export async function getScopes(server_id) {
   return await getResponseDefault(
-    "/admin/servers/" + server_id + "/capabilities"
-  );
-}
-
-export async function getGroupCapabilities(server_id, group_id) {
-  return await getResponseDefault(
-    "/admin/groups/" + group_id + "/servers/" + server_id + "/capabilities"
-  );
-}
-
-export async function getGroupTimeLimits(server_id, group_id) {
-  return await getResponseDefault(
-    "/admin/groups/" + group_id + "/servers/" + server_id + "/time_limits"
+    "/admin/servers/" + server_id + "/scopes"
   );
 }
 
 export async function getAllCapabilities() {
-  return await getResponseDefault("/admin/capabilities");
+  return await getResponseDefault("/admin/scopes");
 }
 
 export async function getAllAggregationUnits() {
@@ -207,13 +184,13 @@ export async function deleteUser(user_id) {
   return await getResponse("/admin/users/" + user_id, dat);
 }
 
-export async function editServerCapabilities(server_id, rights) {
+export async function editServerRoles(server_id, rights) {
   var dat = {
     method: "PATCH",
     body: JSON.stringify(rights),
   };
   return await getResponse(
-    "/admin/servers/" + server_id + "/capabilities",
+    "/admin/servers/" + server_id + "/roles",
     dat
   );
 }
@@ -339,8 +316,12 @@ export async function deleteRole(role_id) {
   return await getResponse("/roles/"+role_id, dat);
 }
 
-export async function getUserRoles(server_id){
-  return await getResponseDefault("/roles/server/"+server_id)
+export async function getUserRoles(user_id){
+  return await getResponseDefault("/roles/user/"+user_id)
+}
+
+export async function getUserRolesOnServer(server_id, user_id){
+  return await getResponseDefault("/roles/server/"+server_id+"/user/"+user_id)
 }
 
 export async function editRole(role_id, role_name, scopes, users, latest_token_expiry, longest_token_life_minutes) {
@@ -353,7 +334,7 @@ export async function editRole(role_id, role_name, scopes, users, latest_token_e
         users: users,
         longest_token_life_minutes: longest_token_life_minutes,
         latest_token_expiry: latest_token_expiry
-    })
+    })  
   }
   return await getResponse("/roles/"+role_id, dat)
 }

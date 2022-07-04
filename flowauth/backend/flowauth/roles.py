@@ -28,11 +28,22 @@ def role_to_dict(role):
     }
 
 
+def roles_to_json(roles):
+    return jsonify(sorted([role_to_dict(role) for role in roles], lambda x: x["id"]))
+
+
 @blueprint.route("/", methods=["GET"])
 @login_required
 @admin_permission.require(http_exception=401)
 def list_roles():
     return jsonify([role_to_dict(role) for role in Role.query.all()])
+
+@blueprint.route("/user/<user_id>")
+@login_required
+@admin_permission.require(http_exception=401)
+def list_user_roles(user_id):
+    user = User.query.filter(User.id==user_id).first_or_404()
+    return jsonify([role_to_dict(role) for role in user.roles])
 
 
 @blueprint.route("/<role_id>", methods=["GET"])
@@ -125,28 +136,25 @@ def get_role_scopes(role_id):
     return jsonify([{"name": scope.name, "id": scope.id} for scope in role.scopes])
 
 
+@blueprint.route("/server/<server_id>/user/<user_id>")
+@login_required
+@admin_permission.require(http_exception=401)
+def list_user_roles_on_server(user_id, server_id):
+    import pdb
+    pdb.set_trace()
+    user = User.query.filter(User.id==user_id).first_or_404()
+    roles = user.roles.query\
+        .filter(Role.server.id == server_id)\
+        .all_or_404()
+    return roles_to_json(roles)
+
+
 @blueprint.route("/server/<server_id>", methods=["GET"])
 @login_required
 def list_my_roles_on_server(server_id):
     """
     Returns a list of roles for this user on this server
     """
-    roles = {role for role in current_user.roles if int(server_id) == role.server.id}
-    return jsonify(
-        sorted(
-            [
-                {
-                    "id": role.id,
-                    "name": role.name,
-                    "scopes": sorted([scope.name for scope in role.scopes]),
-                    "latest_token_expiry": role.latest_token_expiry.strftime(
-                        "%Y-%m-%dT%H:%M:%S.%fZ"
-                    ),
-                    "longest_token_life_minutes": role.longest_token_life_minutes,
-                    "server": role.server_id,
-                }
-                for role in roles
-            ],
-            key=lambda x: x["id"],
-        )
-    )
+    return list_user_roles_on_server(current_user.id, server_id)
+
+

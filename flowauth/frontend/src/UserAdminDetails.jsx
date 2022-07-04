@@ -5,7 +5,6 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import { createUser, editRoleMembers } from "./util/api";
 import { generate } from "generate-password";
 import Typography from "@material-ui/core/Typography";
 import UserRolesPicker from "./UserRolesPicker";
@@ -20,9 +19,8 @@ import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
   getUser,
-  editGroupMemberships,
+  createUser,
   editUser,
-  editGroupServers,
 } from "./util/api";
 var zxcvbn = require("zxcvbn");
 
@@ -44,12 +42,13 @@ class UserAdminDetails extends React.Component {
   };
   async componentDidMount() {
     const json = getUser(this.props.item_id);
-    try {
+    try { 
       this.setState(await json);
       this.setState({ edit_mode: true });
       if ((await json)["has_two_factor"]) {
         this.setState({ two_factor_can_be_disabled: true });
       }
+      this.updateRoles(await json["roles"])
     } catch (err) {
       if (err.code !== 404) {
         this.setState({ hasError: true, error: err });
@@ -114,6 +113,7 @@ class UserAdminDetails extends React.Component {
   };
 
   updateRoles = (roles) => {
+    console.log("Roles: ", roles)
     this.setState({ roles: roles });
   };
 
@@ -143,9 +143,14 @@ class UserAdminDetails extends React.Component {
               is_admin,
               require_two_factor,
               has_two_factor,
-              roles
+              roles.map(r => r.id)
             )
-          : createUser(name, password, is_admin, require_two_factor, roles));
+          : createUser(
+            name,
+            password,
+            is_admin,
+            require_two_factor,
+            roles.map(r => r.id)));
         onClick();
       } catch (err) {
         if (err.code === 400) {
@@ -158,7 +163,7 @@ class UserAdminDetails extends React.Component {
   };
 
   render() {
-    if (this.state.hasError) throw this.state.error;
+    if (this.state.hasError) throw this.state.errors;
 
     const { classes, item_id, onClick } = this.props;
     const {
@@ -278,7 +283,7 @@ class UserAdminDetails extends React.Component {
         </Grid>
         <Grid xs={12}>
           <Typography variant="h5" component="h1">
-            Group Memberships
+            Roles
           </Typography>
         </Grid>
         <Grid xs={12}>

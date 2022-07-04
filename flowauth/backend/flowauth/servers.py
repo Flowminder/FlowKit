@@ -117,7 +117,6 @@ def edit_scope_activation(server_id):
     Expects a json of the form {scope_string:True/False}
 
     """
-    server = Server.query.filter_by(id=server_id).first_or_404()
     json = request.get_json()
     scopes_to_edit = (
         db.session.query(Scope)
@@ -161,7 +160,7 @@ def add_server():
     Notes
     -----
     Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ>, "secret_key":<key>,
-    "longest_token_life_minutes":<int>, "name":<server_name>, "scopes"[<list of scopes>]}
+    "longest_token_life_minutes":<int>, "name":<server_name>, "scopes"[<list of scope stringss>], "role":[<list of role IDs>]}
     """
     json = request.get_json()
     json["latest_token_expiry"] = datetime.datetime.strptime(
@@ -190,12 +189,19 @@ def add_server():
         raise InvalidUsage from e
     try:
         scopes_list = [
-            Scope(scope=scope_str, server=server) for scope_str in json["scopes"]
+            Scope(name=scope_str, server=server) for scope_str in json["scopes"]
         ]
         server.scopes = scopes_list
     except KeyError:
         logging.warning(f"No scopes set for {server.name}")
         pass
+    try:
+        role_list = [
+            Role.query.filter(Role.id.in_(json["roles"]))
+        ]
+        server.roles = role_list
+    except KeyError:
+        logging.warning(f"No roles set for {server.name}")
     db.session.add(server)
     db.session.commit()
     return jsonify({"id": server.id})
@@ -206,7 +212,7 @@ def add_server():
 @admin_permission.require(http_exception=401)
 def edit_server(server_id):
     """
-    Alter the name, latest token expiry, secret key or longest token life of a server.
+    Alter the name, latest token expiry, secret key, roles, or longest token life of a server.
 
     Notes
     -----
@@ -220,7 +226,10 @@ def edit_server(server_id):
         json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
     for key, val in json.items():
-        setattr(server, key, val)
+        if key == "roles":
+            server.roles = Role.query.filter(Role.id.in_(val)).all()
+        else:
+            setattr(server, key, val)
     db.session.add(server)
     db.session.commit()
     return jsonify({"id": server.id})
