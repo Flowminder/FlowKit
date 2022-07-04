@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields
+from marshmallow import fields, validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
 
@@ -16,6 +16,7 @@ from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
+from .aggregation_unit import AggregationUnitKind
 from .reference_location import ReferenceLocationSchema
 from .one_of_query import OneOfQuerySchema
 
@@ -41,6 +42,10 @@ class FlowsExposed(BaseExposedQuery):
         self.join_type = join_type
 
     @property
+    def aggregation_unit(self):
+        return self.from_location.aggregation_unit
+
+    @property
     def _flowmachine_query_obj(self):
         """
         Return the underlying flowmachine object.
@@ -59,6 +64,24 @@ class FlowsSchema(BaseSchema):
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
+
+    @validates_schema
+    def validate_aggregation_units(self, data, **kwargs):
+        """
+        Validate that from_location and to_location have the same aggregation unit
+        """
+        try:
+            if (
+                data["from_location"].aggregation_unit
+                != data["to_location"].aggregation_unit
+            ):
+                raise ValidationError(
+                    "'from_location' and 'to_location' parameters must have the same aggregation unit"
+                )
+        except AttributeError:
+            # Nested schema was invalid - appropriate ValidationError will be raised from elsewhere
+            pass
