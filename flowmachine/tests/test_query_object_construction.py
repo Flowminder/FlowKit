@@ -8,6 +8,7 @@ from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
+from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
 from flowmachine.core.server.query_schemas.mobility_classification import (
     MobilityClassificationSchema,
 )
@@ -1005,6 +1006,54 @@ def test_unmatching_spatial_unit_raises_error_daily():
 
     with pytest.raises(ValidationError, match="same aggregation unit") as exc:
         _ = LocationVisitsSchema().load(query_spec)
+    print(exc)
+
+
+# Regression test for #4816
+@pytest.mark.parametrize(
+    "schema, query_kind",
+    [
+        (ModalLocationSchema, "modal_location"),
+        (LocationVisitsSchema, "location_visits"),
+    ],
+)
+def test_invalid_nested_location_raises_validationerror(schema, query_kind):
+    """
+    Test that ValidationErrors raised by DailyLocationSchema are not masked
+    by errors arising from further validation in ModalLocationSchema or
+    LocationVisitsSchema
+    """
+    query_spec = {
+        "query_kind": query_kind,
+        "locations": [
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-02",
+                "aggregation_unit": "admin2",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-03",
+                "aggregation_unit": "admin3",
+                "method": "oops",
+                "subscriber_subset": None,
+            },
+        ],
+    }
+
+    with pytest.raises(
+        ValidationError, match="Must be one of: last, most-common."
+    ) as exc:
+        _ = schema().load(query_spec)
     print(exc)
 
 
