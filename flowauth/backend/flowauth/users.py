@@ -128,7 +128,7 @@ def edit_user(user_id):
             and user.is_admin
             and len(User.query.filter(User.is_admin).all()) == 1
         ):
-                raise InvalidUsage(
+            raise InvalidUsage(
                 "Removing this user's admin rights would leave no admins.",
                 payload={"bad_field": "is_admin"},
             )

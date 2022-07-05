@@ -196,9 +196,7 @@ def add_server():
         logging.warning(f"No scopes set for {server.name}")
         pass
     try:
-        role_list = [
-            Role.query.filter(Role.id.in_(json["roles"]))
-        ]
+        role_list = [Role.query.filter(Role.id.in_(json["roles"]))]
         server.roles = role_list
     except KeyError:
         logging.warning(f"No roles set for {server.name}")
