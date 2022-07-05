@@ -25,6 +25,8 @@ __all__ = [
     "LabelledSpatialAggregateExposed",
 ]
 
+from .aggregation_unit import AggregationUnitKind
+
 
 class LabelledSpatialAggregateExposed(BaseExposedQuery):
     # query_kind class attribute is required for nesting and serialisation
@@ -35,6 +37,10 @@ class LabelledSpatialAggregateExposed(BaseExposedQuery):
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
         self.labels = labels
+
+    @property
+    def aggregation_unit(self):
+        return self.locations.aggregation_unit
 
     @property
     def _flowmachine_query_obj(self):
@@ -58,5 +64,6 @@ class LabelledSpatialAggregateSchema(BaseSchema):
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
     locations = fields.Nested(CoalescedLocationSchema, required=True)
     labels = fields.Nested(MobilityClassificationSchema, required=True)
