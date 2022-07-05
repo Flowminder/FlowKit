@@ -32,6 +32,7 @@ from flowmachine.features.location.redacted_joined_spatial_aggregate import (
 )
 from flowmachine.utils import Statistic
 from .base_exposed_query import BaseExposedQuery
+from .aggregation_unit import AggregationUnitKind
 
 
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
@@ -70,6 +71,10 @@ class JoinedSpatialAggregateExposed(BaseExposedQuery):
         self.method = method
 
     @property
+    def aggregation_unit(self):
+        return self.locations.aggregation_unit
+
+    @property
     def _flowmachine_query_obj(self):
         """
         Return the underlying flowmachine object.
@@ -92,9 +97,12 @@ class JoinedSpatialAggregateSchema(BaseSchema):
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
     locations = fields.Nested(ReferenceLocationSchema, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
-    method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
+    method = fields.String(
+        validate=OneOf(JoinedSpatialAggregate.allowed_methods), required=True
+    )
 
     @pre_load
     def validate_method(self, data, **kwargs):
