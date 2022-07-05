@@ -12,7 +12,6 @@ function UserRolesPicker (props) {
   const {user_id, updateRoles} = props
 
   const [userRoles, setUserRoles] = useState([])
-  const [selectedRoles, setSelectedRoles] = useState([])
   const [allRoles, setAllRoles] = useState([])
   const [hasError, setHasError] = useState(false)
   const [error, setError] = useState({})
@@ -56,24 +55,16 @@ function UserRolesPicker (props) {
     
   }, [allRoles, user_id])
 
-  //Update selected
-  useEffect(() => {
-    setSelectedRoles(
-      userRoles.map((ur) => allRoles.indexOf(ur))
-    )
-  }, [userRoles])
 
   const handleChange = (event) => {
     console.log("Selected roles: ", event.target.value)
-    setSelectedRoles(event.target.value);
-    updateRoles(
-      selectedRoles.map(i => allRoles[i])
-      );
+    setUserRoles(event.target.value)
+    updateRoles(userRoles);
   };
 
   return (
     <Picker
-      objs={selectedRoles}
+      objs={userRoles}
       all_objs={allRoles}
       hasError={hasError}
       error={error}
