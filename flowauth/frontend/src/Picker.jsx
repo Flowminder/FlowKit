@@ -54,6 +54,8 @@ class Picker extends React.Component {
       handleChange,
       label,
     } = this.props;
+    // This is super ugly, but we need to ensure that the objects will compare equivalent
+    const objs_selected = all_objs.filter((obj) => objs.map((s) => s.id).indexOf(obj.id) !== -1);
     if (hasError) throw error;
     return (
       <div className={classes.root}>
@@ -61,7 +63,7 @@ class Picker extends React.Component {
           <InputLabel htmlFor="select-multiple-chip">{label}</InputLabel>
           <Select
             multiple
-            value={objs}
+            value={objs_selected}
             onChange={handleChange}
             input={<Input id="select-multiple-chip" />}
             renderValue={(selected) => (
@@ -81,10 +83,10 @@ class Picker extends React.Component {
               <MenuItem
                 key={obj.id}
                 value={obj}
-                selected={objs.indexOf(obj) !== -1}
+                selected={objs.map((s) => s.id).indexOf(obj.id) !== -1}
                 style={{
                   fontWeight:
-                    objs.indexOf(obj) === -1
+                    objs.map((s) => s.id).indexOf(obj.id) === -1
                       ? theme.typography.fontWeightRegular
                       : theme.typography.fontWeightMedium,
                 }}
