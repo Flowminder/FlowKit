@@ -139,9 +139,9 @@ async def action_handler__get_aggregation_unit(
                 **exc.details,
             ),
         )
-    try:
+    if hasattr(query_obj, "aggregation_unit"):
         aggregation_unit = query_obj.aggregation_unit.canonical_name
-    except AttributeError:
+    else:
         # Query does not have an aggregation unit associated with it
         aggregation_unit = None
     return ZMQReply(status="success", payload={"aggregation_unit": aggregation_unit})
