@@ -10,7 +10,6 @@ import Picker from "./Picker";
 // Component for picking scopes for a role
 function RoleScopePicker (props) {
   const {role_id, server_id, updateScopes} = props
-
   const [roleScopes, setRoleScopes] = useState([])
   const [serverScopes, setServerScopes] = useState([])
   const [hasError, setHasError] = useState(false)
@@ -50,10 +49,13 @@ function RoleScopePicker (props) {
   }
   }, [role_id, server_id])
 
+  
   const handleChange = (event) => {
     setRoleScopes(event.target.value)
     updateScopes(event.target.value);
   };
+
+
 
   return (
     <Picker
