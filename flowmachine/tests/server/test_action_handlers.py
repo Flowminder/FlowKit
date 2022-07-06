@@ -276,10 +276,15 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     ],
 )
 @pytest.mark.asyncio
-async def test_get_aggregation_unit(params, expected_aggregation_unit, server_config):
+async def test_get_aggregation_unit(
+    params, expected_aggregation_unit, server_config, real_connections
+):
     """
     'get_aggregation_unit' handler returns correct aggregation unit
     """
+    # Have to use real_connections fixture here because query deserialisation
+    # involves constructing a spatial unit object, which requires talking to
+    # the db.
     msg = await action_handler__get_aggregation_unit(
         config=server_config,
         **params,
