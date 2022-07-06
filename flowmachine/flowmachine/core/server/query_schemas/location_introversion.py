@@ -83,4 +83,4 @@ class LocationIntroversionSchema(
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
-    direction = Direction
+    direction = Direction()
