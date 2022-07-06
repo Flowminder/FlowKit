@@ -724,8 +724,10 @@ def nocturnal_events_spec(
         "query_kind": "nocturnal_events",
         "start_date": start_date,
         "end_date": end_date,
-        "night_start_hour": hours[0],
-        "night_end_hour": hours[1],
+        "night_hours": dict(
+            start_hour=hours[0],
+            end_hour=hours[1],
+        ),
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
     }
