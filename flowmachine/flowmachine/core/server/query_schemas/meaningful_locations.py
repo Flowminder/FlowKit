@@ -60,8 +60,8 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
         tower_hour_of_day_scores: List[float],
-        tower_cluster_radius: float = 1.0,
-        tower_cluster_call_threshold: int = 0,
+        tower_cluster_radius: float,
+        tower_cluster_call_threshold: int,
         event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
@@ -125,8 +125,8 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
         tower_hour_of_day_scores: List[float],
-        tower_cluster_radius: float = 1.0,
-        tower_cluster_call_threshold: int = 0,
+        tower_cluster_radius: float,
+        tower_cluster_call_threshold: int,
         event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
@@ -195,8 +195,8 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         labels: Dict[str, Dict[str, dict]],
         tower_day_of_week_scores: Dict[str, float],
         tower_hour_of_day_scores: List[float],
-        tower_cluster_radius: float = 1.0,
-        tower_cluster_call_threshold: int = 0,
+        tower_cluster_radius: float,
+        tower_cluster_call_threshold: int,
         event_types: Optional[Union[str, List[str]]],
         subscriber_subset: Union[dict, None] = None,
     ):
@@ -268,8 +268,8 @@ class MeaningfulLocationsAggregateSchema(
     )  # TODO: use custom field here for stricter validation!
     tower_hour_of_day_scores = TowerHourOfDayScores(required=True)
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
-    tower_cluster_radius = fields.Float(required=False, default=1.0)
-    tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    tower_cluster_radius = fields.Float(required=False, load_default=1.0)
+    tower_cluster_call_threshold = fields.Integer(required=False, load_default=0)
 
 
 def _make_meaningful_locations_object(
@@ -332,12 +332,12 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
     labels = fields.Dict(
-        keys=fields.String(), values=fields.Dict()
+        required=True, keys=fields.String(), values=fields.Dict()
     )  # TODO: use custom field here for stricter validation!
     tower_hour_of_day_scores = TowerHourOfDayScores(required=True)
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
-    tower_cluster_radius = fields.Float(required=False, default=1.0)
-    tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    tower_cluster_radius = fields.Float(required=False, load_default=1.0)
+    tower_cluster_call_threshold = fields.Integer(required=False, load_default=0)
 
 
 class MeaningfulLocationsBetweenDatesODMatrixSchema(
@@ -353,9 +353,9 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(
     end_date_b = ISODateTime(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
-        keys=fields.String(), values=fields.Dict()
+        required=True, keys=fields.String(), values=fields.Dict()
     )  # TODO: use custom field here for stricter validation!
     tower_hour_of_day_scores = TowerHourOfDayScores(required=True)
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
-    tower_cluster_radius = fields.Float(required=False, default=1.0)
-    tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    tower_cluster_radius = fields.Float(required=False, load_default=1.0)
+    tower_cluster_call_threshold = fields.Integer(required=False, load_default=0)

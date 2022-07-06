@@ -81,6 +81,7 @@ class HandsetSchema(
     characteristic = fields.String(
         validate=OneOf(
             ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
-        )
+        ),
+        required=True,
     )
-    method = fields.String(validate=OneOf(["last", "most-common"]))
+    method = fields.String(validate=OneOf(["last", "most-common"]), required=True)

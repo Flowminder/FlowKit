@@ -43,7 +43,9 @@ class LocationVisitsSchema(BaseQueryWithSamplingSchema):
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
-    locations = fields.List(fields.Nested(VisitableLocation), validate=Length(min=1))
+    locations = fields.List(
+        fields.Nested(VisitableLocation), validate=Length(min=1), required=True
+    )
 
     @validates("locations")
     def validate_locations(self, locations):

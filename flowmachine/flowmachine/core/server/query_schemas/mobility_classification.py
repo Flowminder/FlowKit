@@ -40,7 +40,7 @@ class MobilityClassificationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     locations = fields.List(
-        fields.Nested(CoalescedLocationSchema), validate=Length(min=1)
+        fields.Nested(CoalescedLocationSchema), validate=Length(min=1), required=True
     )
     stay_length_threshold = fields.Integer(required=True)
 

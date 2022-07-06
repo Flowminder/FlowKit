@@ -10,6 +10,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .custom_fields import Direction
 from .field_mixins import (
     HoursField,
     StartAndEndField,
@@ -75,6 +76,4 @@ class SubscriberDegreeSchema(
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
-    direction = fields.String(
-        required=False, validate=OneOf(["in", "out", "both"]), default="both"
-    )  # TODO: use a globally defined enum for this
+    direction = Direction()

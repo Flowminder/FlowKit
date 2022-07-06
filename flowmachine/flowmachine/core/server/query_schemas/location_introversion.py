@@ -9,6 +9,7 @@ from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_introversion import (
     RedactedLocationIntroversion,
 )
+from .custom_fields import Direction
 from .field_mixins import (
     HoursField,
     StartAndEndField,
@@ -82,6 +83,4 @@ class LocationIntroversionSchema(
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
-    direction = fields.String(
-        validate=OneOf(["in", "out", "both"]), load_default="both"
-    )  # TODO: use a globally defined enum for this
+    direction = Direction

@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf
 from flowmachine.features import TotalLocationEvents
 from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
 from .base_exposed_query import BaseExposedQuery
+from .custom_fields import Direction
 from .field_mixins import (
     HoursField,
     StartAndEndField,
@@ -85,6 +86,4 @@ class LocationEventCountsSchema(
     interval = fields.String(
         required=True, validate=OneOf(TotalLocationEvents.allowed_intervals)
     )
-    direction = fields.String(
-        required=True, validate=OneOf(["in", "out", "both"])
-    )  # TODO: use a globally defined enum for this
+    direction = Direction()

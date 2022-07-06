@@ -198,3 +198,17 @@ class ISODateTime(fields.DateTime):
     DEFAULT_FORMAT = "iso"
 
     OBJ_TYPE = "datetime"
+
+
+class Direction(fields.String):
+    def __init__(self, required=False, load_default="both", **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The Direction field provides its own validation and"
+                "thus does not accept the 'validate' argument."
+            )
+
+        validate = OneOf(["in", "out", "both"])
+        super().__init__(
+            required=required, validate=validate, load_default=load_default, **kwargs
+        )

@@ -105,4 +105,4 @@ class HistogramAggregateSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     metric = fields.Nested(HistogrammableMetrics, required=True)
     range = fields.Nested(Bounds)
-    bins = fields.Nested(HistogramBins)
+    bins = fields.Nested(HistogramBins, required=True)

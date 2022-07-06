@@ -55,5 +55,5 @@ class AggregateNetworkObjectsSchema(BaseSchema):
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     aggregation_unit = AggregationUnitKind(dump_only=True)
     total_network_objects = fields.Nested(TotalNetworkObjectsSchema, required=True)
-    statistic = Statistic()
-    aggregate_by = AggregateBy()
+    statistic = Statistic(required=True)
+    aggregate_by = AggregateBy(required=True)
