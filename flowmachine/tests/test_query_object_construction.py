@@ -946,6 +946,7 @@ def test_construct_query(diff_reporter):
                         aggregation_unit="lon-lat",
                     ),
                 ),
+                method="avg",
             ),
             "admin3",
         ),
