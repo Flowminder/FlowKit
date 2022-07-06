@@ -69,19 +69,15 @@ class FlowsSchema(BaseSchema):
     to_location = fields.Nested(InputToFlowsSchema, required=True)
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
 
-    @validates_schema
+    @validates_schema(skip_on_field_errors=True)
     def validate_aggregation_units(self, data, **kwargs):
         """
         Validate that from_location and to_location have the same aggregation unit
         """
-        try:
-            if (
-                data["from_location"].aggregation_unit
-                != data["to_location"].aggregation_unit
-            ):
-                raise ValidationError(
-                    "'from_location' and 'to_location' parameters must have the same aggregation unit"
-                )
-        except AttributeError:
-            # Nested schema was invalid - appropriate ValidationError will be raised from elsewhere
-            pass
+        if (
+            data["from_location"].aggregation_unit
+            != data["to_location"].aggregation_unit
+        ):
+            raise ValidationError(
+                "'from_location' and 'to_location' parameters must have the same aggregation unit"
+            )

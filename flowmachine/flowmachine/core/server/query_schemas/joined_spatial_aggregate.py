@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, pre_load, ValidationError
+from marshmallow import fields, validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
@@ -104,7 +104,7 @@ class JoinedSpatialAggregateSchema(BaseSchema):
         validate=OneOf(JoinedSpatialAggregate.allowed_methods), required=True
     )
 
-    @pre_load
+    @validates_schema(skip_on_field_errors=True)
     def validate_method(self, data, **kwargs):
         continuous_metrics = [
             "radius_of_gyration",
@@ -119,13 +119,12 @@ class JoinedSpatialAggregateSchema(BaseSchema):
             "total_active_periods",
         ]
         categorical_metrics = ["handset"]
-        if data["metric"]["query_kind"] in continuous_metrics:
+        if data["metric"].query_kind in continuous_metrics:
             validate = OneOf([f"{stat}" for stat in Statistic])
-        elif data["metric"]["query_kind"] in categorical_metrics:
+        elif data["metric"].query_kind in categorical_metrics:
             validate = OneOf(["distr"])
         else:
             raise ValidationError(
-                f"{data['metric']['query_kind']} does not have a valid metric type."
+                f"{data['metric'].query_kind} does not have a valid metric type."
             )
         validate(data["method"])
-        return data

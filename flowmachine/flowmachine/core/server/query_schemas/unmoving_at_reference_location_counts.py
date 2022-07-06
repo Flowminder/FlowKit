@@ -68,19 +68,15 @@ class UnmovingAtReferenceLocationCountsSchema(BaseSchema):
     locations = fields.Nested(UniqueLocationsSchema, required=True)
     reference_locations = fields.Nested(ReferenceLocationSchema, required=True)
 
-    @validates_schema
+    @validates_schema(skip_on_field_errors=True)
     def validate_aggregation_units(self, data, **kwargs):
         """
         Validate that locations and reference_locations have the same aggregation unit
         """
-        try:
-            if (
-                data["locations"].aggregation_unit
-                != data["reference_locations"].aggregation_unit
-            ):
-                raise ValidationError(
-                    "'locations' and 'reference_locations' parameters must have the same aggregation unit"
-                )
-        except AttributeError:
-            # Nested schema was invalid - appropriate ValidationError will be raised from elsewhere
-            pass
+        if (
+            data["locations"].aggregation_unit
+            != data["reference_locations"].aggregation_unit
+        ):
+            raise ValidationError(
+                "'locations' and 'reference_locations' parameters must have the same aggregation unit"
+            )

@@ -67,19 +67,15 @@ class UniqueVisitorCountsSchema(BaseSchema):
         UniqueSubscriberCountsSchema(), required=True
     )
 
-    @validates_schema
+    @validates_schema(skip_on_field_errors=True)
     def validate_aggregation_units(self, data, **kwargs):
         """
         Validate that active_at_reference_location_counts and unique_subscriber_counts have the same aggregation unit
         """
-        try:
-            if (
-                data["active_at_reference_location_counts"].aggregation_unit
-                != data["unique_subscriber_counts"].aggregation_unit
-            ):
-                raise ValidationError(
-                    "'active_at_reference_location_counts' and 'unique_subscriber_counts' parameters must have the same aggregation unit"
-                )
-        except AttributeError:
-            # Nested schema was invalid - appropriate ValidationError will be raised from elsewhere
-            pass
+        if (
+            data["active_at_reference_location_counts"].aggregation_unit
+            != data["unique_subscriber_counts"].aggregation_unit
+        ):
+            raise ValidationError(
+                "'active_at_reference_location_counts' and 'unique_subscriber_counts' parameters must have the same aggregation unit"
+            )
