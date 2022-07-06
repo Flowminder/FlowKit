@@ -4,7 +4,7 @@
 from flowapi.permissions import (
     is_flat,
     flatten_on_key,
-    scopes_from_query,
+    tl_scope_string,
     schema_to_scopes,
 )
 
@@ -16,8 +16,6 @@ import pytest
     [
         ({}, []),
         (
-            {"properties": {"query_kind": {"enum": ["dummy"]}}},
-            ["dummy"],
         ),
         (
             {
@@ -27,15 +25,14 @@ import pytest
                 }
             },
             [
-                "dummy",
-                "dummy:DUMMY_UNIT",
-                "dummy:DUMMY_UNIT_2",
+                "dummy:DUMMY_UNIT:",
+                "dummy:DUMMY_UNIT_2:",
             ],
         ),
         ({"oneOf": []}, []),
         (
             {"oneOf": [{"properties": {"query_kind": {"enum": ["dummy"]}}}]},
-            ["dummy"],
+            ["dummy::"],
         ),
         (
             {
@@ -43,6 +40,7 @@ import pytest
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
+                            "aggregation_unit":{"enum":["DUMMY_UNIT"]},
                             "dummy_param": {
                                 "properties": {"query_kind": {"enum": ["nested_dummy"]}}
                             },
@@ -51,8 +49,8 @@ import pytest
                 ]
             },
             [
-                "dummy",
-                "nested_dummy",
+                "dummy:DUMMY_UNIT:"
+                "dummy:DUMMY_UNIT:nested_dummy",
             ],
         ),
         (
@@ -61,6 +59,7 @@ import pytest
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
+                            "aggregation_unit": {"enum": ["TL_DUMMY_UNIT"]},
                             "dummy_param": {
                                 "properties": {
                                     "query_kind": {"enum": ["nested_dummy"]},
@@ -72,9 +71,8 @@ import pytest
                 ]
             },
             [
-                "dummy",
-                "nested_dummy",
-                "nested_dummy:DUMMY_UNIT",
+                "dummy:TL_DUMMY_UNIT:",
+                "dummy:TL_DUMMY_UNIT:nested_dummy",
             ],
         ),
         (
@@ -83,6 +81,7 @@ import pytest
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
+                            "enum": ["TL_DUMMY_UNIT", "TL_DUMMY_UNIT_2"],
                             "dummy_param": {
                                 "properties": {
                                     "query_kind": {"enum": ["nested_dummy"]},
@@ -104,13 +103,9 @@ import pytest
                 ]
             },
             [
-                "dummy",
-                "nested_dummy",
-                "nested_dummy:DUMMY_UNIT",
-                "nested_dummy:DUMMY_UNIT_2",
-                "nested_dummy_2",
-                "nested_dummy_2:DUMMY_UNIT_2",
-                "nested_dummy_2:DUMMY_UNIT_3",
+                "dummy::",
+                "dummy::nested_dummy",
+                "dummy::nested_dummy_2",
             ],
         ),
         ({"not_a_query": "empty"}, []),
@@ -231,4 +226,4 @@ def test_flatten_on_key(input, expected):
     ],
 )
 def test_scopes_from_query(input, expected):
-    assert scopes_from_query(input) == expected
+    assert tl_scope_string(tl_query, input) == expected

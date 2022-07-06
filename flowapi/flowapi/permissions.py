@@ -108,21 +108,22 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     # Check query tree
     # Check dates
 
-    # A note here: flatten_on_key _will_ affect schema. This doesn't seem like
-    # an issue right now, but may add a copy()
-    query_list = flatten_on_key(schema, "properties")
-    if query_list == []:
-        return []
-    scopes_generator = (scopes_from_query(query) for query in query_list)
-    unique_scopes = list(set.union(*scopes_generator))
+    top_level_queries = schema.items()
+    for tl_query in top_level_queries:
+        query_list = flatten_on_key(tl_query, "properties")
+        if query_list == []:
+            continue
+        scopes_generator = (tl_scope_string(tl_query, query) for query in query_list)
+        unique_scopes = list(set.union(*scopes_generator))
     # When do we add on the run/read scope?
     return sorted(unique_scopes)
 
 
-def scopes_from_query(query) -> set:
+def tl_scope_string(tl_query, query) -> set:
     """
-    Given a single query, returns the scopes needed for that query
-    only
+    Given a top level (aggregate) query and a sub_query, return the scopes triplet for that query.
+    This is composed of the top_level query, allowable admin level
+    :param tl_query:
     """
     try:
         query_kind = query["query_kind"]["enum"][0]
@@ -130,8 +131,8 @@ def scopes_from_query(query) -> set:
         return set()
     out = {query_kind}
     try:
-        agg_units = query["aggregation_unit"]["enum"]
-        out = out | {":".join([query_kind, agg_unit]) for agg_unit in agg_units}
+        agg_units = tl_query["aggregation_unit"]["enum"]
+        out = out | {f"{tl_query}:{agg_unit}:{query_kind}" for agg_unit in agg_units}
     except KeyError:
         pass
     return out
