@@ -11,8 +11,8 @@ aggregated to a spatial unit.
 
 
 """
+from enum import Enum
 
-from abc import ABCMeta
 from typing import List
 
 from flowmachine.core.query import Query
@@ -26,6 +26,11 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
+class Direction(str, Enum):
+    OUTFLOW = "from"
+    INFLOW = "to"
+
+
 class FlowLike(GeoDataMixin, GraphMixin):
     def outflow(self):
         """
@@ -36,7 +41,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
             originate from one locations, regardless of their destination.
         """
 
-        return OutFlow(self)
+        return InOutFlow(self, Direction.OUTFLOW)
 
     def inflow(self):
         """
@@ -47,7 +52,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
             go to one locations, regardless of their origin.
         """
 
-        return InFlow(self)
+        return InOutFlow(self, Direction.INFLOW)
 
     def _build_json_agg_clause(self, direction):
         if direction == "in":
@@ -213,96 +218,42 @@ class Flows(FlowLike, Query):
         return grouped
 
 
-class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
+class InOutFlow(GeoDataMixin, Query):
     """
-    ABC for both the OutFlow and the Inflow classes.
+    An inflow or outflow from a Flows - sums by the to or from columns.
 
     Parameters
     ----------
     flow : flowmachine.Flows
         Flows object to derive an in/out flow from
+    direction : {'to', 'from'}
+        One of to (for inflows) or out (for outflows)
     """
 
-    def __init__(self, flow):
+    def __init__(self, flow: Flows, direction: str):
         self.flow = flow
-        cols = self.flow.column_names
-        # NOTE: Replace with spatial_unit.from_columns
-        self.loc_from = ",".join([c for c in cols if c.endswith("_from")])
-        self.loc_to = ",".join([c for c in cols if c.endswith("_to")])
-        if hasattr(self.flow, "out_label_columns"):
-            self.label = ",".join(self.flow.out_label_columns)
-        else:
-            self.label = None
         self.spatial_unit = flow.spatial_unit
+        self.direction = Direction(direction)
         super().__init__()
 
-    # Returns a query that groups by one column and sums the count
-    def _groupby_col(self, sql_in, col):
+    @property
+    def column_names(self) -> List[str]:
+        return [*self.spatial_unit.location_id_columns, "value"]
 
-        if self.label:
-            col = ",".join([col, self.label])
+    @property
+    def index_cols(self):
+        return self.spatial_unit.location_id_columns
 
-        sql_out = """
-                  SELECT {c}, sum(value) AS value
-                  FROM ({flow}) AS flow
-                  GROUP BY {c} ORDER BY {c} DESC
-                  """.format(
-            flow=sql_in, c=col
+    def _make_query(self):
+        aliased_cols = ", ".join(
+            f"{col}_{self.direction} as {col}"
+            for col in self.spatial_unit.location_id_columns
         )
-
-        return sql_out
-
-
-class OutFlow(BaseInOutFlow):
-    """
-    Class for an outflow. These are the total number of people coming from one
-    locations, regardless of where they go to. Note that this is normally initialised
-    through the outflows method of a Flows object.
-    """
-
-    def _make_query(self):
-        return self._groupby_col(self.flow.get_query(), self.loc_from)
-
-    @property
-    def index_cols(self):
-        cols = self.spatial_unit.location_id_columns
-        return [[f"{x}_from" for x in cols]]
-
-    @property
-    def column_names(self) -> List[str]:
-        cols = self.spatial_unit.location_id_columns
-        if hasattr(self.flow, "out_label_columns"):
-            return (
-                [f"{col}_from" for col in cols]
-                + self.flow.out_label_columns
-                + ["value"]
-            )
-        else:
-            return [f"{col}_from" for col in cols] + ["value"]
-
-
-class InFlow(BaseInOutFlow):
-    """
-    An inflow is the total number of subscribers coming into a region, regardless of where it
-    is that they have come from. Normally not instantiated directly, but through a method
-    of the Flows class.
-    """
-
-    def _make_query(self):
-
-        return self._groupby_col(self.flow.get_query(), self.loc_to)
-
-    @property
-    def index_cols(self):
-        cols = self.spatial_unit.location_id_columns
-        return [[f"{x}_to" for x in cols]]
-
-    @property
-    def column_names(self) -> List[str]:
-        cols = self.spatial_unit.location_id_columns
-        if hasattr(self.flow, "out_label_columns"):
-            return (
-                [f"{col}_to" for col in cols] + self.flow.out_label_columns + ["value"]
-            )
-        else:
-            return [f"{col}_to" for col in cols] + ["value"]
+        directed_cols = ", ".join(
+            f"{col}_{self.direction}" for col in self.spatial_unit.location_id_columns
+        )
+        return f"""
+        SELECT {aliased_cols}, sum(value) AS value
+        FROM ({self.flow.get_query()}) AS flow
+        GROUP BY {directed_cols} ORDER BY {directed_cols} DESC
+        """

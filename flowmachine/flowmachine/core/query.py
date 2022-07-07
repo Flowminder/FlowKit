@@ -165,8 +165,8 @@ class Query(metaclass=ABCMeta):
     def __iter__(self):
         con = get_db().engine
         qur = self.get_query()
-        with con.begin():
-            self._query_object = con.execute(qur)
+        with con.begin() as trans:
+            self._query_object = trans.execute(qur)
 
         return self
 
@@ -300,14 +300,14 @@ class Query(metaclass=ABCMeta):
                     return self._df.copy()
                 except AttributeError:
                     qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
-                    with get_db().engine.begin():
-                        self._df = pd.read_sql_query(qur, con=get_db().engine)
+                    with get_db().engine.begin() as trans:
+                        self._df = pd.read_sql_query(qur, con=trans)
 
                     return self._df.copy()
             else:
                 qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
-                with get_db().engine.begin():
-                    return pd.read_sql_query(qur, con=get_db().engine)
+                with get_db().engine.begin() as trans:
+                    return pd.read_sql_query(qur, con=trans)
 
         df_future = submit_to_executor(do_get)
         return df_future
@@ -370,8 +370,8 @@ class Query(metaclass=ABCMeta):
         except AttributeError:
             Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
             con = get_db().engine
-            with con.begin():
-                df = pd.read_sql_query(Q, con=con)
+            with con.begin() as trans:
+                df = pd.read_sql_query(Q, con=trans)
                 return df
 
     def get_table(self):
@@ -529,12 +529,15 @@ class Query(metaclass=ABCMeta):
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
         (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
         queries.append(Q)
+        # Make flowmachine user the owner to allow server to cleanup cache tables
+        queries.append(f"ALTER TABLE {full_name} OWNER TO flowmachine;")
         for ix in self.index_cols:
             queries.append(
                 "CREATE INDEX ON {tbl} ({ixen})".format(
                     tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
                 )
             )
+
         return queries
 
     def to_sql(
@@ -816,13 +819,13 @@ class Query(metaclass=ABCMeta):
                         f"SELECT query_id FROM cache.dependencies WHERE depends_on='{self.query_id}'"
                     )
                 ]
-                with con.begin():
-                    con.execute(
+                with con.begin() as trans:
+                    trans.execute(
                         "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
                     )
                     log("Deleted cache record.")
                     if drop:
-                        con.execute(
+                        trans.execute(
                             "DROP TABLE IF EXISTS {}".format(
                                 self.fully_qualified_table_name
                             )
@@ -847,8 +850,8 @@ class Query(metaclass=ABCMeta):
             else:
                 full_name = name
             log("Dropping table outside cache schema.", table_name=full_name)
-            with con.begin():
-                con.execute("DROP TABLE IF EXISTS {}".format(full_name))
+            with con.begin() as trans:
+                trans.execute("DROP TABLE IF EXISTS {}".format(full_name))
             q_state_machine.finish_resetting()
         elif q_state_machine.is_resetting:
             log("Query is being reset from elsewhere, waiting for reset to finish.")

@@ -72,7 +72,6 @@ declare -A hard_secrets
 hard_secrets=(
   [POSTGRES_USER]="flowdb"
   [FLOWAUTH_ADMIN_USERNAME]="admin"
-  [FLOWMACHINE_FLOWDB_USER]="flowmachine"
   [FLOWAPI_FLOWDB_USER]="flowapi"
   [FLOWAPI_IDENTIFIER]="flowapi_server"
   [FLOWETL_POSTGRES_USER]="flowetl"

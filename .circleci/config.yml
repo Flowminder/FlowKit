@@ -32,7 +32,6 @@ defaults:
     FLOWDB_INGESTION_DIR: /home/circleci/project/flowdb/tests/data
     POSTGRES_PASSWORD: flowflow
     POSTGRES_USER: flowdb
-    FLOWMACHINE_FLOWDB_USER: flowmachine
     FLOWAPI_FLOWDB_USER: flowapi
     FLOWMACHINE_FLOWDB_PASSWORD: foo
     FLOWAPI_FLOWDB_PASSWORD: foo
@@ -801,7 +800,11 @@ jobs:
           at: /home/circleci
       - restore_cache:
           key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}
-      - run: *install_autoflow_deps
+      - when:
+          condition:
+            equal: [ "not query_tests", << parameters.pytest_selector >> ]
+          steps:
+            - run: *install_autoflow_deps
       - run: pipenv install --deploy --dev
       - save_cache:
           key: integration-test-deps-4-{{ checksum "Pipfile.lock" }}

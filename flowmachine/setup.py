@@ -69,7 +69,7 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=[
-        "SQLAlchemy<=1.3.23",
+        "SQLAlchemy",
         "cachetools",
         "apispec-oneofschema",
         "marshmallow>=3.0.0",
