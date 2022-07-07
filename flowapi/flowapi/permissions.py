@@ -20,13 +20,42 @@ def is_flat(in_iter):
     return all(type(item) not in [dict, list] for item in in_iter)
 
 
+def _resolve_ref_factory(ref_dict):
+    """
+    When provided with a reference list, returns a closure that replaces
+    dictionary entries with the key '$ref' and the value 'path/to/otherkey'
+    with the key-value pair 'otherkey' in ref_dict.
+    Returns a copy of the dictionary.
+    :param ref_dict:
+    :return:
+    """
+
+    def _resolve_ref(in_dict):
+        out_dict = {}
+        for key, value in in_dict.items():
+            if key == "$ref":
+                new_key = value.rpartition("/")[2]
+                new_value = ref_dict[new_key]
+                out_dict[new_key] = new_value
+            else:
+                out_dict[key] = value
+        return out_dict
+
+    return _resolve_ref
+
+
+def default_ref_resolver(in_dict):
+    return in_dict.copy()
+
+
 @functools.singledispatch
-def _flatten_on_key_inner(root, key_of_interest):
+def _flatten_on_key_inner(root, key_of_interest, resolve_ref):
     raise TypeError
 
 
 @_flatten_on_key_inner.register(dict)
-def _(root, key_of_interest):
+def _(root, key_of_interest, resolve_ref):
+    root = resolve_ref(root)
     for node, value in root.items():
         if is_flat(value):
             pass
@@ -40,7 +69,7 @@ def _(root, key_of_interest):
 
 
 @_flatten_on_key_inner.register(list)
-def _(root, key_of_interest):
+def _(root, key_of_interest, resolve_ref):
     for value in root:
         yield from _flatten_on_key_inner(value, key_of_interest)
 
@@ -53,10 +82,14 @@ def _clean_empties(in_dict, marker):
     return out
 
 
-def flatten_on_key(in_iter, key, _in_place=False):
+def flatten_on_key(in_iter, key, resolve_refs=True, in_place=False):
+    if resolve_refs:
+        ref_resolver = _resolve_ref_factory(in_iter)
+    else:
+        ref_resolver = default_ref_resolver
     if not _in_place:
         in_iter = deepcopy(in_iter)
-    out = list(_flatten_on_key_inner(in_iter, key))
+    out = list(_flatten_on_key_inner(in_iter, key, ref_resolver))
     clean_out = [_clean_empties(flattened, key) for flattened in out]
     return clean_out
 
@@ -108,13 +141,15 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     # Check query tree
     # Check dates
 
-    top_level_queries = schema.items()
-    for tl_query in top_level_queries:
-        query_list = flatten_on_key(tl_query, "properties")
-        if query_list == []:
-            continue
-        scopes_generator = (tl_scope_string(tl_query, query) for query in query_list)
-        unique_scopes = list(set.union(*scopes_generator))
+    query_list = flatten_on_key(
+        schema,
+        "properties",
+    )
+    if query_list == []:
+        return []
+    tl_queries = query_list["FlowMachineQuerySchema"]
+    scopes_generator = (tl_scope_string(tl_query, query) for query in query_list)
+    unique_scopes = list(set.union(*scopes_generator))
     # When do we add on the run/read scope?
     return sorted(unique_scopes)
 
@@ -131,7 +166,7 @@ def tl_scope_string(tl_query, query) -> set:
         return set()
     out = {query_kind}
     try:
-        agg_units = tl_query["aggregation_unit"]["enum"]
+        agg_units = tl_query["properties"]["aggregation_unit"]["enum"]
         out = out | {f"{tl_query}:{agg_unit}:{query_kind}" for agg_unit in agg_units}
     except KeyError:
         pass

@@ -19,6 +19,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     Parameters
     ----------
     socket : Socket
+        ZeroMQ socket used to deliver messages to Flowmachine instance
     request_id : str
         Unique id of the request
 
@@ -44,6 +45,9 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
         ),
     )
     spec.components.schemas.update(flowmachine_query_schemas)
+    import pdb
+
+    pdb.set_trace()
     scopes = schema_to_scopes(spec.to_dict()["components"])  # Don't like this here
     scopes += ["run", "get_available_dates", "get_result"]
     spec.components.security_scheme(
