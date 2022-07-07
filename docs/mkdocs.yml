@@ -83,6 +83,7 @@ theme:
   features:
     - navigation.tabs
     - content.tabs.link
+    - content.code.annotate
   palette:
     accent: "#095798"
     primary: "#2977B8"
@@ -95,6 +96,8 @@ theme:
     logo: material/scatter-plot
 # Extensions
 markdown_extensions:
+  - attr_list
+  - md_in_html
   - markdown.extensions.admonition
   - codehilite:
       guess_lang: false
@@ -124,7 +127,8 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_div_format
   - pymdownx.tasklist:
       custom_checkbox: true
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tilde
 
 extra_css:

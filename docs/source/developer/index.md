@@ -88,9 +88,10 @@ Documentation for FlowMachine can be found [here](../flowmachine/flowmachine/). 
 
 The FlowMachine server is responsible for defining the queries that users can run via FlowAPI. Translation from parameters provided in calls to the `run` API endpoint to the underlying FlowMachine query objects is handled by [marshmallow](https://marshmallow.readthedocs.io) schemas defined in [flowmachine.core.server.query_schemas](../flowmachine/flowmachine/core/server/query_schemas/).
 
-In this section we assume that a FlowMachine query class `MyQuery` (derived from [`flowmachine.core.query.Query](../flowmachine/flowmachine/core/query/#class-query)) is already defined, and describe the steps required to expose this query class, so that queries of this kind can be run via the API.
+In this section we assume that a FlowMachine query class `MyQuery` (derived from [`flowmachine.core.query.Query`](../flowmachine/flowmachine/core/query/#class-query)) is already defined, and describe the steps required to expose this query class, so that queries of this kind can be run via the API.
 
 The information below refers to the following categories of query:
+
 - **aggregate**: A query whose results are aggregated over groups of subscribers, so that no individual-level information is revealed. Example: [histogram_aggregate](../flowmachine/flowmachine/core/server/query_schemas/histogram_aggregate/)
 - **spatial aggregate**: An aggregate query that returns a result per location (e.g. a count of subscribers per administrative region). Example: [spatial_aggregate](../flowmachine/flowmachine/core/server/query_schemas/spatial_aggregate/)
 - **individual-level query**: A query whose result consists of a value per subscriber. Example: [event_count](../flowmachine/flowmachine/core/server/query_schemas/event_count/)
@@ -140,7 +141,7 @@ There are two options here: if users should be able to select a random sample of
 
     1.  `query_kind` class attribute is required, and must be different from the `query_kind` of all other exposed query classes.
     2.  The `__init__` method should take as arguments all parameters of `MyQuery` that will be exposed via the API.
-    3.  All input parameters ust be set as attributes on `self` so that the object can be serialised correctly.
+    3.  All input parameters must be set as attributes on `self` so that the object can be serialised correctly.
     4.  If `MyQuery` is a _spatial aggregate_ or a _reference location_, but does not have an explicit `aggregation_unit` parameter (e.g. because the aggregation unit is determined by a nested sub-query), you must define an `aggregation_unit` property or attribute so that other queries (and the `get_aggregation_unit` server action) can identify the aggregation unit associated with this query.
     5.  Define a `_flowmachine_query_obj` property that returns the underlying `MyQuery` FlowMachine query object.
     6.  The exposed parameters do not need to have names that match the corresponding parameters of the underlying `MyQuery` object.
@@ -168,7 +169,7 @@ There are two options here: if users should be able to select a random sample of
             self.end_date = end_date
             self.sub_query = sub_query
             self.other_param = other_param
-            self.sampling = sampling # (9)
+            self.sampling = sampling
         
         @property
         def aggregation_unit(self): # (4)
@@ -187,7 +188,7 @@ There are two options here: if users should be able to select a random sample of
 
     1.  `query_kind` class attribute is required, and must be different from the `query_kind` of all other exposed query classes.
     2.  The `__init__` method should take as arguments all parameters of `MyQuery` that will be exposed via the API.
-    3.  All input parameters ust be set as attributes on `self` so that the object can be serialised correctly.
+    3.  All input parameters must be set as attributes on `self` so that the object can be serialised correctly.
     4.  If `MyQuery` is a _spatial aggregate_ or a _reference location_, but does not have an explicit `aggregation_unit` parameter (e.g. because the aggregation unit is determined by a nested sub-query), you must define an `aggregation_unit` property or attribute so that other queries (and the `get_aggregation_unit` server action) can identify the aggregation unit associated with this query.
     5.  Define a `_unsampled_query_obj` property that returns the underlying `MyQuery` FlowMachine query object. **Note:** When inheriting from `BaseExposedQueryWithSampling`, this property should be named `_unsampled_query_obj` - the `_flowmachine_query_obj` property will return this query wrapped in an appropriate "random sample" query.
     6.  The exposed parameters do not need to have names that match the corresponding parameters of the underlying `MyQuery` object.
@@ -281,7 +282,7 @@ If `MyQuery` is an _aggregate_, it can be exposed as a top-level query (meaning 
 
 !!! warning
 
-    If the query is an _aggregate_ and will be exposed as a top-level query, it is essential that the underlying FlowMachine query defined in the exposed query's `_flowmachine_query_object` property is _redacted_ - i.e. all rows in the query result corresponding to 15 or fewer individuals are removed from the output. This protects individuals' privacy through k-anonymity.
+    If the query will be exposed as a top-level query, it is essential that the underlying FlowMachine query defined in the exposed query's `_flowmachine_query_object` property is _redacted_ - i.e. all rows in the query result corresponding to 15 or fewer individuals are removed from the output. This protects individuals' privacy through k-anonymity.
 
 If `MyQuery` is an _individual-level_ query, it should **not** be exposed directly as a top-level query. In this case, `MyQuerySchema` should be added as a nested sub-query parameter of the appropriate other query schemas. For example, if `MyQuery` is a _reference location_, add `MyQuerySchema` to [`ReferenceLocationSchema.query_schemas`](../flowmachine/flowmachine/core/server/query_schemas/reference_location/#class-referencelocationschema) so that it will be accepted as a parameter to query kinds such as `spatial_aggregate` and `flows`.
 
