@@ -6,6 +6,7 @@ from flowapi.permissions import (
     flatten_on_key,
     tl_scope_string,
     schema_to_scopes,
+    _resolve_ref_factory,
 )
 
 import pytest
@@ -15,8 +16,6 @@ import pytest
     "tree, expected",
     [
         ({}, []),
-        (
-        ),
         (
             {
                 "properties": {
@@ -40,7 +39,7 @@ import pytest
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
-                            "aggregation_unit":{"enum":["DUMMY_UNIT"]},
+                            "aggregation_unit": {"enum": ["DUMMY_UNIT"]},
                             "dummy_param": {
                                 "properties": {"query_kind": {"enum": ["nested_dummy"]}}
                             },
@@ -49,8 +48,7 @@ import pytest
                 ]
             },
             [
-                "dummy:DUMMY_UNIT:"
-                "dummy:DUMMY_UNIT:nested_dummy",
+                "dummy:DUMMY_UNIT:" "dummy:DUMMY_UNIT:nested_dummy",
             ],
         ),
         (
@@ -226,4 +224,16 @@ def test_flatten_on_key(input, expected):
     ],
 )
 def test_scopes_from_query(input, expected):
+    tl_query = {}
     assert tl_scope_string(tl_query, input) == expected
+
+
+def test_resolve_ref():
+    ref = {"ref_target": {"ref_entry_1": "foo", "ref_entry_2": "bar"}}
+    input = {"outer": "dict", "$ref": "path/to/ref_target"}
+    expected = {
+        "outer": "dict",
+        "ref_target": {"ref_entry_1": "foo", "ref_entry_2": "bar"},
+    }
+    ref_func = _resolve_ref_factory(ref)
+    assert expected == ref_func(input)
