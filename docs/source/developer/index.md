@@ -84,6 +84,207 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 Documentation for FlowMachine can be found [here](../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../analyst/advanced_usage/worked_examples/mobile-data-usage/).
 
+### Exposing a new query kind
+
+The FlowMachine server is responsible for defining the queries that users can run via FlowAPI. Translation from parameters provided in calls to the `run` API endpoint to the underlying FlowMachine query objects is handled by [marshmallow](https://marshmallow.readthedocs.io) schemas defined in [flowmachine.core.server.query_schemas](../flowmachine/flowmachine/core/server/query_schemas/).
+
+In this section we assume that a FlowMachine query class `MyQuery` (derived from [`flowmachine.core.query.Query](../flowmachine/flowmachine/core/query/#class-query)) is already defined, and describe the steps required to expose this query class, so that queries of this kind can be run via the API.
+
+The information below refers to the following categories of query:
+- **aggregate**: A query whose results are aggregated over groups of subscribers, so that no individual-level information is revealed. Example: [histogram_aggregate](../flowmachine/flowmachine/core/server/query_schemas/histogram_aggregate/)
+- **spatial aggregate**: An aggregate query that returns a result per location (e.g. a count of subscribers per administrative region). Example: [spatial_aggregate](../flowmachine/flowmachine/core/server/query_schemas/spatial_aggregate/)
+- **individual-level query**: A query whose result consists of a value per subscriber. Example: [event_count](../flowmachine/flowmachine/core/server/query_schemas/event_count/)
+- **reference location**: An individual-level query that assigns a single location to each subscriber. Example: [daily_location](../flowmachine/flowmachine/core/server/query_schemas/daily_location/)
+
+#### 1. Define an "exposed query" class
+
+In a new file 'flowmachine/core/server/query_schemas/my_query.py', define a new class `MyQueryExposed`. This class is responsible for constructing the appropriate `MyQuery` object from parameter values supplied in an API call.
+
+There are two options here: if users should be able to select a random sample of the rows from this query result, the exposed query class should inherit from [`BaseExposedQueryWithSampling`](../flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling/#class-baseexposedquerywithsampling) (this is usually appropriate for _individual-level_ queries). If it does not make sense to allow random sampling of the query result (as is usually the case for _aggregate_ queries), the exposed query class should inherit from [`BaseExposedQuery`](../flowmachine/flowmachine/core/server/query_schemas/base_exposed_query/#class-baseexposedquery).
+
+=== "Without sampling"
+
+    ```python
+    from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
+
+    class MyQueryExposed(BaseExposedQuery):
+        query_kind = "daily_location" # (1)
+
+        def __init__( # (2)
+            self,
+            *,
+            start_date,
+            end_date,
+            sub_query,
+            other_param,
+        ):
+            self.start_date = start_date # (3)
+            self.end_date = end_date
+            self.sub_query = sub_query
+            self.other_param = other_param
+        
+        @property
+        def aggregation_unit(self): # (4)
+            return self.sub_query.aggregation_unit
+        
+        @property
+        def _flowmachine_query_obj(self): # (5)
+            return MyQuery(
+                start=self.start_date, # (6)
+                stop=self.end_date,
+                sub_query=self.sub_query._flowmachine_query_obj, # (7)
+                other_param=self.other_param,
+                non_exposed_param="default_value", # (8)
+            )
+    ```
+
+    1.  `query_kind` class attribute is required, and must be different from the `query_kind` of all other exposed query classes.
+    2.  The `__init__` method should take as arguments all parameters of `MyQuery` that will be exposed via the API.
+    3.  All input parameters ust be set as attributes on `self` so that the object can be serialised correctly.
+    4.  If `MyQuery` is a _spatial aggregate_ or a _reference location_, but does not have an explicit `aggregation_unit` parameter (e.g. because the aggregation unit is determined by a nested sub-query), you must define an `aggregation_unit` property or attribute so that other queries (and the `get_aggregation_unit` server action) can identify the aggregation unit associated with this query.
+    5.  Define a `_flowmachine_query_obj` property that returns the underlying `MyQuery` FlowMachine query object.
+    6.  The exposed parameters do not need to have names that match the corresponding parameters of the underlying `MyQuery` object.
+    7.  If a parameter is a nested sub-query, you will need to access its `_flowmachine_query_obj` property so that the `MyQuery` constructor receives a Flowmachine query object and not the _exposed_ query object.
+    8.  It is not necessary for all parameters of the underlying `MyQuery` object to be exposed as parameters of `MyQueryExposed`.
+
+=== "With sampling"
+
+    ```python
+    from flowmachine.core.server.query_schemas.base_query_with_sampling import BaseExposedQueryWithSampling
+
+    class MyQueryExposed(BaseExposedQueryWithSampling):
+        query_kind = "daily_location" # (1)
+
+        def __init__( # (2)
+            self,
+            *,
+            start_date,
+            end_date,
+            sub_query,
+            other_param,
+            sampling=None, # (9)
+        ):
+            self.start_date = start_date # (3)
+            self.end_date = end_date
+            self.sub_query = sub_query
+            self.other_param = other_param
+            self.sampling = sampling # (9)
+        
+        @property
+        def aggregation_unit(self): # (4)
+            return self.sub_query.aggregation_unit
+        
+        @property
+        def _unsampled_query_obj(self): # (5)
+            return MyQuery(
+                start=self.start_date, # (6)
+                stop=self.end_date,
+                sub_query=self.sub_query._flowmachine_query_obj, # (7)
+                other_param=self.other_param,
+                non_exposed_param="default_value", # (8)
+            )
+    ```
+
+    1.  `query_kind` class attribute is required, and must be different from the `query_kind` of all other exposed query classes.
+    2.  The `__init__` method should take as arguments all parameters of `MyQuery` that will be exposed via the API.
+    3.  All input parameters ust be set as attributes on `self` so that the object can be serialised correctly.
+    4.  If `MyQuery` is a _spatial aggregate_ or a _reference location_, but does not have an explicit `aggregation_unit` parameter (e.g. because the aggregation unit is determined by a nested sub-query), you must define an `aggregation_unit` property or attribute so that other queries (and the `get_aggregation_unit` server action) can identify the aggregation unit associated with this query.
+    5.  Define a `_unsampled_query_obj` property that returns the underlying `MyQuery` FlowMachine query object. **Note:** When inheriting from `BaseExposedQueryWithSampling`, this property should be named `_unsampled_query_obj` - the `_flowmachine_query_obj` property will return this query wrapped in an appropriate "random sample" query.
+    6.  The exposed parameters do not need to have names that match the corresponding parameters of the underlying `MyQuery` object.
+    7.  If a parameter is a nested sub-query, you will need to access its `_flowmachine_query_obj` property so that the `MyQuery` constructor receives a Flowmachine query object and not the _exposed_ query object.
+    8.  It is not necessary for all parameters of the underlying `MyQuery` object to be exposed as parameters of `MyQueryExposed`.
+    9.  When inheriting from `BaseExposedQueryWithSampling`, it is important to also accept the `sampling` argument here.
+
+
+#### 2. Define a "query schema" class
+
+In the same file as `MyQueryExposed`, define a new class `MyQuerySchema`. This is a [marshmallow](https://marshmallow.readthedocs.io) schema, responsible for validation and deserialisation of parameter values supplied in an API call.
+
+As before, there are two options, depending on whether or not random sampling should be enabled for this query kind. If `MyQueryExposed` inherits from `BaseExposedQueryWithSampling` then `MyQuerySchema` should inherit from [`BaseQueryWithSamplingSchema`](../flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling/#class-basequerywithsamplingschema). Otherwise, `MyQuerySchema` should inherit from [`BaseSchema`](../flowmachine/flowmachine/core/server/query_schemas/base_schema/#class-baseschema).
+
+=== "Without sampling"
+
+    ```python
+    from marshmallow import fields, validate
+    from flowmachine.core.server.query_schemas.field_mixins import StartAndEndField
+    from flowmachine.core.server.query_schemas.base_schema import BaseSchema
+    from flowmachine.core.server.query_schemas.aggregation_unit import AggregationUnitKind
+
+    class MyQuerySchema(
+        StartAndEndField, # (1)
+        BaseSchema,
+    ):
+        __model__ = MyQueryExposed # (2)
+
+        query_kind = fields.String( # (3)
+            validate=validate.OneOf([__model__.query_kind]),
+            required=True,
+        )
+        sub_query = fields.Nested(SomeOtherQuerySchema, required=True) # (4)
+        other_param = fields.Integer(
+            validate=validate.Range(0, 10), # (5)
+            required=False,
+            load_default=0, # (6)
+        )
+        # Only relevant for spatial aggregates:
+        aggregation_unit = AggregationUnitKind(dump_only=True) # (7)
+    ```
+
+    1.  The `StartAndEndField` mixin adds `start_date` and `end_date` fields. There are other mixins available for adding commonly-used fields, e.g. `HoursField` and `AggregationUnitMixin`.
+    2.  Set `MyQueryExposed` as the `__model__` class attribute so that `MyQuerySchema` will deserialise parameters to an instance of `MyQueryExposed`.
+    3.  `query_kind` field must be defined here. This field will not be passed on to `MyQueryExposed.__init__()`.
+    4.  Sub-queries can be accepted as parameters by specifying the appropriate query schema in a marshmallow `Nested` field.
+    5.  The fields specified here should provide all necessary validation of parameter values.
+    6.  If you wish to set a default parameter value to be used if no value is supplied by the user, it is better to specify this here than in `MyQueryExposed.__init__()` so that the default value will be stated in the API spec.
+    7.  If `MyQuery` is a _spatial aggregate_ but does not have an explicit `aggregation_unit` parameter (e.g. because the aggregation unit is determined by a nested sub-query), add a _dump-only_ 'aggregation_unit' field. This enables FlowAPI to identify this query kind as a spatial aggregate, without exposing a redundant 'aggregation_unit' input parameter.
+
+=== "With sampling"
+
+    ```python
+    from marshmallow import fields, validate
+    from flowmachine.core.server.query_schemas.field_mixins import StartAndEndField
+    from flowmachine.core.server.query_schemas.base_query_with_sampling import BaseQueryWithSamplingSchema
+    from flowmachine.core.server.query_schemas.aggregation_unit import AggregationUnitKind
+
+    class MyQuerySchema(
+        StartAndEndField, # (1)
+        BaseQueryWithSamplingSchema, # (8)
+    ):
+        __model__ = MyQueryExposed # (2)
+
+        query_kind = fields.String( # (3)
+            validate=validate.OneOf([__model__.query_kind]),
+            required=True,
+        )
+        sub_query = fields.Nested(SomeOtherQuerySchema, required=True) # (4)
+        other_param = fields.Integer(
+            validate=validate.Range(0, 10), # (5)
+            required=False,
+            load_default=0, # (6)
+        )
+        # Only relevant for spatial aggregates:
+        aggregation_unit = AggregationUnitKind(dump_only=True) # (7)
+    ```
+
+    1.  The `StartAndEndField` mixin adds `start_date` and `end_date` fields. There are other mixins available for adding commonly-used fields, e.g. `HoursField` and `AggregationUnitMixin`.
+    2.  Set `MyQueryExposed` as the `__model__` class attribute so that `MyQuerySchema` will deserialise parameters to an instance of `MyQueryExposed`.
+    3.  `query_kind` field must be defined here. This field will not be passed on to `MyQueryExposed.__init__()`.
+    4.  Sub-queries can be accepted as parameters by specifying the appropriate query schema in a marshmallow `Nested` field.
+    5.  The fields specified here should provide all necessary validation of parameter values.
+    6.  If you wish to set a default parameter value to be used if no value is supplied by the user, it is better to specify this here than in `MyQueryExposed.__init__()` so that the default value will be stated in the API spec.
+    7.  If `MyQuery` is a _spatial aggregate_ but does not have an explicit `aggregation_unit` parameter (e.g. because the aggregation unit is determined by a nested sub-query), add a _dump-only_ 'aggregation_unit' field. This enables FlowAPI to identify this query kind as a spatial aggregate, without exposing a redundant 'aggregation_unit' input parameter.
+    8.  `BaseQueryWithSamplingSchema` adds a `sampling` field.
+
+#### 3. Expose the query
+
+If `MyQuery` is an _aggregate_, it can be exposed as a top-level query (meaning that API users will be able to directly run and get the results of `MyQuery` queries). In this case, add `MyQuerySchema` to [`FlowmachineQuerySchema.query_schemas`](../flowmachine/flowmachine/core/server/query_schemas/flowmachine_query/#class-flowmachinequeryschema).
+
+!!! warning
+
+    If the query is an _aggregate_ and will be exposed as a top-level query, it is essential that the underlying FlowMachine query defined in the exposed query's `_flowmachine_query_object` property is _redacted_ - i.e. all rows in the query result corresponding to 15 or fewer individuals are removed from the output. This protects individuals' privacy through k-anonymity.
+
+If `MyQuery` is an _individual-level_ query, it should **not** be exposed directly as a top-level query. In this case, `MyQuerySchema` should be added as a nested sub-query parameter of the appropriate other query schemas. For example, if `MyQuery` is a _reference location_, add `MyQuerySchema` to [`ReferenceLocationSchema.query_schemas`](../flowmachine/flowmachine/core/server/query_schemas/reference_location/#class-referencelocationschema) so that it will be accepted as a parameter to query kinds such as `spatial_aggregate` and `flows`.
+
 
 <a name="flowdb">
 

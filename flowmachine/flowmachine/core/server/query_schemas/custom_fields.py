@@ -201,6 +201,11 @@ class ISODateTime(fields.DateTime):
 
 
 class Direction(fields.String):
+    """
+    A string representing a direction for CDR events (i.e. incoming/outgoing).
+    Allowed values are 'in', 'out' or 'both' (defaults to 'both' if no value is provided).
+    """
+
     def __init__(self, required=False, validate=None, load_default="both", **kwargs):
         if validate is not None:
             raise ValueError(
