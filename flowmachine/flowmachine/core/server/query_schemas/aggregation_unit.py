@@ -18,7 +18,7 @@ class AggregationUnitKind(String):
         if validate is not None:
             raise ValueError(
                 "The AggregationUnitKind field provides its own validation "
-                "and thus does not accept a the 'validate' argument."
+                "and thus does not accept a 'validate' argument."
             )
         validate = OneOf(["admin0", "admin1", "admin2", "admin3", "lon-lat"])
         super().__init__(validate=validate, **kwargs)
