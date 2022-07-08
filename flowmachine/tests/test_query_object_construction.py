@@ -15,6 +15,58 @@ from flowmachine.core.server.query_schemas.mobility_classification import (
 from flowmachine.core.server.query_schemas.coalesced_location import (
     CoalescedLocationSchema,
 )
+from flowmachine.core.server.query_schemas.active_at_reference_location_counts import (
+    ActiveAtReferenceLocationCountsSchema,
+)
+from flowmachine.core.server.query_schemas.flows import FlowsSchema
+from flowmachine.core.server.query_schemas.unique_visitor_counts import (
+    UniqueVisitorCountsSchema,
+)
+from flowmachine.core.server.query_schemas.labelled_flows import LabelledFlowsSchema
+
+
+# Currently LabelledSpatialUnit and LabelledFlows only accept coalesced_location as input,
+# so this helper function helps to keep the size of the parameter declarations manageable
+def _example_coalesced_location_spec(preferred_dates, fallback_dates, aggregation_unit):
+    preferred_weights = dict(
+        query_kind="location_visits",
+        locations=[
+            dict(
+                query_kind="daily_location",
+                date=d,
+                aggregation_unit=aggregation_unit,
+                method="last",
+                subscriber_subset=None,
+            )
+            for d in preferred_dates
+        ],
+    )
+    fallback_weights = dict(
+        query_kind="location_visits",
+        locations=[
+            dict(
+                query_kind="daily_location",
+                date=d,
+                aggregation_unit=aggregation_unit,
+                method="last",
+                subscriber_subset=None,
+            )
+            for d in fallback_dates
+        ],
+    )
+    return dict(
+        query_kind="coalesced_location",
+        preferred_location=dict(
+            query_kind="majority_location",
+            subscriber_location_weights=preferred_weights,
+        ),
+        fallback_location=dict(
+            query_kind="majority_location",
+            subscriber_location_weights=fallback_weights,
+        ),
+        subscriber_location_weights=preferred_weights,
+        weight_threshold=2,
+    )
 
 
 def test_construct_query(diff_reporter):
@@ -342,210 +394,24 @@ def test_construct_query(diff_reporter):
         },
         {
             "query_kind": "labelled_spatial_aggregate",
-            "locations": {
-                "query_kind": "coalesced_location",
-                "preferred_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "fallback_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "subscriber_location_weights": {
-                    "query_kind": "location_visits",
-                    "locations": [
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-01",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-02",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                    ],
-                },
-                "weight_threshold": 2,
-            },
+            "locations": _example_coalesced_location_spec(
+                ["2016-01-03", "2016-01-04"],
+                ["2016-01-01", "2016-01-02"],
+                "admin3",
+            ),
             "labels": {
                 "query_kind": "mobility_classification",
                 "locations": [
-                    {
-                        "query_kind": "coalesced_location",
-                        "preferred_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "fallback_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-05",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-06",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                        "weight_threshold": 2,
-                    },
-                    {
-                        "query_kind": "coalesced_location",
-                        "preferred_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "fallback_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-01",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-02",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                        "weight_threshold": 2,
-                    },
+                    _example_coalesced_location_spec(
+                        ["2016-01-03", "2016-01-04"],
+                        ["2016-01-01", "2016-01-02"],
+                        "admin3",
+                    ),
+                    _example_coalesced_location_spec(
+                        ["2016-01-05", "2016-01-06"],
+                        ["2016-01-03", "2016-01-04"],
+                        "admin3",
+                    ),
                 ],
                 "stay_length_threshold": 2,
             },
@@ -553,277 +419,29 @@ def test_construct_query(diff_reporter):
         # TODO: Use a more compact 'labelled_flows' example once such a thing is exposed
         {
             "query_kind": "labelled_flows",
-            "from_location": {
-                "query_kind": "coalesced_location",
-                "preferred_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "fallback_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "subscriber_location_weights": {
-                    "query_kind": "location_visits",
-                    "locations": [
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-01",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-02",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                    ],
-                },
-                "weight_threshold": 2,
-            },
-            "to_location": {
-                "query_kind": "coalesced_location",
-                "preferred_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-03",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-04",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "fallback_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-03",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-04",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "subscriber_location_weights": {
-                    "query_kind": "location_visits",
-                    "locations": [
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-03",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-04",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                    ],
-                },
-                "weight_threshold": 2,
-            },
+            "from_location": _example_coalesced_location_spec(
+                ["2016-01-03", "2016-01-04"],
+                ["2016-01-01", "2016-01-02"],
+                "admin3",
+            ),
+            "to_location": _example_coalesced_location_spec(
+                ["2016-01-05", "2016-01-06"],
+                ["2016-01-03", "2016-01-04"],
+                "admin3",
+            ),
             "labels": {
                 "query_kind": "mobility_classification",
                 "locations": [
-                    {
-                        "query_kind": "coalesced_location",
-                        "preferred_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "fallback_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-05",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-06",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                        "weight_threshold": 2,
-                    },
-                    {
-                        "query_kind": "coalesced_location",
-                        "preferred_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "fallback_location": {
-                            "query_kind": "majority_location",
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                        },
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-01",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-02",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                        "weight_threshold": 2,
-                    },
+                    _example_coalesced_location_spec(
+                        ["2016-01-03", "2016-01-04"],
+                        ["2016-01-01", "2016-01-02"],
+                        "admin3",
+                    ),
+                    _example_coalesced_location_spec(
+                        ["2016-01-05", "2016-01-06"],
+                        ["2016-01-03", "2016-01-04"],
+                        "admin3",
+                    ),
                 ],
                 "stay_length_threshold": 2,
             },
@@ -1297,498 +915,64 @@ def test_construct_query(diff_reporter):
             "admin2",
         ),
         (
-            {
-                "query_kind": "labelled_spatial_aggregate",
-                "locations": {
-                    "query_kind": "coalesced_location",
-                    "preferred_location": {
-                        "query_kind": "majority_location",
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-01",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-02",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                    },
-                    "fallback_location": {
-                        "query_kind": "majority_location",
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-01",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-02",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                    },
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                    "weight_threshold": 2,
-                },
-                "labels": {
-                    "query_kind": "mobility_classification",
-                    "locations": [
-                        {
-                            "query_kind": "coalesced_location",
-                            "preferred_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "fallback_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-05",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-06",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                            "weight_threshold": 2,
-                        },
-                        {
-                            "query_kind": "coalesced_location",
-                            "preferred_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "fallback_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                            "weight_threshold": 2,
-                        },
+            dict(
+                query_kind="labelled_spatial_aggregate",
+                locations=_example_coalesced_location_spec(
+                    ["2016-01-03", "2016-01-04"],
+                    ["2016-01-01", "2016-01-02"],
+                    "admin3",
+                ),
+                labels=dict(
+                    query_kind="mobility_classification",
+                    locations=[
+                        _example_coalesced_location_spec(
+                            ["2016-01-03", "2016-01-04"],
+                            ["2016-01-01", "2016-01-02"],
+                            "admin3",
+                        ),
+                        _example_coalesced_location_spec(
+                            ["2016-01-05", "2016-01-06"],
+                            ["2016-01-03", "2016-01-04"],
+                            "admin3",
+                        ),
                     ],
-                    "stay_length_threshold": 2,
-                },
-            },
+                    stay_length_threshold=2,
+                ),
+            ),
             "admin3",
         ),
         (
             # TODO: Use a more compact 'labelled_flows' example once such a thing is exposed
-            {
-                "query_kind": "labelled_flows",
-                "from_location": {
-                    "query_kind": "coalesced_location",
-                    "preferred_location": {
-                        "query_kind": "majority_location",
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-01",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-02",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                    },
-                    "fallback_location": {
-                        "query_kind": "majority_location",
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-01",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-02",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                    },
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                    "weight_threshold": 2,
-                },
-                "to_location": {
-                    "query_kind": "coalesced_location",
-                    "preferred_location": {
-                        "query_kind": "majority_location",
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-03",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-04",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                    },
-                    "fallback_location": {
-                        "query_kind": "majority_location",
-                        "subscriber_location_weights": {
-                            "query_kind": "location_visits",
-                            "locations": [
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-03",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                                {
-                                    "query_kind": "daily_location",
-                                    "date": "2016-01-04",
-                                    "aggregation_unit": "admin3",
-                                    "method": "last",
-                                    "subscriber_subset": None,
-                                },
-                            ],
-                        },
-                    },
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-03",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-04",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                    "weight_threshold": 2,
-                },
-                "labels": {
-                    "query_kind": "mobility_classification",
-                    "locations": [
-                        {
-                            "query_kind": "coalesced_location",
-                            "preferred_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "fallback_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-05",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-06",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                            "weight_threshold": 2,
-                        },
-                        {
-                            "query_kind": "coalesced_location",
-                            "preferred_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "fallback_location": {
-                                "query_kind": "majority_location",
-                                "subscriber_location_weights": {
-                                    "query_kind": "location_visits",
-                                    "locations": [
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-01",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                        {
-                                            "query_kind": "daily_location",
-                                            "date": "2016-01-02",
-                                            "aggregation_unit": "admin3",
-                                            "method": "last",
-                                            "subscriber_subset": None,
-                                        },
-                                    ],
-                                },
-                            },
-                            "subscriber_location_weights": {
-                                "query_kind": "location_visits",
-                                "locations": [
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-01",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                    {
-                                        "query_kind": "daily_location",
-                                        "date": "2016-01-02",
-                                        "aggregation_unit": "admin3",
-                                        "method": "last",
-                                        "subscriber_subset": None,
-                                    },
-                                ],
-                            },
-                            "weight_threshold": 2,
-                        },
+            dict(
+                query_kind="labelled_flows",
+                from_location=_example_coalesced_location_spec(
+                    ["2016-01-03", "2016-01-04"],
+                    ["2016-01-01", "2016-01-02"],
+                    "admin3",
+                ),
+                to_location=_example_coalesced_location_spec(
+                    ["2016-01-05", "2016-01-06"],
+                    ["2016-01-03", "2016-01-04"],
+                    "admin3",
+                ),
+                labels=dict(
+                    query_kind="mobility_classification",
+                    locations=[
+                        _example_coalesced_location_spec(
+                            ["2016-01-03", "2016-01-04"],
+                            ["2016-01-01", "2016-01-02"],
+                            "admin3",
+                        ),
+                        _example_coalesced_location_spec(
+                            ["2016-01-05", "2016-01-06"],
+                            ["2016-01-03", "2016-01-04"],
+                            "admin3",
+                        ),
                     ],
-                    "stay_length_threshold": 2,
-                },
-                "join_type": "full outer",
-            },
+                    stay_length_threshold=2,
+                ),
+                join_type="full outer",
+            ),
             "admin3",
         ),
     ],
@@ -2076,140 +1260,16 @@ def test_mismatched_aggregation_units_mobility_classification():
     query_spec = {
         "query_kind": "mobility_classification",
         "locations": [
-            {
-                "query_kind": "coalesced_location",
-                "preferred_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "fallback_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin3",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "subscriber_location_weights": {
-                    "query_kind": "location_visits",
-                    "locations": [
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-05",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-06",
-                            "aggregation_unit": "admin3",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                    ],
-                },
-                "weight_threshold": 2,
-            },
-            {
-                "query_kind": "coalesced_location",
-                "preferred_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin2",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin2",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "fallback_location": {
-                    "query_kind": "majority_location",
-                    "subscriber_location_weights": {
-                        "query_kind": "location_visits",
-                        "locations": [
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-01",
-                                "aggregation_unit": "admin2",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                            {
-                                "query_kind": "daily_location",
-                                "date": "2016-01-02",
-                                "aggregation_unit": "admin2",
-                                "method": "last",
-                                "subscriber_subset": None,
-                            },
-                        ],
-                    },
-                },
-                "subscriber_location_weights": {
-                    "query_kind": "location_visits",
-                    "locations": [
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-01",
-                            "aggregation_unit": "admin2",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                        {
-                            "query_kind": "daily_location",
-                            "date": "2016-01-02",
-                            "aggregation_unit": "admin2",
-                            "method": "last",
-                            "subscriber_subset": None,
-                        },
-                    ],
-                },
-                "weight_threshold": 2,
-            },
+            _example_coalesced_location_spec(
+                ["2016-01-03", "2016-01-04"],
+                ["2016-01-01", "2016-01-02"],
+                "admin3",
+            ),
+            _example_coalesced_location_spec(
+                ["2016-01-05", "2016-01-06"],
+                ["2016-01-03", "2016-01-04"],
+                "admin2",
+            ),
         ],
         "stay_length_threshold": 2,
     }
@@ -2217,3 +1277,153 @@ def test_mismatched_aggregation_units_mobility_classification():
         MobilityClassificationSchema().load(query_spec)
     # Check that error was raised for the expected field
     assert exc.value.messages.keys() == {"locations"}
+
+
+def test_mismatched_aggregation_units_active_at_reference_location_counts():
+    """
+    Test that ActiveAtReferenceLocationCountsSchema validates aggregation unit consistency
+    """
+    query_spec = dict(
+        query_kind="active_at_reference_location_counts",
+        unique_locations=dict(
+            query_kind="unique_locations",
+            start_date="2016-01-01",
+            end_date="2016-01-02",
+            aggregation_unit="admin3",
+        ),
+        reference_locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin2",
+        ),
+    )
+    with pytest.raises(ValidationError, match="same aggregation unit"):
+        ActiveAtReferenceLocationCountsSchema().load(query_spec)
+
+
+def test_mismatched_aggregation_units_flows():
+    """
+    Test that FlowsSchema validates aggregation unit consistency
+    """
+    query_spec = dict(
+        query_kind="flows",
+        from_location=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+        to_location=dict(
+            query_kind="daily_location",
+            date="2016-01-02",
+            method="last",
+            aggregation_unit="admin2",
+        ),
+    )
+    with pytest.raises(ValidationError, match="same aggregation unit"):
+        FlowsSchema().load(query_spec)
+
+
+def test_mismatched_aggregation_units_labelled_flows():
+    """
+    Test that LabelledFlowsSchema validates aggregation unit consistency
+    """
+    query_spec = dict(
+        query_kind="labelled_flows",
+        from_location=_example_coalesced_location_spec(
+            ["2016-01-03", "2016-01-04"],
+            ["2016-01-01", "2016-01-02"],
+            "admin3",
+        ),
+        to_location=_example_coalesced_location_spec(
+            ["2016-01-05", "2016-01-06"],
+            ["2016-01-03", "2016-01-04"],
+            "admin2",
+        ),
+        labels=dict(
+            query_kind="mobility_classification",
+            locations=[
+                _example_coalesced_location_spec(
+                    ["2016-01-03", "2016-01-04"],
+                    ["2016-01-01", "2016-01-02"],
+                    "admin3",
+                ),
+                _example_coalesced_location_spec(
+                    ["2016-01-05", "2016-01-06"],
+                    ["2016-01-03", "2016-01-04"],
+                    "admin3",
+                ),
+            ],
+            stay_length_threshold=2,
+        ),
+        join_type="full outer",
+    )
+    with pytest.raises(ValidationError, match="same aggregation unit"):
+        LabelledFlowsSchema().load(query_spec)
+
+
+def test_mismatched_aggregation_units_unique_visitor_counts():
+    """
+    Test that UniqueVisitorCountsSchema validates aggregation unit consistency
+    """
+    query_spec = dict(
+        query_kind="unique_visitor_counts",
+        active_at_reference_location_counts=dict(
+            query_kind="active_at_reference_location_counts",
+            unique_locations=dict(
+                query_kind="unique_locations",
+                start_date="2016-01-01",
+                end_date="2016-01-02",
+                aggregation_unit="admin3",
+            ),
+            reference_locations=dict(
+                query_kind="daily_location",
+                date="2016-01-01",
+                method="last",
+                aggregation_unit="admin3",
+            ),
+        ),
+        unique_subscriber_counts=dict(
+            query_kind="unique_subscriber_counts",
+            start_date="2016-01-01",
+            end_date="2016-01-02",
+            aggregation_unit="admin2",
+        ),
+    )
+    with pytest.raises(ValidationError, match="same aggregation unit"):
+        UniqueVisitorCountsSchema().load(query_spec)
+
+
+def test_serialise_query():
+    """
+    Test that an exposed query object can be re-serialised
+    """
+    query_spec = dict(
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
+    expected_query_spec = dict(
+        query_kind="spatial_aggregate",
+        aggregation_unit="admin3",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-01-01T00:00:00",
+            method="last",
+            aggregation_unit="admin3",
+            event_types=None,
+            hours=None,
+            subscriber_subset=None,
+            sampling=None,
+        ),
+    )
+
+    serialised_query_spec = FlowmachineQuerySchema().dump(
+        FlowmachineQuerySchema().load(query_spec)
+    )
+    assert serialised_query_spec == expected_query_spec

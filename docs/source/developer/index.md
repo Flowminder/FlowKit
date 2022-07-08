@@ -231,7 +231,7 @@ As before, there are two options, depending on whether or not random sampling sh
         aggregation_unit = AggregationUnitKind(dump_only=True) # (7)
     ```
 
-    1.  The `StartAndEndField` mixin adds `start_date` and `end_date` fields. There are other mixins available for adding commonly-used fields, e.g. `HoursField` and `AggregationUnitMixin`.
+    1.  The `StartAndEndField` mixin adds `start_date` and `end_date` fields. There are other mixins available for adding commonly-used fields, e.g. [`HoursField`](../flowmachine/flowmachine/core/server/query_schemas/field_mixins/#class-hoursfield) and [`AggregationUnitMixin`](../flowmachine/flowmachine/core/server/query_schemas/aggregation_unit/#class-aggregationunitmixin).
     2.  Set `MyQueryExposed` as the `__model__` class attribute so that `MyQuerySchema` will deserialise parameters to an instance of `MyQueryExposed`.
     3.  `query_kind` field must be defined here. This field will not be passed on to `MyQueryExposed.__init__()`.
     4.  Sub-queries can be accepted as parameters by specifying the appropriate query schema in a marshmallow `Nested` field.
@@ -267,7 +267,7 @@ As before, there are two options, depending on whether or not random sampling sh
         aggregation_unit = AggregationUnitKind(dump_only=True) # (7)
     ```
 
-    1.  The `StartAndEndField` mixin adds `start_date` and `end_date` fields. There are other mixins available for adding commonly-used fields, e.g. `HoursField` and `AggregationUnitMixin`.
+    1.  The `StartAndEndField` mixin adds `start_date` and `end_date` fields. There are other mixins available for adding commonly-used fields, e.g. [`HoursField`](../flowmachine/flowmachine/core/server/query_schemas/field_mixins/#class-hoursfield) and [`AggregationUnitMixin`](../flowmachine/flowmachine/core/server/query_schemas/aggregation_unit/#class-aggregationunitmixin).
     2.  Set `MyQueryExposed` as the `__model__` class attribute so that `MyQuerySchema` will deserialise parameters to an instance of `MyQueryExposed`.
     3.  `query_kind` field must be defined here. This field will not be passed on to `MyQueryExposed.__init__()`.
     4.  Sub-queries can be accepted as parameters by specifying the appropriate query schema in a marshmallow `Nested` field.
