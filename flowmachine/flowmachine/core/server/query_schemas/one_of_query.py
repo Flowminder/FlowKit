@@ -6,6 +6,12 @@ from marshmallow_oneofschema import OneOfSchema
 
 
 class OneOfQuerySchema(OneOfSchema):
+    """
+    Schema for deserialising to one of a choice of query kinds.
+
+    The `query_schemas` attribute is an iterable of allowed query schemas.
+    """
+
     type_field = "query_kind"
     type_field_remove = False
     query_schemas = ()

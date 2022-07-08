@@ -45,6 +45,10 @@ from .one_of_query import OneOfQuerySchema
 
 
 class FlowmachineQuerySchema(OneOfQuerySchema):
+    """
+    Schema for top-level queries exposed through FlowAPI
+    """
+
     query_schemas = (
         DummyQuerySchema,
         FlowsSchema,
