@@ -55,11 +55,9 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
             contact=dict(email="flowkit@flowminder.org"),
         ),
     )
-    scopes = schema_to_scopes(spec.to_dict())
     spec.components.schemas.update(flowmachine_query_schemas)
-    r = RefResolver(spec_dict := spec.to_dict(), base_uri="")
-    r.resolve_references()
-    scopes = schema_to_scopes(spec_dict["components"]["schemas"])
+    scopes = schema_to_scopes(spec.to_dict())
+    breakpoint()
     scopes += ["run", "get_available_dates", "get_result"]
     spec.components.security_scheme(
         "token",
