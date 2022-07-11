@@ -70,6 +70,48 @@ def flatten_on_key(in_iter, key, _in_place=False):
     return clean_out
 
 
+def grab_on_key_list(in_iter, keys):
+    """
+    Looks through the iterator and yields every value at the end of the chain of keys
+    :param in_iter:
+    :param key:
+    :return:
+    """
+
+    return list(_grab_on_key_list_inner(in_iter, keys))
+
+
+@functools.singledispatch
+def _grab_on_key_list_inner(in_iter, search_keys):
+    raise TypeError(in_iter, search_keys)
+
+
+@_grab_on_key_list_inner.register(dict)
+def _(in_iter, search_keys):
+    for key, value in in_iter.items():
+        if key == search_keys[0]:
+            print("First key found, looking for the rest")
+            out = in_iter
+            try:
+                for search_key in search_keys:
+                    out = out[search_key]
+                print(f"Found {out}")
+                yield out
+            except KeyError:
+                print(f"Lost string on {search_key}")
+                pass
+        if type(value) in [list, dict]:
+            yield from _grab_on_key_list_inner(value, search_keys)
+        else:
+            yield ""
+
+
+@_grab_on_key_list_inner.register(list)
+def _(in_iter, search_keys):
+    for value in in_iter:
+        yield from _grab_on_key_list_inner(value, search_keys)
+
+
 def schema_to_scopes(schema: dict) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
@@ -123,10 +165,12 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     breakpoint()
     unique_scopes = []
     for tl_query in resolved_queries["oneOf"]:
-        query_list = flatten_on_key(
+        breakpoint()
+        query_list = grab_on_key_list(
             tl_query,
-            "properties",
+            ["properties", "query_kind", "enum", 0],
         )
+        breakpoint()
         if query_list == []:
             return []
         scopes_generator = (tl_scope_string(tl_query, query) for query in query_list)
@@ -134,23 +178,14 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     return sorted(unique_scopes)
 
 
-def tl_scope_string(tl_query, query) -> set:
+def tl_scope_string(tl_query, query_string) -> set:
     """
     Given a top level (aggregate) query and a sub_query, return the scopes triplet for that query.
     This is composed of the top_level query, allowable admin level
     :param tl_query:
     """
-    try:
-        query_kind = query["query_kind"]["enum"][0]
-    except KeyError:
-        return set()
-    out = {query_kind}
-    try:
-        tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
-        agg_units = tl_query["properties"]["aggregation_unit"]["enum"]
-        out = out | {
-            f"{tl_query_name}:{agg_unit}:{query_kind}" for agg_unit in agg_units
-        }
-    except KeyError:
-        pass
+    out = set()
+    tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
+    agg_units = tl_query["properties"]["aggregation_unit"]["enum"]
+    out = out | {f"{agg_unit}:{tl_query_name}:{query_string}" for agg_unit in agg_units}
     return out

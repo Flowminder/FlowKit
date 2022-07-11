@@ -6,7 +6,7 @@ from flowapi.permissions import (
     flatten_on_key,
     tl_scope_string,
     schema_to_scopes,
-    _resolve_ref_factory,
+    grab_on_key_list,
 )
 
 import pytest
@@ -228,12 +228,19 @@ def test_scopes_from_query(input, expected):
     assert tl_scope_string(tl_query, input) == expected
 
 
-def test_resolve_ref():
-    ref = {"ref_target": {"ref_entry_1": "foo", "ref_entry_2": "bar"}}
-    input = {"outer": "dict", "$ref": "path/to/ref_target"}
-    expected = {
-        "outer": "dict",
-        "ref_target": {"ref_entry_1": "foo", "ref_entry_2": "bar"},
+def test_grab_on_key_list():
+
+    input = {"1": [{}, {}, {"3": "success"}]}
+    keys = ["1", 2, "3"]
+    assert grab_on_key_list(input, keys) == ["success"]
+
+    input = {"outer": {"not_inner": "wrong", "inner": "right"}}
+    keys = ["outer", "inner"]
+    assert grab_on_key_list(input, keys) == ["right"]
+
+    input = {
+        "first": {"1": {"2": "first_inner"}},
+        "second": {"1": {"2": "second_inner"}},
     }
-    ref_func = _resolve_ref_factory(ref)
-    assert expected == ref_func(input)
+    keys = ["1", "2"]
+    assert grab_on_key_list(input, keys) == ["first_inner", "second_inner"]
