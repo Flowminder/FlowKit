@@ -5,6 +5,7 @@
 from apispec import APISpec, yaml_utils
 from quart import Blueprint, request, render_template, current_app
 from zmq.asyncio import Socket
+from prance.util.resolver import RefResolver
 from flowapi import __version__
 from flowapi.permissions import schema_to_scopes
 
@@ -54,11 +55,13 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
             contact=dict(email="flowkit@flowminder.org"),
         ),
     )
-    spec.components.schemas.update(flowmachine_query_schemas)
     import pdb
 
     pdb.set_trace()
-    scopes = schema_to_scopes(spec.to_dict()["components"])  # Don't like this here
+    spec.components.schemas.update(flowmachine_query_schemas)
+    r = RefResolver(spec_dict := spec.to_dict(), base_uri="")
+    r.resolve_references()
+    scopes = schema_to_scopes(spec_dict["components"]["schemas"])
     scopes += ["run", "get_available_dates", "get_result"]
     spec.components.security_scheme(
         "token",
