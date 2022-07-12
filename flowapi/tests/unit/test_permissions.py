@@ -241,6 +241,9 @@ def test_grab_on_key_list():
     input = {
         "first": {"1": {"2": "first_inner"}},
         "second": {"1": {"2": "second_inner"}},
+        "third": {"1": {"3": "not_needed"}},
     }
     keys = ["1", "2"]
     assert grab_on_key_list(input, keys) == ["first_inner", "second_inner"]
+
+    input = {}
