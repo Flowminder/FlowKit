@@ -78,8 +78,14 @@ def grab_on_key_list(in_iter, keys):
     :param key:
     :return:
     """
-    out_list= []
-    list(_grab_on_key_list_inner(in_iter, keys, out_list))
+    out_list = []
+    iter = _grab_on_key_list_inner(in_iter, keys, out_list)
+    count = 0
+    try:
+        next(iter)
+        count += 1
+    except StopIteration:
+        print(f"finishing after {count} iterations")
     return out_list
 
 
@@ -91,14 +97,17 @@ def _grab_on_key_list_inner(in_iter, search_keys, results):
 
 @_grab_on_key_list_inner.register(dict)
 def _(in_iter, search_keys, results):
-    breakpoint()
+    # breakpoint()
     for key, value in in_iter.items():
+        print("Iterating on:")
+        print(type(value))
         if key == search_keys[0]:
             out = _seach_for_nested_keys(in_iter, search_keys)
             if out:
                 results.append(out)
-        elif type(value) in [list, dict]:
-            yield from _grab_on_key_list_inner(value, search_keys)
+        if type(value) in [list, dict]:
+            print("Got to here (dict)")
+            yield from _grab_on_key_list_inner(value, search_keys, results)
 
 
 def _seach_for_nested_keys(in_iter, search_keys):
@@ -115,14 +124,17 @@ def _seach_for_nested_keys(in_iter, search_keys):
 
 @_grab_on_key_list_inner.register(list)
 def _(in_iter, search_keys, results):
-    breakpoint()
+    # breakpoint()
     for value in in_iter:
+        print("Iterating on:")
+        print(type(value))
         if value == search_keys[0]:
             out = _seach_for_nested_keys(value, search_keys)
             if out:
                 results.append(out)
         if type(value) in [list, dict]:
-            yield from _grab_on_key_list_inner(value, search_keys)
+            print("Got to here (list)")
+            yield from _grab_on_key_list_inner(value, search_keys, results)
 
 
 def schema_to_scopes(schema: dict) -> Iterable[str]:
@@ -176,8 +188,6 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     ]["schemas"]["FlowmachineQuerySchema"]
     unique_scopes = []
     for tl_query in resolved_queries["oneOf"]:
-        breakpoint()
-        tl_query = resolved_queries["oneOf"][18]
         tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
         print(f"Looking for {tl_query_name}")
         query_list = grab_on_key_list(
