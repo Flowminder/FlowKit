@@ -78,38 +78,49 @@ def grab_on_key_list(in_iter, keys):
     :param key:
     :return:
     """
-
-    return list(_grab_on_key_list_inner(in_iter, keys))
+    out_list= []
+    list(_grab_on_key_list_inner(in_iter, keys, out_list))
+    return out_list
 
 
 @functools.singledispatch
-def _grab_on_key_list_inner(in_iter, search_keys):
+def _grab_on_key_list_inner(in_iter, search_keys, results):
     # If passed anything that is not a list or dict, pass
     pass
 
 
 @_grab_on_key_list_inner.register(dict)
-def _(in_iter, search_keys):
+def _(in_iter, search_keys, results):
+    breakpoint()
     for key, value in in_iter.items():
         if key == search_keys[0]:
-            print("First key found, looking for the rest")
-            out = in_iter
-            try:
-                for search_key in search_keys:
-                    out = out[search_key]
-                print(f"Found {out}")
-                yield out
-            except KeyError:
-                print(f"Lost string on {search_key}")
-                pass
+            out = _seach_for_nested_keys(in_iter, search_keys)
+            if out:
+                results.append(out)
         elif type(value) in [list, dict]:
-            print(f"Trying this with {type(value)}")
             yield from _grab_on_key_list_inner(value, search_keys)
 
 
+def _seach_for_nested_keys(in_iter, search_keys):
+    out = in_iter
+    try:
+        for search_key in search_keys:
+            out = out[search_key]
+        print(f"Found {out}")
+        return out
+    except KeyError:
+        print(f"Lost string on {search_key}")
+        return None
+
+
 @_grab_on_key_list_inner.register(list)
-def _(in_iter, search_keys):
+def _(in_iter, search_keys, results):
+    breakpoint()
     for value in in_iter:
+        if value == search_keys[0]:
+            out = _seach_for_nested_keys(value, search_keys)
+            if out:
+                results.append(out)
         if type(value) in [list, dict]:
             yield from _grab_on_key_list_inner(value, search_keys)
 
@@ -165,6 +176,8 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     ]["schemas"]["FlowmachineQuerySchema"]
     unique_scopes = []
     for tl_query in resolved_queries["oneOf"]:
+        breakpoint()
+        tl_query = resolved_queries["oneOf"][18]
         tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
         print(f"Looking for {tl_query_name}")
         query_list = grab_on_key_list(
