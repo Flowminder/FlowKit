@@ -5,7 +5,6 @@
 from apispec import APISpec, yaml_utils
 from quart import Blueprint, request, render_template, current_app
 from zmq.asyncio import Socket
-from prance.util.resolver import RefResolver
 from flowapi import __version__
 from flowapi.permissions import schema_to_scopes
 
@@ -57,8 +56,8 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     )
     spec.components.schemas.update(flowmachine_query_schemas)
     scopes = schema_to_scopes(spec.to_dict())
-    breakpoint()
     scopes += ["run", "get_available_dates", "get_result"]
+    breakpoint()
     spec.components.security_scheme(
         "token",
         {

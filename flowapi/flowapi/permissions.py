@@ -9,6 +9,7 @@ from itertools import product
 from typing import Iterable, List, Optional, Tuple, Union, Set, Any
 from prance import ResolvingParser
 from rapidjson import dumps
+import logging
 
 
 def is_flat(in_iter):
@@ -83,7 +84,8 @@ def grab_on_key_list(in_iter, keys):
 
 @functools.singledispatch
 def _grab_on_key_list_inner(in_iter, search_keys):
-    raise TypeError(in_iter, search_keys)
+    # If passed anything that is not a list or dict, pass
+    pass
 
 
 @_grab_on_key_list_inner.register(dict)
@@ -100,16 +102,16 @@ def _(in_iter, search_keys):
             except KeyError:
                 print(f"Lost string on {search_key}")
                 pass
-        if type(value) in [list, dict]:
+        elif type(value) in [list, dict]:
+            print(f"Trying this with {type(value)}")
             yield from _grab_on_key_list_inner(value, search_keys)
-        else:
-            yield ""
 
 
 @_grab_on_key_list_inner.register(list)
 def _(in_iter, search_keys):
     for value in in_iter:
-        yield from _grab_on_key_list_inner(value, search_keys)
+        if type(value) in [list, dict]:
+            yield from _grab_on_key_list_inner(value, search_keys)
 
 
 def schema_to_scopes(schema: dict) -> Iterable[str]:
@@ -158,19 +160,17 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     # Check event types
     # Check query tree
     # Check dates
-    breakpoint()
     resolved_queries = ResolvingParser(spec_string=dumps(schema)).specification[
         "components"
     ]["schemas"]["FlowmachineQuerySchema"]
-    breakpoint()
     unique_scopes = []
     for tl_query in resolved_queries["oneOf"]:
-        breakpoint()
+        tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
+        print(f"Looking for {tl_query_name}")
         query_list = grab_on_key_list(
             tl_query,
             ["properties", "query_kind", "enum", 0],
         )
-        breakpoint()
         if query_list == []:
             return []
         scopes_generator = (tl_scope_string(tl_query, query) for query in query_list)
@@ -186,6 +186,13 @@ def tl_scope_string(tl_query, query_string) -> set:
     """
     out = set()
     tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
-    agg_units = tl_query["properties"]["aggregation_unit"]["enum"]
+    try:
+        agg_units = tl_query["properties"]["aggregation_unit"]["enum"]
+    except KeyError:
+        logging.warning(
+            f"No aggregation unit options for {tl_query_name}; "
+            f"this should be fixed once PR 5278 is merged"
+        )
+        agg_units = ["undefined"]
     out = out | {f"{agg_unit}:{tl_query_name}:{query_string}" for agg_unit in agg_units}
     return out
