@@ -26,7 +26,7 @@ function zip() {
   });
 }
 
-export function scopesGraph(array) {
+export function scopesGraphOld(array) {
   const nested = {};
   Object.keys(array).forEach((scope) => {
     let obj = nested;
@@ -52,6 +52,29 @@ export function scopesGraph(array) {
     });
   });
   return nested;
+}
+
+export function scopesGraph(scopes_obj) {
+  /* Takes an array of scopes, most of which are triplets in the form admin_level:top_level_query:dependent_query
+  and converts them into a graph keyed on admin_level -> top_level_query -> dependent_query */
+  const scopes_array = Object.keys(scopes_obj)
+  const triplet_scopes = scopes_array.filter(row => row.includes(":"))  // It's this or a regex
+  const split_scopes = triplet_scopes.map(row => row.split(":"))
+  const scopes_tree = {}
+  for (const row of split_scopes){
+    const [ admin_level, tl_query, inner_query ] = row
+
+    if (!(admin_level in Object.keys(scopes_tree))){
+      scopes_tree[admin_level] = {}
+    }
+    if (!(tl_query in Object.keys(scopes_tree[admin_level]))){
+      scopes_tree[admin_level][tl_query] = {}
+    }
+    scopes_tree[admin_level][tl_query][inner_query] = true
+
+  }
+  console.log(scopes_tree)
+  return scopes_tree
 }
 
 export function jsonify(tree, labels, enabled, enabledKeys) {

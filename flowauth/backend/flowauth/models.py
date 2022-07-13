@@ -447,14 +447,14 @@ class Scope(db.Model):
     # TODO: Make sure scopes are unique within server
 
 
-class TokenGenerator(db.Model):
-    """
-    A set of parameters for creating a token.
-    """
+# class TokenGenerator(db.Model):
+#     """
+#     A set of parameters for creating a token.
+#     """
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user = db.Column(db.ForeignKey("user.id"))
-    role
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     user = db.Column(db.ForeignKey("user.id"))
+#     role
 
 
 def init_db(force: bool = False) -> None:
