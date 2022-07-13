@@ -78,14 +78,15 @@ def grab_on_key_list(in_iter, keys):
     :param key:
     :return:
     """
+    # I'm not a fan of the mutate-passed-in-list approach; it feels like
+    # it's going against the philosophy of functional programmign, as it
+    # exploits a side-effect. But it works, so....
     out_list = []
     iter = _grab_on_key_list_inner(in_iter, keys, out_list)
-    count = 0
     try:
         next(iter)
-        count += 1
     except StopIteration:
-        print(f"finishing after {count} iterations")
+        pass
     return out_list
 
 
@@ -97,16 +98,12 @@ def _grab_on_key_list_inner(in_iter, search_keys, results):
 
 @_grab_on_key_list_inner.register(dict)
 def _(in_iter, search_keys, results):
-    # breakpoint()
     for key, value in in_iter.items():
-        print("Iterating on:")
-        print(type(value))
         if key == search_keys[0]:
             out = _seach_for_nested_keys(in_iter, search_keys)
             if out:
                 results.append(out)
         if type(value) in [list, dict]:
-            print("Got to here (dict)")
             yield from _grab_on_key_list_inner(value, search_keys, results)
 
 
@@ -115,25 +112,19 @@ def _seach_for_nested_keys(in_iter, search_keys):
     try:
         for search_key in search_keys:
             out = out[search_key]
-        print(f"Found {out}")
         return out
     except KeyError:
-        print(f"Lost string on {search_key}")
         return None
 
 
 @_grab_on_key_list_inner.register(list)
 def _(in_iter, search_keys, results):
-    # breakpoint()
     for value in in_iter:
-        print("Iterating on:")
-        print(type(value))
         if value == search_keys[0]:
             out = _seach_for_nested_keys(value, search_keys)
             if out:
                 results.append(out)
         if type(value) in [list, dict]:
-            print("Got to here (list)")
             yield from _grab_on_key_list_inner(value, search_keys, results)
 
 
