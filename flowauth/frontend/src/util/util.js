@@ -62,12 +62,12 @@ export function scopesGraph(scopes_obj) {
   const split_scopes = triplet_scopes.map(row => row.split(":"))
   const scopes_tree = {}
   for (const row of split_scopes){
-    const [ admin_level, tl_query, inner_query ] = row
+    var [ admin_level, tl_query, inner_query ] = row
 
-    if (!(admin_level in Object.keys(scopes_tree))){
+    if (!(Object.keys(scopes_tree).includes(admin_level))){
       scopes_tree[admin_level] = {}
     }
-    if (!(tl_query in Object.keys(scopes_tree[admin_level]))){
+    if (!(Object.keys(scopes_tree[admin_level]).includes(tl_query))){
       scopes_tree[admin_level][tl_query] = {}
     }
     scopes_tree[admin_level][tl_query][inner_query] = true
