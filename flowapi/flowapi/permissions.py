@@ -207,6 +207,6 @@ def tl_scope_string(tl_query, query_string) -> set:
             f"No aggregation unit options for {tl_query_name}; "
             f"this should be fixed once PR 5278 is merged"
         )
-        agg_units = ["undefined"]
+        agg_units = ["unset"]
     out = out | {f"{agg_unit}:{tl_query_name}:{query_string}" for agg_unit in agg_units}
     return out
