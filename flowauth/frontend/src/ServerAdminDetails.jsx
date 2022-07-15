@@ -16,6 +16,7 @@ import {
   editServer,
   editServerRoles,
   getRoles,
+  getScopes,
   getServer,
   getTimeLimits,
 } from "./util/api";
@@ -167,17 +168,22 @@ class ServerAdminDetails extends React.Component {
     const { item_id } = this.props;
     if (item_id !== -1) {
       try {
-        const capAwait = getCapabilities(item_id);
+        const capAwait = getScopes(item_id);
         const limitsAwait = getTimeLimits(item_id);
-        const scopeGraph = scopesGraph(await capAwait);
+        const rights = await capAwait.then(
+            resp => resp.reduce((p_x,x) => ({[x.name]:x.enabled, ...p_x}), {})
+          );
+        console.log("Rights", rights)
+        const scopeGraph = scopesGraph(rights)
+        console.log("scopeGraph", scopeGraph)
         const enabledKeys = [];
-        const rights = await capAwait;
         const scopes = jsonify(
           scopeGraph,
           [],
           Object.keys(rights).filter((k) => rights[k]),
           enabledKeys
         );
+        console.log(scopes)
         const serverName = (await getServer(item_id)).name;
         const latestExpiry = (await limitsAwait).latest_token_expiry;
         const maxLife = (await limitsAwait).longest_token_life;
@@ -198,6 +204,7 @@ class ServerAdminDetails extends React.Component {
           };
         });
       } catch (err) {
+        console.log(err)
         this.setState({ hasError: true, error: err });
       }
     }
