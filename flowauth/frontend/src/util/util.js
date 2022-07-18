@@ -71,13 +71,41 @@ export function scopesGraph(scopes_obj) {
       scopes_tree[admin_level][tl_query] = {}
     }
     scopes_tree[admin_level][tl_query][inner_query] = true
-
   }
-  console.log(scopes_tree)
-  return scopes_tree
+  const single_scopes=scopes_array.filter(row => !row.includes(":"))
+    .map(scope => ({[scope]:true}))
+    .reduce((p_x, x) => ({...p_x, ...x}))
+  const all_scopes = ({...scopes_tree, ...single_scopes})
+  console.log(all_scopes)
+  return all_scopes
 }
 
-export function jsonify(tree, labels, enabled, enabledKeys) {
+
+export function jsonify_inner(tree, label, value){
+  return (branch in tree).map((branch) => {
+    if (typeof(tree[branch]) === "boolean")
+      return {
+        label: label+branch,
+        value: value + "-1" 
+      }
+    else {
+      return {
+        label: label+branch,
+        value: value+"-1",
+        children: jsonify_inner(tree[branch], label+branch, value+"-1")
+      }
+    }
+  })
+}
+
+
+export function jsonify(tree){
+  return jsonify_inner(tree, "", "")
+}
+
+
+
+export function jsonifyOld(tree, labels, enabled, enabledKeys) {
   const parent = tree.parent;
 
   const list = Object.keys(tree)

@@ -174,11 +174,13 @@ class ServerAdminDetails extends React.Component {
             resp => resp.reduce((p_x,x) => ({[x.name]:x.enabled, ...p_x}), {})
           );
         console.log("Rights", rights)
-        const scopeGraph = scopesGraph(rights)
-        console.log("scopeGraph", scopeGraph)
+        const scope_graph = scopesGraph(rights);
+        console.log("scopeGraph", scope_graph);
         const enabledKeys = [];
+        const scopes = jsonify(scope_graph);
+        debugger;
         const scopes = jsonify(
-          scopeGraph,
+          scope_graph,
           [],
           Object.keys(rights).filter((k) => rights[k]),
           enabledKeys
