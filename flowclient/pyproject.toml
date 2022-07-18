@@ -3,4 +3,4 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta:__legacy__"
 
 [tool.pytest.ini_options]
-asyncio_mode = auto
+asyncio_mode = "auto"
