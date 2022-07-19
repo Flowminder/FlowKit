@@ -117,7 +117,7 @@ class ServerAdminDetails extends React.Component {
           )
         : createServer(name, new Date(latest_expiry).toISOString(), max_life);
       try {
-        await editServerCapabilities((await server).id, rightsObjs);
+        await editServerScopes((await server).id, rightsObjs);
         onClick();
       } catch (err) {
         if (err.code === 400) {
@@ -177,14 +177,13 @@ class ServerAdminDetails extends React.Component {
         const scope_graph = scopesGraph(rights);
         console.log("scopeGraph", scope_graph);
         const enabledKeys = [];
-        const scopes = jsonify(scope_graph);
-        debugger;
-        const scopes = jsonify(
-          scope_graph,
-          [],
-          Object.keys(rights).filter((k) => rights[k]),
-          enabledKeys
-        );
+        const scopes = jsonify(scope_graph, enabledKeys);
+        // const scopes = jsonify(
+        //   scope_graph,
+        //   [],
+        //   Object.keys(rights).filter((k) => rights[k]),
+        //   enabledKeys
+        // );
         console.log(scopes)
         const serverName = (await getServer(item_id)).name;
         const latestExpiry = (await limitsAwait).latest_token_expiry;
