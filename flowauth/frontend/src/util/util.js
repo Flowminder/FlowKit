@@ -81,28 +81,39 @@ export function scopesGraph(scopes_obj) {
 }
 
 
-export function jsonify_inner(tree, label, value){
-  return (branch in tree).map((branch) => {
-    if (typeof(tree[branch]) === "boolean")
-      return {
-        label: label+branch,
-        value: value + "-1" 
+export function jsonify_inner(tree, label, value, enabled){
+  const things = Object.keys(tree).map((branch, index) => {
+    const this_label = label ==="" ? branch: [label, branch].join(".")
+    const this_value = this_label
+    // const this_value = value === "" ? index.toString(): [value, index.toString()].join("-")
+    if (typeof(tree[branch]) === "boolean"){
+      if (tree[branch]){
+        enabled.push(this_value)
       }
+      return {
+        label: this_label,
+        value: this_value,
+        enabled: this_value in enabled
+      }
+    }
     else {
       return {
-        label: label+branch,
-        value: value+"-1",
-        children: jsonify_inner(tree[branch], label+branch, value+"-1")
+        label: this_label,
+        value: this_value,
+        children: jsonify_inner(tree[branch], this_label, this_value, enabled)
       }
     }
   })
+  return things;
 }
 
 
-export function jsonify(tree){
-  return jsonify_inner(tree, "", "")
+export function jsonify(tree, enabled_keys){
+  const out = jsonify_inner(tree, "", "", enabled_keys)
+  console.log("Test jsonify", out)
+  console.log("Enabled keys:", enabled_keys)
+  return out
 }
-
 
 
 export function jsonifyOld(tree, labels, enabled, enabledKeys) {
