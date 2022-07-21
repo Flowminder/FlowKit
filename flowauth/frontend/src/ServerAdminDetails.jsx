@@ -14,8 +14,7 @@ import ErrorDialog from "./ErrorDialog";
 import {
   createServer,
   editServer,
-  editServerRoles,
-  getRoles,
+  editServerScopes,
   getScopes,
   getServer,
   getTimeLimits,
@@ -59,8 +58,6 @@ class ServerAdminDetails extends React.Component {
       const enabledKeys = [];
       const scopes = jsonify(
         scopeGraph,
-        [],
-        Object.keys(specScopes),
         enabledKeys
       );
 
@@ -92,6 +89,8 @@ class ServerAdminDetails extends React.Component {
       maxlife_helper_text,
     } = this.state;
     const { item_id, onClick } = this.props;
+    console.log("Pre submit state:", this.state,)
+    console.log("Pre-submit props:", this.props)
 
     const rightsObjs = fullRights.reduce(
       (obj, cur) => ({
@@ -120,11 +119,11 @@ class ServerAdminDetails extends React.Component {
         await editServerScopes((await server).id, rightsObjs);
         onClick();
       } catch (err) {
-        if (err.code === 400) {
-          this.setState({ pageError: true, errors: err });
-        } else {
-          this.setState({ hasError: true, error: err });
-        }
+        // if (err.code === 400) {
+        //   this.setState({ pageError: true, errors: err });
+        // } else {
+        //   this.setState({ hasError: true, error: err });
+        // }
       }
     }
   };
@@ -142,6 +141,7 @@ class ServerAdminDetails extends React.Component {
       pageError: false,
       errors: "",
     });
+    console.log("Text field changed:", name)
     this.setState({
       [name]: event.target.value,
     });
@@ -178,20 +178,17 @@ class ServerAdminDetails extends React.Component {
         console.log("scopeGraph", scope_graph);
         const enabledKeys = [];
         const scopes = jsonify(scope_graph, enabledKeys);
-        // const scopes = jsonify(
-        //   scope_graph,
-        //   [],
-        //   Object.keys(rights).filter((k) => rights[k]),
-        //   enabledKeys
-        // );
-        console.log(scopes)
         const serverName = (await getServer(item_id)).name;
         const latestExpiry = (await limitsAwait).latest_token_expiry;
-        const maxLife = (await limitsAwait).longest_token_life;
+        const maxLife = (await limitsAwait).longest_token_life_minutes;
+        console.log(await limitsAwait)
+        console.log("maxLife on mount", maxLife)
         this.setState((state, props) => {
           return {
             name: serverName,
-            rights: state.rights.length == 0 ? scopes : state.rights,
+            rights: state.rights.length == 0 
+                ? scopes
+                : state.rights,
             fullRights:
               state.fullRights.length == 0
                 ? Object.keys(rights)
@@ -260,7 +257,6 @@ class ServerAdminDetails extends React.Component {
             className={classes.textField}
             value={name}
             margin="normal"
-            disabled={true}
           />
         </Grid>
         <Grid item xs={6} />
