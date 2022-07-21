@@ -232,12 +232,21 @@ export async function getServerScopes(server_id){
   return await getResponseDefault("/admin/servers/" + server_id + "/scopes")
 }
 
+export async function editServerScopes(server_id, new_scopes){
+  var dat = {
+    method: "POST",
+    body: JSON.stringify(new_scopes)
+  }
+  return await getResponse("/admin/servers/"+server_id+"/scopes", dat)
+}
+
 export async function deleteServer(server_id) {
   var dat = {
     method: "DELETE",
   };
   return await getResponse("/admin/servers/" + server_id, dat);
 }
+
 
 export async function editMembers(group_id, member_ids) {
   var dat = {
@@ -366,7 +375,7 @@ export async function editRoleMembers(role_id, new_members) {
 
 export async function editRoleScopes(role_id, new_scopes) {
   var dat = {
-    method: "PATCH",
+    method: "POST",
     body: JSON.stringify({ scopes: new_scopes})
   };
   return await getResponse("/roles/" + role_id, dat)

@@ -108,6 +108,24 @@ def list_scopes(server_id):
     )
 
 
+@blueprint.route("servers/<server_id>/scopes", methods=["POST"])
+@login_required
+@admin_permission.require(http_exception=401)
+def set_scopes(server_id):
+    """
+    Sets the scopes on server_id to those supplied in the json
+    """
+    json = request.get_json()
+    server = db.session.query(Server).filter(Server.id == server_id).first_or_404()
+    server_scopes = Scope.query.filter(Scope.server_id == server_id).all()
+    for scope in server_scopes:
+        db.session.delete(scope)
+    for scope, is_enabled in json.items():
+        db.session.add(Scope(name=scope, server=server, enabled=is_enabled))
+    db.session.commit()
+    return list_scopes(server_id)
+
+
 @blueprint.route("/servers/<server_id>/scopes", methods=["PATCH"])
 @login_required
 @admin_permission.require(http_exception=401)
