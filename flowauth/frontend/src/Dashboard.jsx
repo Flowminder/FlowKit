@@ -144,7 +144,7 @@ class Dashboard extends React.Component {
     switch (page) {
       case "server":
         return (
-          <TokenBuilder
+          <UserServer
             activeServer = {this.state.activeServer}
           />
         );

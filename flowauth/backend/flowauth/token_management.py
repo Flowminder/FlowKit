@@ -83,27 +83,28 @@ def my_access(server_id):
 #         ]
 #     )
 #
-#
-# @blueprint.route("/tokens/<server>")
-# @login_required
-# def list_my_tokens(server):
-#     """Get a list of all the logged in user's tokens on a specific server."""
-#     server = Server.query.filter(Server.id == server).first_or_404()
-#     return jsonify(
-#         [
-#             {
-#                 "id": token.id,
-#                 "name": token.name,
-#                 "token": token.decrypted_token,
-#                 "expires": token.expires,
-#                 "server_name": token.server.name,
-#                 "username": token.owner.username,
-#             }
-#             for token in Token.query.filter(
-#                 Token.owner == current_user, Token.server == server
-#             )
-#         ]
-#     )
+
+
+@blueprint.route("/tokens/<server>")
+@login_required
+def list_my_tokens(server):
+    """Get a list of all the logged in user's tokens on a specific server."""
+    server = Server.query.filter(Server.id == server).first_or_404()
+    return jsonify(
+        [
+            {
+                "id": token.id,
+                "name": token.name,
+                "token": token.decrypted_token,
+                "expires": token.expires,
+                "server_name": token.server.name,
+                "username": token.owner.username,
+            }
+            for token in TokenHistory.query.filter(
+                TokenHistory.user == current_user, Token.server == server
+            )
+        ]
+    )
 
 
 @blueprint.route("/tokens/<server>", methods=["POST"])
@@ -164,5 +165,15 @@ def add_token(server):
         claims=json["claims"],
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
     )
+
+    history_entry = TokenHistory(
+        name=json["name"],
+        user_id=current_user.id,
+        expiry=expiry,
+        token_string=token_string,
+    )
+
+    db.session.add(history_entry)
+    db.session.commit()
 
     return jsonify({"token": token_string})
