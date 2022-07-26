@@ -41,7 +41,7 @@ class UserServer extends React.Component {
   getBody = () => {
     if (this.state.editing) {
       return (
-        <RoleDetails
+        <TokenDetails
           classes={this.props.classes}
           onClick={this.toggleEdit}
           serverID={this.props.serverID}
@@ -50,7 +50,7 @@ class UserServer extends React.Component {
       );
     } else {
       return (
-        <RoleList
+        <TokenList
           nickName={this.props.serverName}
           serverID={this.props.serverID}
           editAction={this.toggleEdit}

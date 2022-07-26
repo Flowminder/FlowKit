@@ -7,7 +7,7 @@ from pathlib import Path
 
 import datetime
 from itertools import chain
-from sqlalchemy import func
+from sqlalchemy import ForeignKey, func
 from typing import Dict, List, Union
 
 from flask import current_app
@@ -51,6 +51,8 @@ class User(db.Model):
         lazy="subquery",
         backref=db.backref("users", lazy=True),
     )
+
+    tokens = db.relationship("TokenHistory", back_populates="user")
 
     two_factor_auth = db.relationship(
         "TwoFactorAuth",
@@ -457,6 +459,22 @@ class Scope(db.Model):
 #     role
 
 
+class TokenHistory(db.Model):
+    """
+    A previously-generated token
+    """
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    expiry = db.Column(db.DateTime, nullable=False)
+    token_string = db.Column(db.String, nullable=False)
+
+    user = db.Relationship(
+        "User", back_populates="tokens", cascade="all, delete, delete-orphan"
+    )
+
+
 def init_db(force: bool = False) -> None:
     """
     Initialise the database, optionally wipe any existing one first.
@@ -567,6 +585,14 @@ def make_demodata():
         user.roles += roles
 
     db.session.add_all(users)
+
+    test_token_history = TokenHistory(
+        name="Example token",
+        user_id=1,
+        expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+        token_string="If you're reading this, the token history might be working",
+    )
+    db.session.add(test_token_history)
 
     db.session.commit()
     current_app.config["DB_IS_SET_UP"].set()
