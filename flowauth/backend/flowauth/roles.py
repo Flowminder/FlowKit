@@ -29,7 +29,9 @@ def role_to_dict(role):
 
 
 def roles_to_json(roles):
-    return jsonify(sorted([role_to_dict(role) for role in roles], lambda x: x["id"]))
+    return jsonify(
+        sorted([role_to_dict(role) for role in roles], key=lambda x: x["id"])
+    )
 
 
 @blueprint.route("/", methods=["GET"])
@@ -141,9 +143,6 @@ def get_role_scopes(role_id):
 @login_required
 @admin_permission.require(http_exception=401)
 def list_user_roles_on_server(user_id, server_id):
-    import pdb
-
-    pdb.set_trace()
     user = User.query.filter(User.id == user_id).first_or_404()
     roles = user.roles.query.filter(Role.server.id == server_id).all_or_404()
     return roles_to_json(roles)

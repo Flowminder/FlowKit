@@ -333,6 +333,10 @@ export async function getUserRolesOnServer(server_id, user_id){
   return await getResponseDefault("/roles/server/"+server_id+"/user/"+user_id)
 }
 
+export async function getMyRolesOnServer(server_id){
+  return await getResponseDefault("/user/roles/server/"+server_id)
+}
+
 export async function editRole(role_id, role_name, scopes, users, latest_token_expiry, longest_token_life_minutes) {
   console.log("Editing role " + role_id)
   var dat = {

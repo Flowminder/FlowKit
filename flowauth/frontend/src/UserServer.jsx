@@ -9,7 +9,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TokenList from "./TokenList";
 import TokenDetails from "./TokenDetails";
-import UserRolelist from "./RoleList";
+import RoleList from "./RoleList";
 import RoleDetails from "./RoleDetails";
 
 const styles = (theme) => ({
