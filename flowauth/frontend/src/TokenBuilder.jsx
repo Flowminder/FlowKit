@@ -15,7 +15,7 @@ import { getDisabledState } from "rsuite/esm/CheckTreePicker/utils";
 import { Button, Dialog, DialogActions, DialogContentText, DialogTitle } from "@material-ui/core";
 import ScopedCssBaseline from "@material-ui/core/ScopedCssBaseline";
 import { scopes_with_roles } from "./util/util";
-import {createToken, getUserRoles} from "./util/api"
+import {createToken, getMyRolesOnServer} from "./util/api"
 
 const styles = (theme) => ({
   root: {
@@ -27,7 +27,7 @@ const styles = (theme) => ({
 function TokenBuilder(props) {
 
   const [selectedDate, handleDateChange] = useState(new Date());
-  const {serverID} = props
+  const {activeServer} = props
   const [scopes, setScopeState] = useState([])
   const [activeScopes, setActiveScopes] = useState([])
   const [checked, setChecked] = useState([])
@@ -37,7 +37,7 @@ function TokenBuilder(props) {
 
   // Run on initial load to get roles and transform to scopes
   useEffect(() => {
-    getUserRoles(serverID)
+    getMyRolesOnServer(activeServer)
     .then((roles) => {
       setScopeState(scopes_with_roles(roles));
     }, (err) => console.log(err))
@@ -70,7 +70,7 @@ function TokenBuilder(props) {
     console.log(activeScopes)
     createToken(
       "foo",
-      serverID,
+      activeServer,
       selectedDate,
       activeScopes
     ).then((token) => {
