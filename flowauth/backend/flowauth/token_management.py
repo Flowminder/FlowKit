@@ -96,12 +96,12 @@ def list_my_tokens(server):
                 "id": token.id,
                 "name": token.name,
                 "token": token.decrypted_token,
-                "expires": token.expires,
+                "expires": token.expiry,
                 "server_name": token.server.name,
-                "username": token.owner.username,
+                "username": token.user.username,
             }
             for token in TokenHistory.query.filter(
-                TokenHistory.user == current_user, Token.server == server
+                TokenHistory.user == current_user, TokenHistory.server == server
             )
         ]
     )

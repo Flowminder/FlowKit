@@ -52,7 +52,9 @@ class User(db.Model):
         backref=db.backref("users", lazy=True),
     )
 
-    tokens = db.relationship("TokenHistory", back_populates="user")
+    tokens = db.relationship(
+        "TokenHistory", back_populates="user", cascade="all, delete, delete-orphan"
+    )
 
     two_factor_auth = db.relationship(
         "TwoFactorAuth",
@@ -385,6 +387,10 @@ class Server(db.Model):
         "Scope", backref="server", cascade="all, delete, delete-orphan"
     )
 
+    tokens = db.relationship(
+        "TokenHistory", back_populates="server", cascade="all, delete, delete-orphan"
+    )
+
     def __repr__(self) -> str:
         return f"<Server {self.name}>"
 
@@ -449,30 +455,64 @@ class Scope(db.Model):
     # TODO: Make sure scopes are unique within server
 
 
-# class TokenGenerator(db.Model):
-#     """
-#     A set of parameters for creating a token.
-#     """
-
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     user = db.Column(db.ForeignKey("user.id"))
-#     role
-
-
 class TokenHistory(db.Model):
     """
-    A previously-generated token
+    An instance of a token.
+    Is owned by one user, applies to one server, has an expiry time, encodes
+    several capabilties for a server.
     """
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(75), nullable=False)
+    _token = db.Column(db.Text, nullable=False)
     expiry = db.Column(db.DateTime, nullable=False)
-    token_string = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", back_populates="tokens", lazy=True)
+    server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
+    server = db.relationship("Server", back_populates="tokens", lazy=True)
 
-    user = db.Relationship(
-        "User", back_populates="tokens", cascade="all, delete, delete-orphan"
-    )
+    @hybrid_property
+    def token(self) -> str:
+        """
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+        Returns
+        -------
+        str
+            The encrypted token as a string when called on an instance.
+        """
+        return self._token
+
+    @property
+    def decrypted_token(self) -> str:
+        """
+        Decrypted token.
+        Returns
+        -------
+        str
+            Returns the decrypted token.
+        """
+        token = self._token
+        try:
+            token = token.encode()
+        except AttributeError:
+            pass  # Already bytes
+        return get_fernet().decrypt(token).decode()
+
+    @token.setter
+    def token(self, plaintext: str):
+        """
+        Encrypt, then store to the database the token string.
+        Parameters
+        ----------
+        plaintext: str
+            Token to encrypt.
+        """
+        self._token = get_fernet().encrypt(plaintext.encode()).decode()
+
+    def __repr__(self) -> str:
+        return f"<Token {self.owner}:{self.server}>"
 
 
 def init_db(force: bool = False) -> None:
@@ -588,9 +628,10 @@ def make_demodata():
 
     test_token_history = TokenHistory(
         name="Example token",
-        user_id=1,
+        user_id=2,
         expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-        token_string="If you're reading this, the token history might be working",
+        token="If you're reading this, the token history might be working",
+        server_id=1,
     )
     db.session.add(test_token_history)
 
