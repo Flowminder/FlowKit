@@ -31,6 +31,7 @@ class TokenList extends React.Component {
         this.setState({ tokens: tokens });
       })
       .catch((err) => {
+        console.error(err);
         this.setState({ hasError: true, error: err });
       });
   };

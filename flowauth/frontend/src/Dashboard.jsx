@@ -145,7 +145,7 @@ class Dashboard extends React.Component {
       case "server":
         return (
           <UserServer
-            activeServer = {this.state.activeServer}
+            serverID = {this.state.activeServer}
           />
         );
       case "server_admin":
