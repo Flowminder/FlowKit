@@ -415,12 +415,7 @@ class Role(db.Model):
 
     def allowed_claims(self) -> List[str]:
         """
-        Get the claims the user is allowed to generate tokens for on a server.
-
-        Parameters
-        ----------
-        server: Server
-            Server to check against
+        Get the claims the role permits access to.
 
         Returns
         -------
