@@ -9,12 +9,13 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import { getMyRightsForServer, createToken } from "./util/api";
+import { getMyRolesOnServer, createToken } from "./util/api";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
 import WarningDialog from "./WarningDialog";
 import TokenPermission from "./TokenPermission";
+import { scopes_with_roles } from "./util/util";
 
 const styles = (theme) => ({
   root: {
@@ -109,18 +110,18 @@ class TokenDetails extends React.Component {
     this.setState({ name: event.target.value });
   };
 
-  async componentDidMount() {
-    const rights = getMyRightsForServer(this.props.serverID);
-    try {
+  componentDidMount() {
+    getMyRolesOnServer(this.props.serverID)
+    .then((roles) => {
+      const scopes = scopes_with_roles(roles);
+      const expiry = scopes.map(d => d.latest_token_expiry).reduce((p,c) => p > c ? p : c)
       this.setState({
-        rights: (await rights).allowed_claims,
-        permitted: (await rights).allowed_claims,
-        expiry: (await rights).latest_expiry,
-        latest_expiry: (await rights).latest_expiry,
+        rights: scopes,
+        permitted: scopes,
+        expiry: expiry,
+        latest_expiry: expiry,
       });
-    } catch (err) {
-      this.setState({ hasError: true, error: err });
-    }
+    }, (err) => console.log(err))
   }
 
   render() {
