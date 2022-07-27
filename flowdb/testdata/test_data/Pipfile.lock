@@ -34,19 +34,19 @@
         },
         "faker": {
             "hashes": [
-                "sha256:8e94a749d2f3d9b367f61eb33be6a534f0a2d305c54e912ee6618370e3278db7",
-                "sha256:a126fa66f54e65a67f913dcc698c9d023def7277882536bde2968fcac701bfd5"
+                "sha256:172e45220b7a46743f4fb58cf380adb306d5c3ab1c0b0d97062508474cec5ff8",
+                "sha256:7c3f8ee807d3916415568169a172bf0893ea9cc3371ab55e4e5f5170d2185bea"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==13.15.0"
+            "version": "==13.15.1"
         },
         "geoalchemy2": {
             "hashes": [
-                "sha256:52298fefa58310b0a0e413da4927a34c5ebf981c4e4cfaa7b82b79d0b0ddec71",
-                "sha256:ef9eba79b67ff4bc720b0e1991410866fc7db013837b055a1b2cb6518b994d80"
+                "sha256:37066366fa78e59e56bf70e5304e20d8e827ca0aa2c1e7d249d474c219c3fba3",
+                "sha256:78e5e133aebc5eab7acabeae458543340fdad7b8b744c2355c827bcf4b786b0a"
             ],
             "index": "pypi",
-            "version": "==0.12.1"
+            "version": "==0.12.2"
         },
         "geojson": {
             "hashes": [
