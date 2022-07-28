@@ -8,6 +8,7 @@ import { getUserRoles} from "./util/api";
 import { Fragment, useEffect, useState } from "react";
 import {List, Checkbox, ListSubheader, ListItem, Button, Typography } from "@material-ui/core";
 import { TypeChecker } from "rsuite/esm/utils";
+import {Divider} from "@material-ui/core";
 
 const styles = (theme) => ({
   root: {
@@ -17,8 +18,27 @@ const styles = (theme) => ({
   },
 });
 
-function UserScopesList(props){
-  const {scopes, checkAll, handleToggle, checked} = props
+function RoleString(props){
+  const {role} = props
+
+  return (
+    <Fragment>
+    <List>
+      {role.scopes.map((scope) =>
+      <ListItem>
+      <Typography varient = "body1" gutterTop>
+        {scope}
+      </Typography>
+      <Divider />
+      </ListItem>)
+      }
+    </List>
+  </Fragment>
+  )
+}
+
+function TokenRolesPicker(props){
+  const {roles, checkAll, handleToggle, checked} = props
 
   return (
     <Fragment>
@@ -28,10 +48,11 @@ function UserScopesList(props){
         Select all
       </Button>
       <List>
-        <ListSubheader inset>Scopes</ListSubheader>
-        {scopes.map((scope, i) => (
-          <ListItem key={scope.name}>
-          <ScopeDetails scope={scope}/>
+        <ListSubheader inset>Roles</ListSubheader>
+        {roles.map((role, i) => (
+          <ListItem key={role.name}>
+            {role.name}
+          {/* <RoleString role={role}/> */}
           <Checkbox
             onChange={handleToggle(i)}
             checked={checked.indexOf(i) !== -1}
@@ -43,4 +64,4 @@ function UserScopesList(props){
   )
 }
 
-export default withStyles(styles)(UserScopesList);
+export default withStyles(styles)(TokenRolesPicker);

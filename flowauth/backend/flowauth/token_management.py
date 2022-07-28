@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
+from functools import reduce
 
 from flask import Blueprint, jsonify, request
 
@@ -120,9 +121,9 @@ def add_token(server):
 
     Notes
     -----
-    Expects json with "name", "expiry" and "claims" keys, where "name" is a string,
+    Expects json with "name", "expiry" and "roles" keys, where "name" is a string,
     expiry is a datetime string of the form ""%Y-%m-%dT%H:%M:%S.%fZ" (e.g. 2018-01-01T00:00:00.0Z),
-    and claims is a nested dict of the form {<claim_name>:{<right_name>:<bool>}}.
+    and roles is a list of role IDs.
 
     Responds with a json object {"token":<token_string>, "id":<token_id>}.
 
@@ -143,10 +144,18 @@ def add_token(server):
     if expiry < datetime.datetime.now():
         raise Unauthorized(f"Token for {current_user.username} expired")
 
-    # Gotta find all roles that _could_ allow this actio
-    if "claims" not in json:
+    # TODO: Move all of this bit to flowapi
+    # We check here on the offchance that a verified user is manipulating
+    # Gotta find all roles that _could_ allow this action
+
+    if "roles" not in json:
         raise InvalidUsage("No claims.", payload={"bad_field": "claims"})
-    claims = json["claims"]
+
+    # For now, we assume that a user will claim all scopes in the role
+    scope_ids = reduce(
+        lambda p, l: p | l, (set(role["scopes"]) for role in json["roles"]), set()
+    )
+    claims = [scope.name for scope in Scope.query.filter(Scope.id.in_(scope_ids)).all()]
     allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
     if not any(allowed_roles.values()):
         raise Unauthorized(
@@ -162,15 +171,16 @@ def add_token(server):
         username=current_user.username,
         flowapi_identifier=server.name,
         lifetime=lifetime,
-        claims=json["claims"],
+        claims=claims,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
     )
 
     history_entry = TokenHistory(
         name=json["name"],
         user_id=current_user.id,
+        server_id=server.id,
         expiry=expiry,
-        token_string=token_string,
+        token=token_string,
     )
 
     db.session.add(history_entry)

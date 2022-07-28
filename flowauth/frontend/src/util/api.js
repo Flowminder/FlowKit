@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { scopes_with_roles } from "./util";
+
 function getCookieValue(a) {
   var b = document.cookie.match("(^|;)\\s*" + a + "\\s*=\\s*([^;]+)");
   return b ? b.pop() : "";
@@ -385,11 +387,10 @@ export async function editRoleScopes(role_id, new_scopes) {
   return await getResponse("/roles/" + role_id, dat)
 }
 
-export async function createToken(name, server_id, expiry, claims) {
-  const claims_list = claims.map((claim) => claim.name)
+export async function createToken(name, server_id, expiry, roles) {
   var dat = {
     method: "POST",
-    body: JSON.stringify({ name: name, expiry: expiry, claims: claims_list }),
+    body: JSON.stringify({ name: name, expiry: expiry, roles: roles}),
   };
   return await getResponse("/tokens/tokens/" + server_id, dat);
 }
