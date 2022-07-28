@@ -428,7 +428,6 @@ class Role(db.Model):
         """
         Returns true if this role permits this combination of claims, else return false.
         """
-
         scope_strings = [scope.name for scope in self.scopes]
 
         for claim in claims:
@@ -580,7 +579,7 @@ def make_demodata():
     # Add some servers
     test_server = Server(
         name="TEST_SERVER",
-        longest_token_life_minutes=2880,
+        longest_token_life_minutes=31 * 24 * 60,
         latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
     )
     db.session.add(test_server)
@@ -600,14 +599,14 @@ def make_demodata():
             name="viewer",
             server=test_server,
             scopes=[reader_scope, example_geo_scope],
-            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
         Role(
             name="runner",
             server=test_server,
             scopes=[runner_scope, example_geo_scope],
-            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
     ]

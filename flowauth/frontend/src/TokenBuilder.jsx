@@ -10,12 +10,17 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers"
 import DateFnsUtils from "@date-io/date-fns";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles"
-import UserScopesList from "./UserScopesList";
+import UserRoleList from "./UserRoleList";
 import { getDisabledState } from "rsuite/esm/CheckTreePicker/utils";
 import { Button, Dialog, DialogActions, DialogContentText, DialogTitle } from "@material-ui/core";
 import ScopedCssBaseline from "@material-ui/core/ScopedCssBaseline";
 import { scopes_with_roles } from "./util/util";
 import {createToken, getMyRolesOnServer} from "./util/api"
+import UserRolesPicker from "./UserRolesPicker";
+import SubmitButtons from "./SubmitButtons";
+import CompoundChecklist from "./TokenRolesPicker";
+import ScopeDetails from "./ScopeDetails";
+import TokenRolesPicker from "./TokenRolesPicker";
 
 const styles = (theme) => ({
   root: {
@@ -26,30 +31,49 @@ const styles = (theme) => ({
 })
 function TokenBuilder(props) {
 
-  const [selectedDate, handleDateChange] = useState(new Date());
-  const {activeServer} = props
-  const [scopes, setScopeState] = useState([])
-  const [activeScopes, setActiveScopes] = useState([])
+  const {activeServer, onClick} = props
+  
+  const [name, setName] = useState("")
+  const [nameHelperText, setNameHelperText] = useState("")
+  const [nameIsValid, setNameIsValid] = useState("")
+  const [roles, setRoleState] = useState([])
+  const [activeRoles, setActiveRoles] = useState([])
   const [checked, setChecked] = useState([])
   const [tokenErrorOpen, setTokenErrorOpen] = useState(false)
   const [token, setToken] = useState("")
   const [tokenError, setTokenError] = useState("")
 
-  // Run on initial load to get roles and transform to scopes
+  // Run on initial load to get roles
   useEffect(() => {
     getMyRolesOnServer(activeServer)
-    .then((roles) => {
-      setScopeState(scopes_with_roles(roles));
-    }, (err) => console.log(err))
+    .then(roles => setRoleState(roles),
+    (err) => console.log(err))
   }, [])
 
   // Run when setChecked is updated to make sure that this is reflected in activeScopes
   useEffect(() => {
-    setActiveScopes(checked.map((scope_index) => scopes[scope_index]))
-    console.log("Active scopes now:")
-    console.log(activeScopes)
+    setActiveRoles(checked.map(i => roles[i]))
+    console.log("Active roles now:")
+    console.log(activeRoles)
   }, [checked])
 
+  //Validates token name on change
+  useEffect(() => {
+    console.log("Name:" + name)
+    var letters = /^[A-Za-z0-9_]+$/;
+    if (name.match(letters)) {
+      setNameHelperText("");
+      setNameIsValid(true)
+    } else if (name.length === 0) {
+      setNameHelperText("Role name can not be blank.");
+      setNameIsValid(false)
+    } else {
+      setNameHelperText(
+        "Token name may only contain letters, numbers and underscores.",
+      )
+      setNameIsValid(false)
+    };
+  }, [name])
 
   // Keeps track of which boxes are toggled
   const handleToggle = (value) => () => {
@@ -66,13 +90,11 @@ function TokenBuilder(props) {
 
   //Pops up a marquee containing the token for copy-and-paste or download
   const requestToken = () => {
-    console.log("Requesting scopes:")
-    console.log(activeScopes)
     createToken(
-      "foo",
+      name,
       activeServer,
-      selectedDate,
-      activeScopes
+      activeRoles.map(r => r.latest_token_expiry).reduce((prev,cur) => prev > cur ? prev : cur, new Date("1970")),
+      activeRoles
     ).then((token) => {
       console.log("Token got");
       console.log(token)
@@ -90,7 +112,7 @@ function TokenBuilder(props) {
   const checkAll = () => {
     var i;
     var all_checked = [];
-    for (i = 0; i < scopes.length; i++){
+    for (i = 0; i < roles.length; i++){
       all_checked.push(i)
     }
     setChecked(all_checked)
@@ -99,6 +121,11 @@ function TokenBuilder(props) {
   //Handles the token error box being closed
   const closeTokenError = () => {
     setTokenErrorOpen(false)
+  }
+
+  //Handles the token name being changed
+  const handleNameChange = (event) => {
+    setName(event.target.value)
   }
 
 
@@ -124,31 +151,26 @@ function TokenBuilder(props) {
           </Button>
         </DialogActions>
       </Dialog>
-
+      <TextField
+        id="name"
+        label="Name"
+        required={true}
+        onChange = {handleNameChange}
+        value={name}
+        margin="normal"
+        error={!nameIsValid}
+        helperText={nameHelperText}
+      />
       <Grid container xs={8}>
-        <UserScopesList
-          scopes = {scopes}
+        <TokenRolesPicker
+          roles = {roles}
+          detailsComponent = {ScopeDetails}
           checkAll = {checkAll}
           handleToggle = {handleToggle}
           checked = {checked}
-          setScopeState = {setScopeState}
         />
-
-        <Stack>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <DateTimePicker
-              label="Expiry date"
-              value = {selectedDate}
-              onChange={handleDateChange}
-            />
-          </MuiPickersUtilsProvider> 
-          <Button
-            onClick = {requestToken}
-          >
-            Get token
-          </Button>
-        </Stack>
       </Grid>
+      <SubmitButtons handleSubmit={requestToken} onClick={onClick} />
       <TextField
         label='token'
         fullWidth
