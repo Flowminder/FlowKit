@@ -32,6 +32,20 @@ class UserObject:
         self.username = username
         self.scopes = scopes
 
+    def has_access(self, *, actions: List[str], query_json: dict) -> bool:
+
+        try:
+            scopes = set(schema_to_scopes(query_json))
+        except Exception as exc:
+            raise BadQueryError
+        if "query_kind" not in query_json:
+            raise MissingQueryKindError
+
+        for action in actions:
+            if {*scopes, action} in self.scopes:
+                return True
+        raise UserClaimsVerificationError
+
     def can_run(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can run this query.
