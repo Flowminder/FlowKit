@@ -33,7 +33,7 @@ class UserObject:
         self.scopes = scopes
 
     def has_access(self, *, actions: List[str], query_json: dict) -> bool:
-
+        breakpoint()
         try:
             scopes = set(schema_to_scopes(query_json))
         except Exception as exc:
@@ -210,8 +210,9 @@ def user_loader_callback(identity):
         user=get_jwt_identity(),
         src_ip=request.headers.get("Remote-Addr"),
     )
-
-    claims = decompress_claims(get_jwt_claims())
+    breakpoint()
+    # claims = decompress_claims(get_jwt_claims())
+    claims = get_jwt_claims()
 
     log_dict = dict(
         request_id=request.request_id,
@@ -221,5 +222,4 @@ def user_loader_callback(identity):
         claims=claims,
     )
     current_app.access_logger.info("Loaded user", **log_dict)
-
-    return UserObject(username=identity, scopes=list(schema_to_scopes(scopes=claims)))
+    return UserObject(username=identity, scopes=claims)

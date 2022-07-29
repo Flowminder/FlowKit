@@ -42,6 +42,7 @@ def compress_claims(claims):
 
 def decompress_claims(claims):
     in_ = io.BytesIO()
+    breakpoint()
     in_.write(base64.decodebytes(claims.encode()))
     in_.seek(0)
     with gzip.GzipFile(fileobj=in_, mode="rb") as fo:
@@ -215,7 +216,7 @@ def generate_token(
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
     claims: List[str],
-    compress: bool = True,
+    compress: bool = False,
 ) -> str:
     """
 
@@ -252,7 +253,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        scopes=compress_claims(claims) if compress else claims,
+        user_claims=compress_claims(claims) if compress else claims,
         sub=username,
         exp=now + lifetime,
     )
