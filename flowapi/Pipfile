@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pyzmq = "*"
-quart = "*"
+quart = "<=0.17.0" # Pinned due to https://github.com/greenape/quart-jwt-extended/issues/5
 hypercorn = "*"
 asyncpg = "*"
 quart-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
