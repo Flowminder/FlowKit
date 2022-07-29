@@ -36,7 +36,7 @@ setup(
         "nbformat",
         "papermill >= 1.2.1",
         "pendulum",
-        "prefect",
+        "prefect < 2.0",
         "distributed",
         "pyyaml",
         "sh",
