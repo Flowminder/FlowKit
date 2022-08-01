@@ -253,7 +253,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=compress_claims(claims) if compress else claims,
+        user_claims=claims,
         sub=username,
         exp=now + lifetime,
     )

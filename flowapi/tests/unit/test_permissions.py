@@ -4,7 +4,7 @@
 from flowapi.permissions import (
     is_flat,
     flatten_on_key,
-    tl_scope_string,
+    tl_schema_scope_string,
     schema_to_scopes,
     grab_on_key_list,
 )
@@ -225,7 +225,7 @@ def test_flatten_on_key(input, expected):
 )
 def test_scopes_from_query(input, expected):
     tl_query = {}
-    assert tl_scope_string(tl_query, input) == expected
+    assert tl_schema_scope_string(tl_query, input) == expected
 
 
 def test_grab_on_key_list():

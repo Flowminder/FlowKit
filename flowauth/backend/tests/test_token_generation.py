@@ -63,11 +63,7 @@ def test_token_generation(
         token_req = {
             "name": "DUMMY_TOKEN",
             "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "claims": [
-                "run",
-                "get_result",
-                "dummy_query:admin_level_1",
-            ],
+            "roles": ["runner", "reader"],
         }
         response = client.post(
             "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
@@ -81,9 +77,11 @@ def test_token_generation(
             algorithms=["RS256"],
             audience="DUMMY_SERVER_A",
         )
-        assert decompress_claims(decoded_token["scopes"]) == [
-            "dummy_query:admin_level_1,get_result,run"
-        ]
+        assert decoded_token["user_claims"] == {
+            "reader": ["get_result"],
+            "runner": ["dummy_query:admin_level_1", "get_result", "run"],
+        }
+
         assert "TEST_USER" == decoded_token["sub"]
         assert approx(expiry.timestamp()) == decoded_token["exp"]
 
