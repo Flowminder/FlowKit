@@ -154,10 +154,10 @@ def add_token(server):
         raise InvalidUsage("No claims.", payload={"bad_field": "roles"})
 
     claims = {
-        role: db.session.execute(
+        role["name"]: db.session.execute(
             select(Scope.name)
             .join(Role.scopes)
-            .filter(Role.name == role)
+            .filter(Role.name == role["name"])
             .order_by(Scope.name)
         )
         .scalars()
