@@ -7,6 +7,8 @@ from functools import reduce
 from flask import Blueprint, jsonify, request
 
 from flask_login import current_user, login_required
+from sqlalchemy import select
+
 from flowauth.jwt import generate_token
 
 from .invalid_usage import InvalidUsage
@@ -149,23 +151,30 @@ def add_token(server):
     # Gotta find all roles that _could_ allow this action
 
     if "roles" not in json:
-        raise InvalidUsage("No claims.", payload={"bad_field": "claims"})
+        raise InvalidUsage("No claims.", payload={"bad_field": "roles"})
 
-    # For now, we assume that a user will claim all scopes in the role
-    scope_ids = reduce(
-        lambda p, l: p | l, (set(role["scopes"]) for role in json["roles"]), set()
-    )
-    claims = [scope.name for scope in Scope.query.filter(Scope.id.in_(scope_ids)).all()]
-    allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
-    if not any(allowed_roles.values()):
-        raise Unauthorized(
-            f"No roles for {current_user.username} permit the requested scopes."
+    claims = {
+        role: db.session.execute(
+            select(Scope.name)
+            .join(Role.scopes)
+            .filter(Role.name == role)
+            .order_by(Scope.name)
         )
-
-    allowed_roles = dict(filter(lambda x: x[1] is True, allowed_roles.items())).keys()
-    current_app.logger.debug(
-        f"Token granted for {current_user.username} via roles {list(allowed_roles)}"
-    )
+        .scalars()
+        .all()
+        for role in json["roles"]
+    }
+    # claims = [scope.name for scope in Scope.query.filter(Scope.id.in_(scope_ids)).all()]
+    # allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
+    # if not any(allowed_roles.values()):
+    #     raise Unauthorized(
+    #         f"No roles for {current_user.username} permit the requested scopes."
+    #     )
+    #
+    # allowed_roles = dict(filter(lambda x: x[1] is True, allowed_roles.items())).keys()
+    # current_app.logger.debug(
+    #     f"Token granted for {current_user.username} via roles {list(allowed_roles)}"
+    # )
 
     token_string = generate_token(
         username=current_user.username,

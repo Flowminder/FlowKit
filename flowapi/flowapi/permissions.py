@@ -187,15 +187,45 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
         )
         if query_list == []:
             return []
-        scopes_generator = (tl_scope_string(tl_query, query) for query in query_list)
+        scopes_generator = (
+            tl_schema_scope_string(tl_query, query) for query in query_list
+        )
         unique_scopes += list(set.union(*scopes_generator))
     return sorted(unique_scopes)
 
 
-def tl_scope_string(tl_query, query_string) -> set:
+def query_to_scopes(query_dict):
     """
-    Given a top level (aggregate) query and a sub_query, return the scopes triplet for that query.
-    This is composed of the top_level query, allowable admin level
+    Given a query_dict of the form
+    {
+        query_kind:tl_query,
+        aggregation_unit:agg_unit
+        ...
+        sub_param:{
+            query_kind: sub_query...}
+    }
+    returns the scope triplets of the query in the form "agg_unit:tl_query:sub_query".
+    Will always return "agg_unit:tl_query:tl_query"
+    :param query_dict:
+    :return:
+    """
+    tl_query_name = query_dict["query_kind"]
+    query_list = grab_on_key_list(query_dict, ["query_kind"])
+    scopes_generator = (tl_query_scope_string(tl_query, query) for query in query_list)
+
+
+def tl_query_scope_string(tl_query, query_string):
+    try:
+        agg_unit = tl_query["aggregation_unit"]
+    except KeyError:
+        agg_unit = "unset"
+    return f"{agg_unit}:{tl_query['query_kind']}:{query_string}"
+
+
+def tl_schema_scope_string(tl_query, query_string) -> set:
+    """
+    Given a top level (aggregate) query and a sub_query, return the scopes triplet for that query in
+    the format 'geographic_area:top_level_query:sub_query'
     :param tl_query:
     """
     out = set()

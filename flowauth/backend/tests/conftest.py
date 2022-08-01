@@ -263,13 +263,13 @@ def test_data(app, test_servers, test_admin, test_user, test_roles):
         ):
             cap = f"{scope}:{admin_unit}"
             sc_a = Scope(
-                scope=cap,
+                name=cap,
                 server=dummy_server_a,
             )
             scs.append(sc_a)
             db.session.add(sc_a)
             sc_b = Scope(
-                scope=cap,
+                name=cap,
                 server=dummy_server_b,
             )
             scs.append(sc_b)
