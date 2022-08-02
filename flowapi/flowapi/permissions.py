@@ -211,15 +211,12 @@ def query_to_scopes(query_dict):
     """
     tl_query_name = query_dict["query_kind"]
     query_list = grab_on_key_list(query_dict, ["query_kind"])
-    scopes_generator = (tl_query_scope_string(tl_query, query) for query in query_list)
-
-
-def tl_query_scope_string(tl_query, query_string):
-    try:
-        agg_unit = tl_query["aggregation_unit"]
-    except KeyError:
-        agg_unit = "unset"
-    return f"{agg_unit}:{tl_query['query_kind']}:{query_string}"
+    agg_unit = (
+        query_dict["aggregation_unit"]
+        if "aggregation_unit" in query_dict.keys()
+        else "unset"
+    )
+    return [f"{agg_unit}:{tl_query_name}:{query_name}" for query_name in query_list]
 
 
 def tl_schema_scope_string(tl_query, query_string) -> set:
