@@ -23,26 +23,31 @@ class UserObject:
     ----------
     username : str
         Name of the user
-    scopes : List[str]
+    scopes : dict
         Dictionary giving a whitelist of the user's claims
     """
 
-    def __init__(self, username: str, scopes: List[str]) -> None:
+    def __init__(self, username: str, scopes: dict) -> None:
         self.username = username
         self.scopes = scopes
 
     def has_access(self, *, actions: List[str], query_json: dict) -> bool:
         breakpoint()
         try:
-            scopes = set(query_to_scopes(query_json))
+            claims = set(query_to_scopes(query_json))
         except Exception as exc:
             raise BadQueryError
         if "query_kind" not in query_json:
             raise MissingQueryKindError
-
-        for action in actions:
-            if {*scopes, action} in self.scopes:
-                return True
+        granting_roles = []
+        for role, scopes in self.scopes.items():
+            if all(x in scopes for x in {*claims, *actions}):
+                granting_roles.append(role)
+        if granting_roles:
+            current_app.access_logger.info(
+                f"Permission for {actions} over {claims} granted by {granting_roles}"
+            )
+            return True
         raise UserClaimsVerificationError
 
     def can_run(self, *, query_json: dict) -> bool:
@@ -209,7 +214,6 @@ def user_loader_callback(identity):
         user=get_jwt_identity(),
         src_ip=request.headers.get("Remote-Addr"),
     )
-    breakpoint()
     # claims = decompress_claims(get_jwt_claims())
     claims = get_jwt_claims()
 
