@@ -6,12 +6,16 @@ import React from "react";
 import {useEffect, useState} from "react"
 import { getServerScopes, getRoleScopes } from "./util/api";
 import Picker from "./Picker";
+import RightsCascade from "./RightsCascade";
+import {scopesGraph, jsonify} from "./util/util"
 
 // Component for picking scopes for a role
 function RoleScopePicker (props) {
   const {role_id, server_id, updateScopes} = props
   const [roleScopes, setRoleScopes] = useState([])
   const [serverScopes, setServerScopes] = useState([])
+  const [rightsChoices, setRightsChoices] = useState({})
+  const [selectedRights, setSelectedRights] = useState([])
   const [hasError, setHasError] = useState(false)
   const [error, setError] = useState({})
 
@@ -49,22 +53,29 @@ function RoleScopePicker (props) {
   }
   }, [role_id, server_id])
 
+  //On scopes change, update the bits to be fed to RightsCascade
+  useEffect(() =>{
+    if (serverScopes.length > 0){
+      const bar = []
+      const foo = jsonify(scopesGraph(serverScopes.map(x => x.name)), bar);
+      setRightsChoices(foo)
+      setSelectedRights(bar)
+    }
+
+  }, [serverScopes])
+
   
   const handleChange = (event) => {
     setRoleScopes(event.target.value)
     updateScopes(event.target.value);
   };
 
-
-
   return (
-    <Picker
-      objs={roleScopes}
-      all_objs={serverScopes}
-      hasError={hasError}
-      error={error}
-      handleChange={handleChange}
-      label={"Scopes"}
+    <RightsCascade
+      options={rightsChoices}
+      value={selectedRights}
+      onChange={handleChange}
+      // label={"Scopes"}
     />
   );
 }
