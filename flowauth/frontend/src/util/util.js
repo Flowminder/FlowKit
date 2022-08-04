@@ -54,9 +54,10 @@ export function scopesGraphOld(array) {
   return nested;
 }
 
+  /** Takes an array of scopes, most of which are triplets in the form admin_level:top_level_query:dependent_query
+  * and converts them into a graph keyed on admin_level -> top_level_query -> dependent_query
+  */
 export function scopesGraph(scopes_obj) {
-  /* Takes an array of scopes, most of which are triplets in the form admin_level:top_level_query:dependent_query
-  and converts them into a graph keyed on admin_level -> top_level_query -> dependent_query */
   const scopes_array = Object.keys(scopes_obj)
   const triplet_scopes = scopes_array.filter(row => row.includes(":"))  // It's this or a regex
   const split_scopes = triplet_scopes.map(row => row.split(":"))
@@ -107,9 +108,18 @@ export function jsonify_inner(tree, label, value, enabled){
   return things;
 }
 
-
+/**
+ * Walks a tree of nested Objects and returns a tree in the form
+ * object{label, value, children{[label, value, children....]}}
+ * Will also populate enabledKeys with 
+ * For use with RightsCascade
+ * @param {*} tree 
+ * @param {*} enabled_keys 
+ * @returns 
+ */
 export function jsonify(tree, enabled_keys){
   const out = jsonify_inner(tree, "", "", enabled_keys)
+//I don't like that this has enabled_keys as a return argVx
   console.log("Test jsonify", out)
   console.log("Enabled keys:", enabled_keys)
   return out
