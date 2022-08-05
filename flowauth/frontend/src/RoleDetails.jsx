@@ -287,7 +287,7 @@ return (
       <Grid item xs={12}>
       {/* Scope picker */} 
         <RoleScopePicker
-          role_id={role.id}
+          role_id={role}
           server_id={server}
           updateScopes={setScopes}
         />

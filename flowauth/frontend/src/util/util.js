@@ -58,7 +58,13 @@ export function scopesGraphOld(array) {
   * and converts them into a graph keyed on admin_level -> top_level_query -> dependent_query
   */
 export function scopesGraph(scopes_obj) {
-  const scopes_array = Object.keys(scopes_obj)
+  var scopes_array
+  if (!Array.isArray(scopes_obj)){
+    scopes_array = Object.keys(scopes_obj)
+  }
+  else{
+    scopes_array = scopes_obj
+  }
   const triplet_scopes = scopes_array.filter(row => row.includes(":"))  // It's this or a regex
   const split_scopes = triplet_scopes.map(row => row.split(":"))
   const scopes_tree = {}
