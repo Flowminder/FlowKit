@@ -57,7 +57,8 @@ function RoleScopePicker (props) {
   useEffect(() =>{
     if (serverScopes.length > 0){
       const bar = []
-      const foo = jsonify(scopesGraph(serverScopes.map(x => x.name)), bar);
+      const baz = scopesGraph(serverScopes.map(x => x.name))
+      const foo = jsonify(baz, bar);
       setRightsChoices(foo)
       setSelectedRights(bar)
     }
@@ -66,8 +67,8 @@ function RoleScopePicker (props) {
 
   
   const handleChange = (event) => {
-    setRoleScopes(event.target.value)
-    updateScopes(event.target.value);
+    setRoleScopes(event)
+    updateScopes(event);
   };
 
   return (
