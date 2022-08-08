@@ -51,7 +51,7 @@ class UserAdminDetails extends React.Component {
       this.updateRoles(await json["roles"])
     } catch (err) {
       if (err.code !== 404) {
-        this.setState({ hasError: true, error: err });
+        this.setState({ hasError: true, errors: err });
       }
     }
   }
@@ -156,7 +156,7 @@ class UserAdminDetails extends React.Component {
         if (err.code === 400) {
           this.setState({ pageError: true, errors: err });
         } else {
-          this.setState({ hasError: true, error: err });
+          this.setState({ hasError: true, errors: err });
         }
       }
     }
