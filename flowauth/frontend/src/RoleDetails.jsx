@@ -94,25 +94,25 @@ function RoleDetails(props) {
   //the parts from the others.
   useEffect(() => {
       if (serverList !== []){
-      console.log("Trying to update the UI using the following role...")
-      console.log(role)
-      if (Object.keys(role).length !== 0){   //ffs, Javascript
-        console.log("Role not empty")
-        setRoleName(role.name);
-        setServer(role.server);
-        setMembers(role.members);
-        setExpiryDate(role.latest_token_expiry);
-        setMaxLifetime(String(role.longest_token_life_minutes));
-        setScopes(role.scopes)
-        setEditMode(true);
-      } else {
-        console.log("Role empty, setting defaults")
-        setRoleName("");
-        setServer(-1);
-        setMembers([]);
-        setScopes([])
-        setEditMode(false);
-    }
+        console.log("Trying to update the UI using the following role...")
+        console.log(role)
+        if (Object.keys(role).length !== 0){   //ffs, Javascript
+          console.log("Role not empty")
+          setRoleName(role.name);
+          setServer(role.server);
+          setMembers(role.members);
+          setExpiryDate(role.latest_token_expiry);
+          setMaxLifetime(String(role.longest_token_life_minutes));
+          setScopes(role.scopes)
+          setEditMode(true);
+        } else {
+          console.log("Role empty, setting defaults")
+          setRoleName("");
+          setServer(-1);
+          setMembers([]);
+          setScopes([])
+          setEditMode(false);
+      }
     }
   }, [role, serverList])
 
@@ -177,6 +177,11 @@ function RoleDetails(props) {
     console.log("Server picker event handled");
     const index = event.target.value
     setServer(index)
+  }
+
+  const handleMembersChange  = (new_members) => {
+    console.log("Member change event handled")
+    setMembers(new_members)
   }
 
  //Either update or create a new role on 'submit' button
@@ -259,7 +264,7 @@ return (
       <Grid xs={12}>
         <RoleMembersPicker
           role_id={item_id}
-          updateMembers={setMembers}
+          updateMembers={handleMembersChange}
         />
       </Grid>
       <Grid item xs={12}>
