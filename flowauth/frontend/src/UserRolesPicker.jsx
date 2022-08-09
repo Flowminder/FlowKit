@@ -59,7 +59,7 @@ function UserRolesPicker (props) {
   const handleChange = (event) => {
     console.log("Selected roles: ", event.target.value)
     setUserRoles(event.target.value)
-    updateRoles(userRoles);
+    updateRoles(event.target.value);
   };
 
   return (
