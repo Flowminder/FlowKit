@@ -65,10 +65,12 @@ function RoleScopePicker (props) {
 
   }, [serverScopes])
 
+  useEffect(() => {
+    updateScopes(roleScopes)
+  }, [roleScopes])
   
   const handleChange = (event) => {
     setRoleScopes(event)
-    updateScopes(event);
   };
 
   return (

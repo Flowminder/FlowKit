@@ -184,16 +184,22 @@ function RoleDetails(props) {
     setMembers(new_members)
   }
 
+  const handleScopesChange = (new_scopes) => {
+    console.log("Scopes change event handled")
+    setScopes(new_scopes)
+  }
+
  //Either update or create a new role on 'submit' button
  const handleSubmit = async () => {
   console.log("Role form submitted")
+      // Need to throw an error here if !formIsValid
      if (formIsValid) {
       if (edit_mode){
         editRole(
           role.id,
           name,
-          members.map((m) => m.id),
-          scopes.map((s) => s.id),
+          scopes.map(s => s.id),
+          members.map(m => m.id),
           expiryDate,
           maxLifetime)
         .catch((err)=>{
@@ -204,8 +210,8 @@ function RoleDetails(props) {
         createRole(
           name,
           server,
-          scopes.map((s) => s.id),
-          members.map((m) => m.id),
+          scopes.map(s => s.id),
+          members.map(m => m.id),
           expiryDate,
           maxLifetime)
         .catch((err) => {
@@ -294,7 +300,7 @@ return (
         <RoleScopePicker
           role_id={role}
           server_id={server}
-          updateScopes={setScopes}
+          updateScopes={handleScopesChange}
         />
       </Grid>
       <ErrorDialog
