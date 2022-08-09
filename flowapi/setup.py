@@ -27,7 +27,7 @@ setup(
     zip_safe=False,
     python_requires=">=3.7",
     install_requires=[
-        "quart",
+        "quart<=0.17.0",  # Pinned due to https://github.com/greenape/quart-jwt-extended/issues/5
         "pyzmq",
         "hypercorn",
         "python-rapidjson",
