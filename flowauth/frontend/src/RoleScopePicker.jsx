@@ -25,7 +25,18 @@ function RoleScopePicker (props) {
       console.log("Role scopes fetched: ", role_scopes)
       setRoleScopes(role_scopes);
       
-      // See mega-comment in handleChange for the inverse of this
+      // selectedRights contains the list of names of selected scopes for this role.
+      // The trick is that, in the case of nested scopes, selectedRights only contains
+      // the shortest needed name.
+      // For example, there are two scopes available, admin1:foo and admin1:bar.
+      // If roleScopes contains both admin1:foo and admin1:bar, selectedRights should
+      // only contain admin1 - presence of only that implies that all sub-scopes are selected as well.
+      // On the other hand, if roleScopes only contains admin1:foo, selectedRights should also
+      // only contain admin1:foo
+
+      // Sorting this out is at present an exercise for the reader of this comment - please
+      // send answers on a postcard to John Roberts, c.o. Institute for Care of Victims of Unregulated Javascript.
+
       setSelectedRights(role_scopes.map(x => x.name))
     })
     const fetch_server_scopes = (async() => {
@@ -36,14 +47,6 @@ function RoleScopePicker (props) {
     })
     
      if (server_id >= 0){
-       fetch_role_scopes()
-       .catch((err) => {
-         if (err.code === 404) {
-           setRoleScopes([]);
-          } else {
-            throw err;
-          }
-        })
         fetch_server_scopes()
         .catch((err) => {
           if (err.code === 404) {
@@ -52,6 +55,14 @@ function RoleScopePicker (props) {
             throw err;
           }
       })
+      fetch_role_scopes()
+       .catch((err) => {
+         if (err.code === 404) {
+           setRoleScopes([]);
+          } else {
+            throw err;
+          }
+        })
   }
   }, [role_id, server_id])
 
@@ -77,7 +88,7 @@ function RoleScopePicker (props) {
     // label of a tree? This could be a case of it returning the lowest common root of a
     // selected node; so if there is _only_ admin3:dummy_query:dummy_query, and you select
     // admin3 -> dummy_query -> dummy_query, you have selected all _admin3_, therefore 
-    // new_labels contains only admin3. Fix by modifying the includes function below.
+    // new_labels contains only admin3.
     
     setSelectedRights(checked_roles)
     setRoleScopes(serverScopes.filter(
