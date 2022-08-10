@@ -5,7 +5,6 @@
 import React from "react";
 import {useEffect, useState} from "react"
 import { getServerScopes, getRoleScopes } from "./util/api";
-import Picker from "./Picker";
 import RightsCascade from "./RightsCascade";
 import {scopesGraph, jsonify} from "./util/util"
 
@@ -25,6 +24,7 @@ function RoleScopePicker (props) {
       const role_scopes = await getRoleScopes(role_id);
       console.log("Role scopes fetched: ", role_scopes)
       setRoleScopes(role_scopes);
+      setSelectedRights(role_scopes.map(x => x.name))
     })
     const fetch_server_scopes = (async() => {
       console.log("Fetching server scopes....")
@@ -56,11 +56,10 @@ function RoleScopePicker (props) {
   //On scopes change, update the bits to be fed to RightsCascade
   useEffect(() =>{
     if (serverScopes.length > 0){
-      const bar = []
+      const unneeded = []
       const baz = scopesGraph(serverScopes.map(x => x.name))
-      const foo = jsonify(baz, bar);
+      const foo = jsonify(baz, unneeded);
       setRightsChoices(foo)
-      setSelectedRights(bar)
     }
 
   }, [serverScopes])
@@ -69,8 +68,17 @@ function RoleScopePicker (props) {
     updateScopes(roleScopes)
   }, [roleScopes])
   
-  const handleChange = (event) => {
-    setRoleScopes(event)
+  const handleChange = (new_labels) => {
+    //'new_labels' in this case is a list of _labels_ from RightsCascade's onChange
+    // So we need to filter RoleScopes to all the scopes with that 'name' string
+    // This is further complicated by RightsCascade...apparently only returning the root
+    // label of a tree? This could be a case of it returning the lowest common root of a
+    // selected node; so if there is _only_ admin3:dummy_query:dummy_query, and you select
+    // admin3 -> dummy_query -> dummy_query, you have selected all _admin3_, therefore 
+    // new_labels contains only admin3. Fix by modifying the includes function below.
+    
+    setSelectedRights(new_labels)
+    setRoleScopes(serverScopes.filter(x => new_labels.includes(x.name)))
   };
 
   return (
