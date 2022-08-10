@@ -24,6 +24,8 @@ function RoleScopePicker (props) {
       const role_scopes = await getRoleScopes(role_id);
       console.log("Role scopes fetched: ", role_scopes)
       setRoleScopes(role_scopes);
+      
+      // See mega-comment in handleChange for the inverse of this
       setSelectedRights(role_scopes.map(x => x.name))
     })
     const fetch_server_scopes = (async() => {
@@ -68,8 +70,8 @@ function RoleScopePicker (props) {
     updateScopes(roleScopes)
   }, [roleScopes])
   
-  const handleChange = (new_labels) => {
-    //'new_labels' in this case is a list of _labels_ from RightsCascade's onChange
+  const handleChange = (checked_roles) => {
+    //'checked_roles' in this case is a list of _labels_ from RightsCascade's onChange
     // So we need to filter RoleScopes to all the scopes with that 'name' string
     // This is further complicated by RightsCascade...apparently only returning the root
     // label of a tree? This could be a case of it returning the lowest common root of a
@@ -77,8 +79,14 @@ function RoleScopePicker (props) {
     // admin3 -> dummy_query -> dummy_query, you have selected all _admin3_, therefore 
     // new_labels contains only admin3. Fix by modifying the includes function below.
     
-    setSelectedRights(new_labels)
-    setRoleScopes(serverScopes.filter(x => new_labels.includes(x.name)))
+    setSelectedRights(checked_roles)
+    setRoleScopes(serverScopes.filter(
+      s_scope => checked_roles.some(
+        c_role => s_scope.name.startsWith(c_role)
+      )
+    ))
+    // setRoleScopes(serverScopes.filter(x => (
+    //   x.name.startswith(new_label) for new_label in new_labels)))
   };
 
   return (
