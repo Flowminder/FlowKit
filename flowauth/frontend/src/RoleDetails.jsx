@@ -29,7 +29,7 @@ function RoleDetails(props) {
   
   const [role, setRole] = useState({})
   const [name, setRoleName] = useState("");
-  const [server, setServer] = useState(-1);
+  const [server_id, setServer] = useState(-1);
   const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
   const [name_helper_text, setNameHelperText] = useState("");
@@ -44,7 +44,7 @@ function RoleDetails(props) {
   const [serverList, setServerList] = useState([])
   const [formIsValid, setFormIsValid] = useState(false)
 
-  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members, server]
+  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members, server_id]
   
   // get appropriate Role on load
   useEffect( 
@@ -100,7 +100,7 @@ function RoleDetails(props) {
           console.log("Role not empty")
           setRoleName(role.name);
           setServer(role.server);
-          setMembers(role.members);
+          setMembers(role.users);
           setExpiryDate(role.latest_token_expiry);
           setMaxLifetime(String(role.longest_token_life_minutes));
           setScopes(role.scopes)
@@ -155,7 +155,7 @@ function RoleDetails(props) {
     const valid_vars = validation_vars.map(v => typeof(v))
     if (valid_vars.includes("undefined")){
       setFormIsValid(false)
-    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0 && members.length > 0 && server >= 0){
+    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0 && members.length > 0 && server_id >= 0){
       console.log("Form is valid")
       setFormIsValid(true)
     } else {
@@ -193,37 +193,39 @@ function RoleDetails(props) {
  const handleSubmit = async () => {
   console.log("Role form submitted")
       // Need to throw an error here if !formIsValid
-     if (formIsValid) {
-      if (edit_mode){
-        editRole(
-          role.id,
-          name,
-          scopes.map(s => s.id),
-          members.map(m => m.id),
-          expiryDate,
-          maxLifetime)
-        .catch((err)=>{
-          setIsErrored(true)
-          setErrors(err)
-        })
-      } else {
-        createRole(
-          name,
-          server,
-          scopes.map(s => s.id),
-          members.map(m => m.id),
-          expiryDate,
-          maxLifetime)
-        .catch((err) => {
-          setIsErrored(true)
-          setErrors(err)
-        })
-      }
+    if (!formIsValid) {
+      setIsErrored(true)
+      setErrors(new Error("Uncaught form validation error; please report to Flowminder."))
+    }
+    else if (edit_mode){
+      editRole(
+        role.id,
+        name,
+        scopes.map(s => s.id),
+        members.map(m => m.id),
+        expiryDate,
+        maxLifetime)
+      .catch((err)=>{
+        setIsErrored(true)
+        setErrors(err)
+      })
+    } else {
+      createRole(
+        name,
+        server_id,
+        scopes.map(s => s.id),
+        members.map(m => m.id),
+        expiryDate,
+        maxLifetime)
+      .catch((err) => {
+        setIsErrored(true)
+        setErrors(err)
+      })
     }
   };
 
 console.log("Prerendering:")
-console.log("server: ",server)
+console.log("server: ",server_id)
 console.log("Server list: ",JSON.stringify(serverList))
 
 return (
@@ -282,7 +284,7 @@ return (
           labelId="server_label"
           options={serverList.map(this_server => this_server.id)}
           id="server" 
-          value={server}
+          value={server_id}
           label="Server"
           onChange={handleServerChange}
           // native={false}
@@ -298,8 +300,8 @@ return (
       <Grid item xs={12}>
       {/* Scope picker */} 
         <RoleScopePicker
-          role_id={role}
-          server_id={server}
+          role_id={role.id}
+          server_id={server_id}
           updateScopes={handleScopesChange}
         />
       </Grid>
