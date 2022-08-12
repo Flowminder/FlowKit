@@ -40,7 +40,6 @@ function TokenBuilder(props) {
   const [activeRoles, setActiveRoles] = useState([])
   const [checked, setChecked] = useState([])
   const [tokenErrorOpen, setTokenErrorOpen] = useState(false)
-  const [token, setToken] = useState("")
   const [tokenError, setTokenError] = useState("")
 
   // Run on initial load to get roles
@@ -98,11 +97,10 @@ function TokenBuilder(props) {
     ).then((token) => {
       console.log("Token got");
       console.log(token)
-      setToken(token.token)
+      onClick()
     },(err) => {
       console.log("Token error")
       console.log(err)
-      setToken("")
       setTokenError(err.message)
       setTokenErrorOpen(true)
     })
@@ -171,12 +169,7 @@ function TokenBuilder(props) {
         />
       </Grid>
       <SubmitButtons handleSubmit={requestToken} onClick={onClick} />
-      <TextField
-        label='token'
-        fullWidth
-        multiline
-        value={token}
-      />
+
 
     </Fragment>
   );
