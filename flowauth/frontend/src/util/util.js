@@ -28,18 +28,7 @@ function zip() {
 }
 
 
-function compare_graphs(g1, g2){
-  for (var key in Object.keys(g1)){
-    if (!Object.keys(g2).contains(key)){
-      return false
-    }
-    if (typeof(g1[key]) === "object"){
-      if (!compare_graph(g1[key], g2[key]))
-        return false
-      }
-    }
-  return true;
-}
+
 
 
   /** Takes an array of scopes, most of which are triplets in the form admin_level:top_level_query:dependent_query
@@ -135,13 +124,26 @@ export function highest_common_roots(scopes_1, scopes_2){
 
 
 function hrc_inner(scopes_1, scopes_2, out){
-    for (key in Object.keys(scopes_1)){
+    Object.keys(scopes_1).forEach(key => {
     if (compare_graphs(scopes_1[key], scopes_2[key])){
       out.push(key)
     } else {
       hrc_inner(scopes_1[key], scopes_2[key])
     }
-  }
+  })
+}
+
+function compare_graphs(g1, g2){
+  Object.keys(g1).forEach( key => {
+    if (!Object.keys(g2).includes(key)){
+      return false
+    }
+    if (typeof(g1[key]) === "object"){
+      if (!compare_graphs(g1[key], g2[key]))
+        return false
+      }
+    })
+  return true;
 }
 
 export function scopes_with_roles(roles){
