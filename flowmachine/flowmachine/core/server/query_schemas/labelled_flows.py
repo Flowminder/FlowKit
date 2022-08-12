@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields
+from marshmallow import fields, validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
 
@@ -20,8 +20,13 @@ from flowmachine.core.server.query_schemas.mobility_classification import (
 
 __all__ = ["LabelledFlowsSchema", "LabelledFlowsExposed"]
 
+from .aggregation_unit import AggregationUnitKind
+
 
 class LabelledFlowsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "labelled_flows"
+
     def __init__(self, *, from_location, to_location, labels, join_type):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -29,6 +34,10 @@ class LabelledFlowsExposed(BaseExposedQuery):
         self.to_location = to_location
         self.labels = labels
         self.join_type = join_type
+
+    @property
+    def aggregation_unit(self):
+        return self.from_location.aggregation_unit
 
     @property
     def _flowmachine_query_obj(self):
@@ -53,11 +62,25 @@ class LabelledFlowsExposed(BaseExposedQuery):
 
 
 class LabelledFlowsSchema(BaseSchema):
+    __model__ = LabelledFlowsExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["labelled_flows"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
     from_location = fields.Nested(CoalescedLocationSchema, required=True)
     to_location = fields.Nested(CoalescedLocationSchema, required=True)
     labels = fields.Nested(MobilityClassificationSchema, required=True)
     join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
 
-    __model__ = LabelledFlowsExposed
+    @validates_schema(skip_on_field_errors=True)
+    def validate_aggregation_units(self, data, **kwargs):
+        """
+        Validate that from_location and to_location have the same aggregation unit
+        """
+        if (
+            data["from_location"].aggregation_unit
+            != data["to_location"].aggregation_unit
+        ):
+            raise ValidationError(
+                "'from_location' and 'to_location' parameters must have the same aggregation unit"
+            )

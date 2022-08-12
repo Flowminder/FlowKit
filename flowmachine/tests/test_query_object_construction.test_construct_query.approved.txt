@@ -418,7 +418,7 @@
       }
     }
   },
-  "613c5189cb45f34869dc991664534bc2": {
+  "42a51ede05c713ffa5f7fde6b3853f54": {
     "query_kind": "labelled_spatial_aggregate",
     "locations": {
       "query_kind": "coalesced_location",
@@ -429,283 +429,6 @@
           "locations": [
             {
               "query_kind": "daily_location",
-              "date": "2016-01-01",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            },
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-02",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            }
-          ]
-        }
-      },
-      "fallback_location": {
-        "query_kind": "majority_location",
-        "subscriber_location_weights": {
-          "query_kind": "location_visits",
-          "locations": [
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-01",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            },
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-02",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            }
-          ]
-        }
-      },
-      "subscriber_location_weights": {
-        "query_kind": "location_visits",
-        "locations": [
-          {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "subscriber_subset": null
-          },
-          {
-            "query_kind": "daily_location",
-            "date": "2016-01-02",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "subscriber_subset": null
-          }
-        ]
-      },
-      "weight_threshold": 2
-    },
-    "labels": {
-      "query_kind": "mobility_classification",
-      "locations": [
-        {
-          "query_kind": "coalesced_location",
-          "preferred_location": {
-            "query_kind": "majority_location",
-            "subscriber_location_weights": {
-              "query_kind": "location_visits",
-              "locations": [
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-01",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                },
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-02",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                }
-              ]
-            }
-          },
-          "fallback_location": {
-            "query_kind": "majority_location",
-            "subscriber_location_weights": {
-              "query_kind": "location_visits",
-              "locations": [
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-01",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                },
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-02",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                }
-              ]
-            }
-          },
-          "subscriber_location_weights": {
-            "query_kind": "location_visits",
-            "locations": [
-              {
-                "query_kind": "daily_location",
-                "date": "2016-01-05",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": null
-              },
-              {
-                "query_kind": "daily_location",
-                "date": "2016-01-06",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": null
-              }
-            ]
-          },
-          "weight_threshold": 2
-        },
-        {
-          "query_kind": "coalesced_location",
-          "preferred_location": {
-            "query_kind": "majority_location",
-            "subscriber_location_weights": {
-              "query_kind": "location_visits",
-              "locations": [
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-01",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                },
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-02",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                }
-              ]
-            }
-          },
-          "fallback_location": {
-            "query_kind": "majority_location",
-            "subscriber_location_weights": {
-              "query_kind": "location_visits",
-              "locations": [
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-01",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                },
-                {
-                  "query_kind": "daily_location",
-                  "date": "2016-01-02",
-                  "aggregation_unit": "admin3",
-                  "method": "last",
-                  "subscriber_subset": null
-                }
-              ]
-            }
-          },
-          "subscriber_location_weights": {
-            "query_kind": "location_visits",
-            "locations": [
-              {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": null
-              },
-              {
-                "query_kind": "daily_location",
-                "date": "2016-01-02",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": null
-              }
-            ]
-          },
-          "weight_threshold": 2
-        }
-      ],
-      "stay_length_threshold": 2
-    }
-  },
-  "db32e4a7c5209c86a341425a3451dc75": {
-    "query_kind": "labelled_flows",
-    "from_location": {
-      "query_kind": "coalesced_location",
-      "preferred_location": {
-        "query_kind": "majority_location",
-        "subscriber_location_weights": {
-          "query_kind": "location_visits",
-          "locations": [
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-01",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            },
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-02",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            }
-          ]
-        }
-      },
-      "fallback_location": {
-        "query_kind": "majority_location",
-        "subscriber_location_weights": {
-          "query_kind": "location_visits",
-          "locations": [
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-01",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            },
-            {
-              "query_kind": "daily_location",
-              "date": "2016-01-02",
-              "aggregation_unit": "admin3",
-              "method": "last",
-              "subscriber_subset": null
-            }
-          ]
-        }
-      },
-      "subscriber_location_weights": {
-        "query_kind": "location_visits",
-        "locations": [
-          {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "subscriber_subset": null
-          },
-          {
-            "query_kind": "daily_location",
-            "date": "2016-01-02",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "subscriber_subset": null
-          }
-        ]
-      },
-      "weight_threshold": 2
-    },
-    "to_location": {
-      "query_kind": "coalesced_location",
-      "preferred_location": {
-        "query_kind": "majority_location",
-        "subscriber_location_weights": {
-          "query_kind": "location_visits",
-          "locations": [
-            {
-              "query_kind": "daily_location",
               "date": "2016-01-03",
               "aggregation_unit": "admin3",
               "method": "last",
@@ -728,14 +451,14 @@
           "locations": [
             {
               "query_kind": "daily_location",
-              "date": "2016-01-03",
+              "date": "2016-01-01",
               "aggregation_unit": "admin3",
               "method": "last",
               "subscriber_subset": null
             },
             {
               "query_kind": "daily_location",
-              "date": "2016-01-04",
+              "date": "2016-01-02",
               "aggregation_unit": "admin3",
               "method": "last",
               "subscriber_subset": null
@@ -776,14 +499,14 @@
               "locations": [
                 {
                   "query_kind": "daily_location",
-                  "date": "2016-01-01",
+                  "date": "2016-01-03",
                   "aggregation_unit": "admin3",
                   "method": "last",
                   "subscriber_subset": null
                 },
                 {
                   "query_kind": "daily_location",
-                  "date": "2016-01-02",
+                  "date": "2016-01-04",
                   "aggregation_unit": "admin3",
                   "method": "last",
                   "subscriber_subset": null
@@ -806,6 +529,73 @@
                 {
                   "query_kind": "daily_location",
                   "date": "2016-01-02",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                }
+              ]
+            }
+          },
+          "subscriber_location_weights": {
+            "query_kind": "location_visits",
+            "locations": [
+              {
+                "query_kind": "daily_location",
+                "date": "2016-01-03",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": null
+              },
+              {
+                "query_kind": "daily_location",
+                "date": "2016-01-04",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": null
+              }
+            ]
+          },
+          "weight_threshold": 2
+        },
+        {
+          "query_kind": "coalesced_location",
+          "preferred_location": {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+              "query_kind": "location_visits",
+              "locations": [
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-05",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                },
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-06",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                }
+              ]
+            }
+          },
+          "fallback_location": {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+              "query_kind": "location_visits",
+              "locations": [
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-03",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                },
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-04",
                   "aggregation_unit": "admin3",
                   "method": "last",
                   "subscriber_subset": null
@@ -833,7 +623,150 @@
             ]
           },
           "weight_threshold": 2
-        },
+        }
+      ],
+      "stay_length_threshold": 2
+    }
+  },
+  "f5dff0deb633694060715e6a3153c5e6": {
+    "query_kind": "labelled_flows",
+    "from_location": {
+      "query_kind": "coalesced_location",
+      "preferred_location": {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": {
+          "query_kind": "location_visits",
+          "locations": [
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-03",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            },
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-04",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            }
+          ]
+        }
+      },
+      "fallback_location": {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": {
+          "query_kind": "location_visits",
+          "locations": [
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-01",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            },
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-02",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            }
+          ]
+        }
+      },
+      "subscriber_location_weights": {
+        "query_kind": "location_visits",
+        "locations": [
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-03",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          },
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-04",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          }
+        ]
+      },
+      "weight_threshold": 2
+    },
+    "to_location": {
+      "query_kind": "coalesced_location",
+      "preferred_location": {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": {
+          "query_kind": "location_visits",
+          "locations": [
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-05",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            },
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-06",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            }
+          ]
+        }
+      },
+      "fallback_location": {
+        "query_kind": "majority_location",
+        "subscriber_location_weights": {
+          "query_kind": "location_visits",
+          "locations": [
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-03",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            },
+            {
+              "query_kind": "daily_location",
+              "date": "2016-01-04",
+              "aggregation_unit": "admin3",
+              "method": "last",
+              "subscriber_subset": null
+            }
+          ]
+        }
+      },
+      "subscriber_location_weights": {
+        "query_kind": "location_visits",
+        "locations": [
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-05",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          },
+          {
+            "query_kind": "daily_location",
+            "date": "2016-01-06",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "subscriber_subset": null
+          }
+        ]
+      },
+      "weight_threshold": 2
+    },
+    "labels": {
+      "query_kind": "mobility_classification",
+      "locations": [
         {
           "query_kind": "coalesced_location",
           "preferred_location": {
@@ -843,14 +776,14 @@
               "locations": [
                 {
                   "query_kind": "daily_location",
-                  "date": "2016-01-01",
+                  "date": "2016-01-03",
                   "aggregation_unit": "admin3",
                   "method": "last",
                   "subscriber_subset": null
                 },
                 {
                   "query_kind": "daily_location",
-                  "date": "2016-01-02",
+                  "date": "2016-01-04",
                   "aggregation_unit": "admin3",
                   "method": "last",
                   "subscriber_subset": null
@@ -885,14 +818,81 @@
             "locations": [
               {
                 "query_kind": "daily_location",
-                "date": "2016-01-01",
+                "date": "2016-01-03",
                 "aggregation_unit": "admin3",
                 "method": "last",
                 "subscriber_subset": null
               },
               {
                 "query_kind": "daily_location",
-                "date": "2016-01-02",
+                "date": "2016-01-04",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": null
+              }
+            ]
+          },
+          "weight_threshold": 2
+        },
+        {
+          "query_kind": "coalesced_location",
+          "preferred_location": {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+              "query_kind": "location_visits",
+              "locations": [
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-05",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                },
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-06",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                }
+              ]
+            }
+          },
+          "fallback_location": {
+            "query_kind": "majority_location",
+            "subscriber_location_weights": {
+              "query_kind": "location_visits",
+              "locations": [
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-03",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                },
+                {
+                  "query_kind": "daily_location",
+                  "date": "2016-01-04",
+                  "aggregation_unit": "admin3",
+                  "method": "last",
+                  "subscriber_subset": null
+                }
+              ]
+            }
+          },
+          "subscriber_location_weights": {
+            "query_kind": "location_visits",
+            "locations": [
+              {
+                "query_kind": "daily_location",
+                "date": "2016-01-05",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": null
+              },
+              {
+                "query_kind": "daily_location",
+                "date": "2016-01-06",
                 "aggregation_unit": "admin3",
                 "method": "last",
                 "subscriber_subset": null

@@ -7,10 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added `get_aggregation_unit` server action, for getting the aggregation unit associated with a query specification. [#5141](https://github.com/Flowminder/FlowKit/issues/5141)
 
 ### Changed
+- `nocturnal_events` now expects a `night_hours` parameter with nested sub-fields `start_hour` and `end_hour`, instead of two parameters `night_start_hour` and `night_end_hour`.
 
 ### Fixed
+- Invalid sub-query specs nested within a `modal_location` spec now raise appropriate validation errors, instead of being masked by internal flowmachine server errors. [#4816](https://github.com/Flowminder/FlowKit/issues/4816)
 
 ### Removed
 

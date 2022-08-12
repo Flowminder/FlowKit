@@ -2,9 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, pre_load, ValidationError
+from marshmallow import fields, validates_schema, ValidationError
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
@@ -33,39 +32,47 @@ from flowmachine.features.location.redacted_joined_spatial_aggregate import (
 )
 from flowmachine.utils import Statistic
 from .base_exposed_query import BaseExposedQuery
+from .aggregation_unit import AggregationUnitKind
 
 
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 from .base_schema import BaseSchema
+from .one_of_query import OneOfQuerySchema
 from .reference_location import ReferenceLocationSchema
 from .total_active_periods import TotalActivePeriodsSchema
 
 
-class JoinableMetrics(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "radius_of_gyration": RadiusOfGyrationSchema,
-        "unique_location_counts": UniqueLocationCountsSchema,
-        "topup_balance": TopUpBalanceSchema,
-        "subscriber_degree": SubscriberDegreeSchema,
-        "topup_amount": TopUpAmountSchema,
-        "event_count": EventCountSchema,
-        "handset": HandsetSchema,
-        "pareto_interactions": ParetoInteractionsSchema,
-        "nocturnal_events": NocturnalEventsSchema,
-        "displacement": DisplacementSchema,
-        "total_active_periods": TotalActivePeriodsSchema,
-    }
+class JoinableMetrics(OneOfQuerySchema):
+    query_schemas = (
+        RadiusOfGyrationSchema,
+        UniqueLocationCountsSchema,
+        TopUpBalanceSchema,
+        SubscriberDegreeSchema,
+        TopUpAmountSchema,
+        EventCountSchema,
+        HandsetSchema,
+        ParetoInteractionsSchema,
+        NocturnalEventsSchema,
+        DisplacementSchema,
+        TotalActivePeriodsSchema,
+    )
 
 
 class JoinedSpatialAggregateExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "joined_spatial_aggregate"
+
     def __init__(self, *, locations, metric, method):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
         self.metric = metric
         self.method = method
+
+    @property
+    def aggregation_unit(self):
+        return self.locations.aggregation_unit
 
     @property
     def _flowmachine_query_obj(self):
@@ -86,13 +93,18 @@ class JoinedSpatialAggregateExposed(BaseExposedQuery):
 
 
 class JoinedSpatialAggregateSchema(BaseSchema):
+    __model__ = JoinedSpatialAggregateExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
     locations = fields.Nested(ReferenceLocationSchema, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
-    method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
+    method = fields.String(
+        validate=OneOf(JoinedSpatialAggregate.allowed_methods), required=True
+    )
 
-    @pre_load
+    @validates_schema(skip_on_field_errors=True)
     def validate_method(self, data, **kwargs):
         continuous_metrics = [
             "radius_of_gyration",
@@ -107,15 +119,12 @@ class JoinedSpatialAggregateSchema(BaseSchema):
             "total_active_periods",
         ]
         categorical_metrics = ["handset"]
-        if data["metric"]["query_kind"] in continuous_metrics:
+        if data["metric"].query_kind in continuous_metrics:
             validate = OneOf([f"{stat}" for stat in Statistic])
-        elif data["metric"]["query_kind"] in categorical_metrics:
+        elif data["metric"].query_kind in categorical_metrics:
             validate = OneOf(["distr"])
         else:
             raise ValidationError(
-                f"{data['metric']['query_kind']} does not have a valid metric type."
+                f"{data['metric'].query_kind} does not have a valid metric type."
             )
         validate(data["method"])
-        return data
-
-    __model__ = JoinedSpatialAggregateExposed
