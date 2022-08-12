@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+
 function dropWhile(func) {
   let arr = this;
   while (arr.length > 0 && !func(arr[0])) {
@@ -26,33 +27,20 @@ function zip() {
   });
 }
 
-export function scopesGraphOld(array) {
-  const nested = {};
-  Object.keys(array).forEach((scope) => {
-    let obj = nested;
-    let last_split = [];
-    let parents = [];
-    scope.split("&").forEach((sub_scope) => {
-      obj["parent"] = parents.join("&");
-      let split = sub_scope.split(".");
-      split = zip(last_split, split)
-        .dropWhile((x) => x[0] !== x[1])
-        .map((x) => x[1])
-        .filter((x) => x !== undefined);
-      split.forEach((k, ix) => {
-        if (!(k in obj)) {
-          obj[k] = {};
-        }
-        obj = obj[k];
-        obj["parent"] = parents.join("&");
-      });
-      obj["full_path"] = sub_scope;
-      last_split = split;
-      parents.push(sub_scope);
-    });
-  });
-  return nested;
+
+function compare_graphs(g1, g2){
+  for (var key in Object.keys(g1)){
+    if (!Object.keys(g2).contains(key)){
+      return false
+    }
+    if (typeof(g1[key]) === "object"){
+      if (!compare_graph(g1[key], g2[key]))
+        return false
+      }
+    }
+  return true;
 }
+
 
   /** Takes an array of scopes, most of which are triplets in the form admin_level:top_level_query:dependent_query
   * and converts them into a graph keyed on admin_level -> top_level_query -> dependent_query
@@ -88,7 +76,7 @@ export function scopesGraph(scopes_obj) {
 }
 
 
-export function jsonify_inner(tree, label, value, enabled){
+function jsonify_inner(tree, label, value, enabled){
   const things = Object.keys(tree).map((branch, index) => {
     const this_label = label ==="" ? branch: [label, branch].join(".")
     const this_value = this_label
@@ -132,56 +120,29 @@ export function jsonify(tree, enabled_keys){
 }
 
 
-export function jsonifyOld(tree, labels, enabled, enabledKeys) {
-  const parent = tree.parent;
-
-  const list = Object.keys(tree)
-    .filter((k) => k !== "parent" && k !== "full_path")
-    .map((k) => {
-      const ll = labels.concat([k]);
-      const v = tree[k];
-      const val = parent ? [parent, ll.join(".")].join("&") : ll.join(".");
-      if (
-        Object.keys(v).filter((k) => k !== "parent" && k !== "full_path")
-          .length === 0
-      ) {
-        const value = [parent, v.full_path].join("&");
-        return {
-          label: k,
-          value: value,
-          parents: parent,
-          enabled: enabled.includes(value),
-        };
-      } else {
-        const children = jsonify(
-          v,
-          v.parent === parent ? ll : [],
-          enabled,
-          enabledKeys
-        );
-        const allEnabled = children.every((child) => child.enabled);
-        if (!allEnabled) {
-          children
-            .filter((child) => child.enabled)
-            .forEach((child) => enabledKeys.push(child.value));
-        }
-        return {
-          label: k,
-          value: val,
-          children: children,
-          parents: parent,
-          enabled: allEnabled,
-        };
-      }
-    });
-  if (parent === "") {
-    list
-      .filter((obj) => obj.enabled)
-      .forEach((obj) => enabledKeys.push(obj.value));
-  }
-  return list;
+/**
+ * Walks through two trees, returning the highest common
+ * roots contained in both,
+ * @param {*} scopes_1
+ * @param {*} scopes_2
+ */
+export function highest_common_roots(scopes_1, scopes_2){
+  const out = []
+  hrc_inner(scopes_1, scopes_2, out)
+  return out
 }
 
+
+
+function hrc_inner(scopes_1, scopes_2, out){
+    for (key in Object.keys(scopes_1)){
+    if (compare_graphs(scopes_1[key], scopes_2[key])){
+      out.push(key)
+    } else {
+      hrc_inner(scopes_1[key], scopes_2[key])
+    }
+  }
+}
 
 export function scopes_with_roles(roles){
   //Rotates a list of roles-with-scopes to a list of 

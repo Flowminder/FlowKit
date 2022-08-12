@@ -6,7 +6,7 @@ import React from "react";
 import {useEffect, useState} from "react"
 import { getServerScopes, getRoleScopes } from "./util/api";
 import RightsCascade from "./RightsCascade";
-import {scopesGraph, jsonify} from "./util/util"
+import {scopesGraph, jsonify, highest_common_roots} from "./util/util"
 
 // Component for picking scopes for a role
 function RoleScopePicker (props) {
@@ -19,10 +19,11 @@ function RoleScopePicker (props) {
   const [error, setError] = useState({})
 
   useEffect(() => {
-    const fetch_role_scopes =(async () => {
+    const fetch_role_scopes = async (server_scopes) => {
       console.log("Fetching role scopes...")
       const role_scopes = await getRoleScopes(role_id);
       console.log("Role scopes fetched: ", role_scopes)
+      console.log("Server scopes are:", server_scopes)
       setRoleScopes(role_scopes);
       
       // selectedRights contains the list of names of selected scopes for this role.
@@ -37,36 +38,33 @@ function RoleScopePicker (props) {
       // Sorting this out is at present an exercise for the reader of this comment - please
       // send answers on a postcard to John Roberts, c.o. Institute for Care of Victims of Unregulated Javascript.
 
-      setSelectedRights(role_scopes.map(x => x.name))
-    })
-    const fetch_server_scopes = (async() => {
+      const sel_rights = highest_common_roots(
+        scopesGraph(role_scopes.map(x => x.name)),
+        scopesGraph(server_scopes.map(x => x.name)))
+      setSelectedRights(sel_rights)
+    }
+
+    const fetch_server_scopes = async() => {
       console.log("Fetching server scopes....")
       const server_scopes = await getServerScopes(server_id);
       console.log("Server scopes fetched: ", server_scopes)
       setServerScopes(server_scopes)
-    })
+      return server_scopes
+    }
+
+    const set_initial_state = async () => {
+      if (server_id >= 0){
+        const server_scopes = await fetch_server_scopes()
+        await fetch_role_scopes(server_scopes)
+      }
+    }
+
+    set_initial_state().catch(err => console.log(err))
     
-     if (server_id >= 0){
-        fetch_server_scopes()
-        .catch((err) => {
-          if (err.code === 404) {
-            setServerScopes([]);
-          } else {
-            throw err;
-          }
-      })
-      fetch_role_scopes()
-       .catch((err) => {
-         if (err.code === 404) {
-           setRoleScopes([]);
-          } else {
-            throw err;
-          }
-        })
-  }
   }, [role_id, server_id])
 
-  //On scopes change, update the bits to be fed to RightsCascade
+  // On scopes change, jsonify the scopes into the appropriate format for
+  // MultiCascader
   useEffect(() =>{
     if (serverScopes.length > 0){
       const unneeded = []
