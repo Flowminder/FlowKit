@@ -1563,6 +1563,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#class-queryloaderror" class="md-nav__link">
+    Class QueryLoadError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2068,6 +2095,20 @@
     <li class="md-nav__item">
       <a href="../query_schemas/nocturnal_events/" class="md-nav__link">
         nocturnal_events
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query_schemas/one_of_query/" class="md-nav__link">
+        one_of_query
       </a>
     </li>
   
@@ -5246,6 +5287,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#class-queryloaderror" class="md-nav__link">
+    Class QueryLoadError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5266,10 +5334,47 @@
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/exceptions.py#L6">flowmachine/core/server/exceptions.py</a></p>
 <p>Exception which indicates an error during zmq message processing.</p>
+<h2 id="class-queryloaderror">Class <strong>QueryLoadError</strong><a class="headerlink" href="#class-queryloaderror" title="Permanent link">&para;</a></h2>
+<p><div class="highlight"><pre><span></span><code><span class="n">QueryLoadError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/exceptions.py#L16">flowmachine/core/server/exceptions.py</a></p>
+<p>Exception which indicates an error while loading a query object from a dict of parameters.</p>
+<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><code>error_msg</code>: <code>str</code></p>
+<p>Human-readable string describing the error that occurred.</p>
+</li>
+<li>
+<p><code>params</code>: <code>dict</code></p>
+<p>Query parameters that could not be deserialised.</p>
+</li>
+<li>
+<p><code>details</code>: <code>dict</code></p>
+<p>Dict of additional details relating to the error (e.g. validation errors).</p>
+</li>
+</ul>
+<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><code>error_msg</code>: <code>str</code></p>
+<p>Human-readable string describing the error that occurred.</p>
+</li>
+<li>
+<p><code>params</code>: <code>dict</code></p>
+<p>Query parameters that could not be deserialised.</p>
+</li>
+<li>
+<p><code>**kwargs</code></p>
+<p>Additional details relating to the error (e.g. validation errors).</p>
+</li>
+</ul>
 
               
             </article>
             
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
           </div>
         </div>
         
@@ -5355,7 +5460,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.tabs"], "search": "../../../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>

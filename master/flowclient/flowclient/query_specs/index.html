@@ -2618,6 +2618,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/one_of_query/" class="md-nav__link">
+        one_of_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../flowmachine/flowmachine/core/server/query_schemas/outflows/" class="md-nav__link">
         outflows
       </a>
@@ -6342,7 +6356,7 @@
 <h2 id="coalesced_location_spec">coalesced_location_spec<a class="headerlink" href="#coalesced_location_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">coalesced_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">preferred_location</span><span class="p">,</span> <span class="n">fallback_location</span><span class="p">,</span> <span class="n">subscriber_location_weights</span><span class="p">,</span> <span class="n">weight_threshold</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L894">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L896">flowclient/query_specs.py</a></p>
 <h2 id="daily_location_spec">daily_location_spec<a class="headerlink" href="#daily_location_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">daily_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_column</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
@@ -6467,7 +6481,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="handset_spec">handset_spec<a class="headerlink" href="#handset_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">handset_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">characteristic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hnd_type&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">event_types</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L734">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L736">flowclient/query_specs.py</a></p>
 <p>Return query spec for handset</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6510,7 +6524,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="location_visits_spec">location_visits_spec<a class="headerlink" href="#location_visits_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_visits_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">locations</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L875">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L877">flowclient/query_specs.py</a></p>
 <p>Class that defines lists of unique Dailylocations for each subscriber. Each location is accompanied by the count of times it was a daily_location.</p>
 <h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6529,7 +6543,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="majority_location_spec">majority_location_spec<a class="headerlink" href="#majority_location_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">majority_location_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">subscriber_location_weights</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">include_unlocatable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L845">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L847">flowclient/query_specs.py</a></p>
 <p>A class for producing a list of subscribers along with the location (derived from `spatial_unit') that they visited more than half the time.</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6552,7 +6566,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="mobility_classification_spec">mobility_classification_spec<a class="headerlink" href="#mobility_classification_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">mobility_classification_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">locations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">stay_length_threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L910">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L912">flowclient/query_specs.py</a></p>
 <p>Based on subscribers' reference locations in a sequence of reference periods, classify each subscriber as having one of the following mobility types (the assigned label corresponds to the first of these criteria that is true for a given subscriber):
 - 'unlocated': Subscriber has a NULL location in the most recent period - 'irregular': Subscriber is not active in at least one of the reference   periods - 'not_always_locatable': Subscriber has a NULL location in at least one of   the reference periods - 'mobile': Subscriber spent fewer than 'stay_length_threshold' consecutive   periods at any single location - 'stable': Subscriber spent at least 'stay_length_threshold' consecutive   periods at the same location Only subscribers appearing in the result of the reference location query for the most recent period are included in the result of this query (i.e. subscribers absent from the query result can be assumed to fall into a sixth category: "not active in the most recent period").</p>
 <h3 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h3>
@@ -6785,7 +6799,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
 <h2 id="random_sample_spec">random_sample_spec<a class="headerlink" href="#random_sample_spec" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">random_sample_spec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;random_ids&#39;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">estimate_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L786">flowclient/query_specs.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/flowclient/query_specs.py#L788">flowclient/query_specs.py</a></p>
 <p>Return spec for a random sample from a query result.</p>
 <h3 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h3>
 <ul>
@@ -7054,6 +7068,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
               
             </article>
             
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
           </div>
         </div>
         
@@ -7139,7 +7155,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowclient/fl
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>

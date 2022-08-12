@@ -2029,6 +2029,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../flowmachine/flowmachine/core/server/query_schemas/one_of_query/" class="md-nav__link">
+        one_of_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../flowmachine/flowmachine/core/server/query_schemas/outflows/" class="md-nav__link">
         outflows
       </a>
@@ -8663,8 +8677,17 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/Flowminder/FlowKit/compare/1.17.0...master">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added <code>get_aggregation_unit</code> server action, for getting the aggregation unit associated with a query specification. <a href="https://github.com/Flowminder/FlowKit/issues/5141">#5141</a></li>
+</ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>nocturnal_events</code> now expects a <code>night_hours</code> parameter with nested sub-fields <code>start_hour</code> and <code>end_hour</code>, instead of two parameters <code>night_start_hour</code> and <code>night_end_hour</code>.</li>
+</ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Invalid sub-query specs nested within a <code>modal_location</code> spec now raise appropriate validation errors, instead of being masked by internal flowmachine server errors. <a href="https://github.com/Flowminder/FlowKit/issues/4816">#4816</a></li>
+</ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1170"><a href="https://github.com/Flowminder/FlowKit/compare/1.16.0...1.17.0">1.17.0</a><a class="headerlink" href="#1170" title="Permanent link">&para;</a></h2>
 <h4 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h4>
@@ -9574,6 +9597,8 @@
               
             </article>
             
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
           </div>
         </div>
         
@@ -9644,7 +9669,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.6c7ad80a.min.js"></script>
