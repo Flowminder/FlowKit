@@ -181,7 +181,7 @@ function RoleDetails(props) {
 
   const handleMembersChange  = (new_members) => {
     console.log("Member change event handled")
-    setMembers(new_members)
+    setMembers(new_members.map(x => x.id))
   }
 
   const handleScopesChange = (new_scopes) => {
@@ -202,7 +202,7 @@ function RoleDetails(props) {
         role.id,
         name,
         scopes.map(s => s.id),
-        members.map(m => m.id),
+        members,
         expiryDate,
         maxLifetime)
       .catch((err)=>{
@@ -214,7 +214,7 @@ function RoleDetails(props) {
         name,
         server_id,
         scopes.map(s => s.id),
-        members.map(m => m.id),
+        members,
         expiryDate,
         maxLifetime)
       .catch((err) => {
