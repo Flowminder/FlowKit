@@ -222,6 +222,7 @@ function RoleDetails(props) {
         setErrors(err)
       })
     }
+    onClick()
   };
 
 console.log("Prerendering:")
