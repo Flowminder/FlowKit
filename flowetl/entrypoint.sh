@@ -30,19 +30,28 @@ done
 
 : "${AIRFLOW__CORE__SQL_ALCHEMY_CONN:?AIRFLOW__CORE__SQL_ALCHEMY_CONN env var or secret must be set.}"
 
-# Defaults and back-compat
-: "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
-: "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
-: "${AIRFLOW__WEBSERVER__SECRET_KEY:=${AIRFLOW__WEBSERVER__SECRET_KEY:=$(python -c "import os; print(os.urandom(16))")}}"
+## Defaults and back-compat
+# These could mask missing
+#: "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
+#: "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
+#: "${AIRFLOW__WEBSERVER__SECRET_KEY:=${AIRFLOW__WEBSERVER__SECRET_KEY:=$(python -c "import os; print(os.urandom(16))")}}"
+
+# Aliasing flowetl-specific secrets to their general use
+
+: "REDIS_PASSWORD"=${FLOWETL_REDIS_PASSWORD:?FLOWETL_REDIS_PASSWORD not defined; check secrets}
+: "POSTGRES_PASSWORD"=${FLOWETL_POSTGRES_PASSWORD:?FLOWETL_POSTGRES_PASSWORD not defined; check secrets}
+: "SECRET_KEY"
 
 export \
   AIRFLOW__CELERY__BROKER_URL \
-  AIRFLOW__CELERY__RESULT_BACKEND \
   AIRFLOW__CORE__EXECUTOR \
   AIRFLOW__CORE__FERNET_KEY \
   AIRFLOW__CORE__LOAD_EXAMPLES \
   AIRFLOW__CORE__SQL_ALCHEMY_CONN \
-  AIRFLOW__WEBSERVER__SECRET_KEY
+  AIRFLOW__WEBSERVER__SECRET_KEY \
+  REDIS_PASSWORD \
+  POSTGRES_PASSWORD \
+  FLOWETL_CELERY_PASSWORD
 
 echo "Running airflow entrypoint."
 exec /entrypoint "${@}"

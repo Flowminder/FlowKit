@@ -6,7 +6,7 @@
 Tests for cache management utilities.
 """
 from cachey import Scorer
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
 import pytest
 
@@ -332,7 +332,9 @@ def test_cache_miss_value_error_rescore():
     ValueError should be raised if we try to rescore something not in cache.
     """
     connection_mock = Mock()
-    connection_mock.fetch.return_value = []
+    trans_mock = MagicMock()
+    trans_mock.__enter__.return_value.execute.return_value.fetchall.return_value = []
+    connection_mock.engine.begin.return_value = trans_mock
     with pytest.raises(ValueError):
         touch_cache(connection_mock, "NOT_IN_CACHE")
 
@@ -577,7 +579,6 @@ def test_cache_ddl_op_error(dummy_redis):
             query=query_mock,
             connection=Mock(conn_id="DUMMY_CONNECTION"),
             ddl_ops_func=Mock(side_effect=TestException),
-            write_func=Mock(),
         )
     assert qsm.current_query_state == QueryState.ERRORED
 

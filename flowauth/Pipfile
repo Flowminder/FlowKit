@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 flask = "*"
-sqlalchemy = "<1.4.37"
+sqlalchemy = "<1.4.40"
 flask-sqlalchemy = "*"
 flask-login = "*"
 flask-principal = "*"
@@ -30,7 +30,7 @@ freezegun = "*"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-black = {extras = ["jupyter"],version = "==22.3.0"}
+black = {extras = ["jupyter"],version = "==22.6.0"}
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 

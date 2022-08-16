@@ -19,13 +19,9 @@ from concurrent.futures import Future
 import structlog
 from typing import List, Union
 
-import psycopg2
 import pandas as pd
 
 from hashlib import md5
-
-from sqlalchemy.engine import Engine
-from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache, get_obj_or_stub
 from flowmachine.core.context import (
@@ -39,7 +35,6 @@ from abc import ABCMeta, abstractmethod
 
 from flowmachine.core.errors import (
     NameTooLongError,
-    NotConnectedError,
     UnstorableQueryError,
 )
 
@@ -170,8 +165,8 @@ class Query(metaclass=ABCMeta):
     def __iter__(self):
         con = get_db().engine
         qur = self.get_query()
-        with con.begin():
-            self._query_object = con.execute(qur)
+        with con.begin() as trans:
+            self._query_object = trans.execute(qur)
 
         return self
 
@@ -276,13 +271,7 @@ class Query(metaclass=ABCMeta):
             if state_machine.is_completed and get_db().has_table(
                 schema=schema, name=name
             ):
-                try:
-                    touch_cache(get_db(), self.query_id)
-                except ValueError:
-                    pass  # Cache record not written yet, which can happen for Models
-                    # which will call through to this method from their `_make_query` method while writing metadata.
-                # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
-                # as the cache metadata transaction isn't complete!
+                touch_cache(get_db(), self.query_id)
                 return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
@@ -311,14 +300,14 @@ class Query(metaclass=ABCMeta):
                     return self._df.copy()
                 except AttributeError:
                     qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
-                    with get_db().engine.begin():
-                        self._df = pd.read_sql_query(qur, con=get_db().engine)
+                    with get_db().engine.begin() as trans:
+                        self._df = pd.read_sql_query(qur, con=trans)
 
                     return self._df.copy()
             else:
                 qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
-                with get_db().engine.begin():
-                    return pd.read_sql_query(qur, con=get_db().engine)
+                with get_db().engine.begin() as trans:
+                    return pd.read_sql_query(qur, con=trans)
 
         df_future = submit_to_executor(do_get)
         return df_future
@@ -381,8 +370,8 @@ class Query(metaclass=ABCMeta):
         except AttributeError:
             Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
             con = get_db().engine
-            with con.begin():
-                df = pd.read_sql_query(Q, con=con)
+            with con.begin() as trans:
+                df = pd.read_sql_query(Q, con=trans)
                 return df
 
     def get_table(self):
@@ -540,12 +529,15 @@ class Query(metaclass=ABCMeta):
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
         (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
         queries.append(Q)
+        # Make flowmachine user the owner to allow server to cleanup cache tables
+        queries.append(f"ALTER TABLE {full_name} OWNER TO flowmachine;")
         for ix in self.index_cols:
             queries.append(
                 "CREATE INDEX ON {tbl} ({ixen})".format(
                     tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
                 )
             )
+
         return queries
 
     def to_sql(
@@ -584,34 +576,10 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def write_query(query_ddl_ops: List[str], connection: Engine) -> float:
-            plan_time = 0
-            ddl_op_results = []
-            for ddl_op in query_ddl_ops:
-                try:
-                    ddl_op_result = connection.execute(ddl_op)
-                except Exception as e:
-                    logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
-                    raise e
-                try:
-                    ddl_op_results.append(ddl_op_result.fetchall())
-                except ResourceClosedError:
-                    pass  # Nothing to do here
-                for ddl_op_result in ddl_op_results:
-                    try:
-                        plan = ddl_op_result[0][0][0]  # Should be a query plan
-                        plan_time += plan["Execution Time"]
-                    except (IndexError, KeyError):
-                        pass  # Not an explain result
-            logger.debug("Executed queries.")
-            return plan_time
-
         if store_dependencies:
             store_queries_in_order(
                 unstored_dependencies_graph(self)
             )  # Need to ensure we're behind our deps in the queue
-
-        ddl_ops_func = self._make_sql
 
         current_state, changed_to_queue = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
@@ -619,7 +587,6 @@ class Query(metaclass=ABCMeta):
         logger.debug(
             f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
-        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = submit_to_executor(
             write_query_to_cache,
             name=name,
@@ -627,8 +594,7 @@ class Query(metaclass=ABCMeta):
             query=self,
             connection=get_db(),
             redis=get_redis(),
-            ddl_ops_func=ddl_ops_func,
-            write_func=write_query,
+            ddl_ops_func=self._make_sql,
         )
         return store_future
 
@@ -853,13 +819,13 @@ class Query(metaclass=ABCMeta):
                         f"SELECT query_id FROM cache.dependencies WHERE depends_on='{self.query_id}'"
                     )
                 ]
-                with con.begin():
-                    con.execute(
+                with con.begin() as trans:
+                    trans.execute(
                         "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
                     )
                     log("Deleted cache record.")
                     if drop:
-                        con.execute(
+                        trans.execute(
                             "DROP TABLE IF EXISTS {}".format(
                                 self.fully_qualified_table_name
                             )
@@ -884,8 +850,8 @@ class Query(metaclass=ABCMeta):
             else:
                 full_name = name
             log("Dropping table outside cache schema.", table_name=full_name)
-            with con.begin():
-                con.execute("DROP TABLE IF EXISTS {}".format(full_name))
+            with con.begin() as trans:
+                trans.execute("DROP TABLE IF EXISTS {}".format(full_name))
             q_state_machine.finish_resetting()
         elif q_state_machine.is_resetting:
             log("Query is being reset from elsewhere, waiting for reset to finish.")

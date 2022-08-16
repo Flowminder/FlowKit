@@ -22,13 +22,12 @@ from .versions import __version__
 from .core.init import connect, connections
 from .features.utilities import GroupValues, feature_collection
 from flowmachine.core.logging import init_logging
-import flowmachine.models
 import flowmachine.features
 import flowmachine.utils
 import flowmachine.core
 
 methods = ["GroupValues", "feature_collection", "connect", "connections"]
-sub_modules = ["core", "features", "utils", "models"]
+sub_modules = ["core", "features", "utils"]
 __all__ = methods + sub_modules
 
 # Initialise loggers when flowmachine is imported

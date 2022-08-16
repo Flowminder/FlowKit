@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 mkdocs = "*"
-black = {extras = ["jupyter"],version = "==22.1.0"}
+black = {extras = ["jupyter"],version = "==22.3.0"}
 jupyter-client = "*"
 nbconvert = "*"
 pygments = "*"
@@ -29,7 +29,7 @@ markdown = "==3.3.5" # Working around version conflict caused by airflow's aggre
 chroma-py = "==0.1.0.dev1"
 ipywidgets = "*"
 flowetl = {editable = true,path = "./../flowetl/flowetl"}
-
+mike = "*"
 
 [dev-packages]
 jupyterlab = "*"

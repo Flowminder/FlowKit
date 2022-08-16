@@ -15,11 +15,8 @@ from flowmachine.features.location.redacted_location_metric import (
 
 class RedactedUniqueSubscriberCounts(RedactedLocationMetric, GeoDataMixin, Query):
     """
-    Class representing the result of spatially aggregating
-    a locations object, redacted so that results are not returned if counts are 15 or less..
-    A locations object represents the
-    location of multiple subscribers. This class represents the output
-    of aggregating that data spatially.
+    Class that defines redacted counts of unique subscribers for each location.
+    Each location for the given spatial unit is accompanied by the count of unique subscribers.
 
     Parameters
     ----------

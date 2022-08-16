@@ -21,7 +21,6 @@ FlowDB is distributed as a docker container. To run it, you will need to provide
 | ----------- | -------------- | ----- |
 | FLOWAPI_FLOWDB_USER | Database user used by FlowAPI | Role with _read_ access to tables under the cache and geography schemas | 
 | FLOWAPI_FLOWDB_PASSWORD | Password for the FlowAPI database user | |
-| FLOWMACHINE_FLOWDB_USER | Database user for FlowMachine | Role with _write_ access to tables under the cache schema, and _read_ access to events, infrastructure, cache and geography schemas |
 | FLOWMACHINE_FLOWDB_PASSWORD | Password for flowmachine user | |
 | FLOWDB_POSTGRES_PASSWORD | Postgres superuser password for flowdb | Username `flowdb`, user with super user access to flowdb database |
 
@@ -102,6 +101,12 @@ To run FlowETL, you will need to provide the following secrets:
 | AIRFLOW_CONN_FLOWDB | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
 | FLOWETL_POSTGRES_PASSWORD | Superuser password for FlowETL's backing database | |
 
+We recommend running FlowETL using the celery scheduler, in which case you will also need to provide additional environment variables and secrets as described in the [main airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html). 
+
+!!!note
+    Any environment variable can be provided as a secret with the same name for the FlowETL container.
+
+
 !!!note 
     Generating Fernet keys
     
@@ -137,6 +142,8 @@ You can find a sample FlowETL stack file [here](https://github.com/Flowminder/Fl
 | FLOWETL_HOST_USER_ID | uid of the host user for FlowETL |
 | FLOWETL_HOST_GROUP_ID | gid of the host user for FlowETL |
 | FLOWETL_HOST_DAG_DIR | Path on the host to a directory where dag files will be stored |
+| FLOWETL_WORKER_COUNT | The number of workers which will be available to run tasks |
+| FLOWETL_CELERY_PORT | Port which the Celery user interface will be available on |
 
 Once your stack has come up, you will be able to access FlowETL's web user interface which allows you to monitor the progress of ETL tasks. 
 
@@ -224,7 +231,7 @@ Once you have FlowAuth, FlowDB, and FlowETL running, you are ready to add FlowMa
 
 ##### FlowMachine
 
-The FlowMachine server requires one additional secret: `REDIS_PASSWORD`, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the `FLOWMACHINE_FLOWDB_USER` and `FLOWMACHINE_FLOWDB_PASSWORD` secrets defined for FlowDB.
+The FlowMachine server requires one additional secret: `REDIS_PASSWORD`, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the `FLOWMACHINE_FLOWDB_PASSWORD` secrets defined for FlowDB.
 
 You may also set the following environment variables:
 

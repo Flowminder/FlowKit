@@ -2,15 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.core import Query
+from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.location.unmoving_counts import UnmovingCounts
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
 
 
-class RedactedUnmovingCounts(RedactedLocationMetric, Query):
+class RedactedUnmovingCounts(RedactedLocationMetric, GeoDataMixin, Query):
     """
-    An object which represents a count of consecutive visits between locations.
+     Redacted per location counts of subscribers who were only seen at that location and did not move.
 
     Parameters
     ----------

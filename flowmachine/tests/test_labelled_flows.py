@@ -83,7 +83,7 @@ def test_labelled_flow(labelled_flows, get_dataframe):
 
     labelled_outflow = labelled_flows.outflow()
     out_df = get_dataframe(labelled_outflow)
-    assert all(out_df.columns == ["pcod_from", "value_label", "value"])
+    assert all(out_df.columns == ["pcod", "value_label", "value"])
 
 
 def test_multiple_labels(get_dataframe, multi_labelled_flows):

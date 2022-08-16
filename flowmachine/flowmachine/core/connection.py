@@ -88,7 +88,6 @@ class Connection:
         self.engine = sqlalchemy.create_engine(
             conn_str,
             echo=False,
-            strategy="threadlocal",
             pool_size=pool_size,
             max_overflow=overflow,
             pool_timeout=None,
@@ -171,8 +170,8 @@ class Connection:
         if schema is not None:
             exists_query = "{} AND table_schema='{}'".format(exists_query, schema)
         exists_query = "SELECT EXISTS({})".format(exists_query)
-        with self.engine.begin():
-            return self.engine.execute(exists_query).fetchall()[0][0]
+        with self.engine.begin() as trans:
+            return trans.execute(exists_query).fetchall()[0][0]
 
     @property
     def available_dates(self) -> Dict[str, List[datetime.date]]:
@@ -276,4 +275,4 @@ class Connection:
         """
         Close the connection
         """
-        self.engine.close()
+        self.engine.dispose()

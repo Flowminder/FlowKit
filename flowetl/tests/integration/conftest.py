@@ -106,7 +106,6 @@ def container_env(ensure_required_env_vars_are_set):
         "POSTGRES_USER": "flowdb",
         "POSTGRES_PASSWORD": "flowflow",
         "POSTGRES_DB": "flowdb",
-        "FLOWMACHINE_FLOWDB_USER": "flowmachine",
         "FLOWAPI_FLOWDB_USER": "flowapi",
         "FLOWMACHINE_FLOWDB_PASSWORD": "flowmachine",
         "FLOWAPI_FLOWDB_PASSWORD": "flowapi",
@@ -127,6 +126,8 @@ def container_env(ensure_required_env_vars_are_set):
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
         "AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC": 10,
+        "FLOWETL_REDIS_PASSWORD": "NULL",
+        "FLOWETL_POSTGRES_PASSWORD": flowetl_db["POSTGRES_PASSWORD"],
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}

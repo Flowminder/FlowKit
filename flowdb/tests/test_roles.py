@@ -9,7 +9,7 @@ Test for the database roles.
 The database has three different roles:
 
     * `flowdb`: database super user.
-    * `$FLOWMACHINE_FLOWDB_USER`: FlowMachine user with read access to raw tables.
+    * `flowmachine`: FlowMachine user with read access to raw tables.
     * `$FLOWAPI_FLOWDB_USER`: has read access to public tables only and
                   reference tables.
 """
@@ -40,7 +40,7 @@ def test_tables(env):
         "cache.blah": f"""
             CREATE TABLE IF NOT EXISTS
                 cache.blah();
-            ALTER TABLE cache.blah OWNER TO {env["FLOWMACHINE_FLOWDB_USER"]};
+            ALTER TABLE cache.blah OWNER TO flowmachine;
             """,
         "geography.admin0": """
             CREATE TABLE IF NOT EXISTS 

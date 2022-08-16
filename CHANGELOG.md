@@ -9,17 +9,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+
+### Fixed
+
+### Removed
+
+## [1.17.0]
+
+#### Added
+- `inflows` and `outflows` exposed via API endpoint + added to flowclient [#2029](https://github.com/Flowminder/FlowKit/issues/2029), [#4866](https://github.com/Flowminder/FlowKit/issues/4866)
+
+### Changed
 - __Action Needed__ Airflow updated to version 2.3.3; **backup flowetl_db before applying update** [#4940](https://github.com/Flowminder/FlowKit/pull/4940)
 - Tables created under the cache schema in FlowDB will automatically be set to be owned by the `flowmachine` user. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
 - `Query.explain` will now explain the query even where it is already stored. [#1285](https://github.com/Flowminder/FlowKit/issues/1285)
 - `unstored_dependencies_graph` no longer blocks until dependencies are in a determinate state. [#4949](https://github.com/Flowminder/FlowKit/issues/4949)
+- In and out flows no longer return location columns with to/from suffix.
+- FlowDB now always creates a role named `flowmachine.`
+- Flowmachine will set the state of a query being stored to cancelled if interrupted while the store is running.
+- Flowmachine now supports sqlalchemy >=1.4 [#5140](https://github.com/Flowminder/FlowKit/issues/5140)
 
 ### Fixed
-- FlowDB trigger to alter ownership of cache tables is now triggered when a flowmachine query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
+- Flowmachine now makes the built in `flowmachine` role owner of cache tables as a post-action when a query is `store`d. [#4714](https://github.com/Flowminder/FlowKit/issues/4714)
 - TopupBalance now returns the weighted mode when requested instead of weighted median [#1412](https://github.com/Flowminder/FlowKit/issues/1412)
+- Fixed in and out flow geojson for multicolumn location types [#5132](https://github.com/Flowminder/FlowKit/issues/5132)
 
 ### Removed
 - `use_file_flux_sensor` removed entirely. [#2812](https://github.com/Flowminder/FlowKit/issues/2812)
+- `Model`, `ModelResult` and `Louvain` have been removed. [#5168](https://github.com/Flowminder/FlowKit/issues/5168)
 
 ## [1.16.0]
 
@@ -925,7 +942,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 -   Added Python 3.6 support for FlowClient
 
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.16.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/1.17.0...master
+[1.17.0]: https://github.com/Flowminder/FlowKit/compare/1.16.0...1.17.0
 [1.16.0]: https://github.com/Flowminder/FlowKit/compare/1.15.0...1.16.0
 [1.15.0]: https://github.com/Flowminder/FlowKit/compare/1.14.6...1.15.0
 [1.14.6]: https://github.com/Flowminder/FlowKit/compare/1.14.5...1.14.6

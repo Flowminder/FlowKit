@@ -22,8 +22,7 @@ class RedactedFlows(RedactedLocationMetric, FlowLike, Query):
         An unredacted flows object
     """
 
-    def __init__(self, *, flows: Flows):
-
+    def __init__(self, *, flows: FlowLike):
         self.redaction_target = flows
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = flows.spatial_unit
