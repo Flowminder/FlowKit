@@ -22,6 +22,9 @@ __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
 
 
 class TripsODMatrixExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "trips_od_matrix"
+
     def __init__(
         self,
         start_date,
@@ -72,7 +75,7 @@ class TripsODMatrixSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["trips_od_matrix"]))
-
     __model__ = TripsODMatrixExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

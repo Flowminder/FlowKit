@@ -20,14 +20,15 @@ from .field_mixins import (
     SubscriberSubsetField,
 )
 from .base_schema import BaseSchema
-from .custom_fields import EventTypes, ISODateTime, Hours
-from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["ConsecutiveTripsODMatrixSchema", "ConsecutiveTripsODMatrixExposed"]
 
 
 class ConsecutiveTripsODMatrixExposed(AggregationUnitMixin, BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "consecutive_trips_od_matrix"
+
     def __init__(
         self,
         start_date,
@@ -78,7 +79,7 @@ class ConsecutiveTripsODMatrixSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["consecutive_trips_od_matrix"]))
-
     __model__ = ConsecutiveTripsODMatrixExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

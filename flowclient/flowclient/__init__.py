@@ -114,3 +114,7 @@ __all__ = [
     "labelled_spatial_aggregate",
     "labelled_flows",
 ]
+
+from . import _version
+
+__version__ = _version.get_versions()["version"]

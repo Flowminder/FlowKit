@@ -4,14 +4,10 @@
 
 from marshmallow import fields
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Displacement
-from .custom_fields import EventTypes, Statistic, ISODateTime, Hours
+from .custom_fields import Statistic
 from .reference_location import ReferenceLocationSchema
-from .subscriber_subset import SubscriberSubset
-from .daily_location import DailyLocationSchema
-from .modal_location import ModalLocationSchema
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
@@ -27,6 +23,9 @@ __all__ = ["DisplacementSchema", "DisplacementExposed"]
 
 
 class DisplacementExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "displacement"
+
     def __init__(
         self,
         *,
@@ -77,8 +76,9 @@ class DisplacementSchema(
     HoursField,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["displacement"]))
-    statistic = Statistic()
-    reference_location = fields.Nested(ReferenceLocationSchema, many=False)
-
     __model__ = DisplacementExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    statistic = Statistic()
+    reference_location = fields.Nested(ReferenceLocationSchema, required=True)

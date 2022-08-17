@@ -11,6 +11,9 @@ from flowmachine.features.location.redacted_in_out_flows import RedactedInOutFlo
 
 
 class OutflowsExposed(FlowsExposed):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "outflows"
+
     @property
     def _flowmachine_query_obj(self):
         loc1 = self.from_location._flowmachine_query_obj
@@ -21,5 +24,7 @@ class OutflowsExposed(FlowsExposed):
 
 
 class OutflowsSchema(FlowsSchema):
-    query_kind = fields.String(validate=OneOf(["outflows"]))
     __model__ = OutflowsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

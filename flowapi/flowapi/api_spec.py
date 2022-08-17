@@ -34,16 +34,6 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     #  Get the reply.
     reply = await socket.recv_json()
     flowmachine_query_schemas = reply["payload"]["query_schemas"]
-    # Need to mark query_kind as a required field
-    # this is a workaround because the marshmallow-oneOf plugin strips
-    # the query_kind off, which means it can't be required from the marshmallow
-    # side without raising an error
-    for schema, schema_dict in flowmachine_query_schemas.items():
-        try:
-            if "query_kind" in schema_dict["properties"]:
-                schema_dict["required"].append("query_kind")
-        except KeyError:
-            pass  # Doesn't have any properties
     spec = APISpec(
         title="FlowAPI",
         version=__version__,

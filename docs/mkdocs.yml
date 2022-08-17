@@ -26,49 +26,49 @@ nav:
   - index.md
   - install.md
   - Analysts:
-    - analyst/index.md
-    - FlowClient:
-      - analyst/flowclient/example_usage.ipynb
-      - api-docs-flowclient
-    - Worked examples:
-      - analyst/worked_examples/index.md
-      - analyst/worked_examples/flows-above-normal.ipynb
-      - analyst/worked_examples/commuting-patterns.ipynb
-      - analyst/worked_examples/cell-towers-per-region.ipynb
-      - analyst/worked_examples/unique-subscriber-counts.ipynb
-      - analyst/worked_examples/joined-spatial-aggregate.ipynb
-    - analyst/autoflow.md
-    - Advanced usage:
-        - analyst/advanced_usage/index.md
-        - Worked examples:
-            - analyst/advanced_usage/worked_examples/mobile-data-usage.ipynb
+      - analyst/index.md
+      - FlowClient:
+          - analyst/flowclient/example_usage.ipynb
+          - api-docs-flowclient
+      - Worked examples:
+          - analyst/worked_examples/index.md
+          - analyst/worked_examples/flows-above-normal.ipynb
+          - analyst/worked_examples/commuting-patterns.ipynb
+          - analyst/worked_examples/cell-towers-per-region.ipynb
+          - analyst/worked_examples/unique-subscriber-counts.ipynb
+          - analyst/worked_examples/joined-spatial-aggregate.ipynb
+      - analyst/autoflow.md
+      - Advanced usage:
+          - analyst/advanced_usage/index.md
+          - Worked examples:
+              - analyst/advanced_usage/worked_examples/mobile-data-usage.ipynb
   - Developers:
       - developer/index.md
       - developer/dev_environment_setup.md
       - api-docs-flowmachine
       - FlowAPI specification: developer/api-spec.html
       - Architectural Decision Records (ADR):
-        - developer/adr/README.md
-        - developer/adr/0001-pipenv-for-package-and-dependency-management.md
-        - developer/adr/0002-pytest-for-testing.md
-        - developer/adr/0003-http-api.md
-        - developer/adr/0004-http-framework.md
-        - developer/adr/0005-IPC-methods.md
-        - developer/adr/0006-JWTs.md
-        - developer/adr/0007-mapbox-for-worked-examples.md
-        - developer/adr/0008-jupyter-notebooks-for-autoflow.md
-        - developer/adr/0009-asciidoctor-pdf-for-notebook-conversion.md
-        - developer/adr/0010-prefect-for-autoflow.md
+          - developer/adr/README.md
+          - developer/adr/0001-pipenv-for-package-and-dependency-management.md
+          - developer/adr/0002-pytest-for-testing.md
+          - developer/adr/0003-http-api.md
+          - developer/adr/0004-http-framework.md
+          - developer/adr/0005-IPC-methods.md
+          - developer/adr/0006-JWTs.md
+          - developer/adr/0007-mapbox-for-worked-examples.md
+          - developer/adr/0008-jupyter-notebooks-for-autoflow.md
+          - developer/adr/0009-asciidoctor-pdf-for-notebook-conversion.md
+          - developer/adr/0010-prefect-for-autoflow.md
   - System Administrators:
-    - administrator/index.md
-    - administrator/deployment.md
-    - System management:
-        - administrator/management/cache.md
-        - ETL:
-          - administrator/management/etl/etl.md
-          - api-docs-flowetl
-        - administrator/management/logging.md
-        - administrator/management/users.md
+      - administrator/index.md
+      - administrator/deployment.md
+      - System management:
+          - administrator/management/cache.md
+          - ETL:
+              - administrator/management/etl/etl.md
+              - api-docs-flowetl
+          - administrator/management/logging.md
+          - administrator/management/users.md
   - license.md
   - changelog.md
 
@@ -82,6 +82,8 @@ theme:
   language: en
   features:
     - navigation.tabs
+    - content.tabs.link
+    - content.code.annotate
   palette:
     accent: "#095798"
     primary: "#2977B8"
@@ -94,6 +96,8 @@ theme:
     logo: material/scatter-plot
 # Extensions
 markdown_extensions:
+  - attr_list
+  - md_in_html
   - markdown.extensions.admonition
   - codehilite:
       guess_lang: false
@@ -123,7 +127,8 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_div_format
   - pymdownx.tasklist:
       custom_checkbox: true
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tilde
 
 extra_css:

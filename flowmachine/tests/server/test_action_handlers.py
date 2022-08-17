@@ -24,6 +24,7 @@ from flowmachine.core.server.action_handlers import (
     action_handler__get_query_params,
     action_handler__get_sql,
     action_handler__run_query,
+    action_handler__get_aggregation_unit,
     get_action_handler,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
@@ -143,8 +144,11 @@ async def test_rerun_query_after_cancelled(server_config, real_connections):
     assert query_obj.is_stored
 
 
+@pytest.mark.parametrize(
+    "handler", [action_handler__run_query, action_handler__get_aggregation_unit]
+)
 @pytest.mark.asyncio
-async def test_run_query_type_error(monkeypatch, server_config):
+async def test_run_query_type_error(handler, monkeypatch, server_config):
     """
     Test that developer errors when creating schemas return the error message.
     """
@@ -156,7 +160,7 @@ async def test_run_query_type_error(monkeypatch, server_config):
     monkeypatch.setattr(
         flowmachine.core.server.action_handlers, "FlowmachineQuerySchema", BrokenSchema
     )
-    msg = await action_handler__run_query(config=server_config, query_kind={})
+    msg = await handler(config=server_config, query_kind={})
     assert msg.status == ZMQReplyStatus.ERROR
     assert (
         msg.msg
@@ -167,7 +171,7 @@ async def test_run_query_type_error(monkeypatch, server_config):
 @pytest.mark.asyncio
 async def test_run_query_error_handled(dummy_redis, server_config):
     """
-    Run query handler should return an error status if query construction failed.
+    Action handler should return an error status if query construction failed.
     """
     # This is going to error, because the db connection is a mock.
     msg = await action_handler__run_query(
@@ -228,3 +232,62 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.payload["query_state"] == query_state
     redis_connection.reset(redis_reset)
+
+
+@pytest.mark.parametrize(
+    "params, expected_aggregation_unit",
+    [
+        (
+            dict(
+                query_kind="spatial_aggregate",
+                locations=dict(
+                    query_kind="modal_location",
+                    locations=[
+                        dict(
+                            query_kind="daily_location",
+                            date="2016-01-01",
+                            method="last",
+                            aggregation_unit="admin3",
+                        )
+                    ],
+                ),
+            ),
+            "admin3",
+        ),
+        (
+            dict(
+                query_kind="histogram_aggregate",
+                metric=dict(
+                    query_kind="displacement",
+                    start_date="2016-01-01",
+                    end_date="2016-01-02",
+                    statistic="avg",
+                    reference_location=dict(
+                        query_kind="daily_location",
+                        date="2016-01-01",
+                        method="last",
+                        aggregation_unit="lon-lat",
+                    ),
+                ),
+                bins=dict(n_bins=10),
+            ),
+            None,
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_aggregation_unit(
+    params, expected_aggregation_unit, server_config, real_connections
+):
+    """
+    'get_aggregation_unit' handler returns correct aggregation unit
+    """
+    # Have to use real_connections fixture here because query deserialisation
+    # involves constructing a spatial unit object, which requires talking to
+    # the db.
+    msg = await action_handler__get_aggregation_unit(
+        config=server_config,
+        **params,
+    )
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    assert msg.payload["aggregation_unit"] == expected_aggregation_unit

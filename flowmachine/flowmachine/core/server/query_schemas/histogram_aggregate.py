@@ -4,7 +4,6 @@
 
 from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
 from marshmallow.validate import OneOf
-from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.server.query_schemas.custom_fields import Bounds
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
@@ -33,22 +32,22 @@ __all__ = ["HistogramAggregateSchema", "HistogramAggregateExposed"]
 
 from .base_schema import BaseSchema
 from .total_active_periods import TotalActivePeriodsSchema
+from .one_of_query import OneOfQuerySchema
 
 
-class HistogrammableMetrics(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "radius_of_gyration": RadiusOfGyrationSchema,
-        "unique_location_counts": UniqueLocationCountsSchema,
-        "topup_balance": TopUpBalanceSchema,
-        "subscriber_degree": SubscriberDegreeSchema,
-        "topup_amount": TopUpAmountSchema,
-        "event_count": EventCountSchema,
-        "pareto_interactions": ParetoInteractionsSchema,
-        "nocturnal_events": NocturnalEventsSchema,
-        "displacement": DisplacementSchema,
-        "total_active_periods": TotalActivePeriodsSchema,
-    }
+class HistogrammableMetrics(OneOfQuerySchema):
+    query_schemas = (
+        RadiusOfGyrationSchema,
+        UniqueLocationCountsSchema,
+        TopUpBalanceSchema,
+        SubscriberDegreeSchema,
+        TopUpAmountSchema,
+        EventCountSchema,
+        ParetoInteractionsSchema,
+        NocturnalEventsSchema,
+        DisplacementSchema,
+        TotalActivePeriodsSchema,
+    )
 
 
 class HistogramBins(Schema):
@@ -76,6 +75,9 @@ class HistogramBins(Schema):
 
 
 class HistogramAggregateExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "histogram_aggregate"
+
     def __init__(self, *, metric, bins, range=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -97,10 +99,10 @@ class HistogramAggregateExposed(BaseExposedQuery):
 
 
 class HistogramAggregateSchema(BaseSchema):
+    __model__ = HistogramAggregateExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["histogram_aggregate"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     metric = fields.Nested(HistogrammableMetrics, required=True)
     range = fields.Nested(Bounds)
-    bins = fields.Nested(HistogramBins)
-
-    __model__ = HistogramAggregateExposed
+    bins = fields.Nested(HistogramBins, required=True)

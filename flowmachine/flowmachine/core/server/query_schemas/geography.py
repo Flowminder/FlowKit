@@ -15,6 +15,9 @@ from .base_schema import BaseSchema
 
 
 class GeographyExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "geography"
+
     def __init__(self, *, aggregation_unit):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -42,7 +45,7 @@ class GeographyExposed(BaseExposedQuery):
 
 
 class GeographySchema(AggregationUnitMixin, BaseSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["geography"]))
-
     __model__ = GeographyExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
