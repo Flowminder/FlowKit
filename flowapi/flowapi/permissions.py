@@ -194,6 +194,12 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     return sorted(unique_scopes)
 
 
+def get_agg_unit(query_dict):
+    """
+    Interrogates Flowmachine for the top-level agg unit of this query
+    """
+
+
 def query_to_scopes(query_dict):
     """
     Given a query_dict of the form
@@ -234,6 +240,6 @@ def tl_schema_scope_string(tl_query, query_string) -> set:
             f"No aggregation unit options for {tl_query_name}; "
             f"this should be fixed once PR 5278 is merged"
         )
-        agg_units = ["unset"]
+        agg_units = ["nonspatial"]
     out = out | {f"{agg_unit}:{tl_query_name}:{query_string}" for agg_unit in agg_units}
     return out
