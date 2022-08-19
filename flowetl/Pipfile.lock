@@ -93,11 +93,11 @@
         },
         "apache-airflow-providers-postgres": {
             "hashes": [
-                "sha256:3b6e84126ebb87ef0f9f2b4e40598b0ca9823c991ad3aa7bf82bcacc699387f2",
-                "sha256:72411d0df31bfbfbb30bc0d8565818b252b00344af9cbed19164279e955ecf11"
+                "sha256:2425a467b7069fea278701b1d8f77156cab6f83997f19bf36365e4ec92c662b9",
+                "sha256:31dd94b1ff9c3e90a48c9ca29d240e7007e5f98ee183d566b784341e02c20b97"
             ],
             "index": "pypi",
-            "version": "==5.1.0"
+            "version": "==5.2.0"
         },
         "apache-airflow-providers-sqlite": {
             "hashes": [
