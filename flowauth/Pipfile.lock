@@ -593,11 +593,11 @@
         },
         "versioneer": {
             "hashes": [
-                "sha256:9f0e9a2cb5ef521cbfd104d43a208dd9124dfb4accfa72d694e0d0430a0142bc",
-                "sha256:dee243f8f084351a1d79eabefc2e55d58aa8a2af086a7e41602a6aafbd972a34"
+                "sha256:78f0f8642326f47a6b3833fc86977096e9ae1ccf84efa7494cb60809745bfa85",
+                "sha256:d6b6d68c299653736a29f199309ee4306e97a0f0d0a78ecb71e21c90ce1322bb"
             ],
             "index": "pypi",
-            "version": "==0.22"
+            "version": "==0.23"
         },
         "werkzeug": {
             "hashes": [
@@ -1368,9 +1368,6 @@
         },
         "sanitized-package": {
             "editable": true,
-            "extras": [
-
-            ],
             "path": "./backend"
         },
         "setuptools": {
