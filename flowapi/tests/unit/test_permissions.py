@@ -7,9 +7,13 @@ from flowapi.permissions import (
     tl_schema_scope_string,
     schema_to_scopes,
     grab_on_key_list,
+    get_agg_unit,
 )
 
 import pytest
+import asyncio
+
+pytest_plugins = "pytest_asyncio"
 
 
 @pytest.mark.parametrize(
@@ -24,8 +28,8 @@ import pytest
                 }
             },
             [
-                "dummy:DUMMY_UNIT:",
-                "dummy:DUMMY_UNIT_2:",
+                "DUMMY_UNIT:dummy:dummy",
+                "DUMMY_UNIT_2:dummy:dummy",
             ],
         ),
         ({"oneOf": []}, []),
@@ -48,7 +52,7 @@ import pytest
                 ]
             },
             [
-                "dummy:DUMMY_UNIT:" "dummy:DUMMY_UNIT:nested_dummy",
+                "DUMMY_UNIT:dummy:dummy" "DUMMY_UNIT:dummy:nested_dummy",
             ],
         ),
         (
@@ -69,8 +73,8 @@ import pytest
                 ]
             },
             [
-                "dummy:TL_DUMMY_UNIT:",
-                "dummy:TL_DUMMY_UNIT:nested_dummy",
+                "TL_DUMMY_UNIT:dummy:dummy",
+                "TL_DUMMY_UNIT:dummy:nested_dummy",
             ],
         ),
         (
@@ -101,9 +105,9 @@ import pytest
                 ]
             },
             [
-                "dummy::",
-                "dummy::nested_dummy",
-                "dummy::nested_dummy_2",
+                "unset:dummy:dummy",
+                "unset:dummy:nested_dummy",
+                "unset:dummy:nested_dummy_2",
             ],
         ),
         ({"not_a_query": "empty"}, []),
@@ -247,3 +251,15 @@ def test_grab_on_key_list():
     assert grab_on_key_list(input, keys) == ["first_inner", "second_inner"]
 
     input = {}
+
+
+@pytest.mark.asyncio
+async def test_get_agg_unit(app, dummy_zmq_server):
+    token = access_token_builder(["admin3:daily_location:daily_location"])
+    query_dict = {
+        "aggregation_unit": "admin3",
+        "date": "2016-01-01",
+        "method": "last",
+        "query_kind": "daily_location",
+    }
+    assert await get_agg_unit(query_dict) == "admin3"

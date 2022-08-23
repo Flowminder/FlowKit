@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import asyncio
 import collections
 import functools
 import pdb
@@ -9,6 +10,9 @@ from itertools import product
 from typing import Iterable, List, Optional, Tuple, Union, Set, Any
 from prance import ResolvingParser
 from rapidjson import dumps
+
+from quart import request
+
 import logging
 
 
@@ -194,13 +198,30 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     return sorted(unique_scopes)
 
 
-def get_agg_unit(query_dict):
+async def get_agg_unit(query_dict):
     """
     Interrogates Flowmachine for the top-level agg unit of this query
     """
+    request.socket.send_json(
+        {
+            "request_id": request.request_id,
+            "action": "get_aggregation_unit",
+            "params": query_dict,
+        }
+    )
+    reply = await request.socket.recv_json()
+    if reply["status"] != "success":
+        raise Exception("Query has no type - something wrong with Flowmachine")
+    try:
+        return reply["aggregation_unit"]
+    except KeyError:
+        # breakpoint()
+        raise Exception(
+            "Reply missing aggregation_unit key - something wrong with Flowmachine"
+        )
 
 
-def query_to_scopes(query_dict):
+async def query_to_scopes(query_dict):
     """
     Given a query_dict of the form
     {
@@ -217,11 +238,7 @@ def query_to_scopes(query_dict):
     """
     tl_query_name = query_dict["query_kind"]
     query_list = grab_on_key_list(query_dict, ["query_kind"])
-    agg_unit = (
-        query_dict["aggregation_unit"]
-        if "aggregation_unit" in query_dict.keys()
-        else "unset"
-    )
+    agg_unit = await get_agg_unit(query_dict)
     return [f"{agg_unit}:{tl_query_name}:{query_name}" for query_name in query_list]
 
 

@@ -31,14 +31,17 @@ class UserObject:
         self.username = username
         self.scopes = scopes
 
-    def has_access(self, *, actions: List[str], query_json: dict) -> bool:
-        breakpoint()
-        try:
-            claims = set(query_to_scopes(query_json))
-        except Exception as exc:
-            raise BadQueryError
-        if "query_kind" not in query_json:
-            raise MissingQueryKindError
+    def has_access(
+        self, *, actions: List[str] = None, claims: List[str] = None
+    ) -> bool:
+        if not actions or claims:
+            raise ValueError("has_access needs at least actions or claims")
+        # try:
+        #     claims = set(await query_to_scopes(query_json))
+        # except Exception as exc:
+        #     raise BadQueryError
+        # if "query_kind" not in query_json:
+        #     raise MissingQueryKindError
         granting_roles = []
         for role, scopes in self.scopes.items():
             if all(x in scopes for x in {*claims, *actions}):
@@ -50,7 +53,7 @@ class UserObject:
             return True
         raise UserClaimsVerificationError
 
-    def can_run(self, *, query_json: dict) -> bool:
+    async def can_run(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can run this query.
 
@@ -70,8 +73,8 @@ class UserObject:
             If the user cannot run this kind of query at this level of aggregation
 
         """
-
-        return self.has_access(actions=["run"], query_json=query_json)
+        claims = await query_to_scopes(query_json)
+        return self.has_access(actions=["run"], claims=claims)
 
     async def can_poll_by_query_id(self, *, query_id) -> bool:
         """
@@ -96,7 +99,7 @@ class UserObject:
         params = await get_query_parameters_from_flowmachine(query_id=query_id)
         return self.can_poll(query_json=params)
 
-    def can_poll(self, *, query_json: dict) -> bool:
+    async def can_poll(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can poll this kind of query at this unit of aggregation.
 
@@ -115,8 +118,8 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot get the status of this kind of query at this level of aggregation
         """
-
-        return self.has_access(actions=["run", "get_result"], query_json=query_json)
+        claims = await query_to_scopes(query_json)
+        return self.has_access(claims=claims)
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
         """
@@ -138,10 +141,9 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await get_query_parameters_from_flowmachine(query_id=query_id)
-
         return self.can_get_results(query_json=params)
 
-    def can_get_results(self, *, query_json: dict) -> bool:
+    async def can_get_results(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can get the results of this kind of query at this unit of aggregation.
         Parameters
@@ -159,8 +161,8 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot get the results of this kind of query at this level of aggregation
         """
-
-        return self.has_access(actions=["get_result"], query_json=query_json)
+        claims = await query_to_scopes(query_json)
+        return self.has_access(actions=["get_result"], claims=claims)
 
     def can_get_geography(self, *, aggregation_unit: str) -> bool:
         """
@@ -183,13 +185,11 @@ class UserObject:
         """
         return self.has_access(
             actions=["get_result"],
-            query_json=dict(query_kind="geography", aggregation_unit=aggregation_unit),
+            claims=[f"{aggregation_unit}:geography:geography"],
         )
 
     def can_get_available_dates(self) -> bool:
-        return self.has_access(
-            actions=["get_result"], query_json=dict(query_kind="available_dates")
-        )
+        return self.has_access(actions=["get_available_dates"])
 
 
 def user_loader_callback(identity):
