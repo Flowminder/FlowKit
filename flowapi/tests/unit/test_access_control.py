@@ -41,7 +41,9 @@ async def test_granular_run_access(
 
     """
 
-    token = access_token_builder([f"run&{exemplar_query_params[query_kind]['token']}"])
+    token = access_token_builder(
+        [exemplar_query_params[query_kind]["token"], "run_query"]
+    )
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {

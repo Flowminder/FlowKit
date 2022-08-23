@@ -14,10 +14,13 @@ exemplar_query_params = {
             "aggregation_unit": "admin3",
             "method": "last",
         },
-        "token": "daily_location.aggregation_unit.admin3",
+        "token": "admin3:daily_location:daily_location",
     },
     "modal_location": {
-        "token": "modal_location.locations.daily_location.aggregation_unit.admin3",
+        "token": [
+            "admin3:modal_location:daily_location",
+            "admin3:modal_location:modal_location",
+        ],
         "params": {
             "query_kind": "modal_location",
             "locations": [
