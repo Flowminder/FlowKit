@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - `nocturnal_events` now expects a `night_hours` parameter with nested sub-fields `start_hour` and `end_hour`, instead of two parameters `night_start_hour` and `night_end_hour`.
+- Spatial units wiht a mapping table now only include cells that appear in the mapping table. [#5360](https://github.com/Flowminder/FlowKit/issues/5360)
 
 ### Fixed
 - Invalid sub-query specs nested within a `modal_location` spec now raise appropriate validation errors, instead of being masked by internal flowmachine server errors. [#4816](https://github.com/Flowminder/FlowKit/issues/4816)
