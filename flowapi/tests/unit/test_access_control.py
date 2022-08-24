@@ -83,7 +83,9 @@ async def test_granular_poll_access(
 
     """
 
-    token = access_token_builder([f"run&{exemplar_query_params[query_kind]['token']}"])
+    token = access_token_builder(
+        {"test_role": exemplar_query_params[query_kind]["token"]}
+    )
 
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 303
@@ -97,6 +99,14 @@ async def test_granular_poll_access(
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
                     "query_params": exemplar_query_params[q_kind]["params"],
+                },
+            },
+            {
+                "status": "success",
+                "msg": "",
+                "payload": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
                 },
             },
             {
