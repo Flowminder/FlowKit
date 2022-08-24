@@ -34,7 +34,7 @@ class UserObject:
     def has_access(
         self, *, actions: List[str] = None, claims: List[str] = None
     ) -> bool:
-        if not actions or claims:
+        if not actions or not claims:
             raise ValueError("has_access needs at least actions or claims")
         # try:
         #     claims = set(await query_to_scopes(query_json))
@@ -55,7 +55,7 @@ class UserObject:
 
     async def can_run(self, *, query_json: dict) -> bool:
         """
-        Returns true if the user can run this query.
+        Returns true if the user can run this query, or raises an exception
 
         Parameters
         ----------

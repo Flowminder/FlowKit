@@ -42,7 +42,6 @@ def compress_claims(claims):
 
 def decompress_claims(claims):
     in_ = io.BytesIO()
-    breakpoint()
     in_.write(base64.decodebytes(claims.encode()))
     in_.seek(0)
     with gzip.GzipFile(fileobj=in_, mode="rb") as fo:
