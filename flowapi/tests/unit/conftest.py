@@ -54,7 +54,6 @@ def dummy_zmq_server(monkeypatch):
     """
     dummy = Mock()
     dummy.return_value.socket.return_value.recv_json = CoroutineMock()
-
     monkeypatch.setattr(zmq.asyncio.Context, "instance", dummy)
     yield dummy.return_value.socket.return_value.recv_json
 

@@ -92,7 +92,7 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
             "PRIVATE_JWT_SIGNING_KEY environment variable must be set."
         )
 
-    def token_maker(claims: List[str]) -> str:
+    def token_maker(claims: Dict) -> str:
         return generate_token(
             flowapi_identifier=audience,
             username="test",

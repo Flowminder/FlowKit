@@ -42,11 +42,11 @@ async def test_granular_run_access(
     """
 
     token = access_token_builder(
-        [exemplar_query_params[query_kind]["token"], "run_query"]
+        {"test_role": exemplar_query_params[query_kind]["token"] + ["run"]}
     )
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 202
-    dummy_zmq_server.return_value = {
+    prog_return_value = {
         "status": "success",
         "msg": "",
         "payload": {
@@ -57,6 +57,15 @@ async def test_granular_run_access(
     responses = {}
     for q_kind in query_kinds:
         q_params = exemplar_query_params[q_kind]["params"]
+        agg_return_value = {
+            "status": "success",
+            "msg": "",
+            "payload": {
+                "query_id": "DUMMY_QUERY_ID",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+            },
+        }
+        dummy_zmq_server.side_effect = (agg_return_value, prog_return_value)
         response = await app.client.post(
             f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=q_params
         )

@@ -213,11 +213,11 @@ async def get_agg_unit(query_dict):
     if reply["status"] != "success":
         raise Exception("Query has no type - something wrong with Flowmachine")
     try:
-        return reply["aggregation_unit"]
+        return reply["payload"]["aggregation_unit"]
     except KeyError:
-        # breakpoint()
         raise Exception(
-            "Reply missing aggregation_unit key - something wrong with Flowmachine"
+            "Reply missing aggregation_unit key - something wrong with Flowmachine."
+            f"Received output: {reply}"
         )
 
 
