@@ -6,7 +6,8 @@
 # Provides all worked examples from the FlowKit docs in a ready-to-go JupyterLab install
 #
 
-FROM jupyter/scipy-notebook
+# Base image pinned due to https://github.com/Flowminder/FlowKit/issues/5374
+FROM jupyter/scipy-notebook:2022-08-22
 
 RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION=0+unknown
