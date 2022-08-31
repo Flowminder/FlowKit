@@ -6,16 +6,16 @@ SELECT loc_table.id AS location_id,
        st_x(CAST(geom_table.geom_point AS geometry)) AS lon,
        st_y(CAST(geom_table.geom_point AS geometry)) AS lat
 FROM infrastructure.cells AS loc_table
-     LEFT JOIN (SELECT site_id,
-                       id,
-                       version,
-                       name,
-                       type,
-                       status,
-                       structure_type,
-                       is_cow,
-                       date_of_first_service,
-                       date_of_last_service,
-                       geom_point,
-                       geom_polygon
-                FROM infrastructure.sites) AS geom_table ON loc_table.site_id = geom_table.id
+     INNER JOIN (SELECT site_id,
+                        id,
+                        version,
+                        name,
+                        type,
+                        status,
+                        structure_type,
+                        is_cow,
+                        date_of_first_service,
+                        date_of_last_service,
+                        geom_point,
+                        geom_polygon
+                 FROM infrastructure.sites) AS geom_table ON loc_table.site_id = geom_table.id
