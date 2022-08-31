@@ -1663,7 +1663,7 @@
                 "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159",
                 "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"
             ],
-            "markers": "python_version >= '3.6'",
+            "markers": "python_full_version >= '3.6.0'",
             "version": "==1.0.0"
         },
         "psycopg2-binary": {
@@ -1783,6 +1783,10 @@
             "markers": "python_version >= '3.7' and python_version < '4.0'",
             "version": "==2.28.1"
         },
+        "sanitized-package": {
+            "editable": true,
+            "path": "./flowetl"
+        },
         "six": {
             "hashes": [
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
@@ -1817,11 +1821,11 @@
         },
         "versioneer": {
             "hashes": [
-                "sha256:78f0f8642326f47a6b3833fc86977096e9ae1ccf84efa7494cb60809745bfa85",
-                "sha256:d6b6d68c299653736a29f199309ee4306e97a0f0d0a78ecb71e21c90ce1322bb"
+                "sha256:1b8dba9e51e2f0e04c7e8545216eecdea2d63e1bd5569448ee66c549f7e7782f",
+                "sha256:6695fadcd47a5fed638a33b2535d955c7e58ee921181f8bf705576a5d0a2cfdf"
             ],
             "index": "pypi",
-            "version": "==0.23"
+            "version": "==0.24"
         },
         "websocket-client": {
             "hashes": [
