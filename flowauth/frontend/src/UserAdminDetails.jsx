@@ -6,7 +6,7 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { createUser } from "./util/api";
-import { generate } from "generate-password";
+import { generatePassphrase } from "niceware";
 import Typography from "@material-ui/core/Typography";
 import UserGroupsPicker from "./UserGroupsPicker";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -61,7 +61,7 @@ class UserAdminDetails extends React.Component {
   }
 
   generatePassword = (event) => {
-    var pass = generate({ length: 16, numbers: true, symbols: true });
+    var pass = generate(16);
     var passStrength = zxcvbn(pass);
     this.setState({
       password: pass,
