@@ -116,7 +116,6 @@ class UserObject:
             If the user cannot get the status of this kind of query at this level of aggregation
         """
         claims = await query_to_scopes(query_json)
-        print(f"~~~~~~~~~~\n{claims}\n~~~~~~~~~~~~")
         return self.has_access(claims=claims)
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
