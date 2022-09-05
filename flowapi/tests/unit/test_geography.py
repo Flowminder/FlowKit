@@ -25,7 +25,7 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
         {"json": "bits"},
     ]
     token = access_token_builder(
-        [f"get_result&geography.aggregation_unit.{aggregation_unit}"]
+        {"test_role": ["get_result", f"{aggregation_unit}:geography:geography"]}
     )
 
     zmq_reply = ZMQReply(
