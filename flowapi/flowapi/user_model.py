@@ -39,6 +39,7 @@ class UserObject:
         if not actions and not claims:
             raise ValueError("has_access needs at least actions or claims")
         granting_roles = []
+        print(f"=======\n{self.scopes}\n=========")
         for role, scopes in self.scopes.items():
             if all(x in scopes for x in {*claims, *actions}):
                 granting_roles.append(role)
