@@ -185,6 +185,8 @@ async def poll_query(query_id):
         f"Received reply {reply}", request_id=request.request_id
     )
 
+    print(f"=======\n{reply}\n=======")
+
     if reply["status"] == "error":
         return {"status": "error", "msg": reply[""]}, 500
     else:

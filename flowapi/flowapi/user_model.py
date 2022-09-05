@@ -31,17 +31,13 @@ class UserObject:
         self.username = username
         self.scopes = scopes
 
-    def has_access(
-        self, *, actions: List[str] = None, claims: List[str] = None
-    ) -> bool:
-        if not actions or not claims:
+    def has_access(self, *, actions=None, claims=None) -> bool:
+        if actions is None:
+            actions = []
+        if claims is None:
+            claims = []
+        if not actions and not claims:
             raise ValueError("has_access needs at least actions or claims")
-        # try:
-        #     claims = set(await query_to_scopes(query_json))
-        # except Exception as exc:
-        #     raise BadQueryError
-        # if "query_kind" not in query_json:
-        #     raise MissingQueryKindError
         granting_roles = []
         for role, scopes in self.scopes.items():
             if all(x in scopes for x in {*claims, *actions}):
@@ -97,7 +93,7 @@ class UserObject:
         """
 
         params = await get_query_parameters_from_flowmachine(query_id=query_id)
-        return self.can_poll(query_json=params)
+        return await self.can_poll(query_json=params)
 
     async def can_poll(self, *, query_json: dict) -> bool:
         """
@@ -119,6 +115,7 @@ class UserObject:
             If the user cannot get the status of this kind of query at this level of aggregation
         """
         claims = await query_to_scopes(query_json)
+        print(f"~~~~~~~~~~\n{claims}\n~~~~~~~~~~~~")
         return self.has_access(claims=claims)
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
@@ -141,7 +138,7 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await get_query_parameters_from_flowmachine(query_id=query_id)
-        return self.can_get_results(query_json=params)
+        return await self.can_get_results(query_json=params)
 
     async def can_get_results(self, *, query_json: dict) -> bool:
         """
