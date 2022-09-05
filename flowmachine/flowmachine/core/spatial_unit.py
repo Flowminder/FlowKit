@@ -367,7 +367,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
             raise ValueError("No columns specified for join.")
         if hasattr(self, "mapping_table"):
             return f"""
-                    LEFT JOIN
+                    INNER JOIN
                         ({self.mapping_table.get_query()}) AS _ USING ({self._loc_on})
                     LEFT JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
@@ -376,7 +376,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         else:
 
             return f"""
-                    LEFT JOIN
+                    INNER JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
                     ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
                     """
