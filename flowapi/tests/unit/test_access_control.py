@@ -55,7 +55,7 @@ async def test_granular_run_access(
         },
     }
     responses = {}
-    for q_kind in query_kinds:
+    for q_kind in query_kinds[:0]:
         q_params = exemplar_query_params[q_kind]["params"]
         agg_return_value = {
             "status": "success",
@@ -71,6 +71,12 @@ async def test_granular_run_access(
         )
         responses[q_kind] = response.status_code
     assert expected_responses == responses
+
+
+def loud_zmq(responses):
+    for response in responses:
+        print(f"********\nZMQ call, responding with {response}\n**************")
+        yield response
 
 
 @pytest.mark.asyncio
@@ -92,32 +98,34 @@ async def test_granular_poll_access(
 
     responses = {}
     for q_kind in query_kinds:
-        dummy_zmq_server.side_effect = (
-            {
-                "status": "success",
-                "msg": "",
-                "payload": {
-                    "query_id": "DUMMY_QUERY_ID",
-                    "query_params": exemplar_query_params[q_kind]["params"],
+        dummy_zmq_server.side_effect = loud_zmq(
+            [
+                {
+                    "status": "success",
+                    "msg": "",
+                    "payload": {
+                        "query_id": "DUMMY_QUERY_ID",
+                        "query_params": exemplar_query_params[q_kind]["params"],
+                    },
                 },
-            },
-            {
-                "status": "success",
-                "msg": "",
-                "payload": {
-                    "query_id": "DUMMY_QUERY_ID",
-                    "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+                {
+                    "status": "success",
+                    "msg": "",
+                    "payload": {
+                        "query_id": "DUMMY_QUERY_ID",
+                        "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+                    },
                 },
-            },
-            {
-                "status": "success",
-                "msg": "",
-                "payload": {
-                    "query_id": "DUMMY_QUERY_ID",
-                    "query_kind": q_kind,
-                    "query_state": "completed",
+                {
+                    "status": "success",
+                    "msg": "",
+                    "payload": {
+                        "query_id": "DUMMY_QUERY_ID",
+                        "query_kind": q_kind,
+                        "query_state": "completed",
+                    },
                 },
-            },
+            ]
         )
         response = await app.client.get(
             f"/api/0/poll/DUMMY_QUERY_ID",
