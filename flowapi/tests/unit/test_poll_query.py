@@ -14,16 +14,23 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
     Test that correct status code and any redirect is returned when polling a running query
     """
 
-    token = token = access_token_builder(
-        [f"run&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
+    token = access_token_builder(
+        {"test_role": ["run", "DUMMY_AGGREGATION:modal_location:modal_location"]}
     )
 
-    dummy_zmq_server.side_effect = return_once(
+    dummy_zmq_server.side_effect = (
+        ZMQReply(
+            status="success",
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+            },
+        ),
         ZMQReply(
             status="error",
             msg=f"Unknown query id: 'DUMMY_QUERY_ID'",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "awol"},
-        )
+        ),
     )
     response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
@@ -52,17 +59,20 @@ async def test_poll_query(
     """
 
     token = access_token_builder(
-        [f"{action_right}&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
+        {
+            "test_role": [
+                action_right,
+                "DUMMY_AGGREGATION_UNIT:modal_location:modal_location",
+            ]
+        }
     )
 
     # The replies below are in response to the following messages:
     #  - get_query_kind
+    #  - get_agg_unit
     #  - poll_query
-    #
-    # {'status': 'done', 'msg': '', 'payload': {'query_id': '5ffe4a96dbe33a117ae9550178b81836', 'query_kind': 'modal_location'}}
-    # {'status': 'done', 'msg': '', 'payload': {'query_id': '5ffe4a96dbe33a117ae9550178b81836', 'query_kind': 'modal_location', 'query_state': 'completed'}}
-    #
-    dummy_zmq_server.side_effect = return_once(
+
+    dummy_zmq_server.side_effect = (
         ZMQReply(
             status="success",
             payload={
@@ -73,7 +83,14 @@ async def test_poll_query(
                 },
             },
         ),
-        then=ZMQReply(
+        ZMQReply(
+            status="success",
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+            },
+        ),
+        ZMQReply(
             status="success",
             payload={
                 "query_id": "DUMMY_QUERY_ID",

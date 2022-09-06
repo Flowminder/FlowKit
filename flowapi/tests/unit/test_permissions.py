@@ -1,6 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import prance
+from prance import ResolvingParser
+
 from flowapi.permissions import (
     is_flat,
     flatten_on_key,
@@ -12,6 +15,9 @@ from flowapi.permissions import (
 
 import pytest
 import asyncio
+import ast
+
+from unit.zmq_helpers import ZMQReply
 
 pytest_plugins = "pytest_asyncio"
 
@@ -19,23 +25,9 @@ pytest_plugins = "pytest_asyncio"
 @pytest.mark.parametrize(
     "tree, expected",
     [
-        ({}, []),
-        (
-            {
-                "properties": {
-                    "query_kind": {"enum": ["dummy"]},
-                    "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
-                }
-            },
-            [
-                "DUMMY_UNIT:dummy:dummy",
-                "DUMMY_UNIT_2:dummy:dummy",
-            ],
-        ),
-        ({"oneOf": []}, []),
         (
             {"oneOf": [{"properties": {"query_kind": {"enum": ["dummy"]}}}]},
-            ["dummy::"],
+            ["nonspatial:dummy:dummy"],
         ),
         (
             {
@@ -52,7 +44,8 @@ pytest_plugins = "pytest_asyncio"
                 ]
             },
             [
-                "DUMMY_UNIT:dummy:dummy" "DUMMY_UNIT:dummy:nested_dummy",
+                "DUMMY_UNIT:dummy:dummy",
+                "DUMMY_UNIT:dummy:nested_dummy",
             ],
         ),
         (
@@ -105,16 +98,33 @@ pytest_plugins = "pytest_asyncio"
                 ]
             },
             [
-                "unset:dummy:dummy",
-                "unset:dummy:nested_dummy",
-                "unset:dummy:nested_dummy_2",
+                "nonspatial:dummy:dummy",
+                "nonspatial:dummy:nested_dummy",
+                "nonspatial:dummy:nested_dummy_2",
             ],
         ),
-        ({"not_a_query": "empty"}, []),
     ],
 )
-def test_schema_to_scopes(tree, expected):
+def test_schema_to_scopes(tree, expected, monkeypatch):
+    # Shouldn't try and fit a full spec in here, this test is large enough as it is - we skip ResolvingParser instead
+    class MockResolvingParser:
+        def __init__(self, spec_string, **kwargs):
+            self.specification = {
+                "components": {
+                    "schemas": {"FlowmachineQuerySchema": ast.literal_eval(spec_string)}
+                }
+            }
+
+    # It looks like we can't mock out ResolvingParser, so we mock out it's parent instead
+    monkeypatch.setattr(prance, "BaseParser", MockResolvingParser)
     assert schema_to_scopes(tree) == expected
+
+
+def test_schema_to_scopes_bad_input():
+    with pytest.raises(
+        AssertionError, match="No specification parsed, cannot validate!"
+    ):
+        schema_to_scopes({})
 
 
 @pytest.mark.parametrize(
@@ -214,21 +224,19 @@ def test_flatten_on_key(input, expected):
     assert flatten_on_key(input, key="properties") == expected
 
 
-@pytest.mark.parametrize(
-    "input,expected",
-    [
-        (
-            {
-                "query_kind": {"enum": ["nested_dummy"]},
-                "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
-            },
-            {"nested_dummy", "nested_dummy:DUMMY_UNIT", "nested_dummy:DUMMY_UNIT_2"},
-        ),
-        ({"query_kind": {"enum": ["dummy"]}}, {"dummy"}),
-    ],
-)
-def test_scopes_from_query(input, expected):
-    tl_query = {}
+def test_scopes_from_query():
+    tl_query = {
+        "properties": {
+            "query_kind": {"enum": ["test_query"]},
+            "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
+        }
+    }
+
+    input = "nested_query"
+    expected = {
+        "DUMMY_UNIT:test_query:nested_query",
+        "DUMMY_UNIT_2:test_query:nested_query",
+    }
     assert tl_schema_scope_string(tl_query, input) == expected
 
 
@@ -251,15 +259,3 @@ def test_grab_on_key_list():
     assert grab_on_key_list(input, keys) == ["first_inner", "second_inner"]
 
     input = {}
-
-
-@pytest.mark.asyncio
-async def test_get_agg_unit(app, dummy_zmq_server):
-    token = access_token_builder(["admin3:daily_location:daily_location"])
-    query_dict = {
-        "aggregation_unit": "admin3",
-        "date": "2016-01-01",
-        "method": "last",
-        "query_kind": "daily_location",
-    }
-    assert await get_agg_unit(query_dict) == "admin3"
