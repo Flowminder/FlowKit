@@ -131,7 +131,12 @@ async def test_get_json_status_code(
     """
 
     token = access_token_builder(
-        ["get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
+        {
+            "test_role": [
+                "get_result",
+                "DUMMY_AGGREGATION_UNIT:modal_location:modal_location",
+            ]
+        }
     )
 
     # The replies below are in response to the following messages:
@@ -144,9 +149,16 @@ async def test_get_json_status_code(
             payload={
                 "query_id": "DUMMY_QUERY_ID",
                 "query_params": {
-                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
                     "query_kind": "modal_location",
                 },
+            },
+        ),
+        ZMQReply(
+            status="success",
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
             },
         ),
         ZMQReply(

@@ -135,11 +135,12 @@ def _(in_iter, search_keys, results):
 def schema_to_scopes(schema: dict) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
-    <action>:<query_kind>:<arg_name>:<arg_val>
-    where arg_val may be a query kind, or the name of an aggregation unit if applicable, and <action> is run or get_result.
+    <agg_unit>:<tl_query>:<sub_query>
+    where agg_unit is the name of an aggregation unit, <tl_query> is the query and <sub_query> is a dependent query.
+    Every query yields a scope of the form <agg_unit>:<tl_query>:<tl_query>
     Additionally yields the "get_result&available_dates" scope.
-    One scope is yielded for each viable query structure, so for queries which contain two child queries
-    five scopes are yielded. If that query has 3 possible aggregation units, then 13 scopes are yielded altogether.
+    One scope is yielded for each descendent of TL query, so for queries which contain two child queries
+    three scopes are yielded. If that query has 3 possible aggregation units, then 9 scopes are yielded altogether.
 
     Parameters
     ----------
@@ -153,31 +154,19 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
 
     Examples
     --------
-    >>> list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
-    ["get_result&dummy", "run&dummy", "get_result&available_dates"],
+
+    >>> list(
+        schema_to_scopes(
+            {
+                "FlowmachineQuerySchema": {
+                    "oneOf": [{"$ref": "DUMMY"}]},
+                "DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},
+            },
+        )
+    )
+
+    ["dummy", "run&dummy", "get_result&available_dates"],
     """
-
-    # Note from meeting; this will need to be per-role check, as all permissions for a query have to be contained in
-    # a single role
-
-    # Example query scopes:
-    # "run",
-    #  "read",
-    #  "spatial_aggregate",
-    #  "locations:admin_1",
-    #  "locations:admin_3",
-    #  "event_dates:1990-02-01:1992-03-04"
-    #  "event_type:mds",
-    #  "event_type:sms",
-    #  "subscriber_subset"
-
-    # Boolean permissions:
-    # Check run
-    # Check read
-    # Check subscriber subset
-    # Check event types
-    # Check query tree
-    # Check dates
     resolved_queries = ResolvingParser(spec_string=dumps(schema)).specification[
         "components"
     ]["schemas"]["FlowmachineQuerySchema"]
