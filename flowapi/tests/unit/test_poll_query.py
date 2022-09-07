@@ -15,22 +15,15 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
     """
 
     token = access_token_builder(
-        {"test_role": ["run", "DUMMY_AGGREGATION:modal_location:modal_location"]}
+        {"test_role": ["run", "DUMMY_AGGREGATION_UNIT:modal_location:modal_location"]}
     )
 
-    dummy_zmq_server.side_effect = (
-        ZMQReply(
-            status="success",
-            payload={
-                "query_id": "DUMMY_QUERY_ID",
-                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
-            },
-        ),
+    dummy_zmq_server.side_effect = return_once(
         ZMQReply(
             status="error",
             msg=f"Unknown query id: 'DUMMY_QUERY_ID'",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "awol"},
-        ),
+        )
     )
     response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
