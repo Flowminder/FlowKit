@@ -461,10 +461,10 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:7ca74052a38fa25fe9bedf52da0be7d3fdd2fb027c3b778ea78dfe8c212937d1",
-                "sha256:f2db3a10254241d9b447232cec8b424847f338d9d36f9a577a6192c332a46abd"
+                "sha256:097bdf5cd87576fd066179c9f7f208004f7a6864ee1b20f37d346c0bcb099f84",
+                "sha256:6f090e29ab8ef8643e521763a4f1f39dc3914db643122b1e9d3328ff2e43ada2"
             ],
-            "version": "==8.4.0"
+            "version": "==8.5.0"
         },
         "jedi": {
             "hashes": [
@@ -614,14 +614,6 @@
             ],
             "path": "."
         },
-        "setuptools": {
-            "hashes": [
-                "sha256:2e24e0bec025f035a2e72cdd1961119f557d78ad331bb00ff82efb2ab8da8e82",
-                "sha256:7732871f4f7fa58fb6bdcaeadb0161b2bd046c85905dbaa066bdcbcc81953b57"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==65.3.0"
-        },
         "six": {
             "hashes": [
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
@@ -670,11 +662,11 @@
         },
         "versioneer": {
             "hashes": [
-                "sha256:9a8d5ac720c66e099ac20ba4fbc2cf00a5f2bb1614de89f44c82935ac510bae1",
-                "sha256:a2966768241814558057060fd5d736e5b6f491b191229185f6bfa701651024d6"
+                "sha256:67f464f152283caaec2c0fdd9f2f782bb460932c155bcc9529daa1bec84f26f6",
+                "sha256:84fc729aa296d1d26645a8f62f178019885ff6f9a1073b29a4a228270ac5257b"
             ],
             "index": "pypi",
-            "version": "==0.25"
+            "version": "==0.26"
         },
         "wcwidth": {
             "hashes": [
