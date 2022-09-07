@@ -67,7 +67,17 @@ async def run_query():
 
     """
     json_data = await request.json
-    await current_user.can_run(query_json=json_data)
+    # REVIEWER COMMENT: I'm not entirely sure that this is he right place for this check
+    try:
+        await current_user.can_run(query_json=json_data)
+    except KeyError as e:
+        return (
+            {
+                "status": "Error",
+                "msg": f"{e.args[0]} must be specified when running a query.",
+            },
+            400,
+        )
     current_app.query_run_logger.info("run_query", query=json_data)
     request.socket.send_json(
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
@@ -184,8 +194,6 @@ async def poll_query(query_id):
     current_app.flowapi_logger.debug(
         f"Received reply {reply}", request_id=request.request_id
     )
-
-    print(f"=======\n{reply}\n=======")
 
     if reply["status"] == "error":
         return {"status": "error", "msg": reply[""]}, 500
