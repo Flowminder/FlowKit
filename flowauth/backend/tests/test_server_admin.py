@@ -72,7 +72,11 @@ def test_create_server(client, auth, test_admin):
     response = client.get(
         "/admin/servers/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
     )
-    assert {"run": True, "read": True, "dummy_scope_1": True} == response.get_json()
+    assert [
+        {"id": 1, "enabled": True, "name": "run"},
+        {"id": 2, "enabled": True, "name": "read"},
+        {"id": 3, "enabled": True, "name": "dummy_scope_1"},
+    ] == response.get_json()
 
 
 def test_create_server_errors_with_missing_name(client, auth, test_admin):
@@ -209,26 +213,26 @@ def test_list_scopes(client, auth, test_scopes, test_servers, test_admin):
         headers={"X-CSRF-Token": csrf_cookie},
     )
     assert response.status_code == 200
-    assert response.json == {
-        0: {"name": "get_result", "enabled": "true"},
-        1: {"name": "run", "enabled": "true"},
-        2: {"name": "dummy_query:admin_level_1", "enabled": "true"},
-    }
+    assert response.json == [
+        {"id": 1, "name": "get_result", "enabled": True},
+        {"id": 3, "name": "run", "enabled": True},
+        {"id": 4, "name": "dummy_agg_unit:dummy_query:dummy_query", "enabled": True},
+    ]
 
 
 def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
     uid, uname, password = test_admin
     response, csrf_cookie = auth.login(uname, password)
-    json = {"dummy_query:admin_level_1": False}
+    json = {"dummy_agg_unit:dummy_query:dummy_query": False}
     response = client.patch(
         "/admin/servers/1/scopes", json=json, headers={"X-CSRF-Token": csrf_cookie}
     )
     assert response.status_code == 200
-    assert response.json == {
-        "get_result": True,
-        "run": True,
-        "dummy_query:admin_level_1": False,
-    }
+    assert response.json == [
+        {"id": 1, "name": "get_result", "enabled": True},
+        {"id": 3, "name": "run", "enabled": True},
+        {"id": 4, "name": "dummy_agg_unit:dummy_query:dummy_query", "enabled": False},
+    ]
 
 
 def test_list_servers_for_user(client, auth, test_user_with_roles):

@@ -134,7 +134,6 @@ def add_token(server):
     json = request.get_json()
 
     current_app.logger.debug("New token request", request=json)
-
     if "name" not in json:
         raise InvalidUsage("No name.", payload={"bad_field": "name"})
     expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -146,14 +145,10 @@ def add_token(server):
     if expiry < datetime.datetime.now():
         raise Unauthorized(f"Token for {current_user.username} expired")
 
-    # TODO: Move all of this bit to flowapi
-    # We check here on the offchance that a verified user is manipulating
-    # Gotta find all roles that _could_ allow this action
-
     if "roles" not in json:
         raise InvalidUsage("No claims.", payload={"bad_field": "roles"})
 
-    claims = {
+    roles = {
         role["name"]: db.session.execute(
             select(Scope.name)
             .join(Role.scopes)
@@ -164,24 +159,13 @@ def add_token(server):
         .all()
         for role in json["roles"]
     }
-    # claims = [scope.name for scope in Scope.query.filter(Scope.id.in_(scope_ids)).all()]
-    # allowed_roles = {role.name: role.is_allowed(claims) for role in current_user.roles}
-    # if not any(allowed_roles.values()):
-    #     raise Unauthorized(
-    #         f"No roles for {current_user.username} permit the requested scopes."
-    #     )
-    #
-    # allowed_roles = dict(filter(lambda x: x[1] is True, allowed_roles.items())).keys()
-    # current_app.logger.debug(
-    #     f"Token granted for {current_user.username} via roles {list(allowed_roles)}"
-    # )
 
     token_string = generate_token(
-        username=current_user.username,
         flowapi_identifier=server.name,
-        lifetime=lifetime,
-        claims=claims,
+        username=current_user.username,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
+        lifetime=lifetime,
+        roles=roles,
     )
 
     history_entry = TokenHistory(

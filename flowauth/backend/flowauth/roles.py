@@ -67,7 +67,10 @@ def add_role():
     )
     server = Server.query.filter(Server.id == json["server_id"]).first()
     role_scopes = Scope.query.filter(Scope.id.in_(json["scopes"])).all()
-    role_users = User.query.filter(User.id.in_(json["users"])).all()
+    try:
+        role_users = User.query.filter(User.id.in_(json["users"])).all()
+    except KeyError:
+        role_users = []
     new_role = Role(
         name=json["name"],
         scopes=role_scopes,
@@ -154,4 +157,6 @@ def list_my_roles_on_server(server_id):
     """
     Returns a list of roles for this user on this server
     """
-    return list_user_roles_on_server(current_user.id, server_id)
+    user = User.query.filter(User.id == current_user.id).first_or_404()
+    roles = user.roles.query.filter(Role.server.id == server_id).all_or_404()
+    return roles_to_json(roles)

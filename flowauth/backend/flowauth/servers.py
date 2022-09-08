@@ -61,7 +61,7 @@ def get_roles(server_id):
                 "name": role.name,
                 "scopes": [scope.name for scope in role.scopes],
                 "latest_token_expiry": role.latest_token_expiry.strftime(
-                    "%y-%m-%dt%h:%m:%s.%fz"
+                    "%Y-%m-%dT%H:%M:%S.%fZ"
                 ),
                 "longest_token_life_minutes": role.longest_token_life_minutes,
             }
@@ -84,7 +84,7 @@ def get_role(server_id, role_id):
             "name": role.name,
             "scopes": [scope.name for scope in role.scopes],
             "latest_token_expiry": role.latest_token_expiry.strftime(
-                "%y-%m-%dt%h:%m:%s.%fz"
+                "%Y-%m-%dT%H:%M:%S.%fZ"
             ),
             "longest_token_life_minutes": role.longest_token_life_minutes,
         }
