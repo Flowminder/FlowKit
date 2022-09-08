@@ -214,7 +214,7 @@ def generate_token(
     username: str,
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
-    claims: List[str],
+    roles: dict,
     compress: bool = False,
 ) -> str:
     """
@@ -228,7 +228,7 @@ def generate_token(
         containing a PEM encoded key
     lifetime : datetime.timedelta
         Lifetime from now of the token
-    claims : list
+    roles : list
         List of claims this token will contain
     flowapi_identifier : str, optional
         Optionally provide a string to identify the audience of the token
@@ -237,7 +237,7 @@ def generate_token(
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims=["run&spatial_aggregate.locations.daily_location.aggregation_unit.admin3"])
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),roles=["run&spatial_aggregate.locations.daily_location.aggregation_unit.admin3"])
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
     Returns
@@ -252,7 +252,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=claims,
+        user_claims=roles,
         sub=username,
         exp=now + lifetime,
     )
