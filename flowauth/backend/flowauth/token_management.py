@@ -146,7 +146,7 @@ def add_token(server):
         raise Unauthorized(f"Token for {current_user.username} expired")
 
     if "roles" not in json:
-        raise InvalidUsage("No claims.", payload={"bad_field": "roles"})
+        raise InvalidUsage("No roles.", payload={"bad_field": "roles"})
 
     roles = {
         role["name"]: db.session.execute(
