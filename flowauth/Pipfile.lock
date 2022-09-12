@@ -447,11 +447,11 @@
         },
         "pyotp": {
             "hashes": [
-                "sha256:9d144de0f8a601d6869abe1409f4a3f75f097c37b50a36a3bf165810a6e23f28",
-                "sha256:d28ddfd40e0c1b6a6b9da961c7d47a10261fb58f378cb00f05ce88b26df9c432"
+                "sha256:2e746de4f15685878df6d022c5691627af9941eec18e0d513f05497f5fa7711f",
+                "sha256:ce989faba0df77dc032b45e51c6cca42bcf20896c8d3d1e7cd759a53dc7d6cb5"
             ],
             "index": "pypi",
-            "version": "==2.6.0"
+            "version": "==2.7.0"
         },
         "pyparsing": {
             "hashes": [
@@ -1348,11 +1348,11 @@
         },
         "pyotp": {
             "hashes": [
-                "sha256:9d144de0f8a601d6869abe1409f4a3f75f097c37b50a36a3bf165810a6e23f28",
-                "sha256:d28ddfd40e0c1b6a6b9da961c7d47a10261fb58f378cb00f05ce88b26df9c432"
+                "sha256:2e746de4f15685878df6d022c5691627af9941eec18e0d513f05497f5fa7711f",
+                "sha256:ce989faba0df77dc032b45e51c6cca42bcf20896c8d3d1e7cd759a53dc7d6cb5"
             ],
             "index": "pypi",
-            "version": "==2.6.0"
+            "version": "==2.7.0"
         },
         "pyparsing": {
             "hashes": [
@@ -1381,9 +1381,9 @@
         "sanitized-package": {
             "editable": true,
             "extras": [
-                "pytest"
+
             ],
-            "path": "./../flowkit_jwt_generator"
+            "path": "./backend"
         },
         "simplejson": {
             "hashes": [

@@ -1582,10 +1582,10 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:9dc80d3bbea3d99dfbebaa23632754a186734684dbd97c6147a164285ce3ca12"
+                "sha256:29c0d538a02e4398952a02b7a3556773e2d456c2358b34e790e981ca2c822751"
             ],
             "index": "pypi",
-            "version": "==1.3.5"
+            "version": "==1.3.6"
         },
         "python-dateutil": {
             "hashes": [
