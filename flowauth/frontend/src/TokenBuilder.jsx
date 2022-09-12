@@ -29,6 +29,8 @@ const styles = (theme) => ({
     paddingBottom: theme.spacing.unit * 2
   }
 })
+
+
 function TokenBuilder(props) {
 
   const {activeServer, onClick} = props
@@ -41,6 +43,7 @@ function TokenBuilder(props) {
   const [checked, setChecked] = useState([])
   const [tokenErrorOpen, setTokenErrorOpen] = useState(false)
   const [tokenError, setTokenError] = useState("")
+  const [tokenWarningOpen, setTokenWarningOpen] = useState(false)
 
   // Run on initial load to get roles
   useEffect(() => {
@@ -64,7 +67,7 @@ function TokenBuilder(props) {
       setNameHelperText("");
       setNameIsValid(true)
     } else if (name.length === 0) {
-      setNameHelperText("Role name can not be blank.");
+      setNameHelperText("Token name cannot be blank.");
       setNameIsValid(false)
     } else {
       setNameHelperText(
@@ -116,9 +119,23 @@ function TokenBuilder(props) {
     setChecked(all_checked)
   }
 
+  //Handles form submission
+  const submitForm = () => {
+    if (activeRoles.length === 0){
+      setTokenWarningOpen(true)
+    } else {
+      requestToken()
+    }
+  }
+
   //Handles the token error box being closed
   const closeTokenError = () => {
     setTokenErrorOpen(false)
+  }
+
+  //Handles the token warning box being closed
+  const closeTokenWarning = () => {
+    setTokenWarningOpen(false)
   }
 
   //Handles the token name being changed
@@ -149,6 +166,32 @@ function TokenBuilder(props) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open = {tokenWarningOpen}
+        onClose = {closeTokenWarning}
+      >
+        <DialogTitle>
+          Warning
+        </DialogTitle>
+        <DialogContentText>
+          No permissions will be granted by this token. Are you sure?
+        </DialogContentText>
+        <DialogActions>
+          <Button
+            onClick={closeTokenWarning}
+            autoFocus
+          >
+             No
+          </Button>
+          <Button
+            onClick = {x => {closeTokenWarning(); requestToken()}}
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <TextField
         id="name"
         label="Name"
@@ -168,7 +211,7 @@ function TokenBuilder(props) {
           checked = {checked}
         />
       </Grid>
-      <SubmitButtons handleSubmit={requestToken} onClick={onClick} />
+      <SubmitButtons handleSubmit={submitForm} onClick={onClick} />
 
 
     </Fragment>
