@@ -682,11 +682,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:0b6d0e163436e3365aad4726aea8407a25e81489a04f8a6dfae373bd363eff75",
-                "sha256:0f7ab3aa0f6bca8f47503f18c36a9b3615fab8bf5c33f550e743b07f51abcdd2"
+                "sha256:b00759b7b805751b461f26778bacb328705c7626fca18199e0c6c3b8b8deb614",
+                "sha256:c9eb236d7016cf8a92348156176b8679ccb86e3bddda9fae54bb92a0682bc99a"
             ],
             "index": "pypi",
-            "version": "==5.6.1"
+            "version": "==5.7.1"
         },
         "asttokens": {
             "hashes": [
