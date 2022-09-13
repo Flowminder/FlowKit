@@ -92,6 +92,7 @@ function TokenBuilder(props) {
 
   //Pops up a marquee containing the token for copy-and-paste or download
   const requestToken = () => {
+
     createToken(
       name,
       activeServer,
@@ -122,7 +123,8 @@ function TokenBuilder(props) {
   //Handles form submission
   const submitForm = () => {
     if (activeRoles.length === 0){
-      setTokenWarningOpen(true)
+      setTokenError("At least one role must be selected")
+      setTokenErrorOpen(true)
     } else {
       requestToken()
     }
@@ -163,31 +165,6 @@ function TokenBuilder(props) {
           autoFocus
           >
             Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open = {tokenWarningOpen}
-        onClose = {closeTokenWarning}
-      >
-        <DialogTitle>
-          Warning
-        </DialogTitle>
-        <DialogContentText>
-          No permissions will be granted by this token. Are you sure?
-        </DialogContentText>
-        <DialogActions>
-          <Button
-            onClick={closeTokenWarning}
-            autoFocus
-          >
-             No
-          </Button>
-          <Button
-            onClick = {x => {closeTokenWarning(); requestToken()}}
-          >
-            Yes
           </Button>
         </DialogActions>
       </Dialog>
