@@ -29,7 +29,7 @@ describe("Token generation", function () {
       force: true,
     });
 
-    cy.get("#name").type("TOKEN_TEST01", {
+    cy.get("#name").type("TEXT_INPUT_TEST", {
       force: true,
     });
     cy.contains("#name-helper-text").should("not.exist");
@@ -64,39 +64,21 @@ describe("Token generation", function () {
     cy.get("#name").type("TOKEN_TEST02", {
       force: true,
     });
-    // cy.get("[data-cy='roles_picker']").get(".rs-picker-toggle-clean").click();
     cy.contains("Save").click();
-    cy.get("#warning-dialog-description").should(
+    cy.get('.MuiDialog-container').should(
       "have.text",
-      "No permissions will be granted by this token. Are you sure?"
+      "ErrorAt least one role must be selectedClose"
     );
-    cy.get("#warning-dialog-yes").click();
-    cy.contains("TOKEN_TEST02").should("be.visible");
   });
 
-  it("Click Cancel on warning box", function () {
-    cy.get("#new").click();
-    //add token name
-    cy.get("#name").type("TOKEN_TEST02", {
-      force: true,
-    });
-    //unchecked permission top level checkbox
-    cy.get("[data-cy=roles_picker]").get(".rs-picker-toggle-clean").click();
-    cy.contains("Save").click();
-    cy.get("#warning-dialog-description").should(
-      "have.text",
-      "Warning: no permissions will be granted by this token. Are you sure?"
-    );
-    cy.get("#warning-dialog-cancel").click();
-    cy.contains("TOKEN_TEST02").should("not.exist");
-  });
   it("Add new token", function () {
     cy.get("#new").click();
     //Add new token
-    cy.get("#name").type("TOKEN_TEST01", {
+    cy.get("#name").type("auto_test_token", {
       force: true,
     });
+    cy.get('.MuiGrid-grid-xs-8 > .MuiButton-root').click();
     cy.contains("Save").click();
-    cy.contains("TOKEN_TEST01").should("be.visible");
+    cy.contains("auto_test_token").should("be.visible");
   });
 });
