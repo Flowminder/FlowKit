@@ -24,6 +24,8 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+const { dateTimePickerDefaultProps } = require("@material-ui/pickers/constants/prop-types");
+
 function getCookieValue(a) {
   var b = document.cookie.match("(^|;)\\s*" + a + "\\s*=\\s*([^;]+)");
   return b ? b.pop() : "";
@@ -50,7 +52,7 @@ Cypress.Commands.add("create_two_factor_user", (username, password) =>
       .its("body");
   })
 );
-Cypress.Commands.add("create_user", (username, password) =>
+  Cypress.Commands.add("create_user", (username, password) =>
   cy.login_admin().then((response) =>
     cy.request({
       method: "POST",
@@ -63,14 +65,18 @@ Cypress.Commands.add("create_user", (username, password) =>
     })
   )
 );
-Cypress.Commands.add("create_group", (group_name) =>
+Cypress.Commands.add("create_role", (role_name) =>
   cy.login_admin().then((response) =>
     cy
       .request({
         method: "POST",
-        url: "/admin/groups",
+        url: "/roles/",
         body: {
-          name: group_name,
+          name: role_name,
+          scopes: [0],
+          latest_token_expiry: "2121-12-31T00:00:00.000000Z",
+          server_id: 1,
+          longest_token_life_minutes: 2*24*60
         },
         headers: { "X-CSRF-Token": getCookieValue("X-CSRF") },
       })
