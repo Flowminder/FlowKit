@@ -682,11 +682,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:1c95d5b0531180e2ee8d65e853fc5c166136b494c2dbbc940b23d899993a18ef",
-                "sha256:20ec967a4174853e4f3c14f12a1b6e031740a6e4734f00110934e12e1e7f0ebe"
+                "sha256:78d2711d45f3baf626e161182850c5707080cddecd1ac19b4293ee2a8cf574f2",
+                "sha256:f6a7b7fb1607231c520f13ba8ef9343b26b661c4579ecf0381463fa1b9fa10e1"
             ],
             "index": "pypi",
-            "version": "==5.7.2"
+            "version": "==5.8.0"
         },
         "asttokens": {
             "hashes": [
@@ -1835,7 +1835,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version >= '3.7'",
+            "markers": "python_full_version < '3.11.0a7'",
             "version": "==2.0.1"
         },
         "tornado": {
