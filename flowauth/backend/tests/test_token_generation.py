@@ -14,7 +14,6 @@ from freezegun import freeze_time
 from flowauth.models import db, User
 
 
-@pytest.mark.skip("I'm not sure that this a)is needed and b) was ever needed")
 @freeze_time(datetime.datetime(year=2020, month=12, day=31))
 def test_reject_when_claim_not_allowed(
     client, auth, app, test_user, test_roles, test_scopes
@@ -35,16 +34,13 @@ def test_reject_when_claim_not_allowed(
         token_eq = {
             "name": "TEST_TOKEN",
             "expiry": expiry,
-            "roles": [0],
+            "roles": [{"name": "runner"}],
         }
         response = client.post(
             "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
         )
         assert 401 == response.status_code
-        assert (
-            b"No roles for TEST_USER permit the requested scopes."
-            in response.get_data()
-        )
+        assert b"runner is not permitted for the current user." in response.get_data()
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -63,7 +59,6 @@ def test_token_generation(
         )
         token_req = {
             "name": "DUMMY_TOKEN",
-            "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "roles": [{"name": "runner"}, {"name": "reader"}],
         }
         response = client.post(

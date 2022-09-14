@@ -24,8 +24,8 @@ db = SQLAlchemy()
 
 scopes_in_role = db.Table(
     "scopes_in_role",
-    db.Column("scope_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
-    db.Column("role_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
+    db.Column("scope_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
 )
 
 users_with_roles = db.Table(
