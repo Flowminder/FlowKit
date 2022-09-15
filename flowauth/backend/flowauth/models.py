@@ -101,6 +101,8 @@ class User(db.Model):
     def latest_token_expiry(self, server: "Server") -> datetime.datetime:
         """
         Get the latest datetime a token can be valid until on a server.
+        Returns the soonest of either the server's expiry date or the
+        current time + the servers maximum lifetime.
 
         Parameters
         ----------

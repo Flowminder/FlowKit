@@ -228,8 +228,8 @@ def generate_token(
         containing a PEM encoded key
     lifetime : datetime.timedelta
         Lifetime from now of the token
-    roles : list
-        List of claims this token will contain
+    roles : dict
+        Dict of claims this token will contain in the form {role_name:[scope_list], ...}
     flowapi_identifier : str, optional
         Optionally provide a string to identify the audience of the token
     compress : bool

@@ -28,19 +28,18 @@ def test_reject_when_claim_not_allowed(
 
         # Log in first
         response, csrf_cookie = auth.login(uname, upass)
-        expiry = (datetime.datetime.now() + datetime.timedelta(minutes=2)).strftime(
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
         token_eq = {
             "name": "TEST_TOKEN",
-            "expiry": expiry,
             "roles": [{"name": "runner"}],
         }
         response = client.post(
             "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
         )
         assert 401 == response.status_code
-        assert b"runner is not permitted for the current user." in response.get_data()
+        assert (
+            "Role 'runner' is not permitted for the current user"
+            == response.get_json()["message"]
+        )
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -54,8 +53,9 @@ def test_token_generation(
         response, csrf_cookie = auth.login(uname, upass)
         assert response.status_code == 200
 
+        # Expiry from token roles
         expiry = datetime.datetime(year=2020, month=12, day=31) + datetime.timedelta(
-            minutes=2
+            days=1
         )
         token_req = {
             "name": "DUMMY_TOKEN",
@@ -88,19 +88,18 @@ def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, publ
             # Log in first
             uid, uname, upass = test_user_with_roles
             response, csrf_cookie = auth.login(uname, upass)
-            expiry = datetime.datetime.now() + datetime.timedelta(minutes=10)
             token_eq = {
                 "name": "DUMMY_TOKEN",
-                "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                "roles": [{"name": "dummy_role", "claims": ["run"]}],
+                "roles": [{"name": "reader"}],
             }
             response = client.post(
                 "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
             )
             assert 200 == response.status_code
 
-            frozentime.tick(datetime.timedelta(minutes=20))
-
+            frozentime.tick(datetime.timedelta(days=2))
+            # Re-login to avoid the csrf cookie timing outj
+            response, csrf_cookie = auth.login(uname, upass)
             response = client.post(
                 "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
             )
