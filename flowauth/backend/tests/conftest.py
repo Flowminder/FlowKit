@@ -216,14 +216,14 @@ def test_roles(app, test_scopes, test_servers):
             scopes=[run, read_a, dummy_query],
             server=server_a,
             longest_token_life_minutes=2880,
-            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=1),
         )
         reader = Role(
             name="reader",
             scopes=[read_a],
             server=server_a,
             longest_token_life_minutes=2880,
-            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=1),
         )
         db.session.add(runner)
         db.session.add(reader)

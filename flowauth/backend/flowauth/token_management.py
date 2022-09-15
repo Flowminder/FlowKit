@@ -130,7 +130,7 @@ def add_token(server_id):
     Responds with a json object {"token":<token_string>, "id":<token_id>}.
 
     """
-    Server.query.filter(Server.id == server_id).first_or_404()
+    server = Server.query.filter(Server.id == server_id).first_or_404()
     json = request.get_json()
 
     current_app.logger.debug("New token request", request=json)
@@ -139,42 +139,38 @@ def add_token(server_id):
     if "roles" not in json:
         raise InvalidUsage("No roles.", payload={"bad_field": "roles"})
 
-    breakpoint()
-
     user_roles = db.session.execute(
         select(Role)
         .join(User.roles)
         .filter(User.id == current_user.id)
         .filter(Role.server_id == server_id)
     ).all()
-
-    # roles = {
-    #     role["name"]: db.session.execute(
-    #         select(Scope.name)
-    #         .join(Role.scopes)
-    #         .filter(Role.name == role["name"])
-    #         .filter(Role.server == server)
-    #         .order_by(Scope.name)
-    #     )
-    #     .scalars()
-    #     .all()
-    #     for role in json["roles"]
-    # }
+    user_roles = [row[0] for row in user_roles]
 
     roles = []
     for requested_role in json["roles"]:
-        if requested_role["name"] not in [role.name for role in user_roles]:
-            raise Unauthorized(
-                f"{requested_role['name']} not permitted for current user"
+        try:
+            this_role = next(
+                filter(lambda x: x.name == requested_role["name"], user_roles)
             )
+        except StopIteration:
+            raise Unauthorized(
+                f"Role '{requested_role['name']}' is not permitted for the current user"
+            )
+        roles.append(
+            {
+                "name": this_role.name,
+                "latest_token_expiry": this_role.latest_token_expiry,
+                "scopes": [s.name for s in this_role.scopes],
+            }
+        )
 
     expiry = reduce(
         lambda prev, cur: prev if prev < cur else cur,
-        (role.latest_token_expiry for role in roles),
+        (role.pop("latest_token_expiry") for role in roles),
     )
-
     lifetime = expiry - datetime.datetime.now()
-    latest_lifetime = current_user.latest_token_expiry(server_id)
+    latest_lifetime = current_user.latest_token_expiry(server)
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
 
@@ -182,17 +178,17 @@ def add_token(server_id):
         raise Unauthorized(f"Token for {current_user.username} expired")
 
     token_string = generate_token(
-        flowapi_identifier=server_id.name,
+        flowapi_identifier=server.name,
         username=current_user.username,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
         lifetime=lifetime,
-        roles=roles,
+        roles={role["name"]: sorted(role["scopes"]) for role in roles},
     )
 
     history_entry = TokenHistory(
         name=json["name"],
         user_id=current_user.id,
-        server_id=server_id.id,
+        server_id=server.id,
         expiry=expiry,
         token=token_string,
     )
