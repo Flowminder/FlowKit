@@ -88,6 +88,7 @@ def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, publ
             # Log in first
             uid, uname, upass = test_user_with_roles
             response, csrf_cookie = auth.login(uname, upass)
+            print(csrf_cookie)
             token_eq = {
                 "name": "DUMMY_TOKEN",
                 "roles": [{"name": "reader"}],
@@ -98,14 +99,18 @@ def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, publ
             assert 200 == response.status_code
 
             frozentime.tick(datetime.timedelta(days=2))
-            # Re-login to avoid the csrf cookie timing outj
-            response, csrf_cookie = auth.login(uname, upass)
-            response = client.post(
-                "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+            # Re-login to avoid the csrf cookie timing out
+            login_response, new_csrf_cookie = auth.login(uname, upass)
+            assert login_response.status_code == 200
+            print(new_csrf_cookie)
+            bad_response = client.post(
+                "/tokens/tokens/1",
+                headers={"X-CSRF-Token": new_csrf_cookie},
+                json=token_eq,
             )
-            assert response.status_code == 401
+            assert bad_response.status_code == 401
             # Should this be a jwt-specific error?
             assert {
                 "code": 401,
                 "message": "Token for TEST_USER expired",
-            } == response.json
+            } == bad_response.json
