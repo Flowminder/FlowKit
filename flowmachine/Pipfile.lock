@@ -682,11 +682,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:78d2711d45f3baf626e161182850c5707080cddecd1ac19b4293ee2a8cf574f2",
-                "sha256:f6a7b7fb1607231c520f13ba8ef9343b26b661c4579ecf0381463fa1b9fa10e1"
+                "sha256:8f77ced2d5eae012054e9f698f52281a685d6342f706fa61451db8ca3b70e6fc",
+                "sha256:a2191db78da8cb7a944614918ad910e1764137783c79476a0be476b573ec54ff"
             ],
             "index": "pypi",
-            "version": "==5.8.0"
+            "version": "==5.10.0"
         },
         "asttokens": {
             "hashes": [
@@ -815,7 +815,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:01778769097dbd705a24e221f42be885c544bb91251747a8a3efdec6eb4788f2",
