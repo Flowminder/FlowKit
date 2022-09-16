@@ -682,11 +682,11 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:78d2711d45f3baf626e161182850c5707080cddecd1ac19b4293ee2a8cf574f2",
-                "sha256:f6a7b7fb1607231c520f13ba8ef9343b26b661c4579ecf0381463fa1b9fa10e1"
+                "sha256:8f77ced2d5eae012054e9f698f52281a685d6342f706fa61451db8ca3b70e6fc",
+                "sha256:a2191db78da8cb7a944614918ad910e1764137783c79476a0be476b573ec54ff"
             ],
             "index": "pypi",
-            "version": "==5.8.0"
+            "version": "==5.10.0"
         },
         "asttokens": {
             "hashes": [
@@ -768,11 +768,11 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:0aa1a42fbd57645fabeb6290a7687c21755b0344ecaeaa05f4e9f6207ae2e9a8",
-                "sha256:aa08c101214127b9b0472ca6338315113c9487d45376fd3e669201b477c71003"
+                "sha256:36973885b9542e6bd01dea287b2b4b3b21236307c56324fcc3f1160f2d655ed5",
+                "sha256:e232343de1ab72c2aa521b625c80f699e356830fd0e2c620b465b304b17b0516"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2022.6.15.2"
+            "version": "==2022.9.14"
         },
         "cfgv": {
             "hashes": [
@@ -815,7 +815,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:01778769097dbd705a24e221f42be885c544bb91251747a8a3efdec6eb4788f2",
@@ -984,11 +984,11 @@
         },
         "fonttools": {
             "hashes": [
-                "sha256:4606e1a88ee1f6699d182fea9511bd9a8a915d913eab4584e5226da1180fcce7",
-                "sha256:fff6b752e326c15756c819fe2fe7ceab69f96a1dbcfe8911d0941cdb49905007"
+                "sha256:88d48ef24486137c864dc56707b4b54ef8a97ab9162c2721ec61434baf1c4d13",
+                "sha256:b6d86ffd0a5f83d3da6a34d5f99a90398638e423cd6a8d93c5808af703432c7f"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==4.37.1"
+            "version": "==4.37.2"
         },
         "geojson": {
             "hashes": [
