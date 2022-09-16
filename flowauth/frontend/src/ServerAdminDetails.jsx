@@ -89,8 +89,6 @@ class ServerAdminDetails extends React.Component {
       maxlife_helper_text,
     } = this.state;
     const { item_id, onClick } = this.props;
-    console.log("Pre submit state:", this.state,)
-    console.log("Pre-submit props:", this.props)
 
     const rightsObjs = fullRights.reduce(
       (obj, cur) => ({
@@ -173,9 +171,7 @@ class ServerAdminDetails extends React.Component {
         const rights = await capAwait.then(
             resp => resp.reduce((p_x,x) => ({[x.name]:x.enabled, ...p_x}), {})
           );
-        console.log("Rights", rights)
         const scope_graph = scopesGraph(rights);
-        console.log("scopeGraph", scope_graph);
         const enabledKeys = [];
         const scopes = jsonify(scope_graph, enabledKeys);
         const serverName = (await getServer(item_id)).name;
@@ -186,15 +182,15 @@ class ServerAdminDetails extends React.Component {
         this.setState((state, props) => {
           return {
             name: serverName,
-            rights: state.rights.length == 0 
+            rights: state.rights.length === 0 
                 ? scopes
                 : state.rights,
             fullRights:
-              state.fullRights.length == 0
+              state.fullRights.length === 0
                 ? Object.keys(rights)
                 : state.fullRights,
             enabledRights:
-              state.enabledRights.length == 0
+              state.enabledRights.length === 0
                 ? enabledKeys
                 : state.enabledRights,
             latest_expiry: latestExpiry,

@@ -67,27 +67,6 @@ def my_access(server_id):
     )
 
 
-#
-# @blueprint.route("/tokens")
-# @login_required
-# def list_all_my_tokens():
-#     """Get a list of all the logged in user's tokens."""
-#     return jsonify(
-#         [
-#             {
-#                 "id": token.id,
-#                 "name": token.name,
-#                 "token": token.decrypted_token,
-#                 "expires": token.expires,
-#                 "server_name": token.server.name,
-#                 "username": token.owner.username,
-#             }
-#             for token in Token.query.filter(Token.owner == current_user)
-#         ]
-#     )
-#
-
-
 @blueprint.route("/tokens/<server>")
 @login_required
 def list_my_tokens(server):
