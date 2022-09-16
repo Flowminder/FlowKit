@@ -26,7 +26,7 @@ function RoleString(props){
     <List>
       {role.scopes.map((scope) =>
       <ListItem>
-      <Typography varient = "body1" gutterTop>
+      <Typography variant = "body1" gutterTop>
         {scope}
       </Typography>
       <Divider />

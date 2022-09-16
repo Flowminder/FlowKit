@@ -24,7 +24,7 @@ class UserObject:
     username : str
         Name of the user
     scopes : dict
-        Dictionary giving a whitelist of the user's claims
+        Dictionary giving a list of the user's permitted claims
     """
 
     def __init__(self, username: str, scopes: dict) -> None:
@@ -210,7 +210,6 @@ def user_loader_callback(identity):
         user=get_jwt_identity(),
         src_ip=request.headers.get("Remote-Addr"),
     )
-    # claims = decompress_claims(get_jwt_claims())
     claims = get_jwt_claims()
 
     log_dict = dict(
