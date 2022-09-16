@@ -387,10 +387,10 @@ export async function editRoleScopes(role_id, new_scopes) {
   return await getResponse("/roles/" + role_id, dat)
 }
 
-export async function createToken(name, server_id, expiry, roles) {
+export async function createToken(name, server_id, roles) {
   var dat = {
     method: "POST",
-    body: JSON.stringify({ name: name, expiry: expiry, roles: roles}),
+    body: JSON.stringify({ name: name, roles: roles}),
   };
   return await getResponse("/tokens/tokens/" + server_id, dat);
 }

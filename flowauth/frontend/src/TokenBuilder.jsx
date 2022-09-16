@@ -96,7 +96,6 @@ function TokenBuilder(props) {
     createToken(
       name,
       activeServer,
-      activeRoles.map(r => r.latest_token_expiry).reduce((prev,cur) => prev > cur ? prev : cur, new Date("1970")),
       activeRoles
     ).then((token) => {
       console.log("Token got");
