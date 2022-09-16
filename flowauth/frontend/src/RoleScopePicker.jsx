@@ -94,8 +94,6 @@ function RoleScopePicker (props) {
         c_role => s_scope.name.startsWith(c_role)
       )
     ))
-    // setRoleScopes(serverScopes.filter(x => (
-    //   x.name.startswith(new_label) for new_label in new_labels)))
   };
 
   return (

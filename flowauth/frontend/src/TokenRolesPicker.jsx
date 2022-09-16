@@ -52,7 +52,6 @@ function TokenRolesPicker(props){
         {roles.map((role, i) => (
           <ListItem key={role.name}>
             {role.name}
-          {/* <RoleString role={role}/> */}
           <Checkbox
             onChange={handleToggle(i)}
             checked={checked.indexOf(i) !== -1}

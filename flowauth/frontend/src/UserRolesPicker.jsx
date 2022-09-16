@@ -57,7 +57,6 @@ function UserRolesPicker (props) {
 
 
   const handleChange = (event) => {
-    console.log("Selected roles: ", event.target.value)
     setUserRoles(event.target.value)
     updateRoles(event.target.value);
   };

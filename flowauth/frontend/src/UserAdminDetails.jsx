@@ -43,13 +43,11 @@ class UserAdminDetails extends React.Component {
   async componentDidMount() {
     const json = getUser(this.props.item_id);
     try {
-      console.log("Incoming JSON:", await json)
       this.setState(await json);
       this.setState({ edit_mode: true });
       if ((await json)["has_two_factor"]) {
         this.setState({ two_factor_can_be_disabled: true });
       }
-      //this.updateRoles(await json["roles"])
     } catch (err) {
       if (err.code !== 404) {
         this.setState({ hasError: true, errors: err });
@@ -114,7 +112,6 @@ class UserAdminDetails extends React.Component {
   };
 
   updateRoles = (roles) => {
-    console.log("Roles: ", roles)
     this.setState({ roles: roles });
   };
 

@@ -69,7 +69,6 @@ function jsonify_inner(tree, label, value, enabled){
   const things = Object.keys(tree).map((branch, index) => {
     const this_label = label ==="" ? branch: [label, branch].join(".")
     const this_value = this_label
-    // const this_value = value === "" ? index.toString(): [value, index.toString()].join("-")
     if (typeof(tree[branch]) === "boolean"){
       if (tree[branch]){
         enabled.push(this_value)
@@ -77,7 +76,7 @@ function jsonify_inner(tree, label, value, enabled){
       return {
         label: this_label,
         value: this_value,
-        enabled: this_value in enabled
+        enabled: enabled.includes(this_value)
       }
     }
     else {
@@ -152,7 +151,7 @@ export function scopes_with_roles(roles){
   const scopes_obj = {};
   roles.forEach((role) => {
     role.scopes.forEach((scope) => {
-      if (scopes_obj[scope] == undefined){
+      if (scopes_obj[scope] === undefined){
         scopes_obj[scope] = []
       }
       scopes_obj[scope].push(role.name);

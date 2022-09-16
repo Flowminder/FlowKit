@@ -11,7 +11,7 @@ from typing import Iterable, List, Optional, Tuple, Union, Set, Any
 from prance import ResolvingParser
 from rapidjson import dumps
 
-from quart import request
+from quart import request, current_app
 
 import logging
 
@@ -242,7 +242,7 @@ def tl_schema_scope_string(tl_query, query_string) -> set:
     try:
         agg_units = tl_query["properties"]["aggregation_unit"]["enum"]
     except KeyError:
-        logging.warning(
+        current_app.flowapi_logger.warning(
             f"No aggregation unit options for {tl_query_name}; "
             f"this should be fixed once PR 5278 is merged"
         )

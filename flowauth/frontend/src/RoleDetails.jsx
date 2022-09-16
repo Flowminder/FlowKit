@@ -124,7 +124,7 @@ function RoleDetails(props) {
       setNameHelperText("");
       setNameIsValid(true)
     } else if (name.length === 0) {
-      setNameHelperText("Role name can not be blank.");
+      setNameHelperText("Role name cannot be blank.");
       setNameIsValid(false)
     } else {
       setNameHelperText(
@@ -141,7 +141,7 @@ function RoleDetails(props) {
     if (maxLifetime.match(numbers)){
       setLifetimeHelperText("");
       setLifetimeIsValid(true)
-    } else if (maxLifetime == "") {
+    } else if (maxLifetime === "") {
       setLifetimeHelperText("Maximum lifetime cannot be blank");
       setLifetimeIsValid(false)
     } else {
@@ -164,28 +164,23 @@ function RoleDetails(props) {
   }, validation_vars)
 
   const handleNameChange = (event) => {
-    console.log("Name change event handled")
     setRoleName(event.target.value)
   }
 
   const handleLifetimeChange = (event) => {
-    console.log("Lifetime change event handled");
     setMaxLifetime(event.target.value)
   }
 
   const handleServerChange = (event) => {
-    console.log("Server picker event handled");
     const index = event.target.value
     setServer(index)
   }
 
   const handleMembersChange  = (new_members) => {
-    console.log("Member change event handled")
     setMembers(new_members.map(x => x.id))
   }
 
   const handleScopesChange = (new_scopes) => {
-    console.log("Scopes change event handled")
     setScopes(new_scopes)
   }
 
@@ -198,7 +193,7 @@ function RoleDetails(props) {
       setErrors(new Error("Uncaught form validation error; please report to Flowminder."))
     }
     else if (edit_mode){
-      editRole(
+      await editRole(
         role.id,
         name,
         scopes.map(s => s.id),
@@ -210,7 +205,7 @@ function RoleDetails(props) {
         setErrors(err)
       })
     } else {
-      createRole(
+      await createRole(
         name,
         server_id,
         scopes.map(s => s.id),

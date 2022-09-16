@@ -45,8 +45,12 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
         ),
     )
     spec.components.schemas.update(flowmachine_query_schemas)
-    scopes = schema_to_scopes(spec.to_dict())
-    scopes += ["run", "get_available_dates", "get_result"]
+    scopes = [
+        *schema_to_scopes(spec.to_dict()),
+        "run",
+        "get_available_dates",
+        "get_result",
+    ]
     spec.components.security_scheme(
         "token",
         {
