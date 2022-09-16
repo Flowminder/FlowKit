@@ -22,14 +22,14 @@ def test_list_roles(client, auth, app, test_roles, test_scopes):
                     "get_result",
                     "dummy_agg_unit:dummy_query:dummy_query",
                 ],
-                "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+                "latest_token_expiry": "2020-12-31T00:05:00.000000Z",
                 "longest_token_life_minutes": 2880,
             },
             {
                 "id": 2,
                 "name": "reader",
                 "scopes": ["get_result"],
-                "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+                "latest_token_expiry": "2020-12-31T00:05:00.000000Z",
                 "longest_token_life_minutes": 2880,
             },
         ] == response.get_json()
@@ -54,7 +54,7 @@ def test_list_roles_user(client, auth, app, test_servers, test_user_with_roles):
                     "get_result",
                     "dummy_agg_unit:dummy_query:dummy_query",
                 ],
-                "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+                "latest_token_expiry": "2020-12-31T00:05:00.000000Z",
                 "longest_token_life_minutes": 2880,
                 "server": 1,
             },
@@ -62,7 +62,7 @@ def test_list_roles_user(client, auth, app, test_servers, test_user_with_roles):
                 "id": 2,
                 "name": "reader",
                 "scopes": ["get_result"],
-                "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+                "latest_token_expiry": "2020-12-31T00:05:00.000000Z",
                 "longest_token_life_minutes": 2880,
                 "server": 1,
             },
@@ -79,7 +79,7 @@ def test_get_role(client, auth, app, test_user_with_roles):
         "scopes": [1, 3, 4],
         "server": 1,
         "longest_token_life_minutes": 2880,
-        "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+        "latest_token_expiry": "2020-12-31T00:05:00.000000Z",
         "users": [uid],
     }
 
@@ -130,7 +130,7 @@ def test_update_role(auth, client, test_roles):
         "scopes": [1, 3, 4],
         "server": 1,
         "longest_token_life_minutes": 2880,
-        "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+        "latest_token_expiry": "2020-12-31T00:05:00.000000Z",
         "users": [1],
     }
 
