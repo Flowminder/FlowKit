@@ -9,11 +9,11 @@ function ScopeDetails(props) {
 
   return (
     <Fragment>
-      <ListItem varient="h6">{scope.name}
+      <ListItem variant="h6">{scope.name}
       <List>
         {scope.roles.map((role) =>
         <ListItem>
-        <Typography varient = "body1" gutterTop>
+        <Typography variant = "body1" gutterTop>
           {role}
         </Typography>
         <Divider />

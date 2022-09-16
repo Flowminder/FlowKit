@@ -30,30 +30,6 @@ TestTwoFactorUser = namedtuple(
     "TestTwoFactorUser", TestUser._fields + ("otp_generator", "backup_codes")
 )
 
-#
-# @pytest.fixture
-# def test_date(monkeypatch):
-#
-#     # Adapted from https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test /
-#     TEST_DATE = datetime.datetime(year=2020, month=12, day=31)
-#
-#     class test_datetime(datetime.datetime):
-#         @classmethod
-#         def now(cls, *args, **kwargs):
-#             return TEST_DATE
-#
-#         @classmethod
-#         def utcnow(cls, *args, **kwargs):
-#             return cls.now()
-#
-#     monkeypatch.setattr(datetime, "datetime", test_datetime)
-#         return TEST_DATE
-#
-#
-# def test_test_date_fixture(test_date):
-#     assert datetime.datetime.now() == test_date
-#
-
 
 @pytest.fixture
 def app(tmpdir):
