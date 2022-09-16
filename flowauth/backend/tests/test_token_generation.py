@@ -55,7 +55,7 @@ def test_token_generation(
 
         # Expiry from token roles
         expiry = datetime.datetime(year=2020, month=12, day=31) + datetime.timedelta(
-            days=1
+            minutes=5
         )
         token_req = {
             "name": "DUMMY_TOKEN",
@@ -98,7 +98,7 @@ def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, publ
             )
             assert 200 == response.status_code
 
-            frozentime.tick(datetime.timedelta(days=2))
+            frozentime.tick(datetime.timedelta(minutes=10))
             # Re-login to avoid the csrf cookie timing out
             login_response, new_csrf_cookie = auth.login(uname, upass)
             assert login_response.status_code == 200
