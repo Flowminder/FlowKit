@@ -17,20 +17,6 @@ ENV AIRFLOW__WEBSERVER__RBAC=True
 # Needed for custom users passed through docker's --user argument, otherwise it's /
 ENV HOME ${AIRFLOW_USER_HOME_DIR}
 
-# Need pg_config installed before we can install apache-airflow-providers-postgres, which no longer has psycopg2-binary as a dependency
-# Note: apache-airflow-providers-postgres is already installed in the image (as is airflow and all its dependencies).
-# We shouldn't need to install them all again (via 'pipenv install'), but we'd then need to find a different way to
-# ensure that non-containerised tests run against the same dependencies as are installed in the Docker image.
-USER root
-RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-    && echo "deb https://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && apt-get update \
-    && apt-get install --no-install-recommends -y libpq-dev \
-    && apt-get autoremove -yqq --purge \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-USER airflow
-
 # Install FlowETL module
 
 ARG SOURCE_VERSION=0+unknown
