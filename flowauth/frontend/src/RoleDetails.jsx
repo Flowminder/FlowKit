@@ -12,6 +12,7 @@ import ErrorDialog from "./ErrorDialog";
 import {
   createRole,
   getServers,
+  getServer,
   getRole,
   editRole,
 } from "./util/api"
@@ -115,6 +116,20 @@ function RoleDetails(props) {
       }
     }
   }, [role, serverList])
+
+  //When server_id changes, update the expiry date to the server's expiry date
+  useEffect(() => {
+    const fetch_server = (async () => {
+      const server = getServer(server_id)
+      setExpiryDate(server.expiry_date)
+    })
+
+    fetch_server()
+    .catch((err) => {
+      setErrors(err.message); 
+      setIsErrored(true)
+    })   
+  }, [server_id])
 
   //Validate Rolename on change
   useEffect(() => {

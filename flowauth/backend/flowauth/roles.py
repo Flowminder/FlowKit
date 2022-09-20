@@ -71,6 +71,7 @@ def add_role():
         role_users = User.query.filter(User.id.in_(json["users"])).all()
     except KeyError:
         role_users = []
+
     new_role = Role(
         name=json["name"],
         scopes=role_scopes,
