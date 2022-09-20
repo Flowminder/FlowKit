@@ -26,9 +26,8 @@ def test_foreign_staging_table_program_param(program, expected):
     op = CreateForeignStagingTableOperator(
         task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), program=program
     )
-    from airflow.models import Param
 
-    assert op.params.get("program", Param(False)).value == expected
+    assert op.params.get("program", False) == expected
 
 
 @pytest.mark.parametrize("encoding, expected", [(None, False), ("foo", "foo")])
@@ -40,6 +39,5 @@ def test_foreign_staging_table_encoding_param(encoding, expected):
     op = CreateForeignStagingTableOperator(
         task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), encoding=encoding
     )
-    from airflow.models import Param
 
-    assert op.params.get("encoding", Param(False)).value == expected
+    assert op.params.get("encoding", False) == expected
