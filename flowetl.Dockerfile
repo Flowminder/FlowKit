@@ -21,6 +21,7 @@ ENV HOME ${AIRFLOW_USER_HOME_DIR}
 # Note: apache-airflow-providers-postgres is already installed in the image (as is airflow and all its dependencies).
 # We shouldn't need to install them all again (via 'pipenv install'), but we'd then need to find a different way to
 # ensure that non-containerised tests run against the same dependencies as are installed in the Docker image.
+USER root
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
     && echo "deb https://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
     && apt-get update \
@@ -28,6 +29,7 @@ RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
     && apt-get autoremove -yqq --purge \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+USER airflow
 
 # Install FlowETL module
 
