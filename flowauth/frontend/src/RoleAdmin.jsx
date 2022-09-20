@@ -23,44 +23,49 @@ function RoleItem(props) {
   // Properties:
   // role_id
 
-  const {role} = props
-  const edit_action = () => console.debug(role.id)
-  const delete_action = () => deleteRole(role.id)
+  const {role, server, onClick} = props
+  const edit_role = () => onClick(role.id, server.id)
+  const delete_role = () => deleteRole(role.id)
 
   return(
     <Grid container spacing = {3}>
       <Grid item xs={8}>{role.name}</Grid>
-      <Grid item xs={1}><Button onClick={edit_action}>Edit</Button></Grid>
-      <Grid item xs={1}r><Button onClick={delete_action}>Delete</Button></Grid>
+      <Grid item xs={1}><Button onClick={edit_role}>Edit</Button></Grid>
+      <Grid item xs={1}r><Button onClick={delete_role}>Delete</Button></Grid>
     </Grid>
   )
 }
 
 function ServerRoleList(props) {
-  const {roles} = props
+  const {roles, server, onClick} = props
 
   return(
     <Grid direction='column'>
       {roles.map(
-        (role) => <Paper><RoleItem role = {role}/></Paper>)
+        (role) => <Paper><RoleItem
+          role = {role}
+          server = {server}
+          onClick = {onClick}
+          /></Paper>)
       }
     </Grid>
   )
 }
 
 function ServerHeader(props) {
-  const {server} = props
+  const {server, onClick} = props
+  const new_role_on_server = () => onClick(-1, server.id)
 
   return(
     <Grid direction='column'>
       <Paper>{server.name}</Paper>
-      <Paper><Button>Add New</Button></Paper>
+      <Paper><Button onClick={new_role_on_server}>Add New</Button></Paper>
     </Grid>
   )
 }
 
 function ServerRoleView(props) {
-  const {server_id, edit_action, delete_action} = props
+  const {server_id, onClick} = props
 
   const [server, setServer] = useState({})
   const [roles, setRoleList] = useState([])
@@ -82,8 +87,8 @@ function ServerRoleView(props) {
 
   return(
     <Grid direction='column'>
-      <Paper><ServerHeader server = {server} /></Paper>
-      <Paper><ServerRoleList roles = {roles}/></Paper>
+      <Paper><ServerHeader server = {server} onClick = {onClick} /></Paper>
+      <Paper><ServerRoleList roles = {roles} server = {server} onClick= {onClick} /></Paper>
     </Grid>
   )
 }
@@ -91,8 +96,7 @@ function ServerRoleView(props) {
 
 function RoleList(props) {
 
-  const {editAction, deleteAction} = props
-
+  const {onClick} = props
   const [server_list, setServerList] = useState([])
 
   // On load, get list of servers.
@@ -115,8 +119,7 @@ function RoleList(props) {
       {server_list.map((server) => (
         <Paper><ServerRoleView
           server_id = {server.id}
-          edit_action = {editAction}
-          delete_action = {deleteAction}
+          onClick = {onClick}
         /></Paper>
       ))}
       </Grid>
@@ -125,7 +128,33 @@ function RoleList(props) {
 }
 
 
+function RoleAdmin(props) {
+
+  const [is_editing, setIsEditing] = useState(false)
+  const [active_role, setActiveRole] = useState(-1)
+  const [active_server, setActiveServer] = useState(-1)
+
+  const edit_role = (this_role, this_server) => {
+    setActiveRole(this_role);
+    setActiveServer(this_server);
+    setIsEditing(true);
+  }
+
+  const return_to_list = () => {
+    setActiveRole(-1)
+    setActiveServer(-1)
+    setIsEditing(false)
+  }
+
+  if (is_editing){
+    return (<RoleDetails item_id={active_role} onClick={return_to_list} server_id = {active_server}/>)
+  } else {
+    return (<RoleList onClick = {edit_role}/>)
+  }
+}
 
 
-export default withStyles(styles)(RoleList);
+
+
+export default withStyles(styles)(RoleAdmin);
 

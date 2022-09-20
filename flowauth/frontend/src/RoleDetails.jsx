@@ -26,11 +26,10 @@ function RoleDetails(props) {
   //Properties:
   //item_id
 
-  const {item_id, classes, onClick} = props
+  const {item_id, classes, onClick, server_id} = props
   
   const [role, setRole] = useState({})
   const [name, setRoleName] = useState("");
-  const [server_id, setServer] = useState(-1);
   const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
   const [name_helper_text, setNameHelperText] = useState("");
@@ -251,7 +250,7 @@ return (
         <TextField
           id="name"
           label="Name"
-          className={classes.textField}
+          // className={classes.textField}
           required={true}
           value={name}
           onChange={handleNameChange}
@@ -271,7 +270,7 @@ return (
       <TextField
         id="lifetime"
         label="Maximum lifetime (minutes)"
-        className={classes.textField}
+        // className={classes.textField}
         required={true}
         value={maxLifetime}
         onChange={handleLifetimeChange}

@@ -18,8 +18,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import UserServer from "./UserServer";
 import UserServerList from "./UserServerList";
-import RoleList from "./RoleList"
-import RoleDetails from "./RoleDetails"
+import RoleAdmin from "./RoleAdmin"
 import UserList from "./UserList";
 import ServerList from "./ServerList";
 import AdminMenu from "./AdminMenu";
@@ -157,7 +156,7 @@ class Dashboard extends React.Component {
       case "public_key_admin":
         return <PublicKey />;
       case "role_admin":
-        return <RoleList/>;
+        return <RoleAdmin/>;
       default:
         return <div />;
     }
