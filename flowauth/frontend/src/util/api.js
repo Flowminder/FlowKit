@@ -128,6 +128,9 @@ export async function getServer(server_id) {
   return await getResponseDefault("/admin/servers/" + server_id);
 }
 
+export async function getRolesOnServer(server_id) {
+  return await getResponseDefault("/admin/servers/" + server_id + "/roles")
+}
 
 export async function getMyServers() {
   return await getResponseDefault("tokens/servers");
