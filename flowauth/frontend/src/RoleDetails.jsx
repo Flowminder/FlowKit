@@ -8,10 +8,8 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
-import ErrorDialog from "./ErrorDialog";
 import {
   createRole,
-  getServers,
   getServer,
   getRole,
   editRole,
@@ -20,7 +18,13 @@ import { useEffect, useState } from "react";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import RoleScopePicker from "./RoleScopePicker";
-import { FormControl, MenuItem, Select, ListItem, InputLabel } from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button";
+
 
 function RoleDetails(props) {
   //Properties:
@@ -42,10 +46,9 @@ function RoleDetails(props) {
   const [lifetimeHelperText, setLifetimeHelperText] = useState("")
   const [lifetimeIsValid, setLifetimeIsValid] = useState(true)
   const [scopes, setScopes] = useState([])
-  const [serverList, setServerList] = useState([])
   const [formIsValid, setFormIsValid] = useState(false)
 
-  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members, server_id]
+  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members]
   
   // get appropriate Role on load
   useEffect( 
@@ -158,11 +161,6 @@ function RoleDetails(props) {
     setMaxLifetime(event.target.value)
   }
 
-  const handleServerChange = (event) => {
-    const index = event.target.value
-    setServer(index)
-  }
-
   const handleMembersChange  = (new_members) => {
     setMembers(new_members.map(x => x.id))
   }
@@ -177,7 +175,7 @@ function RoleDetails(props) {
       // Need to throw an error here if !formIsValid
     if (!formIsValid) {
       setIsErrored(true)
-      setErrors(new Error("Uncaught form validation error; please report to Flowminder."))
+      setErrors(new Error("Validation error"))
     }
     else if (edit_mode){
       await editRole(
@@ -191,6 +189,7 @@ function RoleDetails(props) {
         setIsErrored(true)
         setErrors(err)
       })
+      .then(onClick())
     } else {
       await createRole(
         name,
@@ -203,12 +202,9 @@ function RoleDetails(props) {
         setIsErrored(true)
         setErrors(err)
       })
+      .then(onClick())
     }
-    onClick()
   };
-
-console.log("Prerendering:")
-console.log("server: ",server_id)
 
 return (
     <React.Fragment>
@@ -236,17 +232,20 @@ return (
           helperText={name_helper_text}
         />
       </Grid>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Grid>
+        <Grid item xs={6}>      
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DateTimePicker
               label="Expiry date"
               value = {expiryDate}
               onChange={setExpiryDate}
             />
-          </MuiPickersUtilsProvider> 
-      
+          </MuiPickersUtilsProvider>
+        </Grid>
+
       <TextField
         id="lifetime"
-        label="Maximum lifetime (minutes)"
+        label="Max. lifetime (mins)"
         // className={classes.textField}
         required={true}
         value={maxLifetime}
@@ -255,6 +254,7 @@ return (
         error={!lifetimeIsValid}
         helperText={lifetimeHelperText}
       />
+      </Grid>
         
       <Grid xs={12}>
         <RoleMembersPicker
@@ -271,15 +271,49 @@ return (
           updateScopes={handleScopesChange}
         />
       </Grid>
-      <ErrorDialog
+      <ValidationDialog
         open={is_errored}
         message={errors.message}
+        onClose={() => setIsErrored(false)}
       />
 
       <Grid item xs={12} />
-      <SubmitButtons handleSubmit={handleSubmit} onClick={onClick} />
+      <SubmitButtons handleSubmit={handleSubmit} onClick={onClick}  />
     </React.Fragment>
   );
+}
+
+
+function ValidationDialog(props){
+  const {open, onClose, message } = props
+
+
+  return(
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby="error-dialog-title"
+      aria-describedby="error-dialog-description"
+      id="error-dialog"
+    >
+    <DialogTitle id="error-dialog-title">{"Error"}</DialogTitle>
+    <DialogContent>
+      <DialogContentText id="error-dialog-description">
+        {message}
+      </DialogContentText>
+    </DialogContent>
+    <DialogActions>
+      <Button
+        onClick={onClose}
+        color="primary"
+        id="error-dialog-ok"
+      >
+        OK
+      </Button>
+    </DialogActions>
+  </Dialog>
+  )
+  
 }
 
 export default RoleDetails;
