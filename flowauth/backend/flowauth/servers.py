@@ -39,7 +39,16 @@ def get_server(server_id):
     Responds with {"id":<server_id>, "name":<server_name>, "secret_key":<secret_key>}
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
-    return jsonify({"id": server.id, "name": server.name})
+    return jsonify(
+        {
+            "id": server.id,
+            "name": server.name,
+            "longest_token_life_minutes": server.longest_token_life_minutes,
+            "latest_token_expiry": server.latest_token_expiry.strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+        }
+    )
 
 
 @blueprint.route("/servers/<server_id>/roles")
@@ -149,6 +158,7 @@ def edit_scope_activation(server_id):
     return list_scopes(server_id)
 
 
+# Rolling this into get_server
 @blueprint.route("/servers/<server_id>/time_limits")
 @login_required
 @admin_permission.require(http_exception=401)
