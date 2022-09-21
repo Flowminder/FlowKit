@@ -31,7 +31,7 @@ function RoleItem(props) {
 
   return(
     <Grid container spacing = {3}>
-      <Grid item xs={8}>{role.name}</Grid>
+      <Grid item xs={8}><Typography component="h3">{role.name}</Typography></Grid>
       <Grid item xs={1}><Button onClick={edit_role}>Edit</Button></Grid>
       <Grid item xs={1}r><Button onClick={delete_role}>Delete</Button></Grid>
     </Grid>
@@ -44,12 +44,12 @@ function ServerRoleList(props) {
   return(
     <Grid direction='column'>
       {roles.map(
-        (role) => <Paper><RoleItem
+        (role) => <Grid item><RoleItem
           role = {role}
           server = {server}
           onClick = {onClick}
           deleteRole = {deleteRole}
-          /></Paper>)
+          /></Grid>)
       }
     </Grid>
   )
@@ -60,9 +60,9 @@ function ServerHeader(props) {
   const new_role_on_server = () => onClick(-1, server.id)
 
   return(
-    <Grid direction='column'>
-      <Paper>{server.name}</Paper>
-      <Paper><Button onClick={new_role_on_server}>Add New</Button></Paper>
+    <Grid container direction="row">
+      <Grid item xs={9}><Typography variant="h5" component="h1">{server.name}</Typography></Grid>
+      <Grid item xs={3}><Button onClick={new_role_on_server}>New Role</Button></Grid>
     </Grid>
   )
 }
@@ -94,9 +94,9 @@ function ServerRoleView(props) {
   )
 
   return(
-    <Grid direction='column'>
-      <Paper><ServerHeader server = {server} onClick = {onClick} /></Paper>
-      <Paper><ServerRoleList roles = {roles} server = {server} onClick= {onClick} deleteRole = {deleteRoleWithEdit}/></Paper>
+    <Grid container direction='column'>
+      <Grid item><ServerHeader server = {server} onClick = {onClick} /></Grid>
+      <Grid item><ServerRoleList roles = {roles} server = {server} onClick= {onClick} deleteRole = {deleteRoleWithEdit}/></Grid>
     </Grid>
   )
 }
@@ -125,11 +125,11 @@ function RoleList(props) {
     <React.Fragment>
       <Grid direction='column'>
       {server_list.map((server) => (
-        <Paper><ServerRoleView
+        <Grid item><ServerRoleView
           server_id = {server.id}
           onClick = {onClick}
           deleteRole = {deleteRole}
-        /></Paper>
+        /></Grid>
       ))}
       </Grid>
     </React.Fragment>
