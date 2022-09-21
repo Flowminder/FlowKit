@@ -5,7 +5,7 @@
 import { withStyles } from "@material-ui/core/styles";
 import RoleDetails from "./RoleDetails";
 import Lister from "./Lister";
-import {deleteRole, getServer, getServers, getRole, getRolesOnServer } from "./util/api";
+import {deleteRole as requestDeleteRole, getServer, getServers, getRole, getRolesOnServer } from "./util/api";
 import React, { useEffect, useState } from "react";
 import { Typography, Grid, Paper, Button } from "@material-ui/core";
 import { EditLocation } from "@material-ui/icons";
@@ -23,9 +23,11 @@ function RoleItem(props) {
   // Properties:
   // role_id
 
-  const {role, server, onClick} = props
+  const {role, server, onClick, deleteRole} = props
+
   const edit_role = () => onClick(role.id, server.id)
   const delete_role = () => deleteRole(role.id)
+
 
   return(
     <Grid container spacing = {3}>
@@ -37,7 +39,7 @@ function RoleItem(props) {
 }
 
 function ServerRoleList(props) {
-  const {roles, server, onClick} = props
+  const {roles, server, onClick, deleteRole} = props
 
   return(
     <Grid direction='column'>
@@ -46,6 +48,7 @@ function ServerRoleList(props) {
           role = {role}
           server = {server}
           onClick = {onClick}
+          deleteRole = {deleteRole}
           /></Paper>)
       }
     </Grid>
@@ -65,10 +68,15 @@ function ServerHeader(props) {
 }
 
 function ServerRoleView(props) {
-  const {server_id, onClick} = props
+  const {server_id, onClick, deleteRole} = props
 
   const [server, setServer] = useState({})
   const [roles, setRoleList] = useState([])
+
+  const deleteRoleWithEdit = (role_id) => {
+    deleteRole(role_id)
+    setRoleList(roles.filter(x => x.id !== role_id))
+  }
 
   useEffect(
     () => {
@@ -88,7 +96,7 @@ function ServerRoleView(props) {
   return(
     <Grid direction='column'>
       <Paper><ServerHeader server = {server} onClick = {onClick} /></Paper>
-      <Paper><ServerRoleList roles = {roles} server = {server} onClick= {onClick} /></Paper>
+      <Paper><ServerRoleList roles = {roles} server = {server} onClick= {onClick} deleteRole = {deleteRoleWithEdit}/></Paper>
     </Grid>
   )
 }
@@ -96,7 +104,7 @@ function ServerRoleView(props) {
 
 function RoleList(props) {
 
-  const {onClick} = props
+  const {onClick, deleteRole} = props
   const [server_list, setServerList] = useState([])
 
   // On load, get list of servers.
@@ -120,6 +128,7 @@ function RoleList(props) {
         <Paper><ServerRoleView
           server_id = {server.id}
           onClick = {onClick}
+          deleteRole = {deleteRole}
         /></Paper>
       ))}
       </Grid>
@@ -134,10 +143,15 @@ function RoleAdmin(props) {
   const [active_role, setActiveRole] = useState(-1)
   const [active_server, setActiveServer] = useState(-1)
 
+
   const edit_role = (this_role, this_server) => {
     setActiveRole(this_role);
     setActiveServer(this_server);
     setIsEditing(true);
+  }
+
+  const delete_role = async (this_role) => {
+    await requestDeleteRole(this_role);
   }
 
   const return_to_list = () => {
@@ -149,7 +163,7 @@ function RoleAdmin(props) {
   if (is_editing){
     return (<RoleDetails role_id={active_role} onClick={return_to_list} server_id = {active_server}/>)
   } else {
-    return (<RoleList onClick = {edit_role}/>)
+    return (<RoleList onClick = {edit_role} deleteRole={delete_role}/>)
   }
 }
 
