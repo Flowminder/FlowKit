@@ -756,16 +756,16 @@ jobs:
             pyenv versions
             pyenv global 3.9.4
       - run:
+          name: Install postgresql
+          command: |
+            sudo apt-get update && sudo apt-get install -y libpq-dev postgresql
+      - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
       - run:
           name: Install python dependencies
           command: |
             pipenv install --deploy --dev
-      - run:
-          name: Install postgresql
-          command: |
-            sudo apt-get update && sudo apt-get install -y postgresql
       - save_cache:
           key: flowetl-deps-5-{{ checksum "Pipfile.lock" }}
           paths:
