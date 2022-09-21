@@ -364,6 +364,7 @@ def flowetl_container(
     logger.info("Starting FlowETL container")
     container = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
+        "standalone",
         environment=container_env["flowetl"],
         name=f"flowetl_{container_name_suffix}",
         restart_policy={"Name": "always"},
@@ -377,8 +378,8 @@ def flowetl_container(
     try:
         flowdb_container()
         flowetl_db_container()
-        logger.info("Running init.")
-        logger.info(container.exec_run("standalone", user=user, detach=True))
+        # logger.info("Running init.")
+        # logger.info(container.exec_run("bash -c /init.sh", user=user, detach=True))
         logger.info("Waiting for container to be healthy.")
         wait_for_container()
 
