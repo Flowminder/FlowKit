@@ -147,7 +147,7 @@ function RoleAdmin(props) {
   }
 
   if (is_editing){
-    return (<RoleDetails item_id={active_role} onClick={return_to_list} server_id = {active_server}/>)
+    return (<RoleDetails role_id={active_role} onClick={return_to_list} server_id = {active_server}/>)
   } else {
     return (<RoleList onClick = {edit_role}/>)
   }

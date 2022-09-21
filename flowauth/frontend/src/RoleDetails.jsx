@@ -24,11 +24,12 @@ import { FormControl, MenuItem, Select, ListItem, InputLabel } from "@material-u
 
 function RoleDetails(props) {
   //Properties:
-  //item_id
+  //role_id
 
-  const {item_id, classes, onClick, server_id} = props
+  const {role_id, classes, onClick, server_id} = props
   
   const [role, setRole] = useState({})
+  const [server, setServer] = useState({})
   const [name, setRoleName] = useState("");
   const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
@@ -51,32 +52,23 @@ function RoleDetails(props) {
     () => {
 
       const fetch_role = (async () => {
-        const role = await getRole(item_id);
+        const role = await getRole(role_id);
         console.log("Role fetched");
         console.log(role);
         setRole(role);
       });
 
-      const fetch_servers = (async () => {
-        console.log("Fetching servers")
-        const servers = await getServers();
-        console.log("Servers:");
-        console.log(servers);
-        setServerList(servers);
-      });
-      
-      fetch_servers()
-      .catch((err) => {
-        console.log("Server list error:" + err)
-        if (err.code !== 404){
-          setServerList([]);
-          setErrors(err.message);
-          setIsErrored(true)
-        }
+      const fetch_server = (async () => {
+        const server = await getServer(server_id);
+        setServer(server)
+        setExpiryDate(server.latest_token_expiry)
+        setMaxLifetime(String(server.longest_token_life_minutes))
       })
 
-      if (item_id >= 0){
-        console.log(item_id);
+      fetch_server().catch((err) => console.error(err))
+
+      if (role_id >= 0){
+        console.log(role_id);
         fetch_role()
         .catch((err) => {
           console.log("Role err:" + err)
@@ -93,13 +85,9 @@ function RoleDetails(props) {
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
   useEffect(() => {
-      if (serverList !== []){
-        console.log("Trying to update the UI using the following role...")
-        console.log(role)
         if (Object.keys(role).length !== 0){   //ffs, Javascript
           console.log("Role not empty")
           setRoleName(role.name);
-          setServer(role.server);
           setMembers(role.users);
           setExpiryDate(role.latest_token_expiry);
           setMaxLifetime(String(role.longest_token_life_minutes));
@@ -108,27 +96,12 @@ function RoleDetails(props) {
         } else {
           console.log("Role empty, setting defaults")
           setRoleName("");
-          setServer(-1);
           setMembers([]);
           setScopes([])
           setEditMode(false);
       }
-    }
-  }, [role, serverList])
+  }, [role])
 
-  //When server_id changes, update the expiry date to the server's expiry date
-  useEffect(() => {
-    const fetch_server = (async () => {
-      const server = getServer(server_id)
-      setExpiryDate(server.expiry_date)
-    })
-
-    fetch_server()
-    .catch((err) => {
-      setErrors(err.message); 
-      setIsErrored(true)
-    })   
-  }, [server_id])
 
   //Validate Rolename on change
   useEffect(() => {
@@ -169,7 +142,7 @@ function RoleDetails(props) {
     const valid_vars = validation_vars.map(v => typeof(v))
     if (valid_vars.includes("undefined")){
       setFormIsValid(false)
-    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0 && members.length > 0 && server_id >= 0){
+    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0){
       console.log("Form is valid")
       setFormIsValid(true)
     } else {
@@ -221,7 +194,7 @@ function RoleDetails(props) {
     } else {
       await createRole(
         name,
-        server_id,
+        server.id,
         scopes.map(s => s.id),
         members,
         expiryDate,
@@ -236,7 +209,6 @@ function RoleDetails(props) {
 
 console.log("Prerendering:")
 console.log("server: ",server_id)
-console.log("Server list: ",JSON.stringify(serverList))
 
 return (
     <React.Fragment>
@@ -244,6 +216,11 @@ return (
       <Grid item xs={12}>
         <Typography variant="h5" component="h1">
           {(edit_mode && "Edit Role") || "New Role"}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography varient="h5" component="h2">
+          Server: {server.name}
         </Typography>
       </Grid>
       <Grid item xs={12}>
@@ -281,30 +258,9 @@ return (
         
       <Grid xs={12}>
         <RoleMembersPicker
-          role_id={item_id}
+          role_id={role.id}
           updateMembers={handleMembersChange}
         />
-      </Grid>
-      <Grid item xs={12}>
-
-      {/* Server picker */}
-      <FormControl disabled = {edit_mode}>
-        <InputLabel id="server_picker">Server</InputLabel>
-        <Select 
-          labelId="server_label"
-          options={serverList.map(this_server => this_server.id)}
-          id="server" 
-          value={server_id}
-          label="Server"
-          onChange={handleServerChange}
-          // native={false}
-        >
-          <MenuItem label={-1} key={-1} value={-1}>-</MenuItem>
-          {serverList.map( (this_server)=> {
-            return <MenuItem label={this_server.id} key={this_server.id} value={this_server.id}>{this_server.name}</MenuItem>
-          })}
-        </Select>
-      </FormControl>
       </Grid>
 
       <Grid item xs={12}>
