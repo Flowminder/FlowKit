@@ -362,20 +362,20 @@ def flowetl_container(
 
     user = f"{os.getuid()}:0"
     logger.info("Starting FlowETL container")
-    container = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}",
-        "standalone",
-        environment=container_env["flowetl"],
-        name=f"flowetl_{container_name_suffix}",
-        restart_policy={"Name": "always"},
-        ports={"8080": container_ports["flowetl_airflow"]},
-        mounts=mounts["flowetl"],
-        user=user,
-        detach=True,
-        stderr=True,
-    )
-    container_network.connect(container, aliases=["flowetl"])
     try:
+        container = docker_client.containers.run(
+            f"flowminder/flowetl:{container_tag}",
+            "standalone",
+            environment=container_env["flowetl"],
+            name=f"flowetl_{container_name_suffix}",
+            restart_policy={"Name": "always"},
+            ports={"8080": container_ports["flowetl_airflow"]},
+            mounts=mounts["flowetl"],
+            user=user,
+            detach=True,
+            stderr=True,
+        )
+        container_network.connect(container, aliases=["flowetl"])
         flowdb_container()
         flowetl_db_container()
         # logger.info("Running init.")
