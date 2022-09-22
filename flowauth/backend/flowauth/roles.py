@@ -163,14 +163,3 @@ def list_user_roles_on_server(user_id, server_id):
     user = User.query.filter(User.id == user_id).first_or_404()
     roles = user.roles.query.filter(Role.server.id == server_id).all_or_404()
     return roles_to_json(roles)
-
-
-@blueprint.route("/server/<server_id>", methods=["GET"])
-@login_required
-def list_my_roles_on_server(server_id):
-    """
-    Returns a list of roles for this user on this server
-    """
-    user = User.query.filter(User.id == current_user.id).first_or_404()
-    roles = user.roles.query.filter(Role.server.id == server_id).all_or_404()
-    return roles_to_json(roles)
