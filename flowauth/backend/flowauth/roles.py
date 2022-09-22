@@ -103,8 +103,6 @@ def edit_role(role_id):
             value = [User.query.filter(User.id == uid).first() for uid in value]
         elif key == "scopes":
             value = [Scope.query.filter(Scope.id == sid).first() for sid in value]
-        elif key == "server":
-            value = Server.query.filter(Server.id == value).first()
         elif key == "latest_token_expiry":
             value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
         setattr(role, key, value)
