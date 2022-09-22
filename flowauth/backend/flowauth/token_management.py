@@ -29,7 +29,6 @@ def list_my_servers():
     """
     # is this the sqlalchemy way to do this?
     servers = {role.server for role in current_user.roles}
-    breakpoint()
     return jsonify(
         sorted(
             [{"id": server.id, "server_name": server.name} for server in servers],
