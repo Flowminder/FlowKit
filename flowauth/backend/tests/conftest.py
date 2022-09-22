@@ -201,17 +201,24 @@ def test_roles(app, test_scopes, test_servers):
             longest_token_life_minutes=2880,
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
         )
+        reader_b = Role(
+            name="reader_b",
+            scopes=[read_b],
+            server=server_b,
+            longest_token_life_minutes=2880,
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
+        )
         db.session.add(runner)
         db.session.add(reader)
         db.session.commit()
-        return runner, reader
+        return runner, reader, reader_b
 
 
 @pytest.fixture  # (scope="session")
 def test_user_with_roles(app, test_user, test_roles):
     with app.app_context():
         uid, uname, upass = test_user
-        role_a, role_b = test_roles
+        role_a, role_b, role_c = test_roles
         test_user_orm = db.session.execute(
             db.select(User).where(User.id == uid)
         ).first()[0]

@@ -20,7 +20,7 @@ def test_reject_when_claim_not_allowed(
 ):
     with app.app_context():
         uid, uname, upass = test_user
-        runner_role, reader_role = test_roles
+        runner_role, reader_role, reader_b_role = test_roles
 
         # Give test_user some roles on DUMMY_SERVER_A
         test_user = db.session.execute(db.select(User).where(User.id == uid)).scalar()
@@ -40,6 +40,12 @@ def test_reject_when_claim_not_allowed(
             "Role 'runner' is not permitted for the current user"
             == response.get_json()["message"]
         )
+
+        # Testing attempting reader on second server
+        response = client.post(
+            "/tokens/tokens/2", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+        )
+        assert 401 == response.status_code
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
