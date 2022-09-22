@@ -5,8 +5,6 @@ from urllib import response
 import pytest
 from freezegun import freeze_time
 
-from flowauth.roles import list_my_roles_on_server, role_to_dict
-
 from flowauth.models import db
 
 
