@@ -12,49 +12,18 @@ from flowauth.models import (
 )
 
 
-@pytest.mark.skip(reason="No groups anymore; not sure if this is relevant")
-def test_disallow_right_on_server_disallows_for_group(app):
-    """Test that if a claim is disallowed on a server, it will be disallowed even if previously granted to groups."""
+def test_disallow_right_on_server_disallows_for_role(
+    app, test_servers, test_scopes, test_roles, test_user_with_roles
+):
+    """Tests that a scope being removed from the server propogates to associated roles"""
     with app.app_context():
-        session = db.session
-        user = User(username="TEST_USER", password="TEST_PASSWORD")
-
-        user_group = Group(name="TEST_USER", user_group=True)
-        user.groups.append(user_group)
-
-        session.add(user)
-        session.add(user_group)
-        server = Server(
-            name="TEST_SERVER",
-            longest_token_life_minutes=2880,
-            latest_token_expiry=datetime.datetime(2020, 1, 1),
-        )
-        session.add(server)
-        server_capability = ServerCapability(
-            server=server,
-            capability="get_result&DUMMY_ROUTE",
-            enabled=True,
-            capability_hash=md5(b"get_result&DUMMY_ROUTE").hexdigest(),
-        )
-        session.add(server_capability)
-        gsp = GroupServerPermission(
-            group=user_group, server_capability=server_capability
-        )
-        session.add(gsp)
-        token_limits = GroupServerTokenLimits(
-            group=user_group,
-            longest_life=1440,
-            latest_end=datetime.datetime(2019, 1, 1),
-            server=server,
-        )
-        session.add(token_limits)
-        session.commit()
-        claims = user.allowed_claims(server)
-        assert "get_result&DUMMY_ROUTE" in claims
-        session.delete(gsp)
-        session.commit()
-        claims = user.allowed_claims(server)
-        assert [] == claims
+        runner_role, reader_role, _ = test_roles
+        reader_scope, _, runner_scope, _ = test_scopes
+        db.session.add_all([reader_role, reader_scope])
+        assert reader_role.is_allowed(["get_result"])
+        db.session.delete(reader_scope)
+        db.session.commit()
+        assert not reader_role.is_allowed(["get_result"])
 
 
 def test_token_time_limits_reflect_server_limits(app):
