@@ -31,7 +31,12 @@ def test_get_server(client, auth, app):
 
     response = client.get("/admin/servers/1", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
-    assert {"id": 1, "name": "DUMMY_SERVER_A"} == response.get_json()
+    assert {
+        "id": 1,
+        "name": "DUMMY_SERVER_A",
+        "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+        "longest_token_life_minutes": 2880,
+    } == response.get_json()
 
 
 @freeze_time("2020-12-31")
@@ -194,7 +199,12 @@ def test_edit_server(client, auth, test_admin):
     )
     assert 200 == response.status_code
     response = client.get("/admin/servers/1", headers={"X-CSRF-Token": csrf_cookie})
-    assert {"id": 1, "name": "DUMMY_SERVER_X"} == response.get_json()
+    assert {
+        "id": 1,
+        "name": "DUMMY_SERVER_X",
+        "latest_token_expiry": "2020-01-01T00:00:00.000000Z",
+        "longest_token_life_minutes": 1,
+    } == response.get_json()
     response = client.get(
         "/admin/servers/1/time_limits", headers={"X-CSRF-Token": csrf_cookie}
     )
