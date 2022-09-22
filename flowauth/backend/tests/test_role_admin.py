@@ -1,8 +1,13 @@
+from datetime import timedelta
+from sys import base_prefix
+from time import strptime
 from urllib import response
 import pytest
 from freezegun import freeze_time
 
 from flowauth.roles import list_my_roles_on_server, role_to_dict
+
+from flowauth.models import db
 
 
 @freeze_time("2020-12-31")
@@ -96,7 +101,7 @@ def test_add_role(client, auth, app, test_scopes):
                 4,
             ],  # "run" and "dummy_agg_unit:dummy_scope:dummy_scope", server 1
             "server_id": 1,
-            "latest_token_expiry": "2021-12-31T12:00:00.0Z",
+            "latest_token_expiry": "2020-12-31T12:00:00.0Z",
             "longest_token_life_minutes": 2 * 24 * 60,
         },
     )
@@ -109,7 +114,7 @@ def test_add_role(client, auth, app, test_scopes):
             "id": 1,
             "name": "test_role",
             "scopes": ["run", "dummy_agg_unit:dummy_query:dummy_query"],
-            "latest_token_expiry": "2021-12-31T12:00:00.000000Z",
+            "latest_token_expiry": "2020-12-31T12:00:00.000000Z",
             "longest_token_life_minutes": 2 * 24 * 60,
         }
     ]
@@ -135,20 +140,39 @@ def test_update_role(auth, client, test_roles):
     }
 
 
-@pytest.mark.skip(
-    reason="Scopes are included in regular listing now; not needed anymore"
-)
-def test_list_scopes_in_role(client, auth, test_scopes, test_roles):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
-    response = client.get(
-        "/servers/1/roles/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
-    )
-    assert response.status_code == 200
-    assert [["DUMMY_SCOPE_1"]] == response.get_json()
-    response = client.get(
-        "/admin/roles/2/scopes", headers={"X-CSRF-Token": csrf_cookie}
-    )
-    assert response.status_code == 200
-    assert [
-        "DUMMY_SCOPE_2",
-    ] == response.get_json()
+def test_invalid_role(app, auth, client, test_servers):
+    with app.app_context():
+        server, _ = test_servers
+        db.session.add(server)
+        response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+        invalid_expiry = server.latest_token_expiry + timedelta(minutes=1)
+        base_payload = {
+            "name": "test_role",
+            "scopes": [
+                3,
+                4,
+            ],  # "run" and "dummy_agg_unit:dummy_scope:dummy_scope", server 1
+            "server_id": server.id,
+            "latest_token_expiry": server.latest_token_expiry.strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            "longest_token_life_minutes": server.longest_token_life_minutes,
+        }
+        invalid_expiry_payload = base_payload.copy()
+        invalid_expiry_payload["latest_token_expiry"] = invalid_expiry.strftime(
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+        response = client.post(
+            "/roles/",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json=invalid_expiry_payload,
+        )
+        assert response.status_code == 400
+        invalid_life_payload = base_payload.copy()
+        invalid_life_payload["longest_token_life_minutes"] = (
+            server.longest_token_life_minutes + 1
+        )
+        response = client.post(
+            "/roles/", headers={"X-CSRF-Token": csrf_cookie}, json=invalid_life_payload
+        )
+        assert response.status_code == 400

@@ -8,6 +8,7 @@ from flask_login import current_user, login_required
 from flask_principal import Permission, RoleNeed
 
 from .models import Role, Scope, Server, User, db
+from .invalid_usage import InvalidUsage
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 
@@ -72,6 +73,11 @@ def add_role():
     except KeyError:
         role_users = []
 
+    if json["latest_token_expiry"] > server.latest_token_expiry:
+        raise InvalidUsage("Role cannot exist past latest token in server")
+    if int(json["longest_token_life_minutes"]) > server.longest_token_life_minutes:
+        raise InvalidUsage("Role cannot have a maximum lifetime greater than server")
+
     new_role = Role(
         name=json["name"],
         scopes=role_scopes,
@@ -95,6 +101,7 @@ def add_role():
 def edit_role(role_id):
     edits = request.get_json()
     role = Role.query.filter(Role.id == role_id).first_or_404()
+    server = role.server
     for key, value in edits.items():
         if key == "id":
             current_app.logger.warning("Cannot change role ID; ignoring")
@@ -105,6 +112,14 @@ def edit_role(role_id):
             value = [Scope.query.filter(Scope.id == sid).first() for sid in value]
         elif key == "latest_token_expiry":
             value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+            if value > server.latest_token_expiry:
+                raise InvalidUsage("Role cannot exist past latest token in server")
+        elif key == "longest_token_lifetime_minutes":
+            if value > server.longest_token_life_minutes:
+                raise InvalidUsage(
+                    "Role cannot have a maximum lifetime greater than server"
+                )
+
         setattr(role, key, value)
     db.session.add(role)
     db.session.commit()
