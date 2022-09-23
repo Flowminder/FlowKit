@@ -67,8 +67,8 @@ export function scopesGraph(scopes_obj) {
 
 function jsonify_inner(tree, label, value, enabled){
   const things = Object.keys(tree).map((branch, index) => {
-    const this_label = label ==="" ? branch: [label, branch].join(".")
-    const this_value = this_label
+    const this_value = value ==="" ? branch: [label, branch].join(".")
+    const this_label = label ==="" ? branch:branch
     if (typeof(tree[branch]) === "boolean"){
       if (tree[branch]){
         enabled.push(this_value)

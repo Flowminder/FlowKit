@@ -145,13 +145,13 @@ def test_servers(app):
         # Add some servers
         dummy_server_a = Server(
             name="DUMMY_SERVER_A",
-            longest_token_life_minutes=2880,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now().date()
             + datetime.timedelta(days=365),
         )
         dummy_server_b = Server(
             name="DUMMY_SERVER_B",
-            longest_token_life_minutes=2880,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now().date()
             + datetime.timedelta(days=365),
         )
@@ -191,21 +191,21 @@ def test_roles(app, test_scopes, test_servers):
             name="runner",
             scopes=[run, read_a, dummy_query],
             server=server_a,
-            longest_token_life_minutes=2880,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
         )
         reader = Role(
             name="reader",
             scopes=[read_a],
             server=server_a,
-            longest_token_life_minutes=2880,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
         )
         reader_b = Role(
             name="reader_b",
             scopes=[read_b],
             server=server_b,
-            longest_token_life_minutes=2880,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
         )
         db.session.add(runner)
