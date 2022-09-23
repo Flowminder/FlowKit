@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import Token from "./Token";
-import { getMyTokensForServer } from "./util/api";
+import { getMyTokensForServer, getServer } from "./util/api";
 
 const styles = (theme) => ({
   root: {
@@ -22,7 +22,7 @@ const styles = (theme) => ({
 });
 
 class TokenList extends React.Component {
-  state = { tokens: [] };
+  state = { tokens: [], serverName: "" };
 
   updateTokenList = () => {
     getMyTokensForServer(this.props.serverID)
@@ -35,8 +35,14 @@ class TokenList extends React.Component {
         this.setState({ hasError: true, error: err });
       });
   };
+  getServerName = () => {
+    getServer(this.props.serverID)
+    .then(server => this.setState({serverName: server.name}))
+    .catch(err => console.error(err))
+  }
   componentDidMount() {
     this.updateTokenList();
+    this.getServerName();
   }
 
   componentDidUpdate(prevProps) {
@@ -45,8 +51,8 @@ class TokenList extends React.Component {
     }
   }
   render() {
-    const { classes, nickName, editAction } = this.props;
-    const { tokens } = this.state;
+    const { classes, nickName, editAction} = this.props;
+    const { tokens, serverName } = this.state;
 
     const now = Date.parse(new Date());
     const activeTokens = tokens.filter(
@@ -59,6 +65,11 @@ class TokenList extends React.Component {
     return (
       <React.Fragment>
         <React.Fragment>
+          <Grid item xs={12}>
+            <Typography variant="h5" component="h3">
+              Server: {serverName}
+            </Typography>
+          </Grid>
           <Grid item xs={12}>
             <Typography variant="h5" component="h1">
               {nickName}

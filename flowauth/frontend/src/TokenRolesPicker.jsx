@@ -51,7 +51,7 @@ function TokenRolesPicker(props){
         <ListSubheader inset>Roles</ListSubheader>
         {roles.map((role, i) => (
           <ListItem key={role.name}>
-            {role.name}
+            <Typography>{role.name}</Typography>
           <Checkbox
             onChange={handleToggle(i)}
             checked={checked.indexOf(i) !== -1}
