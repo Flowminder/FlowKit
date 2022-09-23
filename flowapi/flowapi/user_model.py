@@ -31,20 +31,14 @@ class UserObject:
         self.username = username
         self.scopes = scopes
 
-    def has_access(self, *, actions=None, claims=None) -> bool:
-        if actions is None:
-            actions = []
-        if claims is None:
-            claims = []
-        if not actions and not claims:
-            raise ValueError("has_access needs at least actions or claims")
+    def has_access(self, *, requested_scopes) -> bool:
         granting_roles = []
         for role, scopes in self.scopes.items():
-            if all(x in scopes for x in {*claims, *actions}):
+            if all(x in scopes for x in requested_scopes):
                 granting_roles.append(role)
         if granting_roles:
             current_app.access_logger.info(
-                f"Permission for {actions} over {claims} granted by {granting_roles}"
+                f"Permission for {requested_scopes} granted by {granting_roles}"
             )
             return True
         raise UserClaimsVerificationError
@@ -70,7 +64,7 @@ class UserObject:
 
         """
         claims = await query_to_scopes(query_json)
-        return self.has_access(actions=["run"], claims=claims)
+        return self.has_access(requested_scopes=["run"] + claims)
 
     async def can_poll_by_query_id(self, *, query_id) -> bool:
         """
@@ -115,7 +109,7 @@ class UserObject:
             If the user cannot get the status of this kind of query at this level of aggregation
         """
         claims = await query_to_scopes(query_json)
-        return self.has_access(claims=claims)
+        return self.has_access(requested_scopes=claims)
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
         """
@@ -158,7 +152,7 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         claims = await query_to_scopes(query_json)
-        return self.has_access(actions=["get_result"], claims=claims)
+        return self.has_access(requested_scopes=["get_result"] + claims)
 
     def can_get_geography(self, *, aggregation_unit: str) -> bool:
         """
@@ -180,12 +174,12 @@ class UserObject:
             If the user get geography at this level
         """
         return self.has_access(
-            actions=["get_result"],
-            claims=[f"{aggregation_unit}:geography:geography"],
+            requested_scopes=["get_result"]
+            + [f"{aggregation_unit}:geography:geography"],
         )
 
     def can_get_available_dates(self) -> bool:
-        return self.has_access(actions=["get_available_dates"])
+        return self.has_access(requested_scopes=["get_available_dates"])
 
 
 def user_loader_callback(identity):
