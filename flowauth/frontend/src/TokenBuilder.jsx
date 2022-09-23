@@ -15,7 +15,7 @@ import { getDisabledState } from "rsuite/esm/CheckTreePicker/utils";
 import { Button, Dialog, DialogActions, DialogContentText, DialogTitle } from "@material-ui/core";
 import ScopedCssBaseline from "@material-ui/core/ScopedCssBaseline";
 import { scopes_with_roles } from "./util/util";
-import {createToken, getMyRolesOnServer} from "./util/api"
+import {createToken, getMyRolesOnServer, getServer} from "./util/api"
 import UserRolesPicker from "./UserRolesPicker";
 import SubmitButtons from "./SubmitButtons";
 import CompoundChecklist from "./TokenRolesPicker";
@@ -36,6 +36,7 @@ function TokenBuilder(props) {
   const {activeServer, onClick} = props
   
   const [name, setName] = useState("")
+  const [serverName, setServerName] = useState("")
   const [nameHelperText, setNameHelperText] = useState("")
   const [nameIsValid, setNameIsValid] = useState("")
   const [roles, setRoleState] = useState([])
@@ -47,6 +48,9 @@ function TokenBuilder(props) {
 
   // Run on initial load to get roles
   useEffect(() => {
+    getServer(activeServer)
+    .then(server => setServerName(server.name),
+    (err) => console.log(err))
     getMyRolesOnServer(activeServer)
     .then(roles => setRoleState(roles),
     (err) => console.log(err))
@@ -90,7 +94,6 @@ function TokenBuilder(props) {
     setChecked(newChecked)
   }
 
-  //Pops up a marquee containing the token for copy-and-paste or download
   const requestToken = () => {
 
     createToken(
@@ -168,16 +171,20 @@ function TokenBuilder(props) {
         </DialogActions>
       </Dialog>
 
-      <TextField
-        id="name"
-        label="Name"
-        required={true}
-        onChange = {handleNameChange}
-        value={name}
-        margin="normal"
-        error={!nameIsValid}
-        helperText={nameHelperText}
-      />
+      <Grid container spacing={3} direction='column' >
+      <Grid item><Typography variant="h5" component="h1">Server: {serverName}</Typography></Grid>
+      <Grid item>
+        <TextField
+          id="name"
+          label="Name"
+          required={true}
+          onChange = {handleNameChange}
+          value={name}
+          margin="normal"
+          error={!nameIsValid}
+          helperText={nameHelperText}
+        />
+      </Grid>
       <Grid container xs={8}>
         <TokenRolesPicker
           roles = {roles}
@@ -186,6 +193,7 @@ function TokenBuilder(props) {
           handleToggle = {handleToggle}
           checked = {checked}
         />
+      </Grid>
       </Grid>
       <SubmitButtons handleSubmit={submitForm} onClick={onClick} />
 
