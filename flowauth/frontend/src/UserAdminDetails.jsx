@@ -38,7 +38,7 @@ class UserAdminDetails extends React.Component {
     has_two_factor: false,
     two_factor_can_be_disabled: false,
     pageError: false,
-    errors: { message: "" },
+    error: { message: "" },
   };
   async componentDidMount() {
     const json = getUser(this.props.item_id);
@@ -50,7 +50,7 @@ class UserAdminDetails extends React.Component {
       }
     } catch (err) {
       if (err.code !== 404) {
-        this.setState({ hasError: true, errors: err });
+        this.setState({ hasError: true, error: err });
       }
     }
   }
@@ -79,7 +79,7 @@ class UserAdminDetails extends React.Component {
   handleChange = (name) => (event) => {
     this.setState({
       pageError: false,
-      errors: "",
+      error: "",
     });
     this.setState({
       [name]: event.target.value,
@@ -152,16 +152,16 @@ class UserAdminDetails extends React.Component {
         onClick();
       } catch (err) {
         if (err.code === 400) {
-          this.setState({ pageError: true, errors: err });
+          this.setState({ pageError: true, error: err });
         } else {
-          this.setState({ hasError: true, errors: err });
+          this.setState({ hasError: true, error: err });
         }
       }
     }
   };
 
   render() {
-    if (this.state.hasError) throw this.state.errors;
+    if (this.state.hasError) throw this.state.error;
 
     const { classes, item_id, onClick } = this.props;
     const {
@@ -292,7 +292,7 @@ class UserAdminDetails extends React.Component {
         </Grid>
         <ErrorDialog
           open={this.state.pageError}
-          message={this.state.errors.message}
+          message={this.state.error.message}
         />
         <Grid item xs={12} />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
