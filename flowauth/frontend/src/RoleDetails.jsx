@@ -56,8 +56,6 @@ function RoleDetails(props) {
 
       const fetch_role = (async () => {
         const role = await getRole(role_id);
-        console.log("Role fetched");
-        console.log(role);
         setRole(role);
       });
 
@@ -71,10 +69,9 @@ function RoleDetails(props) {
       fetch_server().catch((err) => console.error(err))
 
       if (role_id >= 0){
-        console.log(role_id);
         fetch_role()
         .catch((err) => {
-          console.log("Role err:" + err)
+          console.error("Role err:" + err)
           if (err.code !== 404){
             setRole({});
             setErrors(err.message);
@@ -89,7 +86,6 @@ function RoleDetails(props) {
   //the parts from the others.
   useEffect(() => {
         if (Object.keys(role).length !== 0){   //ffs, Javascript
-          console.log("Role not empty")
           setRoleName(role.name);
           setMembers(role.users);
           setExpiryDate(role.latest_token_expiry);
