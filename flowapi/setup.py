@@ -38,6 +38,7 @@ setup(
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",
+        "openapi_spec_validator<0.5",  # Pinned because of https://github.com/RonnyPfannschmidt/prance/issues/131
         "werkzeug",
     ],
     extras_require={"test": ["pytest", "coverage"]},
