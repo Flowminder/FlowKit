@@ -751,6 +751,11 @@ jobs:
       - restore_cache:
           key: flowetl-deps-5-{{ checksum "Pipfile.lock"}}
       - run:
+          name: Install psycopg2 build deps
+          command: |
+            sudo apt-get update
+            sudo apt install libpq-dev
+      - run:
           name: Set python version
           command: |
             pyenv versions
