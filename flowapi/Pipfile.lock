@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "12600ffc84e4a16f4ff4214b441eb9b4a211db7b763f36de04cbeeb96723d009"
+            "sha256": "0e021fbdc901346cbf92598ae073c7131a76366730fb92bd8736f8a71f35e620"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -270,6 +270,14 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==3.4"
+        },
+        "importlib-metadata": {
+            "hashes": [
+                "sha256:637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3d45670",
+                "sha256:7401a975809ea1fdc658c3aa4f78cc2195a0e019c5cbc4c06122884e9ae80c23"
+            ],
+            "markers": "python_version < '3.10'",
+            "version": "==4.12.0"
         },
         "importlib-resources": {
             "hashes": [
@@ -663,11 +671,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:2cf213d8b83fa701a83e3b3125e9102a937cefd1e97e9583f22ee2fa79139640",
-                "sha256:69480e7384935feff1f50293a8cb70c5d31f568af94ed792d043bb368b50bd50"
+                "sha256:0c2465ef5768890431650636f51fe2cc459de6cf4cf3363870ae2a1f3dba9eb1",
+                "sha256:5bef6711d25e379ce8a1ed3f7d3ec72eae4159d116e8d480d1cab59c8bb6f44d"
             ],
             "index": "pypi",
-            "version": "==0.17.0"
+            "version": "==0.18.0"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1753,11 +1761,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:2cf213d8b83fa701a83e3b3125e9102a937cefd1e97e9583f22ee2fa79139640",
-                "sha256:69480e7384935feff1f50293a8cb70c5d31f568af94ed792d043bb368b50bd50"
+                "sha256:0c2465ef5768890431650636f51fe2cc459de6cf4cf3363870ae2a1f3dba9eb1",
+                "sha256:5bef6711d25e379ce8a1ed3f7d3ec72eae4159d116e8d480d1cab59c8bb6f44d"
             ],
             "index": "pypi",
-            "version": "==0.17.0"
+            "version": "==0.18.0"
         },
         "quart-jwt-extended": {
             "extras": [
