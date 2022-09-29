@@ -569,11 +569,11 @@
         },
         "respx": {
             "hashes": [
-                "sha256:6dab3a19dfb0ea07cef996198c12bf8a34e6fc3573a24b184d714f765e8b5e57",
-                "sha256:ea3049468bfcf95c7827436230e05b85a037050dc569dbeaecdaa08fa0de5750"
+                "sha256:27ef411ca9622ae1e032c3f355506f62de5efe08c4296f64ae2c0621888e710a",
+                "sha256:61e26ddf66b2b0d1bcd78c4e18a06533e50493f8c0179e5542ebfffd3ed3d0c5"
             ],
             "index": "pypi",
-            "version": "==0.19.3"
+            "version": "==0.20.0"
         },
         "rfc3986": {
             "extras": [
@@ -643,7 +643,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version >= '3.7'",
+            "markers": "python_full_version < '3.11.0a7'",
             "version": "==2.0.1"
         },
         "traitlets": {
