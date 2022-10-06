@@ -689,13 +689,21 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==2.5.0"
         },
+        "approval-utilities": {
+            "hashes": [
+                "sha256:773edb25704148dacb7838a45090fa0ff6698f15c95af842c6007782dbce980b",
+                "sha256:c40f6e78a182312d95d2d08364801e72e02f8ffbc535ef5fea159ee9f3b220c9"
+            ],
+            "markers": "python_full_version >= '3.6.1'",
+            "version": "==7.0.1"
+        },
         "approvaltests": {
             "hashes": [
-                "sha256:8a498c78caaaf0395a93af30d575e96dff52c1c7c813fe189ed0a06bb7e8a4a9",
-                "sha256:c1266bf015ca4a1666744630b33af5ed09a8fc5f90646fe7852f813628c8996f"
+                "sha256:87f4c0147e9114a3bfd81e12dc8ea7ae8848ddf152b7eb27aa25cf0a74419890",
+                "sha256:e9b21db03481d6637eefe0d3b23c2350c9dca9bd1ba82c82b394a0d095faa82f"
             ],
             "index": "pypi",
-            "version": "==6.2.0"
+            "version": "==7.0.1"
         },
         "asttokens": {
             "hashes": [
@@ -898,6 +906,9 @@
             "version": "==1.0.5"
         },
         "coverage": {
+            "extras": [
+                "toml"
+            ],
             "hashes": [
                 "sha256:027018943386e7b942fa832372ebc120155fd970837489896099f5cfa2890f79",
                 "sha256:11b990d520ea75e7ee8dcab5bc908072aaada194a794db9f6d7d5cfd19661e5a",
@@ -1096,11 +1107,11 @@
         },
         "identify": {
             "hashes": [
-                "sha256:322a5699daecf7c6fd60e68852f36f2ecbb6a36ff6e6e973e0d2bb6fca203ee6",
-                "sha256:ef78c0d96098a3b5fe7720be4a97e73f439af7cf088ebf47b620aeaa10fadf97"
+                "sha256:6c32dbd747aa4ceee1df33f25fed0b0f6e0d65721b15bd151307ff7056d50245",
+                "sha256:b276db7ec52d7e89f5bc4653380e33054ddc803d25875952ad90b0f012cbcdaa"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2.5.5"
+            "version": "==2.5.6"
         },
         "idna": {
             "hashes": [
@@ -1913,10 +1924,10 @@
         },
         "tokenize-rt": {
             "hashes": [
-                "sha256:08a27fa032a81cf45e8858d0ac706004fcd523e8463415ddf1442be38e204ea8",
-                "sha256:0d4f69026fed520f8a1e0103aa36c406ef4661417f20ca643f913e33531b3b94"
+                "sha256:3160bc0c3e8491312d0485171dea861fc160a240f5f5766b72a1165408d10740",
+                "sha256:c67772c662c6b3dc65edf66808577968fb10badfc2042e3027196bed4daf9e5a"
             ],
-            "version": "==4.2.1"
+            "version": "==5.0.0"
         },
         "toml": {
             "hashes": [
