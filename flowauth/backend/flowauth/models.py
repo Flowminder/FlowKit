@@ -9,6 +9,7 @@ import datetime
 from itertools import chain
 from sqlalchemy import ForeignKey, func
 from typing import Dict, List, Union
+import json
 
 from flask import current_app
 
@@ -571,6 +572,10 @@ def make_demodata():
     """
     Generate some demo data.
     """
+
+    # A local import here, as this is the only link to flowAPI
+    from flowapi.permissions import schema_to_scopes
+
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
@@ -586,13 +591,14 @@ def make_demodata():
     )
     db.session.add(test_server)
 
-    scopes = [
+    scope_doc = json.load("demo_data/demo_scopes.json")
+    scopes = [Scope(name=scope_string, server=test_server) for scope_string in schema_to_scopes(scope_doc)]
+    scopes += [
         reader_scope := Scope(name="get_result", server=test_server),
         runner_scope := Scope(name="run", server=test_server),
-        example_geo_scope := Scope(
-            name="admin3:dummy_query:dummy_query", server=test_server
-        ),
+        dates_scope := Scope(name="get_available_dates", server=test_server)
     ]
+
     db.session.add_all(scopes)
 
     # Add roles to test server
