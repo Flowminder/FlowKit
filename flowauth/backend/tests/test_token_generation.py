@@ -28,12 +28,12 @@ def test_reject_when_claim_not_allowed(
 
         # Log in first
         response, csrf_cookie = auth.login(uname, upass)
-        token_eq = {
+        token_req = {
             "name": "TEST_TOKEN",
             "roles": [{"name": "runner"}],
         }
         response = client.post(
-            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
         )
         assert 401 == response.status_code
         assert (
@@ -41,9 +41,10 @@ def test_reject_when_claim_not_allowed(
             == response.get_json()["message"]
         )
 
+        token_req = {"name": "TEST_TOKEN", "roles": [{"name": "reader"}]}
         # Testing attempting reader on second server
         response = client.post(
-            "/tokens/tokens/2", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+            "/tokens/tokens/2", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
         )
         assert 401 == response.status_code
 
