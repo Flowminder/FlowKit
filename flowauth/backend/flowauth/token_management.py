@@ -139,6 +139,13 @@ def add_token(server_id):
             )
         roles.append(this_role)
     token_expiry = min(server.next_expiry(), min(rr.next_expiry() for rr in roles))
+    # The role expiry date doesn't beat the server expiry date
+    # The role longest lifetime doesn't beat the server longest lifetime
+    # If you request token with a role with a expiry past the server final expiry, then issue the token with the server's final expiry
+    # feature todo: flag this to the user
+    # breakpoint()
+        server
+    )  # This isn't about the user, so get these values from the server
 
     token_string = generate_token(
         flowapi_identifier=server.name,
