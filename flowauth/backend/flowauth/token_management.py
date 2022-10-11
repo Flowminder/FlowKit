@@ -142,13 +142,20 @@ def add_token(server_id):
                 "scopes": [s.name for s in this_role.scopes],
             }
         )
-
+    # For each role, we want to check
+    # The role expiry date doesn't beat the server expiry date
+    # The role longest lifetime doesn't beat the server longest lifetime
+    # If you request token with a role with a expiry past the server final expiry, then issue the token with the server's final expiry
+    # feature todo: flag this to the user
     expiry = reduce(
         lambda prev, cur: prev if prev < cur else cur,
         (role.pop("latest_token_expiry") for role in roles),
     )
+    # breakpoint()
     lifetime = expiry - datetime.datetime.now()
-    latest_lifetime = current_user.latest_token_expiry(server)
+    latest_lifetime = current_user.latest_token_expiry(
+        server
+    )  # This isn't about the user, so get these values from the server
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
 
