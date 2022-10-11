@@ -394,6 +394,13 @@ class Server(db.Model):
         "TokenHistory", back_populates="server", cascade="all, delete, delete-orphan"
     )
 
+    def next_expiry(self) -> datetime.datetime:
+        return min(
+            self.latest_token_expiry,
+            datetime.datetime.now()
+            + datetime.timedelta(minutes=self.longest_token_life_minutes),
+        )
+
     def __repr__(self) -> str:
         return f"<Server {self.name}>"
 
@@ -415,6 +422,13 @@ class Role(db.Model):
         lazy="subquery",
         backref=db.backref("roles", lazy=True),
     )
+
+    def next_expiry(self) -> datetime.datetime:
+        return min(
+            self.latest_token_expiry,
+            datetime.datetime.now()
+            + datetime.timedelta(minutes=self.longest_token_life_minutes),
+        )
 
     def allowed_claims(self) -> List[str]:
         """
@@ -592,11 +606,14 @@ def make_demodata():
     db.session.add(test_server)
 
     scope_doc = json.load("demo_data/demo_scopes.json")
-    scopes = [Scope(name=scope_string, server=test_server) for scope_string in schema_to_scopes(scope_doc)]
+    scopes = [
+        Scope(name=scope_string, server=test_server)
+        for scope_string in schema_to_scopes(scope_doc)
+    ]
     scopes += [
         reader_scope := Scope(name="get_result", server=test_server),
         runner_scope := Scope(name="run", server=test_server),
-        dates_scope := Scope(name="get_available_dates", server=test_server)
+        dates_scope := Scope(name="get_available_dates", server=test_server),
     ]
 
     db.session.add_all(scopes)

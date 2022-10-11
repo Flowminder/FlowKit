@@ -11,7 +11,7 @@ from sqlalchemy import select
 
 from flowauth.jwt import generate_token
 
-from .invalid_usage import InvalidUsage
+from .invalid_usage import InvalidUsage, Unauthorized
 from .models import *
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
@@ -127,6 +127,8 @@ def add_token(server_id):
 
     roles = []
     for requested_role in json["roles"]:
+        # I think I might also rewrite this bit as just iterating through the requested roles and
+        # doing Role.query.filter(Role.id == requested_role).first_or_404()?
         try:
             this_role = next(
                 filter(lambda x: x.name == requested_role["name"], user_roles)
@@ -135,31 +137,14 @@ def add_token(server_id):
             raise Unauthorized(
                 f"Role '{requested_role['name']}' is not permitted for the current user"
             )
-        roles.append(
-            {
-                "name": this_role.name,
-                "latest_token_expiry": this_role.latest_token_expiry,
-                "scopes": [s.name for s in this_role.scopes],
-            }
-        )
-
-    expiry = reduce(
-        lambda prev, cur: prev if prev < cur else cur,
-        (role.pop("latest_token_expiry") for role in roles),
-    )
-    lifetime = expiry - datetime.datetime.now()
-    latest_lifetime = current_user.latest_token_expiry(server)
-    if expiry > latest_lifetime:
-        raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
-
-    if expiry < datetime.datetime.now():
-        raise Unauthorized(f"Token for {current_user.username} expired")
+        roles.append(this_role)
+    token_expiry = min(server.next_expiry(), min(rr.next_expiry() for rr in roles))
 
     token_string = generate_token(
         flowapi_identifier=server.name,
         username=current_user.username,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
-        lifetime=lifetime,
+        lifetime=token_expiry - datetime.datetime.now(),
         roles={role["name"]: sorted(role["scopes"]) for role in roles},
     )
 
