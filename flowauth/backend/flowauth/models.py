@@ -587,8 +587,8 @@ def make_demodata():
     Generate some demo data.
     """
 
-    # A local import here, as this is the only link to flowAPI
-    from flowapi.permissions import schema_to_scopes
+    # A local import here, as this is the only lddink to flowAPI
+    from .permissions import schema_to_scopes
 
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
@@ -605,12 +605,12 @@ def make_demodata():
     )
     db.session.add(test_server)
 
-    scope_doc = json.load("demo_data/demo_scopes.json")
+    # scopes_doc = json.loads()
+    # scopes = [
+    #     Scope(name=scope_string, server=test_server)
+    #     for scope_string in schema_to_scopes("demo_data/demo_scopes.json")
+    # ]
     scopes = [
-        Scope(name=scope_string, server=test_server)
-        for scope_string in schema_to_scopes(scope_doc)
-    ]
-    scopes += [
         reader_scope := Scope(name="get_result", server=test_server),
         runner_scope := Scope(name="run", server=test_server),
         dates_scope := Scope(name="get_available_dates", server=test_server),
@@ -623,14 +623,14 @@ def make_demodata():
         Role(
             name="viewer",
             server=test_server,
-            scopes=[reader_scope, example_geo_scope],
+            scopes=[reader_scope],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
         Role(
             name="runner",
             server=test_server,
-            scopes=[runner_scope, example_geo_scope],
+            scopes=[runner_scope],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),

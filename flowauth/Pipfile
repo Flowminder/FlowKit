@@ -26,6 +26,8 @@ redis = "*"
 structlog = "*"
 simplejson = "*"
 freezegun = "*"
+prance = {extras = ["osv"],version = "*"}
+python-rapidjson = "*"
 
 [dev-packages]
 pytest = "*"
