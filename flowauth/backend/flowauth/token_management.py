@@ -130,9 +130,9 @@ def add_token(server_id):
         # I think I might also rewrite this bit as just iterating through the requested roles and
         # doing Role.query.filter(Role.id == requested_role).first_or_404()?
         try:
-            this_role = next(
-                filter(lambda x: x.name == requested_role["name"], user_roles)
-            )
+            this_role = Role.query.filter(
+                Role.name == requested_role["name"]
+            ).first_or_404()
         except StopIteration:
             raise Unauthorized(
                 f"Role '{requested_role['name']}' is not permitted for the current user"
@@ -143,23 +143,25 @@ def add_token(server_id):
     # The role longest lifetime doesn't beat the server longest lifetime
     # If you request token with a role with a expiry past the server final expiry, then issue the token with the server's final expiry
     # feature todo: flag this to the user
-    # breakpoint()
+
         server
     )  # This isn't about the user, so get these values from the server
+
+    current_app.logger.debug("token_expiry")
 
     token_string = generate_token(
         flowapi_identifier=server.name,
         username=current_user.username,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
         lifetime=token_expiry - datetime.datetime.now(),
-        roles={role["name"]: sorted(role["scopes"]) for role in roles},
+        roles={role.name: sorted([ss.name for ss in role.scopes]) for role in roles},
     )
 
     history_entry = TokenHistory(
         name=json["name"],
         user_id=current_user.id,
         server_id=server.id,
-        expiry=expiry,
+        expiry=token_expiry,
         token=token_string,
     )
 
