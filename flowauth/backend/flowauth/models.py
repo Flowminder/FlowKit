@@ -610,10 +610,10 @@ def make_demodata():
             "x-security-scopes"
         ]
     ]
-    reader_scope = list(filter(scopes, lambda scope: scope.name == "get_result"))[0]
-    runner_scope = list(filter(scopes, lambda scope: scope.name == "run"))[0]
+    reader_scope = list(filter(lambda scope: scope.name == "get_result", scopes))[0]
+    runner_scope = list(filter(lambda scope: scope.name == "run", scopes))[0]
     dates_scope = list(
-        filter(scopes, lambda scope: scope.name == "get_available_dates")
+        filter(lambda scope: scope.name == "get_available_dates", scopes)
     )[0]
 
     db.session.add_all(scopes)
