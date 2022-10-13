@@ -162,6 +162,7 @@ function RoleDetails(props) {
   }
 
   const handleScopesChange = (new_scopes) => {
+    console.debug("Scopes now:",new_scopes)
     setScopes(new_scopes)
   }
 

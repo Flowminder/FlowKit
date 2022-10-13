@@ -68,7 +68,7 @@ export function scopesGraph(scopes_obj) {
 //Something is wrong in here - nested scopes aren't coming back properly on load
 function jsonify_inner(tree, label, value, enabled){
   const things = Object.keys(tree).map((branch, index) => {
-    const this_value = value ==="" ? branch: [label, branch].join(".")
+    const this_value = value ==="" ? branch: [label, branch].join(":")
     const this_label = label ==="" ? branch:branch
     if (typeof(tree[branch]) === "boolean"){
       if (tree[branch]){
