@@ -610,11 +610,11 @@ def make_demodata():
             "x-security-scopes"
         ]
     ]
-    scopes += [
-        reader_scope := Scope(name="get_result", server=test_server),
-        runner_scope := Scope(name="run", server=test_server),
-        dates_scope := Scope(name="get_available_dates", server=test_server),
-    ]
+    reader_scope = list(filter(scopes, lambda scope: scope.name == "get_result"))[0]
+    runner_scope = list(filter(scopes, lambda scope: scope.name == "run"))[0]
+    dates_scope = list(
+        filter(scopes, lambda scope: scope.name == "get_available_dates")
+    )[0]
 
     db.session.add_all(scopes)
 
@@ -623,14 +623,14 @@ def make_demodata():
         Role(
             name="viewer",
             server=test_server,
-            scopes=[reader_scope],
+            scopes=[reader_scope, dates_scope],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
         Role(
             name="runner",
             server=test_server,
-            scopes=[runner_scope],
+            scopes=[runner_scope, dates_scope],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
