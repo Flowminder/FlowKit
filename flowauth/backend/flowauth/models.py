@@ -587,9 +587,6 @@ def make_demodata():
     Generate some demo data.
     """
 
-    # A local import here, as this is the only lddink to flowAPI
-    from .permissions import schema_to_scopes
-
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
@@ -605,12 +602,15 @@ def make_demodata():
     )
     db.session.add(test_server)
 
-    # scopes_doc = json.loads()
+    with (Path(__file__).parent / Path("demo_data/demo_scopes.json")).open() as spec:
+        scopes_doc = json.load(spec)
     scopes = [
         Scope(name=scope_string, server=test_server)
-        for scope_string in schema_to_scopes(scope_doc)
+        for scope_string in scopes_doc["components"]["securitySchemes"]["token"][
+            "x-security-scopes"
+        ]
     ]
-    scopes = [
+    scopes += [
         reader_scope := Scope(name="get_result", server=test_server),
         runner_scope := Scope(name="run", server=test_server),
         dates_scope := Scope(name="get_available_dates", server=test_server),

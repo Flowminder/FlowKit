@@ -248,4 +248,4 @@ def tl_schema_scope_string(tl_query, query_string) -> set:
         )
         agg_units = ["nonspatial"]
     out = out | {f"{agg_unit}:{tl_query_name}:{query_string}" for agg_unit in agg_units}
-        return out
+    return out
