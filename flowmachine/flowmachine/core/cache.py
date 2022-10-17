@@ -209,7 +209,7 @@ def write_query_to_cache(
                             trans,
                             query,
                             compute_time=plan_time,
-                            executed_sql="\n".join(query_ddl_ops),
+                            executed_sql=";\n".join(query_ddl_ops),
                         )
                     except Exception as exc:
                         logger.error(f"Error writing cache metadata. Error was {exc}")
