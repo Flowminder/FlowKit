@@ -27,7 +27,15 @@ WORKDIR /${SOURCE_TREE}/flowetl
 COPY --chown=airflow . /${SOURCE_TREE}/
 
 
-RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libpq-dev build-essential &&  \
+    sudo -u airflow -s pip install --no-cache-dir pipenv && \
+    sudo -u airflow -s /home/airflow/.local/bin/pipenv install --clear --deploy --system && \
+    apt-get -y remove build-essential && \
+    apt purge -y --auto-remove && \
+    rm -rf /var/lib/apt/lists/*
+USER airflow
 RUN cd flowetl && python setup.py install --prefix /home/airflow/.local
 
 
