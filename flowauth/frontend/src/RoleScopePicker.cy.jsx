@@ -5,6 +5,7 @@ import RoleScopePicker from './RoleScopePicker'
 //
 
 
+
 describe('<RoleScopePicker>', () => {
 	it('mounts', () => {
 		cy.intercept({
@@ -73,24 +74,24 @@ describe('<RoleScopePicker>', () => {
 			method: 'GET',
 			url:'/roles/1/scopes'
 		},
-		[{
-			"id": 3,
-			"name": "admin0:dummy_query:dummy_query",
-		},
-	]
+		[
+			{
+				"id": 3,
+				"name": "admin0:dummy_query:dummy_query"
+			},
+		]
 		).as('getRoleScopes');
-				
+		
 		cy.mount(<RoleScopePicker
 				updateScopes={()=>{}}
 				server_id = {1}
 				role_id = {1}
 			/>);
-		cy.wait("@getServerScopes")
-		cy.wait("@getRoleScopes")
-		cy.get('.rs-picker-toggle-value > span').should("include.text", "admin0:dummy_query:dummy_query")
-		cy.mount(<RoleScopePicker
-				updateScopes={()=>{}} 
-			/>)
+		cy.get('.rs-picker-toggle-caret').click();
+		cy.get('[data-layer="0"] > ul > .rs-picker-cascader-menu-has-children > .rs-check-item > .rs-checkbox-checker > label').should('have.text','admin0');
+		
+		
 	})
+
 })
 
