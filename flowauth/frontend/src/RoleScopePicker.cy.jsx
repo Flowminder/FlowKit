@@ -88,6 +88,9 @@ describe('<RoleScopePicker>', () => {
 		cy.wait("@getServerScopes")
 		cy.wait("@getRoleScopes")
 		cy.get('.rs-picker-toggle-value > span').should("include.text", "admin0:dummy_query:dummy_query")
+		cy.mount(<RoleScopePicker
+				updateScopes={()=>{}} 
+			/>)
 	})
 })
 
