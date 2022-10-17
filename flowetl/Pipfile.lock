@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "833ec51c152d780774897e97635c3bc58b032a92cb4f0b70ce3f9413b7fa62dd"
+            "sha256": "6d54a665f33fe5c67e891453d26d11df7e6e149f00309d7a686bb28dddc7cfc1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -45,11 +45,11 @@
                 "celery"
             ],
             "hashes": [
-                "sha256:17de1f856445ab85a776c37ac37adc76690dbd33733884d174df17c281927cc9",
-                "sha256:3cdae056f124951f6a4c63fb615ca618e61433030ed253d748c770d23cfdda4a"
+                "sha256:62513caaa38ac5c676a2636ca4d37d7bfccec1f7bd3a2605c177246c35a4068d",
+                "sha256:77b0b7e3658be5e658ee47f99c90f6dd020fb1c60c837593a55e052619e53ffd"
             ],
             "index": "pypi",
-            "version": "==2.4.0"
+            "version": "==2.4.1"
         },
         "apache-airflow-providers-celery": {
             "hashes": [
