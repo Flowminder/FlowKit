@@ -58,7 +58,7 @@ export function scopesGraph(scopes_obj) {
   }
   const single_scopes=scopes_array.filter(row => !row.includes(":"))
     .map(scope => ({[scope]:true}))
-    .reduce((p_x, x) => ({...p_x, ...x}))
+    .reduce((p_x, x) => ({...p_x, ...x}), [])
   const all_scopes = ({...scopes_tree, ...single_scopes})
   console.log(all_scopes)
   return all_scopes
