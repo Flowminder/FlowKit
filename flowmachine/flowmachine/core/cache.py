@@ -205,7 +205,12 @@ def write_query_to_cache(
                     raise exc
                 if schema == "cache":
                     try:
-                        write_cache_metadata(trans, query, compute_time=plan_time)
+                        write_cache_metadata(
+                            trans,
+                            query,
+                            compute_time=plan_time,
+                            executed_sql=";\n".join(query_ddl_ops),
+                        )
                     except Exception as exc:
                         logger.error(f"Error writing cache metadata. Error was {exc}")
                         raise exc
@@ -238,6 +243,7 @@ def write_cache_metadata(
     connection: sqlalchemy.engine.Transaction,
     query: "Query",
     compute_time: Optional[float] = None,
+    executed_sql: str = "",
 ):
     """
     Helper function for store, updates flowmachine metadata table to
@@ -252,6 +258,8 @@ def write_cache_metadata(
         Query object to write metadata about
     compute_time : float, default None
         Optionally provide the compute time for the query
+    executed_sql : str, default ""
+        Optionally provide the sql executed when this cache record was created.
 
     """
 
@@ -279,7 +287,7 @@ def write_cache_metadata(
             (
                 query.query_id,
                 __version__,
-                query._make_query(),
+                executed_sql,
                 compute_time,
                 query.__class__.__name__,
                 *query.fully_qualified_table_name.split("."),
