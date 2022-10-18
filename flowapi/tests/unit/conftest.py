@@ -95,7 +95,6 @@ async def app(monkeypatch, tmpdir, dummy_db_pool, json_log):
     monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
     current_app = create_app()
     await current_app.startup()
-    async with current_app.app_context():
-        yield TestApp(
-            current_app.test_client(), dummy_db_pool, tmpdir, current_app, json_log
-        )
+    return TestApp(
+        current_app.test_client(), dummy_db_pool, tmpdir, current_app, json_log
+    )
