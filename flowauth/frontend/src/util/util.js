@@ -65,7 +65,6 @@ export function scopesGraph(scopes_obj) {
 }
 
 
-//Something is wrong in here - nested scopes aren't coming back properly on load
 function jsonify_inner(tree, label, value, enabled){
   const things = Object.keys(tree).map((branch, index) => {
     const this_value = value ==="" ? branch: [label, branch].join(":")
@@ -116,6 +115,7 @@ export function jsonify(tree, enabled_keys){
  * @param {*} scopes_2
  */
 export function highest_common_roots(scopes_1, scopes_2){
+  console.debug("HCR for:", scopes_1, scopes_2)
   const out = []
   hrc_inner(scopes_1, scopes_2, out)
   return out
@@ -125,6 +125,7 @@ export function highest_common_roots(scopes_1, scopes_2){
 
 function hrc_inner(scopes_1, scopes_2, out){
     Object.keys(scopes_1).forEach(key => {
+    console.debug(key, scopes_1[key], scopes_2[key])
     if (compare_graphs(scopes_1[key], scopes_2[key])){
       out.push(key)
     } else {
@@ -133,17 +134,21 @@ function hrc_inner(scopes_1, scopes_2, out){
   })
 }
 
+//This needs to check if graphs are 
 function compare_graphs(g1, g2){
-  Object.keys(g1).forEach( key => {
+  return Object.keys(g1).forEach( key => {
     if (!Object.keys(g2).includes(key)){
       return false
     }
     if (typeof(g1[key]) === "object"){
-      if (!compare_graphs(g1[key], g2[key]))
+      if (!compare_graphs(g1[key], g2[key])){
         return false
       }
-    })
-  return true;
+    } else if(!(g1 === g2)) {
+      return false;
+    }
+    return true
+  })
 }
 
 export function scopes_with_roles(roles){
