@@ -55,11 +55,13 @@ function RoleScopePicker (props) {
     const set_initial_state = async () => {
       if (server_id >= 0){
         const server_scopes = await fetch_server_scopes()
-        await fetch_role_scopes(server_scopes)
+        if (role_id >= 0){
+          await fetch_role_scopes(server_scopes)
+        }
       }
     }
 
-    set_initial_state().catch(err => console.log(err))
+    set_initial_state()//.catch(err => console.log(err))
     
   }, [role_id, server_id])
 

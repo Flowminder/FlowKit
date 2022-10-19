@@ -5,7 +5,6 @@ import RoleScopePicker from './RoleScopePicker'
 //
 
 
-
 describe('<RoleScopePicker>', () => {
 	it('mounts', () => {
 		cy.intercept({
@@ -74,12 +73,10 @@ describe('<RoleScopePicker>', () => {
 			method: 'GET',
 			url:'/roles/1/scopes'
 		},
-		[
-			{
-				"id": 3,
-				"name": "admin0:dummy_query:dummy_query"
-			},
-		]
+		[{
+			"id": 3,
+			"name": "admin0:dummy_query:dummy_query",
+		}]
 		).as('getRoleScopes');
 				
 		cy.mount(<RoleScopePicker
@@ -87,10 +84,9 @@ describe('<RoleScopePicker>', () => {
 				server_id = {1}
 				role_id = {1}
 			/>);
-		cy.get('.rs-picker-toggle-caret').click();
-		cy.get('.rs-checkbox-wrapper').should('be.checked')
-		cy.get('[data-layer="0"] > ul > .rs-picker-cascader-menu-has-children > .rs-check-item > .rs-checkbox-checker > label').should('have.text','admin0').find('input').should('be.checked');
-		cy.get('[data-layer="1"] > ul > .rs-picker-cascader-menu-has-children > .rs-check-item > .rs-checkbox-checker > label > .rs-checkbox-wrapper').should('not.be.checked');
+		cy.wait("@getServerScopes")
+		cy.wait("@getRoleScopes")
+		cy.get('.rs-picker-toggle-value > span').should("include.text", "admin0:dummy_query:dummy_query")
 	})
 })
 
