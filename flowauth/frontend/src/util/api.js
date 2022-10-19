@@ -31,7 +31,7 @@ async function getResponse(path, dat) {
   var err;
   var response = await fetch(path, fullDat);
   if (response.ok) {
-    return await response.json();
+    return response.json();
   } else {
     try {
       console.log("trying to throw..");
@@ -367,11 +367,11 @@ export async function renameRole(role_id, new_name) {
 }
 
 export async function getRoleMembers(role_id) {
-  return await getResponseDefault("roles/"+role_id+"/members")
+  return await getResponseDefault("/roles/"+role_id+"/members")
 }
 
 export async function getRoleScopes(role_id) {
-  return await getResponseDefault("roles/"+role_id+"/scopes")
+  return await getResponseDefault("/roles/"+role_id+"/scopes")
 }
 
 export async function editRoleMembers(role_id, new_members) {
