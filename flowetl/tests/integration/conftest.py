@@ -366,7 +366,7 @@ def flowetl_container(
         flowdb_container()
         flowetl_db_container()
         logger.info("Running FlowETL db init container")
-        container = docker_client.containers.run(
+        init_container = docker_client.containers.run(
             f"flowminder/flowetl:{container_tag}",
             environment=dict(_AIRFLOW_DB_UPGRADE="true", **container_env["flowetl"]),
             name=f"flowetl_{container_name_suffix}_init",
@@ -374,7 +374,6 @@ def flowetl_container(
             user=user,
             network=container_network.name,
             command="version",
-            auto_remove=True,
         )
 
         logger.info("Starting FlowETL container")
@@ -426,6 +425,7 @@ def flowetl_container(
             logger.error(f"Failed to get logs: {exc}")
         container.kill()
         container.remove()
+        init_container.remove()
 
 
 @pytest.fixture(scope="function")
