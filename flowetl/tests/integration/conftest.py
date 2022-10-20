@@ -369,11 +369,12 @@ def flowetl_container(
         container = docker_client.containers.run(
             f"flowminder/flowetl:{container_tag}",
             environment=dict(_AIRFLOW_DB_UPGRADE="true", **container_env["flowetl"]),
-            name=f"flowetl_{container_name_suffix}",
+            name=f"flowetl_{container_name_suffix}_init",
             restart_policy={"Name": "on-failure"},
             user=user,
             network=container_network.name,
             command="version",
+            auto_remove=True,
         )
 
         logger.info("Starting FlowETL container")
