@@ -373,6 +373,7 @@ def flowetl_container(
             restart_policy={"Name": "on-failure"},
             user=user,
             network=container_network.name,
+            command="version",
         )
 
         logger.info("Starting FlowETL container")
