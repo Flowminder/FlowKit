@@ -118,37 +118,49 @@ export function highest_common_roots(scopes_1, scopes_2){
   console.debug("HCR for:", scopes_1, scopes_2)
   const out = []
   hrc_inner(scopes_1, scopes_2, out)
+  console.debug("HCR:", out)
   return out
 }
 
 
-
 function hrc_inner(scopes_1, scopes_2, out){
+    // Type check here
     Object.keys(scopes_1).forEach(key => {
-    console.debug(key, scopes_1[key], scopes_2[key])
-    if (compare_graphs(scopes_1[key], scopes_2[key])){
       out.push(key)
-    } else {
-      hrc_inner(scopes_1[key], scopes_2[key])
-    }
+      console.debug("HCR on", key, scopes_1[key], scopes_2[key])
+      if (Object.values(scopes_1[key]).every(x => typeof(x) === "boolean")
+      && Object.values(scopes_2[key]).every(x => typeof(x) === "boolean")){
+        console.debug("Bottom of tree hit")
+      }
+      if (compare_trees(scopes_1[key], scopes_2[key])){
+        console.debug("Common key found:", key)
+      } else {
+        hrc_inner(scopes_1[key], scopes_2[key], out)
+      }
   })
 }
 
-//This needs to check if graphs are 
-function compare_graphs(g1, g2){
-  return Object.keys(g1).forEach( key => {
-    if (!Object.keys(g2).includes(key)){
-      return false
-    }
-    if (typeof(g1[key]) === "object"){
-      if (!compare_graphs(g1[key], g2[key])){
-        return false
-      }
-    } else if(!(g1 === g2)) {
-      return false;
-    }
+
+function do_arrays_match(arr1, arr2){
+  return arr1.every(x => arr2.includes(x)) 
+    && arr2.every(x => arr1.includes(x))
+}
+
+function compare_trees(t1, t2){
+  console.debug("comparing trees:", t1, t2)
+  //Do t1 and t2 not have the same keys?
+  if (! do_arrays_match(Object.keys(t1), Object.keys(t2))){
+    return false
+  }
+  // Is this the bottom of t1 and t2?
+  if (do_arrays_match(Object.values(t1), Object.values(t2))){
+    // If we are at the bottom of t1 and t2, 
     return true
-  })
+  }
+  if (Object.values(t1).every(x => typeof(x) === "object")
+  && Object.values(t2).every(x => typeof(x) === "object")){
+    return Object.keys(t1).every(key => compare_trees(t1[key], t2[key]))
+  }
 }
 
 export function scopes_with_roles(roles){

@@ -35,9 +35,6 @@ function RoleScopePicker (props) {
       // On the other hand, if roleScopes only contains admin1:foo, selectedRights should also
       // only contain admin1:foo
 
-      // Sorting this out is at present an exercise for the reader of this comment - please
-      // send answers on a postcard to John Roberts, c.o. Institute for Care of Victims of Unregulated Javascript.
-
       const sel_rights = highest_common_roots(
         scopesGraph(role_scopes.map(x => x.name)),
         scopesGraph(server_scopes.map(x => x.name)))
