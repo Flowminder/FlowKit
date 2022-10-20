@@ -372,6 +372,7 @@ def flowetl_container(
             name=f"flowetl_{container_name_suffix}_init",
             restart_policy={"Name": "on-failure"},
             user=user,
+            mounts=mounts["flowetl"],
             network=container_network.name,
             command="version",
         )
