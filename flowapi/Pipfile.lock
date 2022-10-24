@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "92c82e48f454b961bb6cb23dec68995fc55d078892c8dc95dd88a62b2b5b9c2c"
+            "sha256": "80154e7d6b268d020575307e42f91b770529c127bd2eb3ed74d32024e72a342e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -270,6 +270,14 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==3.4"
+        },
+        "importlib-metadata": {
+            "hashes": [
+                "sha256:da31db32b304314d044d3c12c79bd59e307889b287ad12ff387b3500835fc2ab",
+                "sha256:ddb0e35065e8938f867ed4928d0ae5bf2a53b7773871bfe6bcc7e4fcdc7dea43"
+            ],
+            "markers": "python_version < '3.10'",
+            "version": "==5.0.0"
         },
         "importlib-resources": {
             "hashes": [
@@ -688,11 +696,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:2cf213d8b83fa701a83e3b3125e9102a937cefd1e97e9583f22ee2fa79139640",
-                "sha256:69480e7384935feff1f50293a8cb70c5d31f568af94ed792d043bb368b50bd50"
+                "sha256:c221a7deb83a014dee040108d654b6141fe37f59e249c5caa0fdcf6506caf50b",
+                "sha256:dc4de597d5d4693627c90904b233d729531f6b27c1164f760476d3967aee2a4a"
             ],
             "index": "pypi",
-            "version": "==0.17.0"
+            "version": "==0.18.3"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1788,11 +1796,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:2cf213d8b83fa701a83e3b3125e9102a937cefd1e97e9583f22ee2fa79139640",
-                "sha256:69480e7384935feff1f50293a8cb70c5d31f568af94ed792d043bb368b50bd50"
+                "sha256:c221a7deb83a014dee040108d654b6141fe37f59e249c5caa0fdcf6506caf50b",
+                "sha256:dc4de597d5d4693627c90904b233d729531f6b27c1164f760476d3967aee2a4a"
             ],
             "index": "pypi",
-            "version": "==0.17.0"
+            "version": "==0.18.3"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1861,9 +1869,6 @@
         },
         "sanitized-package": {
             "editable": true,
-            "extras": [
-
-            ],
             "path": "."
         },
         "semver": {
