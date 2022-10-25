@@ -21,50 +21,11 @@ describe('<RoleScopePicker>', () => {
 					"enabled": true,
 					"id": 3,
 					"name": "admin0:dummy_query:inner_dummy_query"
-				}
-			]
-		).as('getServerScopes');
-
-		cy.intercept({
-			method: 'GET',
-			url:'/roles/1/scopes'
-		},
-		[{
-			"id": 3,
-			"name": "admin0:dummy_query:inner_dummy_query",
-		},
-		{
-			"id":3,
-			"name":"admin0:dummy_query:dummy_nested_query"
-		}
-	]
-		).as('getRoleScopes');
-				
-		cy.mount(<RoleScopePicker
-				updateScopes={()=>{}}
-				server_id = {1}
-				role_id = {1}
-			/>);
-		cy.wait("@getServerScopes")
-		cy.wait("@getRoleScopes")
-		cy.get('.rs-picker-toggle-value > span').should("include.text", "admin0 (All)")
-	}),
-
-	it('respects deeply nested loading differences', () => {
-		cy.intercept({
-				method: 'GET',
-				url: '/admin/servers/1/scopes', 
-			},
-			[
-				{
-					"enabled": true,
-					"id": 1,
-					"name": "admin0:dummy_query:other_query"
 				},
 				{
 					"enabled": true,
-					"id": 3,
-					"name": "admin0:dummy_query:inner_dummy_query"
+					"id": 5,
+					"name": "get_results"
 				}
 			]
 		).as('getServerScopes');
@@ -78,8 +39,12 @@ describe('<RoleScopePicker>', () => {
 			"name": "admin0:dummy_query:inner_dummy_query",
 		},
 		{
-			"id":3,
+			"id":1,
 			"name":"admin0:dummy_query:dummy_nested_query"
+		},
+		{
+			"id":7,
+			"name":"get_results"
 		}
 	]
 		).as('getRoleScopes');
@@ -91,7 +56,7 @@ describe('<RoleScopePicker>', () => {
 			/>);
 		cy.wait("@getServerScopes")
 		cy.wait("@getRoleScopes")
-		cy.get('.rs-picker-toggle-value > span').should("include.text", "admin0 (All)")
+		cy.get('.rs-picker-toggle-value > span').should("include.text", "admin0 (All), get_results")
 	}),
 
 	it('respects deeply nested loading differences', () => {

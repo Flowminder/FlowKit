@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { EmojiObjects } from "@material-ui/icons";
+
 
 function dropWhile(func) {
   let arr = this;
@@ -109,10 +111,17 @@ export function jsonify(tree, enabled_keys){
 
 
 /**
- * Walks through two trees, returning the highest common
- * roots contained in both,
+ * Walks through two trees, returning the list of roots that lead to trees that match
  * @param {*} scopes_1
  * @param {*} scopes_2
+ * 
+ * Notes: The algorithm is as follows.
+ * - Start at the root of two trees (a set of nested objects {root:{branch_1:{...}, branch_2:{...}}})
+ * - Save the key of the root
+ * - Stop if you are on a leaf of a tree
+ * - Stop if subtree_1[root] == subtree_2[root]
+ * - 
+ * 
  */
 export function highest_common_roots(scopes_1, scopes_2){
   console.debug("HCR for:", scopes_1, scopes_2)
@@ -125,7 +134,11 @@ export function highest_common_roots(scopes_1, scopes_2){
 
 function hrc_inner(scopes_1, scopes_2, out){
     // Type check here
-    Object.keys(scopes_1).forEach(key => {
+    const s1_keys = Object.keys(scopes_1)
+    const s2_keys = Object.keys(scopes_2)
+
+    const key_intersection = s1_keys.filter(x => s2_keys.includes(x))
+    key_intersection.forEach(key => {
       out.push(key)
       console.debug("HCR on", key, scopes_1[key], scopes_2[key])
       if (Object.values(scopes_1[key]).every(x => typeof(x) === "boolean")
@@ -140,7 +153,13 @@ function hrc_inner(scopes_1, scopes_2, out){
   })
 }
 
-
+/**
+ * Helper function that returns true if every member of array 1 is in array 2 and vice-versa
+ * Only works on flat arrays - object comparison is always false in JS
+ * @param {Array} arr1 
+ * @param {Array} arr2 
+ * @returns bool
+ */
 function do_arrays_match(arr1, arr2){
   return arr1.every(x => arr2.includes(x)) 
     && arr2.every(x => arr1.includes(x))

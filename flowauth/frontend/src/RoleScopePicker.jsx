@@ -38,6 +38,7 @@ function RoleScopePicker (props) {
       const sel_rights = highest_common_roots(
         scopesGraph(role_scopes.map(x => x.name)),
         scopesGraph(server_scopes.map(x => x.name)))
+      console.debug("Selected rights:", sel_rights.join(":"))
       setSelectedRights(sel_rights)
     }
 
@@ -88,6 +89,7 @@ function RoleScopePicker (props) {
     // new_labels contains only admin3.
     
     setSelectedRights(checked_roles)
+    console.debug("checked_roles:",checked_roles)
     setRoleScopes(serverScopes.filter(
       s_scope => checked_roles.some(
         c_role => s_scope.name.startsWith(c_role)

@@ -143,9 +143,7 @@ def add_token(server_id):
     # The role longest lifetime doesn't beat the server longest lifetime
     # If you request token with a role with a expiry past the server final expiry, then issue the token with the server's final expiry
     # feature todo: flag this to the user
-
-        server
-    )  # This isn't about the user, so get these values from the server
+    # This isn't about the user, so get these values from the server
 
     current_app.logger.debug("token_expiry")
 
