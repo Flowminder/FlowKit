@@ -8,6 +8,7 @@ import {useEffect, useState} from "react"
 import { Grid } from "rsuite";
 import { getServerScopes, getRoleScopes } from "./util/api";
 import { List, ListItem, Checkbox, ListItemIcon, ListItemText} from "@material-ui/core"
+import cs from "date-fns/esm/locale/cs/index.js";
 //import {scopesGraph, jsonify, highest_common_roots} from "./util/util"
 
 function ScopeItem(props) {
@@ -20,6 +21,12 @@ function ScopeItem(props) {
   </ListItem>
 }
 
+function NestedScopeList(props) {
+  const {nested_scopes} = props
+
+  return <ListItem key = {"foo"} />
+}
+
 function ScopeList (props) {
   const {scopes} = props
   const [flatScopes, setFlatScopes] = useState([])
@@ -29,14 +36,28 @@ function ScopeList (props) {
   useEffect(() => {
     console.debug("Scopes", scopes)
     setFlatScopes(scopes.filter(s => !s.name.includes(":")))
-    setNestedScopes(scopes.filter(s => s.name.includes(":")))
+    const complex_scopes = scopes.filter(s => s.name.includes(":"))
+    // If Array.prototype.group() existed it would be ideal here...
+    const tl_scopes = [...new Set(complex_scopes.map(s => s.name.split(":")[0]))]
+    console.debug(tl_scopes)
+    const nested_scopes = tl_scopes.map(
+      ts => new Object({[ts]:
+        complex_scopes
+          .filter(cs => cs.name.startsWith(ts))
+          .map(cs => new Object({
+            "name": cs.name.replace(ts, cs.name),
+            "enabled": cs.enabled
+          }))
+      })
+    )
+    console.debug(nested_scopes)
   }, [scopes])
 
   return <List>
     {flatScopes.map(
       scope => <ScopeItem scope_name = {scope.name} key={scope.name} is_checked={scope.enabled}/>
     )}
-    {/* map<ScopeList scopes={nested_scopes} /> */}
+    {/* map<NestedScopeList scopes={nested_scopes} /> */}
   </List>
 }
 
