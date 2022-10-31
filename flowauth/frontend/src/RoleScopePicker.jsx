@@ -7,9 +7,23 @@ import React from "react";
 import {useEffect, useState} from "react"
 import { Grid } from "rsuite";
 import { getServerScopes, getRoleScopes } from "./util/api";
-import { List, ListItem, Checkbox, ListItemIcon, ListItemText, Collapse} from "@material-ui/core"
+import { List, ListItem, Checkbox, ListItemIcon, ListItemText, Collapse, Button} from "@material-ui/core"
 import { ExpandLess, ExpandMore} from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles"
 //import {scopesGraph, jsonify, highest_common_roots} from "./util/util"
+
+const useStyles = makeStyles((theme) => ({
+  ".MuiListItem-root": {
+    "flex-direction": "column",
+    "align-items": "self-start"
+  },
+  ".CollapsibleScope":{
+    "display":"flex"
+  },
+  ".MuiSvgIcon-root": {
+    "margin":"4px 0"
+  }
+}));
 
 function ScopeItem(props) {
   var {scope_name, init_check, onChangeCallback} = props
@@ -34,6 +48,7 @@ function ScopeItem(props) {
 
 
 function NestedScopeList(props) {
+  const classes = useStyles()
   const {outer_scope, inner_scopes, onChangeCallback} = props
   const [open, setOpen] = useState(false)
   const handleClick = () =>{
@@ -44,17 +59,25 @@ function NestedScopeList(props) {
     onChangeCallback(outer_scope + ":" + inner_scope)
   }
 
-  return <ListItem button onClick={handleClick}>
-    <ListItemText primary = {outer_scope} />
-    {open ? <ExpandLess /> : <ExpandMore />}
+  return <ListItem  className={classes[".MuiListItem-root"]}>
+    <div className={classes[".CollapsibleScope"]}>
+      <ListItemText primary = {outer_scope} >
+      </ListItemText>
+      <Button onClick={handleClick}>
+        {open ? <ExpandLess className={classes[".MuiSvgIcon-root"]} /> : <ExpandMore className={classes[".MuiSvgIcon-root"]} />}
+      </Button>
+      
+    </div>
     <Collapse in={open}>
       <ScopeList scopes = {inner_scopes} onChangeCallback = {newCallback}/>
     </Collapse>
+
   </ListItem>
 }
 
 
 function ScopeList (props) {
+  const classes = useStyles();
   const {scopes, onChangeCallback} = props
   const [flatScopes, setFlatScopes] = useState([])
   const [nestedScopes, setNestedScopes] = useState([])
@@ -82,7 +105,9 @@ function ScopeList (props) {
     setNestedScopes(nested_scopes)
   }, [scopes])
 
-  return <List disablePadding>
+  return <List 
+    disablePadding
+    className = {classes[".MuiListItem-root"]}>
     {flatScopes.map(
       scope => <ScopeItem 
         scope_name = {scope.name}
@@ -100,6 +125,7 @@ function ScopeList (props) {
 
 // Component for picking scopes for a role
 function RoleScopePicker (props) {
+
   const {role_id, server_id, updateScopes} = props
   const [checkedScopes, setCheckedScopes] = useState([])
   const [hasError, setHasError] = useState(false)
