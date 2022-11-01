@@ -30,7 +30,9 @@ function ScopeItem(props) {
   var {scope, init_check, flipScopeCallback} = props
 
   const [isChecked, setIsChecked] = useState(init_check)
+  const [stateScope, setStateScope] = useState(scope)
 
+  
   const flip_check = () => {
     setIsChecked(!isChecked)
   }
@@ -42,11 +44,17 @@ function ScopeItem(props) {
     flipScopeCallback(scope.key, isChecked)
   }, [isChecked])
 
-  return <ListItem key={scope.key} value={scope.enabled} onClick={flip_check}>
+  // For some reason, when
+  useEffect(() => {
+    console.debug("Scope flipped:", scope.name)
+    setStateScope(scope)
+  }, scope)
+
+  return <ListItem key={stateScope.key} value={stateScope.enabled} onClick={flip_check}>
     <ListItemIcon>
       <Checkbox checked ={isChecked} />
     </ListItemIcon>
-    <ListItemText primary={scope.name} />
+    <ListItemText primary={stateScope.name} />
   </ListItem>
 }
 
@@ -55,23 +63,56 @@ function NestedScopeList(props) {
   const classes = useStyles()
   const {outer_scope, inner_scopes, flipScopeCallback} = props
   const [open, setOpen] = useState(false)
+  const [isChecked, setIsChecked] = useState(false)
+  const [isIndeterminant, setIsIndeterminant] = useState(false)
+  const [innerScopes, setInnerScopes] = useState(inner_scopes)
+
+  useEffect(() => {
+    console.debug(`Inner scopes changed on ${outer_scope}`)
+    if (inner_scopes.every(s => s.enabled === true)){
+      setIsChecked(true)
+      setIsIndeterminant(false)
+    }
+    else if (inner_scopes.every(s => s.enabled === false)){
+      setIsChecked(false)
+      setIsIndeterminant(false)
+    }
+    else {
+      setIsIndeterminant(true)
+    }
+    setInnerScopes(inner_scopes)
+  }, [inner_scopes])
+  
+
   const handleChevronClick = () =>{
     setOpen(!open)
   }
 
+  const handleCheckboxClick = () => {
+    if(isIndeterminant){
+      setIsIndeterminant(false)
+      setIsChecked(true)
+    } else {
+      setIsChecked(!isChecked)
+    }
+  }
+
+  // If a reviewer knows the good way of returning a list of objects with one member changed, please amend
+  useEffect(() => setInnerScopes(
+    innerScopes.map(s => Object({name:s.name, key:s.key, enabled:isChecked}))
+  ), [isChecked])
+
   return <ListItem  className={classes[".MuiListItem-root"]}>
     <div className={classes[".CollapsibleScope"]}>
-      <ListItemText primary = {outer_scope} >
-      </ListItemText>
+      <Checkbox checked={isChecked} indeterminate={isIndeterminant} onClick={handleCheckboxClick} />
+      <ListItemText primary = {outer_scope} />
       <Button onClick={handleChevronClick}>
         {open ? <ExpandLess className={classes[".MuiSvgIcon-root"]} /> : <ExpandMore className={classes[".MuiSvgIcon-root"]} />}
       </Button>
     </div>
-
     <Collapse in={open}>
-      <ScopeList scopes = {inner_scopes} flipScopeCallback={flipScopeCallback}/>
+      <ScopeList scopes = {innerScopes} flipScopeCallback={flipScopeCallback}/>
     </Collapse>
-
   </ListItem>
 }
 
@@ -84,6 +125,7 @@ function ScopeList (props) {
   // const flat_scopes 
   // const nested_scopes
   useEffect(() => {
+    console.debug("Scopes changed", scopes)
     setFlatScopes(scopes.filter(s => !s.name.includes(":")))
     
     // This mess takes every scope that is 
@@ -103,15 +145,13 @@ function ScopeList (props) {
             "enabled": cs.enabled
           }))
       }))
-    console.debug("NEsteed",nested_scopes)
-    setNestedScopes(nested_scopes)
+    console.debug("Nested scopes:", nested_scopes)
+    setNestedScopes(nested_scopes)    
   }, [scopes])
 
-  return <List 
-    disablePadding
-    className = {classes[".MuiListItem-root"]}>
-    {flatScopes.map(
-      scope => <ScopeItem 
+  return <List disablePadding className = {classes[".MuiListItem-root"]}>
+    {flatScopes.map(scope => 
+      <ScopeItem 
         scope = {scope}
         key = {scope.key}
         flipScopeCallback={flipScopeCallback}
@@ -120,9 +160,10 @@ function ScopeList (props) {
     {nestedScopes.map( scope =>
       <NestedScopeList 
         outer_scope = {scope.outer_scope}
-        inner_scopes={scope.inner_scopes}
+        inner_scopes = {scope.inner_scopes}
         key = {scope.outer_scope}
-        flipScopeCallback={flipScopeCallback}/>
+        flipScopeCallback = {flipScopeCallback}
+      />
     )}
   </List>
 }
@@ -156,7 +197,7 @@ function RoleScopePicker (props) {
     }, []
   )
 
-  // Callback that flips all check
+  // Callback that flips all checkboxes
   const flipScope = (changed_scope_name, enabled) => {
     console.debug(`Flipping ${changed_scope_name} to ${enabled}`)
     const new_scopes = checkedScopes.map(s => changed_scope_name === s.name ? {"name":s.name, "key":s.key, "enabled":enabled} : s)
@@ -168,6 +209,5 @@ function RoleScopePicker (props) {
 
   return <ScopeList scopes = {checkedScopes} flipScopeCallback = {flipScope} />
 }
-
 
 export default RoleScopePicker
