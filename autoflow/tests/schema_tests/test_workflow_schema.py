@@ -10,7 +10,7 @@ from prefect import storage
 from autoflow.parser.workflow_schema import WorkflowSchema
 
 
-def test_workflow_schema(monkeypatch):
+def test_workflow_schema(monkeypatch, tmp_path):
     """
     Test that WorkflowSchema loads a workflow specification as a Storage object
     containing the defined flow.
@@ -20,14 +20,17 @@ def test_workflow_schema(monkeypatch):
         "name": "DUMMY_WORKFLOW",
         "notebooks": {"notebook1": {"filename": "NOTEBOOK1.ipynb"}},
     }
-    workflow_storage = WorkflowSchema(context={"inputs_dir": "DUMMY_INPUTS_DIR"}).load(
-        workflow
-    )
+    workflow_storage = WorkflowSchema(
+        context={
+            "inputs_dir": "DUMMY_INPUTS_DIR",
+            "workflow_storage_dir": str(tmp_path),
+        }
+    ).load(workflow)
     assert isinstance(workflow_storage, storage.Storage)
     assert "DUMMY_WORKFLOW" in workflow_storage
 
 
-def test_workflow_schema_missing_name(monkeypatch):
+def test_workflow_schema_missing_name(monkeypatch, tmp_path):
     """
     Test that WorkflowSchema raises a ValidationError if the 'name' field is missing.
     """
@@ -35,12 +38,15 @@ def test_workflow_schema_missing_name(monkeypatch):
     workflow = {"notebooks": {"notebook1": {"filename": "NOTEBOOK1.ipynb"}}}
     with pytest.raises(ValidationError) as exc_info:
         workflow_storage = WorkflowSchema(
-            context={"inputs_dir": "DUMMY_INPUTS_DIR"}
+            context={
+                "inputs_dir": "DUMMY_INPUTS_DIR",
+                "workflow_storage_dir": str(tmp_path),
+            }
         ).load(workflow)
     assert "Missing data for required field." in exc_info.value.messages["name"]
 
 
-def test_workflow_schema_invalid_name(monkeypatch):
+def test_workflow_schema_invalid_name(monkeypatch, tmp_path):
     """
     Test that WorkflowSchema raises a ValidationError if the 'name' field is not a string.
     """
@@ -51,12 +57,15 @@ def test_workflow_schema_invalid_name(monkeypatch):
     }
     with pytest.raises(ValidationError) as exc_info:
         workflow_storage = WorkflowSchema(
-            context={"inputs_dir": "DUMMY_INPUTS_DIR"}
+            context={
+                "inputs_dir": "DUMMY_INPUTS_DIR",
+                "workflow_storage_dir": str(tmp_path),
+            }
         ).load(workflow)
     assert "Not a valid string." in exc_info.value.messages["name"]
 
 
-def test_workflow_schema_missing_notebooks(monkeypatch):
+def test_workflow_schema_missing_notebooks(monkeypatch, tmp_path):
     """
     Test that WorkflowSchema raises a ValidationError if the 'notebooks' field is missing.
     """
@@ -64,12 +73,15 @@ def test_workflow_schema_missing_notebooks(monkeypatch):
     workflow = {"name": "DUMMY_WORKFLOW"}
     with pytest.raises(ValidationError) as exc_info:
         workflow_storage = WorkflowSchema(
-            context={"inputs_dir": "DUMMY_INPUTS_DIR"}
+            context={
+                "inputs_dir": "DUMMY_INPUTS_DIR",
+                "workflow_storage_dir": str(tmp_path),
+            }
         ).load(workflow)
     assert "Missing data for required field." in exc_info.value.messages["notebooks"]
 
 
-def test_workflow_schema_many(monkeypatch):
+def test_workflow_schema_many(monkeypatch, tmp_path):
     """
     Test that WorkflowSchema can load multiple workflow specifications as a
     single Storage object.
@@ -86,14 +98,18 @@ def test_workflow_schema_many(monkeypatch):
         },
     ]
     workflow_storage = WorkflowSchema(
-        many=True, context={"inputs_dir": "DUMMY_INPUTS_DIR"}
+        many=True,
+        context={
+            "inputs_dir": "DUMMY_INPUTS_DIR",
+            "workflow_storage_dir": str(tmp_path),
+        },
     ).load(workflows)
     assert isinstance(workflow_storage, storage.Storage)
     assert "DUMMY_WORKFLOW_1" in workflow_storage
     assert "DUMMY_WORKFLOW_2" in workflow_storage
 
 
-def test_workflow_schema_duplicate_name(monkeypatch):
+def test_workflow_schema_duplicate_name(monkeypatch, tmp_path):
     """
     Test that WorkflowSchema raises a ValidationError if multiple workflows
     have the same name.
@@ -115,7 +131,11 @@ def test_workflow_schema_duplicate_name(monkeypatch):
     ]
     with pytest.raises(ValidationError) as exc_info:
         workflow_storage = WorkflowSchema(
-            many=True, context={"inputs_dir": "DUMMY_INPUTS_DIR"}
+            many=True,
+            context={
+                "inputs_dir": "DUMMY_INPUTS_DIR",
+                "workflow_storage_dir": str(tmp_path),
+            },
         ).load(workflows)
     assert "Duplicate workflow name." in exc_info.value.messages[1]["name"]
     assert "Duplicate workflow name." in exc_info.value.messages[2]["name"]
