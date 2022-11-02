@@ -3,9 +3,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// BUG: If you check a middle-level query, then check a leaf query in a 
+// neighbouring branch, then the mid-query branch you selected first gets
+// flipped
+
 import React from "react";
 import {useEffect, useState} from "react"
-import { Grid } from "rsuite";
 import { getServerScopes, getRoleScopes } from "./util/api";
 import { List, ListItem, Checkbox, ListItemIcon, ListItemText, Collapse, Button} from "@material-ui/core"
 import { ExpandLess, ExpandMore} from "@material-ui/icons";
@@ -35,6 +38,7 @@ function ScopeItem(props) {
   // When an inner scope item is checked, use flipScopeCallback to
   // flip the scope with scope.key in the root of the component
   const onClick = () => {
+    console.debug(`Flipping single scope ${scope.name} from click`)
     flipScopeCallback(scope.key, !isChecked)
   }
 
@@ -56,45 +60,47 @@ function ScopeItem(props) {
 function NestedScopeList(props) {
   const classes = useStyles()
   const {outer_scope, inner_scopes, flipScopeCallback} = props
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true) //remember to put this back to false
   const [isChecked, setIsChecked] = useState(false)
   const [isIndeterminant, setIsIndeterminant] = useState(false)
-  const [innerScopes, setInnerScopes] = useState(inner_scopes)
 
   useEffect(() => {
     console.debug(`Inner scopes changed on ${outer_scope}`)
     if (inner_scopes.every(s => s.enabled === true)){
+      console.debug("foo")
       setIsChecked(true)
       setIsIndeterminant(false)
     }
     else if (inner_scopes.every(s => s.enabled === false)){
+      console.debug("bar")
       setIsChecked(false)
       setIsIndeterminant(false)
     }
     else {
+      console.debug("baz")
       setIsIndeterminant(true)
     }
-    setInnerScopes(inner_scopes)
   }, [inner_scopes])
   
-
   const handleChevronClick = () =>{
     setOpen(!open)
   }
 
   const handleCheckboxClick = () => {
+    var is_checked
     if(isIndeterminant){
+      console.debug("blep")
       setIsIndeterminant(false)
-      setIsChecked(true)
+      is_checked = true
     } else {
-      setIsChecked(!isChecked)
+      is_checked = !isChecked
     }
+    console.debug(`Flipping inner scopes of ${outer_scope} to ${is_checked}`)
+    inner_scopes.forEach(s => {
+      flipScopeCallback(s.key, is_checked)
+      console.log("Flipped:", s.key)
+    })
   }
-
-  // If a reviewer knows the good way of returning a list of objects with one member changed, please amend
-  useEffect(() => setInnerScopes(
-    innerScopes.map(s => Object({name:s.name, key:s.key, enabled:isChecked}))
-  ), [isChecked])
 
   return <ListItem  className={classes[".MuiListItem-root"]}>
     <div className={classes[".CollapsibleScope"]}>
@@ -105,7 +111,7 @@ function NestedScopeList(props) {
       </Button>
     </div>
     <Collapse in={open}>
-      <ScopeList scopes = {innerScopes} flipScopeCallback={flipScopeCallback}/>
+      <ScopeList scopes = {inner_scopes} flipScopeCallback={flipScopeCallback}/>
     </Collapse>
   </ListItem>
 }
@@ -138,7 +144,7 @@ function ScopeList (props) {
             "enabled": cs.enabled
           }))
       }))
-    setNestedScopes(nested_scopes)    
+    setNestedScopes(nested_scopes)
   }, [scopes])
 
   return <List disablePadding className = {classes[".MuiListItem-root"]}>
