@@ -34,7 +34,6 @@ class WorkflowSchema(Schema):
 
     name = fields.String(required=True)
     notebooks = NotebooksField(required=True)
-    storage_path = fields.String(required=False)
 
     @validates_schema(pass_many=True)
     def check_for_duplicate_names(self, data, many, **kwargs):
@@ -63,8 +62,7 @@ class WorkflowSchema(Schema):
 
         if not many:
             data = [data]
-        storage_path = data[0].get("storage_path")
-        workflow_storage = storage.Local(directory=storage_path)
+        workflow_storage = storage.Local(directory=self.context["workflow_storage_dir"])
         for workflow_spec in data:
             workflow = make_notebooks_workflow(**workflow_spec)
             workflow_storage.add_flow(workflow)
