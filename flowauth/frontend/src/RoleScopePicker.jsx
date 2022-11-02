@@ -30,31 +30,25 @@ function ScopeItem(props) {
   var {scope, init_check, flipScopeCallback} = props
 
   const [isChecked, setIsChecked] = useState(init_check)
-  const [stateScope, setStateScope] = useState(scope)
 
-  
-  const flip_check = () => {
-    setIsChecked(!isChecked)
+
+  // When an inner scope item is checked, use flipScopeCallback to
+  // flip the scope with scope.key in the root of the component
+  const onClick = () => {
+    flipScopeCallback(scope.key, !isChecked)
   }
-
-  // When an inner scope item is checked, use flipScopeCallback to pass the new state
-  // of the flipped scope to the top-level RoleScopePicker component.
-  useEffect(() => {
-    console.debug(`About to flip ${scope.key}, on ${scope.name}`)
-    flipScopeCallback(scope.key, isChecked)
-  }, [isChecked])
 
   // For some reason, when
   useEffect(() => {
-    console.debug("Scope flipped:", scope.name)
-    setStateScope(scope)
-  }, scope)
+    console.debug(`${scope.key} flip detected from scope effect`)
+    setIsChecked(scope.enabled)
+  }, [scope])
 
-  return <ListItem key={stateScope.key} value={stateScope.enabled} onClick={flip_check}>
+  return <ListItem key={scope.key} value={scope.enabled} onClick={onClick}>
     <ListItemIcon>
       <Checkbox checked ={isChecked} />
     </ListItemIcon>
-    <ListItemText primary={stateScope.name} />
+    <ListItemText primary={scope.name} />
   </ListItem>
 }
 
@@ -122,11 +116,10 @@ function ScopeList (props) {
   const {scopes, flipScopeCallback} = props
   const [flatScopes, setFlatScopes] = useState([])
   const [nestedScopes, setNestedScopes] = useState([])
-  // const flat_scopes 
-  // const nested_scopes
+
   useEffect(() => {
-    console.debug("Scopes changed", scopes)
-    setFlatScopes(scopes.filter(s => !s.name.includes(":")))
+    const flat_scopes = scopes.filter(s => !s.name.includes(":"))
+    setFlatScopes(flat_scopes)
     
     // This mess takes every scope that is 
     // {name: scope1:scope2, key: scope1:scope2 enabled:true}, {name: scope1:scope3, key: scope1:scope3, enabled:false}
@@ -145,7 +138,6 @@ function ScopeList (props) {
             "enabled": cs.enabled
           }))
       }))
-    console.debug("Nested scopes:", nested_scopes)
     setNestedScopes(nested_scopes)    
   }, [scopes])
 
@@ -155,6 +147,7 @@ function ScopeList (props) {
         scope = {scope}
         key = {scope.key}
         flipScopeCallback={flipScopeCallback}
+        init_check = {scope.enabled}
       />
     )}
     {nestedScopes.map( scope =>
@@ -189,6 +182,7 @@ function RoleScopePicker (props) {
             "key":srv_scope.name,
             "enabled":role_scopes.map(y => y.name).includes(srv_scope.name)})
         )
+        console.debug("Inital checked scopes", checked_scopes)
         setCheckedScopes(checked_scopes)
       }
       
@@ -199,9 +193,8 @@ function RoleScopePicker (props) {
 
   // Callback that flips all checkboxes
   const flipScope = (changed_scope_name, enabled) => {
-    console.debug(`Flipping ${changed_scope_name} to ${enabled}`)
+    console.debug(`Flipping ${changed_scope_name} to ${enabled} from RoleScopeCallback`)
     const new_scopes = checkedScopes.map(s => changed_scope_name === s.name ? {"name":s.name, "key":s.key, "enabled":enabled} : s)
-    console.debug(new_scopes)
     setCheckedScopes(new_scopes)
   }
 
