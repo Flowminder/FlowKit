@@ -877,7 +877,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowkit-docs-deps-4-{{ checksum "Pipfile.lock" }}
+          key: flowkit-docs-deps-5-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install pandoc
           command: |
@@ -971,7 +971,7 @@ jobs:
           path: /home/circleci/project/docs/pg_log.zip
           destination: pg_log
       - save_cache:
-          key: flowkit-docs-deps-4-{{ checksum "Pipfile.lock" }}
+          key: flowkit-docs-deps-5-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
 
