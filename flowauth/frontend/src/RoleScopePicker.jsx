@@ -34,17 +34,18 @@ function ScopeItem(props) {
 
   const [isChecked, setIsChecked] = useState(init_check)
 
+  useEffect(() => {
+    console.debug(`Initial state of ${scope.name}; ${scope.enabled}`)
+  },[])
+
 
   // When an inner scope item is checked, use flipScopeCallback to
   // flip the scope with scope.key in the root of the component
   const onClick = () => {
-    console.debug(`Flipping single scope ${scope.name} from click`)
-    flipScopeCallback(scope.key, !isChecked)
+    flipScopeCallback(scope.key, !scope.enabled)
   }
 
-  // For some reason, when
   useEffect(() => {
-    console.debug(`${scope.key} flip detected from scope effect`)
     setIsChecked(scope.enabled)
   }, [scope])
 
@@ -66,18 +67,17 @@ function NestedScopeList(props) {
 
   useEffect(() => {
     console.debug(`Inner scopes changed on ${outer_scope}`)
+    console.debug(inner_scopes)
     if (inner_scopes.every(s => s.enabled === true)){
-      console.debug("foo")
       setIsChecked(true)
       setIsIndeterminant(false)
     }
     else if (inner_scopes.every(s => s.enabled === false)){
-      console.debug("bar")
       setIsChecked(false)
       setIsIndeterminant(false)
     }
     else {
-      console.debug("baz")
+      setIsChecked(true)
       setIsIndeterminant(true)
     }
   }, [inner_scopes])
@@ -89,17 +89,14 @@ function NestedScopeList(props) {
   const handleCheckboxClick = () => {
     var is_checked
     if(isIndeterminant){
-      console.debug("blep")
       setIsIndeterminant(false)
       is_checked = true
     } else {
       is_checked = !isChecked
     }
-    console.debug(`Flipping inner scopes of ${outer_scope} to ${is_checked}`)
     inner_scopes.forEach(s => {
       flipScopeCallback(s.key, is_checked)
-      console.log("Flipped:", s.key)
-    })
+    })  
   }
 
   return <ListItem  className={classes[".MuiListItem-root"]}>
@@ -188,7 +185,6 @@ function RoleScopePicker (props) {
             "key":srv_scope.name,
             "enabled":role_scopes.map(y => y.name).includes(srv_scope.name)})
         )
-        console.debug("Inital checked scopes", checked_scopes)
         setCheckedScopes(checked_scopes)
       }
       
@@ -204,7 +200,12 @@ function RoleScopePicker (props) {
     setCheckedScopes(new_scopes)
   }
 
-  useEffect(() => updateScopes(checkedScopes), [checkedScopes])
+  useEffect(
+    () => {
+      updateScopes(checkedScopes)
+      console.debug("Checked scopes:", checkedScopes)
+    }, [checkedScopes]
+  )
 
   return <ScopeList scopes = {checkedScopes} flipScopeCallback = {flipScope} />
 }

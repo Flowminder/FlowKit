@@ -17,7 +17,7 @@ describe("<RoleScopePicker>", () => {
       {
         "enabled": true,
         "id": 1,
-        "name": "admin0:dummy_query:dummy_nested_query"
+        "name": "admin0:dummy_query:dummy_nested_query:silly_query"
       },
       {
         "enabled": true,
@@ -26,12 +26,17 @@ describe("<RoleScopePicker>", () => {
       },
       {
         "enabled": true,
+        "id": 6,
+        "name": "admin0:other_query:inner_dummy_query"
+      },
+      {
+        "enabled": true,
         "id": 4,
         "name": "admin1:dummy_query:inner_dummy_query"
       },
       {
         "enabled": true,
-        "id": 5,
+        "id": 7,
         "name": "get_results"
       }
     ]
@@ -75,7 +80,7 @@ describe("<RoleScopePicker>", () => {
   //     {
   //       "enabled": true,
   //       "id": 1,
-  //       "name": "admin0:dummy_query:other_query"
+  //       "name": "admin0:dummy_query:other_query:silly_query"
   //     },
   //     {
   //       "enabled": true,
