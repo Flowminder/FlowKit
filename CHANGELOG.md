@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Fixed a potential deadlock when using a small connection pool and `store`-ing queries
+- AutoFlow can now be run in a docker container with non-default user. [#5574](https://github.com/Flowminder/FlowKit/issues/5574)
 
 ### Removed
 
