@@ -42,7 +42,7 @@ function ScopeItem(props) {
   // When an inner scope item is checked, use flipScopeCallback to
   // flip the scope with scope.key in the root of the component
   const onClick = () => {
-    flipScopeCallback(scope.key, !scope.enabled)
+    flipScopeCallback([scope.key], !scope.enabled)
   }
 
   useEffect(() => {
@@ -94,9 +94,7 @@ function NestedScopeList(props) {
     } else {
       is_checked = !isChecked
     }
-    inner_scopes.forEach(s => {
-      flipScopeCallback(s.key, is_checked)
-    })  
+    flipScopeCallback(inner_scopes.map(s => s.key), is_checked) 
   }
 
   return <ListItem  className={classes[".MuiListItem-root"]}>
@@ -194,9 +192,10 @@ function RoleScopePicker (props) {
   )
 
   // Callback that flips all checkboxes
-  const flipScope = (changed_scope_name, enabled) => {
-    console.debug(`Flipping ${changed_scope_name} to ${enabled} from RoleScopeCallback`)
-    const new_scopes = checkedScopes.map(s => changed_scope_name === s.name ? {"name":s.name, "key":s.key, "enabled":enabled} : s)
+  const flipScopes = (changed_scope_names, enabled) => {
+    console.debug(`Flipping ${changed_scope_names} to ${enabled} from RoleScopeCallback`)
+    const new_scopes = checkedScopes.map(s => changed_scope_names.includes(s.name) ? {"name":s.name, "key":s.key, "enabled":enabled} : s)
+    console.log("New scopes:", new_scopes)
     setCheckedScopes(new_scopes)
   }
 
@@ -207,7 +206,7 @@ function RoleScopePicker (props) {
     }, [checkedScopes]
   )
 
-  return <ScopeList scopes = {checkedScopes} flipScopeCallback = {flipScope} />
+  return <ScopeList scopes = {checkedScopes} flipScopeCallback = {flipScopes} />
 }
 
 export default RoleScopePicker
