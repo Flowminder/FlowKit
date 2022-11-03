@@ -375,7 +375,11 @@ def flowetl_container(
             mounts=mounts["flowetl"],
             network=container_network.name,
             command="version",
+            detach=True,
+            stderr=True,
         )
+        init_container.wait()
+        logger.info(init_container.logs())
 
         logger.info("Starting FlowETL container")
         container = docker_client.containers.run(
