@@ -13,7 +13,6 @@ import { getServerScopes, getRoleScopes } from "./util/api";
 import { List, ListItem, Checkbox, ListItemIcon, ListItemText, Collapse, Button} from "@material-ui/core"
 import { ExpandLess, ExpandMore} from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles"
-//import {scopesGraph, jsonify, highest_common_roots} from "./util/util"
 
 const useStyles = makeStyles((theme) => ({
   ".MuiListItem-root": {
@@ -49,7 +48,12 @@ function ScopeItem(props) {
     setIsChecked(scope.enabled)
   }, [scope])
 
-  return <ListItem key={scope.key} value={scope.enabled} onClick={onClick}>
+  return <ListItem 
+    key={scope.key}
+    value={scope.enabled} 
+    onClick={onClick}
+    data-cy={`scope-item-${scope.key}`}
+  >
     <ListItemIcon>
       <Checkbox checked ={isChecked} />
     </ListItemIcon>
@@ -61,7 +65,7 @@ function ScopeItem(props) {
 function NestedScopeList(props) {
   const classes = useStyles()
   const {outer_scope, inner_scopes, flipScopeCallback} = props
-  const [open, setOpen] = useState(true) //remember to put this back to false
+  const [open, setOpen] = useState(false) //remember to put this back to false
   const [isChecked, setIsChecked] = useState(false)
   const [isIndeterminant, setIsIndeterminant] = useState(false)
 
@@ -97,17 +101,25 @@ function NestedScopeList(props) {
     flipScopeCallback(inner_scopes.map(s => s.key), is_checked) 
   }
 
-  return <ListItem  className={classes[".MuiListItem-root"]}>
+  return <ListItem 
+    className={classes[".MuiListItem-root"]}
+    data-cy={`nested-${outer_scope}`}
+  >
     <div className={classes[".CollapsibleScope"]}>
-      <Checkbox checked={isChecked} indeterminate={isIndeterminant} onClick={handleCheckboxClick} />
+      <Checkbox 
+        checked={isChecked}
+        indeterminate={isIndeterminant}
+        onClick={handleCheckboxClick} 
+        data-cy={"checkbox"}
+      />
       <ListItemText primary = {outer_scope} />
-      <Button onClick={handleChevronClick}>
+      <Button onClick={handleChevronClick} data-cy={"chevron"}>
         {open ? <ExpandLess className={classes[".MuiSvgIcon-root"]} /> : <ExpandMore className={classes[".MuiSvgIcon-root"]} />}
       </Button>
     </div>
     <Collapse in={open}>
       <ScopeList scopes = {inner_scopes} flipScopeCallback={flipScopeCallback}/>
-    </Collapse>
+    </Collapse> 
   </ListItem>
 }
 
@@ -142,7 +154,11 @@ function ScopeList (props) {
     setNestedScopes(nested_scopes)
   }, [scopes])
 
-  return <List disablePadding className = {classes[".MuiListItem-root"]}>
+  return <List 
+    disablePadding
+    className = {classes[".MuiListItem-root"]}
+    data-cy = {`scope-list-${flatScopes[0] ? flatScopes[0].key : ""}`}
+  >
     {flatScopes.map(scope => 
       <ScopeItem 
         scope = {scope}

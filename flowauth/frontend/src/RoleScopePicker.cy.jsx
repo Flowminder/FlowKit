@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable no-undef */
 /* eslint-disable react/react-in-jsx-scope */
 import RoleScopePicker from "./RoleScopePicker"
@@ -8,7 +9,7 @@ import RoleScopePicker from "./RoleScopePicker"
 
 
 describe("<RoleScopePicker>", () => {
-  it("mounts", () => {
+  beforeEach(() => {
     cy.intercept({
       method: "GET",
       url: "/admin/servers/1/scopes", 
@@ -60,7 +61,9 @@ describe("<RoleScopePicker>", () => {
     }
     ]
     ).as("getRoleScopes");
-				
+  })
+	
+  it("mounts", () => {
     cy.mount(<RoleScopePicker
       updateScopes={()=>{}}
       server_id = {1}
@@ -68,48 +71,66 @@ describe("<RoleScopePicker>", () => {
     />);
     cy.wait("@getServerScopes")
     cy.wait("@getRoleScopes")
-    cy.get(".rs-picker-toggle-value > span").should("include.text", "admin0 (All), get_results")
   })
 
-  // it("respects deeply nested loading differences", () => {
-  //   cy.intercept({
-  //     method: "GET",
-  //     url: "/admin/servers/1/scopes", 
-  //   },
-  //   [
-  //     {
-  //       "enabled": true,
-  //       "id": 1,
-  //       "name": "admin0:dummy_query:other_query:silly_query"
-  //     },
-  //     {
-  //       "enabled": true,
-  //       "id": 3,
-  //       "name": "admin0:dummy_query:dummy_query"
-  //     }
-  //   ]
-  //   ).as("getServerScopes");
+  it("expands", () => {
+    cy.mount(<RoleScopePicker
+      updateScopes={()=>{}}
+      server_id = {1}
+      role_id = {1}
+    />);
+    cy.get("[data-cy=nested-admin0]").within(() => {
+      cy.get("[data-cy=chevron]")
+        .click()
+    }).contains("dummy_query")
+  })
 
-  //   cy.intercept({
-  //     method: "GET",
-  //     url:"/roles/1/scopes"
-  //   },
-  //   [{
-  //     "id": 3,
-  //     "name": "admin0:dummy_query:dummy_query",
-  //   },
-  //   ]
-  //   ).as("getRoleScopes");
-				
-  //   cy.mount(<RoleScopePicker
-  //     updateScopes={()=>{}}
-  //     server_id = {1}
-  //     role_id = {1}
-  //   />);
-  //   cy.wait("@getServerScopes")
-  //   cy.wait("@getRoleScopes")
-  //   cy.get(".rs-picker-toggle-value > span").should("include.text", "admin0:dummy_query:dummy_query")
-  // })
-}
-)
+  it("cascades correctly", () => {
+    cy.mount(<RoleScopePicker
+      updateScopes={()=>{}}
+      server_id = {1}
+      role_id = {1}
+    />);
+    // Check admin0 starts indeterminant
+    cy.get("[data-cy=nested-admin0")
+      .find("[data-cy=checkbox]").first()
+      .invoke("prop", "indeterminate", true)
 
+    // Expand child scopes and check click on checkbox works
+    cy.get("[data-cy=nested-admin0]").within(() => {
+      cy.get("[data-cy=chevron]")
+        .click()
+      cy.get("[data-cy=nested-dummy_query]")
+        .find("[data-cy=checkbox]").first()
+        .invoke("prop", "checked", true)
+        .click()
+        .invoke("prop", "checked", false)
+    })
+
+    // Check both child scopes of admin0 change on click
+    cy.get("[data-cy=nested-other_query]")
+      .find("[data-cy=checkbox]").first()
+      .click()
+
+    //Check both children being true cause admin0 to become true
+    cy.get("[data-cy=nested-admin0")
+      .find("[data-cy=checkbox]").first()
+      .invoke("prop", "checked", true)
+
+    //Click on admin0's checkbox
+    cy.get("[data-cy=nested-admin0")
+      .find("[data-cy=checkbox]").first()
+      .click()
+
+    // Check both children are now false
+    cy.get("[data-cy=nested-admin0]")
+      .find("[data-cy=nested-dummy_query]")
+      .find("[data-cy=checkbox]").first()
+      .invoke("prop", "checked", false)
+    cy.get("[data-cy=nested-admin0]")
+      .find("[data-cy=nested-other_query]")
+      .find("[data-cy=checkbox]").first()
+      .invoke("prop", "checked", false)
+  })
+
+})
