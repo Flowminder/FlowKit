@@ -120,7 +120,7 @@ def container_env(ensure_required_env_vars_are_set):
     flowetl = {
         "AIRFLOW__CORE__EXECUTOR": "LocalExecutor",
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
-        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgresql://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
+        "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN": f"postgresql://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
         "AIRFLOW_CONN_FLOWDB": f"postgresql://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
         "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging,
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
@@ -301,7 +301,9 @@ def flowetl_db_container(
         # Wait for container to be ready
         healthy = False
         while not healthy:
+            logger.info("Checking container health")
             container_info = docker_api_client.inspect_container(container.id)
+            logger.info("Container info", container_info=container_info)
             healthy = container_info["State"]["Health"]["Status"] == "healthy"
         logger.info("Started FlowETL db container")
 
@@ -379,7 +381,7 @@ def flowetl_container(
             stderr=True,
         )
         init_container.wait()
-        logger.info(init_container.logs())
+        logger.info("Init container log", logs=init_container.logs())
 
         logger.info("Starting FlowETL container")
         container = docker_client.containers.run(

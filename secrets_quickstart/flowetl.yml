@@ -9,7 +9,7 @@ secrets:
     external: true
   FLOWETL_AIRFLOW_ADMIN_PASSWORD:
     external: true
-  AIRFLOW__CORE__SQL_ALCHEMY_CONN:
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN:
     external: true
   AIRFLOW__CORE__FERNET_KEY:
     external: true
@@ -74,7 +74,7 @@ services:
       - AIRFLOW__CELERY__RESULT_BACKEND
       - FLOWETL_POSTGRES_USER
       - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     command: scheduler
     networks:
       - flowetl
@@ -134,7 +134,7 @@ services:
       - FLOWETL_POSTGRES_PASSWORD
       - AIRFLOW_CONN_FLOWDB
       - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     networks:
       - flowetl
       - flowdb
@@ -151,7 +151,7 @@ services:
       - FLOWETL_POSTGRES_USER
       - FLOWETL_POSTGRES_PASSWORD
       - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     networks:
       - flowetl
     environment:
@@ -168,7 +168,7 @@ services:
       - FLOWETL_CELERY_USER
       - FLOWETL_CELERY_PASSWORD
       - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     environment:
       AIRFLOW__CELERY__FLOWER_BASIC_AUTH_CMD: "echo $$(cat /run/secrets/FLOWETL_CELERY_USER),$$(cat /run/secrets/FLOWETL_CELERY_PASSWORD)"
     command: celery flower
@@ -187,7 +187,7 @@ services:
       - FLOWETL_POSTGRES_USER
       - FLOWETL_POSTGRES_PASSWORD
       - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     networks:
       - flowetl
 
@@ -208,7 +208,7 @@ services:
       - FLOWETL_POSTGRES_PASSWORD
       - FLOWETL_WEBSERVER_PASSWORD
       - AIRFLOW__WEBSERVER__SECRET_KEY
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     command: version
     networks:
       - flowetl

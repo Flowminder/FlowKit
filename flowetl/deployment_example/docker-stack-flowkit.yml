@@ -56,7 +56,7 @@ services:
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${FLOWETL_SQL_ALCHEMY_CONN:?Must set FLOWETL_SQL_ALCHEMY_CONN env var}
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${FLOWETL_SQL_ALCHEMY_CONN:?Must set FLOWETL_SQL_ALCHEMY_CONN env var}
       AIRFLOW__CORE__FERNET_KEY: ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
       # Note: By setting a variable called "AIRFLOW_CONN_<some_database_name>" airflow will
       # automatically define a connection for the given database.
