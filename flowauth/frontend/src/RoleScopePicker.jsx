@@ -20,20 +20,19 @@ const useStyles = makeStyles((theme) => ({
     "display":"flex"
   },
   ".MuiSvgIcon-root": {
-    "margin":"4px 0"
+    "margin":"2px 0"
+  },
+  ".MuiTextItem-root": {
+    "align-self":"center"
   }
 }));
 
 
 function ScopeItem(props) {
+  const classes = useStyles()
   var {scope, init_check, flipScopeCallback} = props
 
   const [isChecked, setIsChecked] = useState(init_check)
-
-  useEffect(() => {
-    console.debug(`Initial state of ${scope.name}; ${scope.enabled}`)
-  },[])
-
 
   // When an inner scope item is checked, use flipScopeCallback to
   // flip the scope with scope.key in the root of the component
@@ -52,7 +51,7 @@ function ScopeItem(props) {
     data-cy={`scope-item-${scope.key}`}
   >
     <ListItemIcon>
-      <Checkbox checked ={isChecked} />
+      <Checkbox checked ={isChecked} className={classes[".MuiSvgIcon-root"]}/>
     </ListItemIcon>
     <ListItemText primary={scope.name} />
   </ListItem>
@@ -67,8 +66,6 @@ function NestedScopeList(props) {
   const [isIndeterminant, setIsIndeterminant] = useState(false)
 
   useEffect(() => {
-    console.debug(`Inner scopes changed on ${outer_scope}`)
-    console.debug(inner_scopes)
     if (inner_scopes.every(s => s.enabled === true)){
       setIsChecked(true)
       setIsIndeterminant(false)
@@ -109,7 +106,7 @@ function NestedScopeList(props) {
         onClick={handleCheckboxClick} 
         data-cy={"checkbox"}
       />
-      <ListItemText primary = {outer_scope} />
+      <ListItemText primary = {outer_scope} className={classes[".MuiTextItem-root"]} />
       <Button onClick={handleChevronClick} data-cy={"chevron"}>
         {open ? <ExpandLess className={classes[".MuiSvgIcon-root"]} /> : <ExpandMore className={classes[".MuiSvgIcon-root"]} />}
       </Button>
@@ -208,14 +205,12 @@ function RoleScopePicker (props) {
   const flipScopes = (changed_scope_names, enabled) => {
     console.debug(`Flipping ${changed_scope_names} to ${enabled} from RoleScopeCallback`)
     const new_scopes = checkedScopes.map(s => changed_scope_names.includes(s.name) ? {"name":s.name, "key":s.key, "enabled":enabled} : s)
-    console.log("New scopes:", new_scopes)
     setCheckedScopes(new_scopes)
   }
 
   useEffect(
     () => {
       updateScopes(checkedScopes)
-      console.debug("Checked scopes:", checkedScopes)
     }, [checkedScopes]
   )
 
