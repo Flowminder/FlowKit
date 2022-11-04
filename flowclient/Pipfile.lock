@@ -643,7 +643,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_full_version < '3.11.0a7'",
+            "markers": "python_version >= '3.7'",
             "version": "==2.0.1"
         },
         "traitlets": {
@@ -664,11 +664,11 @@
         },
         "versioneer": {
             "hashes": [
-                "sha256:452e0130658e9d3f0ba3e8a70cf34ef23c0ff6cbf743555b3e73a6c11d0161a3",
-                "sha256:525c66e285691087d2418c3226c346c23b59d96fe7ab612369e05f22321b32af"
+                "sha256:11ffc09427ac99db4ce61bdc85785dae819618d0de28153adfce3085956125a8",
+                "sha256:7175ca8e7bb4dd0e3c9779dd2745e5b4a6036304af3f5e50bd896f10196586d6"
             ],
             "index": "pypi",
-            "version": "==0.27"
+            "version": "==0.28"
         },
         "wcwidth": {
             "hashes": [
