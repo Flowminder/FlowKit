@@ -926,7 +926,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:027018943386e7b942fa832372ebc120155fd970837489896099f5cfa2890f79",
@@ -1172,11 +1172,11 @@
         },
         "ipykernel": {
             "hashes": [
-                "sha256:32eb7bdc5af57185e9a42b0dcef66413ef91a0490b378eae46cbdf0d4e0b5912",
-                "sha256:3a27a550c1d682e7825f0f7732b0142b79ef1b21cd2e713cacac0c9847535f13"
+                "sha256:301fdb487587c9bf277025001da97b53697aab73ae1268d9d1ba972a2c5fc801",
+                "sha256:e195cf6d8c3dd5d41f3cf8ad831d9891f95d7d18fa6d5fb4d30a713df99b26a4"
             ],
             "index": "pypi",
-            "version": "==6.16.1"
+            "version": "==6.17.0"
         },
         "ipython": {
             "hashes": [
@@ -1719,10 +1719,10 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:3d52d73814e8db19cc04ce30cafae61a0cb3b56d1a8c6c4c53ea0886b8d98b0f"
+                "sha256:da65692b99c31e6d8b5645e51dbb9b37aa2c4a4e59af811a878bdafc82722e9b"
             ],
             "index": "pypi",
-            "version": "==1.4.0"
+            "version": "==1.4.1"
         },
         "python-dateutil": {
             "hashes": [
