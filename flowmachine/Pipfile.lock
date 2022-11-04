@@ -1709,10 +1709,10 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:3d52d73814e8db19cc04ce30cafae61a0cb3b56d1a8c6c4c53ea0886b8d98b0f"
+                "sha256:da65692b99c31e6d8b5645e51dbb9b37aa2c4a4e59af811a878bdafc82722e9b"
             ],
             "index": "pypi",
-            "version": "==1.4.0"
+            "version": "==1.4.1"
         },
         "python-dateutil": {
             "hashes": [
