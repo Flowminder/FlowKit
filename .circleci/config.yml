@@ -751,6 +751,11 @@ jobs:
       - restore_cache:
           key: flowetl-deps-5-{{ checksum "Pipfile.lock"}}
       - run:
+          name: Install psycopg2 build deps
+          command: |
+            sudo apt-get update
+            sudo apt install libpq-dev
+      - run:
           name: Set python version
           command: |
             pyenv versions
@@ -777,7 +782,7 @@ jobs:
       - run:
           name: run flowetl integration tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
+            pipenv run pytest --capture=tee-sys --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
       - store_test_results:
           path: test_results
       - upload_codecov:
