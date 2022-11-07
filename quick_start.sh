@@ -120,6 +120,8 @@ curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/doc
 
 DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
 
+if [ -x "$(command -v ss)" ]; then NW_CHECK_TOOL='ss -tuna'; else NW_CHECK_TOOL='netstat -an'; fi
+
 if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
     echo "Stopping containers"
@@ -138,7 +140,7 @@ else
     echo "Waiting for containers to be ready.."
     docker exec flowdb bash -c 'i=0; until { [ $i -ge 90 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
-    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { ((ss -tuna || netstat -an) | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { ($NW_CHECK_TOOL | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
     echo "FlowMachine ready"
     (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAPI_PORT/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAPI,bug including the output of running 'docker logs flowapi'" && exit 1)
     echo "FlowAPI ready."
