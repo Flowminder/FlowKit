@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Repinned: https://github.com/eslint/eslint-scope/issues/55
 FROM node:16 as builder
 
 COPY flowauth/frontend /
