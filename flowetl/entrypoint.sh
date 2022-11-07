@@ -28,7 +28,7 @@ done
 
 # Make sure we have a db connection specified
 
-: "${AIRFLOW__CORE__SQL_ALCHEMY_CONN:?AIRFLOW__CORE__SQL_ALCHEMY_CONN env var or secret must be set.}"
+: "${AIRFLOW__DATABASE__SQL_ALCHEMY_CONN:?AIRFLOW__DATABASE__SQL_ALCHEMY_CONN env var or secret must be set.}"
 
 ## Defaults and back-compat
 # These could mask missing
@@ -47,7 +47,7 @@ export \
   AIRFLOW__CORE__EXECUTOR \
   AIRFLOW__CORE__FERNET_KEY \
   AIRFLOW__CORE__LOAD_EXAMPLES \
-  AIRFLOW__CORE__SQL_ALCHEMY_CONN \
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN \
   AIRFLOW__WEBSERVER__SECRET_KEY \
   REDIS_PASSWORD \
   POSTGRES_PASSWORD \
