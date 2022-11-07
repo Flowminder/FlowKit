@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Changed `AIRFLOW__CORE__SQL_ALCHEMY_CONN` env var to `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`
+- Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. [#3622](https://github.com/Flowminder/FlowKit/issues/3622)
 
 ### Fixed
 - Fixed a potential deadlock when using a small connection pool and `store`-ing queries
