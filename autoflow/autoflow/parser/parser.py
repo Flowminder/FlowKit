@@ -17,7 +17,7 @@ from autoflow.parser.workflow_schema import WorkflowSchema
 
 
 def parse_workflows_yaml(
-    filename: str, inputs_dir: str
+    filename: str, inputs_dir: str, workflow_storage_dir: str
 ) -> Tuple[
     "prefect.storage.Storage",
     Dict[
@@ -36,15 +36,20 @@ def parse_workflows_yaml(
     ----------
     filename : str
         Name of yaml input file
-    inputs_dir : Path
+    inputs_dir : str
         Directory in which input files should be found
+    workflow_storage_dir : str
+        Directory in which workflow objects will be stored (using prefect Local storage)
 
     Returns
     -------
-    workflows : list of Flow
-        List of prefect workflows
-    run_parameters : dict
-        mapping from workflow names to a list of dicts of parameters for which the workflow should be run
+    workflow_storage : prefect.storage.Storage
+        Prefect Storage object containing the workflows
+    sensor_config : dict
+        Dict of sensor config options:
+        - 'schedule': prefect Schedule on which the sensor will run
+        - 'cdr_types': list of CDR types for which available dates will be found
+        - 'workflows': list of parameterised workflows to be run
     """
     with open(Path(inputs_dir) / filename, "r") as f:
         workflows_yaml = yaml.safe_load(f)
@@ -60,7 +65,9 @@ def parse_workflows_yaml(
             "Input file does not have an 'available_dates_sensor' section."
         )
 
-    workflow_schema = WorkflowSchema(context=dict(inputs_dir=inputs_dir))
+    workflow_schema = WorkflowSchema(
+        context=dict(inputs_dir=inputs_dir, workflow_storage_dir=workflow_storage_dir)
+    )
     workflow_storage = workflow_schema.load(workflows_spec, many=True)
 
     sensor_schema = AvailableDatesSensorSchema(

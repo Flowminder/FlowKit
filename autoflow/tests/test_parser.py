@@ -66,7 +66,9 @@ def test_parse_workflows_yaml(tmp_path):
         )
     )
     workflow_storage, sensor_config = parse_workflows_yaml(
-        filename="dummy_input.yml", inputs_dir=str(tmp_path)
+        filename="dummy_input.yml",
+        inputs_dir=str(tmp_path),
+        workflow_storage_dir=str(tmp_path / ".prefect/flows"),
     )
     assert isinstance(workflow_storage, storage.Storage)
     assert "workflow1" in workflow_storage
@@ -105,7 +107,9 @@ def test_parse_workflows_yaml_missing_workflows(tmp_path):
         ValueError, match="Input file does not have a 'workflows' section."
     ):
         workflow_storage, sensor_config = parse_workflows_yaml(
-            filename="dummy_input.yml", inputs_dir=str(tmp_path)
+            filename="dummy_input.yml",
+            inputs_dir=str(tmp_path),
+            workflow_storage_dir=str(tmp_path / ".prefect/flows"),
         )
 
 
@@ -131,5 +135,7 @@ def test_parse_workflows_yaml_missing_available_dates_sensor(tmp_path):
         match="Input file does not have an 'available_dates_sensor' section.",
     ):
         workflow_storage, sensor_config = parse_workflows_yaml(
-            filename="dummy_input.yml", inputs_dir=str(tmp_path)
+            filename="dummy_input.yml",
+            inputs_dir=str(tmp_path),
+            workflow_storage_dir=str(tmp_path / ".prefect/flows"),
         )

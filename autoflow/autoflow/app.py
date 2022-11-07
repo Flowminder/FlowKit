@@ -61,8 +61,11 @@ def main(run_on_schedule: bool = True):
 
     # Create workflows according to workflow definition file
     inputs_dir = os.environ["AUTOFLOW_INPUTS_DIR"]
+    workflow_storage_dir = str(outputs_path / ".prefect/flows")
     logger.info(f"Creating workflows defined in '{Path(inputs_dir)/'workflows.yml'}'.")
-    workflow_storage, sensor_config = parse_workflows_yaml("workflows.yml", inputs_dir)
+    workflow_storage, sensor_config = parse_workflows_yaml(
+        "workflows.yml", inputs_dir, workflow_storage_dir
+    )
 
     # Run available dates sensor
     logger.info("Running available dates sensor.")
