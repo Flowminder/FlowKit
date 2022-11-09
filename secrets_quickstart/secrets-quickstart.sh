@@ -216,6 +216,7 @@ export FLOWDB_DATA_DIR=./flowdb_pgdata
 mkdir $FLOWDB_DATA_DIR || true
 export FLOWDB_ETL_DIR=./../flowetl/mounts/files/
 export FLOWETL_HOST_DAG_DIR=./../flowetl/mounts/dags/
+export FLOWETL_HOST_LOGS_DIR=./../flowetl/mounts/logs/
 
 
 # Deploy the stack
