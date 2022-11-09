@@ -26,8 +26,8 @@
 
 const { dateTimePickerDefaultProps } = require("@material-ui/pickers/constants/prop-types");
 
-// Regex developed and explained at https://regex101.com/r/sNbyim/1
-const pep440_regex = new RegExp("(?<version>[0-9]+(?:\.[0-9]+)+)-(?<dev>[0-9]*)-(?<revision>g[0-9]c[0-9]*)(-(?<dirty>dirty))?", "mg")
+// Regex developed and explained at https://regex101.com/r/oBJsrs/1
+const pep440_regex = new RegExp("(?<version>[0-9]+(?:\.[0-9]+)+)-(?<dev>[0-9]*)-(?<revision>\w*)(-(?<dirty>dirty))?", "mg")
 
 function getCookieValue(a) {
   var b = document.cookie.match("(^|;)\\s*" + a + "\\s*=\\s*([^;]+)");
@@ -36,9 +36,9 @@ function getCookieValue(a) {
 
 Cypress.Commands.add("build_version_string", () => {
   cy.exec('git describe --tags --dirty --always').then((result) =>{
-    console.debug(result)
+    console.debug(pep440_regex)
     const {version, dev, revision, dirty} = result.stdout.matchAll(pep440_regex).next().value.groups
-    const outstring =  `${version}.post0.dev${dev}`
+    const outstring =  `${version}.post0.dev${dev}` 
     console.debug(outstring)
     return outstring
   })}
