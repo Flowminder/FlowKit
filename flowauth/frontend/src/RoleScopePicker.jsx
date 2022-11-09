@@ -185,6 +185,7 @@ function RoleScopePicker (props) {
   useEffect(
     () => {
       const fetch_scopes = async () => {
+        console.debug("Feching scopes for RSP")
         const role_scopes = await getRoleScopes(role_id)
         const server_scopes = await getServerScopes(server_id)
         const checked_scopes = server_scopes.map(
@@ -193,6 +194,7 @@ function RoleScopePicker (props) {
             "key":srv_scope.name,
             "enabled":role_scopes.map(y => y.name).includes(srv_scope.name)})
         )
+        console.log("got scopes", checkedScopes)
         setCheckedScopes(checked_scopes)
       }
       
