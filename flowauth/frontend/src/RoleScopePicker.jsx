@@ -186,7 +186,11 @@ function RoleScopePicker (props) {
   useEffect(
     () => {
       const fetch_scopes = async () => {
-        const role_scopes = await getRoleScopes(role_id)
+        const role_scopes = await getRoleScopes(role_id).catch(err => {
+          if (err.code === 404){
+            return []
+          }
+        })
         const server_scopes = await getServerScopes(server_id)
         const checked_scopes = server_scopes.map(
           srv_scope => new Object({

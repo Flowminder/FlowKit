@@ -164,7 +164,7 @@ function RoleDetails(props) {
   const handleScopesChange = (new_scopes) => {
     console.debug("Scopes now:",new_scopes)
     setScopes(new_scopes.filter(s => s.enabled === true))
-  }
+  } 
 
  //Either update or create a new role on 'submit' button
  const handleSubmit = async () => {
