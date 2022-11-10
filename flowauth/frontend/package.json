@@ -30,8 +30,7 @@
     "localtest": "jest"
   },
   "devDependencies": {
-    "cypress": "^9.7.0",
-    "cypress-plugin-retries": "^1.5.2",
+    "cypress": "^11.0.1",
     "husky": "^8.0.1",
     "otp-cli": "^0.2.0",
     "prettier": "^2.7.1",
