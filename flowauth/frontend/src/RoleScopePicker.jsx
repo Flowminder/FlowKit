@@ -111,7 +111,7 @@ function NestedScopeList(props) {
         {open ? <ExpandLess className={classes[".MuiSvgIcon-root"]} /> : <ExpandMore className={classes[".MuiSvgIcon-root"]} />}
       </Button>
     </div>
-    <Collapse in={open}>
+    <Collapse in={open} unmountOnExit>
       <ScopeList scopes = {inner_scopes} flipScopeCallback={flipScopeCallback}/>
     </Collapse> 
   </ListItem>
@@ -142,7 +142,8 @@ function ScopeList (props) {
           .map(cs => new Object({
             "name": cs.name.replace(ts, "").replace(":", ""),
             "key": cs.key,
-            "enabled": cs.enabled
+            "enabled": cs.enabled,
+            "id": cs.id
           }))
       }))
     setNestedScopes(nested_scopes)
@@ -185,28 +186,29 @@ function RoleScopePicker (props) {
   useEffect(
     () => {
       const fetch_scopes = async () => {
-        console.debug("Feching scopes for RSP")
         const role_scopes = await getRoleScopes(role_id)
         const server_scopes = await getServerScopes(server_id)
         const checked_scopes = server_scopes.map(
           srv_scope => new Object({
             "name":srv_scope.name,
             "key":srv_scope.name,
-            "enabled":role_scopes.map(y => y.name).includes(srv_scope.name)})
-        )
-        console.log("got scopes", checkedScopes)
+            "enabled":role_scopes.map(y => y.name).includes(srv_scope.name),
+            "id":srv_scope.id
+          }))
         setCheckedScopes(checked_scopes)
       }
       
       fetch_scopes().catch((err) => console.error(err))
+
+      return() => {}
       // This needs to be cancellable
-    }, []
+    }, [role_id, server_id]
   )
 
   // Callback that flips all checkboxes
   const flipScopes = (changed_scope_names, enabled) => {
     console.debug(`Flipping ${changed_scope_names} to ${enabled} from RoleScopeCallback`)
-    const new_scopes = checkedScopes.map(s => changed_scope_names.includes(s.name) ? {"name":s.name, "key":s.key, "enabled":enabled} : s)
+    const new_scopes = checkedScopes.map(s => changed_scope_names.includes(s.name) ? {"name":s.name, "key":s.key, "enabled":enabled, "id":s.id} : s)
     setCheckedScopes(new_scopes)
   }
 
