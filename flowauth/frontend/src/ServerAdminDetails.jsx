@@ -294,6 +294,12 @@ class ServerAdminDetails extends React.Component {
           </Typography>
         </Grid>
         <Grid item xs={12}>
+          <Typography>
+            Scope enable/disable currently out of service.
+            Below view is for information only
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
           <RightsCascade
             options={rights}
             value={enabledRights}
