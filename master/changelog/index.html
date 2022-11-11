@@ -8755,6 +8755,7 @@
 <ul>
 <li>Fixed a potential deadlock when using a small connection pool and <code>store</code>-ing queries</li>
 <li>AutoFlow can now be run in a docker container with non-default user. <a href="https://github.com/Flowminder/FlowKit/issues/5574">#5574</a></li>
+<li>Passing an empty list of events tables when creating a query now raises <code>ValueError: Empty tables list.</code> instead of a <code>MissingDateError</code>. <a href="https://github.com/Flowminder/FlowKit/issues/436">#436</a></li>
 </ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1171"><a href="https://github.com/Flowminder/FlowKit/compare/1.17.0...1.17.1">1.17.1</a><a class="headerlink" href="#1171" title="Permanent link">&para;</a></h2>
