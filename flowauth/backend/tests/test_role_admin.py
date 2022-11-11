@@ -174,3 +174,26 @@ def test_invalid_role(app, auth, client, test_servers):
             "/roles/", headers={"X-CSRF-Token": csrf_cookie}, json=invalid_life_payload
         )
         assert response.status_code == 400
+
+
+def test_role_server_check(app, auth, client, test_scopes, test_roles):
+    # Tests that if you add a scope to a role, the scope exists on the server
+    with app.app_context():
+        read_a, read_b, _, _ = test_scopes
+        db.session.add(read_a)
+        db.session.add(read_b)
+        response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+        # Role 1 lives on server 1.
+        response = client.patch(
+            "/roles/1",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={"scopes": [read_a.id]},
+        )
+        assert response.status_code == 200
+        # scope read_b lives on server 2
+        response = client.patch(
+            "/roles/1",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={"scopes": [read_b.id]},
+        )
+        assert response.status_code == 500
