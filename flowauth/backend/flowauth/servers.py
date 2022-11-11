@@ -130,7 +130,7 @@ def set_scopes(server_id):
     for scope in server_scopes:
         db.session.delete(scope)
     for scope, is_enabled in json.items():
-        db.session.add(Scope(name=scope, server=server, enabled=is_enabled))
+        db.session.add(Scope(name=scope, server=server, enabled=True))
     db.session.commit()
     return list_scopes(server_id)
 
@@ -144,6 +144,8 @@ def edit_scope_activation(server_id):
     Expects a json of the form {scope_string:True/False}
 
     """
+    # Removing until sup
+    raise NotImplemented
     json = request.get_json()
     scopes_to_edit = (
         db.session.query(Scope)
