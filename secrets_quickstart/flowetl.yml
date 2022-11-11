@@ -46,6 +46,7 @@ x-flowetl-common:
 
   volumes:
     - ${FLOWETL_HOST_DAG_DIR:?Must set FLOWETL_HOST_DAG_DIR env var}:/opt/airflow/dags:ro
+    - ${FLOWETL_HOST_LOGS_DIR:?}/opt/airflow/logs:rw
 
   environment:
     &flowetl-envs
