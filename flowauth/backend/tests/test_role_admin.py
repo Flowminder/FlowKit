@@ -6,6 +6,7 @@ import pytest
 from freezegun import freeze_time
 
 from flowauth.models import db
+from flowauth.invalid_usage import InvalidUsage
 
 
 @freeze_time("2020-12-31")
@@ -180,6 +181,7 @@ def test_role_server_check(app, auth, client, test_scopes, test_roles):
     # Tests that if you add a scope to a role, the scope exists on the server
     with app.app_context():
         read_a, read_b, _, _ = test_scopes
+        breakpoint()
         db.session.add(read_a)
         db.session.add(read_b)
         response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
@@ -190,10 +192,12 @@ def test_role_server_check(app, auth, client, test_scopes, test_roles):
             json={"scopes": [read_a.id]},
         )
         assert response.status_code == 200
-        # scope read_b lives on server 2
-        response = client.patch(
-            "/roles/1",
-            headers={"X-CSRF-Token": csrf_cookie},
-            json={"scopes": [read_b.id]},
-        )
-        assert response.status_code == 500
+
+        with pytest.raises(InvalidUsage):
+            # scope read_b lives on server 2
+            response = client.patch(
+                "/roles/1",
+                headers={"X-CSRF-Token": csrf_cookie},
+                json={"scopes": [read_b.id]},
+            )
+            # assert response.status_code == 400

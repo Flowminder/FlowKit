@@ -36,7 +36,6 @@ def app(tmpdir):
     """Per test app"""
     db_path = tmpdir / "db.db"
     print(f"DB path: {db_path}")
-
     app = create_app(
         {
             "TESTING": True,
@@ -184,9 +183,9 @@ def test_scopes(app, test_servers):
 @pytest.fixture  # (scope="session")
 @freeze_time("2020-12-31")
 def test_roles(app, test_scopes, test_servers):
-    read_a, read_b, run, dummy_query = test_scopes
-    server_a, server_b = test_servers
     with app.app_context():
+        read_a, read_b, run, dummy_query = test_scopes
+        server_a, server_b = test_servers
         runner = Role(
             name="runner",
             scopes=[run, read_a, dummy_query],

@@ -15,10 +15,11 @@ from flask import current_app
 
 import pyotp
 from flask_sqlalchemy import SQLAlchemy
-from flowauth.invalid_usage import Unauthorized
+from flowauth.invalid_usage import InvalidUsage, Unauthorized
 from flowauth.util import get_fernet
 from passlib.hash import argon2
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
 
 db = SQLAlchemy()
 
@@ -422,6 +423,14 @@ class Role(db.Model):
         lazy="subquery",
         backref=db.backref("roles", lazy=True),
     )
+
+    @validates("scopes")
+    def validate_scope(self, key, scope):
+        # Note for reviewer - should this be added here?
+        db.session.add(scope)
+        breakpoint()
+        if scope.server.id != self.server_id:
+            raise InvalidUsage("Cannot add scope outside server to role")
 
     def next_expiry(self) -> datetime.datetime:
         return min(
