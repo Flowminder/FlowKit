@@ -111,4 +111,4 @@ def test_demo_data(app):
         assert len(User.query.all()) == 2
         assert len(Role.query.all()) == 2
         assert len(Server.query.all()) == 1
-        assert len(Scope.query.all()) == 3
+        assert len(Scope.query.all()) == 182

@@ -209,6 +209,7 @@ def test_roles(app, test_scopes, test_servers):
         )
         db.session.add(runner)
         db.session.add(reader)
+        db.session.add(reader_b)
         db.session.commit()
         return runner, reader, reader_b
 

@@ -230,6 +230,7 @@ def test_list_scopes(client, auth, test_scopes, test_servers, test_admin):
     ]
 
 
+@pytest.mark.xfail
 def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
     uid, uname, password = test_admin
     response, csrf_cookie = auth.login(uname, password)

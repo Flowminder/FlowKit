@@ -192,11 +192,10 @@ def test_role_server_check(app, auth, client, test_scopes, test_roles):
         )
         assert response.status_code == 200
 
-        with pytest.raises(InvalidUsage):
-            # scope read_b lives on server 2
-            response = client.patch(
-                "/roles/1",
-                headers={"X-CSRF-Token": csrf_cookie},
-                json={"scopes": [read_b.id]},
-            )
-            # assert response.status_code == 400
+        # scope read_b lives on server 2
+        response = client.patch(
+            "/roles/1",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={"scopes": [read_b.id]},
+        )
+        assert response.status_code == 400

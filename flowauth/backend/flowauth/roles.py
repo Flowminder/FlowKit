@@ -50,6 +50,11 @@ def list_user_roles(user_id):
     return jsonify([role_to_dict(role) for role in user.roles])
 
 
+def _validate_scope_server(scope, server):
+    if scope.server_id != server.id:
+        raise InvalidUsage("Scope server must match role server")
+
+
 @blueprint.route("/<role_id>", methods=["GET"])
 @login_required
 @admin_permission.require(http_exception=401)
@@ -68,6 +73,8 @@ def add_role():
     )
     server = Server.query.filter(Server.id == json["server_id"]).first()
     role_scopes = Scope.query.filter(Scope.id.in_(json["scopes"])).all()
+    for scope in role_scopes:
+        _validate_scope_server(scope, server)
     try:
         role_users = User.query.filter(User.id.in_(json["users"])).all()
     except KeyError:
@@ -110,6 +117,8 @@ def edit_role(role_id):
             value = [User.query.filter(User.id == uid).first() for uid in value]
         elif key == "scopes":
             value = [Scope.query.filter(Scope.id == sid).first() for sid in value]
+            for scope in value:
+                _validate_scope_server(scope, server)
         elif key == "latest_token_expiry":
             value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
             if value > server.latest_token_expiry:
