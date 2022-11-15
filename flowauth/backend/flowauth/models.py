@@ -424,13 +424,6 @@ class Role(db.Model):
         backref=db.backref("roles", lazy=True),
     )
 
-    @validates("scopes")
-    def validate_scope(self, key, scope):
-        # Note for reviewer - should this be added here?
-        db.session.add(scope)
-        if scope.server.id != self.server_id:
-            raise InvalidUsage("Cannot add scope outside server to role")
-
     def next_expiry(self) -> datetime.datetime:
         return min(
             self.latest_token_expiry,
