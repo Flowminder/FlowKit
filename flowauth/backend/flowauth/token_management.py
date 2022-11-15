@@ -127,17 +127,11 @@ def add_token(server_id):
 
     roles = []
     for requested_role in json["roles"]:
-        # I think I might also rewrite this bit as just iterating through the requested roles and
-        # doing Role.query.filter(Role.id == requested_role).first_or_404()?
-        try:
-            this_role = Role.query.filter(
-                Role.name == requested_role["name"]
-            ).first_or_404()
-        except StopIteration:
+        if requested_role["name"] not in [ur.name for ur in user_roles]:
             raise Unauthorized(
                 f"Role '{requested_role['name']}' is not permitted for the current user"
             )
-        roles.append(this_role)
+        roles.append(Role.query.filter(Role.name == requested_role["name"]).first())
     token_expiry = min(server.next_expiry(), min(rr.next_expiry() for rr in roles))
     # The role expiry date doesn't beat the server expiry date
     # The role longest lifetime doesn't beat the server longest lifetime
@@ -146,6 +140,9 @@ def add_token(server_id):
     # This isn't about the user, so get these values from the server
 
     current_app.logger.debug("token_expiry")
+
+    if token_expiry < datetime.datetime.now():
+        raise Unauthorized(f"Token for {current_user.username} expired")
 
     token_string = generate_token(
         flowapi_identifier=server.name,
