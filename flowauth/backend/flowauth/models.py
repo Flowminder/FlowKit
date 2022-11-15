@@ -428,7 +428,6 @@ class Role(db.Model):
     def validate_scope(self, key, scope):
         # Note for reviewer - should this be added here?
         db.session.add(scope)
-        breakpoint()
         if scope.server.id != self.server_id:
             raise InvalidUsage("Cannot add scope outside server to role")
 
