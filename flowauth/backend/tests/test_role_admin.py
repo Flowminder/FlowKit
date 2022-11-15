@@ -181,7 +181,6 @@ def test_role_server_check(app, auth, client, test_scopes, test_roles):
     # Tests that if you add a scope to a role, the scope exists on the server
     with app.app_context():
         read_a, read_b, _, _ = test_scopes
-        breakpoint()
         db.session.add(read_a)
         db.session.add(read_b)
         response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
