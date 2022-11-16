@@ -50,7 +50,7 @@ function RoleDetails(props) {
 
   const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members]
   
-  // get appropriate Role on load
+  // get appropriate roles + servers on server_id set
   useEffect( 
     () => {
 
@@ -66,21 +66,23 @@ function RoleDetails(props) {
         setMaxLifetime(String(server.longest_token_life_minutes))
       })
 
-      fetch_server().catch((err) => console.error(err))
+      if (server_id >= 0){
+        fetch_server().catch((err) => console.error(err)).then(() => {
 
-      if (role_id >= 0){
-        fetch_role()
-        .catch((err) => {
-          console.error("Role err:" + err)
-          if (err.code !== 404){
-            setRole({});
-            setErrors(err.message);
-            setIsErrored(true);
+          if (role_id >= 0){
+            fetch_role()
+            .catch((err) => {
+              console.error("Role err:" + err)
+              if (err.code !== 404){
+                setRole({});
+                setErrors(err.message);
+                setIsErrored(true);
+              }
+            })
           }
-        })
-     }
-    
-  }, [])
+      })
+      }
+  }, [server_id])
 
   //When Role changes, replace role.name, role.server and role.members with 
   //the parts from the others.
@@ -245,8 +247,8 @@ return (
         label="Max. lifetime (mins)"
         // className={classes.textField}
         required={true}
-        value={maxLifetime}
         onChange={handleLifetimeChange}
+        value={maxLifetime}
         margin="normal"
         error={!lifetimeIsValid}
         helperText={lifetimeHelperText}
@@ -266,6 +268,7 @@ return (
           role_id={role.id}
           server_id={server_id}
           updateScopes={handleScopesChange}
+          data-cy={"RoleScopePicker"}
         />
       </Grid>
       <ValidationDialog
@@ -275,7 +278,7 @@ return (
       />
 
       <Grid item xs={12} />
-      <SubmitButtons handleSubmit={handleSubmit} onClick={onClick}  />
+      <SubmitButtons handleSubmit={handleSubmit} onClick={onClick} enabled={formIsValid} />
     </React.Fragment>
   );
 }

@@ -32,8 +32,8 @@ function RoleItem(props) {
   return(
     <Grid container spacing = {3}>
       <Grid item xs={8}><Typography component="h3">{role.name}</Typography></Grid>
-      <Grid item xs={1}><Button onClick={edit_role}>Edit</Button></Grid>
-      <Grid item xs={1}r><Button onClick={delete_role}>Delete</Button></Grid>
+      <Grid item xs={1}><Button onClick={edit_role} data-cy={`edit-${role.id}`}>Edit</Button></Grid>
+      <Grid item xs={1}r><Button onClick={delete_role} data-cy={`delete-${role.id}`}>Delete</Button></Grid>
     </Grid>
   )
 }
@@ -62,7 +62,7 @@ function ServerHeader(props) {
   return(
     <Grid container direction="row">
       <Grid item xs={9}><Typography variant="h5" component="h1">{server.name}</Typography></Grid>
-      <Grid item xs={3}><Button onClick={new_role_on_server}>New Role</Button></Grid>
+      <Grid item xs={3}><Button onClick={new_role_on_server} data-cy={"new"}>New Role</Button></Grid>
     </Grid>
   )
 }
