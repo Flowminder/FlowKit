@@ -71,6 +71,23 @@ describe("role list screen", function () {
     cy.contains(role_name).should("be.visible");
   });
 
+  it("Role scopes are reflected", function () {
+    const role_name = Math.random().toString(36).substring(2, 15)
+    cy.create_role(role_name).then((role) => {
+      cy.goto("/").get("#role_admin").click()
+      cy.get(`[data-cy=edit-${role_name}]`)
+      .click()
+      cy.get('[data-cy="nested-admin0"]').within(()=>{
+        cy.get("[data-cy=checkbox]")
+        .invoke("prop", "indeterminate", true)
+        cy.get("[data-cy=chevron]").click()
+      })
+      cy.get('[data-cy=nested-consecutive_trips_od_matrix]')
+      .find("[data-cy=checkbox]")
+      .invoke("prop", "checked", true)
+    })
+  })
+
   it("Delete role", function () {
     // Create the role
     const role_name =
@@ -113,6 +130,6 @@ describe("role list screen", function () {
       // Check that role is renamed
       cy.contains(role_name + "_edited").should("exist")
       .contains("/^" + role_name + "$/").should("not.exist");
-    });
+   });
   });
 });
