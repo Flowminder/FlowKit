@@ -107,7 +107,7 @@ def list_scopes(server_id):
     """
     Returns the list of available scopes on a server
     """
-    server = Server.query.filter_by(id=server_id).first()
+    server = Server.query.filter_by(id=server_id).first_or_404()
     current_app.logger.debug(f"Fetching scopes for server {server}")
     return jsonify(
         [
