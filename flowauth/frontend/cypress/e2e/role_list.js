@@ -10,6 +10,7 @@ describe("role list screen", function () {
     cy.login_admin();
     cy.goto("/");
     cy.get("#role_admin").click();
+    cy.wait(3000) // This needed to wait for 
     
 
     //set up aliases
@@ -46,13 +47,14 @@ describe("role list screen", function () {
     cy.contains("#name-helper-text").should("not.exist");
   });
   
-  // it("Add duplicate role name", function () {
-  //   this.new_role;
-  //   //adding existing username and new password
-  //   cy.get("#name").type("Test_Role");
-  //   cy.contains("Save").should("be.disabled")
-  //   //checking error dialogue text
-  // });
+  it("Add duplicate role name", function () {
+    this.new_role;
+    //adding existing username and new password
+    cy.get("#name").type("Test_Role");
+    cy.contains("Save").should("be.disabled")
+    //checking error dialogue text
+    
+  });
 
   it("Add role", function () {
     // Add a new group
