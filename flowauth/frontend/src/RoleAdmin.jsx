@@ -32,8 +32,8 @@ function RoleItem(props) {
   return(
     <Grid container spacing = {3}>
       <Grid item xs={8}><Typography component="h3">{role.name}</Typography></Grid>
-      <Grid item xs={1}><Button onClick={edit_role} data-cy={`edit-${role.id}`}>Edit</Button></Grid>
-      <Grid item xs={1}r><Button onClick={delete_role} data-cy={`delete-${role.id}`}>Delete</Button></Grid>
+      <Grid item xs={1}><Button onClick={edit_role} data-cy={`edit-${role.name}`}>Edit</Button></Grid>
+      <Grid item xs={1}r><Button onClick={delete_role} data-cy={`delete-${role.name}`}>Delete</Button></Grid>
     </Grid>
   )
 }
@@ -72,6 +72,7 @@ function ServerRoleView(props) {
 
   const [server, setServer] = useState({})
   const [roles, setRoleList] = useState([])
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   const deleteRoleWithEdit = (role_id) => {
     deleteRole(role_id)
@@ -93,12 +94,27 @@ function ServerRoleView(props) {
     }, []
   )
 
-  return(
-    <Grid container direction='column'>
-      <Grid item><ServerHeader server = {server} onClick = {onClick} /></Grid>
-      <Grid item><ServerRoleList roles = {roles} server = {server} onClick= {onClick} deleteRole = {deleteRoleWithEdit}/></Grid>
-    </Grid>
-  )
+  useEffect(() => {
+    if (server !== "undefined" && roles !== "undefined"){
+      setDataLoaded(true)
+    }
+  }, [server, roles])
+
+  if (dataLoaded)
+    return(
+      <Grid container direction='column'>
+        <Grid item><ServerHeader server = {server} onClick = {onClick} /></Grid>
+        <Grid item>
+          <ServerRoleList 
+            roles = {roles}
+            server = {server}
+            onClick= {onClick}
+            deleteRole = {deleteRoleWithEdit}
+          />
+        </Grid>
+      </Grid>
+    )
+  else return null
 }
 
 
@@ -107,7 +123,7 @@ function RoleList(props) {
   const {onClick, deleteRole} = props
   const [server_list, setServerList] = useState([])
 
-  // On load, get list of servers.
+  // On load, get list of servers.  
   useEffect(
     () => {
       const fetch_servers = (async () => {

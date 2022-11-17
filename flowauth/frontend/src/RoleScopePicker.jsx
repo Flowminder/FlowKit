@@ -51,7 +51,7 @@ function ScopeItem(props) {
     data-cy={`scope-item-${scope.key}`}
   >
     <ListItemIcon>
-      <Checkbox checked ={isChecked} className={classes[".MuiSvgIcon-root"]}/>
+      <Checkbox checked ={isChecked} className={classes[".MuiSvgIcon-root"]} data-cy={"checkbox"}/>
     </ListItemIcon>
     <ListItemText primary={scope.name} />
   </ListItem>

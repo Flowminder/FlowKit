@@ -87,8 +87,9 @@ Cypress.Commands.add("create_role", (role_name) =>
         url: "/roles/",
         body: {
           name: role_name,
-          scopes: [0],
-          latest_token_expiry: "2121-12-31T00:00:00.000000Z",
+          scopes: [1],
+          members: [1],
+          latest_token_expiry: "2021-12-31T00:00:00.000000Z",
           server_id: 1,
           longest_token_life_minutes: 2*24*60
         },
