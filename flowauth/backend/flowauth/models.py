@@ -7,7 +7,7 @@ from pathlib import Path
 
 import datetime
 from itertools import chain
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, func, inspect
 from typing import Dict, List, Union
 import json
 
@@ -20,6 +20,8 @@ from flowauth.util import get_fernet
 from passlib.hash import argon2
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
+from sqlalchemy.event import listens_for
+from sqlalchemy.orm.attributes import get_history
 
 db = SQLAlchemy()
 
@@ -412,7 +414,7 @@ class Role(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(75), unique=True, nullable=False)
+    name = db.Column(db.String(75), nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life_minutes = db.Column(db.Integer, nullable=False)
@@ -452,6 +454,23 @@ class Role(db.Model):
             if claim not in scope_strings:
                 return False
         return True
+
+
+# Based on https://stackoverflow.com/questions/51376652/sqlalchemy-before-flush-event-handler-doesnt-see-change-of-foreign-key-when-ins
+@listens_for(db.session, "before_flush")
+def _check_unique_role_name(session, flush_context, instances):
+    for instance in (*session.dirty, *session.new):
+        if not isinstance(instance, Role):
+            continue
+        if (
+            "name" not in inspect(instance).unmodified
+            and instance.query.filter(Role.name == instance.name)
+            .filter(Role.server_id == instance.server.id)
+            .count()
+            >= 1
+        ):
+            session.rollback()
+            raise InvalidUsage("Cannot have duplicate role name in server")
 
 
 class Scope(db.Model):

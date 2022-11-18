@@ -199,3 +199,66 @@ def test_role_server_check(app, auth, client, test_scopes, test_roles):
             json={"scopes": [read_b.id]},
         )
         assert response.status_code == 400
+
+
+def test_duplicate_role_name_check(app, auth, client, test_servers):
+    # Checks that you can't have two roles with the same name on a server
+    with app.app_context():
+        response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+
+        role_payload = {
+            "name": "test_role",
+            "scopes": [
+                3,
+                4,
+            ],  # "run" and "dummy_agg_unit:dummy_scope:dummy_scope", server 1
+            "server_id": 1,
+            "latest_token_expiry": "2020-12-31T12:00:00.0Z",
+            "longest_token_life_minutes": 2 * 24 * 60,
+        }
+
+        response = client.post(
+            "roles/", headers={"X-CSRF-Token": csrf_cookie}, json=role_payload
+        )
+        assert response.status_code == 200
+
+        response = client.post(
+            "roles/", headers={"X-CSRF-Token": csrf_cookie}, json=role_payload
+        )
+        assert response.status_code == 400  # this the error code?
+        assert "Cannot have duplicate role name in server" in response.text
+
+        role_payload.update({"server_id": 2})
+        response = client.post(
+            "roles/", headers={"X-CSRF-Token": csrf_cookie}, json=role_payload
+        )
+        assert response.status_code == 200
+
+        # Check test also fires on change of role name
+        second_role_payload = role_payload.copy()
+        second_role_payload["name"] = "test_role_2"
+        response = client.post(
+            "roles/", headers={"X-CSRF-Token": csrf_cookie}, json=second_role_payload
+        )
+        assert response.status_code == 200
+        # TODO: Fix the bug this exposes in scope_server
+        # response = client.patch(
+        #     "/roles/2",
+        #     headers={"X-CSRF-Token":csrf_cookie},
+        #     json = {"scopes":[3,4,5]}
+        # )
+        # assert response.status_code == 200
+        response = client.patch(
+            "/roles/2",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={"name": "test_role"},
+        )
+        assert response.status_code == 400  # this the error code?
+        assert "Cannot have duplicate role name in server" in response.text
+
+        response = client.patch(
+            "/roles/2",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={"name": "test_role_no_dupe"},
+        )
+        assert response.status_code == 200
