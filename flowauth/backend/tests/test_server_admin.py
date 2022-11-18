@@ -107,6 +107,25 @@ def test_create_server_errors_with_missing_name(client, auth, test_admin):
     assert [] == response.get_json()
 
 
+def test_create_server_errors_with_duplicate_scopes(client, auth, test_admin):
+    """Should throw a 400 error if two scopes with the same name try to get into the server"""
+    uid, username, password = test_admin
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/servers",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "name": "DUMMY_SERVER_2",
+            "latest_token_expiry": "2019-01-01T00:00:00.0Z",
+            "longest_token_life_minutes": 1440,
+            "secret_key": "DUMMY_SECRET_KEY",
+            "scopes": ["foo", "foo"],
+        },
+    )
+    assert 400 == response.status_code
+    assert "Cannot have duplicate scope name in server" in response.text
+
+
 @pytest.mark.parametrize(
     "name, expected_message",
     [

@@ -7,6 +7,7 @@ from pathlib import Path
 
 import datetime
 from itertools import chain
+from collections import Counter
 from sqlalchemy import ForeignKey, func, inspect
 from typing import Dict, List, Union
 import json
@@ -484,6 +485,31 @@ class Scope(db.Model):
     enabled = db.Column(db.Boolean, default=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
     # TODO: Make sure scopes are unique within server
+
+
+@listens_for(db.session, "before_flush")
+def _check_unique_scopes(session, flush_context, instances):
+    scopes = [s for s in filter(lambda i: isinstance(i, Scope), session.new)]
+    if len(scopes) == 0:
+        return
+    scope_name, scope_count = Counter(map(lambda i: i.name, scopes)).most_common(1)[0]
+    print(scope_count)
+    if scope_count > 1:
+        print(scope_name)
+        raise InvalidUsage("Cannot have duplicate scope name in server")
+
+    for instance in session.new:
+        if not isinstance(instance, Scope):
+            continue
+        if (
+            "name" not in inspect(instance).unmodified
+            and instance.query.filter(Scope.name == instance.name)
+            .filter(Scope.server_id == instance.server.id)
+            .count()
+            >= 1
+        ):
+            session.rollback()
+            raise InvalidUsage("Cannot have duplicate scope name in server")
 
 
 class TokenHistory(db.Model):
