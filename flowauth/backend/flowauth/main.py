@@ -14,6 +14,7 @@ from flask_principal import Principal, RoleNeed, UserNeed, identity_loaded
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 from flowauth.invalid_usage import InvalidUsage
 from flowauth.util import request_context_processor
+from sqlalchemy.exc import IntegrityError
 
 try:
     from uwsgidecorators import lock
@@ -82,6 +83,21 @@ def handle_invalid_usage(error):
     response = flask.jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+
+def handle_integrity_error(error):
+    """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
+    from flowauth.models import db
+
+    print(error)
+    _, _, error_message = error.args[0].partition(" ")
+    if error_message.startswith("UNIQUE"):
+        db.session.rollback()
+        table = error.statement.split(" ")[2]
+        name = error.params[0]
+        return f"{table.capitalize()} '{name}' already exists on server'", 400
+    else:
+        raise error
 
 
 def before_request():
@@ -204,6 +220,7 @@ def create_app(test_config=None):
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)
     app.errorhandler(InvalidUsage)(handle_invalid_usage)
+    app.errorhandler(IntegrityError)(handle_integrity_error)
     app.before_request(before_request)
     login_manager.user_loader(load_user)
     identity_loaded.connect_via(app)(on_identity_loaded)

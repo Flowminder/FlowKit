@@ -123,7 +123,7 @@ def test_create_server_errors_with_duplicate_scopes(client, auth, test_admin):
         },
     )
     assert 400 == response.status_code
-    assert "Cannot have duplicate scope name in server" in response.text
+    assert "Scope 'foo' already exists on server" in response.text
 
 
 @pytest.mark.parametrize(
