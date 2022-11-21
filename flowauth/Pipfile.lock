@@ -601,11 +601,11 @@
         },
         "structlog": {
             "hashes": [
-                "sha256:760d37b8839bd4fe1747bed7b80f7f4de160078405f4b6a1db9270ccbfce6c30",
-                "sha256:94b29b1d62b2659db154f67a9379ec1770183933d6115d21f21aa25cfc9a7393"
+                "sha256:4edfe1d9f15f8a4bf365a817f7182af5d610596c155434b7564bfe7d40c2753c",
+                "sha256:bb1aa189214c30372a8afaa592f9556756aeb690e1ad7eb34391d7b5fa0f09b2"
             ],
             "index": "pypi",
-            "version": "==22.1.0"
+            "version": "==22.2.0"
         },
         "versioneer": {
             "hashes": [
@@ -1393,9 +1393,9 @@
         "sanitized-package": {
             "editable": true,
             "extras": [
-                "pytest"
+
             ],
-            "path": "./../flowkit_jwt_generator"
+            "path": "./backend"
         },
         "simplejson": {
             "hashes": [
@@ -1546,7 +1546,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_full_version < '3.11.0a7'",
+            "markers": "python_version < '3.11'",
             "version": "==2.0.1"
         },
         "traitlets": {
