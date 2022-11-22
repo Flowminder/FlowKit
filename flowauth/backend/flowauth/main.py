@@ -93,7 +93,9 @@ def handle_integrity_error(error):
     _, _, error_message = error.args[0].partition(" ")
     if error_message.startswith("UNIQUE"):
         db.session.rollback()
-        table = error.statement.split(" ")[2]
+        table = error.statement.split(" ")[
+            2 if error.statement.startswith("INSERT") else 1
+        ]
         name = error.params[0]
         return f"{table.capitalize()} '{name}' already exists on server'", 400
     else:
