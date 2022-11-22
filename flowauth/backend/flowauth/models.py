@@ -414,6 +414,7 @@ class Role(db.Model):
     A role assigned to one or more users, providing them with one or more scopes.
     """
 
+    __table_args__ = (UniqueConstraint("name", "server_id"),)
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(75), nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
@@ -457,22 +458,22 @@ class Role(db.Model):
         return True
 
 
-# Based on https://stackoverflow.com/questions/51376652/sqlalchemy-before-flush-event-handler-doesnt-see-change-of-foreign-key-when-ins
-# I would prefer to use a UniqueConstaint here, but it doesn't sem to apply to SQLAlchemy's version of UPDATE?
-@listens_for(db.session, "before_flush")
-def _check_unique_role_name(session, flush_context, instances):
-    for instance in (*session.dirty, *session.new):
-        if not isinstance(instance, Role):
-            continue
-        if (
-            "name" not in inspect(instance).unmodified
-            and instance.query.filter(Role.name == instance.name)
-            .filter(Role.server_id == instance.server.id)
-            .count()
-            >= 1
-        ):
-            session.rollback()
-            raise InvalidUsage("Cannot have duplicate role name in server")
+# # Based on https://stackoverflow.com/questions/51376652/sqlalchemy-before-flush-event-handler-doesnt-see-change-of-foreign-key-when-ins
+# # I would prefer to use a UniqueConstaint here, but it doesn't sem to apply to SQLAlchemy's version of UPDATE?
+# @listens_for(db.session, "before_flush")
+# def _check_unique_role_name(session, flush_context, instances):
+#     for instance in (*session.dirty, *session.new):
+#         if not isinstance(instance, Role):
+#             continue
+#         if (
+#             "name" not in inspect(instance).unmodified
+#             and instance.query.filter(Role.name == instance.name)
+#             .filter(Role.server_id == instance.server.id)
+#             .count()
+#             >= 1
+#         ):
+#             session.rollback()
+#             raise InvalidUsage("Cannot have duplicate role name in server")
 
 
 class Scope(db.Model):
