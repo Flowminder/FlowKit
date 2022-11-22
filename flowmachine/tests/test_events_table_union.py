@@ -62,6 +62,29 @@ def test_get_only_sms(get_length):
     assert get_length(etu) == 1246
 
 
+@pytest.mark.parametrize(
+    "arg,error_type,error_message",
+    [
+        ("", ValueError, "Empty table name."),
+        (0, ValueError, "Tables must be a string or list of strings."),
+        ([0, "a"], ValueError, "Tables must be a string or list of strings."),
+        ([], ValueError, "Empty tables list."),
+    ],
+)
+def test_bad_table_arguments(arg, error_type, error_message):
+    """
+    Test that an appropriate error is raised for bad tables arguments.
+    """
+
+    with pytest.raises(expected_exception=error_type, match=error_message):
+        EventsTablesUnion(
+            "2016-01-01",
+            "2016-01-02",
+            columns=["msisdn"],
+            tables=arg,
+        )
+
+
 def test_get_list_of_tables(get_length):
     """
     Test that we can get only sms

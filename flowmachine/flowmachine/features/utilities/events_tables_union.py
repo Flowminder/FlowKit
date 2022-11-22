@@ -84,8 +84,16 @@ class EventsTablesUnion(Query):
     def _parse_tables(self, tables):
         if tables is None:
             return [f"events.{t}" for t in get_db().subscriber_tables]
-        elif isinstance(tables, str):
+        elif isinstance(tables, str) and len(tables) > 0:
             return [tables]
+        elif isinstance(tables, str):
+            raise ValueError("Empty table name.")
+        elif not isinstance(tables, list) or not all(
+            [isinstance(tbl, str) for tbl in tables]
+        ):
+            raise ValueError("Tables must be a string or list of strings.")
+        elif len(tables) == 0:
+            raise ValueError("Empty tables list.")
         else:
             return tables
 
