@@ -10,10 +10,7 @@ describe("Login screen", function () {
 
   it("Should show the version on the login screen", function () {
     cy.build_version_string().then((result) => {
-      cy.get("#flowauth_version").should(
-        "contain",
-        "FlowAuth v" + result
-      );
+      cy.get("#flowauth_version").should("contain", "FlowAuth v" + result);
     });
   });
 

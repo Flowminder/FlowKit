@@ -8,12 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
-import {
-  createRole,
-  getServer,
-  getRole,
-  editRole,
-} from "./util/api"
+import { createRole, getServer, getRole, editRole } from "./util/api";
 import { useEffect, useState } from "react";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -25,189 +20,186 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 
-
 function RoleDetails(props) {
   //Properties:
   //role_id
 
-  const {role_id, classes, onClick, server_id} = props
-  
-  const [role, setRole] = useState({})
-  const [server, setServer] = useState({})
+  const { role_id, classes, onClick, server_id } = props;
+
+  const [role, setRole] = useState({});
+  const [server, setServer] = useState({});
   const [name, setRoleName] = useState("");
   const [members, setMembers] = useState([]);
   const [edit_mode, setEditMode] = useState(false);
   const [name_helper_text, setNameHelperText] = useState("");
   const [nameIsValid, setNameIsValid] = useState(true);
-  const [errors, setErrors] = useState({message:""});
+  const [errors, setErrors] = useState({ message: "" });
   const [is_errored, setIsErrored] = useState(false);
   const [expiryDate, setExpiryDate] = useState(new Date());
-  const [maxLifetime, setMaxLifetime] = useState("")
-  const [lifetimeHelperText, setLifetimeHelperText] = useState("")
-  const [lifetimeIsValid, setLifetimeIsValid] = useState(true)
-  const [scopes, setScopes] = useState([])
-  const [formIsValid, setFormIsValid] = useState(false)
+  const [maxLifetime, setMaxLifetime] = useState("");
+  const [lifetimeHelperText, setLifetimeHelperText] = useState("");
+  const [lifetimeIsValid, setLifetimeIsValid] = useState(true);
+  const [scopes, setScopes] = useState([]);
+  const [formIsValid, setFormIsValid] = useState(false);
 
-  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members]
-  
+  const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members];
+
   // get appropriate roles + servers on server_id set
-  useEffect( 
-    () => {
+  useEffect(() => {
+    const fetch_role = async () => {
+      const role = await getRole(role_id);
+      setRole(role);
+    };
 
-      const fetch_role = (async () => {
-        const role = await getRole(role_id);
-        setRole(role);
-      });
+    const fetch_server = async () => {
+      const server = await getServer(server_id);
+      setServer(server);
+      setExpiryDate(server.latest_token_expiry);
+      setMaxLifetime(String(server.longest_token_life_minutes));
+    };
 
-      const fetch_server = (async () => {
-        const server = await getServer(server_id);
-        setServer(server)
-        setExpiryDate(server.latest_token_expiry)
-        setMaxLifetime(String(server.longest_token_life_minutes))
-      })
-
-      if (server_id >= 0){
-        fetch_server().catch((err) => console.error(err)).then(() => {
-
-          if (role_id >= 0){
-            fetch_role()
-            .catch((err) => {
-              console.error("Role err:" + err)
-              if (err.code !== 404){
+    if (server_id >= 0) {
+      fetch_server()
+        .catch((err) => console.error(err))
+        .then(() => {
+          if (role_id >= 0) {
+            fetch_role().catch((err) => {
+              console.error("Role err:" + err);
+              if (err.code !== 404) {
                 setRole({});
                 setErrors(err.message);
                 setIsErrored(true);
               }
-            })
+            });
           }
-      })
-      }
-  }, [server_id])
+        });
+    }
+  }, [server_id]);
 
-  //When Role changes, replace role.name, role.server and role.members with 
+  //When Role changes, replace role.name, role.server and role.members with
   //the parts from the others.
   useEffect(() => {
-        if (Object.keys(role).length !== 0){   //ffs, Javascript
-          setRoleName(role.name);
-          setMembers(role.users);
-          setExpiryDate(role.latest_token_expiry);
-          setMaxLifetime(String(role.longest_token_life_minutes));
-          setScopes(role.scopes)
-          setEditMode(true);
-        } else {
-          console.log("Role empty, setting defaults")
-          setRoleName("");
-          setMembers([]);
-          setScopes([])
-          setEditMode(false);
-      }
-  }, [role])
-
+    if (Object.keys(role).length !== 0) {
+      //ffs, Javascript
+      setRoleName(role.name);
+      setMembers(role.users);
+      setExpiryDate(role.latest_token_expiry);
+      setMaxLifetime(String(role.longest_token_life_minutes));
+      setScopes(role.scopes);
+      setEditMode(true);
+    } else {
+      console.log("Role empty, setting defaults");
+      setRoleName("");
+      setMembers([]);
+      setScopes([]);
+      setEditMode(false);
+    }
+  }, [role]);
 
   //Validate Rolename on change
   useEffect(() => {
-    console.log("Name:" + name)
+    console.log("Name:" + name);
     var letters = /^[A-Za-z0-9_]+$/;
     if (name.match(letters)) {
       setNameHelperText("");
-      setNameIsValid(true)
+      setNameIsValid(true);
     } else if (name.length === 0) {
       setNameHelperText("Role name cannot be blank.");
-      setNameIsValid(false)
+      setNameIsValid(false);
     } else {
       setNameHelperText(
-        "Role name may only contain letters, numbers and underscores.",
-      )
-      setNameIsValid(false)
-    };
-  }, [name])
+        "Role name may only contain letters, numbers and underscores."
+      );
+      setNameIsValid(false);
+    }
+  }, [name]);
 
   //Validate lifetime on change
   useEffect(() => {
-    console.log("New lifetime: " + maxLifetime)
+    console.log("New lifetime: " + maxLifetime);
     var numbers = /^[0-9]+$/;
-    if (maxLifetime.match(numbers)){
+    if (maxLifetime.match(numbers)) {
       setLifetimeHelperText("");
-      setLifetimeIsValid(true)
+      setLifetimeIsValid(true);
     } else if (maxLifetime === "") {
       setLifetimeHelperText("Maximum lifetime cannot be blank");
-      setLifetimeIsValid(false)
+      setLifetimeIsValid(false);
     } else {
-      setLifetimeHelperText("Lifetime must be a number")
-      setLifetimeIsValid(false)
+      setLifetimeHelperText("Lifetime must be a number");
+      setLifetimeIsValid(false);
     }
-  }, [maxLifetime])
+  }, [maxLifetime]);
 
   //Make sure entire form is valid on change for any relevant members
   useEffect(() => {
-    const valid_vars = validation_vars.map(v => typeof(v))
-    if (valid_vars.includes("undefined")){
-      setFormIsValid(false)
-    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0){
-      console.log("Form is valid")
-      setFormIsValid(true)
+    const valid_vars = validation_vars.map((v) => typeof v);
+    if (valid_vars.includes("undefined")) {
+      setFormIsValid(false);
+    } else if (nameIsValid && lifetimeIsValid && scopes.length > 0) {
+      console.log("Form is valid");
+      setFormIsValid(true);
     } else {
-      setFormIsValid(false)
+      setFormIsValid(false);
     }
-  }, validation_vars)
+  }, validation_vars);
 
   const handleNameChange = (event) => {
-    setRoleName(event.target.value)
-  }
+    setRoleName(event.target.value);
+  };
 
   const handleLifetimeChange = (event) => {
-    setMaxLifetime(event.target.value)
-  }
+    setMaxLifetime(event.target.value);
+  };
 
-  const handleMembersChange  = (new_members) => {
-    setMembers(new_members.map(x => x.id))
-  }
+  const handleMembersChange = (new_members) => {
+    setMembers(new_members.map((x) => x.id));
+  };
 
   const handleScopesChange = (new_scopes) => {
-    console.debug("Scopes now:",new_scopes)
-    setScopes(new_scopes.filter(s => s.enabled === true))
-  } 
+    console.debug("Scopes now:", new_scopes);
+    setScopes(new_scopes.filter((s) => s.enabled === true));
+  };
 
- //Either update or create a new role on 'submit' button
- const handleSubmit = async () => {
-  console.log("Role form submitted")
-      // Need to throw an error here if !formIsValid
+  //Either update or create a new role on 'submit' button
+  const handleSubmit = async () => {
+    console.log("Role form submitted");
+    // Need to throw an error here if !formIsValid
     if (!formIsValid) {
-      setIsErrored(true)
-      setErrors(new Error("Validation error"))
-    }
-    else if (edit_mode){
+      setIsErrored(true);
+      setErrors(new Error("Validation error"));
+    } else if (edit_mode) {
       await editRole(
         role.id,
         name,
-        scopes.map(s => s.id),
+        scopes.map((s) => s.id),
         members,
         expiryDate,
-        maxLifetime)
-      .catch((err)=>{
-        setIsErrored(true)
-        setErrors(err)
-      })
-      .then(onClick())
+        maxLifetime
+      )
+        .catch((err) => {
+          setIsErrored(true);
+          setErrors(err);
+        })
+        .then(onClick());
     } else {
       await createRole(
         name,
         server.id,
-        scopes.map(s => s.id),
+        scopes.map((s) => s.id),
         members,
         expiryDate,
-        maxLifetime)
-      .catch((err) => {
-        setIsErrored(true)
-        setErrors(err)
-      })
-      .then(onClick())
+        maxLifetime
+      )
+        .catch((err) => {
+          setIsErrored(true);
+          setErrors(err);
+        })
+        .then(onClick());
     }
   };
 
-return (
+  return (
     <React.Fragment>
-
       <Grid item xs={12}>
         <Typography variant="h5" component="h1">
           {(edit_mode && "Edit Role") || "New Role"}
@@ -232,29 +224,29 @@ return (
         />
       </Grid>
       <Grid>
-        <Grid item xs={6}>      
+        <Grid item xs={6}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DateTimePicker
               label="Expiry date"
-              value = {expiryDate}
+              value={expiryDate}
               onChange={setExpiryDate}
             />
           </MuiPickersUtilsProvider>
         </Grid>
 
-      <TextField
-        id="lifetime"
-        label="Max. lifetime (mins)"
-        // className={classes.textField}
-        required={true}
-        onChange={handleLifetimeChange}
-        value={maxLifetime}
-        margin="normal"
-        error={!lifetimeIsValid}
-        helperText={lifetimeHelperText}
-      />
+        <TextField
+          id="lifetime"
+          label="Max. lifetime (mins)"
+          // className={classes.textField}
+          required={true}
+          onChange={handleLifetimeChange}
+          value={maxLifetime}
+          margin="normal"
+          error={!lifetimeIsValid}
+          helperText={lifetimeHelperText}
+        />
       </Grid>
-        
+
       <Grid xs={12}>
         <RoleMembersPicker
           role_id={role.id}
@@ -263,7 +255,7 @@ return (
       </Grid>
 
       <Grid item xs={12}>
-      {/* Scope picker */} 
+        {/* Scope picker */}
         <RoleScopePicker
           role_id={role.id}
           server_id={server_id}
@@ -278,17 +270,19 @@ return (
       />
 
       <Grid item xs={12} />
-      <SubmitButtons handleSubmit={handleSubmit} onClick={onClick} enabled={formIsValid} />
+      <SubmitButtons
+        handleSubmit={handleSubmit}
+        onClick={onClick}
+        enabled={formIsValid}
+      />
     </React.Fragment>
   );
 }
 
+function ValidationDialog(props) {
+  const { open, onClose, message } = props;
 
-function ValidationDialog(props){
-  const {open, onClose, message } = props
-
-
-  return(
+  return (
     <Dialog
       open={open}
       onClose={onClose}
@@ -296,24 +290,19 @@ function ValidationDialog(props){
       aria-describedby="error-dialog-description"
       id="error-dialog"
     >
-    <DialogTitle id="error-dialog-title">{"Error"}</DialogTitle>
-    <DialogContent>
-      <DialogContentText id="error-dialog-description">
-        {message}
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <Button
-        onClick={onClose}
-        color="primary"
-        id="error-dialog-ok"
-      >
-        OK
-      </Button>
-    </DialogActions>
-  </Dialog>
-  )
-  
+      <DialogTitle id="error-dialog-title">{"Error"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="error-dialog-description">
+          {message}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary" id="error-dialog-ok">
+          OK
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
 
 export default RoleDetails;

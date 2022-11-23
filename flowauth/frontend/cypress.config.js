@@ -9,7 +9,7 @@ module.exports = defineConfig({
     openMode: 0,
   },
   defaultCommandTimeout: 1000,
-  scrollBehavior: 'center',
+  scrollBehavior: "center",
   e2e: {
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.

@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 
 function SubmitButtons(props) {
-  const { handleSubmit, onClick, enabled = true} = props;
+  const { handleSubmit, onClick, enabled = true } = props;
   return (
     <Grid item xs={12} container direction="row-reverse" spacing={2}>
       <Grid item>
@@ -17,7 +17,7 @@ function SubmitButtons(props) {
           variant="contained"
           color="primary"
           onClick={handleSubmit}
-          disabled = {!enabled}
+          disabled={!enabled}
         >
           Save
         </Button>

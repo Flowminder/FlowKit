@@ -12,7 +12,7 @@ describe("Public key viewing", function () {
       public_key = key;
     });
     // Log in and navigate to user details screen
-    
+
     cy.login_admin();
     cy.goto("/");
     cy.get("#public_key").click();

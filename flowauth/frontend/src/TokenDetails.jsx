@@ -111,17 +111,21 @@ class TokenDetails extends React.Component {
   };
 
   componentDidMount() {
-    getMyRolesOnServer(this.props.serverID)
-    .then((roles) => {
-      const scopes = scopes_with_roles(roles);
-      const expiry = scopes.map(d => d.latest_token_expiry).reduce((p,c) => p > c ? p : c)
-      this.setState({
-        rights: scopes,
-        permitted: scopes,
-        expiry: expiry,
-        latest_expiry: expiry,
-      });
-    }, (err) => console.log(err))
+    getMyRolesOnServer(this.props.serverID).then(
+      (roles) => {
+        const scopes = scopes_with_roles(roles);
+        const expiry = scopes
+          .map((d) => d.latest_token_expiry)
+          .reduce((p, c) => (p > c ? p : c));
+        this.setState({
+          rights: scopes,
+          permitted: scopes,
+          expiry: expiry,
+          latest_expiry: expiry,
+        });
+      },
+      (err) => console.log(err)
+    );
   }
 
   render() {

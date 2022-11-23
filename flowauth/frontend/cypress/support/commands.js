@@ -24,10 +24,15 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-const { dateTimePickerDefaultProps } = require("@material-ui/pickers/constants/prop-types");
+const {
+  dateTimePickerDefaultProps,
+} = require("@material-ui/pickers/constants/prop-types");
 
 // Regex developed and explained at https://regex101.com/r/oBJsrs/1
-const pep440_regex = new RegExp("(?<version>[0-9]+(?:\.[0-9]+)+)-(?<dev>[0-9]*)-(?<revision>\w*)(-(?<dirty>dirty))?", "mg")
+const pep440_regex = new RegExp(
+  "(?<version>[0-9]+(?:.[0-9]+)+)-(?<dev>[0-9]*)-(?<revision>w*)(-(?<dirty>dirty))?",
+  "mg"
+);
 
 function getCookieValue(a) {
   var b = document.cookie.match("(^|;)\\s*" + a + "\\s*=\\s*([^;]+)");
@@ -35,14 +40,16 @@ function getCookieValue(a) {
 }
 
 Cypress.Commands.add("build_version_string", () => {
-  cy.exec('git describe --tags --dirty --always').then((result) =>{
-    console.debug(pep440_regex)
-    const {version, dev, revision, dirty} = result.stdout.matchAll(pep440_regex).next().value.groups
-    const outstring =  `${version}.post0.dev${dev}` 
-    console.debug(outstring)
-    return outstring
-  })}
-)
+  cy.exec("git describe --tags --dirty --always").then((result) => {
+    console.debug(pep440_regex);
+    const { version, dev, revision, dirty } = result.stdout
+      .matchAll(pep440_regex)
+      .next().value.groups;
+    const outstring = `${version}.post0.dev${dev}`;
+    console.debug(outstring);
+    return outstring;
+  });
+});
 
 Cypress.Commands.add("login", () =>
   cy.goto("/").request("POST", "/signin", {
@@ -66,7 +73,7 @@ Cypress.Commands.add("create_two_factor_user", (username, password) =>
       .its("body");
   })
 );
-  Cypress.Commands.add("create_user", (username, password) =>
+Cypress.Commands.add("create_user", (username, password) =>
   cy.login_admin().then((response) =>
     cy.request({
       method: "POST",
@@ -91,7 +98,7 @@ Cypress.Commands.add("create_role", (role_name) =>
           members: [1],
           latest_token_expiry: "2021-12-31T00:00:00.000000Z",
           server_id: 1,
-          longest_token_life_minutes: 2*24*60
+          longest_token_life_minutes: 2 * 24 * 60,
         },
         headers: { "X-CSRF-Token": getCookieValue("X-CSRF") },
       })

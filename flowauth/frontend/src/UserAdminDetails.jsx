@@ -17,11 +17,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
-import {
-  getUser,
-  createUser,
-  editUser,
-} from "./util/api";
+import { getUser, createUser, editUser } from "./util/api";
 var zxcvbn = require("zxcvbn");
 
 class UserAdminDetails extends React.Component {
@@ -141,14 +137,15 @@ class UserAdminDetails extends React.Component {
               is_admin,
               require_two_factor,
               has_two_factor,
-              roles.map(r => r.id)
+              roles.map((r) => r.id)
             )
           : createUser(
-            name,
-            password,
-            is_admin,
-            require_two_factor,
-            roles.map(r => r.id)));
+              name,
+              password,
+              is_admin,
+              require_two_factor,
+              roles.map((r) => r.id)
+            ));
         onClick();
       } catch (err) {
         if (err.code === 400) {
@@ -285,10 +282,7 @@ class UserAdminDetails extends React.Component {
           </Typography>
         </Grid>
         <Grid xs={12}>
-          <UserRolesPicker
-            user_id={item_id}
-            updateRoles={this.updateRoles}
-          />
+          <UserRolesPicker user_id={item_id} updateRoles={this.updateRoles} />
         </Grid>
         <ErrorDialog
           open={this.state.pageError}

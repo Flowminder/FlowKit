@@ -56,10 +56,7 @@ class ServerAdminDetails extends React.Component {
       ].reduce((obj, cur) => ({ ...obj, [cur]: true }), {});
       const scopeGraph = scopesGraph(specScopes);
       const enabledKeys = [];
-      const scopes = jsonify(
-        scopeGraph,
-        enabledKeys
-      );
+      const scopes = jsonify(scopeGraph, enabledKeys);
 
       this.setState({
         rights: scopes,
@@ -139,7 +136,7 @@ class ServerAdminDetails extends React.Component {
       pageError: false,
       errors: "",
     });
-    console.log("Text field changed:", name)
+    console.log("Text field changed:", name);
     this.setState({
       [name]: event.target.value,
     });
@@ -168,23 +165,21 @@ class ServerAdminDetails extends React.Component {
       try {
         const capAwait = getScopes(item_id);
         const limitsAwait = getTimeLimits(item_id);
-        const rights = await capAwait.then(
-            resp => resp.reduce((p_x,x) => ({[x.name]:x.enabled, ...p_x}), {})
-          );
+        const rights = await capAwait.then((resp) =>
+          resp.reduce((p_x, x) => ({ [x.name]: x.enabled, ...p_x }), {})
+        );
         const scope_graph = scopesGraph(rights);
         const enabledKeys = [];
         const scopes = jsonify(scope_graph, enabledKeys);
         const serverName = (await getServer(item_id)).name;
         const latestExpiry = (await limitsAwait).latest_token_expiry;
         const maxLife = (await limitsAwait).longest_token_life_minutes;
-        console.log(await limitsAwait)
-        console.log("maxLife on mount", maxLife)
+        console.log(await limitsAwait);
+        console.log("maxLife on mount", maxLife);
         this.setState((state, props) => {
           return {
             name: serverName,
-            rights: state.rights.length === 0 
-                ? scopes
-                : state.rights,
+            rights: state.rights.length === 0 ? scopes : state.rights,
             fullRights:
               state.fullRights.length === 0
                 ? Object.keys(rights)
@@ -198,7 +193,7 @@ class ServerAdminDetails extends React.Component {
           };
         });
       } catch (err) {
-        console.log(err)
+        console.log(err);
         this.setState({ hasError: true, error: err });
       }
     }
@@ -295,8 +290,8 @@ class ServerAdminDetails extends React.Component {
         </Grid>
         <Grid item xs={12}>
           <Typography>
-            Scope enable/disable currently out of service.
-            Below view is for information only
+            Scope enable/disable currently out of service. Below view is for
+            information only
           </Typography>
         </Grid>
         <Grid item xs={12}>

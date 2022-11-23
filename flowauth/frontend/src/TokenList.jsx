@@ -37,9 +37,9 @@ class TokenList extends React.Component {
   };
   getServerName = () => {
     getServer(this.props.serverID)
-    .then(server => this.setState({serverName: server.name}))
-    .catch(err => console.error(err))
-  }
+      .then((server) => this.setState({ serverName: server.name }))
+      .catch((err) => console.error(err));
+  };
   componentDidMount() {
     this.updateTokenList();
     this.getServerName();
@@ -51,7 +51,7 @@ class TokenList extends React.Component {
     }
   }
   render() {
-    const { classes, nickName, editAction} = this.props;
+    const { classes, nickName, editAction } = this.props;
     const { tokens, serverName } = this.state;
 
     const now = Date.parse(new Date());

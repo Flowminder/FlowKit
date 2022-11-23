@@ -4,20 +4,17 @@
 
 describe("role list screen", function () {
   Cypress.Cookies.debug(true);
-  const race_timeout = 300
+  const race_timeout = 300;
 
   beforeEach(function () {
     // Log in and navigate to user details screen
     cy.login_admin();
     cy.goto("/");
     cy.get("#role_admin").click();
-    cy.wait(race_timeout) // This needed to mitigate race condition 
-    
+    cy.wait(race_timeout); // This needed to mitigate race condition
 
     //set up aliases
-    cy.get("[data-cy=new]")
-    .get("[data-cy=new]").click()
-    .as("new_role")
+    cy.get("[data-cy=new]").get("[data-cy=new]").click().as("new_role");
   });
 
   it("Add blank role", function () {
@@ -25,8 +22,7 @@ describe("role list screen", function () {
     //adding blank rolename
     cy.get("#name").type(" ").clear();
     //checking validation text
-    cy.get("#name-helper-text")
-    .should(
+    cy.get("#name-helper-text").should(
       "have.text",
       "Role name cannot be blank."
     );
@@ -47,15 +43,17 @@ describe("role list screen", function () {
     cy.get("#name").type("TEST_ROLE");
     cy.contains("#name-helper-text").should("not.exist");
   });
-  
+
   it("Add duplicate role name", function () {
     this.new_role;
     //adding existing username and new password
     cy.get("#name").type("Test_Role");
     cy.get('[data-cy="scope-item-get_available_dates"]')
-    .find("[data-cy=checkbox]").first().click()
-    cy.contains("Save").should("be.disabled")
-    //checking error dialogue text    
+      .find("[data-cy=checkbox]")
+      .first()
+      .click();
+    cy.contains("Save").should("be.disabled");
+    //checking error dialogue text
   });
 
   it("Add role", function () {
@@ -65,28 +63,28 @@ describe("role list screen", function () {
     this.new_role;
     cy.get("#name").type(role_name);
     cy.get('[data-cy="scope-item-get_available_dates"]')
-    .find("[data-cy=checkbox]").first().click()
+      .find("[data-cy=checkbox]")
+      .first()
+      .click();
     cy.contains("Save").click();
     // Check that new group appears
     cy.contains(role_name).should("be.visible");
   });
 
   it("Role scopes are reflected", function () {
-    const role_name = Math.random().toString(36).substring(2, 15)
+    const role_name = Math.random().toString(36).substring(2, 15);
     cy.create_role(role_name).then((role) => {
-      cy.goto("/").get("#role_admin").click()
-      cy.get(`[data-cy=edit-${role_name}]`)
-      .click()
-      cy.get('[data-cy="nested-admin0"]').within(()=>{
-        cy.get("[data-cy=checkbox]")
-        .invoke("prop", "indeterminate", true)
-        cy.get("[data-cy=chevron]").click()
-      })
-      cy.get('[data-cy=nested-consecutive_trips_od_matrix]')
-      .find("[data-cy=checkbox]")
-      .invoke("prop", "checked", true)
-    })
-  })
+      cy.goto("/").get("#role_admin").click();
+      cy.get(`[data-cy=edit-${role_name}]`).click();
+      cy.get('[data-cy="nested-admin0"]').within(() => {
+        cy.get("[data-cy=checkbox]").invoke("prop", "indeterminate", true);
+        cy.get("[data-cy=chevron]").click();
+      });
+      cy.get("[data-cy=nested-consecutive_trips_od_matrix]")
+        .find("[data-cy=checkbox]")
+        .invoke("prop", "checked", true);
+    });
+  });
 
   it("Delete role", function () {
     // Create the role
@@ -97,7 +95,7 @@ describe("role list screen", function () {
       // Reload the roles page
       cy.goto("/");
       cy.get("#role_admin").click();
-      cy.wait(race_timeout)
+      cy.wait(race_timeout);
       cy.contains(role_name).should("be.visible");
       cy.get(`[data-cy=delete-${role_name}]`).click();
       // Check that the role is gone
@@ -112,24 +110,28 @@ describe("role list screen", function () {
       console.log("Role " + role);
 
       // Reload the roles page
-      cy.goto("/")
-      .get("#role_admin").click()
+      cy.goto("/").get("#role_admin").click();
 
-      cy.contains(role_name).should("be.visible")
-      .get(`[data-cy=edit-${role_name}]`)
-      .scrollIntoView()
-      .click()
+      cy.contains(role_name)
+        .should("be.visible")
+        .get(`[data-cy=edit-${role_name}]`)
+        .scrollIntoView()
+        .click();
       // Check that role is populated and window title is edit
-      cy.contains("Edit Role").should("be.visible")
-      .wait(race_timeout) // Remove once race conidtion is fixed
-      .get("#name").should("have.value", role_name)
-      .get('.Dashboard-content-18').scrollTo("top")
-      cy.get("#name")
-      .type("{selectall}" + role_name + "_edited")
-      cy.contains("Save").click()
+      cy.contains("Edit Role")
+        .should("be.visible")
+        .wait(race_timeout) // Remove once race conidtion is fixed
+        .get("#name")
+        .should("have.value", role_name)
+        .get(".Dashboard-content-18")
+        .scrollTo("top");
+      cy.get("#name").type("{selectall}" + role_name + "_edited");
+      cy.contains("Save").click();
       // Check that role is renamed
-      cy.contains(role_name + "_edited").should("exist")
-      .contains("/^" + role_name + "$/").should("not.exist");
-   });
+      cy.contains(role_name + "_edited")
+        .should("exist")
+        .contains("/^" + role_name + "$/")
+        .should("not.exist");
+    });
   });
 });

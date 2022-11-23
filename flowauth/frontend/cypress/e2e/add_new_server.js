@@ -24,7 +24,7 @@ describe("Server management", function () {
 
   it("Add duplicate Server name", function () {
     cy.get("#new").click();
-    cy.get("#spec-upload-button").uploadFile("openapi.json")
+    cy.get("#spec-upload-button").uploadFile("openapi.json");
     cy.get("#max-life").type("1234", {
       force: true,
     });
@@ -83,7 +83,7 @@ describe("Server management", function () {
             server_name;
           content["components"]["securitySchemes"]["token"][
             "x-security-scopes"
-          ] = ["get_result","test_scope"];
+          ] = ["get_result", "test_scope"];
           const testFile = new File([JSON.stringify(content)], "openapi.json");
           const dataTransfer = new DataTransfer();
 

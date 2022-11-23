@@ -65,7 +65,7 @@ describe("Token generation", function () {
       force: true,
     });
     cy.contains("Save").click();
-    cy.get('.MuiDialog-container').should(
+    cy.get(".MuiDialog-container").should(
       "have.text",
       "ErrorAt least one role must be selectedClose"
     );
@@ -77,7 +77,7 @@ describe("Token generation", function () {
     cy.get("#name").type("auto_test_token", {
       force: true,
     });
-    cy.get('.MuiGrid-grid-xs-8 > .MuiButton-root').click();
+    cy.get(".MuiGrid-grid-xs-8 > .MuiButton-root").click();
     cy.contains("Save").click();
     cy.contains("auto_test_token").should("be.visible");
   });

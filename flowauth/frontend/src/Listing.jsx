@@ -30,9 +30,7 @@ class Listing extends React.Component {
     }
   }
 
-  async componentDidUpdate() {
-    
-  }
+  async componentDidUpdate() {}
 
   rmObj = (obj_id) => {
     const { deleteAction } = this.props;
