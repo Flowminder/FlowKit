@@ -77,13 +77,18 @@ CREATE VIEW etl.ingest_state AS (
     ORDER BY cdr_type, cdr_date, timestamp DESC
 );
 
+CREATE VIEW etl.available_dates AS (
+    SELECT cdr_type, cdr_date
+    FROM etl.ingest_state
+    WHERE state = 'ingested'
+)
+
 CREATE VIEW etl.deduped_post_etl_queries AS (
     SELECT DISTINCT ON (cdr_date, cdr_type, type_of_query_or_check)
            cdr_date, cdr_type, type_of_query_or_check, outcome, optional_comment_or_description, timestamp
     FROM etl.post_etl_queries
-    INNER JOIN etl.ingest_state
+    INNER JOIN etl.available_dates
     USING (cdr_date, cdr_type)
-    WHERE state = 'ingested'
     ORDER BY cdr_date, cdr_type, type_of_query_or_check, timestamp DESC
 );
 
