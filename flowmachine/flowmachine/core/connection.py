@@ -200,7 +200,7 @@ class Connection:
         return defaultdict(
             list,
             self.fetch(
-                "SELECT cdr_type, array_agg(distinct cdr_date) FROM etl.etl_records WHERE state='ingested' GROUP BY cdr_type"
+                "SELECT cdr_type, array_agg(distinct cdr_date) FROM etl.ingest_state WHERE state='ingested' GROUP BY cdr_type"
             ),
         )
 
