@@ -70,3 +70,20 @@ COMMENT ON TABLE etl.post_etl_queries
         IS 'Records outcomes of queries (e.g. simple quality checks) that are run '
            'as part of the regular ETL process, after data has been ingested.';
 
+CREATE VIEW etl.ingest_state AS (
+    SELECT DISTINCT ON (cdr_type, cdr_date)
+           cdr_type, cdr_date, state, timestamp
+    FROM etl.etl_records
+    ORDER BY cdr_type, cdr_date, timestamp DESC
+);
+
+CREATE VIEW etl.deduped_post_etl_queries AS (
+    SELECT DISTINCT ON (cdr_date, cdr_type, type_of_query_or_check)
+           cdr_date, cdr_type, type_of_query_or_check, outcome, optional_comment_or_description, timestamp
+    FROM etl.post_etl_queries
+    INNER JOIN etl.ingest_state
+    USING (cdr_date, cdr_type)
+    WHERE state = 'ingested'
+    ORDER BY cdr_date, cdr_type, type_of_query_or_check, timestamp DESC
+);
+
