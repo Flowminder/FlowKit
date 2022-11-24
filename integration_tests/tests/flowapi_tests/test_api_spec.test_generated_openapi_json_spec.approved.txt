@@ -38,13 +38,13 @@
         "properties": {
           "aggregate_by": {
             "enum": [
-              "second",
-              "minute",
-              "hour",
+              "century",
               "day",
+              "hour",
+              "minute",
               "month",
-              "year",
-              "century"
+              "second",
+              "year"
             ],
             "type": "string"
           },
@@ -67,15 +67,15 @@
           },
           "statistic": {
             "enum": [
-              "count",
-              "sum",
               "avg",
+              "count",
               "max",
-              "min",
               "median",
+              "min",
+              "mode",
               "stddev",
-              "variance",
-              "mode"
+              "sum",
+              "variance"
             ],
             "type": "string"
           },
@@ -197,8 +197,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -271,8 +271,8 @@
             "enum": [
               "amount",
               "commission",
-              "fee",
-              "discount"
+              "discount",
+              "fee"
             ],
             "type": "string"
           },
@@ -317,8 +317,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -393,8 +393,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -435,15 +435,15 @@
           },
           "statistic": {
             "enum": [
-              "count",
-              "sum",
               "avg",
+              "count",
               "max",
-              "min",
               "median",
+              "min",
+              "mode",
               "stddev",
-              "variance",
-              "mode"
+              "sum",
+              "variance"
             ],
             "type": "string"
           },
@@ -511,9 +511,9 @@
           "direction": {
             "default": "both",
             "enum": [
+              "both",
               "in",
-              "out",
-              "both"
+              "out"
             ],
             "type": "string"
           },
@@ -526,8 +526,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -608,79 +608,79 @@
         },
         "oneOf": [
           {
+            "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+          },
+          {
+            "$ref": "#/components/schemas/AggregateNetworkObjects"
+          },
+          {
+            "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
+          },
+          {
+            "$ref": "#/components/schemas/DFSTotalMetricAmount"
+          },
+          {
             "$ref": "#/components/schemas/DummyQuery"
           },
           {
             "$ref": "#/components/schemas/Flows"
           },
           {
-            "$ref": "#/components/schemas/Inflows"
-          },
-          {
-            "$ref": "#/components/schemas/Outflows"
-          },
-          {
-            "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
-          },
-          {
-            "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-          },
-          {
-            "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
-          },
-          {
             "$ref": "#/components/schemas/Geography"
-          },
-          {
-            "$ref": "#/components/schemas/LocationEventCounts"
-          },
-          {
-            "$ref": "#/components/schemas/UniqueSubscriberCounts"
-          },
-          {
-            "$ref": "#/components/schemas/LocationIntroversion"
-          },
-          {
-            "$ref": "#/components/schemas/TotalNetworkObjects"
-          },
-          {
-            "$ref": "#/components/schemas/AggregateNetworkObjects"
-          },
-          {
-            "$ref": "#/components/schemas/DFSTotalMetricAmount"
-          },
-          {
-            "$ref": "#/components/schemas/SpatialAggregate"
-          },
-          {
-            "$ref": "#/components/schemas/JoinedSpatialAggregate"
           },
           {
             "$ref": "#/components/schemas/HistogramAggregate"
           },
           {
-            "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+            "$ref": "#/components/schemas/Inflows"
           },
           {
-            "$ref": "#/components/schemas/UniqueVisitorCounts"
+            "$ref": "#/components/schemas/JoinedSpatialAggregate"
           },
           {
-            "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
-          },
-          {
-            "$ref": "#/components/schemas/UnmovingCounts"
-          },
-          {
-            "$ref": "#/components/schemas/UnmovingAtReferenceLocationCounts"
-          },
-          {
-            "$ref": "#/components/schemas/TripsODMatrix"
+            "$ref": "#/components/schemas/LabelledFlows"
           },
           {
             "$ref": "#/components/schemas/LabelledSpatialAggregate"
           },
           {
-            "$ref": "#/components/schemas/LabelledFlows"
+            "$ref": "#/components/schemas/LocationEventCounts"
+          },
+          {
+            "$ref": "#/components/schemas/LocationIntroversion"
+          },
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
+          },
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+          },
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+          },
+          {
+            "$ref": "#/components/schemas/Outflows"
+          },
+          {
+            "$ref": "#/components/schemas/SpatialAggregate"
+          },
+          {
+            "$ref": "#/components/schemas/TotalNetworkObjects"
+          },
+          {
+            "$ref": "#/components/schemas/TripsODMatrix"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueSubscriberCounts"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueVisitorCounts"
+          },
+          {
+            "$ref": "#/components/schemas/UnmovingAtReferenceLocationCounts"
+          },
+          {
+            "$ref": "#/components/schemas/UnmovingCounts"
           }
         ]
       },
@@ -703,11 +703,11 @@
           "join_type": {
             "default": "inner",
             "enum": [
-              "inner",
               "full outer",
+              "inner",
               "left",
-              "right",
               "left outer",
+              "right",
               "right outer"
             ],
             "type": "string"
@@ -770,8 +770,8 @@
         "properties": {
           "characteristic": {
             "enum": [
-              "hnd_type",
               "brand",
+              "hnd_type",
               "model",
               "software_os_name",
               "software_os_vendor"
@@ -787,8 +787,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -902,13 +902,19 @@
         },
         "oneOf": [
           {
+            "$ref": "#/components/schemas/Displacement"
+          },
+          {
+            "$ref": "#/components/schemas/EventCount"
+          },
+          {
+            "$ref": "#/components/schemas/NocturnalEvents"
+          },
+          {
+            "$ref": "#/components/schemas/ParetoInteractions"
+          },
+          {
             "$ref": "#/components/schemas/RadiusOfGyration"
-          },
-          {
-            "$ref": "#/components/schemas/UniqueLocationCounts"
-          },
-          {
-            "$ref": "#/components/schemas/TopUpBalance"
           },
           {
             "$ref": "#/components/schemas/SubscriberDegree"
@@ -917,19 +923,13 @@
             "$ref": "#/components/schemas/TopUpAmount"
           },
           {
-            "$ref": "#/components/schemas/EventCount"
-          },
-          {
-            "$ref": "#/components/schemas/ParetoInteractions"
-          },
-          {
-            "$ref": "#/components/schemas/NocturnalEvents"
-          },
-          {
-            "$ref": "#/components/schemas/Displacement"
+            "$ref": "#/components/schemas/TopUpBalance"
           },
           {
             "$ref": "#/components/schemas/TotalActivePeriods"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueLocationCounts"
           }
         ]
       },
@@ -971,11 +971,11 @@
           "join_type": {
             "default": "inner",
             "enum": [
-              "inner",
               "full outer",
+              "inner",
               "left",
-              "right",
               "left outer",
+              "right",
               "right outer"
             ],
             "type": "string"
@@ -1012,7 +1012,13 @@
         },
         "oneOf": [
           {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          },
+          {
             "$ref": "#/components/schemas/DailyLocation"
+          },
+          {
+            "$ref": "#/components/schemas/MajorityLocation"
           },
           {
             "$ref": "#/components/schemas/ModalLocation"
@@ -1021,16 +1027,10 @@
             "$ref": "#/components/schemas/MostFrequentLocation"
           },
           {
-            "$ref": "#/components/schemas/VisitedMostDays"
-          },
-          {
-            "$ref": "#/components/schemas/MajorityLocation"
-          },
-          {
-            "$ref": "#/components/schemas/CoalescedLocation"
-          },
-          {
             "$ref": "#/components/schemas/UniqueLocations"
+          },
+          {
+            "$ref": "#/components/schemas/VisitedMostDays"
           }
         ]
       },
@@ -1066,19 +1066,7 @@
         },
         "oneOf": [
           {
-            "$ref": "#/components/schemas/RadiusOfGyration"
-          },
-          {
-            "$ref": "#/components/schemas/UniqueLocationCounts"
-          },
-          {
-            "$ref": "#/components/schemas/TopUpBalance"
-          },
-          {
-            "$ref": "#/components/schemas/SubscriberDegree"
-          },
-          {
-            "$ref": "#/components/schemas/TopUpAmount"
+            "$ref": "#/components/schemas/Displacement"
           },
           {
             "$ref": "#/components/schemas/EventCount"
@@ -1087,16 +1075,28 @@
             "$ref": "#/components/schemas/Handset"
           },
           {
-            "$ref": "#/components/schemas/ParetoInteractions"
-          },
-          {
             "$ref": "#/components/schemas/NocturnalEvents"
           },
           {
-            "$ref": "#/components/schemas/Displacement"
+            "$ref": "#/components/schemas/ParetoInteractions"
+          },
+          {
+            "$ref": "#/components/schemas/RadiusOfGyration"
+          },
+          {
+            "$ref": "#/components/schemas/SubscriberDegree"
+          },
+          {
+            "$ref": "#/components/schemas/TopUpAmount"
+          },
+          {
+            "$ref": "#/components/schemas/TopUpBalance"
           },
           {
             "$ref": "#/components/schemas/TotalActivePeriods"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueLocationCounts"
           }
         ]
       },
@@ -1118,16 +1118,16 @@
           },
           "method": {
             "enum": [
-              "count",
-              "sum",
               "avg",
+              "count",
+              "distr",
               "max",
-              "min",
               "median",
-              "stddev",
-              "variance",
+              "min",
               "mode",
-              "distr"
+              "stddev",
+              "sum",
+              "variance"
             ],
             "type": "string"
           },
@@ -1168,11 +1168,11 @@
           "join_type": {
             "default": "inner",
             "enum": [
-              "inner",
               "full outer",
+              "inner",
               "left",
-              "right",
               "left outer",
+              "right",
               "right outer"
             ],
             "type": "string"
@@ -1246,9 +1246,9 @@
           "direction": {
             "default": "both",
             "enum": [
+              "both",
               "in",
-              "out",
-              "both"
+              "out"
             ],
             "type": "string"
           },
@@ -1261,8 +1261,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -1291,8 +1291,8 @@
           "interval": {
             "enum": [
               "day",
-              "min",
-              "hour"
+              "hour",
+              "min"
             ],
             "type": "string"
           },
@@ -1339,9 +1339,9 @@
           "direction": {
             "default": "both",
             "enum": [
+              "both",
               "in",
-              "out",
-              "both"
+              "out"
             ],
             "type": "string"
           },
@@ -1354,8 +1354,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -1489,8 +1489,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -1598,8 +1598,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -1709,8 +1709,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -1882,8 +1882,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -1955,8 +1955,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2018,11 +2018,11 @@
           "join_type": {
             "default": "inner",
             "enum": [
-              "inner",
               "full outer",
+              "inner",
               "left",
-              "right",
               "left outer",
+              "right",
               "right outer"
             ],
             "type": "string"
@@ -2055,8 +2055,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2121,8 +2121,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2215,13 +2215,13 @@
         },
         "oneOf": [
           {
-            "$ref": "#/components/schemas/SystemRandomSample"
-          },
-          {
             "$ref": "#/components/schemas/BernoulliRandomSample"
           },
           {
             "$ref": "#/components/schemas/RandomIDsRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/SystemRandomSample"
           }
         ]
       },
@@ -2239,7 +2239,13 @@
         },
         "oneOf": [
           {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          },
+          {
             "$ref": "#/components/schemas/DailyLocation"
+          },
+          {
+            "$ref": "#/components/schemas/MajorityLocation"
           },
           {
             "$ref": "#/components/schemas/ModalLocation"
@@ -2249,12 +2255,6 @@
           },
           {
             "$ref": "#/components/schemas/VisitedMostDays"
-          },
-          {
-            "$ref": "#/components/schemas/MajorityLocation"
-          },
-          {
-            "$ref": "#/components/schemas/CoalescedLocation"
           }
         ]
       },
@@ -2292,9 +2292,9 @@
           "direction": {
             "default": "both",
             "enum": [
+              "both",
               "in",
-              "out",
-              "both"
+              "out"
             ],
             "type": "string"
           },
@@ -2307,8 +2307,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2423,15 +2423,15 @@
           },
           "statistic": {
             "enum": [
-              "count",
-              "sum",
               "avg",
+              "count",
               "max",
-              "min",
               "median",
+              "min",
+              "mode",
               "stddev",
-              "variance",
-              "mode"
+              "sum",
+              "variance"
             ],
             "type": "string"
           },
@@ -2483,15 +2483,15 @@
           },
           "statistic": {
             "enum": [
-              "count",
-              "sum",
               "avg",
+              "count",
               "max",
-              "min",
               "median",
+              "min",
+              "mode",
               "stddev",
-              "variance",
-              "mode"
+              "sum",
+              "variance"
             ],
             "type": "string"
           },
@@ -2515,8 +2515,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2593,8 +2593,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2641,11 +2641,11 @@
           "total_by": {
             "default": "day",
             "enum": [
-              "second",
-              "minute",
-              "hour",
               "day",
+              "hour",
+              "minute",
               "month",
+              "second",
               "year"
             ],
             "type": "string"
@@ -2680,8 +2680,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2755,8 +2755,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2830,8 +2830,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -2913,8 +2913,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -3100,8 +3100,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -3782,8 +3782,7 @@
       "name": "MPLv2",
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     },
-    "title": "FlowAPI",
-    "version": "1.17.1.post0.dev691"
+    "title": "FlowAPI"
   },
   "openapi": "3.0.1",
   "paths": {
@@ -3900,14 +3899,6 @@
         "operationId": "query.get_query_result.get",
         "parameters": [
           {
-            "in": "path",
-            "name": "query_id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "default": "json",
             "in": "path",
             "name": "filetype",
@@ -3918,6 +3909,14 @@
                 "geojson",
                 "csv"
               ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "query_id",
+            "required": true,
+            "schema": {
               "type": "string"
             }
           }
@@ -3981,14 +3980,6 @@
         "operationId": "query.get_query_result.get",
         "parameters": [
           {
-            "in": "path",
-            "name": "query_id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "default": "json",
             "in": "path",
             "name": "filetype",
@@ -3999,6 +3990,14 @@
                 "geojson",
                 "csv"
               ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "query_id",
+            "required": true,
+            "schema": {
               "type": "string"
             }
           }
