@@ -81,7 +81,7 @@ CREATE VIEW etl.available_dates AS (
     SELECT cdr_type, cdr_date
     FROM etl.ingest_state
     WHERE state = 'ingested'
-)
+);
 
 CREATE VIEW etl.deduped_post_etl_queries AS (
     SELECT DISTINCT ON (cdr_date, cdr_type, type_of_query_or_check)
