@@ -519,11 +519,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:41fa68ecac9e099122990d7437bc10683b966c32a591caa2824dffcffd5dea7a",
-                "sha256:97a4a824325146ebc8dc29b0aa5f3b1eaa590a0f00cacbfdf81831670f07862d"
+                "sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54",
+                "sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==65.6.2"
+            "version": "==65.6.3"
         },
         "shapely": {
             "hashes": [
@@ -627,11 +627,11 @@
         },
         "structlog": {
             "hashes": [
-                "sha256:4edfe1d9f15f8a4bf365a817f7182af5d610596c155434b7564bfe7d40c2753c",
-                "sha256:bb1aa189214c30372a8afaa592f9556756aeb690e1ad7eb34391d7b5fa0f09b2"
+                "sha256:b403f344f902b220648fa9f286a23c0cc5439a5844d271fec40562dbadbc70ad",
+                "sha256:e7509391f215e4afb88b1b80fa3ea074be57a5a17d794bd436a5c949da023333"
             ],
             "index": "pypi",
-            "version": "==22.2.0"
+            "version": "==22.3.0"
         }
     },
     "develop": {
@@ -858,9 +858,6 @@
             "version": "==1.0.6"
         },
         "coverage": {
-            "extras": [
-
-            ],
             "hashes": [
                 "sha256:027018943386e7b942fa832372ebc120155fd970837489896099f5cfa2890f79",
                 "sha256:11b990d520ea75e7ee8dcab5bc908072aaada194a794db9f6d7d5cfd19661e5a",
@@ -1796,11 +1793,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:41fa68ecac9e099122990d7437bc10683b966c32a591caa2824dffcffd5dea7a",
-                "sha256:97a4a824325146ebc8dc29b0aa5f3b1eaa590a0f00cacbfdf81831670f07862d"
+                "sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54",
+                "sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==65.6.2"
+            "version": "==65.6.3"
         },
         "shapely": {
             "hashes": [
