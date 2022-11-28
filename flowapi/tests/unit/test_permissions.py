@@ -105,7 +105,7 @@ pytest_plugins = "pytest_asyncio"
         ),
     ],
 )
-def test_schema_to_scopes(tree, expected, monkeypatch):
+def test_schema_to_scopes(app, tree, expected, monkeypatch):
     # Shouldn't try and fit a full spec in here, this test is large enough as it is - we skip ResolvingParser instead
     class MockResolvingParser:
         def __init__(self, spec_string, **kwargs):
