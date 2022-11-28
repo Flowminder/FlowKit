@@ -15,6 +15,12 @@ from quart import request, current_app
 
 import logging
 
+from flowapi.flowapi_errors import (
+    JSONHTTPException,
+    MissingQueryKindError,
+    BadQueryError,
+)
+
 
 def is_flat(in_iter):
     """
@@ -200,7 +206,7 @@ async def get_agg_unit(query_dict):
     )
     reply = await request.socket.recv_json()
     if reply["status"] != "success":
-        raise Exception("Query has no type - something wrong with Flowmachine")
+        raise JSONHTTPException(description=reply["msg"])
     try:
         return reply["payload"]["aggregation_unit"]
     except KeyError:
@@ -225,8 +231,14 @@ async def query_to_scopes(query_dict):
     :param query_dict:
     :return:
     """
-    tl_query_name = query_dict["query_kind"]
-    query_list = grab_on_key_list(query_dict, ["query_kind"])
+
+    try:
+        if "query_kind" not in query_dict.keys():
+            raise MissingQueryKindError
+        tl_query_name = query_dict["query_kind"]
+        query_list = grab_on_key_list(query_dict, ["query_kind"])
+    except Exception:
+        raise BadQueryError
     agg_unit = await get_agg_unit(query_dict)
     return [f"{agg_unit}:{tl_query_name}:{query_name}" for query_name in query_list]
 
