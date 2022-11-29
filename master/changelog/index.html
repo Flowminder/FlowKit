@@ -8746,6 +8746,9 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/Flowminder/FlowKit/compare/1.17.1...master">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added views <code>etl.ingested_state</code>, <code>etl.available_dates</code> and <code>etl.deduped_post_etl_queries</code> in FlowDB, for convenient extraction of relevant information from the ETL tables. <a href="https://github.com/Flowminder/FlowKit/issues/5641">#5641</a></li>
+</ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Changed <code>AIRFLOW__CORE__SQL_ALCHEMY_CONN</code> env var to <code>AIRFLOW__DATABASE__SQL_ALCHEMY_CONN</code></li>
@@ -8756,6 +8759,7 @@
 <li>Fixed a potential deadlock when using a small connection pool and <code>store</code>-ing queries</li>
 <li>AutoFlow can now be run in a docker container with non-default user. <a href="https://github.com/Flowminder/FlowKit/issues/5574">#5574</a></li>
 <li>Passing an empty list of events tables when creating a query now raises <code>ValueError: Empty tables list.</code> instead of a <code>MissingDateError</code>. <a href="https://github.com/Flowminder/FlowKit/issues/436">#436</a></li>
+<li>Flowmachine now looks at only the most recent state (per CDR type per CDR date) in <code>etl.etl_records</code> to determine available dates. <a href="https://github.com/Flowminder/FlowKit/issues/5641">#5641</a></li>
 </ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1171"><a href="https://github.com/Flowminder/FlowKit/compare/1.17.0...1.17.1">1.17.1</a><a class="headerlink" href="#1171" title="Permanent link">&para;</a></h2>
