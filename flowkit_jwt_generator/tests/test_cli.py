@@ -34,5 +34,5 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
         audience=dummy_flowapi["aud"],
     )
     assert result.exit_code == 0
-    assert decompress_claims(decoded["user_claims"]) == dummy_flowapi["claims"]
+    assert decoded["user_claims"] == dummy_flowapi["roles"]
     assert decoded["aud"] == dummy_flowapi["aud"]

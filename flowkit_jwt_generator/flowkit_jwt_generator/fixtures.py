@@ -120,5 +120,5 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
 
     """
     return access_token_builder(
-        {"univeral_role": get_all_claims_from_flowapi(flowapi_url=flowapi_url)}
+        {"universal_role": get_all_claims_from_flowapi(flowapi_url=flowapi_url)}
     )

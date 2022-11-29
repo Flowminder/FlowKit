@@ -120,8 +120,7 @@ def test_schema_to_scopes(app, tree, expected, monkeypatch):
 
     # It looks like we can't mock out ResolvingParser, so we mock out it's parent instead
     monkeypatch.setattr(prance, "BaseParser", MockResolvingParser)
-    monkeypatch.setattr(quart, "current_app.flowapi_logger", logging.Logger(__file__))
-    with app.app.app_context():
+    with app.app_context():
         assert schema_to_scopes(tree) == expected
 
 
