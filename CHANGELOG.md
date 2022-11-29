@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added views `etl.ingested_state`, `etl.available_dates` and `etl.deduped_post_etl_queries` in FlowDB, for convenient extraction of relevant information from the ETL tables. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
 
 ### Changed
 - Changed `AIRFLOW__CORE__SQL_ALCHEMY_CONN` env var to `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`
@@ -16,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed a potential deadlock when using a small connection pool and `store`-ing queries
 - AutoFlow can now be run in a docker container with non-default user. [#5574](https://github.com/Flowminder/FlowKit/issues/5574)
 - Passing an empty list of events tables when creating a query now raises `ValueError: Empty tables list.` instead of a `MissingDateError`. [#436](https://github.com/Flowminder/FlowKit/issues/436)
+- Flowmachine now looks at only the most recent state (per CDR type per CDR date) in `etl.etl_records` to determine available dates. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
 
 ### Removed
 
