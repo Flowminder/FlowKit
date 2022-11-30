@@ -1,12 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import logging
-
 import prance
 import quart
-from quart import current_app
-
 from flowapi.permissions import (
     is_flat,
     flatten_on_key,
@@ -108,7 +104,7 @@ pytest_plugins = "pytest_asyncio"
         ),
     ],
 )
-def test_schema_to_scopes(app, tree, expected, monkeypatch):
+def test_schema_to_scopes(tree, expected, monkeypatch):
     # Shouldn't try and fit a full spec in here, this test is large enough as it is - we skip ResolvingParser instead
     class MockResolvingParser:
         def __init__(self, spec_string, **kwargs):
@@ -120,8 +116,17 @@ def test_schema_to_scopes(app, tree, expected, monkeypatch):
 
     # It looks like we can't mock out ResolvingParser, so we mock out it's parent instead
     monkeypatch.setattr(prance, "BaseParser", MockResolvingParser)
-    with app.app_context():
-        assert schema_to_scopes(tree) == expected
+
+    class MockFlowApiLogger:
+        @staticmethod
+        def warning(msg):
+            print(msg)
+
+    class MockCurrentApp:
+        flowapi_logger = MockFlowApiLogger()
+
+    monkeypatch.setattr(quart, "current_app", MockCurrentApp)
+    assert schema_to_scopes(tree) == expected
 
 
 def test_schema_to_scopes_bad_input():
