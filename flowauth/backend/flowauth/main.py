@@ -97,7 +97,8 @@ def handle_integrity_error(error):
             2 if error.statement.startswith("INSERT") else 1
         ]
         name = error.params[0]
-        return f"{table.capitalize()} '{name}' already exists on server'", 400
+        out_msg = f"{table.capitalize()} '{name}' already exists on server"
+        return dict(status=400, statusText=out_msg), 400
     else:
         raise error
 

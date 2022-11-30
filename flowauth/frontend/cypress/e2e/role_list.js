@@ -4,7 +4,7 @@
 
 describe("role list screen", function () {
   Cypress.Cookies.debug(true);
-  const race_timeout = 300;
+  const race_timeout = 500;
 
   beforeEach(function () {
     // Log in and navigate to user details screen
@@ -45,15 +45,19 @@ describe("role list screen", function () {
   });
 
   it("Add duplicate role name", function () {
-    this.new_role;
-    //adding existing username and new password
-    cy.get("#name").type("Test_Role");
-    cy.get('[data-cy="scope-item-get_available_dates"]')
-      .find("[data-cy=checkbox]")
-      .first()
-      .click();
-    cy.contains("Save").should("be.disabled");
-    //checking error dialogue text
+    const role_name = Math.random().toString(36).substring(2, 15);
+    cy.create_role(role_name).then((role) => {
+      this.new_role;
+      cy.get("#name").type(role_name);
+      cy.get('[data-cy="scope-item-get_available_dates"]')
+        .find("[data-cy=checkbox]")
+        .first()
+        .click();
+      cy.contains("Save").click();
+      cy.get("#error-dialog-description").contains(
+        `Role '${role_name}' already exists on server`
+      );
+    });
   });
 
   it("Add role", function () {

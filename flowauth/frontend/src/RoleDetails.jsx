@@ -33,7 +33,7 @@ function RoleDetails(props) {
   const [edit_mode, setEditMode] = useState(false);
   const [name_helper_text, setNameHelperText] = useState("");
   const [nameIsValid, setNameIsValid] = useState(true);
-  const [errors, setErrors] = useState({ message: "" });
+  const [errors, setErrors] = useState("Unknown error, please report");
   const [is_errored, setIsErrored] = useState(false);
   const [expiryDate, setExpiryDate] = useState(new Date());
   const [maxLifetime, setMaxLifetime] = useState("");
@@ -168,33 +168,39 @@ function RoleDetails(props) {
       setIsErrored(true);
       setErrors(new Error("Validation error"));
     } else if (edit_mode) {
-      await editRole(
-        role.id,
-        name,
-        scopes.map((s) => s.id),
-        members,
-        expiryDate,
-        maxLifetime
-      )
-        .catch((err) => {
-          setIsErrored(true);
-          setErrors(err);
-        })
-        .then(onClick());
+      try {
+        await editRole(
+          role.id,
+          name,
+          scopes.map((s) => s.id),
+          members,
+          expiryDate,
+          maxLifetime
+        );
+        onClick();
+      } catch (err) {
+        console.error("Error in editRole");
+        console.error(err);
+        setIsErrored(true);
+        setErrors(err.statusText);
+      }
     } else {
-      await createRole(
-        name,
-        server.id,
-        scopes.map((s) => s.id),
-        members,
-        expiryDate,
-        maxLifetime
-      )
-        .catch((err) => {
-          setIsErrored(true);
-          setErrors(err);
-        })
-        .then(onClick());
+      try {
+        await createRole(
+          name,
+          server.id,
+          scopes.map((s) => s.id),
+          members,
+          expiryDate,
+          maxLifetime
+        );
+        onClick();
+      } catch (err) {
+        console.error("Error in createRole");
+        console.error(err);
+        setIsErrored(true);
+        setErrors(err.statusText);
+      }
     }
   };
 
@@ -265,7 +271,7 @@ function RoleDetails(props) {
       </Grid>
       <ValidationDialog
         open={is_errored}
-        message={errors.message}
+        message={errors}
         onClose={() => setIsErrored(false)}
       />
 
@@ -289,6 +295,7 @@ function ValidationDialog(props) {
       aria-labelledby="error-dialog-title"
       aria-describedby="error-dialog-description"
       id="error-dialog"
+      data-cy="error_dialog"
     >
       <DialogTitle id="error-dialog-title">{"Error"}</DialogTitle>
       <DialogContent>
