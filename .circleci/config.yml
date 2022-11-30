@@ -589,9 +589,9 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-          #- restore_cache:
-          #keys:
-          #  - flowauth-deps-5-{{ checksum "package.json" }}
+      - restore_cache:
+          keys:
+            - flowauth-deps-5-{{ checksum "package.json" }}
       - run:
           name: Cypress setup
           command: npm ci
