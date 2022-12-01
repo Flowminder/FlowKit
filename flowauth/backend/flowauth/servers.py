@@ -129,7 +129,11 @@ def set_scopes(server_id):
     server_scopes = Scope.query.filter(Scope.server_id == server_id).all()
     for scope in server_scopes:
         db.session.delete(scope)
-    for scope, is_enabled in json.items():
+    db.session.commit()
+    for (
+        scope,
+        is_enabled,
+    ) in json.items():  # Scope enabling set to True until enabling is fixed
         db.session.add(Scope(name=scope, server=server, enabled=True))
     db.session.commit()
     return list_scopes(server_id)
@@ -144,7 +148,7 @@ def edit_scope_activation(server_id):
     Expects a json of the form {scope_string:True/False}
 
     """
-    # Removing until sup
+    # Removing until supported by
     raise NotImplemented
     json = request.get_json()
     scopes_to_edit = (
@@ -256,6 +260,8 @@ def edit_server(server_id):
     for key, val in json.items():
         if key == "roles":
             server.roles = Role.query.filter(Role.id.in_(val)).all()
+        elif key == "scopes":
+            current_app.flowapi_logger.warning("Cannot edit scopes at present")
         else:
             setattr(server, key, val)
     db.session.add(server)

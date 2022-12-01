@@ -10,33 +10,33 @@ describe("Server management", function () {
     cy.login_admin().goto("/").get("#server_list").click();
   });
 
-  it("Add blank maximum lifetime minutes", function () {
-    cy.get("#new").click();
-    //Add blank maximum lifetime minutes
-    cy.get("#max-life").type(" ", { force: true }).clear({ force: true });
-    cy.get("#max-life-helper-text").should(
-      "have.text",
-      "Maximum lifetime minutes can not be blank."
-    );
-    cy.get("#max-life").type("1234", { force: true });
-    cy.get("#max-life-helper-text").should("not.exist");
-  });
+  // it("Add blank maximum lifetime minutes", function () {
+  //   cy.get("#new").click();
+  //   //Add blank maximum lifetime minutes
+  //   cy.get("#max-life").type(" ", { force: true }).clear({ force: true });
+  //   cy.get("#max-life-helper-text").should(
+  //     "have.text",
+  //     "Maximum lifetime minutes can not be blank."
+  //   );
+  //   cy.get("#max-life").type("1234", { force: true });
+  //   cy.get("#max-life-helper-text").should("not.exist");
+  // });
 
-  it("Add duplicate Server name", function () {
-    cy.get("#new").click();
-    cy.get("#spec-upload-button").uploadFile("openapi.json");
-    cy.get("#max-life").type("1234", {
-      force: true,
-    });
-    cy.contains("Save").click();
-    //checking error dialogue text
-    cy.get("#error-dialog-description").should(
-      "have.text",
-      "Server with this name already exists."
-    );
-    cy.contains("OK").click();
-    cy.get("#error-dialog-description").should("not.exist");
-  });
+  // it("Add duplicate Server name", function () {
+  //   cy.get("#new").click();
+  //   cy.get("#spec-upload-button").uploadFile("openapi.json");
+  //   cy.get("#max-life").type("1234", {
+  //     force: true,
+  //   });
+  //   cy.contains("Save").click();
+  //   //checking error dialogue text
+  //   cy.get("#error-dialog-description").should(
+  //     "have.text",
+  //     "Server with this name already exists."
+  //   );
+  //   cy.contains("OK").click();
+  //   cy.get("#error-dialog-description").should("not.exist");
+  // });
 
   it("Add server", function () {
     cy.get("#new").click();
@@ -63,8 +63,9 @@ describe("Server management", function () {
     cy.get(".rs-picker-toggle-value").click().wait(1);
     cy.get(
       ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper"
-    ).click({ force: true });
-    cy.contains("Save").click({ force: true }).wait(1);
+    ).click();
+    cy.get('.MuiGrid-align-items-xs-center > :nth-child(1)').click() //click off the picker
+    cy.contains("Save").click().wait(50);
     /* Check the edit happened */
     cy.get("[data-action=edit][data-item-name=" + server_name + "]")
       .click()
