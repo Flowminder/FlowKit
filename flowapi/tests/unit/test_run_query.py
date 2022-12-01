@@ -54,7 +54,8 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
 @pytest.mark.parametrize(
     "query, expected_msg",
     [
-        ({"date": "2016-01-01"}, "query_kind must be specified when running a query."),
+        # TODO Rework flowapi's error handing to get this back to a more informative error message
+        ({"date": "2016-01-01"}, "Could not parse query spec."),
     ],
 )
 @pytest.mark.asyncio
