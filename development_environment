@@ -26,6 +26,7 @@ FLOWAUTH_CACHE_BACKEND=memory
 QUART_APP="flowapi.main:create_app()"
 # Shouldn't be relevant as serving now done by hypercorn?
 QUART_DEBUG=1
+FLOWAPI_TESTING=TRUE
 # Error & debug log level
 FLOWAPI_LOG_LEVEL=debug
 # Flowmachine ZMQ host
