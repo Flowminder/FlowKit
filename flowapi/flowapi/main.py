@@ -109,7 +109,9 @@ async def connect_zmq():
 
 
 async def add_uuid():
+    current_app.flowapi_logger.debug("Adding request id.")
     request.request_id = str(uuid.uuid4())
+    current_app.flowapi_logger.debug("Added request id.")
 
 
 def close_zmq(exc):
