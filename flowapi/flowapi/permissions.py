@@ -208,7 +208,7 @@ async def get_agg_unit(query_dict):
     if reply["status"] != "success":
         raise JSONHTTPException(description=reply["msg"])
     try:
-        if reply["payload"]["aggregation_unit"] == "None":
+        if reply["payload"]["aggregation_unit"] is None:
             return "nonspatial"
         else:
             return reply["payload"]["aggregation_unit"]
