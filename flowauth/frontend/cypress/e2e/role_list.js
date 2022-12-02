@@ -14,11 +14,18 @@ describe("role list screen", function () {
     cy.wait(race_timeout); // This needed to mitigate race condition
 
     //set up aliases
-    cy.get("[data-cy=new]").get("[data-cy=new]").click().as("new_role");
+    cy.get("[data-cy=new]")
+      .get("[data-cy=new]")
+      .click()
+      .as("nav_new_role_view");
+    cy.get('[data-cy="scope-item-get_available_dates"]')
+      .should("exist")
+      .as("wait_for_new_role_load");
   });
 
   it("Add blank role", function () {
-    this.new_role;
+    this.nav_new_role_view;
+    this.wait_for_new_role_load;
     //adding blank rolename
     cy.get("#name").type(" ").clear();
     //checking validation text
@@ -31,7 +38,8 @@ describe("role list screen", function () {
   });
 
   it("Add role name with space", function () {
-    this.new_role;
+    this.nav_new_role_view;
+    this.wait_for_new_role_load;
     //adding groupname with space
     cy.get("#name").type("Role ");
     //checking validation text
@@ -47,7 +55,8 @@ describe("role list screen", function () {
   it("Add duplicate role name", function () {
     const role_name = Math.random().toString(36).substring(2, 15);
     cy.create_role(role_name).then((role) => {
-      this.new_role;
+      this.nav_new_role_view;
+      this.wait_for_new_role_load;
       cy.get("#name").type(role_name);
       cy.get('[data-cy="scope-item-get_available_dates"]')
         .find("[data-cy=checkbox]")
@@ -64,7 +73,9 @@ describe("role list screen", function () {
     // Add a new group
     const role_name = Math.random().toString(36).substring(2, 15);
     cy.contains(role_name).should("not.exist");
-    this.new_role;
+    this.nav_new_role_view;
+    this.wait_for_new_role_load;
+
     cy.get("#name").type(role_name);
     cy.get('[data-cy="scope-item-get_available_dates"]')
       .find("[data-cy=checkbox]")
