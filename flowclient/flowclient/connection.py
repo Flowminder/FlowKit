@@ -138,7 +138,9 @@ class Connection:
                 error = "Unknown access denied error"
             raise FlowclientConnectionError(error)
         else:
+            print("*****************")
             print(response.__dict__)
+            print("*****************")
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
@@ -189,6 +191,9 @@ class Connection:
                 error_msg = "Unknown access denied error"
             raise FlowclientConnectionError(error_msg)
         else:
+            print("******************")
+            print(response.__dict__)
+            print("******************")
             try:
                 error_msg = response.json()["msg"]
                 try:
