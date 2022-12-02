@@ -64,7 +64,7 @@ describe("Server management", function () {
     cy.get(
       ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper"
     ).click();
-    cy.get('.MuiGrid-align-items-xs-center > :nth-child(1)').click() //click off the picker
+    cy.get(".MuiGrid-align-items-xs-center > :nth-child(1)").click(); //click off the picker
     cy.contains("Save").click().wait(50);
     /* Check the edit happened */
     cy.get("[data-action=edit][data-item-name=" + server_name + "]")
