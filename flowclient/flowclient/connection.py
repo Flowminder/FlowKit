@@ -142,6 +142,8 @@ class Connection:
         else:
             print(response.__dict__)
             print(response._request.__dict__)
+            print(response.content)
+            print(response.read())
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
