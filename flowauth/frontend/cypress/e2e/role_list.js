@@ -4,7 +4,7 @@
 
 describe("role list screen", function () {
   Cypress.Cookies.debug(true);
-  const race_timeout = 500;
+  const race_timeout = 2000;
 
   beforeEach(function () {
     // Log in and navigate to user details screen
