@@ -19,6 +19,8 @@ except ImportError:
 from flowclient.errors import FlowclientConnectionError
 
 logger = logging.getLogger(__name__)
+logging.basicConfig()
+logger.setLevel("DEBUG")
 
 
 class Connection:
@@ -113,7 +115,7 @@ class Connection:
         requests.Response
 
         """
-        logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
+        print(f"Getting {self.url}/api/{self.api_version}/{route}")
         try:
             response = self.session.request(
                 "GET",
@@ -139,6 +141,7 @@ class Connection:
             raise FlowclientConnectionError(error)
         else:
             print(response.__dict__)
+            print(response._request.__dict__)
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
