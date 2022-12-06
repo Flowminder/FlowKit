@@ -818,7 +818,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 HTTPX_LOG_LEVEL=trace QUART_DEBUG=1 FLOWAPI_TESTING=TRUE pipenv run pytest -sv --junitxml=test_results/pytest/results.xml --durations=10 \
+            PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 HTTPX_LOG_LEVEL=trace QUART_DEBUG=1 FLOWAPI_TESTING=TRUE pipenv run pytest -v --capture=tee-sys --junitxml=test_results/pytest/results.xml --durations=10 \
             --cov=../flowmachine --cov=../flowclient --cov=../flowapi --cov=../autoflow \
             --cov-report xml \
             --cov-report term \
