@@ -114,7 +114,7 @@ def autostart_flowapi_server(logging_config, flowapi_port):
 
         api_thread = Process(
             target=hypercorn.__main__.main,
-            args=(["--bind", f"0.0.0.0:{flowapi_port}", "--access-logfile", "-", "flowapi.main:create_app()"],),
+            args=(["--bind", f"0.0.0.0:{flowapi_port}", "--access-logfile", "-", "--debug", "flowapi.main:create_app()"],),
         )
         api_thread.start()
         sleep(2)
