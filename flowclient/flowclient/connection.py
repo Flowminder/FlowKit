@@ -20,6 +20,8 @@ from flowclient.errors import FlowclientConnectionError
 
 logger = logging.getLogger(__name__)
 
+def log(event_name, info):
+    print(event_name, info)
 
 class Connection:
     """
@@ -73,6 +75,7 @@ class Connection:
             timeout=None,
             http2=http2,
             verify=ssl_certificate,
+            extensions={"trace": log}
         )
         self.update_token(token=token)
 
