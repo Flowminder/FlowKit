@@ -75,7 +75,6 @@ class Connection:
             timeout=None,
             http2=http2,
             verify=ssl_certificate,
-            extensions={"trace": log}
         )
         self.update_token(token=token)
 
@@ -125,6 +124,7 @@ class Connection:
                 route,
                 follow_redirects=False,
                 json=data,
+                extensions={"trace": log}
             )
         except RequestError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
