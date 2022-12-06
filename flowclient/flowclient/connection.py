@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 logging.basicConfig()
 logger.setLevel("DEBUG")
 
+def log(event_name, info):
+    print(event_name, info)
 
 class Connection:
     """
@@ -75,6 +77,7 @@ class Connection:
             timeout=None,
             http2=http2,
             verify=ssl_certificate,
+            extensions={"trace": log}
         )
         self.update_token(token=token)
 
