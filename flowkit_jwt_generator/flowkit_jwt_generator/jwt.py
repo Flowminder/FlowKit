@@ -35,7 +35,7 @@ def compress_claims(claims):
     out = io.BytesIO()
 
     with gzip.open(out, mode="wt") as fo:
-        json.dump(list(squashed_scopes(claims)), fo)
+        json.dump(claims, fo)
 
     return base64.encodebytes(out.getvalue()).decode()
 
@@ -215,7 +215,7 @@ def generate_token(
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
     roles: dict,
-    compress: bool = False,
+    compress: bool = True,
 ) -> str:
     """
 
@@ -252,7 +252,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=roles,
+        user_claims=compress_claims(roles) if compress else roles,
         sub=username,
         exp=now + lifetime,
     )

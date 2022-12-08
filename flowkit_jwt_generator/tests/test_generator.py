@@ -51,7 +51,7 @@ def test_token_generator(private_key, public_key):
     )
     decoded = jwt.decode(jwt=token, key=public_key, algorithms=["RS256"])
     assert decoded["sub"] == "test"
-    assert decoded["user_claims"] == {"a_role": ["A_CLAIM"]}
+    assert decompress_claims(decoded["user_claims"]) == {"a_role": ["A_CLAIM"]}
     assert "aud" not in decoded
 
 
@@ -71,4 +71,4 @@ def test_token_generator_with_audience(private_key, public_key):
         audience="test_audience",
     )
     assert decoded["sub"] == "test"
-    assert decoded["user_claims"] == {"a_role": ["A_CLAIM"]}
+    assert decompress_claims(decoded["user_claims"]) == {"a_role": ["A_CLAIM"]}
