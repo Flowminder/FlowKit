@@ -260,9 +260,11 @@ def generate_token(
         token_data["aud"] = flowapi_identifier
     if flowauth_identifier is not None:
         token_data["iss"] = flowauth_identifier
-    return jwt.encode(
+    token = jwt.encode(
         payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
     )
+    print(f"Token size: {len(token.encode('utf-8')) / 1024}kib")
+    return token
 
 
 @lru_cache(None)
