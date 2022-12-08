@@ -8,6 +8,7 @@ from quart_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart_jwt_extended.exceptions import UserClaimsVerificationError
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
+from flowapi.jwt import decompress_claims
 from flowapi.permissions import query_to_scopes
 from flowapi.utils import get_query_parameters_from_flowmachine
 from quart import current_app, request
@@ -204,7 +205,8 @@ def user_loader_callback(identity):
         user=get_jwt_identity(),
         src_ip=request.headers.get("Remote-Addr"),
     )
-    claims = get_jwt_claims()
+
+    claims = decompress_claims(get_jwt_claims())
 
     log_dict = dict(
         request_id=request.request_id,
