@@ -80,7 +80,7 @@ def test_token_generation(
             algorithms=["RS256"],
             audience="DUMMY_SERVER_A",
         )
-        assert decoded_token["user_claims"] == {
+        assert decompress_claims(decoded_token["user_claims"]) == {
             "reader": ["get_result"],
             "runner": ["dummy_agg_unit:dummy_query:dummy_query", "get_result", "run"],
         }
