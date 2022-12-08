@@ -22,7 +22,7 @@ CaptureResult = namedtuple("CaptureResult", ["debug", "access"])
 @pytest.fixture
 def json_log(caplog):
     def parse_json():
-        loggers = dict(debug=[], access=[])
+        loggers = dict(debug=[], access=[], query=[])
         for logger, level, msg in caplog.record_tuples:
             if msg == "":
                 continue
