@@ -1105,11 +1105,11 @@
         },
         "ipykernel": {
             "hashes": [
-                "sha256:7aabde9e201c4a8f43000f4be0d057f91df13b906ea646acd9047fcb85600b9b",
-                "sha256:851aa3f9cbbec6918136ada733069a6709934b8106a743495070cf46917eb9a9"
+                "sha256:1374a55c57ca7a7286c3d8b15799cd76e1a2381b6b1fea99c494b955988926b6",
+                "sha256:1ab68d3d3654196266baa93990055413e167263ffbe4cfe834f871bcd3d3506d"
             ],
             "index": "pypi",
-            "version": "==6.19.0"
+            "version": "==6.19.2"
         },
         "ipython": {
             "hashes": [
@@ -1890,7 +1890,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_full_version < '3.11.0a7'",
             "version": "==2.0.1"
         },
         "tornado": {
