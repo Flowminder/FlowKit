@@ -166,7 +166,8 @@ export async function createUser(
   username,
   password,
   is_admin,
-  require_two_factor
+  require_two_factor,
+  roles
 ) {
   var dat = {
     method: "POST",
@@ -175,6 +176,7 @@ export async function createUser(
       password: password,
       is_admin: is_admin,
       require_two_factor: require_two_factor,
+      roles: roles,
     }),
   };
   return await getResponse("/admin/users", dat);

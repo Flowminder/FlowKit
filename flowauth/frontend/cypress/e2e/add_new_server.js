@@ -10,33 +10,33 @@ describe("Server management", function () {
     cy.login_admin().goto("/").get("#server_list").click();
   });
 
-  // it("Add blank maximum lifetime minutes", function () {
-  //   cy.get("#new").click();
-  //   //Add blank maximum lifetime minutes
-  //   cy.get("#max-life").type(" ", { force: true }).clear({ force: true });
-  //   cy.get("#max-life-helper-text").should(
-  //     "have.text",
-  //     "Maximum lifetime minutes can not be blank."
-  //   );
-  //   cy.get("#max-life").type("1234", { force: true });
-  //   cy.get("#max-life-helper-text").should("not.exist");
-  // });
+  it("Add blank maximum lifetime minutes", function () {
+    cy.get("#new").click();
+    //Add blank maximum lifetime minutes
+    cy.get("#max-life").type(" ", { force: true }).clear({ force: true });
+    cy.get("#max-life-helper-text").should(
+      "have.text",
+      "Maximum lifetime minutes can not be blank."
+    );
+    cy.get("#max-life").type("1234", { force: true });
+    cy.get("#max-life-helper-text").should("not.exist");
+  });
 
-  // it("Add duplicate Server name", function () {
-  //   cy.get("#new").click();
-  //   cy.get("#spec-upload-button").uploadFile("openapi.json");
-  //   cy.get("#max-life").type("1234", {
-  //     force: true,
-  //   });
-  //   cy.contains("Save").click();
-  //   //checking error dialogue text
-  //   cy.get("#error-dialog-description").should(
-  //     "have.text",
-  //     "Server with this name already exists."
-  //   );
-  //   cy.contains("OK").click();
-  //   cy.get("#error-dialog-description").should("not.exist");
-  // });
+  it("Add duplicate Server name", function () {
+    cy.get("#new").click();
+    cy.get("#spec-upload-button").uploadFile("openapi.json");
+    cy.get("#max-life").type("1234", {
+      force: true,
+    });
+    cy.contains("Save").click();
+    //checking error dialogue text
+    cy.get("#error-dialog-description").should(
+      "have.text",
+      "Server with this name already exists."
+    );
+    cy.contains("OK").click();
+    cy.get("#error-dialog-description").should("not.exist");
+  });
 
   it("Add server", function () {
     cy.get("#new").click();

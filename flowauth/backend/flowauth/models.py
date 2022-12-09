@@ -50,6 +50,7 @@ class User(db.Model):
     _password = db.Column(db.Text, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    # Should this table be called 'Roles'?
     roles = db.relationship(
         "Role",
         secondary=users_with_roles,

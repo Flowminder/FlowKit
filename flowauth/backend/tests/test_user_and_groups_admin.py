@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-def test_create_user(client, auth, test_admin):
+def test_create_user(client, auth, test_roles, test_admin):
     uid, username, password = test_admin
     # Log in first
     response, csrf_cookie = auth.login(username, password)
@@ -13,6 +13,7 @@ def test_create_user(client, auth, test_admin):
         json={
             "username": "TEST_USER",
             "password": "A_VERY_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
+            "roles": [1, 2],
         },
     )
     assert 200 == response.status_code  # Should get an OK
@@ -24,7 +25,7 @@ def test_create_user(client, auth, test_admin):
         "is_admin": False,
         "has_two_factor": False,
         "require_two_factor": False,
-        "roles": [],
+        "roles": [{"id": 1, "name": "runner"}, {"id": 2, "name": "reader"}],
     } == response.get_json()
 
 

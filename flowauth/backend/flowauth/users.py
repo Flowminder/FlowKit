@@ -38,6 +38,8 @@ def add_user():
     Returns the new user's id and group_id.
     """
     json = request.get_json()
+    role_ids = json.pop("roles", [])
+
     try:
         if zxcvbn(json["password"])["score"] > 3:
             user = User(**json)
@@ -55,6 +57,7 @@ def add_user():
             "Username already exists.", payload={"bad_field": "username"}
         )
     else:
+        user.roles = Role.query.filter(Role.id.in_(role_ids)).all()
         db.session.add(user)
         db.session.commit()
         return jsonify({"id": user.id})

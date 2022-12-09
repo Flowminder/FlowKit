@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { getRoles, getUserRoles } from "./util/api";
 import Picker from "./Picker";
 
-// Component for picking scopes for a role
+// Component for picking roles for a user
 function UserRolesPicker(props) {
   const { user_id, updateRoles } = props;
 
