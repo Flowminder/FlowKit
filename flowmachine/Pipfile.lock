@@ -637,19 +637,19 @@
         },
         "approval-utilities": {
             "hashes": [
-                "sha256:4771664eaf61de236fcef13a7bb8b4d4569bcf61949e80c408120dd4407f0b45",
-                "sha256:86ef37aadaca8a4666b933aae72ffe9822306f1945ad4663c1b6fd1f07b115da"
+                "sha256:8e0b146716db2f7d95d01726947438904760a6cb005aa391cee6f7a623d627ee",
+                "sha256:d11f545ad318f3520e997657aaeb6511521a4d0b647a0868037ca817af7c73b3"
             ],
             "markers": "python_full_version >= '3.6.1'",
-            "version": "==7.3.0"
+            "version": "==7.4.0"
         },
         "approvaltests": {
             "hashes": [
-                "sha256:0a86899810ee9c1ae1689744c361aaf4748054dd971edcfcbaba048c0b464460",
-                "sha256:2d4aef653a0a35b164f14cf7488cd02b043ce2a4ac681891f8aedbdfd8d6cd02"
+                "sha256:64e8798f843f44ffd047935f18e8ec850caf9d4f924b9b24456008102cbb6aca",
+                "sha256:e09b2f2af6cd049d71a3dcdc7b3bb4c2cd887cc5eb4b1294b557675360c5f90d"
             ],
             "index": "pypi",
-            "version": "==7.3.0"
+            "version": "==7.4.0"
         },
         "asttokens": {
             "hashes": [
@@ -859,7 +859,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:027018943386e7b942fa832372ebc120155fd970837489896099f5cfa2890f79",
@@ -1394,11 +1394,11 @@
         },
         "pathspec": {
             "hashes": [
-                "sha256:88c2606f2c1e818b978540f73ecc908e13999c6c3a383daf3705652ae79807a5",
-                "sha256:8f6bf73e5758fd365ef5d58ce09ac7c27d2833a8d7da51712eac6e27e35141b0"
+                "sha256:3c95343af8b756205e2aba76e843ba9520a24dd84f68c22b9f93251507509dd6",
+                "sha256:56200de4077d9d0791465aa9095a01d421861e405b5096955051deefd697d6f6"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==0.10.2"
+            "version": "==0.10.3"
         },
         "pexpect": {
             "hashes": [
