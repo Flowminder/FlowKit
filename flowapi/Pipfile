@@ -23,7 +23,7 @@ pytest = "*"
 pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
-black = {extras = ["jupyter"],version = "==22.10.0"}
+black = {extras = ["jupyter"],version = "==22.12.0"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 flowapi = {editable = true, path = "."}
 
