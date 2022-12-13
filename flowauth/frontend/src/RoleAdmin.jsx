@@ -12,7 +12,7 @@ import {
   getRole,
   getRolesOnServer,
 } from "./util/api";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Typography, Grid, Paper, Button } from "@material-ui/core";
 import { EditLocation } from "@material-ui/icons";
 
@@ -74,6 +74,12 @@ function ServerRoleList(props) {
 function ServerHeader(props) {
   const { server, onClick } = props;
   const new_role_on_server = () => onClick(-1, server.id);
+  
+  const [new_role_enabled, setNewRoleEnabled] = useState(false)
+
+  useEffect(() => 
+    setNewRoleEnabled(typeof server !== 'undefined')
+  , server)
 
   return (
     <Grid container direction="row">
@@ -83,7 +89,7 @@ function ServerHeader(props) {
         </Typography>
       </Grid>
       <Grid item xs={3}>
-        <Button onClick={new_role_on_server} data-cy={"new"}>
+        <Button onClick={new_role_on_server} data-cy={"new"} enabled={new_role_enabled}>
           New Role
         </Button>
       </Grid>
