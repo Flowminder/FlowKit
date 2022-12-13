@@ -77,7 +77,7 @@ function ServerHeader(props) {
 
   const [new_role_enabled, setNewRoleEnabled] = useState(false);
 
-  useEffect(() => setNewRoleEnabled(typeof server !== "undefined"), server);
+  useEffect(() => setNewRoleEnabled(typeof server !== "undefined"), [server]);
 
   return (
     <Grid container direction="row">
