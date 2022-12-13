@@ -58,21 +58,23 @@ function RoleDetails(props) {
       setMaxLifetime(String(server.longest_token_life_minutes));
     };
 
+    const handle_role_error = (err) => {
+      if (err.code !== 404) {
+        setRole({});
+        setErrors(err.message);
+        setIsErrored(true);
+      }
+    };
+
     if (server_id >= 0) {
-      fetch_server()
-        .catch((err) => console.error(err))
-        .then(() => {
+      fetch_server().then(
+        () => {
           if (role_id >= 0) {
-            fetch_role().catch((err) => {
-              console.error("Role err:" + err);
-              if (err.code !== 404) {
-                setRole({});
-                setErrors(err.message);
-                setIsErrored(true);
-              }
-            });
+            fetch_role().catch(handle_role_error);
           }
-        });
+        },
+        (err) => console.error(err)
+      );
     }
   }, [server_id]);
 

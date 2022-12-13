@@ -14,10 +14,7 @@ describe("role list screen", function () {
     cy.wait(race_timeout); // This needed to mitigate race condition
 
     //set up aliases
-    cy.get("[data-cy=new]")
-      .get("[data-cy=new]")
-      .click()
-      .as("nav_new_role_view");
+    cy.get("[data-cy=new]").click().as("nav_new_role_view");
     cy.get('[data-cy="scope-item-get_available_dates"]')
       .should("exist")
       .as("wait_for_new_role_load");

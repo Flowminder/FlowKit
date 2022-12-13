@@ -74,12 +74,10 @@ function ServerRoleList(props) {
 function ServerHeader(props) {
   const { server, onClick } = props;
   const new_role_on_server = () => onClick(-1, server.id);
-  
-  const [new_role_enabled, setNewRoleEnabled] = useState(false)
 
-  useEffect(() => 
-    setNewRoleEnabled(typeof server !== 'undefined')
-  , server)
+  const [new_role_enabled, setNewRoleEnabled] = useState(false);
+
+  useEffect(() => setNewRoleEnabled(typeof server !== "undefined"), server);
 
   return (
     <Grid container direction="row">
@@ -89,7 +87,11 @@ function ServerHeader(props) {
         </Typography>
       </Grid>
       <Grid item xs={3}>
-        <Button onClick={new_role_on_server} data-cy={"new"} enabled={new_role_enabled}>
+        <Button
+          onClick={new_role_on_server}
+          data-cy={"new"}
+          enabled={new_role_enabled}
+        >
           New Role
         </Button>
       </Grid>
