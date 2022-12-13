@@ -78,7 +78,7 @@ function RoleDetails(props) {
     }
   }, [server_id]);
 
-  
+
 
   //When Role changes, replace role.name, role.server and role.members with
   //the parts from the others.
@@ -174,7 +174,7 @@ function RoleDetails(props) {
     } else if (edit_mode) {
       try {
         await editRole(
-          role.id,
+          role_id,
           name,
           scopes.map((s) => s.id),
           members,
@@ -192,7 +192,7 @@ function RoleDetails(props) {
       try {
         await createRole(
           name,
-          server.id,
+          server_id,
           scopes.map((s) => s.id),
           members,
           expiryDate,
@@ -259,7 +259,7 @@ function RoleDetails(props) {
 
       <Grid xs={12}>
         <RoleMembersPicker
-          role_id={role.id}
+          role_id={role_id}
           updateMembers={handleMembersChange}
         />
       </Grid>
@@ -267,7 +267,7 @@ function RoleDetails(props) {
       <Grid item xs={12}>
         {/* Scope picker */}
         <RoleScopePicker
-          role_id={role.id}
+          role_id={role_id}
           server_id={server_id}
           updateScopes={handleScopesChange}
           data-cy={"RoleScopePicker"}
