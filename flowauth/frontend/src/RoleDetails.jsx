@@ -8,7 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
-import { createRole, getServer, getRole, editRole } from "./util/api";
+import { createRole, getServer, getRole, editRole, getRoleScopes } from "./util/api";
 import { useEffect, useState } from "react";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -44,12 +44,17 @@ function RoleDetails(props) {
 
   const validation_vars = [nameIsValid, lifetimeIsValid, scopes, members];
 
-  // get appropriate roles + servers on server_id set
+  // get appropriate roles, scopes + servers on server_id set
   useEffect(() => {
     const fetch_role = async () => {
       const role = await getRole(role_id);
       setRole(role);
     };
+
+    const fetch_scopes = async () => {
+      const scopes = await getRoleScopes(role_id)
+      setScopes(scopes)
+    }
 
     const fetch_server = async () => {
       const server = await getServer(server_id);
@@ -66,11 +71,16 @@ function RoleDetails(props) {
       }
     };
 
+    const handle_scope_error = (err) => {
+      console.error("Scope error: ", err)
+    }
+
     if (server_id >= 0) {
       fetch_server().then(
         () => {
           if (role_id >= 0) {
             fetch_role().catch(handle_role_error);
+            fetch_scopes().catch(handle_scope_error);
           }
         },
         (err) => console.error(err)
@@ -89,7 +99,6 @@ function RoleDetails(props) {
       setMembers(role.users);
       setExpiryDate(role.latest_token_expiry);
       setMaxLifetime(String(role.longest_token_life_minutes));
-      setScopes(typeof(role.scopes) === "undefined" ? [] : role.scopes);
       setEditMode(true);
     } else {
       console.log("Role empty, setting defaults");
