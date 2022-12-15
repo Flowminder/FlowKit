@@ -72,7 +72,7 @@ def add_role():
     json["latest_token_expiry"] = datetime.datetime.strptime(
         json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
-    server = Server.query.filter(Server.id == json["server_id"]).first()
+    server = Server.query.filter(Server.id == json["server_id"]).first_or_404()
     role_scopes = Scope.query.filter(Scope.id.in_(json["scopes"])).all()
     for scope in role_scopes:
         _validate_scope_server(scope, server)
