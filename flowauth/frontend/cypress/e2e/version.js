@@ -9,17 +9,24 @@ describe("Login screen", function () {
   });
 
   it("Should show the version on the login screen", function () {
-    cy.build_version_string().then((result) => {
-      cy.get("#flowauth_version").should("contain", "FlowAuth v" + result);
+    cy.exec(
+      'git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g'
+    ).then((result) => {
+      cy.get("#flowauth_version").should(
+        "contain",
+        "FlowAuth v" + result.stdout
+      );
     });
   });
 
   it("Should show the version after logging in", function () {
-    cy.build_version_string().then((result) => {
+    cy.exec(
+      'git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g'
+    ).then((result) => {
       cy.login_admin()
         .goto("/")
         .get("#flowauth_version")
-        .should("contain", "FlowAuth v" + result);
+        .should("contain", "FlowAuth v" + result.stdout);
     });
   });
 });
