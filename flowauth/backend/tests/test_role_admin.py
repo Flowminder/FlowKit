@@ -226,7 +226,7 @@ def test_duplicate_role_name_post(app, auth, client, test_servers):
             "roles/", headers={"X-CSRF-Token": csrf_cookie}, json=role_payload
         )
         assert response.status_code == 400  # this the error code?
-        assert "Role 'test_role' already exists on server" in response.text
+        assert "Name already exists" in response.text
 
         role_payload.update({"server_id": 2})
         response = client.post(

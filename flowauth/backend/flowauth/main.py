@@ -89,13 +89,8 @@ def handle_unique_error(error):
     """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
     print(error)
     _, _, error_message = error.args[-1].partition(" ")
-    if error_message.startswith("UNIQUE"):
-        table = error.statement.split(" ")[
-            2 if error.statement.startswith("INSERT") else 1
-        ]
-        name = error.params[0]
-        out_msg = f"{table.capitalize()} '{name}' already exists on server"
-        return dict(status=399, statusText=out_msg), 400
+    if error_message.lower().contains("unique constraint"):
+        return dict(status=399, statusText="Name already exists"), 400
     else:
         raise error
 

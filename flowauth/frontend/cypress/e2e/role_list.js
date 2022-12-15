@@ -61,7 +61,7 @@ describe("role list screen", function () {
         .click();
       cy.contains("Save").click();
       cy.get("#error-dialog-description").contains(
-        `Role '${role_name}' already exists on server`
+        `Name already exists`
       );
     });
   });
@@ -132,7 +132,6 @@ describe("role list screen", function () {
       // Check that role is populated and window title is edit
       cy.contains("Edit Role")
         .should("be.visible")
-        .wait(race_timeout) // Remove once race conidtion is fixed
         .get("#name")
         .should("have.value", role_name)
         .get(".Dashboard-content-18")
