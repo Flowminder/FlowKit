@@ -134,8 +134,6 @@ describe("role list screen", function () {
         .should("be.visible")
         .get("#name")
         .should("have.value", role_name)
-        .get(".Dashboard-content-18")
-        .scrollTo("top");
       cy.get("#name").type("{selectall}" + role_name + "_edited");
       cy.contains("Save").click();
       // Check that role is renamed
