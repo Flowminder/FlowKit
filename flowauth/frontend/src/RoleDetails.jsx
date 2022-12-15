@@ -89,7 +89,7 @@ function RoleDetails(props) {
       setMembers(role.users);
       setExpiryDate(role.latest_token_expiry);
       setMaxLifetime(String(role.longest_token_life_minutes));
-      setScopes(role.scopes);
+      setScopes(typeof(role.scopes) === "undefined" ? [] : role.scopes);
       setEditMode(true);
     } else {
       console.log("Role empty, setting defaults");
