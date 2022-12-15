@@ -90,7 +90,6 @@ def handle_unique_error(error):
     print(error)
     _, _, error_message = error.args[-1].partition(" ")
     if error_message.startswith("UNIQUE"):
-        breakpoint()
         table = error.statement.split(" ")[
             2 if error.statement.startswith("INSERT") else 1
         ]
