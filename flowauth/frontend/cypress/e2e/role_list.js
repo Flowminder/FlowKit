@@ -60,9 +60,7 @@ describe("role list screen", function () {
         .first()
         .click();
       cy.contains("Save").click();
-      cy.get("#error-dialog-description").contains(
-        `Name already exists`
-      );
+      cy.get("#error-dialog-description").contains(`Name already exists`);
     });
   });
 
@@ -133,7 +131,7 @@ describe("role list screen", function () {
       cy.contains("Edit Role")
         .should("be.visible")
         .get("#name")
-        .should("have.value", role_name)
+        .should("have.value", role_name);
       cy.get("#name").type("{selectall}" + role_name + "_edited");
       cy.contains("Save").click();
       // Check that role is renamed

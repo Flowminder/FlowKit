@@ -8,7 +8,13 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import RoleMembersPicker from "./RoleMembersPicker";
 import SubmitButtons from "./SubmitButtons";
-import { createRole, getServer, getRole, editRole, getRoleScopes } from "./util/api";
+import {
+  createRole,
+  getServer,
+  getRole,
+  editRole,
+  getRoleScopes,
+} from "./util/api";
 import { useEffect, useState } from "react";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -52,9 +58,9 @@ function RoleDetails(props) {
     };
 
     const fetch_scopes = async () => {
-      const scopes = await getRoleScopes(role_id)
-      setScopes(scopes)
-    }
+      const scopes = await getRoleScopes(role_id);
+      setScopes(scopes);
+    };
 
     const fetch_server = async () => {
       const server = await getServer(server_id);
@@ -72,8 +78,8 @@ function RoleDetails(props) {
     };
 
     const handle_scope_error = (err) => {
-      console.error("Scope error: ", err)
-    }
+      console.error("Scope error: ", err);
+    };
 
     if (server_id >= 0) {
       fetch_server().then(
@@ -87,8 +93,6 @@ function RoleDetails(props) {
       );
     }
   }, [server_id]);
-
-
 
   //When Role changes, replace role.name, role.server and role.members with
   //the parts from the others.
