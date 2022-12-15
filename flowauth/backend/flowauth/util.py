@@ -24,6 +24,7 @@ def request_context_processor(logger, method_name, event_dict) -> dict:
             session_id=session.get("_id", None),
             request_id=request.id if hasattr(request, "id") else None
         )
+
     return event_dict
 
 

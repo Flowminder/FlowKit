@@ -85,20 +85,18 @@ def handle_invalid_usage(error):
     return response
 
 
-def handle_integrity_error(error):
+def handle_unique_error(error):
     """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
-    from flowauth.models import db
-
     print(error)
-    _, _, error_message = error.args[0].partition(" ")
+    _, _, error_message = error.args[-1].partition(" ")
     if error_message.startswith("UNIQUE"):
-        db.session.rollback()
+        breakpoint()
         table = error.statement.split(" ")[
             2 if error.statement.startswith("INSERT") else 1
         ]
         name = error.params[0]
         out_msg = f"{table.capitalize()} '{name}' already exists on server"
-        return dict(status=400, statusText=out_msg), 400
+        return dict(status=399, statusText=out_msg), 400
     else:
         raise error
 
@@ -223,7 +221,7 @@ def create_app(test_config=None):
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)
     app.errorhandler(InvalidUsage)(handle_invalid_usage)
-    app.errorhandler(IntegrityError)(handle_integrity_error)
+    app.errorhandler(IntegrityError)(handle_unique_error)
     app.before_request(before_request)
     login_manager.user_loader(load_user)
     identity_loaded.connect_via(app)(on_identity_loaded)

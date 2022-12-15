@@ -6,6 +6,7 @@ import datetime
 
 from flask_login import current_user, login_required
 from flask_principal import Permission, RoleNeed
+from sqlalchemy.exc import IntegrityError
 
 from .models import Role, Scope, Server, User, db
 from .invalid_usage import InvalidUsage
@@ -94,7 +95,11 @@ def add_role():
         longest_token_life_minutes=json["longest_token_life_minutes"],
     )
     db.session.add(new_role)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        raise e
     current_app.logger.info(f"Created role {new_role.name}")
     return get_role(new_role.id)
 
@@ -131,7 +136,11 @@ def edit_role(role_id):
 
         setattr(role, key, value)
     db.session.add(role)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        raise e
     current_app.logger.info(f"Role {role_id} updated with {edits}")
     # TODO: Add audit log here
     return list_roles()
