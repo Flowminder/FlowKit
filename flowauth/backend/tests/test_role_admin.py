@@ -272,7 +272,7 @@ def test_duplicate_role_name_patch(app, auth, client, test_servers):
         json={"name": "test_role"},
     )
     assert response.status_code == 400  # this the error code?
-    assert "Role 'test_role' already exists on server" in response.text
+    assert "Name already exists" in response.text
 
     response = client.patch(
         "/roles/2",

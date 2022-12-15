@@ -89,7 +89,7 @@ def handle_unique_error(error):
     """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
     print(error)
     _, _, error_message = error.args[-1].partition(" ")
-    if error_message.lower().contains("unique constraint"):
+    if "unique constraint" in error_message.lower():
         return dict(status=399, statusText="Name already exists"), 400
     else:
         raise error
