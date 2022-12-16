@@ -22,7 +22,7 @@ The core of the change that has been implemented is to change the definition of 
  - *Simple scopes*
 
    These control access to a server-wide capability and are all-or-nothing. The currently implemented simple scopes are:
-   - `run`; permits a user that olds this role to run queries using the `run` flowAPI endpoint
+   - `run`; permits a user that holds this role to run queries using the `run` flowAPI endpoint
    - `get_result`; permits a user to get the results of a query using the `get` flowAPI endpoint
    - `get_available_dates`; permits a user to get the list of dates available to run queries against on a server.
    
