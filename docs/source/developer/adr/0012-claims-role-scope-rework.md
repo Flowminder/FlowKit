@@ -4,7 +4,7 @@
 
 **Status**
 
-Proposed
+Accepted
 
 **Context**
 
@@ -31,11 +31,11 @@ The core of the change that has been implemented is to change the definition of 
  - *Complex scopes*
   
    These control access to a combination of a geographic component, a top-level query and a descendent query.
-   - Top-level queries are the methods that are avilable to the users of Flowmachine directly.
+   - Top-level queries are the methods that are available to the users of Flowmachine directly.
    - Each top-level query may require a set of sub-queries to run, wich in turn may require sub-queries of their own; these are the descendent queries.
-   - Finally, the geographic component is the spatial presentation that is available to the role.
+   - Finally, the geographic component is the spatial presentation that is available to the role. Queries without spatial aggregates (such as `historgram_aggregate`) have the geographic component `nonspatial`.
    
-   Complex scopes are of the form `geographic_component:top_level_query:sub_query` - this ordering has been built on assumed order of importance to users. For example it will be a more common use case that an administrator will want to create a role that restrics access only to admin levels 0 or 1 than to the `most_frequest_location` sub-query of the `spatial_aggregate` TL query.
+   Complex scopes are of the form `geographic_component:top_level_query:sub_query` - this ordering has been built on assumed order of importance to users. For example it will be a more common use case that an administrator will want to create a role that restrics access only to admin levels 0 or 1 than to the `most_frequest_location` sub-query of the `spatial_aggregate` top-level query.
 
 As a consequence of this, the new Flowauth db schema is shown below:
 
@@ -68,5 +68,7 @@ sequenceDiagram
 **Consequences**
  - Much faster and more lightweight building of tokens
  - Flowauth frontend can now be used on lower-capability machines
- - Loss of fine-grained control over query permissions
- - Users can't be grouped anymore (roles supercede group functions)
+ - Less fine-grained control over query permissions
+    - This does have the knock-on effect of reducing the decision space to a more managable size,perhaps leading users to make meaningful decisions about scopes within a role instead of defaulting to 'all'.
+ - Users can't be explicitly grouped anymore (roles supercede group functions)
+ - Scopes cannot be assigned directly to users anymore.
