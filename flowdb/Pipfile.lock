@@ -38,6 +38,14 @@
         }
     },
     "develop": {
+        "appnope": {
+            "hashes": [
+                "sha256:02bd91c4de869fbb1e1c50aafc4098827a7a54ab2f39d9dcba6c9547ed920e24",
+                "sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.3"
+        },
         "asttokens": {
             "hashes": [
                 "sha256:4622110b2a6f30b77e1473affaa97e711bc2f07d3f10848420ff1898edbe94f3",
@@ -227,11 +235,11 @@
         },
         "traitlets": {
             "hashes": [
-                "sha256:61832ea7b7f910f5745e27e9bb269a181fd15af76027d99560299209d5b17c94",
-                "sha256:bd0fca5c890a09bf66b33cce67ca14156b080429bc39c7ef26b075a4bd4f9fc3"
+                "sha256:57ba2ba951632eeab9388fa45f342a5402060a5cc9f0bb942f760fafb6641581",
+                "sha256:fde8f62c05204ead43c2c1b9389cfc85befa7f54acb5da28529d671175bb4108"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==5.7.0"
+            "version": "==5.7.1"
         },
         "typing-extensions": {
             "hashes": [
