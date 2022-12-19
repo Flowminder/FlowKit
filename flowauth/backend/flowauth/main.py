@@ -87,10 +87,9 @@ def handle_invalid_usage(error):
 
 def handle_unique_error(error):
     """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
-    print(error)
-    _, _, error_message = error.args[-1].partition(" ")
+    _, _, error_message = error.args[0].partition(" ")
     if "unique constraint" in error_message.lower():
-        return dict(status=399, statusText="Name already exists"), 400
+        return dict(status=400, statusText="Name already exists"), 400
     else:
         raise error
 
