@@ -4,8 +4,7 @@
 import asyncio
 import collections
 import functools
-from copy import deepcopy
-from typing import Iterable, List, Optional, Tuple, Union, Set, Any
+from typing import Iterable, Any
 from prance import ResolvingParser
 from rapidjson import dumps
 
@@ -18,127 +17,45 @@ from flowapi.flowapi_errors import (
     BadQueryError,
 )
 
+try:
+    logger = current_app.debug_logger
+except RuntimeError:
+    import structlog
 
-def is_flat(in_iter: Any) -> bool:
-    """
-    Returns
-    ---------
-    bool
-        True if in_iter is flat (contains no dicts or lists)
-    """
-    if not isinstance(in_iter, collections.Container):
-        return True
-    if isinstance(in_iter, dict):
-        in_iter = in_iter.values()
-    # Think there's a slightly better way of doing type introspection here
-    return all(type(item) not in [dict, list] for item in in_iter)
+    logger = structlog.get_logger(__name__)
 
 
 @functools.singledispatch
-def _flatten_on_key_inner(root, key_of_interest):
-    raise TypeError
-
-
-@_flatten_on_key_inner.register
-def _(
-    root: dict,
-    key_of_interest,
-):
-    for node, value in root.items():
-        if is_flat(value):
-            pass
-        else:
-            yield from _flatten_on_key_inner(value, key_of_interest)
-            if node == key_of_interest:
-                # We cannot change the size of a dict mid-iterate, so instead we mark it for
-                # deletion post-iterate
-                root[node] = {}
-                yield value
-
-
-@_flatten_on_key_inner.register
-def _(
-    root: list,
-    key_of_interest,
-):
-    for value in root:
-        yield from _flatten_on_key_inner(value, key_of_interest)
-
-
-def _clean_empties(in_dict, marker):
-    out = {}
-    for key, value in in_dict.items():
-        if value != {marker: {}}:
-            out[key] = value
-    return out
-
-
-def flatten_on_key(in_iter, key, _in_place=False):
-    if not _in_place:
-        in_iter = deepcopy(in_iter)
-    out = _flatten_on_key_inner(in_iter, key)
-    clean_out = list(_clean_empties(flattened, key) for flattened in out)
-    return clean_out
-
-
-def grab_on_key_list(in_iter, keys):
-    """
-    Looks through the iterator and returns every value at the end of the chain of `keys`
-    Parameters
-    ----------
-    in_iter : dict or list
-        A nested iterator
-    keys : list of str
-        The list of keys that will return a value (wherever it appears in `iter`).
-    """
-    # I'm not a fan of the mutate-passed-in-list approach; it feels like
-    # it's going against the philosophy of functional programming, as it
-    # exploits a side-effect. But it works, so....
-    out_list = []
-    iter = _grab_on_key_list_inner(in_iter, keys, out_list)
-    try:
-        next(iter)
-    except StopIteration:
-        pass
-    return out_list
-
-
-@functools.singledispatch
-def _grab_on_key_list_inner(in_iter, search_keys, results):
+def grab_on_key_list(in_iter, search_keys):
     # If passed anything that is not a list or dict, pass
-    pass
+    yield from ()
 
 
-@_grab_on_key_list_inner.register
-def _(in_iter: dict, search_keys, results):
+@grab_on_key_list.register
+def _(in_iter: dict, search_keys: list):
     for key, value in in_iter.items():
-        if key == search_keys[0]:
-            out = _seach_for_nested_keys(in_iter, search_keys)
-            if out:
-                results.append(out)
-        if type(value) in [list, dict]:
-            yield from _grab_on_key_list_inner(value, search_keys, results)
+        try:
+            yield _search_for_nested_keys(in_iter, search_keys)
+        except (KeyError, TypeError):
+            pass
+        yield from grab_on_key_list(value, search_keys)
 
 
-def _seach_for_nested_keys(in_iter, search_keys):
-    out = in_iter
-    try:
-        for search_key in search_keys:
-            out = out[search_key]
-        return out
-    except KeyError:
-        return None
-
-
-@_grab_on_key_list_inner.register
-def _(in_iter: dict, search_keys, results):
+@grab_on_key_list.register
+def _(in_iter: list, search_keys):
     for value in in_iter:
-        if value == search_keys[0]:
-            out = _seach_for_nested_keys(value, search_keys)
-            if out:
-                results.append(out)
-        if type(value) in [list, dict]:
-            yield from _grab_on_key_list_inner(value, search_keys, results)
+        try:
+            yield _search_for_nested_keys(value, search_keys)
+        except (KeyError, TypeError):
+            pass
+        yield from grab_on_key_list(value, search_keys)
+
+
+def _search_for_nested_keys(in_iter: dict, search_keys: Any) -> Any:
+    out = in_iter
+    for search_key in search_keys:
+        out = out[search_key]
+    return out
 
 
 def schema_to_scopes(schema: dict) -> Iterable[str]:
@@ -179,20 +96,19 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     resolved_queries = ResolvingParser(spec_string=dumps(schema)).specification[
         "components"
     ]["schemas"]["FlowmachineQuerySchema"]
-    unique_scopes = []
+    unique_scopes = set()
     for tl_query in resolved_queries["oneOf"]:
         tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
-        print(f"Looking for {tl_query_name}")
+        logger.debug(f"Looking for {tl_query_name}")
         query_list = grab_on_key_list(
             tl_query,
             ["properties", "query_kind", "enum", 0],
         )
-        if query_list == []:
-            return []
+
         scopes_generator = (
             tl_schema_scope_string(tl_query, query) for query in query_list
         )
-        unique_scopes += list(set.union(*scopes_generator))
+        unique_scopes = set.union(unique_scopes, *scopes_generator)
     return sorted(unique_scopes)
 
 
