@@ -4,16 +4,13 @@
 import asyncio
 import collections
 import functools
-import pdb
 from copy import deepcopy
-from itertools import product
 from typing import Iterable, List, Optional, Tuple, Union, Set, Any
 from prance import ResolvingParser
 from rapidjson import dumps
 
 from quart import request, current_app
 
-import logging
 
 from flowapi.flowapi_errors import (
     JSONHTTPException,
@@ -22,9 +19,12 @@ from flowapi.flowapi_errors import (
 )
 
 
-def is_flat(in_iter):
+def is_flat(in_iter: Any) -> bool:
     """
-    Returns True if in_iter is flat (contains no dicts or lists)
+    Returns
+    ---------
+    bool
+        True if in_iter is flat (contains no dicts or lists)
     """
     if not isinstance(in_iter, collections.Container):
         return True
@@ -39,9 +39,9 @@ def _flatten_on_key_inner(root, key_of_interest):
     raise TypeError
 
 
-@_flatten_on_key_inner.register(dict)
+@_flatten_on_key_inner.register
 def _(
-    root,
+    root: dict,
     key_of_interest,
 ):
     for node, value in root.items():
@@ -56,9 +56,9 @@ def _(
                 yield value
 
 
-@_flatten_on_key_inner.register(list)
+@_flatten_on_key_inner.register
 def _(
-    root,
+    root: list,
     key_of_interest,
 ):
     for value in root:
@@ -76,20 +76,23 @@ def _clean_empties(in_dict, marker):
 def flatten_on_key(in_iter, key, _in_place=False):
     if not _in_place:
         in_iter = deepcopy(in_iter)
-    out = list(_flatten_on_key_inner(in_iter, key))
+    out = _flatten_on_key_inner(in_iter, key)
     clean_out = list(_clean_empties(flattened, key) for flattened in out)
     return clean_out
 
 
 def grab_on_key_list(in_iter, keys):
     """
-    Looks through the iterator and yields every value at the end of the chain of keys
-    :param in_iter:
-    :param key:
-    :return:
+    Looks through the iterator and returns every value at the end of the chain of `keys`
+    Parameters
+    ----------
+    in_iter : dict or list
+        A nested iterator
+    keys : list of str
+        The list of keys that will return a value (wherever it appears in `iter`).
     """
     # I'm not a fan of the mutate-passed-in-list approach; it feels like
-    # it's going against the philosophy of functional programmign, as it
+    # it's going against the philosophy of functional programming, as it
     # exploits a side-effect. But it works, so....
     out_list = []
     iter = _grab_on_key_list_inner(in_iter, keys, out_list)
@@ -106,8 +109,8 @@ def _grab_on_key_list_inner(in_iter, search_keys, results):
     pass
 
 
-@_grab_on_key_list_inner.register(dict)
-def _(in_iter, search_keys, results):
+@_grab_on_key_list_inner.register
+def _(in_iter: dict, search_keys, results):
     for key, value in in_iter.items():
         if key == search_keys[0]:
             out = _seach_for_nested_keys(in_iter, search_keys)
@@ -127,8 +130,8 @@ def _seach_for_nested_keys(in_iter, search_keys):
         return None
 
 
-@_grab_on_key_list_inner.register(list)
-def _(in_iter, search_keys, results):
+@_grab_on_key_list_inner.register
+def _(in_iter: dict, search_keys, results):
     for value in in_iter:
         if value == search_keys[0]:
             out = _seach_for_nested_keys(value, search_keys)
@@ -231,8 +234,18 @@ async def query_to_scopes(query_dict):
     }
     returns the scope triplets of the query in the form "agg_unit:tl_query:sub_query".
     Will always return "agg_unit:tl_query:tl_query"
-    :param query_dict:
-    :return:
+
+    Parameters
+    ----------
+    query_dict : dict
+        Query to build the list of scopes from
+
+    Raises
+    ------
+    MissingQueryKindError
+        if "query_kind" is missing from `query_dict`
+    BadQueryError
+        If something else is wrong with `query_dict`
     """
 
     try:
@@ -250,7 +263,12 @@ def tl_schema_scope_string(tl_query, query_string) -> set:
     """
     Given a top level (aggregate) query and a sub_query, return the scopes triplet for that query in
     the format 'geographic_area:top_level_query:sub_query'
-    :param tl_query:
+    Parameters
+    -----------
+    tl_query : dict
+        A query, as returned from `ResolvingParser`
+    query_string : str
+        The sub-query to build the scope for
     """
     out = set()
     tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]

@@ -471,13 +471,12 @@ class Scope(db.Model):
     name = db.Column(db.String)
     enabled = db.Column(db.Boolean, default=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
-    # TODO: Make sure scopes are unique within server
 
 
 class TokenHistory(db.Model):
     """
-    An instance of a token.
-    Is owned by one user, applies to one server, has an expiry time, encodes
+    All tokens that have been issued by this flowauth instance.
+    Each token is owned by one user, applies to one server, has an expiry time, encodes
     several capabilties for a server.
     """
 

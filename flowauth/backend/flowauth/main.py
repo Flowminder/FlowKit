@@ -56,13 +56,6 @@ def connect_logger():
     current_app.logger.info("Started")
 
 
-def connect_audit_logger():
-    channel = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter(
-        "{date}; Request: {request_id}; Event {message}", style="{"
-    )
-
-
 def set_xsrf_cookie(response):
     """
     Sets the csrf token used by csrf protect as a cookie to allow usage with

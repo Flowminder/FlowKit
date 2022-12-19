@@ -16,8 +16,6 @@ import pytest
 import asyncio
 import ast
 
-from unit.zmq_helpers import ZMQReply
-
 pytest_plugins = "pytest_asyncio"
 
 

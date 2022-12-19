@@ -60,7 +60,7 @@ def _validate_scope_server(scope, server):
 @login_required
 @admin_permission.require(http_exception=401)
 def get_role(role_id):
-    role = Role.query.filter(Role.id == role_id).first()  # First or error?
+    role = Role.query.filter(Role.id == role_id).first_or_404()
     return jsonify(role_to_dict(role))
 
 
@@ -133,7 +133,9 @@ def edit_role(role_id):
                 raise InvalidUsage(
                     "Role cannot have a maximum lifetime greater than server"
                 )
-
+        elif key not in Role.columns.keys():
+            current_app.logger.warning(f"Invalid key {key} in PATCH roles/{role_id}")
+            continue
         setattr(role, key, value)
     db.session.add(role)
     try:

@@ -280,3 +280,24 @@ def test_duplicate_role_name_patch(app, auth, client, test_servers):
         json={"name": "test_role_no_dupe"},
     )
     assert response.status_code == 200
+
+
+def test_invalid_payload_patch(app, auth, client, test_servers):
+    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+
+    role_payload = {
+        "name": "test_role",
+        "scopes": [
+            3,
+            4,
+        ],  # "run" and "dummy_agg_unit:dummy_scope:dummy_scope", server 1
+        "server_id": 1,
+        "latest_token_expiry": "2020-12-31T12:00:00.0Z",
+        "longest_token_life_minutes": 2 * 24 * 60,
+        "not_a_real_heading": 9999999,
+    }
+    response = client.post(
+        "roles/", headers={"X-CSRF-Token": csrf_cookie}, json=role_payload
+    )
+    assert response.status_code == 200
+    assert "not_a_real_heading" not in response.json.keys()
