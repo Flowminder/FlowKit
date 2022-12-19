@@ -137,7 +137,7 @@ def test_admin(app):
         return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
 
-@pytest.fixture  # (scope="session")
+@pytest.fixture
 @freeze_time("2020-12-31")
 def test_servers(app):
     with app.app_context():
@@ -160,27 +160,25 @@ def test_servers(app):
         return (dummy_server_a, dummy_server_b)
 
 
-@pytest.fixture  # (scope="session")
+@pytest.fixture
 def test_scopes(app, test_servers):
     with app.app_context():
         dummy_server_a, dummy_server_b = test_servers
         scopes = [
-            read_scope_a := Scope(
+            Scope(
                 name="get_result",
                 server=dummy_server_a,
             ),
-            read_scope_b := Scope(name="get_result", server=dummy_server_b),
-            run_scope := Scope(name="run", server=dummy_server_a),
-            dummy_query_scope := Scope(
-                name="dummy_agg_unit:dummy_query:dummy_query", server=dummy_server_a
-            ),
+            Scope(name="get_result", server=dummy_server_b),
+            Scope(name="run", server=dummy_server_a),
+            Scope(name="dummy_agg_unit:dummy_query:dummy_query", server=dummy_server_a),
         ]
         db.session.add_all(scopes)
         db.session.commit()
         return scopes
 
 
-@pytest.fixture  # (scope="session")
+@pytest.fixture
 @freeze_time("2020-12-31")
 def test_roles(app, test_scopes, test_servers):
     with app.app_context():
@@ -214,7 +212,7 @@ def test_roles(app, test_scopes, test_servers):
         return runner, reader, reader_b
 
 
-@pytest.fixture  # (scope="session")
+@pytest.fixture
 def test_user_with_roles(app, test_user, test_roles):
     with app.app_context():
         uid, uname, upass = test_user

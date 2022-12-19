@@ -139,8 +139,6 @@ def add_token(server_id):
     # feature todo: flag this to the user
     # This isn't about the user, so get these values from the server
 
-    current_app.logger.debug("token_expiry")
-
     if token_expiry < datetime.datetime.now():
         raise Unauthorized(f"Token for {current_user.username} expired")
 

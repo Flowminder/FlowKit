@@ -7,8 +7,8 @@ from flask import g, session
 
 
 def test_login(app, client, auth, test_user):
+    """Test that we can log in by posting a username and password as json"""
     with app.app_context():
-        """Test that we can log in by posting a username and password as json"""
         # test that signin route doesn't accept a get
         assert client.get("/signin").status_code == 405
         uid, username, password = test_user

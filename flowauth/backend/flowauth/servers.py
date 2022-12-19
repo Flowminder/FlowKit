@@ -174,8 +174,6 @@ def list_server_time_limits(server_id):
     on a server.
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
-    # I have no idea why this test is failing, it's been like this since before
-    # I started messing with stuff
     return jsonify(
         {
             "longest_token_life_minutes": server.longest_token_life_minutes,
@@ -194,7 +192,7 @@ def add_server():
     Notes
     -----
     Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ>, "secret_key":<key>,
-    "longest_token_life_minutes":<int>, "name":<server_name>, "scopes"[<list of scope stringss>], "role":[<list of role IDs>]}
+    "longest_token_life_minutes":<int>, "name":<server_name>, "scopes":[<list of scope strings>], "role":[<list of role IDs>]}
     """
     json = request.get_json()
     json["latest_token_expiry"] = datetime.datetime.strptime(
@@ -219,8 +217,8 @@ def add_server():
             latest_token_expiry=json["latest_token_expiry"],
             longest_token_life_minutes=json["longest_token_life_minutes"],
         )
-    except KeyError as e:
-        raise InvalidUsage from e
+    except KeyError as err:
+        raise InvalidUsage from err
     try:
         scopes_list = [
             Scope(name=scope_str, server=server) for scope_str in json["scopes"]
