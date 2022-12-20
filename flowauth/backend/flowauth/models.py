@@ -459,6 +459,19 @@ class Role(db.Model):
                 return False
         return True
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "scopes": sorted([scope.id for scope in self.scopes]),
+            "latest_token_expiry": self.latest_token_expiry.strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            "longest_token_life_minutes": self.longest_token_life_minutes,
+            "server": self.server_id,
+            "users": sorted([user.id for user in self.users]),
+        }
+
 
 class Scope(db.Model):
     """

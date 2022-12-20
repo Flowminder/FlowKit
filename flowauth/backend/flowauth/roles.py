@@ -16,31 +16,15 @@ blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))
 
 
-def role_to_dict(role):
-    return {
-        "id": role.id,
-        "name": role.name,
-        "scopes": sorted([scope.id for scope in role.scopes]),
-        "latest_token_expiry": role.latest_token_expiry.strftime(
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        ),
-        "longest_token_life_minutes": role.longest_token_life_minutes,
-        "server": role.server_id,
-        "users": sorted([user.id for user in role.users]),
-    }
-
-
 def roles_to_json(roles):
-    return jsonify(
-        sorted([role_to_dict(role) for role in roles], key=lambda x: x["id"])
-    )
+    return jsonify(sorted([role.to_dict() for role in roles], key=lambda x: x["id"]))
 
 
 @blueprint.route("/", methods=["GET"])
 @login_required
 @admin_permission.require(http_exception=401)
 def list_roles():
-    return jsonify([role_to_dict(role) for role in Role.query.all()])
+    return jsonify([role.to_dict() for role in Role.query.all()])
 
 
 @blueprint.route("/user/<user_id>")
@@ -48,7 +32,7 @@ def list_roles():
 @admin_permission.require(http_exception=401)
 def list_user_roles(user_id):
     user = User.query.filter(User.id == user_id).first_or_404()
-    return jsonify([role_to_dict(role) for role in user.roles])
+    return jsonify([role.to_dict() for role in user.roles])
 
 
 def _validate_scope_server(scope, server):
@@ -61,7 +45,7 @@ def _validate_scope_server(scope, server):
 @admin_permission.require(http_exception=401)
 def get_role(role_id):
     role = Role.query.filter(Role.id == role_id).first_or_404()
-    return jsonify(role_to_dict(role))
+    return jsonify(role.to_dict())
 
 
 @blueprint.route("/", methods=["POST"])
