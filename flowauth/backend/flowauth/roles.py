@@ -117,8 +117,8 @@ def edit_role(role_id):
     for key, value in edits.items():
         if key == "id":
             current_app.logger.warning("Cannot change role ID; ignoring")
-            pass
-        if key == "users":
+            continue
+        elif key == "users":
             value = [User.query.filter(User.id == uid).first() for uid in value]
         elif key == "scopes":
             value = [Scope.query.filter(Scope.id == sid).first() for sid in value]
@@ -133,7 +133,7 @@ def edit_role(role_id):
                 raise InvalidUsage(
                     "Role cannot have a maximum lifetime greater than server"
                 )
-        elif key not in Role.columns.keys():
+        elif key not in ["name", "server_id"]:
             current_app.logger.warning(f"Invalid key {key} in PATCH roles/{role_id}")
             continue
         setattr(role, key, value)
