@@ -133,16 +133,16 @@ def edit_role(role_id):
                 raise InvalidUsage(
                     "Role cannot have a maximum lifetime greater than server"
                 )
-        elif key not in ["name", "server_id"]:
+        elif key not in ["name"]:
             current_app.logger.warning(f"Invalid key {key} in PATCH roles/{role_id}")
-            continue
+            raise InvalidUsage(f"Invalid key {key} in PATCH request.")
         setattr(role, key, value)
     db.session.add(role)
     try:
         db.session.commit()
-    except IntegrityError as e:
+    except IntegrityError as err:
         db.session.rollback()
-        raise e
+        raise err
     current_app.logger.info(f"Role {role_id} updated with {edits}")
     # TODO: Add audit log here
     return list_roles()
