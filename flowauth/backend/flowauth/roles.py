@@ -128,7 +128,8 @@ def edit_role(role_id):
             value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
             if value > server.latest_token_expiry:
                 raise InvalidUsage("Role cannot exist past latest token in server")
-        elif key == "longest_token_lifetime_minutes":
+        elif key == "longest_token_life_minutes":
+            value = int(value)
             if value > server.longest_token_life_minutes:
                 raise InvalidUsage(
                     "Role cannot have a maximum lifetime greater than server"
