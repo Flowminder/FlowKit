@@ -32,7 +32,7 @@ def list_all_servers():
 @admin_permission.require(http_exception=401)
 def get_server(server_id):
     """
-    Get the id, name, and secret key of a server by its ID.
+    Get the id, name, token expiryand secret key of a server by its ID.
 
     Notes
     -----
@@ -79,27 +79,6 @@ def get_roles(server_id):
     )
 
 
-@blueprint.route("/servers/<server_id>/roles/<role_id>")
-@login_required
-@admin_permission.require(http_exception=401)
-def get_role(server_id, role_id):
-    """
-    As get_roles, but returns a single role
-    """
-    role = Role.query.filter(Role.id == role_id).filter(Role.server == server_id)
-    return jsonify(
-        {
-            "id": role.id,
-            "name": role.name,
-            "scopes": [scope.name for scope in role.scopes],
-            "latest_token_expiry": role.latest_token_expiry.strftime(
-                "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
-            "longest_token_life_minutes": role.longest_token_life_minutes,
-        }
-    )
-
-
 @blueprint.route("/servers/<server_id>/scopes", methods=["GET"])
 @login_required
 @admin_permission.require(http_exception=401)
@@ -129,7 +108,6 @@ def set_scopes(server_id):
     server_scopes = Scope.query.filter(Scope.server_id == server_id).all()
     for scope in server_scopes:
         db.session.delete(scope)
-    db.session.commit()
     for (
         scope,
         is_enabled,
@@ -148,7 +126,7 @@ def edit_scope_activation(server_id):
     Expects a json of the form {scope_string:True/False}
 
     """
-    # Removing until supported by
+    # Removing until supported by frontend
     raise NotImplemented
     json = request.get_json()
     scopes_to_edit = (
