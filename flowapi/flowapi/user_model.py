@@ -39,7 +39,9 @@ class UserObject:
                 granting_roles.append(role)
         if granting_roles:
             current_app.access_logger.info(
-                f"Permission for {requested_scopes} granted by {granting_roles}"
+                f"Permission for {requested_scopes} granted by {granting_roles}",
+                requested_scopes=requested_scopes,
+                granting_roles=granting_roles,
             )
             return True
         raise UserClaimsVerificationError
