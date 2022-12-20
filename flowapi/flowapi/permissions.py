@@ -27,7 +27,7 @@ except RuntimeError:
 
 @functools.singledispatch
 def grab_on_key_list(in_iter, search_keys):
-    # If passed anything that is not a list or dict, pass
+    # If passed anything that is not a list or dict, stop
     yield from ()
 
 
@@ -42,7 +42,7 @@ def _(in_iter: dict, search_keys: list):
 
 
 @grab_on_key_list.register
-def _(in_iter: list, search_keys):
+def _(in_iter: list, search_keys: list):
     for value in in_iter:
         try:
             yield _search_for_nested_keys(value, search_keys)
