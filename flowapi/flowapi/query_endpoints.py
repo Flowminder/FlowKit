@@ -67,17 +67,7 @@ async def run_query():
 
     """
     json_data = await request.json
-    # REVIEWER COMMENT: I'm not entirely sure that this is he right place for this check
-    try:
-        await current_user.can_run(query_json=json_data)
-    except KeyError as e:
-        return (
-            {
-                "status": "Error",
-                "msg": f"{e.args[0]} must be specified when running a query.",
-            },
-            400,
-        )
+    await current_user.can_run(query_json=json_data)
     current_app.query_run_logger.info("run_query", query=json_data)
     request.socket.send_json(
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
