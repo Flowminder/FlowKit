@@ -249,7 +249,26 @@ def test_list_scopes(client, auth, test_scopes, test_servers, test_admin):
     ]
 
 
-@pytest.mark.xfail
+def test_set_scopes(client, auth, test_scopes, test_servers, test_admin):
+    uid, uname, password = test_admin
+    response, csrf_cookie = auth.login(uname, password)
+    response = client.post(
+        "/admin/servers/1/scopes",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"get_result": True, "run": True, "dummy_simple_scope": True},
+    )
+    assert response.status_code == 200
+    response = client.get(
+        "/admin/servers/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
+    )
+    assert response.json == [
+        {"id": 1, "name": "get_result", "enabled": True},
+        {"id": 3, "name": "run", "enabled": True},
+        {"id": 5, "name": "dummy_simple_scope", "enabled": True},
+    ]
+
+
+@pytest.mark.skip("Disabling until enable scopes is back")
 def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
     uid, uname, password = test_admin
     response, csrf_cookie = auth.login(uname, password)

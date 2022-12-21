@@ -101,18 +101,26 @@ def list_scopes(server_id):
 @admin_permission.require(http_exception=401)
 def set_scopes(server_id):
     """
-    Sets the scopes on server_id to those supplied in the json
+    Sets the scopes on server_id to those supplied in the json.
+    Expects json of the form {scope_1_string:bool, scope_2_string:bool ...}
     """
     json = request.get_json()
     server = db.session.query(Server).filter(Server.id == server_id).first_or_404()
     server_scopes = Scope.query.filter(Scope.server_id == server_id).all()
-    for scope in server_scopes:
+    to_be_deleted = list(
+        filter(lambda srv_scope: srv_scope.name not in json.keys(), server_scopes)
+    )
+    new_names = list(
+        filter(
+            lambda new_scope_name: new_scope_name
+            not in [s.name for s in server_scopes],
+            json.keys(),
+        )
+    )
+    to_be_added = [Scope(name=name, server=server, enabled=True) for name in new_names]
+    for scope in to_be_deleted:
         db.session.delete(scope)
-    for (
-        scope,
-        is_enabled,
-    ) in json.items():  # Scope enabling set to True until enabling is fixed
-        db.session.add(Scope(name=scope, server=server, enabled=True))
+    db.session.add_all(to_be_added)
     db.session.commit()
     return list_scopes(server_id)
 
