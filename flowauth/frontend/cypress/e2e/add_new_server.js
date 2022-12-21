@@ -24,7 +24,7 @@ describe("Server management", function () {
 
   it("Add duplicate Server name", function () {
     cy.get("#new").click();
-    cy.get("#spec-upload-button").uploadFile("openapi.json");
+    cy.get("#spec-upload-button").uploadFile("api_spec.json");
     cy.get("#max-life").type("1234", {
       force: true,
     });
@@ -42,11 +42,11 @@ describe("Server management", function () {
     cy.get("#new").click();
     const server_name = Math.random().toString(36).substring(2, 15);
     cy.get("#spec-upload-button").then((subject) => {
-      cy.fixture("openapi.json").then((content) => {
+      cy.fixture("api_spec.json").then((content) => {
         const el = subject[0];
         content["components"]["securitySchemes"]["token"]["x-audience"] =
           server_name;
-        const testFile = new File([JSON.stringify(content)], "openapi.json");
+        const testFile = new File([JSON.stringify(content)], "api_spec.json");
         const dataTransfer = new DataTransfer();
 
         dataTransfer.items.add(testFile);
@@ -78,14 +78,14 @@ describe("Server management", function () {
     /* Supply an updated spec */
     cy.get("#spec-upload-button")
       .then((subject) => {
-        cy.fixture("openapi.json").then((content) => {
+        cy.fixture("api_spec.json").then((content) => {
           const el = subject[0];
           content["components"]["securitySchemes"]["token"]["x-audience"] =
             server_name;
           content["components"]["securitySchemes"]["token"][
             "x-security-scopes"
           ] = ["get_result", "test_scope"];
-          const testFile = new File([JSON.stringify(content)], "openapi.json");
+          const testFile = new File([JSON.stringify(content)], "api_spec.json");
           const dataTransfer = new DataTransfer();
 
           dataTransfer.items.add(testFile);

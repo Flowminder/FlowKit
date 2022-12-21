@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Changed `AIRFLOW__CORE__SQL_ALCHEMY_CONN` env var to `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`
 - RoleScopePicker component redesigned and reimplemented.
 - Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. [#3622](https://github.com/Flowminder/FlowKit/issues/3622)
+- `jwt` tokens now use `sub` instead of `identity` for `JWT_IDENTITY_CLAIM`.
+
 
 ### Fixed
 - Fixed a potential deadlock when using a small connection pool and `store`-ing queries
