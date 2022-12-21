@@ -624,19 +624,17 @@ def make_demodata():
 
     with (Path(__file__).parent / Path("demo_data/demo_scopes.json")).open() as spec:
         scopes_doc = json.load(spec)
-    scopes = [
-        Scope(name=scope_string, server=test_server)
+    scopes = {
+        scope_string: Scope(name=scope_string, server=test_server)
         for scope_string in scopes_doc["components"]["securitySchemes"]["token"][
             "x-security-scopes"
         ]
-    ]
-    reader_scope = list(filter(lambda scope: scope.name == "get_result", scopes))[0]
-    runner_scope = list(filter(lambda scope: scope.name == "run", scopes))[0]
-    dates_scope = list(
-        filter(lambda scope: scope.name == "get_available_dates", scopes)
-    )[0]
+    }
 
-    db.session.add_all(scopes)
+    reader_scope = scopes["get_result"]
+    runner_scope = scopes["run"]
+    dates_scope = scopes["get_available_dates"]
+    db.session.add_all(scopes.values())
 
     # Add roles to test server
     roles = [
