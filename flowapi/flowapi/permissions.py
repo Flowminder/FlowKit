@@ -27,6 +27,44 @@ except RuntimeError:
 
 @functools.singledispatch
 def grab_on_key_list(in_iter, search_keys):
+    """
+    Searches `in_iter`, a deeply-nested set of dicts and/or lists forming a tree,
+    for occurrences of `search_keys` nested directly within one another and
+    yields the value contained by the final search key
+    Parameters
+    ----------
+    in_iter : list or dict
+        A deeply-nested set of lists or dicts forming a tree
+    search_keys : list
+        A list of str and/or ints to search for within the tree
+
+    Yields
+    -------
+    An iterator of items at the end of search_keys
+
+    Examples
+    --------
+
+    >>> input = {"1": [{}, {}, {"3": "success"}]}
+    >>> keys = ["1", 2, "3"]
+    >>> list(grab_on_key_list(input, keys))
+    ["success"]
+
+    >>> input = {"outer": {"not_inner": "wrong", "inner": "right"}}
+    >>> keys = ["outer", "inner"]
+    >>> list(grab_on_key_list(input, keys))
+    ["right"]
+
+    >>> input = {
+    ...    "first": {"1": {"2": "first_inner"}},
+    ...    "second": {"1": {"2": "second_inner"}},
+    ...    "third": {"1": {"3": "not_needed"}},
+    ... }
+    >>> keys = ["1", "2"]
+    >>> list(grab_on_key_list(input, keys))
+    ["first_inner", "second_inner"]
+
+    """
     # If passed anything that is not a list or dict, stop
     yield from ()
 
