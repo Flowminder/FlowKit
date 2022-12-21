@@ -32,7 +32,7 @@ def list_all_servers():
 @admin_permission.require(http_exception=401)
 def get_server(server_id):
     """
-    Get the id, name, token expiryand secret key of a server by its ID.
+    Get the id, name, token expiry and secret key of a server by its ID.
 
     Notes
     -----
