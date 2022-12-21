@@ -77,7 +77,7 @@ setup(
         "numpy",
         "networkx",
         "pandas",
-        "pglast",
+        "pglast==4.1",
         "python-dateutil",
         "pytz",
         "python-louvain",
