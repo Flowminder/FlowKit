@@ -7,7 +7,7 @@ SELECT events.calls.datetime,
        events.calls.outgoing,
        events.calls.tac
 FROM events.calls
-WHERE (events.calls.datetime >= '2016-01-02 00:00:00')
-  AND (events.calls.datetime < '2016-01-04 00:00:00')
-  AND ((   (to_char(events.calls.datetime, 'HH24:MI') < '05:00')
-        OR (to_char(events.calls.datetime, 'HH24:MI') >= '21:00')))
+WHERE events.calls.datetime >= '2016-01-02 00:00:00'
+  AND events.calls.datetime < '2016-01-04 00:00:00'
+  AND (to_char(events.calls.datetime, 'HH24:MI') < '05:00'
+    OR to_char(events.calls.datetime, 'HH24:MI') >= '21:00')

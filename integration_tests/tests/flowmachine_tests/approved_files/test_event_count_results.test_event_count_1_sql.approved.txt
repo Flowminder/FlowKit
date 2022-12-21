@@ -2,13 +2,13 @@ SELECT subscriber,
        count(*) AS value
 FROM (SELECT events.calls.msisdn AS subscriber
       FROM events.calls
-      WHERE (events.calls.datetime >= '2016-01-02 00:00:00')
-        AND (events.calls.datetime < '2016-01-04 00:00:00')
+      WHERE events.calls.datetime >= '2016-01-02 00:00:00'
+        AND events.calls.datetime < '2016-01-04 00:00:00'
 
       UNION ALL
 
       SELECT events.sms.msisdn AS subscriber
       FROM events.sms
-      WHERE (events.sms.datetime >= '2016-01-02 00:00:00')
-        AND (events.sms.datetime < '2016-01-04 00:00:00')) AS u
+      WHERE events.sms.datetime >= '2016-01-02 00:00:00'
+        AND events.sms.datetime < '2016-01-04 00:00:00') AS u
 GROUP BY subscriber
