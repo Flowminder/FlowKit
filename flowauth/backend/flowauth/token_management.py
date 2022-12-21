@@ -147,7 +147,7 @@ def add_token(server_id):
         username=current_user.username,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
         lifetime=token_expiry - datetime.datetime.now(),
-        roles={role.name: sorted([ss.name for ss in role.scopes]) for role in roles},
+        roles={role.name: sorted(ss.name for ss in role.scopes) for role in roles},
     )
 
     history_entry = TokenHistory(
