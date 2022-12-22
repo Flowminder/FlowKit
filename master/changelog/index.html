@@ -8751,8 +8751,12 @@
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
+<li><em>Important</em>; tokens issued by previous versions of Flowauth are not compatible with this version. Users will need to regenerate tokens using the updated Flowauth.</li>
+<li>Move from <code>groups</code> to <code>roles</code> in flowauth; see <a href="https://github.com/Flowminder/FlowKit/pull/5163#issuecomment-1216480419">here</a> for full details. <a href="https://github.com/Flowminder/FlowKit/pull/5163">#5613</a></li>
 <li>Changed <code>AIRFLOW__CORE__SQL_ALCHEMY_CONN</code> env var to <code>AIRFLOW__DATABASE__SQL_ALCHEMY_CONN</code></li>
+<li>RoleScopePicker component redesigned and reimplemented.</li>
 <li>Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. <a href="https://github.com/Flowminder/FlowKit/issues/3622">#3622</a></li>
+<li><code>jwt</code> tokens now use <code>sub</code> instead of <code>identity</code> for <code>JWT_IDENTITY_CLAIM</code>.</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
