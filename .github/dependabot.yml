@@ -141,6 +141,8 @@ updates:
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "apache-airflow" # Airflow package version needs to stay in sync with Airflow docker image version
     labels:
       - FlowETL
   - package-ecosystem: pip
