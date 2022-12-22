@@ -1,5 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
 import logging
+import sys
 import uuid
 from functools import partial
 
@@ -13,6 +17,7 @@ from flask_principal import Principal, RoleNeed, UserNeed, identity_loaded
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 from flowauth.invalid_usage import InvalidUsage
 from flowauth.util import request_context_processor
+from sqlalchemy.exc import IntegrityError
 
 try:
     from uwsgidecorators import lock
@@ -76,6 +81,15 @@ def handle_invalid_usage(error):
     return response
 
 
+def handle_unique_error(error):
+    """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
+    _, _, error_message = error.args[0].partition(" ")
+    if "unique constraint" in error_message.lower():
+        return dict(status=400, statusText="Name already exists"), 400
+    else:
+        raise error
+
+
 def before_request():
     """
     Make sessions expire after 20 minutes of inactivity.
@@ -121,12 +135,12 @@ def create_app(test_config=None):
     )
     from .admin import blueprint as admin_blueprint
     from .users import blueprint as users_blueprint
-    from .groups import blueprint as groups_blueprint
     from .servers import blueprint as servers_blueprint
     from .token_management import blueprint as token_management_blueprint
     from .login import blueprint as login_blueprint
     from .user_settings import blueprint as user_settings_blueprint
     from .version import blueprint as version_blueprint
+    from .roles import blueprint as roles_blueprint
 
     app = Flask(__name__)
 
@@ -159,11 +173,11 @@ def create_app(test_config=None):
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(admin_blueprint, url_prefix="/admin")
-    app.register_blueprint(groups_blueprint, url_prefix="/admin")
     app.register_blueprint(servers_blueprint, url_prefix="/admin")
     app.register_blueprint(users_blueprint, url_prefix="/admin")
     app.register_blueprint(token_management_blueprint, url_prefix="/tokens")
     app.register_blueprint(user_settings_blueprint, url_prefix="/user")
+    app.register_blueprint(roles_blueprint, url_prefix="/roles")
 
     app.register_blueprint(version_blueprint)
 
@@ -196,6 +210,7 @@ def create_app(test_config=None):
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)
     app.errorhandler(InvalidUsage)(handle_invalid_usage)
+    app.errorhandler(IntegrityError)(handle_unique_error)
     app.before_request(before_request)
     login_manager.user_loader(load_user)
     identity_loaded.connect_via(app)(on_identity_loaded)

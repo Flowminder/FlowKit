@@ -59,7 +59,7 @@ async def test_expired_token(app):
         "nbf": 1548061881,
         "jti": "bada4e8a-bf33-4b2f-b02d-88a2c5fad180",
         "exp": 1548061920,
-        "identity": "TEST_USER",
+        "sub": "TEST_USER",
         "fresh": True,
         "type": "access",
         "user_claims": {},

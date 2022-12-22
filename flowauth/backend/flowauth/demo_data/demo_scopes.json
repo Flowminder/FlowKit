@@ -1,0 +1,3643 @@
+{
+  "components": {
+    "schemas": {
+      "ActiveAtReferenceLocationCounts": {
+        "properties": {
+          "query_kind": {
+            "enum": [
+              "active_at_reference_location_counts"
+            ], 
+            "type": "string"
+          }, 
+          "reference_locations": {
+            "$ref": "#/components/schemas/ReferenceLocation"
+          }, 
+          "unique_locations": {
+            "$ref": "#/components/schemas/UniqueLocations"
+          }
+        }, 
+        "type": "object"
+      }, 
+      "AggregateNetworkObjects": {
+        "properties": {
+          "aggregate_by": {
+            "enum": [
+              "second", 
+              "minute", 
+              "hour", 
+              "day", 
+              "month", 
+              "year", 
+              "century"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "aggregate_network_objects"
+            ], 
+            "type": "string"
+          }, 
+          "statistic": {
+            "enum": [
+              "avg", 
+              "max", 
+              "min", 
+              "median", 
+              "mode", 
+              "stddev", 
+              "variance"
+            ], 
+            "type": "string"
+          }, 
+          "total_network_objects": {
+            "$ref": "#/components/schemas/TotalNetworkObjects"
+          }
+        }, 
+        "required": [
+          "statistic", 
+          "total_network_objects", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "BernoulliRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true, 
+            "type": "boolean"
+          }, 
+          "fraction": {
+            "maximum": 1.0, 
+            "minimum": 0.0, 
+            "nullable": true, 
+            "type": "number"
+          }, 
+          "sampling_method": {
+            "enum": [
+              "bernoulli"
+            ], 
+            "type": "string"
+          }, 
+          "seed": {
+            "type": "number"
+          }, 
+          "size": {
+            "minimum": 1, 
+            "nullable": true, 
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "seed"
+        ], 
+        "type": "object"
+      }, 
+      "Bounds": {
+        "properties": {
+          "lower_bound": {
+            "type": "number"
+          }, 
+          "upper_bound": {
+            "type": "number"
+          }
+        }, 
+        "required": [
+          "lower_bound", 
+          "upper_bound"
+        ], 
+        "type": "object"
+      }, 
+      "CoalescedLocation": {
+        "properties": {
+          "fallback_location": {
+            "$ref": "#/components/schemas/MajorityLocation"
+          }, 
+          "preferred_location": {
+            "$ref": "#/components/schemas/MajorityLocation"
+          }, 
+          "query_kind": {
+            "enum": [
+              "coalesced_location"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "subscriber_location_weights": {
+            "$ref": "#/components/schemas/LocationVisits"
+          }, 
+          "weight_threshold": {
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "fallback_location", 
+          "preferred_location", 
+          "subscriber_location_weights", 
+          "weight_threshold", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "ConsecutiveTripsODMatrix": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "consecutive_trips_od_matrix"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "DFSTotalMetricAmount": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "metric": {
+            "enum": [
+              "amount", 
+              "commission", 
+              "fee", 
+              "discount"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "dfs_metric_total_amount"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "metric", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "DailyLocation": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "method": {
+            "enum": [
+              "last", 
+              "most-common"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "daily_location"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "date", 
+          "method", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "Displacement": {
+        "properties": {
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "query_kind": {
+            "enum": [
+              "displacement"
+            ], 
+            "type": "string"
+          }, 
+          "reference_location": {
+            "$ref": "#/components/schemas/ReferenceLocation"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "statistic": {
+            "enum": [
+              "avg", 
+              "max", 
+              "min", 
+              "median", 
+              "mode", 
+              "stddev", 
+              "variance"
+            ], 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "statistic", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "DummyQuery": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "dummy_delay": {
+            "default": 0, 
+            "type": "integer"
+          }, 
+          "dummy_param": {
+            "type": "string"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "dummy_query"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "dummy_param", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "EventCount": {
+        "properties": {
+          "direction": {
+            "enum": [
+              "in", 
+              "out", 
+              "both"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "query_kind": {
+            "enum": [
+              "event_count"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "FlowmachineQuerySchema": {
+        "discriminator": {
+          "mapping": {
+            "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts", 
+            "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects", 
+            "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix", 
+            "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount", 
+            "dummy_query": "#/components/schemas/DummyQuery", 
+            "flows": "#/components/schemas/Flows", 
+            "geography": "#/components/schemas/Geography", 
+            "histogram_aggregate": "#/components/schemas/HistogramAggregate", 
+            "inflows": "#/components/schemas/Inflows", 
+            "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate", 
+            "labelled_flows": "#/components/schemas/LabelledFlows", 
+            "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate", 
+            "location_event_counts": "#/components/schemas/LocationEventCounts", 
+            "location_introversion": "#/components/schemas/LocationIntroversion", 
+            "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate", 
+            "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix", 
+            "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix", 
+            "outflows": "#/components/schemas/Outflows", 
+            "spatial_aggregate": "#/components/schemas/SpatialAggregate", 
+            "total_network_objects": "#/components/schemas/TotalNetworkObjects", 
+            "trips_od_matrix": "#/components/schemas/TripsODMatrix", 
+            "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts", 
+            "unique_visitor_counts": "#/components/schemas/UniqueVisitorCounts", 
+            "unmoving_at_reference_location_counts": "#/components/schemas/UnmovingAtReferenceLocationCounts", 
+            "unmoving_counts": "#/components/schemas/UnmovingCounts"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DummyQuery"
+          }, 
+          {
+            "$ref": "#/components/schemas/Flows"
+          }, 
+          {
+            "$ref": "#/components/schemas/Inflows"
+          }, 
+          {
+            "$ref": "#/components/schemas/Outflows"
+          }, 
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
+          }, 
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+          }, 
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+          }, 
+          {
+            "$ref": "#/components/schemas/Geography"
+          }, 
+          {
+            "$ref": "#/components/schemas/LocationEventCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/UniqueSubscriberCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/LocationIntroversion"
+          }, 
+          {
+            "$ref": "#/components/schemas/TotalNetworkObjects"
+          }, 
+          {
+            "$ref": "#/components/schemas/AggregateNetworkObjects"
+          }, 
+          {
+            "$ref": "#/components/schemas/DFSTotalMetricAmount"
+          }, 
+          {
+            "$ref": "#/components/schemas/SpatialAggregate"
+          }, 
+          {
+            "$ref": "#/components/schemas/JoinedSpatialAggregate"
+          }, 
+          {
+            "$ref": "#/components/schemas/HistogramAggregate"
+          }, 
+          {
+            "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/UniqueVisitorCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
+          }, 
+          {
+            "$ref": "#/components/schemas/UnmovingCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/UnmovingAtReferenceLocationCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/TripsODMatrix"
+          }, 
+          {
+            "$ref": "#/components/schemas/LabelledSpatialAggregate"
+          }, 
+          {
+            "$ref": "#/components/schemas/LabelledFlows"
+          }
+        ]
+      }, 
+      "Flows": {
+        "properties": {
+          "from_location": {
+            "$ref": "#/components/schemas/InputToFlows"
+          }, 
+          "join_type": {
+            "default": "inner", 
+            "enum": [
+              "inner", 
+              "full outer", 
+              "left", 
+              "right", 
+              "left outer", 
+              "right outer"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "flows"
+            ], 
+            "type": "string"
+          }, 
+          "to_location": {
+            "$ref": "#/components/schemas/InputToFlows"
+          }
+        }, 
+        "required": [
+          "from_location", 
+          "to_location", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "Geography": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "geography"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "Handset": {
+        "properties": {
+          "characteristic": {
+            "enum": [
+              "hnd_type", 
+              "brand", 
+              "model", 
+              "software_os_name", 
+              "software_os_vendor"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "method": {
+            "enum": [
+              "last", 
+              "most-common"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "handset"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "HistogramAggregate": {
+        "properties": {
+          "bins": {
+            "$ref": "#/components/schemas/HistogramBins"
+          }, 
+          "metric": {
+            "$ref": "#/components/schemas/HistogrammableMetrics"
+          }, 
+          "query_kind": {
+            "enum": [
+              "histogram_aggregate"
+            ], 
+            "type": "string"
+          }, 
+          "range": {
+            "$ref": "#/components/schemas/Bounds"
+          }
+        }, 
+        "required": [
+          "metric", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "HistogramBins": {
+        "properties": {
+          "bin_list": {
+            "items": {
+              "type": "number"
+            }, 
+            "type": "array"
+          }, 
+          "n_bins": {
+            "type": "integer"
+          }
+        }, 
+        "type": "object"
+      }, 
+      "HistogrammableMetrics": {
+        "discriminator": {
+          "mapping": {
+            "displacement": "#/components/schemas/Displacement", 
+            "event_count": "#/components/schemas/EventCount", 
+            "nocturnal_events": "#/components/schemas/NocturnalEvents", 
+            "pareto_interactions": "#/components/schemas/ParetoInteractions", 
+            "radius_of_gyration": "#/components/schemas/RadiusOfGyration", 
+            "subscriber_degree": "#/components/schemas/SubscriberDegree", 
+            "topup_amount": "#/components/schemas/TopUpAmount", 
+            "topup_balance": "#/components/schemas/TopUpBalance", 
+            "total_active_periods": "#/components/schemas/TotalActivePeriods", 
+            "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RadiusOfGyration"
+          }, 
+          {
+            "$ref": "#/components/schemas/UniqueLocationCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/TopUpBalance"
+          }, 
+          {
+            "$ref": "#/components/schemas/SubscriberDegree"
+          }, 
+          {
+            "$ref": "#/components/schemas/TopUpAmount"
+          }, 
+          {
+            "$ref": "#/components/schemas/EventCount"
+          }, 
+          {
+            "$ref": "#/components/schemas/ParetoInteractions"
+          }, 
+          {
+            "$ref": "#/components/schemas/NocturnalEvents"
+          }, 
+          {
+            "$ref": "#/components/schemas/Displacement"
+          }, 
+          {
+            "$ref": "#/components/schemas/TotalActivePeriods"
+          }
+        ]
+      }, 
+      "Hours": {
+        "properties": {
+          "end_hour": {
+            "maximum": 24, 
+            "minimum": 0, 
+            "type": "integer"
+          }, 
+          "start_hour": {
+            "maximum": 24, 
+            "minimum": 0, 
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "end_hour", 
+          "start_hour"
+        ], 
+        "type": "object"
+      }, 
+      "Inflows": {
+        "properties": {
+          "from_location": {
+            "$ref": "#/components/schemas/InputToFlows"
+          }, 
+          "join_type": {
+            "default": "inner", 
+            "enum": [
+              "inner", 
+              "full outer", 
+              "left", 
+              "right", 
+              "left outer", 
+              "right outer"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "inflows"
+            ], 
+            "type": "string"
+          }, 
+          "to_location": {
+            "$ref": "#/components/schemas/InputToFlows"
+          }
+        }, 
+        "required": [
+          "from_location", 
+          "to_location", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "InputToFlows": {
+        "discriminator": {
+          "mapping": {
+            "coalesced_location": "#/components/schemas/CoalescedLocation", 
+            "daily_location": "#/components/schemas/DailyLocation", 
+            "majority_location": "#/components/schemas/MajorityLocation", 
+            "modal_location": "#/components/schemas/ModalLocation", 
+            "most_frequent_location": "#/components/schemas/MostFrequentLocation", 
+            "unique_locations": "#/components/schemas/UniqueLocations", 
+            "visited_most_days": "#/components/schemas/VisitedMostDays"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DailyLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/ModalLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/MostFrequentLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/VisitedMostDays"
+          }, 
+          {
+            "$ref": "#/components/schemas/MajorityLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/UniqueLocations"
+          }
+        ]
+      }, 
+      "InputToModalLocation": {
+        "discriminator": {
+          "mapping": {
+            "daily_location": "#/components/schemas/DailyLocation"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DailyLocation"
+          }
+        ]
+      }, 
+      "JoinableMetrics": {
+        "discriminator": {
+          "mapping": {
+            "displacement": "#/components/schemas/Displacement", 
+            "event_count": "#/components/schemas/EventCount", 
+            "handset": "#/components/schemas/Handset", 
+            "nocturnal_events": "#/components/schemas/NocturnalEvents", 
+            "pareto_interactions": "#/components/schemas/ParetoInteractions", 
+            "radius_of_gyration": "#/components/schemas/RadiusOfGyration", 
+            "subscriber_degree": "#/components/schemas/SubscriberDegree", 
+            "topup_amount": "#/components/schemas/TopUpAmount", 
+            "topup_balance": "#/components/schemas/TopUpBalance", 
+            "total_active_periods": "#/components/schemas/TotalActivePeriods", 
+            "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RadiusOfGyration"
+          }, 
+          {
+            "$ref": "#/components/schemas/UniqueLocationCounts"
+          }, 
+          {
+            "$ref": "#/components/schemas/TopUpBalance"
+          }, 
+          {
+            "$ref": "#/components/schemas/SubscriberDegree"
+          }, 
+          {
+            "$ref": "#/components/schemas/TopUpAmount"
+          }, 
+          {
+            "$ref": "#/components/schemas/EventCount"
+          }, 
+          {
+            "$ref": "#/components/schemas/Handset"
+          }, 
+          {
+            "$ref": "#/components/schemas/ParetoInteractions"
+          }, 
+          {
+            "$ref": "#/components/schemas/NocturnalEvents"
+          }, 
+          {
+            "$ref": "#/components/schemas/Displacement"
+          }, 
+          {
+            "$ref": "#/components/schemas/TotalActivePeriods"
+          }
+        ]
+      }, 
+      "JoinedSpatialAggregate": {
+        "properties": {
+          "locations": {
+            "$ref": "#/components/schemas/ReferenceLocation"
+          }, 
+          "method": {
+            "enum": [
+              "avg", 
+              "mode", 
+              "min", 
+              "max", 
+              "median", 
+              "stddev", 
+              "distr", 
+              "variance"
+            ], 
+            "type": "string"
+          }, 
+          "metric": {
+            "$ref": "#/components/schemas/JoinableMetrics"
+          }, 
+          "query_kind": {
+            "enum": [
+              "joined_spatial_aggregate"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "locations", 
+          "metric", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "LabelledFlows": {
+        "properties": {
+          "from_location": {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          }, 
+          "join_type": {
+            "default": "inner", 
+            "enum": [
+              "inner", 
+              "full outer", 
+              "left", 
+              "right", 
+              "left outer", 
+              "right outer"
+            ], 
+            "type": "string"
+          }, 
+          "labels": {
+            "$ref": "#/components/schemas/MobilityClassification"
+          }, 
+          "query_kind": {
+            "enum": [
+              "labelled_flows"
+            ], 
+            "type": "string"
+          }, 
+          "to_location": {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          }
+        }, 
+        "required": [
+          "from_location", 
+          "labels", 
+          "to_location", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "LabelledSpatialAggregate": {
+        "properties": {
+          "labels": {
+            "$ref": "#/components/schemas/MobilityClassification"
+          }, 
+          "locations": {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          }, 
+          "query_kind": {
+            "enum": [
+              "labelled_spatial_aggregate"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "labels", 
+          "locations", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "LocationEventCounts": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "direction": {
+            "enum": [
+              "in", 
+              "out", 
+              "both"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "interval": {
+            "enum": [
+              "hour", 
+              "min", 
+              "day"
+            ], 
+            "type": "string"
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "location_event_counts"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "direction", 
+          "end_date", 
+          "interval", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "LocationIntroversion": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "direction": {
+            "enum": [
+              "in", 
+              "out", 
+              "both"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "location_introversion"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "LocationVisits": {
+        "properties": {
+          "locations": {
+            "items": {
+              "$ref": "#/components/schemas/VisitableLocation"
+            }, 
+            "minItems": 1, 
+            "type": "array"
+          }, 
+          "query_kind": {
+            "enum": [
+              "location_visits"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }
+        }, 
+        "type": "object"
+      }, 
+      "MajorityLocation": {
+        "properties": {
+          "include_unlocatable": {
+            "default": false, 
+            "type": "boolean"
+          }, 
+          "query_kind": {
+            "enum": [
+              "majority_location"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "subscriber_location_weights": {
+            "$ref": "#/components/schemas/WeightedLocationQueries"
+          }
+        }, 
+        "required": [
+          "subscriber_location_weights", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "MeaningfulLocationsAggregate": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "label": {
+            "type": "string"
+          }, 
+          "labels": {
+            "additionalProperties": {
+              "type": "object"
+            }, 
+            "type": "object"
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "meaningful_locations_aggregate"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "tower_cluster_call_threshold": {
+            "type": "integer"
+          }, 
+          "tower_cluster_radius": {
+            "type": "number"
+          }, 
+          "tower_day_of_week_scores": {
+            "additionalProperties": {
+              "maximum": 1.0, 
+              "minimum": -1.0, 
+              "type": "number"
+            }, 
+            "type": "object"
+          }, 
+          "tower_hour_of_day_scores": {
+            "items": {
+              "maximum": 1.0, 
+              "minimum": -1.0, 
+              "type": "number"
+            }, 
+            "maxItems": 24, 
+            "minItems": 24, 
+            "type": "array"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "label", 
+          "labels", 
+          "start_date", 
+          "tower_day_of_week_scores", 
+          "tower_hour_of_day_scores", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "MeaningfulLocationsBetweenDatesODMatrix": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date_a": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "end_date_b": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "label": {
+            "type": "string"
+          }, 
+          "labels": {
+            "additionalProperties": {
+              "type": "object"
+            }, 
+            "type": "object"
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "meaningful_locations_between_dates_od_matrix"
+            ], 
+            "type": "string"
+          }, 
+          "start_date_a": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "start_date_b": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "tower_cluster_call_threshold": {
+            "type": "integer"
+          }, 
+          "tower_cluster_radius": {
+            "type": "number"
+          }, 
+          "tower_day_of_week_scores": {
+            "additionalProperties": {
+              "maximum": 1.0, 
+              "minimum": -1.0, 
+              "type": "number"
+            }, 
+            "type": "object"
+          }, 
+          "tower_hour_of_day_scores": {
+            "items": {
+              "maximum": 1.0, 
+              "minimum": -1.0, 
+              "type": "number"
+            }, 
+            "maxItems": 24, 
+            "minItems": 24, 
+            "type": "array"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date_a", 
+          "end_date_b", 
+          "label", 
+          "start_date_a", 
+          "start_date_b", 
+          "tower_day_of_week_scores", 
+          "tower_hour_of_day_scores", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "MeaningfulLocationsBetweenLabelODMatrix": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "label_a": {
+            "type": "string"
+          }, 
+          "label_b": {
+            "type": "string"
+          }, 
+          "labels": {
+            "additionalProperties": {
+              "type": "object"
+            }, 
+            "type": "object"
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "meaningful_locations_between_label_od_matrix"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "tower_cluster_call_threshold": {
+            "type": "integer"
+          }, 
+          "tower_cluster_radius": {
+            "type": "number"
+          }, 
+          "tower_day_of_week_scores": {
+            "additionalProperties": {
+              "maximum": 1.0, 
+              "minimum": -1.0, 
+              "type": "number"
+            }, 
+            "type": "object"
+          }, 
+          "tower_hour_of_day_scores": {
+            "items": {
+              "maximum": 1.0, 
+              "minimum": -1.0, 
+              "type": "number"
+            }, 
+            "maxItems": 24, 
+            "minItems": 24, 
+            "type": "array"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "label_a", 
+          "label_b", 
+          "start_date", 
+          "tower_day_of_week_scores", 
+          "tower_hour_of_day_scores", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "MobilityClassification": {
+        "properties": {
+          "locations": {
+            "items": {
+              "$ref": "#/components/schemas/CoalescedLocation"
+            }, 
+            "minItems": 1, 
+            "type": "array"
+          }, 
+          "query_kind": {
+            "enum": [
+              "mobility_classification"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "stay_length_threshold": {
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "stay_length_threshold", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "ModalLocation": {
+        "properties": {
+          "locations": {
+            "items": {
+              "$ref": "#/components/schemas/InputToModalLocation"
+            }, 
+            "minItems": 1, 
+            "type": "array"
+          }, 
+          "query_kind": {
+            "enum": [
+              "modal_location"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }
+        }, 
+        "type": "object"
+      }, 
+      "MostFrequentLocation": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "most_frequent_location"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "NocturnalEvents": {
+        "properties": {
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "night_end_hour": {
+            "maximum": 23, 
+            "minimum": 0, 
+            "type": "integer"
+          }, 
+          "night_start_hour": {
+            "maximum": 23, 
+            "minimum": 0, 
+            "type": "integer"
+          }, 
+          "query_kind": {
+            "enum": [
+              "nocturnal_events"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "Outflows": {
+        "properties": {
+          "from_location": {
+            "$ref": "#/components/schemas/InputToFlows"
+          }, 
+          "join_type": {
+            "default": "inner", 
+            "enum": [
+              "inner", 
+              "full outer", 
+              "left", 
+              "right", 
+              "left outer", 
+              "right outer"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "outflows"
+            ], 
+            "type": "string"
+          }, 
+          "to_location": {
+            "$ref": "#/components/schemas/InputToFlows"
+          }
+        }, 
+        "required": [
+          "from_location", 
+          "to_location", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "ParetoInteractions": {
+        "properties": {
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "proportion": {
+            "maximum": 1.0, 
+            "minimum": 0.0, 
+            "type": "number"
+          }, 
+          "query_kind": {
+            "enum": [
+              "pareto_interactions"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "proportion", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "RadiusOfGyration": {
+        "properties": {
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "query_kind": {
+            "enum": [
+              "radius_of_gyration"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "RandomIDsRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true, 
+            "type": "boolean"
+          }, 
+          "fraction": {
+            "maximum": 1.0, 
+            "minimum": 0.0, 
+            "nullable": true, 
+            "type": "number"
+          }, 
+          "sampling_method": {
+            "enum": [
+              "random_ids"
+            ], 
+            "type": "string"
+          }, 
+          "seed": {
+            "maximum": 1.0, 
+            "minimum": -1.0, 
+            "type": "number"
+          }, 
+          "size": {
+            "minimum": 1, 
+            "nullable": true, 
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "seed"
+        ], 
+        "type": "object"
+      }, 
+      "RandomSample": {
+        "discriminator": {
+          "mapping": {
+            "bernoulli": "#/components/schemas/BernoulliRandomSample", 
+            "random_ids": "#/components/schemas/RandomIDsRandomSample", 
+            "system": "#/components/schemas/SystemRandomSample"
+          }, 
+          "propertyName": "sampling_method"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SystemRandomSample"
+          }, 
+          {
+            "$ref": "#/components/schemas/BernoulliRandomSample"
+          }, 
+          {
+            "$ref": "#/components/schemas/RandomIDsRandomSample"
+          }
+        ]
+      }, 
+      "ReferenceLocation": {
+        "discriminator": {
+          "mapping": {
+            "coalesced_location": "#/components/schemas/CoalescedLocation", 
+            "daily_location": "#/components/schemas/DailyLocation", 
+            "majority_location": "#/components/schemas/MajorityLocation", 
+            "modal_location": "#/components/schemas/ModalLocation", 
+            "most_frequent_location": "#/components/schemas/MostFrequentLocation", 
+            "visited_most_days": "#/components/schemas/VisitedMostDays"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DailyLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/ModalLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/MostFrequentLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/VisitedMostDays"
+          }, 
+          {
+            "$ref": "#/components/schemas/MajorityLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/CoalescedLocation"
+          }
+        ]
+      }, 
+      "SpatialAggregate": {
+        "properties": {
+          "locations": {
+            "$ref": "#/components/schemas/ReferenceLocation"
+          }, 
+          "query_kind": {
+            "enum": [
+              "spatial_aggregate"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "locations", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "SubscriberDegree": {
+        "properties": {
+          "direction": {
+            "enum": [
+              "in", 
+              "out", 
+              "both"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "query_kind": {
+            "enum": [
+              "subscriber_degree"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "SystemRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true, 
+            "type": "boolean"
+          }, 
+          "fraction": {
+            "maximum": 1.0, 
+            "minimum": 0.0, 
+            "nullable": true, 
+            "type": "number"
+          }, 
+          "sampling_method": {
+            "enum": [
+              "system"
+            ], 
+            "type": "string"
+          }, 
+          "seed": {
+            "type": "number"
+          }, 
+          "size": {
+            "minimum": 1, 
+            "nullable": true, 
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "seed"
+        ], 
+        "type": "object"
+      }, 
+      "TopUpAmount": {
+        "properties": {
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "query_kind": {
+            "enum": [
+              "topup_amount"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "statistic": {
+            "enum": [
+              "avg", 
+              "max", 
+              "min", 
+              "median", 
+              "mode", 
+              "stddev", 
+              "variance"
+            ], 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "statistic", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "TopUpBalance": {
+        "properties": {
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "query_kind": {
+            "enum": [
+              "topup_balance"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "statistic": {
+            "enum": [
+              "avg", 
+              "max", 
+              "min", 
+              "median", 
+              "mode", 
+              "stddev", 
+              "variance"
+            ], 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "end_date", 
+          "start_date", 
+          "statistic", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "TotalActivePeriods": {
+        "properties": {
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "period_length": {
+            "default": 1, 
+            "type": "integer"
+          }, 
+          "period_unit": {
+            "default": "days", 
+            "enum": [
+              "days", 
+              "hours", 
+              "minutes"
+            ], 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "total_active_periods"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "total_periods": {
+            "type": "integer"
+          }
+        }, 
+        "required": [
+          "start_date", 
+          "total_periods", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "TotalNetworkObjects": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "total_network_objects"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "total_by": {
+            "default": "day", 
+            "enum": [
+              "second", 
+              "minute", 
+              "hour", 
+              "day", 
+              "month", 
+              "year"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "TripsODMatrix": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "trips_od_matrix"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "UniqueLocationCounts": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "unique_location_counts"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "UniqueLocations": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "unique_locations"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "UniqueSubscriberCounts": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "unique_subscriber_counts"
+            ], 
+            "type": "string"
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "UniqueVisitorCounts": {
+        "properties": {
+          "active_at_reference_location_counts": {
+            "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+          }, 
+          "query_kind": {
+            "enum": [
+              "unique_visitor_counts"
+            ], 
+            "type": "string"
+          }, 
+          "unique_subscriber_counts": {
+            "$ref": "#/components/schemas/UniqueSubscriberCounts"
+          }
+        }, 
+        "type": "object"
+      }, 
+      "UnmovingAtReferenceLocationCounts": {
+        "properties": {
+          "locations": {
+            "$ref": "#/components/schemas/UniqueLocations"
+          }, 
+          "query_kind": {
+            "enum": [
+              "unmoving_at_reference_location_counts"
+            ], 
+            "type": "string"
+          }, 
+          "reference_locations": {
+            "$ref": "#/components/schemas/ReferenceLocation"
+          }
+        }, 
+        "type": "object"
+      }, 
+      "UnmovingCounts": {
+        "properties": {
+          "locations": {
+            "$ref": "#/components/schemas/UniqueLocations"
+          }, 
+          "query_kind": {
+            "enum": [
+              "unmoving_counts"
+            ], 
+            "type": "string"
+          }
+        }, 
+        "type": "object"
+      }, 
+      "VisitableLocation": {
+        "discriminator": {
+          "mapping": {
+            "daily_location": "#/components/schemas/DailyLocation", 
+            "modal_location": "#/components/schemas/ModalLocation"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DailyLocation"
+          }, 
+          {
+            "$ref": "#/components/schemas/ModalLocation"
+          }
+        ]
+      }, 
+      "VisitedMostDays": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0", 
+              "admin1", 
+              "admin2", 
+              "admin3", 
+              "lon-lat"
+            ], 
+            "type": "string"
+          }, 
+          "end_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "event_types": {
+            "default": null, 
+            "items": {
+              "enum": [
+                "calls", 
+                "sms", 
+                "mds", 
+                "topups"
+              ], 
+              "type": "string"
+            }, 
+            "minItems": 1, 
+            "nullable": true, 
+            "type": "array"
+          }, 
+          "geom_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "geom_table_join_column": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ], 
+            "default": null, 
+            "nullable": true
+          }, 
+          "mapping_table": {
+            "nullable": true, 
+            "type": "string"
+          }, 
+          "query_kind": {
+            "enum": [
+              "visited_most_days"
+            ], 
+            "type": "string"
+          }, 
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ], 
+            "nullable": true
+          }, 
+          "start_date": {
+            "format": "date-time", 
+            "type": "string"
+          }, 
+          "subscriber_subset": {
+            "nullable": true, 
+            "type": "string"
+          }
+        }, 
+        "required": [
+          "aggregation_unit", 
+          "end_date", 
+          "start_date", 
+          "query_kind"
+        ], 
+        "type": "object"
+      }, 
+      "WeightedLocationQueries": {
+        "discriminator": {
+          "mapping": {
+            "location_visits": "#/components/schemas/LocationVisits"
+          }, 
+          "propertyName": "query_kind"
+        }, 
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/LocationVisits"
+          }
+        ]
+      }
+    }, 
+    "securitySchemes": {
+      "token": {
+        "bearerFormat": "JWT", 
+        "scheme": "bearer", 
+        "type": "http", 
+        "x-audience": "TEST_SERVER", 
+        "x-security-scopes": [
+          "admin0:consecutive_trips_od_matrix:consecutive_trips_od_matrix", 
+          "admin0:dfs_metric_total_amount:dfs_metric_total_amount", 
+          "admin0:dummy_query:dummy_query", 
+          "admin0:geography:geography", 
+          "admin0:location_event_counts:location_event_counts", 
+          "admin0:location_introversion:location_introversion", 
+          "admin0:meaningful_locations_aggregate:meaningful_locations_aggregate", 
+          "admin0:meaningful_locations_between_dates_od_matrix:meaningful_locations_between_dates_od_matrix", 
+          "admin0:meaningful_locations_between_label_od_matrix:meaningful_locations_between_label_od_matrix", 
+          "admin0:total_network_objects:total_network_objects", 
+          "admin0:trips_od_matrix:trips_od_matrix", 
+          "admin0:unique_subscriber_counts:unique_subscriber_counts", 
+          "admin1:consecutive_trips_od_matrix:consecutive_trips_od_matrix", 
+          "admin1:dfs_metric_total_amount:dfs_metric_total_amount", 
+          "admin1:dummy_query:dummy_query", 
+          "admin1:geography:geography", 
+          "admin1:location_event_counts:location_event_counts", 
+          "admin1:location_introversion:location_introversion", 
+          "admin1:meaningful_locations_aggregate:meaningful_locations_aggregate", 
+          "admin1:meaningful_locations_between_dates_od_matrix:meaningful_locations_between_dates_od_matrix", 
+          "admin1:meaningful_locations_between_label_od_matrix:meaningful_locations_between_label_od_matrix", 
+          "admin1:total_network_objects:total_network_objects", 
+          "admin1:trips_od_matrix:trips_od_matrix", 
+          "admin1:unique_subscriber_counts:unique_subscriber_counts", 
+          "admin2:consecutive_trips_od_matrix:consecutive_trips_od_matrix", 
+          "admin2:dfs_metric_total_amount:dfs_metric_total_amount", 
+          "admin2:dummy_query:dummy_query", 
+          "admin2:geography:geography", 
+          "admin2:location_event_counts:location_event_counts", 
+          "admin2:location_introversion:location_introversion", 
+          "admin2:meaningful_locations_aggregate:meaningful_locations_aggregate", 
+          "admin2:meaningful_locations_between_dates_od_matrix:meaningful_locations_between_dates_od_matrix", 
+          "admin2:meaningful_locations_between_label_od_matrix:meaningful_locations_between_label_od_matrix", 
+          "admin2:total_network_objects:total_network_objects", 
+          "admin2:trips_od_matrix:trips_od_matrix", 
+          "admin2:unique_subscriber_counts:unique_subscriber_counts", 
+          "admin3:consecutive_trips_od_matrix:consecutive_trips_od_matrix", 
+          "admin3:dfs_metric_total_amount:dfs_metric_total_amount", 
+          "admin3:dummy_query:dummy_query", 
+          "admin3:geography:geography", 
+          "admin3:location_event_counts:location_event_counts", 
+          "admin3:location_introversion:location_introversion", 
+          "admin3:meaningful_locations_aggregate:meaningful_locations_aggregate", 
+          "admin3:meaningful_locations_between_dates_od_matrix:meaningful_locations_between_dates_od_matrix", 
+          "admin3:meaningful_locations_between_label_od_matrix:meaningful_locations_between_label_od_matrix", 
+          "admin3:total_network_objects:total_network_objects", 
+          "admin3:trips_od_matrix:trips_od_matrix", 
+          "admin3:unique_subscriber_counts:unique_subscriber_counts", 
+          "get_available_dates", 
+          "get_result", 
+          "lon-lat:consecutive_trips_od_matrix:consecutive_trips_od_matrix", 
+          "lon-lat:dfs_metric_total_amount:dfs_metric_total_amount", 
+          "lon-lat:dummy_query:dummy_query", 
+          "lon-lat:geography:geography", 
+          "lon-lat:location_event_counts:location_event_counts", 
+          "lon-lat:location_introversion:location_introversion", 
+          "lon-lat:meaningful_locations_aggregate:meaningful_locations_aggregate", 
+          "lon-lat:meaningful_locations_between_dates_od_matrix:meaningful_locations_between_dates_od_matrix", 
+          "lon-lat:meaningful_locations_between_label_od_matrix:meaningful_locations_between_label_od_matrix", 
+          "lon-lat:total_network_objects:total_network_objects", 
+          "lon-lat:trips_od_matrix:trips_od_matrix", 
+          "lon-lat:unique_subscriber_counts:unique_subscriber_counts", 
+          "run", 
+          "unset:active_at_reference_location_counts:active_at_reference_location_counts", 
+          "unset:active_at_reference_location_counts:coalesced_location", 
+          "unset:active_at_reference_location_counts:daily_location", 
+          "unset:active_at_reference_location_counts:location_visits", 
+          "unset:active_at_reference_location_counts:majority_location", 
+          "unset:active_at_reference_location_counts:modal_location", 
+          "unset:active_at_reference_location_counts:most_frequent_location", 
+          "unset:active_at_reference_location_counts:unique_locations", 
+          "unset:active_at_reference_location_counts:visited_most_days", 
+          "unset:aggregate_network_objects:aggregate_network_objects", 
+          "unset:aggregate_network_objects:total_network_objects", 
+          "unset:flows:coalesced_location", 
+          "unset:flows:daily_location", 
+          "unset:flows:flows", 
+          "unset:flows:location_visits", 
+          "unset:flows:majority_location", 
+          "unset:flows:modal_location", 
+          "unset:flows:most_frequent_location", 
+          "unset:flows:unique_locations", 
+          "unset:flows:visited_most_days", 
+          "unset:histogram_aggregate:coalesced_location", 
+          "unset:histogram_aggregate:daily_location", 
+          "unset:histogram_aggregate:displacement", 
+          "unset:histogram_aggregate:event_count", 
+          "unset:histogram_aggregate:histogram_aggregate", 
+          "unset:histogram_aggregate:location_visits", 
+          "unset:histogram_aggregate:majority_location", 
+          "unset:histogram_aggregate:modal_location", 
+          "unset:histogram_aggregate:most_frequent_location", 
+          "unset:histogram_aggregate:nocturnal_events", 
+          "unset:histogram_aggregate:pareto_interactions", 
+          "unset:histogram_aggregate:radius_of_gyration", 
+          "unset:histogram_aggregate:subscriber_degree", 
+          "unset:histogram_aggregate:topup_amount", 
+          "unset:histogram_aggregate:topup_balance", 
+          "unset:histogram_aggregate:total_active_periods", 
+          "unset:histogram_aggregate:unique_location_counts", 
+          "unset:histogram_aggregate:visited_most_days", 
+          "unset:inflows:coalesced_location", 
+          "unset:inflows:daily_location", 
+          "unset:inflows:inflows", 
+          "unset:inflows:location_visits", 
+          "unset:inflows:majority_location", 
+          "unset:inflows:modal_location", 
+          "unset:inflows:most_frequent_location", 
+          "unset:inflows:unique_locations", 
+          "unset:inflows:visited_most_days", 
+          "unset:joined_spatial_aggregate:coalesced_location", 
+          "unset:joined_spatial_aggregate:daily_location", 
+          "unset:joined_spatial_aggregate:displacement", 
+          "unset:joined_spatial_aggregate:event_count", 
+          "unset:joined_spatial_aggregate:handset", 
+          "unset:joined_spatial_aggregate:joined_spatial_aggregate", 
+          "unset:joined_spatial_aggregate:location_visits", 
+          "unset:joined_spatial_aggregate:majority_location", 
+          "unset:joined_spatial_aggregate:modal_location", 
+          "unset:joined_spatial_aggregate:most_frequent_location", 
+          "unset:joined_spatial_aggregate:nocturnal_events", 
+          "unset:joined_spatial_aggregate:pareto_interactions", 
+          "unset:joined_spatial_aggregate:radius_of_gyration", 
+          "unset:joined_spatial_aggregate:subscriber_degree", 
+          "unset:joined_spatial_aggregate:topup_amount", 
+          "unset:joined_spatial_aggregate:topup_balance", 
+          "unset:joined_spatial_aggregate:total_active_periods", 
+          "unset:joined_spatial_aggregate:unique_location_counts", 
+          "unset:joined_spatial_aggregate:visited_most_days", 
+          "unset:labelled_flows:coalesced_location", 
+          "unset:labelled_flows:daily_location", 
+          "unset:labelled_flows:labelled_flows", 
+          "unset:labelled_flows:location_visits", 
+          "unset:labelled_flows:majority_location", 
+          "unset:labelled_flows:mobility_classification", 
+          "unset:labelled_flows:modal_location", 
+          "unset:labelled_spatial_aggregate:coalesced_location", 
+          "unset:labelled_spatial_aggregate:daily_location", 
+          "unset:labelled_spatial_aggregate:labelled_spatial_aggregate", 
+          "unset:labelled_spatial_aggregate:location_visits", 
+          "unset:labelled_spatial_aggregate:majority_location", 
+          "unset:labelled_spatial_aggregate:mobility_classification", 
+          "unset:labelled_spatial_aggregate:modal_location", 
+          "unset:outflows:coalesced_location", 
+          "unset:outflows:daily_location", 
+          "unset:outflows:location_visits", 
+          "unset:outflows:majority_location", 
+          "unset:outflows:modal_location", 
+          "unset:outflows:most_frequent_location", 
+          "unset:outflows:outflows", 
+          "unset:outflows:unique_locations", 
+          "unset:outflows:visited_most_days", 
+          "unset:spatial_aggregate:coalesced_location", 
+          "unset:spatial_aggregate:daily_location", 
+          "unset:spatial_aggregate:location_visits", 
+          "unset:spatial_aggregate:majority_location", 
+          "unset:spatial_aggregate:modal_location", 
+          "unset:spatial_aggregate:most_frequent_location", 
+          "unset:spatial_aggregate:spatial_aggregate", 
+          "unset:spatial_aggregate:visited_most_days", 
+          "unset:unique_visitor_counts:active_at_reference_location_counts", 
+          "unset:unique_visitor_counts:coalesced_location", 
+          "unset:unique_visitor_counts:daily_location", 
+          "unset:unique_visitor_counts:location_visits", 
+          "unset:unique_visitor_counts:majority_location", 
+          "unset:unique_visitor_counts:modal_location", 
+          "unset:unique_visitor_counts:most_frequent_location", 
+          "unset:unique_visitor_counts:unique_locations", 
+          "unset:unique_visitor_counts:unique_subscriber_counts", 
+          "unset:unique_visitor_counts:unique_visitor_counts", 
+          "unset:unique_visitor_counts:visited_most_days", 
+          "unset:unmoving_at_reference_location_counts:coalesced_location", 
+          "unset:unmoving_at_reference_location_counts:daily_location", 
+          "unset:unmoving_at_reference_location_counts:location_visits", 
+          "unset:unmoving_at_reference_location_counts:majority_location", 
+          "unset:unmoving_at_reference_location_counts:modal_location", 
+          "unset:unmoving_at_reference_location_counts:most_frequent_location", 
+          "unset:unmoving_at_reference_location_counts:unique_locations", 
+          "unset:unmoving_at_reference_location_counts:unmoving_at_reference_location_counts", 
+          "unset:unmoving_at_reference_location_counts:visited_most_days", 
+          "unset:unmoving_counts:unique_locations", 
+          "unset:unmoving_counts:unmoving_counts"
+        ]
+      }
+    }
+  }, 
+  "info": {
+    "contact": {
+      "email": "flowkit@flowminder.org"
+    }, 
+    "description": "FlowKit Analytical API", 
+    "license": {
+      "name": "MPLv2", 
+      "url": "https://www.mozilla.org/en-US/MPL/2.0/"
+    }, 
+    "title": "FlowAPI", 
+    "version": "1.16.0+694.gd8f0199f5.dirty"
+  }, 
+  "openapi": "3.0.1", 
+  "paths": {
+    "/api/0/available_dates": {
+      "get": {
+        "operationId": "query.get_available_dates.get", 
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "calls": {
+                      "items": {
+                        "format": "date", 
+                        "type": "string"
+                      }, 
+                      "type": "array"
+                    }, 
+                    "mds": {
+                      "items": {
+                        "format": "date", 
+                        "type": "string"
+                      }, 
+                      "type": "array"
+                    }, 
+                    "sms": {
+                      "items": {
+                        "format": "date", 
+                        "type": "string"
+                      }, 
+                      "type": "array"
+                    }, 
+                    "topups": {
+                      "items": {
+                        "format": "date", 
+                        "type": "string"
+                      }, 
+                      "type": "array"
+                    }
+                  }, 
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Dates available for each event type."
+          }, 
+          "401": {
+            "description": "Unauthorized."
+          }, 
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "No access with this token."
+          }, 
+          "500": {
+            "description": "Server error."
+          }
+        }, 
+        "summary": "Get the dates available to query over."
+      }
+    }, 
+    "/api/0/geography/<aggregation_unit>": {
+      "get": {
+        "operationId": "geography.get_geography.get", 
+        "parameters": [
+          {
+            "in": "path", 
+            "name": "aggregation_unit", 
+            "required": true, 
+            "schema": {
+              "type": "string"
+            }
+          }
+        ], 
+        "responses": {
+          "200": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Downloading."
+          }, 
+          "401": {
+            "description": "Unauthorized."
+          }, 
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Token does not grant run access to this spatial aggregation unit."
+          }, 
+          "500": {
+            "description": "Server error."
+          }
+        }, 
+        "summary": "Get geojson for an aggregation unit"
+      }
+    }, 
+    "/api/0/get/<query_id>": {
+      "get": {
+        "operationId": "query.get_query_result.get", 
+        "parameters": [
+          {
+            "in": "path", 
+            "name": "query_id", 
+            "required": true, 
+            "schema": {
+              "type": "string"
+            }
+          }, 
+          {
+            "default": "json", 
+            "in": "path", 
+            "name": "filetype", 
+            "required": true, 
+            "schema": {
+              "enum": [
+                "json", 
+                "geojson", 
+                "csv"
+              ], 
+              "type": "string"
+            }
+          }
+        ], 
+        "responses": {
+          "200": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }, 
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }, 
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }, 
+            "description": "Results returning."
+          }, 
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Request accepted."
+          }, 
+          "401": {
+            "description": "Unauthorized."
+          }, 
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Token does not grant results access to this query or spatial aggregation unit."
+          }, 
+          "404": {
+            "description": "Unknown ID"
+          }, 
+          "500": {
+            "description": "Server error."
+          }
+        }, 
+        "summary": "Get the output of query"
+      }
+    }, 
+    "/api/0/get/<query_id>.<filetype>": {
+      "get": {
+        "operationId": "query.get_query_result.get", 
+        "parameters": [
+          {
+            "in": "path", 
+            "name": "query_id", 
+            "required": true, 
+            "schema": {
+              "type": "string"
+            }
+          }, 
+          {
+            "default": "json", 
+            "in": "path", 
+            "name": "filetype", 
+            "required": true, 
+            "schema": {
+              "enum": [
+                "json", 
+                "geojson", 
+                "csv"
+              ], 
+              "type": "string"
+            }
+          }
+        ], 
+        "responses": {
+          "200": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }, 
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }, 
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }, 
+            "description": "Results returning."
+          }, 
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Request accepted."
+          }, 
+          "401": {
+            "description": "Unauthorized."
+          }, 
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Token does not grant results access to this query or spatial aggregation unit."
+          }, 
+          "404": {
+            "description": "Unknown ID"
+          }, 
+          "500": {
+            "description": "Server error."
+          }
+        }, 
+        "summary": "Get the output of query"
+      }
+    }, 
+    "/api/0/poll/<query_id>": {
+      "get": {
+        "operationId": "query.poll_query.get", 
+        "parameters": [
+          {
+            "in": "path", 
+            "name": "query_id", 
+            "required": true, 
+            "schema": {
+              "type": "string"
+            }
+          }
+        ], 
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "msg": {
+                      "type": "string"
+                    }, 
+                    "progress": {
+                      "schema": {
+                        "eligible": {
+                          "type": "integer"
+                        }, 
+                        "queued": {
+                          "type": "integer"
+                        }, 
+                        "running": {
+                          "type": "integer"
+                        }
+                      }, 
+                      "type": "object"
+                    }, 
+                    "status": {
+                      "enum": [
+                        "executing", 
+                        "queued"
+                      ], 
+                      "type": "string"
+                    }
+                  }, 
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Request accepted."
+          }, 
+          "303": {
+            "description": "Data ready.", 
+            "headers": {
+              "Location": {
+                "description": "URL to download data", 
+                "schema": {
+                  "format": "url", 
+                  "type": "string"
+                }
+              }
+            }
+          }, 
+          "401": {
+            "description": "Unauthorized."
+          }, 
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Token does not grant poll access to this query or spatial aggregation unit."
+          }, 
+          "404": {
+            "description": "Unknown ID"
+          }, 
+          "500": {
+            "description": "Server error."
+          }
+        }, 
+        "summary": "Get the status of a query"
+      }
+    }, 
+    "/api/0/run": {
+      "post": {
+        "operationId": "query.run_query.post", 
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlowmachineQuerySchema"
+              }
+            }
+          }, 
+          "required": true
+        }, 
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "progress": {
+                      "schema": {
+                        "eligible": {
+                          "type": "integer"
+                        }, 
+                        "queued": {
+                          "type": "integer"
+                        }, 
+                        "running": {
+                          "type": "integer"
+                        }
+                      }, 
+                      "type": "object"
+                    }, 
+                    "query_id": {
+                      "type": "string"
+                    }
+                  }, 
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Request accepted.", 
+            "headers": {
+              "Location": {
+                "description": "URL to poll for status", 
+                "schema": {
+                  "format": "url", 
+                  "type": "string"
+                }
+              }
+            }
+          }, 
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Query spec could not be run.."
+          }, 
+          "401": {
+            "description": "Unauthorized."
+          }, 
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }, 
+            "description": "Token does not grant run access to this query or spatial aggregation unit."
+          }, 
+          "500": {
+            "description": "Server error."
+          }
+        }, 
+        "summary": "Run a query"
+      }
+    }
+  }
+}

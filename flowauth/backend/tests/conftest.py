@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from freezegun import freeze_time
 from time import sleep
 
 from functools import partial
@@ -11,18 +12,16 @@ from itertools import product
 
 import pyotp
 import pytest
+import sqlalchemy
 from flowauth.main import create_app
 from flowauth.models import (
-    Group,
-    GroupServerPermission,
-    GroupServerTokenLimits,
     Server,
-    ServerCapability,
-    Token,
     TwoFactorAuth,
     TwoFactorBackup,
     User,
     db,
+    Scope,
+    Role,
 )
 from flowauth.user_settings import generate_backup_codes, md5
 
@@ -30,7 +29,6 @@ TestUser = namedtuple("TestUser", ["id", "username", "password"])
 TestTwoFactorUser = namedtuple(
     "TestTwoFactorUser", TestUser._fields + ("otp_generator", "backup_codes")
 )
-TestGroup = namedtuple("TestGroup", ["id", "name"])
 
 
 @pytest.fixture
@@ -38,7 +36,6 @@ def app(tmpdir):
     """Per test app"""
     db_path = tmpdir / "db.db"
     print(f"DB path: {db_path}")
-
     app = create_app(
         {
             "TESTING": True,
@@ -92,9 +89,7 @@ class AuthActions(object):
 def test_user(app):
     with app.app_context():
         user = User(username="TEST_USER", password="TEST_USER_PASSWORD")
-        ug = Group(name="TEST_USER", user_group=True, members=[user])
         db.session.add(user)
-        db.session.add(ug)
         db.session.commit()
         return TestUser(user.id, user.username, "TEST_USER_PASSWORD")
 
@@ -117,14 +112,12 @@ def get_two_factor_code():
 def test_two_factor_auth_user(app, get_two_factor_code):
     with app.app_context():
         user = User(username="TEST_FACTOR_USER", password="TEST_USER_PASSWORD")
-        ug = Group(name="TEST_FACTOR_USER", user_group=True, members=[user])
         secret = pyotp.random_base32()
         auth = TwoFactorAuth(user=user, enabled=True)
         auth.secret_key = secret
         otp_generator = partial(get_two_factor_code, secret)
         db.session.add(user)
         db.session.add(auth)
-        db.session.add(ug)
         db.session.commit()
         backup_codes = generate_backup_codes()
         for code in backup_codes:
@@ -141,93 +134,130 @@ def test_two_factor_auth_user(app, get_two_factor_code):
 def test_admin(app):
     with app.app_context():
         user = User.query.filter(User.username == app.config["ADMIN_USER"]).first()
-
         return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
 
 @pytest.fixture
-def test_group(app):
+@freeze_time("2020-12-31")
+def test_servers(app):
     with app.app_context():
-        group = Group(name="TEST_GROUP")
-        db.session.add(group)
-        db.session.commit()
-        return TestGroup(group.id, group.name)
-
-
-@pytest.fixture
-def test_data(app, test_admin, test_user, test_group):
-    with app.app_context():
-
-        test_group = Group.query.filter(Group.id == test_group.id).first()
-        # Each user is also a group
-        for user in User.query.all():
-            test_group.members.append(user)
-        db.session.add(test_group)
-
         # Add some servers
         dummy_server_a = Server(
             name="DUMMY_SERVER_A",
-            longest_token_life=2,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now().date()
             + datetime.timedelta(days=365),
         )
         dummy_server_b = Server(
             name="DUMMY_SERVER_B",
-            longest_token_life=2,
+            longest_token_life_minutes=24 * 60 * 2,
             latest_token_expiry=datetime.datetime.now().date()
-            + datetime.timedelta(days=700),
+            + datetime.timedelta(days=365),
         )
         db.session.add(dummy_server_a)
         db.session.add(dummy_server_b)
+        db.session.commit()
+        return (dummy_server_a, dummy_server_b)
+
+
+@pytest.fixture
+def test_scopes(app, test_servers):
+    with app.app_context():
+        dummy_server_a, dummy_server_b = test_servers
+        scopes = [
+            Scope(
+                name="get_result",
+                server=dummy_server_a,
+            ),
+            Scope(name="get_result", server=dummy_server_b),
+            Scope(name="run", server=dummy_server_a),
+            Scope(name="dummy_agg_unit:dummy_query:dummy_query", server=dummy_server_a),
+        ]
+        db.session.add_all(scopes)
+        db.session.commit()
+        return scopes
+
+
+@pytest.fixture
+@freeze_time("2020-12-31")
+def test_roles(app, test_scopes, test_servers):
+    with app.app_context():
+        read_a, read_b, run, dummy_query = test_scopes
+        server_a, server_b = test_servers
+        runner = Role(
+            name="runner",
+            scopes=[run, read_a, dummy_query],
+            server=server_a,
+            longest_token_life_minutes=24 * 60 * 2,
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
+        )
+        reader = Role(
+            name="reader",
+            scopes=[read_a],
+            server=server_a,
+            longest_token_life_minutes=24 * 60 * 2,
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
+        )
+        reader_b = Role(
+            name="reader_b",
+            scopes=[read_b],
+            server=server_b,
+            longest_token_life_minutes=24 * 60 * 2,
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(minutes=5),
+        )
+        db.session.add(runner)
+        db.session.add(reader)
+        db.session.add(reader_b)
+        db.session.commit()
+        return runner, reader, reader_b
+
+
+@pytest.fixture
+def test_user_with_roles(app, test_user, test_roles):
+    with app.app_context():
+        uid, uname, upass = test_user
+        role_a, role_b, role_c = test_roles
+        test_user_orm = db.session.execute(
+            db.select(User).where(User.id == uid)
+        ).first()[0]
+        test_user_orm.roles += [role_a, role_b]
+        db.session.add(test_user_orm)
+        db.session.commit()
+        return uid, uname, upass
+
+
+@pytest.fixture
+def test_data(app, test_servers, test_admin, test_user, test_roles):
+    with app.app_context():
+
+        dummy_server_a, dummy_server_b = test_servers
+
+        test_user_row = db.session.execute(
+            db.select(User).where(User.id == test_user.id)
+        ).first()
 
         # Add some things that you can do on the servers
         scs = []
-        for action, cap, admin_unit in product(
-            ("get_result", "run"),
+        for scope, admin_unit in product(
             ("DUMMY_ROUTE_A", "DUMMY_ROUTE_B"),
             (f"admin{x}" for x in range(4)),
         ):
-            cap = f"{action}&{cap}.aggregation_unit.{admin_unit}"
-            sc_a = ServerCapability(
-                capability=cap,
+            cap = f"{scope}:{admin_unit}"
+            sc_a = Scope(
+                name=cap,
                 server=dummy_server_a,
-                capability_hash=md5(cap.encode()).hexdigest(),
-                enabled=True,
             )
             scs.append(sc_a)
             db.session.add(sc_a)
-            sc_b = ServerCapability(
-                capability=cap,
+            sc_b = Scope(
+                name=cap,
                 server=dummy_server_b,
-                capability_hash=md5(cap.encode()).hexdigest(),
-                enabled=True,
             )
             scs.append(sc_b)
             db.session.add(sc_b)
-        # Give test user group permissions on Haiti
-        for sc in dummy_server_a.capabilities:
-            gsp = GroupServerPermission(group=test_group, server_capability=sc)
-            db.session.add(gsp)
-        db.session.add(
-            GroupServerTokenLimits(
-                group=test_group,
-                longest_life=2,
-                latest_end=datetime.datetime.now().date()
-                + datetime.timedelta(days=365),
-                server=dummy_server_a,
-            )
-        )
 
         # Give test admin a token on server b
 
-        t = Token(
-            name="DUMMY_TOKEN",
-            token="DUMMY_TOKEN_STRING",
-            expires=datetime.datetime.now().date() + datetime.timedelta(days=1),
-            owner=User.query.all()[0],
-            server=dummy_server_b,
-        )
-        db.session.add(t)
         db.session.commit()
 
 
@@ -237,6 +267,6 @@ def auth(client):
 
 
 @pytest.fixture
-def test_data_with_access_rights(app, test_data, test_group):
+def test_data_with_access_rights(app, test_data):
     with app.app_context():
         yield

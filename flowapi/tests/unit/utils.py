@@ -1,3 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 Utilities to generate access tokens for testing purposes
 """
@@ -14,10 +17,13 @@ exemplar_query_params = {
             "aggregation_unit": "admin3",
             "method": "last",
         },
-        "token": "daily_location.aggregation_unit.admin3",
+        "token": ["DUMMY_AGGREGATION_UNIT:daily_location:daily_location"],
     },
     "modal_location": {
-        "token": "modal_location.locations.daily_location.aggregation_unit.admin3",
+        "token": [
+            "DUMMY_AGGREGATION_UNIT:modal_location:daily_location",
+            "DUMMY_AGGREGATION_UNIT:modal_location:modal_location",
+        ],
         "params": {
             "query_kind": "modal_location",
             "locations": [
@@ -52,6 +58,9 @@ exemplar_query_params = {
                 "method": "last",
             },
         },
-        "token": "flow.from_location.daily_location.aggregation_unit.admin3&flow.to_location.daily_location.aggregation_unit.admin3",
+        "token": [
+            "DUMMY_AGGREGATION_UNIT:flow:flow",
+            "DUMMY_AGGREGATION_UNIT:flow:daily_location",
+        ],
     },
 }

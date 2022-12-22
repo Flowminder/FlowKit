@@ -14,8 +14,8 @@ import ErrorDialog from "./ErrorDialog";
 import {
   createServer,
   editServer,
-  editServerCapabilities,
-  getCapabilities,
+  editServerScopes,
+  getScopes,
   getServer,
   getTimeLimits,
 } from "./util/api";
@@ -56,12 +56,7 @@ class ServerAdminDetails extends React.Component {
       ].reduce((obj, cur) => ({ ...obj, [cur]: true }), {});
       const scopeGraph = scopesGraph(specScopes);
       const enabledKeys = [];
-      const scopes = jsonify(
-        scopeGraph,
-        [],
-        Object.keys(specScopes),
-        enabledKeys
-      );
+      const scopes = jsonify(scopeGraph, enabledKeys);
 
       this.setState({
         rights: scopes,
@@ -116,7 +111,7 @@ class ServerAdminDetails extends React.Component {
           )
         : createServer(name, new Date(latest_expiry).toISOString(), max_life);
       try {
-        await editServerCapabilities((await server).id, rightsObjs);
+        await editServerScopes((await server).id, rightsObjs);
         onClick();
       } catch (err) {
         if (err.code === 400) {
@@ -141,6 +136,7 @@ class ServerAdminDetails extends React.Component {
       pageError: false,
       errors: "",
     });
+    console.log("Text field changed:", name);
     this.setState({
       [name]: event.target.value,
     });
@@ -167,30 +163,29 @@ class ServerAdminDetails extends React.Component {
     const { item_id } = this.props;
     if (item_id !== -1) {
       try {
-        const capAwait = getCapabilities(item_id);
+        const capAwait = getScopes(item_id);
         const limitsAwait = getTimeLimits(item_id);
-        const scopeGraph = scopesGraph(await capAwait);
-        const enabledKeys = [];
-        const rights = await capAwait;
-        const scopes = jsonify(
-          scopeGraph,
-          [],
-          Object.keys(rights).filter((k) => rights[k]),
-          enabledKeys
+        const rights = await capAwait.then((resp) =>
+          resp.reduce((p_x, x) => ({ [x.name]: x.enabled, ...p_x }), {})
         );
+        const scope_graph = scopesGraph(rights);
+        const enabledKeys = [];
+        const scopes = jsonify(scope_graph, enabledKeys);
         const serverName = (await getServer(item_id)).name;
         const latestExpiry = (await limitsAwait).latest_token_expiry;
-        const maxLife = (await limitsAwait).longest_token_life;
+        const maxLife = (await limitsAwait).longest_token_life_minutes;
+        console.log(await limitsAwait);
+        console.log("maxLife on mount", maxLife);
         this.setState((state, props) => {
           return {
             name: serverName,
-            rights: state.rights.length == 0 ? scopes : state.rights,
+            rights: state.rights.length === 0 ? scopes : state.rights,
             fullRights:
-              state.fullRights.length == 0
+              state.fullRights.length === 0
                 ? Object.keys(rights)
                 : state.fullRights,
             enabledRights:
-              state.enabledRights.length == 0
+              state.enabledRights.length === 0
                 ? enabledKeys
                 : state.enabledRights,
             latest_expiry: latestExpiry,
@@ -198,6 +193,7 @@ class ServerAdminDetails extends React.Component {
           };
         });
       } catch (err) {
+        console.log(err);
         this.setState({ hasError: true, error: err });
       }
     }
@@ -252,7 +248,6 @@ class ServerAdminDetails extends React.Component {
             className={classes.textField}
             value={name}
             margin="normal"
-            disabled={true}
           />
         </Grid>
         <Grid item xs={6} />
@@ -291,6 +286,12 @@ class ServerAdminDetails extends React.Component {
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             Available API scopes
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography>
+            Scope enable/disable currently out of service. Below view is for
+            information only
           </Typography>
         </Grid>
         <Grid item xs={12}>

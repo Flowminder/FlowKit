@@ -1,31 +1,20 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
+from functools import reduce
 
 from flask import Blueprint, jsonify, request
 
 from flask_login import current_user, login_required
+from sqlalchemy import select
+
 from flowauth.jwt import generate_token
 
-from .invalid_usage import InvalidUsage
+from .invalid_usage import InvalidUsage, Unauthorized
 from .models import *
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
-
-
-@blueprint.route("/groups")
-@login_required
-def list_my_groups():
-    """
-    Get a list of the groups the logged in user is a member of.
-
-    Notes
-    -----
-    Returns a list of json objects with "id" and "group_name" keys.
-    """
-    return jsonify(
-        [{"id": group.id, "group_name": group.name} for group in current_user.groups]
-    )
 
 
 @blueprint.route("/servers")
@@ -38,11 +27,8 @@ def list_my_servers():
     -----
     Produces a list of json objects with "id" and "server_name" fields.
     """
-    servers = set()
-    for group in current_user.groups:
-        for server_token_limit in group.server_token_limits:
-            servers.add(server_token_limit.server)
-
+    # is this the sqlalchemy way to do this?
+    servers = {role.server for role in current_user.roles}
     return jsonify(
         sorted(
             [{"id": server.id, "server_name": server.name} for server in servers],
@@ -80,25 +66,6 @@ def my_access(server_id):
     )
 
 
-@blueprint.route("/tokens")
-@login_required
-def list_all_my_tokens():
-    """Get a list of all the logged in user's tokens."""
-    return jsonify(
-        [
-            {
-                "id": token.id,
-                "name": token.name,
-                "token": token.decrypted_token,
-                "expires": token.expires,
-                "server_name": token.server.name,
-                "username": token.owner.username,
-            }
-            for token in Token.query.filter(Token.owner == current_user)
-        ]
-    )
-
-
 @blueprint.route("/tokens/<server>")
 @login_required
 def list_my_tokens(server):
@@ -110,20 +77,21 @@ def list_my_tokens(server):
                 "id": token.id,
                 "name": token.name,
                 "token": token.decrypted_token,
-                "expires": token.expires,
+                "expires": token.expiry,
                 "server_name": token.server.name,
-                "username": token.owner.username,
+                "username": token.user.username,
             }
-            for token in Token.query.filter(
-                Token.owner == current_user, Token.server == server
+            for token in TokenHistory.query.filter(
+                TokenHistory.user == current_user, TokenHistory.server == server
             )
         ]
     )
 
 
-@blueprint.route("/tokens/<server>", methods=["POST"])
+@blueprint.route("/tokens/<server_id>", methods=["POST"])
 @login_required
-def add_token(server):
+def add_token(server_id):
+
     """
     Generate a new token for a server.
 
@@ -134,47 +102,63 @@ def add_token(server):
 
     Notes
     -----
-    Expects json with "name", "expiry" and "claims" keys, where "name" is a string,
-    expiry is a datetime string of the form ""%Y-%m-%dT%H:%M:%S.%fZ" (e.g. 2018-01-01T00:00:00.0Z),
-    and claims is a nested dict of the form {<claim_name>:{<right_name>:<bool>}}.
+    Expects json with "name", and "roles" keys, where "name" is a string,
+    and roles is a list of role names.
 
     Responds with a json object {"token":<token_string>, "id":<token_id>}.
 
     """
-    server = Server.query.filter(Server.id == server).first_or_404()
+    server = Server.query.filter(Server.id == server_id).first_or_404()
     json = request.get_json()
 
     current_app.logger.debug("New token request", request=json)
-
     if "name" not in json:
         raise InvalidUsage("No name.", payload={"bad_field": "name"})
-    expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
-    lifetime = expiry - datetime.datetime.now()
-    latest_lifetime = current_user.latest_token_expiry(server)
-    if expiry > latest_lifetime:
-        raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
-    allowed_claims = current_user.allowed_claims(server)
+    if "roles" not in json:
+        raise InvalidUsage("No roles.", payload={"bad_field": "roles"})
 
-    current_app.logger.debug("New token request", allowed_claims=allowed_claims)
-    for claim in json["claims"]:
-        if claim not in allowed_claims:
-            raise Unauthorized(f"You do not have access to {claim} on {server.name}")
+    user_roles = db.session.execute(
+        select(Role)
+        .join(User.roles)
+        .filter(User.id == current_user.id)
+        .filter(Role.server_id == server_id)
+    ).all()
+    user_roles = [row[0] for row in user_roles]
+
+    roles = []
+    for requested_role in json["roles"]:
+        if requested_role["name"] not in [ur.name for ur in user_roles]:
+            raise Unauthorized(
+                f"Role '{requested_role['name']}' is not permitted for the current user"
+            )
+        roles.append(Role.query.filter(Role.name == requested_role["name"]).first())
+    token_expiry = min(server.next_expiry(), min(rr.next_expiry() for rr in roles))
+    # The role expiry date doesn't beat the server expiry date
+    # The role longest lifetime doesn't beat the server longest lifetime
+    # If you request token with a role with a expiry past the server final expiry, then issue the token with the server's final expiry
+    # feature todo: flag this to the user
+    # This isn't about the user, so get these values from the server
+
+    if token_expiry < datetime.datetime.now():
+        raise Unauthorized(f"Token for {current_user.username} expired")
 
     token_string = generate_token(
-        username=current_user.username,
         flowapi_identifier=server.name,
-        lifetime=lifetime,
-        claims=json["claims"],
+        username=current_user.username,
         private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
+        lifetime=token_expiry - datetime.datetime.now(),
+        roles={role.name: sorted(ss.name for ss in role.scopes) for role in roles},
     )
 
-    token = Token(
+    history_entry = TokenHistory(
         name=json["name"],
+        user_id=current_user.id,
+        server_id=server.id,
+        expiry=token_expiry,
         token=token_string,
-        expires=expiry,
-        owner=current_user,
-        server=server,
     )
-    db.session.add(token)
+
+    db.session.add(history_entry)
     db.session.commit()
-    return jsonify({"token": token_string, "id": token.id})
+
+    return jsonify({"token": token_string})

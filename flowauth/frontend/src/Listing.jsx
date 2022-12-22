@@ -29,6 +29,9 @@ class Listing extends React.Component {
       this.setState({ hasError: true, error: err });
     }
   }
+
+  async componentDidUpdate() {}
+
   rmObj = (obj_id) => {
     const { deleteAction } = this.props;
     deleteAction(obj_id).then((json) =>

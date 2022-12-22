@@ -47,6 +47,8 @@ TOKEN = generate_token(
     username="docsuser",
     private_key=load_private_key(os.environ["PRIVATE_JWT_SIGNING_KEY"]),
     lifetime=timedelta(days=1),
-    claims=get_all_claims_from_flowapi(flowapi_url="http://localhost:9090"),
+    roles=dict(
+        universal_role=get_all_claims_from_flowapi(flowapi_url="http://localhost:9090")
+    ),
     flowapi_identifier=os.environ["FLOWAPI_IDENTIFIER"],
 )

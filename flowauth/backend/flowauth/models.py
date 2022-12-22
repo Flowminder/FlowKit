@@ -7,47 +7,61 @@ from pathlib import Path
 
 import datetime
 from itertools import chain
-from sqlalchemy import func
+from collections import Counter
+from sqlalchemy import ForeignKey, func, inspect, UniqueConstraint
 from typing import Dict, List, Union
+import json
 
 from flask import current_app
 
 import pyotp
 from flask_sqlalchemy import SQLAlchemy
-from flowauth.invalid_usage import Unauthorized
+from flowauth.invalid_usage import InvalidUsage, Unauthorized
 from flowauth.util import get_fernet
 from passlib.hash import argon2
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
+from sqlalchemy.event import listens_for
+from sqlalchemy.orm.attributes import get_history
 
 db = SQLAlchemy()
 
 
-# Link table for mapping users to groups
-group_memberships = db.Table(
-    "group_memberships",
+scopes_in_role = db.Table(
+    "scopes_in_role",
+    db.Column("scope_id", db.Integer, db.ForeignKey("scope.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
+)
+
+users_with_roles = db.Table(
+    "users_with_roles",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column("group_id", db.Integer, db.ForeignKey("group.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
 )
 
 
 class User(db.Model):
     """
-    A user. Has at least one group.
+    A user.
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(75), unique=True, nullable=False)
     _password = db.Column(db.Text, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    groups = db.relationship(
-        "Group",
-        secondary=group_memberships,
+
+    # Should this table be called 'Roles'?
+    roles = db.relationship(
+        "Role",
+        secondary=users_with_roles,
         lazy="subquery",
-        backref=db.backref("members", lazy=True),
+        backref=db.backref("users", lazy=True),
     )
+
     tokens = db.relationship(
-        "Token", back_populates="owner", cascade="all, delete, delete-orphan"
+        "TokenHistory", back_populates="user", cascade="all, delete, delete-orphan"
     )
+
     two_factor_auth = db.relationship(
         "TwoFactorAuth",
         back_populates="user",
@@ -90,39 +104,11 @@ class User(db.Model):
         """
         return argon2.verify(plaintext, self._password)
 
-    def allowed_claims(self, server) -> List[str]:
-        """
-        Get the claims the user is allowed to generate tokens for on a server.
-
-        Parameters
-        ----------
-        server: Server
-            Server to check against
-
-        Returns
-        -------
-        list of str
-
-        """
-
-        return sorted(
-            val
-            for val, *_ in db.session.query(ServerCapability.capability)
-            .select_from(GroupServerPermission)
-            .join(
-                group_memberships,
-                group_memberships.c.group_id == GroupServerPermission.group_id,
-            )
-            .filter(group_memberships.c.user_id == self.id)
-            .join(ServerCapability)
-            .filter_by(server=server, enabled=True)
-            .distinct()
-            .all()
-        )
-
     def latest_token_expiry(self, server: "Server") -> datetime.datetime:
         """
         Get the latest datetime a token can be valid until on a server.
+        Returns the soonest of either the server's expiry date or the
+        current time + the servers maximum lifetime.
 
         Parameters
         ----------
@@ -153,23 +139,26 @@ class User(db.Model):
             Dict {"latest_end": datetime, "longest_life":int}
         """
 
-        latest, longest = (
-            db.session.query(
-                func.max(GroupServerTokenLimits.latest_end).label("latest_end"),
-                func.max(GroupServerTokenLimits.longest_life).label("longest_life"),
-            )
-            .filter_by(server=server)
-            .join(
-                group_memberships,
-                group_memberships.c.group_id == GroupServerTokenLimits.group_id,
-            )
-            .filter(group_memberships.c.user_id == self.id)
-            .first()
-        )
+        latest = db.session.execute(
+            db.select(Role.latest_token_expiry)
+            .where(Role.server_id == server.id)
+            .join(User.roles)
+            .order_by(Role.latest_token_expiry.desc())
+        ).scalar()
+
+        longest = db.session.execute(
+            db.select(Role.longest_token_life_minutes)
+            .where(Role.server_id == server.id)
+            .join(User.roles)
+            .order_by(Role.longest_token_life_minutes.desc())
+        ).scalar()
+
+        if not latest or not longest:
+            raise Unauthorized(f"No roles for {self.username} on {Server.name}")
 
         return {
             "latest_end": min(server.latest_token_expiry, latest),
-            "longest_life": min(server.longest_token_life, longest),
+            "longest_life": min(server.longest_token_life_minutes, longest),
         }
 
     @hybrid_property
@@ -387,30 +376,138 @@ class TwoFactorBackup(db.Model):
         self._backup_code = argon2.hash(plaintext)
 
 
-class Token(db.Model):
+class Server(db.Model):
     """
-    An instance of a token.
-    Is owned by one user, applies to one server, has an expiry time, encodes
+    A server. Has a name, and a secret key, and upper bounds on token expiry and lifetime.
+    A server has some set of available capabilities.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(75), unique=True, nullable=False)
+    latest_token_expiry = db.Column(db.DateTime, nullable=False)
+    longest_token_life_minutes = db.Column(db.Integer, nullable=False)
+
+    roles = db.relationship(
+        "Role", backref="server", cascade="all, delete, delete-orphan"
+    )
+
+    scopes = db.relationship(
+        "Scope", backref="server", cascade="all, delete, delete-orphan"
+    )
+
+    tokens = db.relationship(
+        "TokenHistory", back_populates="server", cascade="all, delete, delete-orphan"
+    )
+
+    def next_expiry(self) -> datetime.datetime:
+        return min(
+            self.latest_token_expiry,
+            datetime.datetime.now()
+            + datetime.timedelta(minutes=self.longest_token_life_minutes),
+        )
+
+    def __repr__(self) -> str:
+        return f"<Server {self.name}>"
+
+
+class Role(db.Model):
+    """
+    A role assigned to one or more users, providing them with one or more scopes.
+    """
+
+    __table_args__ = (UniqueConstraint("name", "server_id"),)
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(75), nullable=False)
+    server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
+    latest_token_expiry = db.Column(db.DateTime, nullable=False)
+    longest_token_life_minutes = db.Column(db.Integer, nullable=False)
+
+    scopes = db.relationship(
+        "Scope",
+        secondary=scopes_in_role,
+        lazy="subquery",
+        backref=db.backref("roles", lazy=True),
+    )
+
+    def next_expiry(self) -> datetime.datetime:
+        return min(
+            self.latest_token_expiry,
+            datetime.datetime.now()
+            + datetime.timedelta(minutes=self.longest_token_life_minutes),
+        )
+
+    def allowed_claims(self) -> List[str]:
+        """
+        Get the claims the role permits access to.
+
+        Returns
+        -------
+        list of str
+
+        """
+        return sorted(self.scopes)
+
+    def is_allowed(self, claims: List[str]) -> bool:
+        """
+        Returns true if this role permits this combination of claims, else return false.
+        """
+        scope_strings = [scope.name for scope in self.scopes]
+
+        for claim in claims:
+            if claim not in scope_strings:
+                return False
+        return True
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "scopes": sorted([scope.id for scope in self.scopes]),
+            "latest_token_expiry": self.latest_token_expiry.strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            "longest_token_life_minutes": self.longest_token_life_minutes,
+            "server": self.server_id,
+            "users": sorted([user.id for user in self.users]),
+        }
+
+
+class Scope(db.Model):
+    """
+    A scope of actions permitted, represented by a colon-delineated string (fields depend on scope)
+    For example, the scope permitting daily locations at admin 3 would be daily_location:admin3
+    """
+
+    __table_args__ = (UniqueConstraint("name", "server_id"),)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String)
+    enabled = db.Column(db.Boolean, default=True)
+    server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
+
+
+class TokenHistory(db.Model):
+    """
+    All tokens that have been issued by this flowauth instance.
+    Each token is owned by one user, applies to one server, has an expiry time, encodes
     several capabilties for a server.
     """
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(75), nullable=False)
     _token = db.Column(db.Text, nullable=False)
-    expires = db.Column(db.DateTime, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    owner = db.relationship("User", back_populates="tokens", lazy=True)
+    expiry = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", back_populates="tokens", lazy=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="tokens", lazy=True)
 
     @hybrid_property
     def token(self) -> str:
         """
-
         Notes
         -----
         When called on the class, returns the SQLAlchemy QueryableAttribute
-
         Returns
         -------
         str
@@ -422,7 +519,6 @@ class Token(db.Model):
     def decrypted_token(self) -> str:
         """
         Decrypted token.
-
         Returns
         -------
         str
@@ -439,7 +535,6 @@ class Token(db.Model):
     def token(self, plaintext: str):
         """
         Encrypt, then store to the database the token string.
-
         Parameters
         ----------
         plaintext: str
@@ -449,139 +544,6 @@ class Token(db.Model):
 
     def __repr__(self) -> str:
         return f"<Token {self.owner}:{self.server}>"
-
-
-class Server(db.Model):
-    """
-    A server. Has a name, and a secret key, and upper bounds on token expiry and lifetime.
-    A server has some set of available capabilities.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(75), unique=True, nullable=False)
-    latest_token_expiry = db.Column(db.DateTime, nullable=False)
-    longest_token_life = db.Column(db.Integer, nullable=False)
-    tokens = db.relationship(
-        "Token", back_populates="server", cascade="all, delete, delete-orphan"
-    )
-    capabilities = db.relationship(
-        "ServerCapability",
-        back_populates="server",
-        cascade="all, delete, delete-orphan",
-    )
-    group_token_limits = db.relationship(
-        "GroupServerTokenLimits",
-        back_populates="server",
-        cascade="all, delete, delete-orphan",
-    )
-
-    def __repr__(self) -> str:
-        return f"<Server {self.name}>"
-
-
-class ServerCapability(db.Model):
-    """
-    The set of API capabilities which are available on a server.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
-    server = db.relationship("Server", back_populates="capabilities", lazy=True)
-    capability = db.Column(db.Text, nullable=False)
-    capability_hash = db.Column(db.String(32), nullable=False)
-    enabled = db.Column(db.Boolean, default=False)
-    group_uses = db.relationship(
-        "GroupServerPermission",
-        back_populates="server_capability",
-        lazy=True,
-        cascade="all, delete, delete-orphan",
-    )
-    __table_args__ = (
-        db.UniqueConstraint("server_id", "capability_hash", name="_server_cap_uc"),
-    )  # Enforce only one of each capability per server
-
-    def __repr__(self) -> str:
-        return f"<ServerCapability {self.capability}@{self.server}>"
-
-
-class GroupServerTokenLimits(db.Model):
-    """
-    The maximum lifetime of tokens that a group may create for a server.
-    Must be <= the maximum limits for that server.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    latest_end = db.Column(db.DateTime, nullable=False)
-    longest_life = db.Column(db.Integer, nullable=False)
-    server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
-    server = db.relationship("Server", back_populates="group_token_limits", lazy=True)
-    group_id = db.Column(db.Integer, db.ForeignKey("group.id"), nullable=False)
-    group = db.relationship("Group", back_populates="server_token_limits", lazy=True)
-    __table_args__ = (
-        db.UniqueConstraint("group_id", "server_id", name="_group_server_limits_uc"),
-    )  # Enforce only one per group-server combination
-
-    def __repr__(self) -> str:
-        return f"<GroupServerTokenLimits {self.group} {self.server}>"
-
-
-class GroupServerPermission(db.Model):
-    """
-    The set of API capabilities that a group has for a server.
-    Must be a subset of the available capabilities for that server.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey("group.id"), nullable=False)
-    group = db.relationship("Group", back_populates="server_permissions", lazy=True)
-    server_capability_id = db.Column(
-        db.Integer, db.ForeignKey("server_capability.id"), nullable=False
-    )
-    server_capability = db.relationship(
-        "ServerCapability", back_populates="group_uses", lazy=True
-    )
-    __table_args__ = (
-        db.UniqueConstraint(
-            "group_id", "server_capability_id", name="_group_servercap_uc"
-        ),
-    )  # Enforce only only group - capability pair
-
-    def __repr__(self) -> str:
-        return f"<GroupServerPermission {self.server_capability}-{self.group}>"
-
-
-class Group(db.Model):
-    """
-    A group of users. Has some set of permissions on some set of servers.
-    """
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(75), unique=True, nullable=False)
-    user_group = db.Column(db.Boolean, default=False)
-    server_token_limits = db.relationship(
-        "GroupServerTokenLimits",
-        back_populates="group",
-        cascade="all, delete, delete-orphan",
-    )
-    server_permissions = db.relationship(
-        "GroupServerPermission",
-        back_populates="group",
-        cascade="all, delete, delete-orphan",
-    )
-
-    def rights(self, server: Server) -> List[str]:
-        return [
-            val
-            for val, *_ in db.session.query(ServerCapability.capability)
-            .select_from(GroupServerPermission)
-            .filter_by(group=self)
-            .join(ServerCapability)
-            .filter_by(server=server, enabled=True)
-            .all()
-        ]
-
-    def __repr__(self) -> str:
-        return f"<Group {self.name}>"
 
 
 def init_db(force: bool = False) -> None:
@@ -608,6 +570,9 @@ def init_db(force: bool = False) -> None:
     current_app.logger.debug("Initialised db.")
 
 
+# FUTURE: Token history
+
+
 def add_admin(username: str, password: str) -> None:
     """
     Add an administrator, or reset their password if they already exist.
@@ -622,15 +587,11 @@ def add_admin(username: str, password: str) -> None:
     Returns
     -------
     None
-
     """
     u = User.query.filter(User.username == username).first()
     if u is None:
         current_app.logger.debug(f"Creating new admin {username}.")
         u = User(username=username, password=password, is_admin=True)
-        ug = Group(name=username, user_group=True)
-        ug.members.append(u)
-        db.session.add(ug)
     else:
         current_app.logger.debug(f"Promoting {username} to admin.")
         u.password = password
@@ -645,65 +606,72 @@ def make_demodata():
     """
     Generate some demo data.
     """
+
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
     current_app.logger.debug("Creating demo data.")
     db.drop_all()
     db.create_all()
-    users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
-    for user in users:
-        user.password = "DUMMY_PASSWORD"
-
-    # Each user is also a group
-    groups = [
-        Group(name="TEST_USER", user_group=True),
-        Group(name="TEST_ADMIN", user_group=True),
-        Group(name="Test_Group"),
-    ]
-    groups[0].members.append(users[0])
-    groups[1].members.append(users[1])
-    for user in users:
-        groups[2].members.append(user)
-    for x in users + groups:
-        db.session.add(x)
-    # Add some things that you can do
-    with open(Path(__file__).parent / "demo_data" / "api_scopes.txt") as fin:
-        caps = [x.strip() for x in fin.readlines()]
 
     # Add some servers
     test_server = Server(
         name="TEST_SERVER",
-        longest_token_life=2880,
+        longest_token_life_minutes=31 * 24 * 60,
         latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
     )
-
     db.session.add(test_server)
 
-    # Add some things that you can do on the servers
-    scs = []
-    for cap in caps:
-        sc = ServerCapability(
-            capability=cap,
-            server=test_server,
-            enabled=True,
-            capability_hash=md5(cap.encode()).hexdigest(),
-        )
-        scs.append(sc)
-        db.session.add(sc)
+    with (Path(__file__).parent / Path("demo_data/demo_scopes.json")).open() as spec:
+        scopes_doc = json.load(spec)
+    scopes = {
+        scope_string: Scope(name=scope_string, server=test_server)
+        for scope_string in scopes_doc["components"]["securitySchemes"]["token"][
+            "x-security-scopes"
+        ]
+    }
 
-    # Give bob group permissions on test server
-    for sc in test_server.capabilities:
-        gsp = GroupServerPermission(group=groups[0], server_capability=sc)
-        db.session.add(gsp)
-    db.session.add(
-        GroupServerTokenLimits(
-            group=groups[0],
-            longest_life=1440,
-            latest_end=datetime.datetime.now() + datetime.timedelta(days=28),
+    reader_scope = scopes["get_result"]
+    runner_scope = scopes["run"]
+    dates_scope = scopes["get_available_dates"]
+    db.session.add_all(scopes.values())
+
+    # Add roles to test server
+    roles = [
+        Role(
+            name="viewer",
             server=test_server,
-        )
+            scopes=[reader_scope, dates_scope],
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
+            longest_token_life_minutes=30 * 24 * 60,
+        ),
+        Role(
+            name="runner",
+            server=test_server,
+            scopes=[runner_scope, dates_scope],
+            latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
+            longest_token_life_minutes=30 * 24 * 60,
+        ),
+    ]
+    db.session.add_all(roles)
+
+    users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
+
+    for user in users:
+        user.password = "DUMMY_PASSWORD"
+        user.roles += roles
+
+    db.session.add_all(users)
+
+    test_token_history = TokenHistory(
+        name="Example token",
+        user_id=2,
+        expiry=datetime.datetime.now() + datetime.timedelta(days=365),
+        token="If you're reading this, the token history might be working",
+        server_id=1,
     )
+    db.session.add(test_token_history)
+
     db.session.commit()
     current_app.config["DB_IS_SET_UP"].set()
     current_app.logger.debug("Made demo data.")

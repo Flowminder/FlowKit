@@ -1,3 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from cryptography.fernet import Fernet
 from flask import current_app, g, has_request_context, request, session
 
@@ -24,6 +27,7 @@ def request_context_processor(logger, method_name, event_dict) -> dict:
             session_id=session.get("_id", None),
             request_id=request.id if hasattr(request, "id") else None
         )
+
     return event_dict
 
 
