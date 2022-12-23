@@ -845,19 +845,37 @@ def random_sample_spec(
 
 
 def majority_location_spec(
-    *, subscriber_location_weights: Dict, include_unlocatable=False
+    *,
+    subscriber_location_weights: Dict[str, Union[str, dict]],
+    minimum_total_weight: float = 0.0,
+    include_unlocatable: bool = False,
 ) -> dict:
     """
-    A class for producing a list of subscribers along with the location (derived from `spatial_unit')
-    that they visited more than half the time.
+    A query for producing a list of subscribers along with the location that they visited
+    more than half the time. Takes a 'subscriber location weights' query that assigns weights
+    to the locations visited by each subscriber (currently, only `location_visits_spec` queries are supported).
+
+    A subscriber will only be assigned a location if that location represents more than half
+    of the total weight for that subscriber. This means that each subscriber can be assigned at most one location.
+    Subscribers for whom there is no single location with an outright majority will either be excluded from the
+    query result (if `include_unlocatable==False`), or included in the result with `NULL` value in the location ID
+    column(s) (if `include_unlocatable==True`).
 
     Parameters
     ----------
-    subscriber_location_weights: dict
-        A `location_visits_spec`  query specification
-    include_unlocatable: bool default False
+    subscriber_location_weights : dict
+        A `location_visits_spec` query specification
+    minimum_total_weight : float, default 0
+        If the summed weight for a subscriber is less than `minimum_total_weight`,
+        that subscriber will only be assigned a location with weight greater than `minimum_total_weight/2`.
+        This is useful if, for example, `subscriber_location_weights` is a count of the number of days
+        a location was a subscriber's daily location over one week - if a subscriber was not active every day,
+        their total weight would be less than 7, which would lower the threshold for a majority.
+        Setting `minimum_total_weight=7` in this case ensures that a subscriber must have the same
+        daily location on a majority of _all_ days during the week, not just a majority of their _active_ days.
+    include_unlocatable : bool, default False
         If `True`, returns every unique subscriber in the `subscriber_location_weights` query, with
-        the location column as `NULL` if no majority is reached.
+        the location column(s) as `NULL` if no majority is reached.
         If `False`, returns only subscribers that have achieved a majority location
 
     Returns
@@ -865,11 +883,15 @@ def majority_location_spec(
     dict
         A dictionary of the query specification
 
-
+    Notes
+    -----
+    Any rows with value < 0 in the `subscriber_location_weights` query will be dropped.
+    This is necessary to ensure the query can return at most one location per subscriber.
     """
     return {
         "query_kind": "majority_location",
         "subscriber_location_weights": subscriber_location_weights,
+        "minimum_total_weight": minimum_total_weight,
         "include_unlocatable": include_unlocatable,
     }
 
