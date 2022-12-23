@@ -26,7 +26,7 @@ class MajorityLocation(BaseLocation, Query):
         The query object containing subscribers, locations, and weights.
     weight_column : str
         The column, when summed, that will produce the count used to threshold the majority
-    minimum_total_weight : int, default 0
+    minimum_total_weight : float, default 0
         If the summed weight for a subscriber is less than `minimum_total_weight`,
         that subscriber will only be assigned a location with weight greater than `minimum_total_weight/2`.
         This is useful if, for example, `subscriber_location_weights` is a count of the number of days
@@ -46,7 +46,7 @@ class MajorityLocation(BaseLocation, Query):
         *,
         subscriber_location_weights: Query,
         weight_column: str,
-        minimum_total_weight: int = 0,
+        minimum_total_weight: float = 0.0,
     ):
         if "subscriber" not in subscriber_location_weights.column_names:
             raise ValueError("`subscriber` not in subscriber_location_weights query")
@@ -130,7 +130,7 @@ def majority_location(
     *,
     subscriber_location_weights: Query,
     weight_column: str,
-    minimum_total_weight: int = 0,
+    minimum_total_weight: float = 0.0,
     include_unlocatable: bool = False,
 ):
     """
@@ -150,7 +150,7 @@ def majority_location(
         The query object containing subscribers, locations, and weights.
     weight_column : str
         The column, when summed, that will produce the count used to threshold the majority
-    minimum_total_weight : int, default 0
+    minimum_total_weight : float, default 0
         If the summed weight for a subscriber is less than `minimum_total_weight`,
         that subscriber will only be assigned a location with weight greater than `minimum_total_weight/2`.
         This is useful if, for example, `subscriber_location_weights` is a count of the number of days
