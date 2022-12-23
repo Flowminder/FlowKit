@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Union
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
@@ -132,7 +132,7 @@ def majority_location(
     weight_column: str,
     minimum_total_weight: float = 0.0,
     include_unlocatable: bool = False,
-):
+) -> Union[MajorityLocation, MajorityLocationWithUnlocatable]:
     """
     A query for producing a list of subscribers along with the location that they visited
     more than half the time. Takes a 'subscriber location weights' query that includes a 'subscribers' column,
