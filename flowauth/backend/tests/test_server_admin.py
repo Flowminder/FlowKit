@@ -3,6 +3,7 @@
 # file, You can obtain one at http.//mozilla.org/MPL/2.0/.
 import datetime
 
+from freezegun import freeze_time
 from werkzeug.http import http_date
 
 import pytest
@@ -30,9 +31,15 @@ def test_get_server(client, auth, app):
 
     response = client.get("/admin/servers/1", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
-    assert {"id": 1, "name": "DUMMY_SERVER_A"} == response.get_json()
+    assert {
+        "id": 1,
+        "name": "DUMMY_SERVER_A",
+        "latest_token_expiry": "2021-12-31T00:00:00.000000Z",
+        "longest_token_life_minutes": 2880,
+    } == response.get_json()
 
 
+@freeze_time("2020-12-31")
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_get_server_time_limits(client, auth, app):
 
@@ -44,7 +51,7 @@ def test_get_server_time_limits(client, auth, app):
     )
     assert 200 == response.status_code  # Should get an OK
     assert {
-        "longest_token_life": 2,
+        "longest_token_life_minutes": 2880,
         "latest_token_expiry": http_date(
             (datetime.datetime.now().date() + datetime.timedelta(days=365)).timetuple()
         ),
@@ -59,13 +66,22 @@ def test_create_server(client, auth, test_admin):
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
-            "longest_token_life": 1440,
+            "longest_token_life_minutes": 1440,
             "name": "DUMMY_SERVER_Z",
+            "scopes": ["run", "read", "dummy_scope_1"],
         },
     )
     assert 200 == response.status_code
     response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert [{"id": 1, "name": "DUMMY_SERVER_Z"}] == response.get_json()
+    response = client.get(
+        "/admin/servers/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
+    )
+    assert [
+        {"id": 1, "enabled": True, "name": "run"},
+        {"id": 2, "enabled": True, "name": "read"},
+        {"id": 3, "enabled": True, "name": "dummy_scope_1"},
+    ] == response.get_json()
 
 
 def test_create_server_errors_with_missing_name(client, auth, test_admin):
@@ -77,7 +93,7 @@ def test_create_server_errors_with_missing_name(client, auth, test_admin):
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
-            "longest_token_life": 1440,
+            "longest_token_life_minutes": 1440,
             "secret_key": "DUMMY_SECRET_KEY",
         },
     )
@@ -89,6 +105,25 @@ def test_create_server_errors_with_missing_name(client, auth, test_admin):
     } == response.get_json()
     response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert [] == response.get_json()
+
+
+def test_create_server_errors_with_duplicate_scopes(client, auth, test_admin):
+    """Should throw a 400 error if two scopes with the same name try to get into the server"""
+    uid, username, password = test_admin
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/servers",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "name": "DUMMY_SERVER_2",
+            "latest_token_expiry": "2019-01-01T00:00:00.0Z",
+            "longest_token_life_minutes": 1440,
+            "secret_key": "DUMMY_SECRET_KEY",
+            "scopes": ["foo", "foo"],
+        },
+    )
+    assert 400 == response.status_code
+    assert "Name already exists" in response.text
 
 
 @pytest.mark.parametrize(
@@ -109,7 +144,7 @@ def test_create_server_errors_with_bad_name(
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
-            "longest_token_life": 1440,
+            "longest_token_life_minutes": 1440,
             "secret_key": "DUMMY_SECRET_KEY",
             "name": name,
         },
@@ -134,7 +169,7 @@ def test_create_server_errors_with_same_name(client, auth, test_admin):
             headers={"X-CSRF-Token": csrf_cookie},
             json={
                 "latest_token_expiry": "2019-01-01T00:00:00.0Z",
-                "longest_token_life": 1440,
+                "longest_token_life_minutes": 1440,
                 "name": "TEST_SERVER",
             },
         )
@@ -156,8 +191,8 @@ def test_rm_server(client, auth):
     assert 200 == response.status_code
     response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert [{"id": 1, "name": "DUMMY_SERVER_A"}] == response.get_json()
-    response = client.get("/tokens/tokens", headers={"X-CSRF-Token": csrf_cookie})
-    assert [] == response.get_json()  # Should have no tokens
+    # response = client.get("/tokens/tokens", headers={"X-CSRF-Token": csrf_cookie})
+    # assert [] == response.get_json()  # Should have no tokens
 
 
 def test_edit_server(client, auth, test_admin):
@@ -168,7 +203,7 @@ def test_edit_server(client, auth, test_admin):
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
-            "longest_token_life": 1440,
+            "longest_token_life_minutes": 1440,
             "name": "DUMMY_SERVER_Z",
         },
     )
@@ -177,225 +212,83 @@ def test_edit_server(client, auth, test_admin):
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "latest_token_expiry": "2020-01-01T00:00:00.0Z",
-            "longest_token_life": 1,
+            "longest_token_life_minutes": 1,
             "name": "DUMMY_SERVER_X",
         },
     )
     assert 200 == response.status_code
     response = client.get("/admin/servers/1", headers={"X-CSRF-Token": csrf_cookie})
-    assert {"id": 1, "name": "DUMMY_SERVER_X"} == response.get_json()
+    assert {
+        "id": 1,
+        "name": "DUMMY_SERVER_X",
+        "latest_token_expiry": "2020-01-01T00:00:00.000000Z",
+        "longest_token_life_minutes": 1,
+    } == response.get_json()
     response = client.get(
         "/admin/servers/1/time_limits", headers={"X-CSRF-Token": csrf_cookie}
     )
     assert 200 == response.status_code  # Should get an OK
     assert {
-        "longest_token_life": 1,
+        "longest_token_life_minutes": 1,
         "latest_token_expiry": "Wed, 01 Jan 2020 00:00:00 GMT",
     } == response.get_json()
 
 
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_server_capabilities(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
-    # Need to check that the server is removed, all token for it gone
-    response = client.get(
-        "/admin/servers/1/capabilities", headers={"X-CSRF-Token": csrf_cookie}
-    )
-    assert 200 == response.status_code
-    existing_routes = response.get_json()
-    assert all(existing_routes.values())
-    response = client.patch(
-        "/admin/servers/1/capabilities",
-        headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "run&DUMMY_ROUTE_B.aggregation_unit.admin3": True,
-            "run&DUMMY_ROUTE_B.aggregation_unit.admin2": False,
-        },
-    )
-    assert 200 == response.status_code
-    response = client.get(
-        "/admin/servers/1/capabilities", headers={"X-CSRF-Token": csrf_cookie}
-    )
-    assert 200 == response.status_code
-    new_routes = response.get_json()
-    assert new_routes["run&DUMMY_ROUTE_B.aggregation_unit.admin3"]
-    assert not new_routes["run&DUMMY_ROUTE_B.aggregation_unit.admin2"]
-
-
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_group_server_listing(client, auth, test_admin, test_group):
-    uid, uname, upass = test_admin
-    response, csrf_cookie = auth.login(uname, upass)
-    response = client.get(
-        f"/admin/groups/{test_group.id}/servers", headers={"X-CSRF-Token": csrf_cookie}
-    )
-
-    assert 200 == response.status_code
-    new_routes = response.get_json()
-    assert [{"id": 1, "name": "DUMMY_SERVER_A"}] == new_routes
-
-
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_group_server_time_limits(client, auth, test_admin, test_group):
-    uid, uname, upass = test_admin
-    response, csrf_cookie = auth.login(uname, upass)
-    response = client.get(
-        f"/admin/groups/{test_group.id}/servers/1/time_limits",
-        headers={"X-CSRF-Token": csrf_cookie},
-    )
-
-    assert 200 == response.status_code
-    json = response.get_json()
-    assert 2 == json["longest_token_life"]
-    assert (
-        http_date(
-            (datetime.datetime.now().date() + datetime.timedelta(days=365)).timetuple()
-        )
-        == json["latest_token_expiry"]
-    )
-
-
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_group_server_rights(client, auth, test_admin, test_group):
+def test_list_scopes(client, auth, test_scopes, test_servers, test_admin):
     uid, uname, password = test_admin
     response, csrf_cookie = auth.login(uname, password)
     response = client.get(
-        f"/admin/groups/{test_group.id}/servers/1/capabilities",
+        "/admin/servers/1/scopes",
         headers={"X-CSRF-Token": csrf_cookie},
     )
-
-    assert 200 == response.status_code
-    json = response.get_json()
-    assert [
-        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin0",
-        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin1",
-        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin2",
-        "get_result&DUMMY_ROUTE_A.aggregation_unit.admin3",
-        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin0",
-        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin1",
-        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin2",
-        "get_result&DUMMY_ROUTE_B.aggregation_unit.admin3",
-        "run&DUMMY_ROUTE_A.aggregation_unit.admin0",
-        "run&DUMMY_ROUTE_A.aggregation_unit.admin1",
-        "run&DUMMY_ROUTE_A.aggregation_unit.admin2",
-        "run&DUMMY_ROUTE_A.aggregation_unit.admin3",
-        "run&DUMMY_ROUTE_B.aggregation_unit.admin0",
-        "run&DUMMY_ROUTE_B.aggregation_unit.admin1",
-        "run&DUMMY_ROUTE_B.aggregation_unit.admin2",
-        "run&DUMMY_ROUTE_B.aggregation_unit.admin3",
-    ] == json
+    assert response.status_code == 200
+    assert response.json == [
+        {"id": 1, "name": "get_result", "enabled": True},
+        {"id": 3, "name": "run", "enabled": True},
+        {"id": 4, "name": "dummy_agg_unit:dummy_query:dummy_query", "enabled": True},
+    ]
 
 
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_group_server_rights(client, auth, test_admin, test_group):
-    uid, uname, upass = test_admin
-    response, csrf_cookie = auth.login(uname, upass)
-    response = client.patch(
-        f"/admin/groups/{test_group.id}/servers",
+def test_set_scopes(client, auth, test_scopes, test_servers, test_admin):
+    uid, uname, password = test_admin
+    response, csrf_cookie = auth.login(uname, password)
+    response = client.post(
+        "/admin/servers/1/scopes",
         headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "servers": [
-                {
-                    "id": 1,
-                    "max_life": 1,
-                    "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"],
-                }
-            ]
-        },
+        json={"get_result": True, "run": True, "dummy_simple_scope": True},
     )
-
-    assert 200 == response.status_code
+    assert response.status_code == 200
     response = client.get(
-        f"/admin/groups/{test_group.id}/servers/1/capabilities",
-        headers={"X-CSRF-Token": csrf_cookie},
+        "/admin/servers/1/scopes", headers={"X-CSRF-Token": csrf_cookie}
     )
-
-    assert 200 == response.status_code
-    json = response.get_json()
-    assert ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"] == json
-
-    response = client.get(
-        f"/admin/groups/{test_group.id}/servers/1/time_limits",
-        headers={"X-CSRF-Token": csrf_cookie},
-    )
-    json = response.get_json()
-    assert 1 == json["longest_token_life"]
-    assert "Mon, 01 Jan 2018 00:00:00 GMT" == json["latest_token_expiry"]
+    assert response.json == [
+        {"id": 1, "name": "get_result", "enabled": True},
+        {"id": 3, "name": "run", "enabled": True},
+        {"id": 5, "name": "dummy_simple_scope", "enabled": True},
+    ]
 
 
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_group_server_rights_rejected_for_max_life(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+@pytest.mark.skip("Disabling until enable scopes is back")
+def test_enabled_scopes(client, auth, test_scopes, test_servers, test_admin):
+    uid, uname, password = test_admin
+    response, csrf_cookie = auth.login(uname, password)
+    json = {"dummy_agg_unit:dummy_query:dummy_query": False}
     response = client.patch(
-        "/admin/groups/1/servers",
-        headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "servers": [
-                {
-                    "id": 1,
-                    "max_life": 99,
-                    "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"],
-                }
-            ]
-        },
+        "/admin/servers/1/scopes", json=json, headers={"X-CSRF-Token": csrf_cookie}
     )
-    assert 400 == response.status_code
-    assert {
-        "code": 400,
-        "message": "Lifetime too long",
-        "bad_field": "max_life",
-    } == response.get_json()
+    assert response.status_code == 200
+    assert response.json == [
+        {"id": 1, "name": "get_result", "enabled": True},
+        {"id": 3, "name": "run", "enabled": True},
+        {"id": 4, "name": "dummy_agg_unit:dummy_query:dummy_query", "enabled": False},
+    ]
 
 
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_group_server_rights_rejected_for_expiry(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
-    response = client.patch(
-        "/admin/groups/1/servers",
-        headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "servers": [
-                {
-                    "id": 1,
-                    "max_life": 1,
-                    "latest_expiry": "2040-01-01T00:00:00.0Z",
-                    "rights": ["get_result&DUMMY_ROUTE_A.aggregation_unit.admin0"],
-                }
-            ]
-        },
-    )
-    assert 400 == response.status_code
-    assert {
-        "code": 400,
-        "message": "End date too late",
-        "bad_field": "latest_expiry",
-    } == response.get_json()
-
-
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_group_server_rights_rejected_for_rights(
-    client, auth, test_admin, test_group
-):
-    uid, uname, upass = test_admin
-    response, csrf_cookie = auth.login(uname, upass)
-    response = client.patch(
-        f"/admin/groups/{test_group.id}/servers",
-        headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "servers": [
-                {
-                    "id": 1,
-                    "max_life": 1,
-                    "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": ["poll.DUMMY_ROUTE_A.aggregation_unit.admin0"],
-                }
-            ]
-        },
-    )
-    assert 400 == response.status_code
-    assert {
-        "code": 400,
-        "message": "poll.DUMMY_ROUTE_A.aggregation_unit.admin0 not enabled for this server.",
-    } == response.get_json()
+def test_list_servers_for_user(client, auth, test_user_with_roles):
+    uid, uname, password = test_user_with_roles
+    response, csrf_cookie = auth.login(uname, password)
+    response = client.get("/tokens/servers")
+    assert response.status_code == 200
+    assert response.json == [
+        {"id": 1, "server_name": "DUMMY_SERVER_A"},
+    ]

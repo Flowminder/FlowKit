@@ -38,6 +38,7 @@ setup(
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",
+        "openapi_spec_validator",
         "werkzeug",
     ],
     extras_require={"test": ["pytest", "coverage"]},

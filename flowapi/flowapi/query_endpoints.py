@@ -67,7 +67,7 @@ async def run_query():
 
     """
     json_data = await request.json
-    current_user.can_run(query_json=json_data)
+    await current_user.can_run(query_json=json_data)
     current_app.query_run_logger.info("run_query", query=json_data)
     request.socket.send_json(
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
@@ -171,8 +171,8 @@ async def poll_query(query_id):
           description: Server error.
       summary: Get the status of a query
     """
-    await current_user.can_poll_by_query_id(query_id=query_id)
     current_app.query_run_logger.info("poll_query", query_id=query_id)
+    await current_user.can_poll_by_query_id(query_id=query_id)
     request.socket.send_json(
         {
             "request_id": request.request_id,

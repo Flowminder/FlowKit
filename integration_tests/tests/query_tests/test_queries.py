@@ -1414,7 +1414,9 @@ async def test_get_geography(connection, module, access_token_builder, flowapi_u
     """
     con = connection(
         url=flowapi_url,
-        token=access_token_builder(["get_result&geography.aggregation_unit.admin3"]),
+        token=access_token_builder(
+            {"admin3_role": ["get_result", "admin3:geography:geography"]}
+        ),
     )
     try:
         result_geojson = await module.get_geography(
@@ -1508,7 +1510,9 @@ async def test_get_available_dates(
     """
     con = connection(
         url=flowapi_url,
-        token=access_token_builder(["get_result&available_dates"]),
+        token=access_token_builder(
+            {"date_role": ["get_result", "get_available_dates"]}
+        ),
     )
     try:
         result = await module.get_available_dates(

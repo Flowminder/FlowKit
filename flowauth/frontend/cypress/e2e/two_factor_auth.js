@@ -40,7 +40,9 @@ describe("Two-factor setup", function () {
                   .type(mfaCode.stdout)
                   .get("[data-button-id=submit]")
                   .click();
-                cy.contains("My Servers").should("be.visible");
+                cy.contains("My Servers", { timeout: 5000 }).should(
+                  "be.visible"
+                );
                 cy.get("#logout").click();
                 cy.get("#username")
                   .type(username)

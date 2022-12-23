@@ -92,13 +92,13 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
             "PRIVATE_JWT_SIGNING_KEY environment variable must be set."
         )
 
-    def token_maker(claims: List[str]) -> str:
+    def token_maker(roles: Dict) -> str:
         return generate_token(
             flowapi_identifier=audience,
             username="test",
             private_key=private_key,
             lifetime=timedelta(seconds=300),
-            claims=claims,
+            roles=roles,
         )
 
     return token_maker
@@ -119,4 +119,6 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
         The token
 
     """
-    return access_token_builder(get_all_claims_from_flowapi(flowapi_url=flowapi_url))
+    return access_token_builder(
+        {"universal_role": get_all_claims_from_flowapi(flowapi_url=flowapi_url)}
+    )

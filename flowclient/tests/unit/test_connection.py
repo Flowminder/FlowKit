@@ -14,7 +14,7 @@ def test_update_token(session_mock, dummy_route, token):
     Test that update_token updates all attributes appropriately.
     """
     connection = flowclient.connect(url="DUMMY_API", token=token)
-    new_token = jwt.encode({"identity": "NEW_IDENTITY"}, "secret")
+    new_token = jwt.encode({"sub": "NEW_IDENTITY"}, "secret")
     connection.update_token(new_token)
     assert connection.user == "NEW_IDENTITY"
     assert connection.token == new_token

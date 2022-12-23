@@ -86,9 +86,7 @@ class Connection:
             JSON Web Token for this API server
         """
         try:
-            self.user = jwt.decode(token, options=dict(verify_signature=False))[
-                "identity"
-            ]
+            self.user = jwt.decode(token, options=dict(verify_signature=False))["sub"]
         except jwt.DecodeError:
             raise FlowclientConnectionError(f"Unable to decode token: '{token}'")
         except KeyError:
@@ -140,6 +138,9 @@ class Connection:
                 error = "Unknown access denied error"
             raise FlowclientConnectionError(error)
         else:
+            print("*****************")
+            print(response.__dict__)
+            print("*****************")
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
@@ -190,6 +191,9 @@ class Connection:
                 error_msg = "Unknown access denied error"
             raise FlowclientConnectionError(error_msg)
         else:
+            print("******************")
+            print(response.__dict__)
+            print("******************")
             try:
                 error_msg = response.json()["msg"]
                 try:

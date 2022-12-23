@@ -8,7 +8,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TokenList from "./TokenList";
-import TokenDetails from "./TokenDetails";
+import TokenBuilder from "./TokenBuilder";
 
 const styles = (theme) => ({
   root: {
@@ -39,10 +39,10 @@ class UserServer extends React.Component {
   getBody = () => {
     if (this.state.editing) {
       return (
-        <TokenDetails
+        <TokenBuilder
           classes={this.props.classes}
           onClick={this.toggleEdit}
-          serverID={this.props.serverID}
+          activeServer={this.props.serverID}
           cancel={this.toggleEdit}
         />
       );

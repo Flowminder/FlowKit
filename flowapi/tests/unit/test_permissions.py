@@ -1,59 +1,28 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import prance
+import quart
 from flowapi.permissions import (
-    per_query_scopes,
-    tree_walk_to_scope_list,
-    valid_tree_walks,
+    tl_schema_scope_string,
+    schema_to_scopes,
+    grab_on_key_list,
+    get_agg_unit,
 )
 
 import pytest
+import asyncio
+import ast
+
+pytest_plugins = "pytest_asyncio"
 
 
 @pytest.mark.parametrize(
     "tree, expected",
     [
-        ({}, []),
-        ({1: {}}, [[1]]),
-        ({1: {2: {}}}, [[1, 2]]),
-        ({1: {2: {}}, 3: {}}, [[1, 2], [3]]),
-        (
-            {1: {2: [1, 2, 3, 4]}, "3": "A"},
-            [[1, 2, 1], [1, 2, 2], [1, 2, 3], [1, 2, 4], ["3", "A"]],
-        ),
-    ],
-)
-def test_valid_tree_walks(tree, expected):
-    assert list(valid_tree_walks(tree)) == expected
-
-
-@pytest.mark.parametrize(
-    "tree, expected",
-    [
-        ({}, ["get_result&available_dates"]),
-        (
-            {"properties": {"query_kind": {"enum": ["dummy"]}}},
-            ["get_result&dummy", "run&dummy", "get_result&available_dates"],
-        ),
-        (
-            {
-                "properties": {
-                    "query_kind": {"enum": ["dummy"]},
-                    "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
-                }
-            },
-            [
-                "get_result&dummy.aggregation_unit.DUMMY_UNIT",
-                "run&dummy.aggregation_unit.DUMMY_UNIT",
-                "get_result&dummy.aggregation_unit.DUMMY_UNIT_2",
-                "run&dummy.aggregation_unit.DUMMY_UNIT_2",
-                "get_result&available_dates",
-            ],
-        ),
-        ({"oneOf": []}, ["get_result&available_dates"]),
         (
             {"oneOf": [{"properties": {"query_kind": {"enum": ["dummy"]}}}]},
-            ["get_result&dummy", "run&dummy", "get_result&available_dates"],
+            ["nonspatial:dummy:dummy"],
         ),
         (
             {
@@ -61,6 +30,7 @@ def test_valid_tree_walks(tree, expected):
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
+                            "aggregation_unit": {"enum": ["DUMMY_UNIT"]},
                             "dummy_param": {
                                 "properties": {"query_kind": {"enum": ["nested_dummy"]}}
                             },
@@ -69,9 +39,8 @@ def test_valid_tree_walks(tree, expected):
                 ]
             },
             [
-                "get_result&dummy.dummy_param.nested_dummy",
-                "run&dummy.dummy_param.nested_dummy",
-                "get_result&available_dates",
+                "DUMMY_UNIT:dummy:dummy",
+                "DUMMY_UNIT:dummy:nested_dummy",
             ],
         ),
         (
@@ -80,6 +49,7 @@ def test_valid_tree_walks(tree, expected):
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
+                            "aggregation_unit": {"enum": ["TL_DUMMY_UNIT"]},
                             "dummy_param": {
                                 "properties": {
                                     "query_kind": {"enum": ["nested_dummy"]},
@@ -91,9 +61,8 @@ def test_valid_tree_walks(tree, expected):
                 ]
             },
             [
-                "get_result&dummy.dummy_param.nested_dummy",
-                "run&dummy.dummy_param.nested_dummy",
-                "get_result&available_dates",
+                "TL_DUMMY_UNIT:dummy:dummy",
+                "TL_DUMMY_UNIT:dummy:nested_dummy",
             ],
         ),
         (
@@ -102,6 +71,7 @@ def test_valid_tree_walks(tree, expected):
                     {
                         "properties": {
                             "query_kind": {"enum": ["dummy"]},
+                            "enum": ["TL_DUMMY_UNIT", "TL_DUMMY_UNIT_2"],
                             "dummy_param": {
                                 "properties": {
                                     "query_kind": {"enum": ["nested_dummy"]},
@@ -123,66 +93,75 @@ def test_valid_tree_walks(tree, expected):
                 ]
             },
             [
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_2",
-                "get_result&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "run&dummy.dummy_param.nested_dummy.aggregation_unit.DUMMY_UNIT_2&dummy.dummy_param_2.nested_dummy_2.aggregation_unit.DUMMY_UNIT_3",
-                "get_result&available_dates",
+                "nonspatial:dummy:dummy",
+                "nonspatial:dummy:nested_dummy",
+                "nonspatial:dummy:nested_dummy_2",
             ],
         ),
     ],
 )
-def test_per_query_scopes(tree, expected):
+def test_schema_to_scopes(tree, expected, monkeypatch):
+    # Shouldn't try and fit a full spec in here, this test is large enough as it is - we skip ResolvingParser instead
+    class MockResolvingParser:
+        def __init__(self, spec_string, **kwargs):
+            self.specification = {
+                "components": {
+                    "schemas": {"FlowmachineQuerySchema": ast.literal_eval(spec_string)}
+                }
+            }
 
-    if tree == {
+    # It looks like we can't mock out ResolvingParser, so we mock out it's parent instead
+    monkeypatch.setattr(prance, "BaseParser", MockResolvingParser)
+
+    class MockFlowApiLogger:
+        @staticmethod
+        def warning(msg):
+            print(msg)
+
+    class MockCurrentApp:
+        flowapi_logger = MockFlowApiLogger()
+
+    monkeypatch.setattr(quart, "current_app", MockCurrentApp)
+    assert schema_to_scopes(tree) == expected
+
+
+def test_schema_to_scopes_bad_input():
+    with pytest.raises(
+        AssertionError, match="No specification parsed, cannot validate!"
+    ):
+        schema_to_scopes({})
+
+
+def test_scopes_from_query():
+    tl_query = {
         "properties": {
-            "query_kind": {"enum": ["dummy"]},
+            "query_kind": {"enum": ["test_query"]},
             "aggregation_unit": {"enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]},
         }
-    } or tree == {
-        "oneOf": [
-            {
-                "properties": {
-                    "query_kind": {"enum": ["dummy"]},
-                    "dummy_param": {
-                        "properties": {
-                            "query_kind": {"enum": ["nested_dummy"]},
-                            "aggregation_unit": {
-                                "enum": ["DUMMY_UNIT", "DUMMY_UNIT_2"]
-                            },
-                        }
-                    },
-                    "dummy_param_2": {
-                        "properties": {
-                            "query_kind": {"enum": ["nested_dummy_2"]},
-                            "aggregation_unit": {
-                                "enum": ["DUMMY_UNIT_2", "DUMMY_UNIT_3"]
-                            },
-                        },
-                    },
-                },
-            }
-        ]
-    }:
-        pytest.xfail(
-            "Under new schema rules, cannot presently mix admin levels in the same query. See bug #4649"
-        )
+    }
 
-    assert list(per_query_scopes(queries=tree)) == expected
+    input = "nested_query"
+    expected = {
+        "DUMMY_UNIT:test_query:nested_query",
+        "DUMMY_UNIT_2:test_query:nested_query",
+    }
+    assert tl_schema_scope_string(tl_query, input) == expected
 
 
-@pytest.mark.parametrize(
-    "walk, expected",
-    [
-        ("DUMMY", ["DUMMY"]),
-        (["DUMMY", "DUMMY"], ["DUMMY.DUMMY"]),
-        ((["DUMMY", "DUMMY"], ["DUMMY", "DUMMY"]), ["DUMMY.DUMMY", "DUMMY.DUMMY"]),
-        ((["DUMMY", "DUMMY"], (["DUMMY", "DUMMY"])), ["DUMMY.DUMMY", "DUMMY.DUMMY"]),
-    ],
-)
-def test_tree_walk_to_scope_list(walk, expected):
-    assert list(tree_walk_to_scope_list(walk)) == expected
+def test_grab_on_key_list():
+
+    input = {"1": [{}, {}, {"3": "success"}]}
+    keys = ["1", 2, "3"]
+    assert list(grab_on_key_list(input, keys)) == ["success"]
+
+    input = {"outer": {"not_inner": "wrong", "inner": "right"}}
+    keys = ["outer", "inner"]
+    assert list(grab_on_key_list(input, keys)) == ["right"]
+
+    input = {
+        "first": {"1": {"2": "first_inner"}},
+        "second": {"1": {"2": "second_inner"}},
+        "third": {"1": {"3": "not_needed"}},
+    }
+    keys = ["1", "2"]
+    assert list(grab_on_key_list(input, keys)) == ["first_inner", "second_inner"]

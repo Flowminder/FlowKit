@@ -2,8 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowauth.cli import add_admin_command, demo_data, init_db_command
-from flowauth.models import Group, User, db
+from flowauth.cli import (
+    add_admin_command,
+    demo_data,
+    init_db_command,
+)
+from flowauth.models import User, db, Role, Scope, Server
 
 
 def test_add_admin(app):
@@ -80,7 +84,7 @@ def test_demo_data_only_sets_up_once(app, caplog):
         result = runner.invoke(demo_data)
         result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
-        assert len(Group.query.all()) == 3
+        assert len(Scope.query.all()) == 182
     assert "Database already set up by another worker, skipping." in caplog.text
 
 
@@ -105,4 +109,6 @@ def test_demo_data(app):
         app.config["DB_IS_SET_UP"].clear()
         result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
-        assert len(Group.query.all()) == 3
+        assert len(Role.query.all()) == 2
+        assert len(Server.query.all()) == 1
+        assert len(Scope.query.all()) == 182

@@ -9,7 +9,7 @@ from quart_jwt_extended.exceptions import UserClaimsVerificationError
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from flowapi.jwt import decompress_claims
-from flowapi.permissions import expand_scopes, query_to_scope_list
+from flowapi.permissions import query_to_scopes
 from flowapi.utils import get_query_parameters_from_flowmachine
 from quart import current_app, request
 
@@ -24,31 +24,31 @@ class UserObject:
     ----------
     username : str
         Name of the user
-    claims : dict
-        Dictionary giving a whitelist of the user's claims
+    scopes : dict
+        Dictionary giving a list of the user's permitted claims
     """
 
-    def __init__(self, username: str, scopes: List[str]) -> None:
+    def __init__(self, username: str, scopes: dict) -> None:
         self.username = username
         self.scopes = scopes
 
-    def has_access(self, *, actions: List[str], query_json: dict) -> bool:
-
-        try:
-            scopes = set(query_to_scope_list(query_json))
-        except Exception as exc:
-            raise BadQueryError
-        if "query_kind" not in query_json:
-            raise MissingQueryKindError
-
-        for action in actions:
-            if {*scopes, action} in self.scopes:
-                return True
+    def has_access(self, *, requested_scopes) -> bool:
+        granting_roles = []
+        for role, scopes in self.scopes.items():
+            if all(x in scopes for x in requested_scopes):
+                granting_roles.append(role)
+        if granting_roles:
+            current_app.access_logger.info(
+                f"Permission for {requested_scopes} granted by {granting_roles}",
+                requested_scopes=requested_scopes,
+                granting_roles=granting_roles,
+            )
+            return True
         raise UserClaimsVerificationError
 
-    def can_run(self, *, query_json: dict) -> bool:
+    async def can_run(self, *, query_json: dict) -> bool:
         """
-        Returns true if the user can run this query.
+        Returns true if the user can run this query, or raises an exception
 
         Parameters
         ----------
@@ -66,8 +66,8 @@ class UserObject:
             If the user cannot run this kind of query at this level of aggregation
 
         """
-
-        return self.has_access(actions=["run"], query_json=query_json)
+        claims = await query_to_scopes(query_json)
+        return self.has_access(requested_scopes=["run"] + claims)
 
     async def can_poll_by_query_id(self, *, query_id) -> bool:
         """
@@ -90,9 +90,9 @@ class UserObject:
         """
 
         params = await get_query_parameters_from_flowmachine(query_id=query_id)
-        return self.can_poll(query_json=params)
+        return await self.can_poll(query_json=params)
 
-    def can_poll(self, *, query_json: dict) -> bool:
+    async def can_poll(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can poll this kind of query at this unit of aggregation.
 
@@ -111,8 +111,8 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot get the status of this kind of query at this level of aggregation
         """
-
-        return self.has_access(actions=["run", "get_result"], query_json=query_json)
+        claims = await query_to_scopes(query_json)
+        return self.has_access(requested_scopes=claims)
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
         """
@@ -134,10 +134,9 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await get_query_parameters_from_flowmachine(query_id=query_id)
+        return await self.can_get_results(query_json=params)
 
-        return self.can_get_results(query_json=params)
-
-    def can_get_results(self, *, query_json: dict) -> bool:
+    async def can_get_results(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can get the results of this kind of query at this unit of aggregation.
         Parameters
@@ -155,8 +154,8 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot get the results of this kind of query at this level of aggregation
         """
-
-        return self.has_access(actions=["get_result"], query_json=query_json)
+        claims = await query_to_scopes(query_json)
+        return self.has_access(requested_scopes=["get_result"] + claims)
 
     def can_get_geography(self, *, aggregation_unit: str) -> bool:
         """
@@ -178,14 +177,12 @@ class UserObject:
             If the user get geography at this level
         """
         return self.has_access(
-            actions=["get_result"],
-            query_json=dict(query_kind="geography", aggregation_unit=aggregation_unit),
+            requested_scopes=["get_result"]
+            + [f"{aggregation_unit}:geography:geography"],
         )
 
     def can_get_available_dates(self) -> bool:
-        return self.has_access(
-            actions=["get_result"], query_json=dict(query_kind="available_dates")
-        )
+        return self.has_access(requested_scopes=["get_available_dates"])
 
 
 def user_loader_callback(identity):
@@ -221,5 +218,4 @@ def user_loader_callback(identity):
         claims=claims,
     )
     current_app.access_logger.info("Loaded user", **log_dict)
-
-    return UserObject(username=identity, scopes=list(expand_scopes(scopes=claims)))
+    return UserObject(username=identity, scopes=claims)

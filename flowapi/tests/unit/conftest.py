@@ -22,7 +22,7 @@ CaptureResult = namedtuple("CaptureResult", ["debug", "access"])
 @pytest.fixture
 def json_log(caplog):
     def parse_json():
-        loggers = dict(debug=[], access=[])
+        loggers = dict(debug=[], access=[], query=[])
         for logger, level, msg in caplog.record_tuples:
             if msg == "":
                 continue
@@ -55,7 +55,6 @@ def dummy_zmq_server(monkeypatch):
     """
     dummy = Mock()
     dummy.return_value.socket.return_value.recv_json = CoroutineMock()
-
     monkeypatch.setattr(zmq.asyncio.Context, "instance", dummy)
     yield dummy.return_value.socket.return_value.recv_json
 

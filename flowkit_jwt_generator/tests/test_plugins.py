@@ -47,7 +47,7 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_by
                 key={public_key_bytes},
                 algorithms=["RS256"],
             )
-            assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["claims"]}
+            assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["roles"]}
     """
     )
 
@@ -90,7 +90,7 @@ def test_plugin_works_with_no_audience(
                 key={public_key_bytes},
                 algorithms=["RS256"],
             )
-            assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["claims"]}
+            assert decompress_claims(decoded["user_claims"]) == {dummy_flowapi["roles"]}
     """
     )
     # run all tests with pytest

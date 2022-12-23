@@ -10,8 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added views `etl.ingested_state`, `etl.available_dates` and `etl.deduped_post_etl_queries` in FlowDB, for convenient extraction of relevant information from the ETL tables. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
 
 ### Changed
+- *Important*; tokens issued by previous versions of Flowauth are not compatible with this version. Users will need to regenerate tokens using the updated Flowauth.
+- Move from `groups` to `roles` in flowauth; see [here](https://github.com/Flowminder/FlowKit/pull/5163#issuecomment-1216480419) for full details. [#5613](https://github.com/Flowminder/FlowKit/pull/5163)
 - Changed `AIRFLOW__CORE__SQL_ALCHEMY_CONN` env var to `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`
+- RoleScopePicker component redesigned and reimplemented.
 - Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. [#3622](https://github.com/Flowminder/FlowKit/issues/3622)
+- `jwt` tokens now use `sub` instead of `identity` for `JWT_IDENTITY_CLAIM`.
+
 
 ### Fixed
 - Fixed a potential deadlock when using a small connection pool and `store`-ing queries

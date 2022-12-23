@@ -17,6 +17,8 @@ import pyotp
 from flask_login import current_user, login_required
 from zxcvbn import zxcvbn
 
+from flowauth.roles import roles_to_json
+
 from .invalid_usage import InvalidUsage
 from .models import *
 
@@ -223,6 +225,18 @@ def is_two_factor_active():
             and current_user.two_factor_auth.enabled
         }
     )
+
+
+@blueprint.route("/roles/server/<server_id>")
+@login_required
+def get_user_roles(server_id):
+    """
+    Returns a list of roles on server_id for the logged in user
+    """
+    server = Server.query.filter(Server.id == server_id).first_or_404()
+    roles = Role.query.filter(Role.server == server).join(User.roles).all()
+    # NOTE: This includes other users inside the role, leading to enumeration. Is this a problem?
+    return roles_to_json(roles)
 
 
 def generate_backup_codes(*, num_codes: int = 16, num_digits: int = 10) -> List[str]:

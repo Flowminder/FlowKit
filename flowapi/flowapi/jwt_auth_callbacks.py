@@ -59,7 +59,7 @@ async def expired_token_callback(expired_token: Dict[str, Any]) -> Response:
 
     current_app.access_logger.error(
         "EXPIRED_TOKEN",
-        identity=expired_token["identity"],
+        identity=expired_token["sub"],
         expired_token=expired_token,
         json_payload=await request.json,
     )
