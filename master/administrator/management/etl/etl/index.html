@@ -8,8 +8,14 @@
       
       
       
+      
+        <link rel="prev" href="../../cache/">
+      
+      
+        <link rel="next" href="../../../../flowetl/flowetl/">
+      
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.1">
     
     
       
@@ -17,15 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.3bd4f189.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.2505c338.min.css">
-        
-          
-          
-          <meta name="theme-color" content="">
-        
       
       
 
@@ -5577,6 +5578,7 @@
                   
 
 
+
   <h1>ETL</h1>
 
 <h2 id="working-with-flowetl">Working with FlowETL<a class="headerlink" href="#working-with-flowetl" title="Permanent link">&para;</a></h2>
@@ -5656,11 +5658,11 @@
 <p>When specifing a transform, you may not have (or need) all the fields specified in the schema. Any fields which are not included <em>still need to be specified in the transform</em>.
 Fields which are not being extracted from your source data should be specified as <code>NULL::&lt;field_type&gt;</code>, and fields <em>must</em> be specified in your select statement in the order they are given in the tables below. </p>
 <p>For example, a valid SQL extract statement for calls data with <em>only</em> the mandatory fields available:</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">uuid_generate_v4</span><span class="p">()::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">TRUE</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">outgoing</span><span class="p">,</span><span class="w"> </span><span class="n">event_time</span><span class="p">::</span><span class="n">TIMESTAMPTZ</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">datetime</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span><span class="w"></span>
-<span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">network</span><span class="p">,</span><span class="w"> </span><span class="n">msisdn</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">msisdn</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">msisdn_counterpart</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">location_id</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">imsi</span><span class="p">,</span><span class="w"></span>
-<span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">imei</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">tac</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">operator_code</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">country_code</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">uuid_generate_v4</span><span class="p">()::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">TRUE</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">outgoing</span><span class="p">,</span><span class="w"> </span><span class="n">event_time</span><span class="p">::</span><span class="n">TIMESTAMPTZ</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">datetime</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span>
+<span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">network</span><span class="p">,</span><span class="w"> </span><span class="n">msisdn</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">msisdn</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">msisdn_counterpart</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">location_id</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">imsi</span><span class="p">,</span>
+<span class="k">NULL</span><span class="p">::</span><span class="nb">TEXT</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">imei</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">tac</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">operator_code</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">::</span><span class="nb">NUMERIC</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">country_code</span>
 
-<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">staging_table</span><span class="w"> </span><span class="err">}}</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">staging_table</span><span class="w"> </span><span class="err">}}</span>
 </code></pre></div>
 </div>
 <h4 id="calls-data">Calls data<a class="headerlink" href="#calls-data" title="Permanent link">&para;</a></h4>
@@ -6050,65 +6052,65 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <h2 id="connecting-to-different-cdr-data-sources">Connecting to different CDR data sources<a class="headerlink" href="#connecting-to-different-cdr-data-sources" title="Permanent link">&para;</a></h2>
 <h3 id="remote-databases">Remote databases<a class="headerlink" href="#remote-databases" title="Permanent link">&para;</a></h3>
 <p>Extracting data from a remote database has significant benefits, because the source database provides guarantees about the integrity of the data in terms of data types, nullable values and so on. FlowDB uses PostgreSQL's foreign data wrapper mechanism to connect to external databases. In general, to use a remote database table as a source you should create a persistent foreign table that will contain the data (instructions of how to do this for the databases supported by FlowETL are given below), then you will need to provide an SQL snippet to use for extraction. For example, to extract three fields:</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">event_time</span><span class="p">,</span><span class="w"> </span><span class="n">msisdn</span><span class="p">,</span><span class="w"> </span><span class="n">cell_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">source_table</span><span class="w"> </span><span class="err">}}</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">event_time</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">&#39;{{ ds_nodash }}&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">event_time</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">&#39;{{ tomorrow_ds_nodash }}&#39;</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">event_time</span><span class="p">,</span><span class="w"> </span><span class="n">msisdn</span><span class="p">,</span><span class="w"> </span><span class="n">cell_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">source_table</span><span class="w"> </span><span class="err">}}</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">event_time</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">&#39;{{ ds_nodash }}&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">event_time</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">&#39;{{ tomorrow_ds_nodash }}&#39;</span><span class="p">;</span>
 </code></pre></div>
 <p>Note the use of the <code>{{ source_table }}</code>, which you should provide as an argument to either <code>create_dag</code>, or <code>CreateStagingViewOperator</code>, and the datetime constraint using the <code>{{ ds_nodash }}</code> and  <code>{{ tomorrow_ds_nodash }}</code> <a href="https://airflow.apache.org/docs/stable/macros.html">Airflow macros</a>. Remote database extraction in FlowETL works by selecting a time delimited segment of your source table. If your source table is complex, or you will need to use multiple tables to contruct a suitable query, we recommend creating a view in your source database and connecting to the view.</p>
 <p>You will also need to be able to connect to the remote database from inside FlowDB's docker container. If the remote database is also running as a container, you can achieve this by creating an overlay network and attaching both containers to it. </p>
 <h4 id="postgresql-database">PostgreSQL database<a class="headerlink" href="#postgresql-database" title="Permanent link">&para;</a></h4>
 <p>The <a href="https://www.postgresql.org/docs/current/postgres-fdw.html"><code>postgres_fdw</code> extension</a> allows FlowDB to communicate with other databases built on PostgreSQL. This makes data extraction from remote PostgreSQL-compatible databases (e.g. <a href="https://www.timescale.com">TimescaleDB</a>) simple. You will need to create a foreign server, map a user for it, and then specify the table and schema on the remote database you would like to make available within FlowDB:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">postgres_server</span><span class="w"></span>
-<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">postgres_fdw</span><span class="w"></span>
-<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">        </span><span class="k">host</span><span class="w"> </span><span class="s1">&#39;&lt;foreign_host&gt;&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="n">port</span><span class="w"> </span><span class="s1">&#39;&lt;foreign_port&gt;&gt;&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="n">dbname</span><span class="w"> </span><span class="s1">&#39;&lt;foreign_db_name&gt;&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">postgres_server</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">postgres_fdw</span>
+<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="k">host</span><span class="w"> </span><span class="s1">&#39;&lt;foreign_host&gt;&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">port</span><span class="w"> </span><span class="s1">&#39;&lt;foreign_port&gt;&gt;&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">dbname</span><span class="w"> </span><span class="s1">&#39;&lt;foreign_db_name&gt;&#39;</span>
+<span class="w">    </span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">MAPPING</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">flowdb</span><span class="w"></span>
-<span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">postgres_server</span><span class="w"></span>
-<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">        </span><span class="k">user</span><span class="w"> </span><span class="s1">&#39;&lt;postgres_db_user&gt;&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="n">password</span><span class="w"> </span><span class="s1">&#39;&lt;postgres_db_password&gt;&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">MAPPING</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">flowdb</span>
+<span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">postgres_server</span>
+<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="k">user</span><span class="w"> </span><span class="s1">&#39;&lt;postgres_db_user&gt;&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">password</span><span class="w"> </span><span class="s1">&#39;&lt;postgres_db_password&gt;&#39;</span>
+<span class="w">    </span><span class="p">);</span>
 
-<span class="n">IMPORT</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="o">&lt;</span><span class="n">source_table_schema</span><span class="o">&gt;</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="n">source_table</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">foreign_db</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">etl</span><span class="p">;</span><span class="w"></span>
+<span class="n">IMPORT</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="o">&lt;</span><span class="n">source_table_schema</span><span class="o">&gt;</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="n">source_table</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">foreign_db</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">etl</span><span class="p">;</span>
 </code></pre></div>
 <p>You can then use the remote table as a data source in FlowETL, by providing <code>"&lt;source_table_schema&gt;.&lt;source_table&gt;"</code> as the source table.</p>
 <h4 id="oracle-database">Oracle database<a class="headerlink" href="#oracle-database" title="Permanent link">&para;</a></h4>
 <p>FlowDB supports the <a href="https://github.com/laurenz/oracle_fdw">oracle_fdw</a> connector, but to conform with Oracle's licensing we do not distribute a container which includes it. You will need to supply Oracle client binaries, and build the container by downloading the <a href="https://github.com/Flowminder/FlowKit/tree/master/flowdb/oracle_fdw">Dockerfile and script</a> and running:</p>
-<div class="highlight"><pre><span></span><code>docker build --build-arg <span class="nv">ORACLE_BINARY_SOURCE</span><span class="o">=</span>&lt;oracle_binary_url&gt; <span class="se">\</span>
-              --build-arg <span class="nv">CODE_VERSION</span><span class="o">=</span>latest -t flowdb_with_oracle
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>--build-arg<span class="w"> </span><span class="nv">ORACLE_BINARY_SOURCE</span><span class="o">=</span>&lt;oracle_binary_url&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">              </span>--build-arg<span class="w"> </span><span class="nv">CODE_VERSION</span><span class="o">=</span>latest<span class="w"> </span>-t<span class="w"> </span>flowdb_with_oracle
 </code></pre></div>
 <p>Once you have built the image, you can use it in place of standard FlowDB.</p>
 <p>To connect to Oracle, you will need to access FlowDB as the <code>flowdb</code> user and run:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">oracle_server</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">oracle_fdw</span><span class="w"></span>
-<span class="w">          </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">dbserver</span><span class="w"> </span><span class="s1">&#39;//&lt;oracle_server&gt;:&lt;oracle_port&gt;/&lt;oracle_db&gt;&#39;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">oracle_server</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">oracle_fdw</span>
+<span class="w">          </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">dbserver</span><span class="w"> </span><span class="s1">&#39;//&lt;oracle_server&gt;:&lt;oracle_port&gt;/&lt;oracle_db&gt;&#39;</span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">MAPPING</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">flowdb</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">oracle_server</span><span class="w"></span>
-<span class="w">          </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="k">user</span><span class="w"> </span><span class="s1">&#39;&lt;oracle_user&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="s1">&#39;&lt;oracle_password&gt;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">MAPPING</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">flowdb</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">oracle_server</span>
+<span class="w">          </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="k">user</span><span class="w"> </span><span class="s1">&#39;&lt;oracle_user&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="s1">&#39;&lt;oracle_password&gt;&#39;</span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">oracle_source_table</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">          </span><span class="o">&lt;</span><span class="n">fields</span><span class="o">&gt;</span><span class="w"></span>
-<span class="w">       </span><span class="p">)</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">oracle_server</span><span class="w"> </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="k">schema</span><span class="w"> </span><span class="s1">&#39;&lt;schema&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="s1">&#39;&lt;table_name&gt;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">oracle_source_table</span><span class="w"> </span><span class="p">(</span>
+<span class="w">          </span><span class="o">&lt;</span><span class="n">fields</span><span class="o">&gt;</span>
+<span class="w">       </span><span class="p">)</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">oracle_server</span><span class="w"> </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="k">schema</span><span class="w"> </span><span class="s1">&#39;&lt;schema&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="s1">&#39;&lt;table_name&gt;&#39;</span><span class="p">);</span>
 </code></pre></div>
 <p>Further instructions on use of the wrapper are available from the projects <a href="https://github.com/laurenz/oracle_fdw">Github repo</a>.</p>
 <h4 id="mssql-database">MSSQL database<a class="headerlink" href="#mssql-database" title="Permanent link">&para;</a></h4>
 <p>FlowDB includes <a href="https://github.com/tds-fdw/tds_fdw">tds_fdw</a>, which supports data extraction from Microsoft SQL server. Usage is very similar to the other remote database connections:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">mssql_server</span><span class="w"></span>
-<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">tds_fdw</span><span class="w"></span>
-<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">servername</span><span class="w"> </span><span class="s1">&#39;&lt;remote_database_host&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">port</span><span class="w"> </span><span class="s1">&#39;&lt;remote_database_port&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">database</span><span class="w"> </span><span class="s1">&#39;&lt;remote_database_name&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tds_version</span><span class="w"> </span><span class="s1">&#39;&lt;tds_version&gt;&#39;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">mssql_server</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">tds_fdw</span>
+<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">servername</span><span class="w"> </span><span class="s1">&#39;&lt;remote_database_host&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">port</span><span class="w"> </span><span class="s1">&#39;&lt;remote_database_port&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">database</span><span class="w"> </span><span class="s1">&#39;&lt;remote_database_name&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tds_version</span><span class="w"> </span><span class="s1">&#39;&lt;tds_version&gt;&#39;</span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">MAPPING</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">flowdb</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">MAPPING</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">flowdb</span>
 <span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">mssql_server</span><span class="w"> </span>
-<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">username</span><span class="w"> </span><span class="s1">&#39;&lt;remote_user&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="s1">&#39;&lt;remote_password&gt;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">username</span><span class="w"> </span><span class="s1">&#39;&lt;remote_user&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="s1">&#39;&lt;remote_password&gt;&#39;</span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">mssql_table</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="o">&lt;</span><span class="n">fields</span><span class="o">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">mssql_server</span><span class="w"></span>
-<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="k">table_name</span><span class="w"> </span><span class="s1">&#39;&lt;schema_qualified_table_name&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">row_estimate_method</span><span class="w"> </span><span class="s1">&#39;showplan_all&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">mssql_table</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="n">fields</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">mssql_server</span>
+<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="k">table_name</span><span class="w"> </span><span class="s1">&#39;&lt;schema_qualified_table_name&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">row_estimate_method</span><span class="w"> </span><span class="s1">&#39;showplan_all&#39;</span><span class="p">);</span>
 </code></pre></div>
 <p>You should choose the tds version based on the software version of the remote database - additional information on the correct version for different MSSQL server versions is available <a href="http://www.freetds.org/userguide/choosingtdsprotocol.htm">here</a>.</p>
 <h3 id="csv-files">CSV Files<a class="headerlink" href="#csv-files" title="Permanent link">&para;</a></h3>
@@ -6304,27 +6306,27 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 <h2 id="loading-gis-data">Loading GIS data<a class="headerlink" href="#loading-gis-data" title="Permanent link">&para;</a></h2>
 <p>Good spatial data is critical to successful analysis using FlowKit, and you will want to obtain, at a minimum admin 0-3 boundaries for your country of interest. At this time, we recommend using the <a href="https://github.com/pramsey/pgsql-ogr-fdw">OGR foreign data wrapper</a> to load shapefiles.</p>
 <p>Administrative boundaries should be loaded under the <code>geography</code> schema, and named as <code>admin&lt;level&gt;</code>. They should at a minimum contain <code>adminXname</code>, <code>adminXpcod</code> and <code>geom</code> fields. While it is possible to directly mount boundary data into the database using the OGR foreign data wrapper, we would recommend creating in-database tables and using the wrapper only for extraction, for example:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">admin_boundaries_source</span><span class="w"></span>
-<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">ogr_fdw</span><span class="w"></span>
-<span class="w">        </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="n">datasource</span><span class="w"> </span><span class="s1">&#39;&lt;path_inside_container_to_admin_3_file&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="n">format</span><span class="w"> </span><span class="s1">&#39;ESRI Shapefile&#39;</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">SERVER</span><span class="w"> </span><span class="n">admin_boundaries_source</span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">DATA</span><span class="w"> </span><span class="n">WRAPPER</span><span class="w"> </span><span class="n">ogr_fdw</span>
+<span class="w">        </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="n">datasource</span><span class="w"> </span><span class="s1">&#39;&lt;path_inside_container_to_admin_3_file&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">format</span><span class="w"> </span><span class="s1">&#39;ESRI Shapefile&#39;</span><span class="w"> </span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">tmp_admin3</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">gid</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">geom</span><span class="w"> </span><span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">),</span><span class="w"></span>
-<span class="w">    </span><span class="n">admin3name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">admin3pcod</span><span class="w"> </span><span class="nb">integer</span><span class="w"></span>
-<span class="w">    </span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">admin_3_source</span><span class="w"></span>
-<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">layer</span><span class="w"> </span><span class="s1">&#39;admin3&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">tmp_admin3</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">gid</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">geom</span><span class="w"> </span><span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">),</span>
+<span class="w">    </span><span class="n">admin3name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">,</span>
+<span class="w">    </span><span class="n">admin3pcod</span><span class="w"> </span><span class="nb">integer</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="n">SERVER</span><span class="w"> </span><span class="n">admin_3_source</span>
+<span class="w">    </span><span class="k">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="n">layer</span><span class="w"> </span><span class="s1">&#39;admin3&#39;</span><span class="p">);</span>
 
-<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">geography</span><span class="p">.</span><span class="n">admin3</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">gid</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="n">admin3name</span><span class="p">,</span><span class="w"> </span><span class="n">admin3pcod</span><span class="w"> </span><span class="k">FROM</span><span class="w"></span>
-<span class="w">    </span><span class="n">tmp_admin3</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">geography</span><span class="p">.</span><span class="n">admin3</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">gid</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="n">admin3name</span><span class="p">,</span><span class="w"> </span><span class="n">admin3pcod</span><span class="w"> </span><span class="k">FROM</span>
+<span class="w">    </span><span class="n">tmp_admin3</span><span class="p">);</span>
 </code></pre></div>
 <p>You should also create an index on the <code>geom</code> column:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">admin3_geom_gist</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">geography</span><span class="p">.</span><span class="n">admin3</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">gist</span><span class="w"> </span><span class="p">(</span><span class="n">geom</span><span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">admin3_geom_gist</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">geography</span><span class="p">.</span><span class="n">admin3</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">gist</span><span class="w"> </span><span class="p">(</span><span class="n">geom</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="data-qa-checks">Data QA checks<a class="headerlink" href="#data-qa-checks" title="Permanent link">&para;</a></h2>
 <p>FlowETL includes a small number of built in QA checks. These checks are not designed to pass or fail newly arriving data, but to provide you and your analysts with important caveats and metadata about the data you are working with. QA checks will run automatically if you are using the <a href="../../../../flowetl/flowetl/util/#create_dag"><code>create_dag</code></a> function, and their results will be available inside FlowDB in the <code>etl.post_etl_queries</code> table to both superusers, and the <code>flowmachine</code> role. If you are manually composing a DAG, you can use the <a href="../../../../flowetl/flowetl/util/#get_qa_checks"><code>get_qa_checks</code></a> function to return a list of QA check tasks, which can be scheduled in relation to the other tasks in the dag.</p>
@@ -6339,7 +6341,7 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
 </div>
 <p>When writing your QA check, you're almost certain to need to be able to refer to the table of data that's just been loaded. Because the SQL file will be <a href="https://airflow.apache.org/docs/stable/concepts.html#id1">templated</a>, you can use a macro which will be filled in when the check is run. The macro for the final table is <code>{{ final_table }}</code>.</p>
 <p>Here's an example of a valid QA check; one of the defaults which records the number of just-added rows:</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">final_table</span><span class="w"> </span><span class="err">}}</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">final_table</span><span class="w"> </span><span class="err">}}</span>
 </code></pre></div>
 <h2 id="worked-example">Worked example<a class="headerlink" href="#worked-example" title="Permanent link">&para;</a></h2>
 <p>A complete worked example covering deploying and using FlowETL to load data from both a remote PostgreSQL database and CSV files can be found in the main <a href="https://github.com/Flowminder/FlowKit/tree/master/flowetl/deployment_example">FlowKit repository</a>. </p>
@@ -6360,42 +6362,6 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../../cache/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Caching in FlowKit" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Caching in FlowKit
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../../../../flowetl/flowetl/" class="md-footer__link md-footer__link--next" aria-label="Next: flowetl" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              flowetl
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -6440,14 +6406,13 @@ If your data is supplied in <em>one</em>-line format, you will need to transform
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
       
-    
     
   </body>
 </html>

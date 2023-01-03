@@ -8,8 +8,14 @@
       
       
       
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../management/cache/">
+      
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.1">
     
     
       
@@ -17,15 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3bd4f189.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
-        
-          
-          
-          <meta name="theme-color" content="">
-        
       
       
 
@@ -5731,6 +5732,7 @@
                   
 
 
+
   <h1>Deploying FlowKit</h1>
 
 <p>A complete FlowKit deployment consists of FlowDB, FlowMachine, FlowETL, FlowAPI, FlowAuth, and redis. FlowDB, FlowMachine, FlowETL, FlowAPI and redis are deployed inside your firewall and work together to provide a complete running system. FlowAuth can be installed <em>outside</em> your firewall, and does not require a direct connection to the rest of the system.</p>
@@ -5839,13 +5841,13 @@
 <p>By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.</p>
 <p>However, you will often wish to set up bind mounts to hold the data, allow access to the postgres logs, and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.</p>
 <p>Adding a bind mount using <code>docker-compose</code> is simple:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">flowdb</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;HOST_USER_ID&gt;:&lt;HOST_GROUP_ID&gt;</span><span class="w"></span>
-<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">volumes</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/store/data/on/host:/var/lib/postgresql/data</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/consume/data/from/host:/etl:ro</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">flowdb</span><span class="p">:</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;HOST_USER_ID&gt;:&lt;HOST_GROUP_ID&gt;</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">volumes</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/store/data/on/host:/var/lib/postgresql/data</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/consume/data/from/host:/etl:ro</span>
 </code></pre></div>
 <p>This creates two bind mounts, the first is FlowDB's internal storage, and the second is a <em>read only</em> mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.</p>
 <div class="admonition warning">
@@ -5853,12 +5855,12 @@
 <p>If the bind mounted directories do not exist, docker will create them and you will need to <code>chown</code> them to the correct user.</p>
 </div>
 <p>And similarly when using <code>docker run</code>:</p>
-<div class="highlight"><pre><span></span><code>docker run --name flowdb_testdata -e <span class="nv">FLOWMACHINE_FLOWDB_PASSWORD</span><span class="o">=</span>foo -e <span class="nv">FLOWAPI_FLOWDB_PASSWORD</span><span class="o">=</span>foo <span class="se">\</span>
- --publish <span class="m">9000</span>:5432 <span class="se">\</span>
- --user HOST_USER_ID:HOST_GROUP_ID <span class="se">\</span>
- -v /path/to/store/data/on/host:/var/lib/postgresql/data <span class="se">\</span>
- -v /path/to/consume/data/from/host:/etl:ro <span class="se">\</span>
- --detach flowminder/flowdb-testdata:latest
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>flowdb_testdata<span class="w"> </span>-e<span class="w"> </span><span class="nv">FLOWMACHINE_FLOWDB_PASSWORD</span><span class="o">=</span>foo<span class="w"> </span>-e<span class="w"> </span><span class="nv">FLOWAPI_FLOWDB_PASSWORD</span><span class="o">=</span>foo<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--publish<span class="w"> </span><span class="m">9000</span>:5432<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--user<span class="w"> </span>HOST_USER_ID:HOST_GROUP_ID<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>-v<span class="w"> </span>/path/to/store/data/on/host:/var/lib/postgresql/data<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>-v<span class="w"> </span>/path/to/consume/data/from/host:/etl:ro<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--detach<span class="w"> </span>flowminder/flowdb-testdata:latest
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -6011,7 +6013,7 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <h4 id="generating-a-key-pair">Generating a key pair<a class="headerlink" href="#generating-a-key-pair" title="Permanent link">&para;</a></h4>
 <p>FlowAuth uses a private key to sign the tokens it generates, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding <em>public</em> key, to allow them to verify the tokens were produced by the right instance of FlowAuth.</p>
 <p>You can use <code>openssl</code> to generate a private key:</p>
-<div class="highlight"><pre><span></span><code>openssl genrsa -out flowauth-private-key.key <span class="m">4096</span>
+<div class="highlight"><pre><span></span><code>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>flowauth-private-key.key<span class="w"> </span><span class="m">4096</span>
 </code></pre></div>
 <p>And then create a public key from the key file (<code>openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub</code>). Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. <code>base64 -i flowauth-private-key.key</code>). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.</p>
 <div class="admonition warning">
@@ -6301,42 +6303,6 @@ We also recommend running the provided <a href="../../analyst/worked_examples/">
       
         <footer class="md-footer">
   
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Administrator" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Administrator
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../management/cache/" class="md-footer__link md-footer__link--next" aria-label="Next: Caching in FlowKit" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Caching in FlowKit
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
-  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
@@ -6380,14 +6346,13 @@ We also recommend running the provided <a href="../../analyst/worked_examples/">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
       
-    
     
   </body>
 </html>

@@ -8,8 +8,14 @@
       
       
       
+      
+        <link rel="prev" href="../worked_examples/joined-spatial-aggregate/">
+      
+      
+        <link rel="next" href="../advanced_usage/">
+      
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.1">
     
     
       
@@ -17,15 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3bd4f189.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
-        
-          
-          
-          <meta name="theme-color" content="">
-        
       
       
 
@@ -5429,6 +5430,7 @@
                   
 
 
+
 <h1 id="autoflow">AutoFlow<a class="headerlink" href="#autoflow" title="Permanent link">&para;</a></h1>
 <p>AutoFlow is a tool that automates the event-driven execution of workflows consisting of Jupyter notebooks that interact with FlowKit via FlowAPI. Workflows can consist of multiple inter-dependent notebooks, and can run automatically for each new date of CDR data available in FlowDB. After execution, notebooks can optionally be converted to PDF reports.</p>
 <p>AutoFlow consists of a sensor that, on a user-defined schedule, checks for new available dates of CDR data in a FlowKit instance, and runs a set of notebook-based workflows for each date for which they haven't previously run successfully. Each notebook-based workflow is a user-defined workflow that executes one or more Jupyter notebooks, and optionally converts the executed notebooks to PDF.</p>
@@ -5500,10 +5502,10 @@
 <p>If the <code>date_stencil</code> parameter is not provided, the default value is <code>[0]</code> (i.e. only the reference date itself needs to be available).</p>
 <p>For each date for which the workflow runs, the corresponding date ranges described by the date stencil are available to notebooks as the parameter <code>date_ranges</code>, which will contain a list of pairs of absolute dates. Note that <code>date_ranges</code> will always contain pairs of dates, even when the date stencil contains individual dates/offsets.</p>
 <p>As an example, if the date stencil is
-<div class="highlight"><pre><span></span><code><span class="nt">date_stencil</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">2016-01-01</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2016-01-03</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-3</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">date_stencil</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">2016-01-01</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2016-01-03</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-3</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 then the internal <code>date_ranges</code> parameter for reference date <code>2016-01-07</code> would have the value
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
@@ -5529,15 +5531,15 @@ This value can be retrieved in another notebook:
 </code></pre></div></p>
 <p>See <a href="https://nteract-scrapbook.readthedocs.io/en/latest/index.html">scrapbook's documentation</a> for more details.</p>
 <p>As an example, if the <code>notebooks</code> parameter of a workflow specification is
-<div class="highlight"><pre><span></span><code><span class="nt">notebooks</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">notebook1</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">  </span><span class="nt">notebook2</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">path_to_first_notebook</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">notebook1</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">notebooks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">notebook1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">  </span><span class="nt">notebook2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">path_to_first_notebook</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">notebook1</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 </code></pre></div>
 then the <code>path_to_first_notebook</code> parameter in <code>notebook2</code> will be the path to the executed <code>notebook1</code>, so values 'glued' in <code>notebook1</code> can be accessed in <code>notebook2</code> using <code>sb.read_notebook(path_to_first_notebook)</code>.</p>
 <h4 id="connecting-to-flowapi">Connecting to FlowAPI<a class="headerlink" href="#connecting-to-flowapi" title="Permanent link">&para;</a></h4>
@@ -5568,19 +5570,19 @@ then the <code>path_to_first_notebook</code> parameter in <code>notebook2</code>
 <li>Go to <a href="http://localhost:9091/" target="_blank">FlowAuth</a>, log in with username <code>TEST_USER</code> and password <code>DUMMY_PASSWORD</code>, and create an API token following instructions <a href="../#flowauth">here</a>.  </li>
 <li>Create two empty directories, one for inputs and the other for outputs.  </li>
 <li>Copy the example input files into your inputs directory:<br />
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> &lt;your_inputs_directory&gt;
-wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/run_flows.ipynb
-wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/flows_report.ipynb
-wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/workflows.yml
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>&lt;your_inputs_directory&gt;
+wget<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/run_flows.ipynb
+wget<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/flows_report.ipynb
+wget<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/examples/inputs/workflows.yml
 </code></pre></div></li>
 <li>Start AutoFlow:<br />
-<div class="highlight"><pre><span></span><code>docker run -d <span class="se">\</span>
-    -v &lt;your_inputs_directory&gt;:/mounts/inputs:ro <span class="se">\</span>
-    -v &lt;your_outputs_directory&gt;:/mounts/outputs:rw <span class="se">\</span>
-    -e <span class="s2">&quot;AUTOFLOW_LOG_LEVEL=ERROR&quot;</span> <span class="se">\</span>
-    -e <span class="s2">&quot;FLOWAPI_URL=http://localhost:9090&quot;</span> <span class="se">\</span>
-    -e <span class="s2">&quot;FLOWAPI_TOKEN=&lt;api_token&gt;&quot;</span> <span class="se">\</span>
-    flowminder/autoflow:latest
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>&lt;your_inputs_directory&gt;:/mounts/inputs:ro<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>&lt;your_outputs_directory&gt;:/mounts/outputs:rw<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="s2">&quot;AUTOFLOW_LOG_LEVEL=ERROR&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="s2">&quot;FLOWAPI_URL=http://localhost:9090&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="s2">&quot;FLOWAPI_TOKEN=&lt;api_token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>flowminder/autoflow:latest
 </code></pre></div>
 (where <code>&lt;your_inputs_directory&gt;</code> and <code>&lt;your_outputs_directory&gt;</code> are the paths to the input and output directories you created, and <code>&lt;api_token&gt;</code> is the token you created in FlowAuth).</li>
 </ol>
@@ -5603,42 +5605,6 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../worked_examples/joined-spatial-aggregate/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Joined spatial aggregate" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Joined spatial aggregate
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../advanced_usage/" class="md-footer__link md-footer__link--next" aria-label="Next: Advanced usage" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Advanced usage
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -5683,14 +5649,13 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
       
-    
     
   </body>
 </html>

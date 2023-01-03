@@ -8,8 +8,14 @@
       
       
       
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../analyst/">
+      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.1">
     
     
       
@@ -17,15 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.3bd4f189.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
-        
-          
-          
-          <meta name="theme-color" content="">
-        
       
       
 
@@ -5319,6 +5320,7 @@
                   
 
 
+
 <h1 id="getting-started-with-flowkit">Getting started with FlowKit<a class="headerlink" href="#getting-started-with-flowkit" title="Permanent link">&para;</a></h1>
 <p><a name="installationrequirements"></p>
 <h2 id="installation-requirements">Installation requirements<a class="headerlink" href="#installation-requirements" title="Permanent link">&para;</a></h2>
@@ -5339,21 +5341,21 @@
 <p>These instructions assume use of <a href="https://github.com/pyenv/pyenv">Pyenv</a> and <a href="https://github.com/pypa/pipenv">Pipenv</a>. If you are using <a href="https://www.anaconda.com/what-is-anaconda/">Anaconda</a>-based installation commands may be different.</p>
 <p>Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the Docker Hub repositories <a href="https://hub.docker.com/r/flowminder/flowapi">flowminder/flowapi</a>, <a href="https://hub.docker.com/r/flowminder/flowmachine">flowminder/flowmachine</a>, <a href="https://hub.docker.com/r/flowminder/flowdb">flowminder/flowdb</a>, <a href="https://hub.docker.com/r/flowminder/flowauth">flowminder/flowauth</a>, and <a href="https://hub.docker.com/r/flowminder/flowkit-examples">flowminder/flowkit-examples</a> respectively. To install them, you will need <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a>.</p>
 <p>Ensure that you have a Docker installed and running, then start the FlowKit test system by running</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span>
 </code></pre></div>
 <p>This will pull any necessary docker containers, and start the system in the background with the API exposed on port <code>9090</code> by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:9091/" target="_blank"><a href="http://localhost:9091">http://localhost:9091</a></a> using your web browser.</p>
 <p>The default system includes a small amount of test data. For a test system with considerably more data you can run</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> larger_data
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span><span class="w"> </span>larger_data
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The larger data container will take considerably longer to start up, as it generates data when first run.</p>
 </div>
 <p>The <a href="worked_examples">worked examples</a> are also available as part of the demo system. To install these run</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> examples smaller_data
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span><span class="w"> </span>examples<span class="w"> </span>smaller_data
 </code></pre></div>
 <p>for the examples with a small dataset, or</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> examples
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span><span class="w"> </span>examples
 </code></pre></div>
 <p>to get the examples with the larger dataset (the one used when producing this documentation).</p>
 <div class="admonition info">
@@ -5365,7 +5367,7 @@
 <p>The worked examples make use of <a href="https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/">Mapbox GL</a> for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions <a href="https://account.mapbox.com/">here</a>), and set this as the value of the <code>MAPBOX_ACCESS_TOKEN</code> environment variable before running the above commands.</p>
 </div>
 <p>To shut down the system, you can either stop all the docker containers directly, or run</p>
-<div class="highlight"><pre><span></span><code>bash &lt;<span class="o">(</span>curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span> stop
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span><span class="w"> </span>stop
 </code></pre></div>
 <p>In order to use the test system, now <a href="#flowclient">install FlowClient</a>, and generate a token using FlowAuth.</p>
 <h3 id="flowauth-quickstart">FlowAuth quickstart<a class="headerlink" href="#flowauth-quickstart" title="Permanent link">&para;</a></h3>
@@ -5373,7 +5375,7 @@
 <p>See the <a href="../administrator/#granting-user-permissions-in-flowauth">administrator section</a> for details of how to add servers and users or modify user permissions, or the <a href="../analyst/#flowauth">analyst section</a> for instructions to generate a token.</p>
 <h3 id="flowclient">FlowClient <a name="flowclient"> </a><a class="headerlink" href="#flowclient" title="Permanent link">&para;</a></h3>
 <p>The FlowClient Python client is used to perform CDR analysis using the JupyterLab Python Data Science Stack. It may be installed using pip:</p>
-<div class="highlight"><pre><span></span><code>pip install flowclient
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>flowclient
 </code></pre></div>
 <p>Quick install is continued with an example of FlowClient usage <a href="../analyst/#flowclient">here</a>.</p>
 <p>If you are planning to hack on the codebase, you should also check out the <a href="../developer/dev_environment_setup/">developer install</a> instructions; if you are ready to try FlowKit in production, visit the <a href="../administrator/deployment/">production deployment</a> documentation to find out how to deploy FlowKit at your site.</p>
@@ -5394,42 +5396,6 @@
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: FlowKit" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              FlowKit
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../analyst/" class="md-footer__link md-footer__link--next" aria-label="Next: Analyst" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Analyst
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -5474,14 +5440,13 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
       
-    
     
   </body>
 </html>

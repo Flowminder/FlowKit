@@ -8,8 +8,14 @@
       
       
       
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../flowmachine/flowmachine/">
+      
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.1">
     
     
       
@@ -17,15 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3bd4f189.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
-        
-          
-          
-          <meta name="theme-color" content="">
-        
       
       
 
@@ -5525,6 +5526,7 @@
                   
 
 
+
 <h1 id="developer-install">Developer install<a class="headerlink" href="#developer-install" title="Permanent link">&para;</a></h1>
 <h2 id="installation-requirements">Installation requirements<a class="headerlink" href="#installation-requirements" title="Permanent link">&para;</a></h2>
 <p>Just as for a regular installation, you will need <code>docker</code> and <code>docker-compose</code> (see <a href="#installationrequirements">Installation requirements</a> above).</p>
@@ -5539,21 +5541,21 @@
 <p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code> (this will set the required environment variables) followed by <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the FlowKit docker containers using the <code>docker-compose.yml</code> file. The docker containers to start can be selected by running <code>make up DOCKER_SERVICES="&lt;service 1&gt; &lt;service 2&gt; ..."</code>, where the services can be any of <code>flowmachine</code>, <code>flowmachine_query_locker</code>, <code>flowapi</code>, <code>flowauth</code>, <code>flowdb</code>, <code>worked_examples</code>, <code>flowdb_testdata</code>, <code>flowdb_synthetic_data</code>, <code>flowetl</code>, <code>flowetl_db</code> or <code>autoflow</code> (at most one of the <code>flowdb</code> containers). The default is to start <code>flowdb</code>, <code>flowapi</code>, <code>flowmachine</code>, <code>flowauth</code>, <code>flowmachine_query_locker</code>, <code>flowetl</code>, <code>flowetl_db</code> and <code>worked_examples</code>. Alternatively, containers can be built, started or stopped individually by running <code>make &lt;service&gt;-build</code>, <code>make &lt;service&gt;-up</code> or <code>make &lt;service&gt;-down</code>, respectively.</p>
 <p>To run the <code>autoflow</code> service, a valid FlowAPI token must be set as the environment variable <code>FLOWAPI_TOKEN</code> (in addition to the environment variables set by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code>).</p>
 <p>FlowKit uses <a href="https://pipenv.readthedocs.io/">pipenv</a> to manage Python environments. To start a Python session in which you can use FlowClient:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> flowclient
-pipenv install
-pipenv run python
-&gt;&gt;&gt; import flowclient
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>flowclient
+pipenv<span class="w"> </span>install
+pipenv<span class="w"> </span>run<span class="w"> </span>python
+&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>flowclient
 </code></pre></div>
 <p>To run the tests in the <code>flowapi</code>, <code>flowclient</code>, <code>flowdb</code>, <code>flowmachine</code>, <code>autoflow</code>, <code>flowetl</code> or <code>integration_tests</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> &lt;directory&gt;
-pipenv install --dev
-pipenv run pytest
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>&lt;directory&gt;
+pipenv<span class="w"> </span>install<span class="w"> </span>--dev
+pipenv<span class="w"> </span>run<span class="w"> </span>pytest
 </code></pre></div>
 <p>AutoFlow additionally has dependencies on Ruby packages, which we manage using <a href="https://bundler.io/">Bundler</a> which works similarly to pipenv. To run the tests in the <code>autoflow</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> autoflow
-bundle install
-pipenv install --dev
-pipenv run pytest
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>autoflow
+bundle<span class="w"> </span>install
+pipenv<span class="w"> </span>install<span class="w"> </span>--dev
+pipenv<span class="w"> </span>run<span class="w"> </span>pytest
 </code></pre></div>
 <h2 id="getting-set-up-to-contribute">Getting set up to contribute<a class="headerlink" href="#getting-set-up-to-contribute" title="Permanent link">&para;</a></h2>
 <h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
@@ -5562,15 +5564,15 @@ pipenv run pytest
 FlowKit pipenv environments). There is also a <a href="https://pre-commit.com/">pre-commit</a> hook which runs black on all Python
 files before each commit.</p>
 <p>To install the pre-commit hook run:
-<div class="highlight"><pre><span></span><code>pre-commit install
+<div class="highlight"><pre><span></span><code>pre-commit<span class="w"> </span>install
 </code></pre></div>
 If you ever want to uninstall the hook you can do this by running <code>pipenv run pre-commit uninstall</code>.</p>
 <p>The above command requires <code>pre-commit</code> to be installed on your system. For convenience, it is also
 included in the <code>flowmachine</code> pipenv environment, so if you don't want to install it system-wide you
 can run it as follows (it will still be installed and available for all FlowKit components, not just
 flowmachine).
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> flowmachine/
-pipenv run pre-commit install
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>flowmachine/
+pipenv<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install
 </code></pre></div></p>
 <p>Note that if you run <code>git commit</code> and any files are modified by the re-formatting, the pre-commit hook will abort
 the commit (but leave the files re-formatted). Simply repeat the <code>git commit</code> command in order to complete the commit.</p>
@@ -5578,23 +5580,23 @@ the commit (but leave the files re-formatted). Simply repeat the <code>git commi
 <div class="highlight"><pre><span></span><code><span class="c1"># 1) First attempt to commit; this is aborted because one of the files</span>
 <span class="c1">#    is reformatted by the pre-commit hook.</span>
 
-$ git commit -a -m <span class="s2">&quot;Some changes&quot;</span>
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-a<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Some changes&quot;</span>
 black...................................................Failed
-hookid: black
+hookid:<span class="w"> </span>black
 
-Files were modified by this hook. Additional output:
+Files<span class="w"> </span>were<span class="w"> </span>modified<span class="w"> </span>by<span class="w"> </span>this<span class="w"> </span>hook.<span class="w"> </span>Additional<span class="w"> </span>output:
 
-reformatted flowmachine/__init__.py
-All <span class="k">done</span>! ✨ 🍰 ✨
-<span class="m">1</span> file reformatted.
+reformatted<span class="w"> </span>flowmachine/__init__.py
+All<span class="w"> </span><span class="k">done</span>!<span class="w"> </span>✨<span class="w"> </span>🍰<span class="w"> </span>✨
+<span class="m">1</span><span class="w"> </span>file<span class="w"> </span>reformatted.
 
 
 <span class="c1"># 2) Complete the commit by running the same &#39;git commit&#39; command again.</span>
 
-$ git commit -a -m <span class="s2">&quot;Some changes&quot;</span>
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-a<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Some changes&quot;</span>
 black...................................................Passed
-<span class="o">[</span>black-pre-commit-hook 8ebaace<span class="o">]</span> Some changes
- <span class="m">1</span> file changed, <span class="m">2</span> insertions<span class="o">(</span>+<span class="o">)</span>, <span class="m">1</span> deletion<span class="o">(</span>-<span class="o">)</span>
+<span class="o">[</span>black-pre-commit-hook<span class="w"> </span>8ebaace<span class="o">]</span><span class="w"> </span>Some<span class="w"> </span>changes
+<span class="w"> </span><span class="m">1</span><span class="w"> </span>file<span class="w"> </span>changed,<span class="w"> </span><span class="m">2</span><span class="w"> </span>insertions<span class="o">(</span>+<span class="o">)</span>,<span class="w"> </span><span class="m">1</span><span class="w"> </span>deletion<span class="o">(</span>-<span class="o">)</span>
 </code></pre></div>
 <h4 id="diff-tool-for-verifying-changes-in-approvaltests-based-tests">Diff tool (for verifying changes in <code>ApprovalTests</code>-based tests)<a class="headerlink" href="#diff-tool-for-verifying-changes-in-approvaltests-based-tests" title="Permanent link">&para;</a></h4>
 <p>Some of the tests use <a href="https://github.com/approvals/ApprovalTests.Python">ApprovalTests</a> to verify large output against
@@ -5611,7 +5613,7 @@ and <a href="https://www.git-tower.com/blog/diff-tools-windows">Windows</a>.) Th
 <h3 id="option-1-starting-up-all-flowkit-components-inside-a-dockerised-development-environment">Option 1: Starting up all FlowKit components inside a dockerised development environment<a class="headerlink" href="#option-1-starting-up-all-flowkit-components-inside-a-dockerised-development-environment" title="Permanent link">&para;</a></h3>
 <p>For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
 components by running:
-<div class="highlight"><pre><span></span><code>make up
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>up
 </code></pre></div></p>
 <p>This will use the specifications in <code>docker-compose.yml</code> to spin up development versions of <code>flowdb_testdata</code>,
 <code>flowmachine</code>, <code>flowapi</code> and <code>flowauth</code> (as well as a <code>redis</code> container, which is used internally by <code>flowmachine</code>).</p>
@@ -5639,20 +5641,20 @@ difficult or impossible if Flowmachine and FlowAPI are running inside a docker c
 and use for example <a href="https://docs.python.org/3/library/pdb.html">pdb</a>, <a href="https://pypi.org/project/ipdb/">ipdb</a> or similar
 debuggers to step through the code then it is easier to start the relevant components manually.</p>
 <p>To do this, first start the components which you want to run inside the dockerised environment, e.g. via:
-<div class="highlight"><pre><span></span><code>make flowmachine_testdata-up flowauth-up
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>flowmachine_testdata-up<span class="w"> </span>flowauth-up
 </code></pre></div></p>
 <p>Next, run one or more of the following commands (in separate terminals) to start up the remaining components.</p>
 <h4 id="flowmachine">Flowmachine<a class="headerlink" href="#flowmachine" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> flowmachine/
-pipenv run watchmedo auto-restart --recursive --patterns<span class="o">=</span><span class="s2">&quot;*.py&quot;</span> --directory<span class="o">=</span><span class="s2">&quot;.&quot;</span> pipenv run flowmachine
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>flowmachine/
+pipenv<span class="w"> </span>run<span class="w"> </span>watchmedo<span class="w"> </span>auto-restart<span class="w"> </span>--recursive<span class="w"> </span>--patterns<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span>--directory<span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="w"> </span>pipenv<span class="w"> </span>run<span class="w"> </span>flowmachine
 </code></pre></div>
 <h4 id="flowapi">FlowAPI<a class="headerlink" href="#flowapi" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> flowapi/
-pipenv run hypercorn --debug --reload --bind <span class="m">0</span>.0.0.0:9090 <span class="s2">&quot;app.main:create_app()&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>flowapi/
+pipenv<span class="w"> </span>run<span class="w"> </span>hypercorn<span class="w"> </span>--debug<span class="w"> </span>--reload<span class="w"> </span>--bind<span class="w"> </span><span class="m">0</span>.0.0.0:9090<span class="w"> </span><span class="s2">&quot;app.main:create_app()&quot;</span>
 </code></pre></div>
 <h4 id="flowauth">FlowAuth<a class="headerlink" href="#flowauth" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> flowauth/
-pipenv run start-all
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>flowauth/
+pipenv<span class="w"> </span>run<span class="w"> </span>start-all
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -5664,9 +5666,9 @@ Without this setting, both will be started automatically to allow test coverage 
 successfully and are wired up correctly so that they can talk to each other.</p>
 <h3 id="running-the-integration-tests">Running the integration tests<a class="headerlink" href="#running-the-integration-tests" title="Permanent link">&para;</a></h3>
 <p>You can run the integration tests as follows. If these pass, this is a good indication that everything is set up correctly.
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> integration_tests
-pipenv install  <span class="c1"># only needed once to install dependencies</span>
-pipenv run pytest
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>integration_tests
+pipenv<span class="w"> </span>install<span class="w">  </span><span class="c1"># only needed once to install dependencies</span>
+pipenv<span class="w"> </span>run<span class="w"> </span>pytest
 </code></pre></div></p>
 <h3 id="flowdb">FlowDB<a class="headerlink" href="#flowdb" title="Permanent link">&para;</a></h3>
 <p><div class="highlight"><pre><span></span><code>psql &quot;postgresql://flowdb:flowflow@localhost:9000/flowdb&quot; -c &quot;SELECT flowdb_version()&quot;
@@ -5719,42 +5721,6 @@ variable <code>TOKEN</code>.</p>
       
         <footer class="md-footer">
   
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Information for Developers" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Information for Developers
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../../flowmachine/flowmachine/" class="md-footer__link md-footer__link--next" aria-label="Next: flowmachine" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              flowmachine
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
-  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
@@ -5798,14 +5764,13 @@ variable <code>TOKEN</code>.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
       
-    
     
   </body>
 </html>
