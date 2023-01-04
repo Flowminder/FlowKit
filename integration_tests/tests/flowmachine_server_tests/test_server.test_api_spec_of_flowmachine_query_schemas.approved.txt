@@ -1442,6 +1442,10 @@
         "default": false,
         "type": "boolean"
       },
+      "minimum_total_weight": {
+        "default": 0.0,
+        "type": "number"
+      },
       "query_kind": {
         "enum": [
           "majority_location"
