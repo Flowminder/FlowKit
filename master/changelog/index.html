@@ -8748,6 +8748,7 @@
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Added views <code>etl.ingested_state</code>, <code>etl.available_dates</code> and <code>etl.deduped_post_etl_queries</code> in FlowDB, for convenient extraction of relevant information from the ETL tables. <a href="https://github.com/Flowminder/FlowKit/issues/5641">#5641</a></li>
+<li>Added <code>MajorityLocationWithUnlocatable</code> query class and <code>majority_location</code> function. <a href="https://github.com/Flowminder/FlowKit/issues/5720">#5720</a></li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
@@ -8757,6 +8758,7 @@
 <li>RoleScopePicker component redesigned and reimplemented.</li>
 <li>Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. <a href="https://github.com/Flowminder/FlowKit/issues/3622">#3622</a></li>
 <li><code>jwt</code> tokens now use <code>sub</code> instead of <code>identity</code> for <code>JWT_IDENTITY_CLAIM</code>.</li>
+<li>A <code>majority_location</code> query with <code>include_unlocatable=True</code> will now include rows for all subscribers in the <code>subscriber_location_weights</code> sub-query, including those for whom all weights are negative (previously subscribers with only negative weights were excluded).</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
@@ -8764,8 +8766,12 @@
 <li>AutoFlow can now be run in a docker container with non-default user. <a href="https://github.com/Flowminder/FlowKit/issues/5574">#5574</a></li>
 <li>Passing an empty list of events tables when creating a query now raises <code>ValueError: Empty tables list.</code> instead of a <code>MissingDateError</code>. <a href="https://github.com/Flowminder/FlowKit/issues/436">#436</a></li>
 <li>Flowmachine now looks at only the most recent state (per CDR type per CDR date) in <code>etl.etl_records</code> to determine available dates. <a href="https://github.com/Flowminder/FlowKit/issues/5641">#5641</a></li>
+<li>It is now possible to run API queries that include multiple different aggregation units (e.g. <code>joined_spatial_aggregate</code> with <code>displacement</code> metric). <a href="https://github.com/Flowminder/FlowKit/issues/4649">#4649</a></li>
 </ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the <code>include_unlocatable</code> parameter from <code>MajorityLocation</code> class (the <code>majority_location</code> function should be used instead if <code>include_unlocatable</code> is required). <a href="https://github.com/Flowminder/FlowKit/issues/5720">#5720</a></li>
+</ul>
 <h2 id="1171"><a href="https://github.com/Flowminder/FlowKit/compare/1.17.0...1.17.1">1.17.1</a><a class="headerlink" href="#1171" title="Permanent link">&para;</a></h2>
 <h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
 <ul>
