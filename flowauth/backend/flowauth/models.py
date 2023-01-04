@@ -634,9 +634,7 @@ def make_demodata():
     reader_scope = scopes["get_result"]
     runner_scope = scopes["run"]
     dates_scope = scopes["get_available_dates"]
-    admin_3_scopes = [
-        scope for scope in scopes.values() if scope.name.startswith("admin3:")
-    ]
+    complex_scopes = [scope for scope in scopes.values() if ":" in scope.name]
     db.session.add_all(scopes.values())
 
     # Add roles to test server
@@ -644,14 +642,14 @@ def make_demodata():
         Role(
             name="viewer",
             server=test_server,
-            scopes=[reader_scope, dates_scope, *admin_3_scopes],
+            scopes=[reader_scope, dates_scope, *complex_scopes],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
         Role(
             name="runner",
             server=test_server,
-            scopes=[runner_scope, dates_scope, *admin_3_scopes],
+            scopes=[runner_scope, dates_scope, *complex_scopes],
             latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=30),
             longest_token_life_minutes=30 * 24 * 60,
         ),
