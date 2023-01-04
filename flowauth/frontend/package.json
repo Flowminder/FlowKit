@@ -15,7 +15,7 @@
     "react-dom": "^17.0.2",
     "react-qr-svg": "^2.4.0",
     "react-scripts": "^4.0.3",
-    "rsuite": "^5.23.3",
+    "rsuite": "^5.24.0",
     "zxcvbn": "^4.4.2"
   },
   "homepage": "http://site.com/static",
@@ -29,8 +29,8 @@
     "cy:verify": "cypress verify"
   },
   "devDependencies": {
-    "cypress": "^12.2.0",
-    "husky": "^8.0.2",
+    "cypress": "^12.3.0",
+    "husky": "^8.0.3",
     "otp-cli": "^0.2.0",
     "prettier": "^2.8.1",
     "pretty-quick": "^3.1.3"
