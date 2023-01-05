@@ -26,7 +26,7 @@ To connect FlowClient to FlowAPI, an access token must be generated using FlowAu
 
 3. Select the server under "My Servers".
 
-4. Click the '+' icon to add a token, and give it a name (and optionally change the expiry and permissions). And Save.
+4. Click the '+' icon to add a token, and give it a name and the `viewer` and `runner` roles. And Save.
 
 5. Click "COPY" to copy the token string, "DOWNLOAD" to download the token as a text file, or "VIEW" to display the token string.
 

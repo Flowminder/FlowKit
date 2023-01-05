@@ -23,6 +23,7 @@ Note: This is a side-release for accelerating the Ghana project
 - Passing an empty list of events tables when creating a query now raises `ValueError: Empty tables list.` instead of a `MissingDateError`. [#436](https://github.com/Flowminder/FlowKit/issues/436)
 - Flowmachine now looks at only the most recent state (per CDR type per CDR date) in `etl.etl_records` to determine available dates. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
 - It is now possible to run API queries that include multiple different aggregation units (e.g. `joined_spatial_aggregate` with `displacement` metric). [#4649](https://github.com/Flowminder/FlowKit/issues/4649)
+- Demo roles can now be used in `worked_examples`. [#5735](https://github.com/Flowminder/FlowKit/issues/5735)
 
 ### Removed
 - Removed the `include_unlocatable` parameter from `MajorityLocation` class (the `majority_location` function should be used instead if `include_unlocatable` is required). [#5720](https://github.com/Flowminder/FlowKit/issues/5720)

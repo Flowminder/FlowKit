@@ -149,7 +149,7 @@ def majority_location(
     subscriber_location_weights : Query
         The query object containing subscribers, locations, and weights.
     weight_column : str
-        The column, when summed, that will produce the count used to threshold the majority
+        The column in `subscriber_location_weights`, when summed, that will produce the count used to threshold the majority
     minimum_total_weight : float, default 0
         If the summed weight for a subscriber is less than `minimum_total_weight`,
         that subscriber will only be assigned a location with weight greater than `minimum_total_weight/2`.
