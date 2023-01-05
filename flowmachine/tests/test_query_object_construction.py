@@ -59,10 +59,14 @@ def _example_coalesced_location_spec(preferred_dates, fallback_dates, aggregatio
         preferred_location=dict(
             query_kind="majority_location",
             subscriber_location_weights=preferred_weights,
+            minimum_total_weight=len(preferred_dates),
+            include_unlocatable=True,
         ),
         fallback_location=dict(
             query_kind="majority_location",
             subscriber_location_weights=fallback_weights,
+            minimum_total_weight=len(fallback_dates),
+            include_unlocatable=False,
         ),
         subscriber_location_weights=preferred_weights,
         weight_threshold=2,

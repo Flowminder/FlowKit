@@ -371,7 +371,7 @@
     },
     "join_type": "left outer"
   },
-  "115c2688d7476f3f6ab5550e40b48b55": {
+  "30efc8b5452d126750a5ed2ac68095a7": {
     "query_kind": "flows",
     "from_location": {
       "query_kind": "majority_location",
@@ -418,7 +418,7 @@
       }
     }
   },
-  "42a51ede05c713ffa5f7fde6b3853f54": {
+  "1a526dd5bde9f228414aabde34f83dad": {
     "query_kind": "labelled_spatial_aggregate",
     "locations": {
       "query_kind": "coalesced_location",
@@ -442,7 +442,9 @@
               "subscriber_subset": null
             }
           ]
-        }
+        },
+        "minimum_total_weight": 2,
+        "include_unlocatable": true
       },
       "fallback_location": {
         "query_kind": "majority_location",
@@ -464,7 +466,9 @@
               "subscriber_subset": null
             }
           ]
-        }
+        },
+        "minimum_total_weight": 2,
+        "include_unlocatable": false
       },
       "subscriber_location_weights": {
         "query_kind": "location_visits",
@@ -512,7 +516,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": true
           },
           "fallback_location": {
             "query_kind": "majority_location",
@@ -534,7 +540,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": false
           },
           "subscriber_location_weights": {
             "query_kind": "location_visits",
@@ -579,7 +587,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": true
           },
           "fallback_location": {
             "query_kind": "majority_location",
@@ -601,7 +611,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": false
           },
           "subscriber_location_weights": {
             "query_kind": "location_visits",
@@ -628,7 +640,7 @@
       "stay_length_threshold": 2
     }
   },
-  "f5dff0deb633694060715e6a3153c5e6": {
+  "40f9ca28db8087ceb3c5a1036b681979": {
     "query_kind": "labelled_flows",
     "from_location": {
       "query_kind": "coalesced_location",
@@ -652,7 +664,9 @@
               "subscriber_subset": null
             }
           ]
-        }
+        },
+        "minimum_total_weight": 2,
+        "include_unlocatable": true
       },
       "fallback_location": {
         "query_kind": "majority_location",
@@ -674,7 +688,9 @@
               "subscriber_subset": null
             }
           ]
-        }
+        },
+        "minimum_total_weight": 2,
+        "include_unlocatable": false
       },
       "subscriber_location_weights": {
         "query_kind": "location_visits",
@@ -719,7 +735,9 @@
               "subscriber_subset": null
             }
           ]
-        }
+        },
+        "minimum_total_weight": 2,
+        "include_unlocatable": true
       },
       "fallback_location": {
         "query_kind": "majority_location",
@@ -741,7 +759,9 @@
               "subscriber_subset": null
             }
           ]
-        }
+        },
+        "minimum_total_weight": 2,
+        "include_unlocatable": false
       },
       "subscriber_location_weights": {
         "query_kind": "location_visits",
@@ -789,7 +809,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": true
           },
           "fallback_location": {
             "query_kind": "majority_location",
@@ -811,7 +833,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": false
           },
           "subscriber_location_weights": {
             "query_kind": "location_visits",
@@ -856,7 +880,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": true
           },
           "fallback_location": {
             "query_kind": "majority_location",
@@ -878,7 +904,9 @@
                   "subscriber_subset": null
                 }
               ]
-            }
+            },
+            "minimum_total_weight": 2,
+            "include_unlocatable": false
           },
           "subscriber_location_weights": {
             "query_kind": "location_visits",

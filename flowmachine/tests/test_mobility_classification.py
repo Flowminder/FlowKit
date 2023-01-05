@@ -7,7 +7,7 @@ import pytest
 from flowmachine.features.subscriber.mobility_classification import (
     MobilityClassification,
 )
-from flowmachine.features.subscriber.majority_location import MajorityLocation
+from flowmachine.features.subscriber.majority_location import majority_location
 from flowmachine.features.subscriber.subscriber_call_durations import (
     PerLocationSubscriberCallDurations,
 )
@@ -29,14 +29,14 @@ def test_mobility_classification_result(get_dataframe, spatial_unit_params):
     """
     spatial_unit = make_spatial_unit(**spatial_unit_params)
     locations = [
-        MajorityLocation(
+        majority_location(
             subscriber_location_weights=PerLocationSubscriberCallDurations(
                 "2016-01-01", "2016-01-02", statistic="count", spatial_unit=spatial_unit
             ),
             weight_column="value",
             include_unlocatable=True,
         ),
-        MajorityLocation(
+        majority_location(
             subscriber_location_weights=PerLocationSubscriberCallDurations(
                 "2016-01-02", "2016-01-03", statistic="count", spatial_unit=spatial_unit
             ),

@@ -776,7 +776,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=True,
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -792,7 +794,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=False,
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -827,7 +831,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -843,7 +849,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -876,7 +884,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -892,7 +902,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -932,7 +944,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=True,
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -948,7 +962,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=False,
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -981,7 +997,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=True,
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -997,7 +1015,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=False,
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -1032,7 +1052,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -1048,7 +1070,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -1081,7 +1105,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -1097,7 +1123,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -1215,45 +1243,6 @@ async def test_run_query(connection, query, universal_access_token, flowapi_url)
     Test that queries can be run, and return a QueryResult object.
     """
     con = connection(url=flowapi_url, token=universal_access_token)
-
-    if query.keywords == {
-        "locations": {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "event_types": None,
-            "subscriber_subset": None,
-            "mapping_table": None,
-            "geom_table": None,
-            "geom_table_join_column": None,
-            "hours": None,
-        },
-        "metric": {
-            "query_kind": "displacement",
-            "start_date": "2016-01-01",
-            "end_date": "2016-01-02",
-            "statistic": "avg",
-            "reference_location": {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "aggregation_unit": "lon-lat",
-                "method": "last",
-                "event_types": None,
-                "subscriber_subset": None,
-                "mapping_table": None,
-                "geom_table": None,
-                "geom_table_join_column": None,
-                "hours": None,
-            },
-            "event_types": ["calls", "sms"],
-            "subscriber_subset": None,
-            "hours": None,
-        },
-    }:
-        pytest.xfail(
-            "Under new schema rules, cannot presently mix admin levels. See bug #4649"
-        )
 
     try:
         await query(connection=con).get_result()

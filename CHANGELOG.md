@@ -6,14 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+Note: This is a side-release for accelerating the Ghana project
+
 ### Added
 
 ### Changed
+- Changed `AIRFLOW__CORE__SQL_ALCHEMY_CONN` env var to `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`
+- Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. [#3622](https://github.com/Flowminder/FlowKit/issues/3622)
+- `jwt` tokens now use `sub` instead of `identity` for `JWT_IDENTITY_CLAIM`.
+- A `majority_location` query with `include_unlocatable=True` will now include rows for all subscribers in the `subscriber_location_weights` sub-query, including those for whom all weights are negative (previously subscribers with only negative weights were excluded).
 
 ### Fixed
 - Fixed a potential deadlock when using a small connection pool and `store`-ing queries
+- Added `MajorityLocationWithUnlocatable` query class and `majority_location` function. [#5720](https://github.com/Flowminder/FlowKit/issues/5720)
+- AutoFlow can now be run in a docker container with non-default user. [#5574](https://github.com/Flowminder/FlowKit/issues/5574)
+- Passing an empty list of events tables when creating a query now raises `ValueError: Empty tables list.` instead of a `MissingDateError`. [#436](https://github.com/Flowminder/FlowKit/issues/436)
+- Flowmachine now looks at only the most recent state (per CDR type per CDR date) in `etl.etl_records` to determine available dates. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
+- It is now possible to run API queries that include multiple different aggregation units (e.g. `joined_spatial_aggregate` with `displacement` metric). [#4649](https://github.com/Flowminder/FlowKit/issues/4649)
 
 ### Removed
+- Removed the `include_unlocatable` parameter from `MajorityLocation` class (the `majority_location` function should be used instead if `include_unlocatable` is required). [#5720](https://github.com/Flowminder/FlowKit/issues/5720)
 
 ## [1.17.1]
 
