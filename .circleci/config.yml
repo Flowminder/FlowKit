@@ -654,7 +654,9 @@ jobs:
           name: Install non-python autoflow dependencies
           command: |
             sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y postgresql pandoc ruby
-            sudo gem update --system
+            sudo gem i rubygems-update -v '<3' 
+            sudo update_rubygems
+            sudo gem install bundler -v 2.3.26
             sudo gem install bundle 
             bundle install
       - run:
