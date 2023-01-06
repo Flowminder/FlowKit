@@ -389,8 +389,7 @@ def flowetl_container(
             mounts=mounts["flowetl"],
             network=container_network.name,
             command="version",
-            detach=True,
-            stderr=True,
+            auto_remove=True,
         )
         init_container.wait()
         logger.info("Init container log", logs=init_container.logs())
