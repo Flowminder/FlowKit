@@ -92,14 +92,14 @@ docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_
 
 To run FlowETL, you will need to provide the following secrets:
 
-| Secret name | Secret purpose | Notes |
-| ----------- | -------------- | ----- |
-| FLOWETL_AIRFLOW_ADMIN_USERNAME | Default administrative user logon name for the FlowETL web interface | |
-| FLOWETL_AIRFLOW_ADMIN_PASSWORD | Password for the administrative user | |
-| AIRFLOW__CORE__SQL_ALCHEMY_CONN | Connection string for the backing database | Should take the form `postgres://flowetl:<FLOWETL_POSTGRES_PASSWORD>@flowetl_db:5432/flowetl` |
-| AIRFLOW__CORE__FERNET_KEY | Ferney key used to encrypt (at rest) database credentials | |
-| AIRFLOW_CONN_FLOWDB | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
-| FLOWETL_POSTGRES_PASSWORD | Superuser password for FlowETL's backing database | |
+| Secret name                        | Secret purpose | Notes |
+|------------------------------------| -------------- | ----- |
+| FLOWETL_AIRFLOW_ADMIN_USERNAME     | Default administrative user logon name for the FlowETL web interface | |
+| FLOWETL_AIRFLOW_ADMIN_PASSWORD     | Password for the administrative user | |
+| AIRFLOW_DATABASE__SQL_ALCHEMY_CONN | Connection string for the backing database | Should take the form `postgres://flowetl:<FLOWETL_POSTGRES_PASSWORD>@flowetl_db:5432/flowetl` |
+| AIRFLOW__CORE__FERNET_KEY          | Ferney key used to encrypt (at rest) database credentials | |
+| AIRFLOW_CONN_FLOWDB                | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
+| FLOWETL_POSTGRES_PASSWORD          | Superuser password for FlowETL's backing database | |
 
 We recommend running FlowETL using the celery scheduler, in which case you will also need to provide additional environment variables and secrets as described in the [main airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html). 
 

@@ -11,7 +11,7 @@ FROM apache/airflow:2.5.0-python3.10@sha256:f225b826d4f735a5a46827e48d69cb67fa5d
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES False
 # Turn off api access
-ENV AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.deny_all
+ENV AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.deny_all
 ENV AIRFLOW__WEBSERVER__RBAC=True
 
 # Needed for custom users passed through docker's --user argument, otherwise it's /

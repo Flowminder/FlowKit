@@ -120,7 +120,7 @@ def container_env(ensure_required_env_vars_are_set):
     flowetl = {
         "AIRFLOW__CORE__EXECUTOR": "LocalExecutor",
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
-        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgresql://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
+        "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN": f"postgresql://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
         "AIRFLOW_CONN_FLOWDB": f"postgresql://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
         "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging,
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
@@ -301,7 +301,9 @@ def flowetl_db_container(
         # Wait for container to be ready
         healthy = False
         while not healthy:
+            logger.info("Checking container health")
             container_info = docker_api_client.inspect_container(container.id)
+            logger.info("Container info", container_info=container_info)
             healthy = container_info["State"]["Health"]["Status"] == "healthy"
         logger.info("Started FlowETL db container")
 
@@ -377,6 +379,35 @@ def flowetl_container(
     try:
         flowdb_container()
         flowetl_db_container()
+        logger.info("Running FlowETL db init container")
+        init_container = docker_client.containers.run(
+            f"flowminder/flowetl:{container_tag}",
+            environment=dict(_AIRFLOW_DB_UPGRADE="true", **container_env["flowetl"]),
+            name=f"flowetl_{container_name_suffix}_init",
+            restart_policy={"Name": "on-failure"},
+            user=user,
+            mounts=mounts["flowetl"],
+            network=container_network.name,
+            command="version",
+            detach=True,
+            stderr=True,
+        )
+        init_container.wait()
+        logger.info("Init container log", logs=init_container.logs())
+
+        logger.info("Starting FlowETL container")
+        container = docker_client.containers.run(
+            f"flowminder/flowetl:{container_tag}",
+            environment=container_env["flowetl"],
+            name=f"flowetl_{container_name_suffix}",
+            restart_policy={"Name": "always"},
+            ports={"8080": container_ports["flowetl_airflow"]},
+            mounts=mounts["flowetl"],
+            user=user,
+            detach=True,
+            stderr=True,
+        )
+        container_network.connect(container, aliases=["flowetl"])
         logger.info("Running init.")
         logger.info(str(container.exec_run("bash -c /init.sh", user=user, detach=True)))
         logger.info("Waiting for container to be healthy.")
