@@ -443,6 +443,7 @@ def flowetl_container(
             logger.error(f"Failed to get logs: {exc}")
         container.kill()
         container.remove()
+        init_container.remove()
 
 
 @pytest.fixture(scope="function")
