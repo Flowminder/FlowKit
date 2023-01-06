@@ -4,10 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-apache-airflow = {extras = ["postgres", "celery"],version = "==2.3.4"}
+apache-airflow = {extras = ["postgres", "celery"],version = "==2.4.0"}
 sqlalchemy = "*"
 click = "*"
-markupsafe="==2.0.1"
+markupsafe="==2.1.1"
 wtforms = "<3.0.0"
 pyparsing = "==3.0.9"
 
