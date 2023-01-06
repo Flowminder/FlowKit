@@ -378,7 +378,7 @@ def flowetl_container(
         flowdb_container()
         flowetl_db_container()
         logger.info("Running init.")
-        logger.info(container.exec_run("bash -c /init.sh", user=user, detach=True))
+        logger.info(str(container.exec_run("bash -c /init.sh", user=user, detach=True)))
         logger.info("Waiting for container to be healthy.")
         wait_for_container()
 
@@ -408,7 +408,7 @@ def flowetl_container(
                     "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
                 )
                 logger.info("Airflow logs follow.")
-                logger.info(airflow_logs)
+                logger.info(str(airflow_logs))
         except Exception as exc:
             logger.error(f"Failed to get logs: {exc}")
         container.kill()
