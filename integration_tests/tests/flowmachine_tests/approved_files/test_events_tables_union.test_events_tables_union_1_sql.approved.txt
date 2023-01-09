@@ -7,5 +7,5 @@ SELECT events.calls.datetime,
        events.calls.outgoing,
        events.calls.tac
 FROM events.calls
-WHERE (events.calls.datetime >= '2016-01-02 00:00:00')
-  AND (events.calls.datetime < '2016-01-03 00:00:00')
+WHERE events.calls.datetime >= '2016-01-02 00:00:00'
+  AND events.calls.datetime < '2016-01-03 00:00:00'
