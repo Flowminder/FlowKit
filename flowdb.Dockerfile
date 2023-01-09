@@ -17,21 +17,21 @@ FROM postgres:15.1@sha256:e6a3a637b159ed477c09dd5415119178496b53f0599c0aa483fb87
 
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=3.2.1+dfsg-1.pgdg110+1
-ARG PGROUTING_VERSION=3.3.0-2.pgdg110+1
+ARG POSTGIS_VERSION=3.3.2+dfsg-1.pgdg110+1
+ARG PGROUTING_VERSION=3.4.2-1.pgdg110+1
 ARG PG_MEDIAN_UTILS_VERSION=0.0.7
-ARG OGR_FDW_VERSION=1.1.1-1~exp1.pgdg110+1
+ARG OGR_FDW_VERSION=1.1.3-1.pgdg110+1
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
 ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
 ENV POSTGRES_USER=$POSTGRES_USER
 ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
-ENV TDS_FDW_VERSION=2.0.2-3.pgdg110+1
+ENV TDS_FDW_VERSION=2.0.3-1.pgdg110+1
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && echo "deb http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" > /etc/apt/sources.list.d/pgdg-archive.list \
-    && echo "deb-src http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" >> /etc/apt/sources.list.d/pgdg-archive.list \
+    && echo "deb [ signed-by=/usr/local/share/keyrings/postgres.gpg.asc ] http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" > /etc/apt/sources.list.d/pgdg-archive.list \
+    && echo "deb-src [ signed-by=/usr/local/share/keyrings/postgres.gpg.asc ] http://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" >> /etc/apt/sources.list.d/pgdg-archive.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
     postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION  \
