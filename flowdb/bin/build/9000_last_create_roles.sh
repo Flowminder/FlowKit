@@ -180,3 +180,6 @@ psql --dbname="$POSTGRES_DB" -c "
                 GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
         GRANT USAGE ON SCHEMA geography TO $FLOWAPI_FLOWDB_USER;
         "
+
+# Create a schema for flowmachine role
+psql --dbname="$POSTGRES_DB" -c "CREATE SCHEMA flowmachine AUTHORIZATION flowmachine;"
