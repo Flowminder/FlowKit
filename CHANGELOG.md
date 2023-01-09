@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Docs now recommend creating a separate bind mount for airflow scheduler logs, and include this in the secrets quickstart. [#3622](https://github.com/Flowminder/FlowKit/issues/3622)
 - `jwt` tokens now use `sub` instead of `identity` for `JWT_IDENTITY_CLAIM`.
 - A `majority_location` query with `include_unlocatable=True` will now include rows for all subscribers in the `subscriber_location_weights` sub-query, including those for whom all weights are negative (previously subscribers with only negative weights were excluded).
+- Users no longer have write access to the public schema in FlowDB as part of upgrading to [PostgreSQL 15](https://www.postgresql.org/about/news/postgresql-15-released-2526/)
 
 
 ### Fixed

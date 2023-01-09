@@ -118,17 +118,6 @@ def test_cannot_create_events(cursor):
         )
 
 
-def test_create_public(cursor):
-    """Role can CREATE TABLE in public."""
-    cursor.execute("CREATE TABLE foo(id TEXT)")
-
-
-def test_drop_public(cursor):
-    """Role can DROP TABLE in public."""
-    cursor.execute("CREATE TABLE foo(id TEXT)")
-    cursor.execute("DROP TABLE foo")
-
-
 @pytest.mark.skip_usrs(["flowmachine"])
 def test_cannot_drop_geo(cursor, user):
     """Flowapi cannot drop geography tables."""
