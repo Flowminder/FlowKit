@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - `MostFrequentLocation` now breaks ties based on the last used location, instead of by arbitrary Postgres sort order. [#6268](https://github.com/Flowminder/FlowKit/issues/6268)
+- Users no longer have write access to the public schema in FlowDB as part of upgrading to [PostgreSQL 15](https://www.postgresql.org/about/news/postgresql-15-released-2526/)
 
 ### Fixed
 
