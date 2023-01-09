@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pyzmq = "*"
-quart = "<=0.17.0" # Pinned due to https://github.com/greenape/quart-jwt-extended/issues/5
+quart = "*"
 hypercorn = "*"
 asyncpg = "*"
 quart-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
@@ -23,7 +23,7 @@ pytest = "*"
 pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
-black = {extras = ["jupyter"],version = "==22.10.0"}
+black = {extras = ["jupyter"],version = "==22.12.0"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 flowapi = {editable = true, path = "."}
 
