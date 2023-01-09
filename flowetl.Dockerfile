@@ -6,12 +6,12 @@
 #  FLOWETL
 #  -----
 
-FROM apache/airflow:2.4.1-python3.8@sha256:d8de0db634a36f82aab7f0cd27edadda541020f71e4a1b4d8fe33881d42ddf1d
+FROM apache/airflow:2.5.0-python3.8@sha256:17958dfdf3d3cd4fe35ce095bea4fea193675d562a1d82cd056726330076b3a1
 
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES False
 # Turn off api access
-ENV AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.deny_all
+ENV AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.session
 ENV AIRFLOW__WEBSERVER__RBAC=True
 
 # Needed for custom users passed through docker's --user argument, otherwise it's /
@@ -27,7 +27,15 @@ WORKDIR /${SOURCE_TREE}/flowetl
 COPY --chown=airflow . /${SOURCE_TREE}/
 
 
-RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libpq-dev build-essential &&  \
+    sudo -u airflow -s pip install --no-cache-dir pipenv && \
+    sudo -u airflow -s /home/airflow/.local/bin/pipenv install --clear --deploy --system && \
+    apt-get -y remove build-essential && \
+    apt purge -y --auto-remove && \
+    rm -rf /var/lib/apt/lists/*
+USER airflow
 RUN cd flowetl && python setup.py install --prefix /home/airflow/.local
 
 
