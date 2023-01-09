@@ -6,11 +6,6 @@ set -euo pipefail
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-echo "Running db init"
-airflow db init
-echo "Running db upgrade"
-# Not sure why this should be necessary
-airflow db upgrade
 echo "Creating admin user"
 airflow users create -r Admin -u "${FLOWETL_AIRFLOW_ADMIN_USERNAME:?Need to set FLOWETL_AIRFLOW_ADMIN_USERNAME non-empty}" -e ${FLOWETL_AIRFLOW_ADMIN_EMAIL:-admin@example.com} -f ${FLOWETL_AIRFLOW_ADMIN_FIRSTNAME:-admin} -l ${FLOWETL_AIRFLOW_ADMIN_LASTNAME:-user} -p "${FLOWETL_AIRFLOW_ADMIN_PASSWORD:?Need to set FLOWETL_AIRFLOW_ADMIN_PASSWORD non-empty}"
 echo "Creating pool"
