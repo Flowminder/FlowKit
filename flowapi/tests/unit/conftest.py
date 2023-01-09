@@ -6,6 +6,7 @@ from json import JSONDecodeError
 
 import asyncpg
 import pytest
+import pytest_asyncio
 import zmq
 from _pytest.capture import CaptureResult
 
@@ -21,7 +22,7 @@ CaptureResult = namedtuple("CaptureResult", ["debug", "access"])
 @pytest.fixture
 def json_log(caplog):
     def parse_json():
-        loggers = dict(debug=[], access=[])
+        loggers = dict(debug=[], access=[], query=[])
         for logger, level, msg in caplog.record_tuples:
             if msg == "":
                 continue
@@ -54,7 +55,6 @@ def dummy_zmq_server(monkeypatch):
     """
     dummy = Mock()
     dummy.return_value.socket.return_value.recv_json = CoroutineMock()
-
     monkeypatch.setattr(zmq.asyncio.Context, "instance", dummy)
     yield dummy.return_value.socket.return_value.recv_json
 
@@ -83,8 +83,7 @@ def dummy_db_pool(monkeypatch):
     yield dummy
 
 
-@pytest.fixture
-@pytest.mark.asyncio
+@pytest_asyncio.fixture
 async def app(monkeypatch, tmpdir, dummy_db_pool, json_log):
     monkeypatch.setenv("FLOWAPI_LOG_LEVEL", "DEBUG")
     monkeypatch.setenv("FLOWMACHINE_HOST", "localhost")
@@ -95,7 +94,6 @@ async def app(monkeypatch, tmpdir, dummy_db_pool, json_log):
     monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
     current_app = create_app()
     await current_app.startup()
-    async with current_app.app_context():
-        yield TestApp(
-            current_app.test_client(), dummy_db_pool, tmpdir, current_app, json_log
-        )
+    return TestApp(
+        current_app.test_client(), dummy_db_pool, tmpdir, current_app, json_log
+    )
