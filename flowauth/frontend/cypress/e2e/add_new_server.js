@@ -21,7 +21,6 @@ describe("Server management", function () {
     cy.get("#max-life").type("1234", { force: true });
     cy.get("#max-life-helper-text").should("not.exist");
   });
-
   it("Add duplicate Server name", function () {
     cy.get("#new").click();
     cy.get("#spec-upload-button").uploadFile("api_spec.json");
@@ -37,7 +36,6 @@ describe("Server management", function () {
     cy.contains("OK").click();
     cy.get("#error-dialog-description").should("not.exist");
   });
-
   it("Add server", function () {
     cy.get("#new").click();
     const server_name = Math.random().toString(36).substring(2, 15);
@@ -63,14 +61,13 @@ describe("Server management", function () {
     cy.get(".rs-picker-toggle-value").click().wait(1);
     cy.get(
       ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper"
-    ).click();
-    cy.get(".MuiGrid-align-items-xs-center > :nth-child(1)").click(); //click off the picker
-    cy.contains("Save").click().wait(50);
+    ).click({ force: true });
+    cy.contains("Save").click({ force: true }).wait(1);
     /* Check the edit happened */
     cy.get("[data-action=edit][data-item-name=" + server_name + "]")
       .click()
       .wait(1);
-    cy.get(".rs-picker-toggle-value").should("include.text", "run");
+    cy.get(".rs-picker-toggle-value").should("have.text", "run (All)");
     cy.contains("Save").click({ force: true }).wait(1);
     cy.get("[data-action=edit][data-item-name=" + server_name + "]")
       .click()
@@ -94,12 +91,12 @@ describe("Server management", function () {
         });
       })
       .wait(1);
-    cy.get(".rs-picker-toggle-value").should("include.text", "test_scope");
+    cy.get(".rs-picker-toggle-value").should("have.text", "get_result (All)");
     cy.contains("Save").click({ force: true }).wait(1);
     cy.get("[data-action=edit][data-item-name=" + server_name + "]")
       .click()
       .wait(1);
-    cy.get(".rs-picker-toggle-value").should("include.text", "get_result");
+    cy.get(".rs-picker-toggle-value").should("have.text", "get_result (All)");
     cy.contains("Save").click({ force: true }).wait(1);
     /* Delete it again */
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").click();
