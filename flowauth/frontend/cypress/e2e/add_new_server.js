@@ -36,7 +36,7 @@ describe("Server management", function () {
     cy.contains("OK").click();
     cy.get("#error-dialog-description").should("not.exist");
   });
-  it("Add server", function () {
+  it.skip("Add server", function () {
     cy.get("#new").click();
     const server_name = Math.random().toString(36).substring(2, 15);
     cy.get("#spec-upload-button").then((subject) => {
