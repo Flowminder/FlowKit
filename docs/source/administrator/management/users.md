@@ -10,20 +10,10 @@ FlowAuth is the tool which analysts will use to generate tokens which will allow
 
 2. Under "Servers", add a new server by clicking the '+' button, uploading the spec downloaded from the server, and setting the latest expiry and longest life for tokens.
 
-3. Enable or disable permissions for this server under "Available API scopes".
+4. Under "Users", add a new user, and set the username and password. Leave 'Roles' blank for now.
 
-4. Under "Users", add a new user, and set the username and password.
+5. Under "Roles", create a new role under your sever and provide appropriate scopes and lifetimes. Associate the role with the user under 'Members'.
 
-5. Either:
-    - Add a server to the user, and enable/disable API scopes
-    <p>
-7. Or:
-    <p>
-    - Under "Groups", add a new group,
-
-    - Add a server to the group, and enable/disable API scopes
-
-    - Add the user to the group.
 
 The user can then log into FlowAuth and generate a token (see the [analyst section](../../analyst/index.md#flowauth) for instructions).
 

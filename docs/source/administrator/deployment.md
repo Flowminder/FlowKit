@@ -245,7 +245,7 @@ You may also set the following environment variables:
 | FLOWMACHINE_CACHE_PRUNING_FREQUENCY | How often to automatically clean up the cache |  86400 (24 hours) |
 | FLOWMACHINE_CACHE_PRUNING_TIMEOUT | Number of seconds to wait before halting a cache prune | 600 |
 | FLOWMACHINE_LOG_LEVEL | Verbosity of logging (critical, error, info, or debug) | error |
-| FLOWMACHINE_SERVER_THREADPOOL_SIZE | Number of threads the server will use to manage running queries | 5*n_cpus |
+| FLOWMACHINE_SERVER_THREADPOOL_SIZE | Number of threads the server will use to manage running queries | 5\*n_cpus |
 | DB_CONNECTION_POOL_SIZE | Number of connections keep open to FlowDB - the server can actively run this many queries at once. You may wish to increase this if the FlowDB instance is running on a powerful server with multiple CPUs | 5 |
 | DB_CONNECTION_POOL_OVERFLOW |  Number of connections in addition to `DB_CONNECTION_POOL_SIZE` to open if needed | 1 |
 
