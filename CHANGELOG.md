@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## 1.18.0
+
 ### Added
 - Added views `etl.ingested_state`, `etl.available_dates` and `etl.deduped_post_etl_queries` in FlowDB, for convenient extraction of relevant information from the ETL tables. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
 - Added `MajorityLocationWithUnlocatable` query class and `majority_location` function. [#5720](https://github.com/Flowminder/FlowKit/issues/5720)
