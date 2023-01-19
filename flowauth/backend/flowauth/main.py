@@ -10,6 +10,7 @@ from functools import partial
 import flask
 import structlog
 from flask import Flask, current_app, request
+from flask_migrate import Migrate
 
 import simplejson
 from flask_login import LoginManager, current_user
@@ -206,6 +207,9 @@ def create_app(test_config=None):
     app.before_first_request(
         app.config["DB_IS_SET_UP"].wait
     )  # Cause workers to wait for db to set up
+
+    # Register for migrations
+    migrate = Migrate(app, db)
 
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)
