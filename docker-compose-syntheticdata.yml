@@ -14,6 +14,7 @@ services:
     image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
     environment:
       SYNTHETIC_DATA_GENERATOR: ${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
+      COUNTRY: ${COUNTRY:-"NPL"}
       N_SITES: ${N_SITES:?Must set N_SITES env var}
       N_CELLS: ${N_CELLS:?Must set N_CELLS env var}
       N_SUBSCRIBERS: ${N_SUBSCRIBERS:?Must set N_SUBSCRIBERS env var}
@@ -27,3 +28,4 @@ services:
       INTERACTIONS_MULTIPLIER: ${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
       DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
       DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
+      DISASTER_REGION_PCOD: ${DISASTER_REGION_PCOD:-"NPL.1.1_1"}
