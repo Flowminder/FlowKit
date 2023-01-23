@@ -8,7 +8,7 @@ apache-airflow = {extras = ["celery"],version = "==2.5.0"}
 apache-airflow-providers-postgres = "*"
 sqlalchemy = "*"
 click = "*"
-markupsafe="==2.1.1"
+markupsafe="==2.1.2"
 wtforms = "<3.0.0"
 pyparsing = "==3.0.9"
 
