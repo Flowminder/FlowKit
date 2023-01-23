@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Null values in first column of first row of ingested data no longer cause flowetl to skip ingestion [#5090](https://github.com/Flowminder/FlowKit/issues/5090)
 
+### Added
+
+- Quickstart script now supports arbitrary countries via `COUNTRY` env var. [#5796](https://github.com/Flowminder/FlowKit/issues/5796)
+
 ## [1.18.2]
 
 ## Fixed
