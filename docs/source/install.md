@@ -66,6 +66,8 @@ You can also explore FlowKit using synthetic data for other countries, by settin
 COUNTRY=GBR DISASTER_REGION_PCOD=GBR.1.36_1 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples
 ```
 
+Available countries are those with boundaries in the [GADM 3.6](https://gadm.org/download_country36.html) dataset. Possible values for `DISASTER_REGION_PCOD` are any admin2 region for the corresponding country, based on the `GID_2` field in the GADM 3.6 shapefile for that country.
+
 !!! info
     The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](analyst/worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
 
