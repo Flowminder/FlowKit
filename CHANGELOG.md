@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Quickstart script now supports arbitrary countries via `COUNTRY` env var. [#5796](https://github.com/Flowminder/FlowKit/issues/5796)
+- Quickstart script now supports arbitrary countries via `EXAMPLE_COUNTRY` env var. [#5796](https://github.com/Flowminder/FlowKit/issues/5796)
 
 ## [1.18.2]
 
