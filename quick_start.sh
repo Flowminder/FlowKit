@@ -129,6 +129,8 @@ then
     $DOCKER_COMPOSE down -v
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/development_environment)"
+    export COUNTRY=${EXAMPLE_COUNTRY:-$COUNTRY}
+    export DISASTER_REGION_PCODE=${EXAMPLE_DISASTER_REGION_PCODE:-$DISASTER_REGION_PCODE}
     echo "Starting containers (this may take a few minutes)"
     RUNNING=`$DOCKER_COMPOSE ps -q flowdb flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
