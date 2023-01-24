@@ -68,7 +68,7 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC
       --out-of-area-probability ${P_OUT_OF_AREA:-0.05}\
       --relocation-probability ${P_RELOCATE:-0.05}\
       --interactions-multiplier ${INTERACTIONS_MULTIPLIER:-5}\
-      --disaster-zone ${DISASTER_REGION_PCOD:-"NPL.1.1_1"} \
+      --disaster-zone \"${DISASTER_REGION_PCOD:-"NPL.1.1_1"}\" \
       --disaster-start-date ${DISASTER_START:-"2015-01-01"} \
       --disaster-end-date ${DISASTER_END:-"2015-01-01"} \
       --country ${COUNTRY} || (cat cat /var/lib/postgresql/data/pg_log/postgres-* && exit 1)
