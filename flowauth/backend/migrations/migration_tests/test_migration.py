@@ -98,12 +98,10 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
     with old_app.app_context():
         old_app.test_client().get("/")
     del sys.path[0]
-
     del flowauth
     flowauth_module_keys = [n for n in sys.modules.keys() if n.startswith("flowauth")]
     for k in flowauth_module_keys:
         del sys.modules[k]
-
 
     invalidate_caches()
     import flowauth
@@ -146,9 +144,8 @@ def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config, d
         ]
         assert "group" in table_names
         assert "role" not in table_names
-        flask_migrate.upgrade(
-            str(Path(__file__).parent.parent), revision="66dee292d147"
-        )
+        breakpoint()
+        flask_migrate.upgrade(str(Path(__file__).parent.parent))
 
         table_names = [
             row[0]
@@ -157,5 +154,6 @@ def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config, d
             .fetchall()
         ]
         assert "role" in table_names
+        assert "group" not in table_names
         assert "group" not in table_names
 
