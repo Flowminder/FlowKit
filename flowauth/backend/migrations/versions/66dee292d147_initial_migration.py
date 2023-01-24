@@ -102,8 +102,6 @@ def upgrade():
         column_name="longest_token_life",
         new_column_name="longest_token_life_minutes",
     )
-        )
-        batch_op.drop_column("longest_token_life")
 
     # ### end Alembic commands ###
 

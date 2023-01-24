@@ -144,7 +144,6 @@ def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config, d
         ]
         assert "group" in table_names
         assert "role" not in table_names
-        breakpoint()
         flask_migrate.upgrade(str(Path(__file__).parent.parent))
 
         table_names = [
