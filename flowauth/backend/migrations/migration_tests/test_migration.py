@@ -8,6 +8,7 @@ import flask_migrate
 import git
 from git.util import stream_copy
 import pytest
+import sqlite3
 
 # from alembic import
 
@@ -76,8 +77,11 @@ class MockDbSetupWatcher:
 
 
 @pytest.fixture
-def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, monkeypatch, repo_root):
-    monkeypatch.syspath_prepend(project_tmpdir)
+def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
+    from importlib import invalidate_caches, import_module, reload
+
+    sys.path = [str(project_tmpdir), *sys.path]
+    invalidate_caches()
     import flowauth
 
     print(f"DB path: {db_path}")
@@ -92,16 +96,11 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, monkeypatch, rep
     )
     with old_app.app_context():
         old_app.test_client().get("/")
-    # monkeypatch.syspath_prepend(repo_root / "flowauth" / "backend" / "flowauth")
-    # monkeypatch.syspath_prepend(sys.path[-1]) # Hack to put the 'current' version of Flowauth back on top of the Path
-    monkeypatch.syspath_prepend(
-        "/home/john/projects/flowkit_1/FlowKit/flowauth/backend/flowauth"
-    )
+    del sys.path[0]
     del flowauth
     flowauth_module_keys = [n for n in sys.modules.keys() if n.startswith("flowauth")]
     for k in flowauth_module_keys:
         del sys.modules[k]
-    from importlib import invalidate_caches, import_module, reload
 
     invalidate_caches()
     import flowauth
@@ -123,17 +122,34 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, monkeypatch, rep
 @pytest.fixture
 def alembic_test_config(project_tmpdir):
     cfg = flask_migrate.Config()
-    cfg.set_main_option("script_location", "flowauth:backend")
+    cfg.set_main_option("script_location", str(Path(__file__).parent.parent))
     # This should probably be fixturised later
     cfg.set_main_option("sqlalchemy.url", str(project_tmpdir / "db.db"))
     return cfg
 
 
-def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config):
+def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config, db_path):
     monkeypatch.syspath_prepend(Path(__file__).parent.parent / "versions")
-    from flowauth.models import db
 
-    with current_app_old_db.app_context() as current_app:
-        assert "group_memberships" in db.metadata.tables.keys()
-        current_app.migrate.upgrade(alembic_test_config)
-        assert "roles" in db.metadata.tables.keys()
+    with current_app_old_db.app_context() as current_app, sqlite3.connect(
+        db_path
+    ) as conn:
+        table_names = [
+            row[0]
+            for row in conn.cursor()
+            .execute("SELECT name FROM sqlite_master WHERE type='table'")
+            .fetchall()
+        ]
+        assert "group" in table_names
+        assert "role" not in table_names
+        breakpoint()
+        flask_migrate.upgrade(str(Path(__file__).parent.parent))
+
+        table_names = [
+            row[0]
+            for row in conn.cursor()
+            .execute("SELECT name FROM sqlite_master WHERE type='table'")
+            .fetchall()
+        ]
+        assert "role" in table_names
+        assert "group" not in table_names

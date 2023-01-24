@@ -14,25 +14,24 @@ config = context.config
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
-logger = logging.getLogger('alembic.env')
+logger = logging.getLogger("alembic.env")
 
 
 def get_engine():
     try:
         # this works with Flask-SQLAlchemy<3 and Alchemical
-        return current_app.extensions['migrate'].db.get_engine()
+        return current_app.extensions["migrate"].db.get_engine()
     except TypeError:
         # this works with Flask-SQLAlchemy>=3
-        return current_app.extensions['migrate'].db.engine
+        return current_app.extensions["migrate"].db.engine
 
 
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-config.set_main_option(
-    'sqlalchemy.url', str(get_engine().url).replace('%', '%%'))
-target_db = current_app.extensions['migrate'].db
+config.set_main_option("sqlalchemy.url", str(get_engine().url).replace("%", "%%"))
+target_db = current_app.extensions["migrate"].db
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -41,7 +40,7 @@ target_db = current_app.extensions['migrate'].db
 
 
 def get_metadata():
-    if hasattr(target_db, 'metadatas'):
+    if hasattr(target_db, "metadatas"):
         return target_db.metadatas[None]
     return target_db.metadata
 
@@ -59,9 +58,7 @@ def run_migrations_offline():
 
     """
     url = config.get_main_option("sqlalchemy.url")
-    context.configure(
-        url=url, target_metadata=get_metadata(), literal_binds=True
-    )
+    context.configure(url=url, target_metadata=get_metadata(), literal_binds=True)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -79,11 +76,11 @@ def run_migrations_online():
     # when there are no changes to the schema
     # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
     def process_revision_directives(context, revision, directives):
-        if getattr(config.cmd_opts, 'autogenerate', False):
+        if getattr(config.cmd_opts, "autogenerate", False):
             script = directives[0]
             if script.upgrade_ops.is_empty():
                 directives[:] = []
-                logger.info('No changes in schema detected.')
+                logger.info("No changes in schema detected.")
 
     connectable = get_engine()
 
@@ -92,7 +89,7 @@ def run_migrations_online():
             connection=connection,
             target_metadata=get_metadata(),
             process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
+            **current_app.extensions["migrate"].configure_args
         )
 
         with context.begin_transaction():
