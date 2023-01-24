@@ -82,6 +82,7 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
 
     sys.path = [str(project_tmpdir), *sys.path]
     invalidate_caches()
+
     import flowauth
 
     print(f"DB path: {db_path}")
@@ -97,10 +98,12 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
     with old_app.app_context():
         old_app.test_client().get("/")
     del sys.path[0]
+
     del flowauth
     flowauth_module_keys = [n for n in sys.modules.keys() if n.startswith("flowauth")]
     for k in flowauth_module_keys:
         del sys.modules[k]
+
 
     invalidate_caches()
     import flowauth
@@ -123,6 +126,7 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
 def alembic_test_config(project_tmpdir):
     cfg = flask_migrate.Config()
     cfg.set_main_option("script_location", str(Path(__file__).parent.parent))
+
     # This should probably be fixturised later
     cfg.set_main_option("sqlalchemy.url", str(project_tmpdir / "db.db"))
     return cfg
@@ -154,3 +158,4 @@ def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config, d
         ]
         assert "role" in table_names
         assert "group" not in table_names
+
