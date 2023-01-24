@@ -97,11 +97,11 @@ def upgrade():
     op.drop_table("group")
     op.drop_table("group_server_permission")
     op.drop_table("token")
-    with op.batch_alter_table("server", schema=None) as batch_op:
-        batch_op.add_column(
-            sa.Column("longest_token_life_minutes", sa.Integer(), nullable=False)
-        )
-        batch_op.drop_column("longest_token_life")
+    op.alter_column(
+        "server",
+        column_name="longest_token_life",
+        new_column_name="longest_token_life_minutes",
+    )
 
     # ### end Alembic commands ###
 
