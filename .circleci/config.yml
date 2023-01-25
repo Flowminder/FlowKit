@@ -560,7 +560,7 @@ jobs:
           name: Run backend unit tests
           command: |
             pipenv run pytest --junitxml=test_results/pytest/results.xml --cov=backend/flowauth/ \
-             --cov-report term --cov-report xml --durations=10
+             --cov-report term --cov-report xml --durations=10 --ignore backend/migrations/
       - store_test_results:
           path: test_results
       - upload_codecov:
