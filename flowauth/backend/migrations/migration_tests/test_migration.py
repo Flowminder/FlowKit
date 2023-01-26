@@ -97,13 +97,14 @@ def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
     )
     with old_app.app_context():
         old_app.test_client().get("/")
+
     del sys.path[0]
     del flowauth
     flowauth_module_keys = [n for n in sys.modules.keys() if n.startswith("flowauth")]
     for k in flowauth_module_keys:
         del sys.modules[k]
-
     invalidate_caches()
+
     import flowauth
 
     # assert flowauth_new.
