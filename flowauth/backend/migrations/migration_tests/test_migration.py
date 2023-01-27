@@ -11,7 +11,6 @@ import pytest
 import sqlite3
 
 
-
 @functools.singledispatch
 def unblob_tree(tree, root: Path):
     yield from ()
