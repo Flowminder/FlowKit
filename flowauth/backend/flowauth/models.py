@@ -8,6 +8,8 @@ from pathlib import Path
 import datetime
 from itertools import chain
 from collections import Counter
+
+import flask_migrate
 from sqlalchemy import ForeignKey, func, inspect, UniqueConstraint
 from typing import Dict, List, Union
 import json
@@ -567,10 +569,9 @@ def init_db(force: bool = False) -> None:
         db.drop_all()
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
+    # Since this is a fresh db, set the revision inside alembic to HEAD
+    flask_migrate.stamp(revision="head")
     current_app.logger.debug("Initialised db.")
-
-
-# FUTURE: Token history
 
 
 def add_admin(username: str, password: str) -> None:
