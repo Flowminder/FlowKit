@@ -10,7 +10,6 @@ from git.util import stream_copy
 import pytest
 import sqlite3
 
-# from alembic import
 
 
 @functools.singledispatch
