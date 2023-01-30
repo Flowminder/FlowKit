@@ -9,6 +9,7 @@ import datetime
 from itertools import chain
 from collections import Counter
 
+import flask
 import flask_migrate
 from sqlalchemy import ForeignKey, func, inspect, UniqueConstraint
 from typing import Dict, List, Union
@@ -570,7 +571,10 @@ def init_db(force: bool = False) -> None:
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
     # Since this is a fresh db, set the revision inside alembic to HEAD
-    flask_migrate.stamp(revision="head")
+    migration_dir = str(Path(__file__).parent.parent / "migrations")
+    cfg = flask_migrate.Config()
+    cfg.set_main_option("script_location", migration_dir)
+    flask_migrate.stamp(directory=migration_dir, revision="head")
     current_app.logger.debug("Initialised db.")
 
 
