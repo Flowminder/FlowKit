@@ -1,14 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from hashlib import md5
 
 from pathlib import Path
 
 import datetime
-from itertools import chain
-from collections import Counter
-from sqlalchemy import ForeignKey, func, inspect, UniqueConstraint
+
+import flask_migrate
+from sqlalchemy import UniqueConstraint
 from typing import Dict, List, Union
 import json
 
@@ -16,13 +15,10 @@ from flask import current_app
 
 import pyotp
 from flask_sqlalchemy import SQLAlchemy
-from flowauth.invalid_usage import InvalidUsage, Unauthorized
+from flowauth.invalid_usage import Unauthorized
 from flowauth.util import get_fernet
 from passlib.hash import argon2
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import validates
-from sqlalchemy.event import listens_for
-from sqlalchemy.orm.attributes import get_history
 
 db = SQLAlchemy()
 
@@ -567,10 +563,12 @@ def init_db(force: bool = False) -> None:
         db.drop_all()
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
+    # Since this is a fresh db, set the revision inside alembic to HEAD
+    migration_dir = str(Path(__file__).parent.parent / "migrations")
+    cfg = flask_migrate.Config()
+    cfg.set_main_option("script_location", migration_dir)
+    flask_migrate.stamp(directory=migration_dir, revision="head")
     current_app.logger.debug("Initialised db.")
-
-
-# FUTURE: Token history
 
 
 def add_admin(username: str, password: str) -> None:

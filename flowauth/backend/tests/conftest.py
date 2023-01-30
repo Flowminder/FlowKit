@@ -23,7 +23,7 @@ from flowauth.models import (
     Scope,
     Role,
 )
-from flowauth.user_settings import generate_backup_codes, md5
+from flowauth.user_settings import generate_backup_codes
 
 TestUser = namedtuple("TestUser", ["id", "username", "password"])
 TestTwoFactorUser = namedtuple(
