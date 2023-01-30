@@ -1,17 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from hashlib import md5
 
 from pathlib import Path
 
 import datetime
-from itertools import chain
-from collections import Counter
 
-import flask
 import flask_migrate
-from sqlalchemy import ForeignKey, func, inspect, UniqueConstraint
+from sqlalchemy import UniqueConstraint
 from typing import Dict, List, Union
 import json
 
@@ -19,13 +15,10 @@ from flask import current_app
 
 import pyotp
 from flask_sqlalchemy import SQLAlchemy
-from flowauth.invalid_usage import InvalidUsage, Unauthorized
+from flowauth.invalid_usage import Unauthorized
 from flowauth.util import get_fernet
 from passlib.hash import argon2
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import validates
-from sqlalchemy.event import listens_for
-from sqlalchemy.orm.attributes import get_history
 
 db = SQLAlchemy()
 
