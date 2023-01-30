@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import random
 import string
-from typing import List
 
 from flask import Blueprint, jsonify, request
 from itsdangerous import (
@@ -13,7 +12,6 @@ from itsdangerous import (
     TimestampSigner,
 )
 
-import pyotp
 from flask_login import current_user, login_required
 from zxcvbn import zxcvbn
 
