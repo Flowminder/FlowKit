@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Added Alembic support via `flask-migrate` to Flowauth [#5799](https://github.com/Flowminder/FlowKit/pull/5799)
+
 ## 1.18.0
 
 ### Added
