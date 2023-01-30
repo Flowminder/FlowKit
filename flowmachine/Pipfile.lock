@@ -1110,11 +1110,11 @@
         },
         "geojson": {
             "hashes": [
-                "sha256:6e4bb7ace4226a45d9c8c8b1348b3fc43540658359f93c3f7e03efa9f15f658a",
-                "sha256:ccbd13368dd728f4e4f13ffe6aaf725b6e802c692ba0dde628be475040c534ba"
+                "sha256:ea1df8246bdeb2bbf20d0756720911893414f9cee46b336a1e882d2cd60cfba1",
+                "sha256:fae22bb8c69da4cbff743e654d8f55cc45f6aedf19be3c962e7a15f607b5fa4d"
             ],
             "index": "pypi",
-            "version": "==2.5.0"
+            "version": "==3.0.0"
         },
         "geopandas": {
             "hashes": [
