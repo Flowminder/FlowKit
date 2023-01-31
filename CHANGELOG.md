@@ -4,12 +4,12 @@ All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## 1.18.1
+## [1.18.1]
 
 ### Added
 - Added Alembic support via `flask-migrate` to Flowauth [#5799](https://github.com/Flowminder/FlowKit/pull/5799)
 
-## 1.18.0
+## [1.18.0]
 
 ### Added
 - Added views `etl.ingested_state`, `etl.available_dates` and `etl.deduped_post_etl_queries` in FlowDB, for convenient extraction of relevant information from the ETL tables. [#5641](https://github.com/Flowminder/FlowKit/issues/5641)
@@ -978,7 +978,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 [1.18.1]: https://github.com/Flowminder/FlowKit/compare/1.18.0...master
-[1.18.0]: https://github.com/Flowminder/FlowKit/compare/1.17.0...1.18.0
+[1.18.0]: https://github.com/Flowminder/FlowKit/compare/1.17.1...1.18.0
 [1.17.1]: https://github.com/Flowminder/FlowKit/compare/1.17.0...1.17.1
 [1.17.0]: https://github.com/Flowminder/FlowKit/compare/1.16.0...1.17.0
 [1.16.0]: https://github.com/Flowminder/FlowKit/compare/1.15.0...1.16.0
