@@ -477,7 +477,7 @@ class Scope(db.Model):
 
     __table_args__ = (UniqueConstraint("name", "server_id"),)
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(75))
+    name = db.Column(db.String(512))
     enabled = db.Column(db.Boolean, default=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
 
