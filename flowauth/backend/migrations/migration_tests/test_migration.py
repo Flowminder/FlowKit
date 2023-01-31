@@ -6,12 +6,15 @@ import logging
 import os
 import sys
 from pathlib import Path
+from importlib import invalidate_caches
 
 import flask_migrate
 import git
 from git.util import stream_copy
 import pytest
 import sqlite3
+import psycopg2
+import mysql.connector
 
 
 @functools.singledispatch
@@ -77,48 +80,55 @@ class MockDbSetupWatcher:
         return True
 
 
-@pytest.fixture
-def current_app_old_db(v1_17_0_models, db_path, project_tmpdir, repo_root):
-    from importlib import invalidate_caches, import_module, reload
-
-    sys.path = [str(project_tmpdir), *sys.path]
-    invalidate_caches()
-    import flowauth
-
-    print(f"DB path: {db_path}")
-    old_app = flowauth.create_app(
-        {
-            "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
-            "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
-            "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
-            "DEMO_MODE": True,
-        }
-    )
-    with old_app.app_context():
-        old_app.test_client().get("/")
-
-    del sys.path[0]
-    del flowauth
+def unload_flowauth():
     flowauth_module_keys = [n for n in sys.modules.keys() if n.startswith("flowauth")]
     for k in flowauth_module_keys:
         del sys.modules[k]
     invalidate_caches()
 
-    import flowauth
 
-    # assert flowauth_new.
-    new_app = flowauth.create_app(
-        {
-            "TESTING": False,
-            "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
-            "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
-            "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
-            "DEMO_MODE": False,
-            "DB_IS_SET_UP": MockDbSetupWatcher(),
-        }
-    )
-    yield new_app
+@pytest.fixture
+def app_factory(v1_17_0_models, db_path, project_tmpdir):
+    def make_app(db_backend):
+        def current_app_old_db(db_path, project_tmpdir):
+
+            sys.path = [str(project_tmpdir), *sys.path]
+            unload_flowauth()
+            import flowauth
+
+            print(f"DB path: {db_path}")
+            old_app = flowauth.create_app(
+                {
+                    "TESTING": True,
+                    "SQLALCHEMY_DATABASE_URI": f"{db_backend}:///{db_path}",
+                    "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
+                    "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
+                    "DEMO_MODE": True,
+                }
+            )
+            with old_app.app_context():
+                old_app.test_client().get("/")
+
+            del flowauth
+            unload_flowauth()
+            del sys.path[0]
+            import flowauth
+
+            new_app = flowauth.create_app(
+                {
+                    "TESTING": False,
+                    "SQLALCHEMY_DATABASE_URI": f"{db_backend}:///{db_path}",
+                    "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
+                    "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
+                    "DEMO_MODE": False,
+                    "DB_IS_SET_UP": MockDbSetupWatcher(),
+                }
+            )
+            return new_app
+
+        return current_app_old_db(db_path, project_tmpdir)
+
+    return make_app
 
 
 @pytest.fixture
@@ -130,18 +140,56 @@ def alembic_test_config(project_tmpdir):
     return cfg
 
 
-@pytest.mark.skip("This leaks and causes imports to fail on other tests")
-def test_17_18_migration(current_app_old_db, monkeypatch, alembic_test_config, db_path):
-    monkeypatch.syspath_prepend(Path(__file__).parent.parent / "versions")
+class DbBackend:
+    def __init__(self, *, name, table_query, db_path):
+        self.name = name
+        self.table_query = table_query
+        self.db_path = db_path
 
-    with current_app_old_db.app_context() as current_app, sqlite3.connect(
-        db_path
-    ) as conn:
+
+class SqliteBackend(DbBackend):
+    def __init__(self, db_path):
+        super().__init__(
+            name="sqlite", table_query="SELECT name FROM sqlite_master", db_path=db_path
+        )
+
+    def connector(self):
+        return sqlite3.connect(str(self.db_path))
+
+
+class PostgresBackend(DbBackend):
+    def __init__(self, db_path):
+        super().__init__(
+            name="postgresql+psycopg2",
+            table_query="""
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema='public'
+                AND table_type='BASE TABLE';
+                """,
+            db_path=db_path,
+        )
+
+    def connector(self):
+        return psycopg2.connect(
+            host=self.db_path, user="TEST_ADMIN", password="DUMMY_PASSWORD"
+        )
+
+
+backend_classes = [SqliteBackend, PostgresBackend]
+
+
+# @pytest.mark.skip("This leaks and causes imports to fail on other tests")
+@pytest.mark.parametrize("ThisBackend", backend_classes)
+def test_17_18_migration(
+    app_factory, ThisBackend, monkeypatch, alembic_test_config, db_path, project_tmpdir
+):
+    db_backend = ThisBackend(str(db_path))
+    monkeypatch.syspath_prepend(Path(__file__).parent.parent / "versions")
+    current_app_old_db = app_factory(db_backend.name)
+    with current_app_old_db.app_context() as current_app, db_backend.connector() as conn:
         table_names = [
-            row[0]
-            for row in conn.cursor()
-            .execute("SELECT name FROM sqlite_master WHERE type='table'")
-            .fetchall()
+            row[0] for row in conn.cursor().execute(db_backend.table_query).fetchall()
         ]
         assert "group" in table_names
         assert "role" not in table_names
