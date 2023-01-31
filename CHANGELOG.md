@@ -978,7 +978,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.0...1.18.1
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.1...master
 [1.18.1]: https://github.com/Flowminder/FlowKit/compare/1.18.0...1.18.1
 [1.18.0]: https://github.com/Flowminder/FlowKit/compare/1.17.1...1.18.0
 [1.17.1]: https://github.com/Flowminder/FlowKit/compare/1.17.0...1.17.1
