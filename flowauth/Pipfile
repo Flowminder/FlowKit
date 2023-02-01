@@ -27,6 +27,7 @@ structlog = "*"
 simplejson = "*"
 freezegun = "*"
 flask-migrate = "*"
+psycopg = "*"
 
 [dev-packages]
 pytest = "*"
@@ -35,6 +36,8 @@ black = {extras = ["jupyter"],version = "==22.12.0"}
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 gitpython = "*"
+pytest-postgresql = "*"
+psycopg = "*"
 
 [requires]
 python_version = "3.8"
