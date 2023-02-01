@@ -94,11 +94,11 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("user_id", "role_id"),
     )
+    op.drop_table("group_server_permission")
     op.drop_table("server_capability")
     op.drop_table("group_server_token_limits")
     op.drop_table("group_memberships")
     op.drop_table("group")
-    op.drop_table("group_server_permission")
     op.drop_table("token")
     op.alter_column(
         "server",
