@@ -10,6 +10,7 @@ Create Date: 2023-01-23 10:16:16.536867
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.types import Integer
 
 
 # revision identifiers, used by Alembic.
@@ -104,6 +105,8 @@ def upgrade():
         "server",
         column_name="longest_token_life",
         new_column_name="longest_token_life_minutes",
+        type_=Integer,
+        existing_type=Integer,
     )
 
     # ### end Alembic commands ###
