@@ -10,6 +10,7 @@ Create Date: 2023-01-23 10:16:16.536867
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.types import Integer
 
 
 # revision identifiers, used by Alembic.
@@ -38,7 +39,7 @@ def upgrade():
     op.create_table(
         "scope",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("name", sa.String(), nullable=True),
+        sa.Column("name", sa.String(length=512), nullable=True),
         sa.Column("enabled", sa.Boolean(), nullable=True),
         sa.Column("server_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -94,16 +95,18 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("user_id", "role_id"),
     )
+    op.drop_table("group_server_permission")
     op.drop_table("server_capability")
     op.drop_table("group_server_token_limits")
     op.drop_table("group_memberships")
     op.drop_table("group")
-    op.drop_table("group_server_permission")
     op.drop_table("token")
     op.alter_column(
         "server",
         column_name="longest_token_life",
         new_column_name="longest_token_life_minutes",
+        type_=Integer,
+        existing_type=Integer,
     )
 
     # ### end Alembic commands ###

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## Fixed
+
+- Fixed migrations being missing from the built FlowAuth docker images [#5818](https://github.com/Flowminder/FlowKit/issues/5818)
+
 ## [1.18.1]
 
 ### Added
