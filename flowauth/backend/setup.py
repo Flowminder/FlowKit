@@ -28,7 +28,7 @@ setup(
     install_requires=[
         "flask",
         "flask-sqlalchemy",
-        "flask-migration",
+        "flask-migrate",
         "alembic",
         "sqlalchemy <1.4.28",
         "flask-login",
