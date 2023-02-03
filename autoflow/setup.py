@@ -40,7 +40,7 @@ setup(
         "distributed",
         "pyyaml",
         "sh",
-        "sqlalchemy",
+        "sqlalchemy<2.0.0",
     ],
     extras_require={
         "test": ["pytest", "pytest-cov", "sqlalchemy-utils", "testing-postgresql"],
