@@ -48,7 +48,6 @@ class ActiveAtReferenceLocation(SubscriberFeature):
             ModalLocation, MostFrequentLocation, LastLocation, FirstLocation
         ],
     ):
-
         self.spatial_unit = subscriber_locations.spatial_unit
         self.reference_location = reference_locations
         self.subscriber_locations = subscriber_locations

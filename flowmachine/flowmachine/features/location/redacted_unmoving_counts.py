@@ -20,7 +20,6 @@ class RedactedUnmovingCounts(RedactedLocationMetric, GeoDataMixin, Query):
     """
 
     def __init__(self, *, unmoving_counts: UnmovingCounts):
-
         self.redaction_target = unmoving_counts
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = unmoving_counts.spatial_unit

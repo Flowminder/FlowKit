@@ -29,7 +29,6 @@ class RedactedLabelledAggregate(Query):
         labelled_query: Union[LabelledSpatialAggregate, LabelledFlows],
         redaction_threshold: int = 15,
     ):
-
         if not hasattr(labelled_query, "out_spatial_columns"):
             raise ValueError("labelled_query must implement out_spatial_columns")
 
@@ -42,7 +41,6 @@ class RedactedLabelledAggregate(Query):
         return self.labelled_query.column_names
 
     def _make_query(self):
-
         aggs = ",".join(self.labelled_query.out_spatial_columns)
         all_cols = self.labelled_query.column_names_as_string_list
 

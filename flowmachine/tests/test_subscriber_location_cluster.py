@@ -86,7 +86,6 @@ class Sites(GeoDataMixin, Query):
         return ["site_id", "version", "geom_point"]
 
     def _make_query(self):
-
         return "SELECT id AS site_id, version, geom_point FROM infrastructure.sites"
 
     def _geo_augmented_query(self):

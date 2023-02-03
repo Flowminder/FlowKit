@@ -72,7 +72,6 @@ class VersionedInfrastructure(Query):
         return self.table.column_names
 
     def _make_query(self):
-
         sql = f"""
             {self.table.get_query()}
             WHERE date_of_first_service <= '{self.date}'::date AND

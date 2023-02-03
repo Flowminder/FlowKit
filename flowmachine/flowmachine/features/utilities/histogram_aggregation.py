@@ -96,7 +96,6 @@ class HistogramAggregation(Query):
         value_column: str = "value",
         censor: bool = True,
     ) -> None:
-
         self.metric = metric
         self.bins = bins
         self.range = range
@@ -118,7 +117,6 @@ class HistogramAggregation(Query):
         return ["value", "lower_edge", "upper_edge"]
 
     def _make_query(self) -> str:
-
         num_bins, bins_sql = _get_bins_clause(self.bins)
         bounds_sql = _get_bounds_clause(self.range, self.value_column, self.metric)
 

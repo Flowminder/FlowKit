@@ -19,7 +19,6 @@ from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
 def test_redaction(get_dataframe):
-
     locations = locate_subscribers(
         "2016-01-01",
         "2016-01-02",

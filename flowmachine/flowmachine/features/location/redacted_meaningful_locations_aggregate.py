@@ -26,7 +26,6 @@ class RedactedMeaningfulLocationsAggregate(RedactedLocationMetric, GeoDataMixin,
     """
 
     def __init__(self, *, meaningful_locations_aggregate: MeaningfulLocationsAggregate):
-
         self.redaction_target = meaningful_locations_aggregate
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = meaningful_locations_aggregate.spatial_unit

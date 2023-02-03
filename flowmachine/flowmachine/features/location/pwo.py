@@ -190,7 +190,6 @@ class PopulationWeightedOpportunities(Query):
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
     ):
-
         warnings.warn(
             "The PopulationWeightedOpportunities model is currently **experimental**. "
             + "Please review Yan X-Y et al. "

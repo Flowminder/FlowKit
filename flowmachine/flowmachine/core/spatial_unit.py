@@ -374,7 +374,6 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
                     USING ({self._geom_on})
                     """
         else:
-
             return f"""
                     INNER JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
@@ -768,7 +767,6 @@ class AdminSpatialUnit(PolygonSpatialUnit):
         region_id_column_name: Optional[str] = None,
         mapping_table: Union[str, Query] = None,
     ) -> None:
-
         # If there is no region_id_column_name passed then we can use the default,
         # which is of the form admin3pcod. If the user has asked for the standard
         # region_id_column_name then we will alias this column as 'pcod', otherwise

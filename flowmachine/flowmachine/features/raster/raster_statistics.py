@@ -63,7 +63,6 @@ class RasterStatistics(Query):
         grouping_element=None,
         statistic="sum",
     ):
-
         if isinstance(band, int):
             band = [band]
 

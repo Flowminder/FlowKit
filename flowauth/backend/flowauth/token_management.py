@@ -91,7 +91,6 @@ def list_my_tokens(server):
 @blueprint.route("/tokens/<server_id>", methods=["POST"])
 @login_required
 def add_token(server_id):
-
     """
     Generate a new token for a server.
 

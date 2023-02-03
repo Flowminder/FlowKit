@@ -229,7 +229,6 @@ def test_user_with_roles(app, test_user, test_roles):
 @pytest.fixture
 def test_data(app, test_servers, test_admin, test_user, test_roles):
     with app.app_context():
-
         dummy_server_a, dummy_server_b = test_servers
 
         test_user_row = db.session.execute(

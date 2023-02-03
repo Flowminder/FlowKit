@@ -81,7 +81,6 @@ class IntereventInterval(SubscriberFeature):
         subscriber_subset: Optional[Query] = None,
         direction: Union[str, Direction] = Direction.OUT,
     ):
-
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
@@ -113,7 +112,6 @@ class IntereventInterval(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         where_clause = make_where(self.direction.get_filter_clause())
 
         # Postgres does not support the following three operations with intervals

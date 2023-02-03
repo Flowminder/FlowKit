@@ -17,7 +17,6 @@ class RedactedLocationMetric:
         return self.redaction_target.column_names
 
     def _make_query(self):
-
         sql = f"""
         SELECT
             {self.column_names_as_string_list}

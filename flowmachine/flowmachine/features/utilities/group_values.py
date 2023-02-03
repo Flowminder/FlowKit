@@ -71,7 +71,6 @@ class GroupValues(Query):
         return self.groups + self.value
 
     def _make_query(self):
-
         agg_values = ["array_agg({v}) AS {v}".format(v=v) for v in self.value]
 
         sql = """

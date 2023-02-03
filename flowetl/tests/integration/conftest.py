@@ -55,7 +55,6 @@ def container_name_suffix():
 
 @pytest.fixture(scope="session")
 def ensure_required_env_vars_are_set(monkeypatch_session):
-
     monkeypatch_session.setenv("FLOWETL_RUNTIME_CONFIG", "testing")
 
     if "FLOWETL_TESTS_CONTAINER_TAG" not in os.environ:
@@ -443,7 +442,6 @@ def trigger_dags(flowetl_container):
     """
 
     def trigger_dags_function():
-
         dags = ["etl_sensor", "etl_sms", "etl_mds", "etl_calls", "etl_topups"]
 
         for dag in dags:
@@ -490,7 +488,6 @@ def airflow_local_setup(airflow_home):
             stderr=fout,
             env=env,
         ) as scheduler:
-
             sleep(2)
 
             yield
@@ -630,7 +627,6 @@ def dag_status(flowetl_container):
     """
 
     def dag_status(*, dag_id, exec_date):
-
         status_cmd = ["airflow", "dags", "state", dag_id, exec_date]
         logger.info("Getting status", status_cmd=status_cmd)
         status = flowetl_container.exec_run(status_cmd, user="airflow")

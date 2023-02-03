@@ -20,7 +20,6 @@ logger = logging.getLogger()
 
 
 def pytest_configure(config):
-
     config.addinivalue_line(
         "markers",
         "skip_usrs([]): skip the given test if it uses the usr fixture and the usr is included in the list passed to the marker.",

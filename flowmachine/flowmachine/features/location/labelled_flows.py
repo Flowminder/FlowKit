@@ -85,7 +85,6 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         label_columns: List[str] = ("value",),
         join_type: str = "inner",
     ):
-
         if loc1.spatial_unit != loc2.spatial_unit:
             raise ValueError("Flows must have the same spatial unit")
         for label_column in label_columns:
@@ -135,7 +134,6 @@ class LabelledFlows(FlowLike, GeoDataMixin, Query):
         ]
 
     def _make_query(self):
-
         group_cols = ",".join(self.out_spatial_columns + self.out_label_columns)
 
         grouped = f"""

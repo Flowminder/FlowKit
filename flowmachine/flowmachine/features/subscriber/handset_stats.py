@@ -92,7 +92,6 @@ class HandsetStats(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         if self.statistic in {"count", "max", "min"}:
             sql = f"""
             SELECT subscriber, {self.statistic}({self.characteristic}) AS value

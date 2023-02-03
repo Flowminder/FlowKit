@@ -37,7 +37,7 @@ def test_call_days_returns_expected_counts_per_subscriber(get_dataframe):
         ("038OVABN11Ak4W5P", "2016-01-01", "2016-01-03", 6),
         ("038OVABN11Ak4W5P", "2016-01-01", "2016-01-08", 32),
     )
-    for (subscriber, start, end, calls) in test_values:
+    for subscriber, start, end, calls in test_values:
         cd = CallDays(
             SubscriberLocations(
                 start, end, spatial_unit=make_spatial_unit("versioned-site")
@@ -57,7 +57,7 @@ def test_call_days_returns_expected_counts_per_subscriber_tower(get_dataframe):
         ("038OVABN11Ak4W5P", "QeBRM8", "2016-01-01", "2016-01-03", 1),
         ("038OVABN11Ak4W5P", "nWM8R3", "2016-01-01", "2016-01-08", 5),
     )
-    for (subscriber, location, start, end, calls) in test_values:
+    for subscriber, location, start, end, calls in test_values:
         cd = CallDays(
             SubscriberLocations(
                 start, end, spatial_unit=make_spatial_unit("versioned-site")

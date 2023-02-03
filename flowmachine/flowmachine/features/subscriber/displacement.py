@@ -91,7 +91,6 @@ class Displacement(SubscriberFeature):
         return_subscribers_not_seen: bool = False,
         subscriber_subset: Optional[Query] = None,
     ):
-
         self.return_subscribers_not_seen = return_subscribers_not_seen
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
@@ -141,7 +140,6 @@ class Displacement(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         if self.unit == "m":
             multiplier = 1000
         elif self.unit == "km":

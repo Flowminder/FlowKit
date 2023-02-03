@@ -20,7 +20,6 @@ class RedactedTripsODMatrix(RedactedLocationMetric, FlowLike, Query):
     """
 
     def __init__(self, *, trips: TripsODMatrix):
-
         self.redaction_target = trips
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = trips.spatial_unit
