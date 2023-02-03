@@ -50,7 +50,6 @@ class Circle:
         self.radius = radius
 
     def __repr__(self):
-
         return f"Circle(lon={self.lon},lat={self.lat},radius={self.radius},name={self.name})"
 
 
@@ -77,7 +76,6 @@ class CircleGeometries(GeoDataMixin, Query):
     """
 
     def __init__(self, circles):
-
         self.names = [c.name for c in circles]
         self.radii = [c.radius for c in circles]
         self.centres = f"[{','.join([c.point_sql for c in circles])}]"
@@ -89,7 +87,6 @@ class CircleGeometries(GeoDataMixin, Query):
         return ["geom", "name"]
 
     def _make_query(self):
-
         circ_sql = f"""
         select
             *
@@ -106,7 +103,6 @@ class CircleGeometries(GeoDataMixin, Query):
         """
 
     def _geo_augmented_query(self):
-
         sql = f"""
         select
             row_number() over() as gid,

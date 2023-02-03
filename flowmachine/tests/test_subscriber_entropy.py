@@ -12,7 +12,6 @@ from flowmachine.features.subscriber.entropy import *
 
 class MockEntropy(BaseEntropy):
     def __init__(self):
-
         subscribers = np.random.choice(["a", "b", "c", "d", "e"], 20)
         frequencies = np.random.randint(1, 20, 20)
 
@@ -29,7 +28,6 @@ class MockEntropy(BaseEntropy):
 
     @property
     def _absolute_freq_query(self):
-
         return f"""
         SELECT * FROM (VALUES {self.vals}) AS u (subscriber, absolute_freq)
         """

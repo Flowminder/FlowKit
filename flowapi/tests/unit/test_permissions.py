@@ -149,7 +149,6 @@ def test_scopes_from_query():
 
 
 def test_grab_on_key_list():
-
     input = {"1": [{}, {}, {"3": "success"}]}
     keys = ["1", 2, "3"]
     assert list(grab_on_key_list(input, keys)) == ["success"]

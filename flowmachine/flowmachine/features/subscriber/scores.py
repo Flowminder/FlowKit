@@ -168,7 +168,6 @@ class EventScore(Query):
         super().__init__()
 
     def _make_query(self):
-
         # to_char('2016-01-01'::date, 'day');
         # select extract(hour from timestamp '2001-02-16 20:38:40');
 

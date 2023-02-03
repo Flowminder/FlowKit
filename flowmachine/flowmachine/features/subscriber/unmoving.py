@@ -47,7 +47,6 @@ class Unmoving(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         sql = f"""
         SELECT 
             subscriber,

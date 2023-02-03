@@ -28,7 +28,6 @@ class RedactedUnmovingAtReferenceLocationCounts(
         *,
         unmoving_at_reference_location_counts: UnmovingAtReferenceLocationCounts
     ):
-
         self.redaction_target = unmoving_at_reference_location_counts
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = unmoving_at_reference_location_counts.spatial_unit

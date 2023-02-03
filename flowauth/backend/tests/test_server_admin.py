@@ -11,7 +11,6 @@ import pytest
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_list_servers(client, auth, app):
-
     # Log in first
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 
@@ -25,7 +24,6 @@ def test_list_servers(client, auth, app):
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_get_server(client, auth, app):
-
     # Log in first
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 
@@ -42,7 +40,6 @@ def test_get_server(client, auth, app):
 @freeze_time("2020-12-31")
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_get_server_time_limits(client, auth, app):
-
     # Log in first
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 

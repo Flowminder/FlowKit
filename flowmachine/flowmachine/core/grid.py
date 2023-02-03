@@ -56,7 +56,6 @@ class Grid(GeoDataMixin, Query):
         return ["grid_id", "geom_square", "geom_point", "longitude", "latitude"]
 
     def _make_query(self):
-
         grid_sql = f"""
         SELECT
             geom AS geom_square,

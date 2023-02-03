@@ -116,7 +116,6 @@ class TopUpBalance(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         if self.statistic in {"count"}:
             return f"""
             SELECT subscriber, COUNT(*) AS value

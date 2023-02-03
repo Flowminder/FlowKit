@@ -16,7 +16,6 @@ from pandas.testing import assert_frame_equal
 
 
 def test_unique_subscribers_from_queries(get_dataframe):
-
     one_column_query = UniqueValuesFromQueries(
         query_list=EventTableSubset(start="2016-01-01", stop="2016-01-03"),
         column_names="location_id",
@@ -43,7 +42,6 @@ def test_unique_subscribers_from_queries(get_dataframe):
 
 
 def test_with_two_queries(get_dataframe):
-
     two_column_query = UniqueValuesFromQueries(
         query_list=[
             EventTableSubset(start="2016-01-01", stop="2016-01-04"),

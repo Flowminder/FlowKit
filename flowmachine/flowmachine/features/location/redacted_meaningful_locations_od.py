@@ -25,7 +25,6 @@ class RedactedMeaningfulLocationsOD(RedactedLocationMetric, FlowLike, Query):
     """
 
     def __init__(self, *, meaningful_locations_od: MeaningfulLocationsOD):
-
         self.redaction_target = meaningful_locations_od
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = meaningful_locations_od.spatial_unit

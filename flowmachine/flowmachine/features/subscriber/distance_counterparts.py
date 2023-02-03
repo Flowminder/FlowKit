@@ -118,7 +118,6 @@ class DistanceCounterparts(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         filters = [self.direction.get_filter_clause("A")]
         if self.exclude_self_calls:
             filters.append("A.subscriber != A.msisdn_counterpart")

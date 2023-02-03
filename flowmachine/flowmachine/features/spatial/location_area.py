@@ -47,7 +47,6 @@ class _viewshedSlopes(Query):
     """
 
     def __init__(self, radius_query, dem, band, above_ground_position):
-
         self.radius_query = radius_query
         self.dem = dem
         self.band = band
@@ -67,7 +66,6 @@ class _viewshedSlopes(Query):
         ]
 
     def _make_query(self):
-
         sql = """
        
         SELECT
@@ -165,7 +163,6 @@ class _computeArea(Query):
     """
 
     def __init__(self, location_area_query, geom_area_column):
-
         self.location_area_query = location_area_query
         self.geom_area_column = geom_area_column
 
@@ -176,7 +173,6 @@ class _computeArea(Query):
         return ["location_id", "geom_point", self.geom_area_column, "area"]
 
     def _make_query(self):
-
         sql = """
 
             WITH location_area_table AS ({location_area_query})
@@ -291,7 +287,6 @@ class LocationArea(GeoDataMixin, Query):
         geometry_identifier="geom_point",
         above_ground_position=0,
     ):
-
         self.point_collection = point_collection
         self.date = date
         self.method = method

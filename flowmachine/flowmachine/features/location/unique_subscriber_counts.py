@@ -83,7 +83,6 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         table="all",
         subscriber_subset=None,
     ):
-
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit

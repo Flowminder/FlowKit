@@ -82,7 +82,6 @@ class UniqueLocationCounts(SubscriberFeature):
         ignore_nulls=True,
         subscriber_subset=None,
     ):
-
         self.ul = UniqueLocations(
             SubscriberLocations(
                 start=start,

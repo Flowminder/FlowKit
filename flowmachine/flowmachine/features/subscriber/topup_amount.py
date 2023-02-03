@@ -86,7 +86,6 @@ class TopUpAmount(SubscriberFeature):
         return ["subscriber", f"value"]
 
     def _make_query(self):
-
         return f"""
         SELECT subscriber, {self.statistic:recharge_amount} AS value
         FROM ({self.unioned_query.get_query()}) U

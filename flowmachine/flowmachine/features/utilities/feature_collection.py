@@ -113,7 +113,6 @@ def feature_collection_from_list_of_classes(
 # Private function that joins multiple queries together
 # and returns a joined query.
 def _join_queries(queries, dropna):
-
     # We want to handle the first case as a special case, as we
     # need to give the left object a name on the first join, but
     # not in any subsequent joins.

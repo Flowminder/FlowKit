@@ -159,7 +159,6 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         return ["subscriber", "value", "inactive_periods"]
 
     def _make_query(self):
-
         sql = """
             SELECT
                 ul.subscriber,
