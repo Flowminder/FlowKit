@@ -47,7 +47,7 @@ setup(
     ],
     extras_require={
         "test": ["pytest", "coverage", "flowkit-jwt-generator"],
-        "postgres": ["psycopg2-binary"],
+        "postgres": ["psycopg-binary"],
         "mysql": ["mysqlclient"],
         "redis": ["redis"],
     },

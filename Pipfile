@@ -4,13 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "*"
-pandas = "*"
-"psycopg-binary" = "*"
-structlog = "*"
-tohu = "==0.6.7"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"

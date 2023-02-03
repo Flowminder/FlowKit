@@ -16,7 +16,7 @@ pyparsing = "==3.0.9"
 structlog = "*"
 flowetl = {editable = true,path = "./flowetl"}
 pytest = "*"
-"psycopg2-binary" = "*"
+"psycopg-binary" = "*"
 pandas = "*"
 docker = "*"
 versioneer = "*"

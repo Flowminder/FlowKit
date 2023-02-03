@@ -13,7 +13,7 @@ import re
 from functools import singledispatch
 
 from pglast import prettify
-from psycopg2._psycopg import adapt
+from psycopg._psycopg import adapt
 from time import sleep
 from typing import Union, Tuple
 

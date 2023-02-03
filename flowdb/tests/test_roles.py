@@ -15,7 +15,7 @@ The database has three different roles:
 """
 
 import pytest
-import psycopg2 as pg
+import psycopg as pg
 
 
 @pytest.fixture

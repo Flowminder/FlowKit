@@ -12,7 +12,7 @@ gitpython = "*"
 docopt = "*"
 pandas = "*"
 tohu = {file = "https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz"}
-"psycopg2-binary" = "*"
+"psycopg-binary" = "*"
 descartes = "*"
 black = {extras = ["jupyter"],version = "==22.10.0"}
 

@@ -44,7 +44,7 @@ setup(
     ],
     extras_require={
         "test": ["pytest", "pytest-cov", "sqlalchemy-utils", "testing-postgresql"],
-        "postgres": ["psycopg2-binary"],
+        "postgres": ["psycopg-binary"],
         "examples": ["descartes", "geopandas", "matplotlib", "pandas"],
     },
 )
