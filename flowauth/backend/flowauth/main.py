@@ -155,7 +155,6 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     # Connect the db
-
     db.init_app(app)
 
     # Set up flask-login

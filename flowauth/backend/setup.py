@@ -28,6 +28,8 @@ setup(
     install_requires=[
         "flask",
         "flask-sqlalchemy",
+        "flask-migrate",
+        "alembic",
         "sqlalchemy <1.4.28",
         "flask-login",
         "argon2_cffi",
