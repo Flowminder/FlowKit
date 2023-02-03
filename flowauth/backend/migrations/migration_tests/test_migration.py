@@ -100,7 +100,7 @@ def app_factory(v1_17_0_models, db_path, project_tmpdir):
             old_app = flowauth.create_app(
                 {
                     "TESTING": True,
-                    "SQLALCHEMY_DATABASE_URI": f"{db_backend}:///{db_path}",
+                    "SQLALCHEMY_DATABASE_URI": db_backend.sqlalc_string,
                     "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
                     "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
                     "DEMO_MODE": True,
@@ -117,7 +117,7 @@ def app_factory(v1_17_0_models, db_path, project_tmpdir):
             new_app = flowauth.create_app(
                 {
                     "TESTING": False,
-                    "SQLALCHEMY_DATABASE_URI": f"{db_backend}:///{db_path}",
+                    "SQLALCHEMY_DATABASE_URI": db_backend.sqlalc_string,
                     "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
                     "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
                     "DEMO_MODE": False,
@@ -148,7 +148,7 @@ class DbBackend:
 
 
 class SqliteBackend(DbBackend):
-    def __init__(self, db_path):
+    def __init__(self, db_path, postgres_info=None):
         super().__init__(
             name="sqlite", table_query="SELECT name FROM sqlite_master", db_path=db_path
         )
@@ -156,9 +156,16 @@ class SqliteBackend(DbBackend):
     def connector(self):
         return sqlite3.connect(str(self.db_path))
 
+    @property
+    def sqlalc_string(self):
+        return f"{self.name}:///{self.db_path}"
+
+    def get_table_names(self, conn):
+        return [row[0] for row in conn.cursor().execute(self.table_query).fetchall()]
+
 
 class PostgresBackend(DbBackend):
-    def __init__(self, db_path):
+    def __init__(self, db_path, postgres_info):
         super().__init__(
             name="postgresql+psycopg2",
             table_query="""
@@ -169,11 +176,24 @@ class PostgresBackend(DbBackend):
                 """,
             db_path=db_path,
         )
+        self.pinfo = postgres_info
 
     def connector(self):
         return psycopg2.connect(
-            host=self.db_path, user="TEST_ADMIN", password="DUMMY_PASSWORD"
+            host=self.pinfo.host,
+            port=self.pinfo.port,
+            user=self.pinfo.user,
+            dbname=self.pinfo.dbname,
         )
+
+    @property
+    def sqlalc_string(self):
+        return f"postgresql://{self.pinfo.user}:{self.pinfo.password}@{self.pinfo.host}:{self.pinfo.port}/{self.pinfo.dbname}"
+
+    def get_table_names(self, conn):
+        cursor = conn.cursor()
+        cursor.execute(self.table_query)
+        return [row[0] for row in cursor.fetchall()]
 
 
 backend_classes = [SqliteBackend, PostgresBackend]
@@ -182,26 +202,25 @@ backend_classes = [SqliteBackend, PostgresBackend]
 # @pytest.mark.skip("This leaks and causes imports to fail on other tests")
 @pytest.mark.parametrize("ThisBackend", backend_classes)
 def test_17_18_migration(
-    app_factory, ThisBackend, monkeypatch, alembic_test_config, db_path, project_tmpdir
+    app_factory,
+    ThisBackend,
+    monkeypatch,
+    alembic_test_config,
+    db_path,
+    project_tmpdir,
+    postgresql,
 ):
-    db_backend = ThisBackend(str(db_path))
+    db_backend = ThisBackend(str(db_path), postgresql.info)
     monkeypatch.syspath_prepend(Path(__file__).parent.parent / "versions")
-    current_app_old_db = app_factory(db_backend.name)
+    current_app_old_db = app_factory(db_backend)
     with current_app_old_db.app_context() as current_app, db_backend.connector() as conn:
-        table_names = [
-            row[0] for row in conn.cursor().execute(db_backend.table_query).fetchall()
-        ]
+        table_names = db_backend.get_table_names(conn)
         assert "group" in table_names
         assert "role" not in table_names
         flask_migrate.upgrade(
             str(Path(__file__).parent.parent), revision="66dee292d147"
         )
 
-        table_names = [
-            row[0]
-            for row in conn.cursor()
-            .execute("SELECT name FROM sqlite_master WHERE type='table'")
-            .fetchall()
-        ]
+        table_names = db_backend.get_table_names(conn)
         assert "role" in table_names
         assert "group" not in table_names

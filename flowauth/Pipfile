@@ -34,7 +34,6 @@ pytest-cov = "*"
 black = {extras = ["jupyter"],version = "==23.1.0"}
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
-gitpython = "*"
 
 [requires]
 python_version = "3.8"
