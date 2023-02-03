@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.18.2]
+
 ## Fixed
 
 - Fixed migrations being missing from the built FlowAuth docker images [#5818](https://github.com/Flowminder/FlowKit/issues/5818)
@@ -982,7 +984,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.2...master
+[1.18.2]: https://github.com/Flowminder/FlowKit/compare/1.18.1...1.18.2
 [1.18.1]: https://github.com/Flowminder/FlowKit/compare/1.18.0...1.18.1
 [1.18.0]: https://github.com/Flowminder/FlowKit/compare/1.17.1...1.18.0
 [1.17.1]: https://github.com/Flowminder/FlowKit/compare/1.17.0...1.17.1
