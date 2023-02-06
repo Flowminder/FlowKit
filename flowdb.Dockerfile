@@ -121,7 +121,7 @@ RUN apt-get update \
         && pip3 install pgxnclient \
         && pgxnclient install "pg_median_utils=$PG_MEDIAN_UTILS_VERSION" \
         && pip3 install pipenv \
-        && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
+        && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy \
         && apt-get remove -y python3-dev gcc m4 libxml2-dev libaio-dev \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
