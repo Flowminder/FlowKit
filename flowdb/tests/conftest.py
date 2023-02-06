@@ -11,8 +11,8 @@ import os
 import re
 import pytest
 import logging
-import psycopg as pg
-import psycopg.extras
+import psycopg2 as pg
+import psycopg2.extras
 
 from collections import OrderedDict
 
@@ -165,7 +165,7 @@ def db_conn(request, env):
 
     Yields
     ------
-    psycopg.extensions.connection
+    psycopg2.extensions.connection
         A connection to the database consistent with the request fixtures.
     """
     db_conn = DBConn(request, env)
@@ -176,19 +176,21 @@ def db_conn(request, env):
 @pytest.fixture()
 def cursor(db_conn):
     """
-    A psycopg.extras.RealDictCursor instance. The user can specify db params
+    A psycopg2.extras.RealDictCursor instance. The user can specify db params
     (usr, pwd, port, db) as fixtures at the module level, and the appropriate
     cursor will be returned. Once the test is finished, the cursor is closed
     and all changes are rolled back.
 
     Yields
     ------
-    psycopg.extras.RealDictCursor
+    psycopg2.extras.RealDictCursor
         A cursor to the database consistent with the request fixtures.
     """
     try:
         with db_conn:
-            with db_conn.cursor(cursor_factory=psycopg.extras.RealDictCursor) as cursor:
+            with db_conn.cursor(
+                cursor_factory=psycopg2.extras.RealDictCursor
+            ) as cursor:
                 yield cursor
                 raise ConnectionError  # Trigger a rollback
     except ConnectionError:

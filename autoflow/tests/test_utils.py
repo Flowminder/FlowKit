@@ -74,8 +74,8 @@ def test_get_session(monkeypatch):
     user = "DUMMY_USER"
 
     monkeypatch.setenv("AUTOFLOW_DB_PASSWORD", password)
-    mock_psycopg_connect = Mock()
-    monkeypatch.setattr("psycopg.connect", mock_psycopg_connect)
+    mock_psycopg2_connect = Mock()
+    monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
 
     s = get_session(f"postgresql://{user}:{{}}@{host}:{port}/{db_name}")
 
@@ -86,7 +86,7 @@ def test_get_session(monkeypatch):
         # connection catching and ignoring
         pass
 
-    mock_psycopg_connect.assert_called_once_with(
+    mock_psycopg2_connect.assert_called_once_with(
         database=db_name, host=host, password=password, port=port, user=user
     )
 
@@ -100,8 +100,8 @@ def test_get_session_without_password(monkeypatch):
     port = 6666
     user = "DUMMY_USER"
 
-    mock_psycopg_connect = Mock()
-    monkeypatch.setattr("psycopg.connect", mock_psycopg_connect)
+    mock_psycopg2_connect = Mock()
+    monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
 
     s = get_session(f"postgresql://{user}@{host}:{port}/{db_name}")
 
@@ -112,7 +112,7 @@ def test_get_session_without_password(monkeypatch):
         # connection catching and ignoring
         pass
 
-    mock_psycopg_connect.assert_called_once_with(
+    mock_psycopg2_connect.assert_called_once_with(
         database=db_name, host=host, port=port, user=user
     )
 

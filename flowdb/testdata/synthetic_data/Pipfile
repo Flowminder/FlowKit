@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 sqlalchemy = "*"
 pandas = "*"
-"psycopg-binary" = "*"
+"psycopg2-binary" = "*"
 structlog = "*"
 tohu = "==0.6.7"
 
