@@ -37,8 +37,8 @@ setup(
         "pyyaml >= 5.1",
         "apispec[yaml]",
         "get-secret-or-env-var",
-        "prance[osv]",
-        "openapi_spec_validator",
+        "prance[osv] < 0.22.11.4.0",  # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
+        "openapi_spec_validator ==0.4.0",  # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
         "werkzeug",
     ],
     extras_require={"test": ["pytest", "coverage"]},
