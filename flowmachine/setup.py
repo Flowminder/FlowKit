@@ -81,7 +81,7 @@ setup(
         "python-dateutil",
         "pytz",
         "python-louvain",
-        "psycopg2-binary",
+        "psycopg-binary",
         "finist",
         "redis",
         "pyzmq",

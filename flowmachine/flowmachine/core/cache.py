@@ -18,7 +18,7 @@ from sqlalchemy.exc import ResourceClosedError
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
 from redis import StrictRedis
-import psycopg2
+import psycopg
 from sqlalchemy.engine import Engine
 
 from flowmachine.core.errors.flowmachine_errors import (
@@ -291,7 +291,7 @@ def write_cache_metadata(
                 compute_time,
                 query.__class__.__name__,
                 *query.fully_qualified_table_name.split("."),
-                psycopg2.Binary(self_storage),
+                psycopg.Binary(self_storage),
             ),
         )
         connection.execute("SELECT touch_cache(%s);", query.query_id)
@@ -329,7 +329,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
             return float(
                 trans.execute(f"SELECT touch_cache('{query_id}')").fetchall()[0][0]
             )
-    except (IndexError, psycopg2.InternalError):
+    except (IndexError, psycopg.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
