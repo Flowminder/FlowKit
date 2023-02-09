@@ -429,7 +429,7 @@ jobs:
             - ~/.cache
       - run:
           name: Linting JS with prettier
-          command: $(npm bin)/prettier --check "**/*.*(js|jsx|json)"
+          command: npx prettier --check "**/*.*(js|jsx|json)"
 
   run_flowmachine_tests:
     executor:
@@ -608,10 +608,10 @@ jobs:
             wait-on tcp:localhost:5432 -t 300000
       - run:
           name: Run Cypress end-to-end tests
-          command: DEBUG="cypress:*" $(npm bin)/cypress run --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
+          command: DEBUG="cypress:*" npx cypress run --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
       - run:
           name: Run Cypress component tests
-          command: DEBUG="cypress:*" $(npm bin)/cypress run --component --record --reporter junit --reporter-options "mochaFile=results/flowauth-component.[hash].xml"
+          command: DEBUG="cypress:*" npx cypress run --component --record --reporter junit --reporter-options "mochaFile=results/flowauth-component.[hash].xml"
       - store_test_results:
           path: results
       - store_artifacts:
