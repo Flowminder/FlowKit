@@ -123,7 +123,6 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         ]
 
     def _make_query(self):
-
         sql = f"""
         SELECT
             COALESCE(I.subscriber, O.subscriber) AS subscriber,
@@ -190,7 +189,6 @@ class ProportionContactReciprocal(SubscriberFeature):
     """
 
     def __init__(self, contact_reciprocal):
-
         self.contact_reciprocal_query = contact_reciprocal
 
     @property
@@ -198,7 +196,6 @@ class ProportionContactReciprocal(SubscriberFeature):
         return ["subscriber", "proportion"]
 
     def _make_query(self):
-
         return f"""
         SELECT subscriber, AVG(reciprocal::int) AS proportion
         FROM  ({self.contact_reciprocal_query.get_query()}) R
@@ -270,7 +267,6 @@ class ProportionEventReciprocal(SubscriberFeature):
         tables="all",
         exclude_self_calls=True,
     ):
-
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
@@ -305,7 +301,6 @@ class ProportionEventReciprocal(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         filters = [self.direction.get_filter_clause()]
 
         if self.exclude_self_calls:

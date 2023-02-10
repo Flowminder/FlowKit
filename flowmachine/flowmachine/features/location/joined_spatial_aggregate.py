@@ -85,7 +85,6 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         super().__init__()
 
     def _make_query(self):
-
         metric_cols = self.metric.column_names
         metric_cols_no_subscriber = [cn for cn in metric_cols if cn != "subscriber"]
         location_cols = self.spatial_unit.location_id_columns
@@ -114,7 +113,6 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         """
 
         if self.method == "distr":
-
             grouped = " UNION ".join(
                 f"""
                 SELECT

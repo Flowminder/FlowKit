@@ -120,7 +120,6 @@ class Query(metaclass=ABCMeta):
 
     @abstractmethod
     def _make_query(self):
-
         raise NotImplementedError
 
     def __repr__(self):
@@ -178,7 +177,6 @@ class Query(metaclass=ABCMeta):
             raise StopIteration
 
     def __len__(self):
-
         try:
             return self._len
         except AttributeError:

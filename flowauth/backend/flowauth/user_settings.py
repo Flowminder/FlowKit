@@ -59,7 +59,6 @@ def set_password():
         current_app.logger.debug("User password changed.")
         return jsonify({}), 200
     else:
-
         raise InvalidUsage("Password incorrect.", payload={"bad_field": "password"})
 
 

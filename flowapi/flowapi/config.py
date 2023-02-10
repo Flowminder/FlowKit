@@ -46,7 +46,6 @@ def load_public_key(key_string: str) -> _RSAPublicKey:
 
 
 def get_config():
-
     try:
         jwt_public_key = load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"])
 

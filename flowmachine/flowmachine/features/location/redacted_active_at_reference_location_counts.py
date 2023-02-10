@@ -33,7 +33,6 @@ class RedactedActiveAtReferenceLocationCounts(
     def __init__(
         self, *, active_at_reference_location_counts: ActiveAtReferenceLocationCounts
     ):
-
         self.redaction_target = active_at_reference_location_counts
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = active_at_reference_location_counts.spatial_unit

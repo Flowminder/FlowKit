@@ -29,7 +29,6 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
         return ["subscriber", "entropy"]
 
     def _make_query(self):
-
         return f"""
         SELECT
             subscriber,
@@ -41,7 +40,6 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
     @property
     @abstractmethod
     def _absolute_freq_query(self):
-
         raise NotImplementedError
 
     @property
@@ -127,7 +125,6 @@ class PeriodicEntropy(BaseEntropy):
         subscriber_subset=None,
         tables="all",
     ):
-
         self.tables = tables
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
@@ -183,7 +180,6 @@ class PeriodicEntropy(BaseEntropy):
 
     @property
     def _absolute_freq_query(self):
-
         return f"""
         SELECT subscriber, COUNT(*) AS absolute_freq FROM
         ({self.unioned_query.get_query()}) u
@@ -260,7 +256,6 @@ class LocationEntropy(BaseEntropy):
         tables="all",
         ignore_nulls=True,
     ):
-
         self.subscriber_locations = SubscriberLocations(
             start=start,
             stop=stop,
@@ -356,7 +351,6 @@ class ContactEntropy(BaseEntropy):
         tables="all",
         exclude_self_calls=True,
     ):
-
         self.contact_balance = ContactBalance(
             start=start,
             stop=stop,
@@ -370,7 +364,6 @@ class ContactEntropy(BaseEntropy):
 
     @property
     def _absolute_freq_query(self):
-
         return f"""
         SELECT subscriber, events AS absolute_freq FROM
         ({self.contact_balance.get_query()}) u
@@ -378,7 +371,6 @@ class ContactEntropy(BaseEntropy):
 
     @property
     def _relative_freq_query(self):
-
         return f"""
         SELECT subscriber, proportion AS relative_freq FROM
         ({self.contact_balance.get_query()}) u

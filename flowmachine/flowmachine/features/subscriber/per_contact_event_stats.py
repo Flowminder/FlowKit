@@ -54,7 +54,6 @@ class PerContactEventStats(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         return f"""
         SELECT subscriber, {self.statistic:events} AS value
         FROM ({self.contact_balance.get_query()}) C

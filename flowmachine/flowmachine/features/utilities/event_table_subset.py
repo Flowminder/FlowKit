@@ -159,7 +159,6 @@ class EventTableSubset(Query):
         return [c.split(" AS ")[-1] for c in self.columns]
 
     def _check_dates(self):
-
         # Handle the logic for dealing with missing dates.
         # If there are no dates present, then we raise an error
         # if some are present, but some are missing we raise a

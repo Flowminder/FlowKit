@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "*"
+sqlalchemy = "<3.0.0"
 cachetools = "*"
 numpy = "*"
 networkx = "*"

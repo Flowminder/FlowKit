@@ -124,7 +124,6 @@ class EventsTablesUnion(Query):
         return date_subsets
 
     def _make_query(self):
-
         # Get the list of tables, select the relevant columns and union
         # them all
         sql = "\nUNION ALL\n".join(sd.get_query() for sd in self.date_subsets)

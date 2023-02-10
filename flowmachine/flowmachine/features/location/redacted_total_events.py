@@ -29,7 +29,6 @@ class RedactedTotalEvents(RedactedLocationMetric, GeoDataMixin, Query):
         super().__init__()
 
     def _make_query(self):
-
         # list of columns that we want to group by, these are all the time
         # columns, plus the location columns
         groups = [

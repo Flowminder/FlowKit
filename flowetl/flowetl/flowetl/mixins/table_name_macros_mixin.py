@@ -11,7 +11,6 @@ class TableNameMacrosMixin:
     def render_template_fields(
         self, context: Dict, jinja_env: Optional[jinja2.Environment] = None
     ) -> None:
-
         cdr_type = context["params"]["cdr_type"]
         table_name = f"{cdr_type}_{context.get('ds_nodash')}"
 

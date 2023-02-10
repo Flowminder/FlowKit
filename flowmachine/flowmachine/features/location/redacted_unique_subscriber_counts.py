@@ -24,7 +24,6 @@ class RedactedUniqueSubscriberCounts(RedactedLocationMetric, GeoDataMixin, Query
     """
 
     def __init__(self, *, unique_subscriber_counts: UniqueSubscriberCounts):
-
         self.redaction_target = unique_subscriber_counts
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = unique_subscriber_counts.spatial_unit

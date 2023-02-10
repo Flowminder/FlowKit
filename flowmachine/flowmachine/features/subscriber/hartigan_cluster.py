@@ -131,7 +131,6 @@ class HartiganCluster(BaseCluster):
         super().__init__()
 
     def _make_query(self):
-
         calldays = "({}) AS calldays".format(self.calldays.get_query())
 
         sql = f"""
@@ -234,7 +233,6 @@ class _JoinedHartiganCluster(BaseCluster):
         super().__init__()
 
     def _make_query(self):
-
         table = f"({self.query.get_query()}) AS t"
 
         value_cols = ", ".join(

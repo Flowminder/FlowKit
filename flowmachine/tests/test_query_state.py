@@ -37,7 +37,6 @@ class DummyQuery(Query):
     """
 
     def __init__(self, dummy_id, sleep_time=5):
-
         self.dummy_id = dummy_id
         self.sleep_time = sleep_time
         super().__init__()

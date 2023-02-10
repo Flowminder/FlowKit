@@ -55,7 +55,6 @@ class ContactReferenceLocationStats(SubscriberFeature):
         statistic: Union[Statistic, str] = Statistic.SUM,
         geom_column=None,
     ):
-
         self.statistic = Statistic(statistic.lower())
 
         self.contact_locations_query = contact_locations
@@ -84,7 +83,6 @@ class ContactReferenceLocationStats(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         if self.geom_column:
             loc_cols = lambda table: f"{table}.{self.geom_column}"
         else:

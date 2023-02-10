@@ -31,7 +31,6 @@ class NonSubQuery(DummyQuery):
 
 @pytest.mark.parametrize("agg_method", Statistic)
 def test_aggregates(get_dataframe, agg_method, per_location_query):
-
     psa = PerSubscriberAggregate(
         subscriber_query=per_location_query,
         agg_column="value",

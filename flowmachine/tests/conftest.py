@@ -163,7 +163,6 @@ def flowmachine_connect():
 
 @pytest.fixture
 def flowmachine_admin_connect():
-
     yield
     reset_cache(get_db(), get_redis(), protect_table_objects=False)
     get_db().engine.dispose()  # Close the connection

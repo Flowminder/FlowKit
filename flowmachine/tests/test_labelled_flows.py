@@ -75,7 +75,6 @@ def multi_labelled_flows():
 
 
 def test_labelled_flow(labelled_flows, get_dataframe):
-
     df = get_dataframe(labelled_flows)
     assert len(df) == 349
     # We lose some subscribers between locations
@@ -87,7 +86,6 @@ def test_labelled_flow(labelled_flows, get_dataframe):
 
 
 def test_multiple_labels(get_dataframe, multi_labelled_flows):
-
     assert multi_labelled_flows.out_label_columns == [
         "value_hnd_type_label",
         "value_brand_label",
@@ -214,7 +212,6 @@ def test_label_redaction(get_dataframe):
 
 
 def test_geojson(labelled_flows):
-
     out = labelled_flows.to_geojson_string()
     dict = loads(out)
     assert all(

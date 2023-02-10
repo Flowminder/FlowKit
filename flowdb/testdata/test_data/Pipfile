@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 tohu = "*"
 "geoalchemy2" = "*"
+sqlalchemy = "<2.0.0"
 
 [dev-packages]
 
