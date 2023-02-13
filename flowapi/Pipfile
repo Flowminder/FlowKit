@@ -16,7 +16,7 @@ pyyaml = ">=5.1"
 apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
 prance = {extras = ["osv"],version = "<0.22.11.4.0"} # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
-openapi_spec_validator  = "==0.4.0" # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
+openapi_spec_validator  = "==0.5.5" # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
 werkzeug = "*"
 
 [dev-packages]
