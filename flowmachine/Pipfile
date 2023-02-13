@@ -1,10 +1,10 @@
-[source]
+[[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "*"
+sqlalchemy = "<2"
 cachetools = "*"
 numpy = "*"
 networkx = "*"
@@ -14,7 +14,7 @@ python-dateutil = "*"
 pytz = "*"
 python-louvain = "*"
 pyzmq = "*"
-"psycopg-binary" = "*"
+"psycopg[binary]" = "*"
 structlog = "*"
 shapely = "*"
 finist = "*"
@@ -24,7 +24,6 @@ marshmallow-oneofschema = "*"
 apispec-oneofschema = "*"
 get_secret_or_env_var = "*"
 redis = "*"
-flowmachine = {path = "."}
 
 [dev-packages]
 ipykernel = "*"
@@ -44,6 +43,7 @@ approvaltests = "*"
 watchdog = "*"
 ipdb = "*"
 flowmachine = {editable = true, extras = ["test"], path = "."}
+psycopg2 = "*"
 
 [requires]
 python_version = "3.8"
