@@ -9,6 +9,9 @@ We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/
 !!! warning
     If updating from FlowKit v. 1.16 or earlier, it is **strongly recommended** that you take a backup of the flowetl_db database. Airflow has been bumped to v2 from v1.
 
+!!! warning
+    If updating Flowauth from v 1.17 to 1.18.1 or later, your will need to migrate Flowauth's database. See [migration](#migration)
+
 ### FlowDB and FlowETL only
 
 FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
@@ -205,6 +208,17 @@ You may also set the following environment variables:
 | DB_URI | URI for the backing database | Should be of the form `postgresql://flowauth:{}@flowauth_postgres:5432/flowauth`. If not set, a temporary sqlite database will be created. The `{}` will be populated using the value of the `FLOWAUTH_DB_PASSWORD` secret. | 
 | RESET_FLOWAUTH_DB | Set to true to reset the database | |
 | FLOWAUTH_CACHE_BACKEND | Backend to use for two factor auth last used key cache | Defaults to 'file'. May be set to 'memory' if deploying a single instance on only one CPU, or to 'redis' for larger deployments |
+
+##### Migration
+
+If updating Flowauth from v 1.17 to v 1.18.1, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data. *It is recommended that you take a backup of your flowauth db before migration*
+You can do this with the following:
+
+``` bash
+docker exec <flowauth-container> sh
+cd /FlowKit-<version>/flowauth/backend
+flask db upgrade
+```
 
 ##### Two-factor authentication
 
