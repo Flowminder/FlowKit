@@ -5206,6 +5206,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#advanced-role-management" class="md-nav__link">
+    Advanced role management
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5309,6 +5316,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#advanced-role-management" class="md-nav__link">
+    Advanced role management
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5350,35 +5364,56 @@
 <p>Under "Servers", add a new server by clicking the '+' button, uploading the spec downloaded from the server, and setting the latest expiry and longest life for tokens.</p>
 </li>
 <li>
-<p>Enable or disable permissions for this server under "Available API scopes".</p>
+<p>Create a new role for the server</p>
+<ol>
+<li>
+<p>Under "Roles", add a new role to your server. An analyst role should have <code>get_available_dates</code>, <code>get_results</code> and <code>run</code> scopes enabled, along with appropriate geographic roles.</p>
 </li>
 <li>
-<p>Under "Users", add a new user, and set the username and password.</p>
+<p>You only need to do this once per server.</p>
+</li>
+</ol>
 </li>
 <li>
-<p>Either:</p>
-<ul>
-<li>Add a server to the user, and enable/disable API scopes
-<p></li>
-</ul>
-</li>
-<li>
-<p>Or:
-    <p></p>
-<ul>
-<li>
-<p>Under "Groups", add a new group,</p>
-</li>
-<li>
-<p>Add a server to the group, and enable/disable API scopes</p>
-</li>
-<li>
-<p>Add the user to the group.</p>
-</li>
-</ul>
+<p>Under "Users", add a new user, set the username and password and assign them the new role.</p>
 </li>
 </ol>
 <p>The user can then log into FlowAuth and generate a token (see the <a href="../../../analyst/#flowauth">analyst section</a> for instructions).</p>
+<h3 id="advanced-role-management">Advanced role management<a class="headerlink" href="#advanced-role-management" title="Permanent link">&para;</a></h3>
+<p>Each <code>role</code> consists of a set of <code>scopes</code>, derived from the server's spec. Scopes grant roles the following capabilities;</p>
+<ul>
+<li><code>run</code>: A role with the <code>run</code> scope can request runs of queries that it has the scopes for.</li>
+<li><code>get_results</code>: A role with the <code>get_results</code> scope can retrieve results for completed Flowkit queries</li>
+<li><code>get_available_dates</code>: This scopes permits the role holder to retrieve the range of dates available on the server.
+All other scopes are for specific flowmachine queries, grouped first by geographic aggregation, then by main query and finally by sub-query within those main queries. It is anticipated that users will mainly be restricting role by geography. Each of these scopes grant the capability to poll progress of that query and, in conjunction with the <code>run</code> and <code>get_results</code> roles, run and return results from those queries.</li>
+</ul>
+<p>Some example advanced roles could be:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Purpose</th>
+<th>Scopes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State-level analyst</td>
+<td>A role for analysts who can perform any analysis, but only at state-level scales</td>
+<td><code>run</code>, <code>get_available_dates</code>, <code>get_results</code>, <code>admin1</code> and <code>nonspatial</code></td>
+</tr>
+<tr>
+<td>Automated monitor</td>
+<td>A role for an automated user that triggers a "flows" on a timer, but will never need to read it</td>
+<td><code>get_available_dates</code>, <code>run</code>, <code>admin3:flows</code></td>
+</tr>
+<tr>
+<td>Viewer</td>
+<td>A role for any user that can view the results of any query, but not run new ones.</td>
+<td><code>get_results</code>, <code>get_available_dates</code>, all query scopes.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="managing-access-to-flowdb">Managing access to FlowDB<a class="headerlink" href="#managing-access-to-flowdb" title="Permanent link">&para;</a></h2>
 <p>Because FlowDB is built using <a href="https://postgresql.org">PostgreSQL</a>, you can use standard Postgres commands to <a href="https://www.postgresql.org/docs/current/sql-createrole.html">manage users</a>. FlowDB contains some default roles which you can use as group templates using <code>CREATE ROLE INHERIT</code>:</p>
 <table>

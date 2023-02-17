@@ -4881,6 +4881,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    Migration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#two-factor-authentication" class="md-nav__link">
     Two-factor authentication
   </a>
@@ -5626,6 +5633,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    Migration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#two-factor-authentication" class="md-nav__link">
     Two-factor authentication
   </a>
@@ -5773,6 +5787,10 @@
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If updating from FlowKit v. 1.16 or earlier, it is <strong>strongly recommended</strong> that you take a backup of the flowetl_db database. Airflow has been bumped to v2 from v1.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If updating Flowauth from v 1.17 to 1.18.1 or later, your will need to migrate Flowauth's database. See <a href="#migration">migration</a></p>
 </div>
 <h3 id="flowdb-and-flowetl-only">FlowDB and FlowETL only<a class="headerlink" href="#flowdb-and-flowetl-only" title="Permanent link">&para;</a></h3>
 <p>FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.</p>
@@ -6117,6 +6135,13 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 </tr>
 </tbody>
 </table>
+<h5 id="migration">Migration<a class="headerlink" href="#migration" title="Permanent link">&para;</a></h5>
+<p>If updating an existing installation of FlowAuth to v1.18.1 or newer, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data, and then re-upload the API specifications for any existing servers in the new 1.18.1+ format. <strong>It is recommended that you take a backup of your flowauth db before migration.</strong></p>
+<p>You can migrate the Flowauth db to 1.18.1+ with the following commands:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;flowauth-container&gt;<span class="w"> </span>sh
+<span class="nb">cd</span><span class="w"> </span>/FlowKit-&lt;version&gt;/flowauth/backend
+flask<span class="w"> </span>db<span class="w"> </span>upgrade
+</code></pre></div>
 <h5 id="two-factor-authentication">Two-factor authentication<a class="headerlink" href="#two-factor-authentication" title="Permanent link">&para;</a></h5>
 <p>FlowAuth supports optional two-factor authentication for user accounts, using the Google Authenticator app or similar. This can be enabled either by an administrator, or by individual users.</p>
 <p>To safeguard two-factor codes, FlowAuth prevents users from authenticating more than once with the same code within a short window. When deploying to production, you may wish to deploy a redis backend to support this feature - for example if you are deploying multiple instances of the FlowAuth container which need to be able to record the last used codes for users in a common place.</p>
@@ -6252,7 +6277,7 @@ like this: <code>initdb: could not change permissions of directory "/var/lib/pos
 <p>FlowAPI also makes use of the <code>FLOWAPI_FLOWDB_USER</code> and <code>FLOWAPI_FLOWDB_PASSWORD</code> secrets provided to FlowDB.</p>
 <h5 id="adding-the-new-server-to-flowauth">Adding the new server to FlowAuth<a class="headerlink" href="#adding-the-new-server-to-flowauth" title="Permanent link">&para;</a></h5>
 <p>Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from <code>https://&lt;flowapi_host&gt;:&lt;flowapi_port&gt;/api/0/spec/openapi.json</code>. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.</p>
-<p>After uploading the specification, you can configure the maximum token lifetime settings, and use the dropdown box to enable or disable access to the available FlowAPI scopes. If you have updated either the FlowAPI or FlowMachine servers, you should upload the newly generated specification to ensure that the correct API actions are available when assigning users and generating tokens. </p>
+<p>After uploading the specification, you can configure the maximum lifetime and final expiry date of tokens issued by that server. You should then create some new roles; we recommend that you create a role for analysis staff that includes at least the <code>get_results</code>, <code>get_available_dates</code> and <code>run_query</code> scopes, along with the appropriate geographic levels. If you are unsure, tick all boxes.</p>
 <h5 id="sample-stack-files_2">Sample stack files<a class="headerlink" href="#sample-stack-files_2" title="Permanent link">&para;</a></h5>
 <h6 id="flowmachine_1">FlowMachine<a class="headerlink" href="#flowmachine_1" title="Permanent link">&para;</a></h6>
 <p>A sample stack file suitable for use with the FlowDB and FlowETL stacks can be found <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml">here</a>. This adds an additional two services: FlowMachine, and a redis instance used to coordinate the running state of queries. If you are supporting additional users with FlowMachine as a library, they should also use this redis instance. This stack file requires one additional environment variable: <code>REDIS_HOST_PORT</code>, the localhost port where Redis will be accessible.</p>
