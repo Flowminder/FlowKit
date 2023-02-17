@@ -9,6 +9,9 @@ We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/
 !!! warning
     If updating from FlowKit v. 1.16 or earlier, it is **strongly recommended** that you take a backup of the flowetl_db database. Airflow has been bumped to v2 from v1.
 
+!!! warning
+    If updating Flowauth from v 1.17 to 1.18.1 or later, your will need to migrate Flowauth's database. See [migration](#migration)
+
 ### FlowDB and FlowETL only
 
 FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
@@ -206,6 +209,18 @@ You may also set the following environment variables:
 | RESET_FLOWAUTH_DB | Set to true to reset the database | |
 | FLOWAUTH_CACHE_BACKEND | Backend to use for two factor auth last used key cache | Defaults to 'file'. May be set to 'memory' if deploying a single instance on only one CPU, or to 'redis' for larger deployments |
 
+##### Migration
+
+If updating an existing installation of FlowAuth to v1.18.1 or newer, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data, and then re-upload the API specifications for any existing servers in the new 1.18.1+ format. **It is recommended that you take a backup of your flowauth db before migration.**
+
+You can migrate the Flowauth db to 1.18.1+ with the following commands:
+
+``` bash
+docker exec <flowauth-container> sh
+cd /FlowKit-<version>/flowauth/backend
+flask db upgrade
+```
+
 ##### Two-factor authentication
 
 FlowAuth supports optional two-factor authentication for user accounts, using the Google Authenticator app or similar. This can be enabled either by an administrator, or by individual users.
@@ -266,7 +281,7 @@ FlowAPI also makes use of the `FLOWAPI_FLOWDB_USER` and `FLOWAPI_FLOWDB_PASSWORD
 
 Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from `https://<flowapi_host>:<flowapi_port>/api/0/spec/openapi.json`. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.
 
-After uploading the specification, you can configure the maximum token lifetime settings, and use the dropdown box to enable or disable access to the available FlowAPI scopes. If you have updated either the FlowAPI or FlowMachine servers, you should upload the newly generated specification to ensure that the correct API actions are available when assigning users and generating tokens. 
+After uploading the specification, you can configure the maximum lifetime and final expiry date of tokens issued by that server. You should then create some new roles; we recommend that you create a role for analysis staff that includes at least the `get_results`, `get_available_dates` and `run_query` scopes, along with the appropriate geographic levels. If you are unsure, tick all boxes.
 
 ##### Sample stack files
 
