@@ -280,7 +280,7 @@ FlowAPI also makes use of the `FLOWAPI_FLOWDB_USER` and `FLOWAPI_FLOWDB_PASSWORD
 
 Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from `https://<flowapi_host>:<flowapi_port>/api/0/spec/openapi.json`. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.
 
-After uploading the specification, you can configure the maximum lifetime and final expiry date of tokens issued by that server. You should then create some new roles; it is recommended that you create a role for analysis staff that includes at least the `get_results`, `get_available_dates` and `run_query` scopes, along with the appropriate geographic levels. If you are unsure, tick all boxes.
+After uploading the specification, you can configure the maximum lifetime and final expiry date of tokens issued by that server. You should then create some new roles; we recommend that you create a role for analysis staff that includes at least the `get_results`, `get_available_dates` and `run_query` scopes, along with the appropriate geographic levels. If you are unsure, tick all boxes.
 
 ##### Sample stack files
 
