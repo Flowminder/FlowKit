@@ -12,9 +12,9 @@ FlowAuth is the tool which analysts will use to generate tokens which will allow
 
 5. Create a new role for the server
 
-   1. Under "Roles", add a new role to your server. An analyst role should have `get_available_dates`, `get_results` and `run` scopes enabled, along with appropriate geographic roles.
+    1. Under "Roles", add a new role to your server. An analyst role should have `get_available_dates`, `get_results` and `run` scopes enabled, along with appropriate geographic roles.
   
-   2. You only need to do this once per server.
+    2. You only need to do this once per server.
 
 4. Under "Users", add a new user, set the username and password and assign them the new role.
 
