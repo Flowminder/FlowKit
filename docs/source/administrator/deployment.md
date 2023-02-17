@@ -211,7 +211,7 @@ You may also set the following environment variables:
 
 ##### Migration
 
-If updating Flowauth from v 1.17 to v 1.18.1, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data. *It is recommended that you take a backup of your flowauth db before migration*
+If updating an existing installation of FlowAuth to v1.18.1 or newer, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data, and then re-upload the API specifications for any existing servers in the new 1.18.1+ format. *It is recommended that you take a backup of your flowauth db before migration*
 You can do this with the following:
 
 ``` bash
