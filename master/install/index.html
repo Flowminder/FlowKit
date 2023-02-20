@@ -5390,6 +5390,10 @@
 <div class="highlight"><pre><span></span><code>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span><span class="w"> </span>examples
 </code></pre></div>
 <p>to get the examples with the larger dataset (the one used when producing this documentation).</p>
+<p>You can also explore FlowKit using synthetic data for other countries, by setting the <code>EXAMPLE_COUNTRY</code> environment variable to a three-level ISO country code, for example to simulate data for the UK with a crisis in Greater London:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">EXAMPLE_COUNTRY</span><span class="o">=</span>GBR<span class="w"> </span><span class="nv">EXAMPLE_DISASTER_REGION_PCOD</span><span class="o">=</span>GBR.1.36_1<span class="w"> </span>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh<span class="o">)</span><span class="w"> </span>examples
+</code></pre></div>
+<p>Available countries are those with boundaries in the <a href="https://gadm.org/download_country36.html">GADM 3.6</a> dataset. Possible values for <code>EXAMPLE_DISASTER_REGION_PCOD</code> are any admin2 region for the corresponding country, based on the <code>GID_2</code> field in the GADM 3.6 shapefile for that country.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the <a href="../analyst/worked_examples/flows-above-normal/">Flows Above Normal</a> example because this uses data for dates outside the range included in the small dataset.</p>
