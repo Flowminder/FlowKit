@@ -40,6 +40,7 @@ You may also provide the following environment variables:
 | MAX_WORKERS_PER_GATHER |  Maximum number of CPUs that may be used for parallelising part of one query | MAX_CPUS/2 |
 | EFFECTIVE_CACHE_SIZE | Postgres cache size | 25% of total RAM |
 | FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE |
+ | MAX_LOCKS | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500 | 
 
 However in most cases, the defaults will be adequate.
 
