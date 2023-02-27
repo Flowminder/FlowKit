@@ -29,24 +29,24 @@ FlowDB is distributed as a docker container. To run it, you will need to provide
 
 You may also provide the following environment variables:
 
-| Variable name | Purpose | Default value |
-| ------------- | ------- | ------------- |
-| CACHE_SIZE | Maximum size of the cache schema | 1 tenth of available space in pgdata directory |
-| CACHE_PROTECTED_PERIOD | Amount of time to protect cache tables from being cleaned up | 86400 (24 hours) |
-| CACHE_HALF_LIFE | Speed at which cache tables expire when not used | 1000 |
-| MAX_CPUS | Maximum number of CPUs that may be used for parallelising queries | The greater of 1 or 1 less than all CPUs |
-| SHARED_BUFFERS_SIZE | Size of shared buffers | 16GB |
-| MAX_WORKERS |  Maximum number of CPUs that may be used for parallelising one query | MAX_CPUS/2 |
-| MAX_WORKERS_PER_GATHER |  Maximum number of CPUs that may be used for parallelising part of one query | MAX_CPUS/2 |
-| EFFECTIVE_CACHE_SIZE | Postgres cache size | 25% of total RAM |
+| Variable name                     | Purpose | Default value |
+|-----------------------------------| ------- | ------------- |
+| CACHE_SIZE                        | Maximum size of the cache schema | 1 tenth of available space in pgdata directory |
+| CACHE_PROTECTED_PERIOD            | Amount of time to protect cache tables from being cleaned up | 86400 (24 hours) |
+| CACHE_HALF_LIFE                   | Speed at which cache tables expire when not used | 1000 |
+| MAX_CPUS                          | Maximum number of CPUs that may be used for parallelising queries | The greater of 1 or 1 less than all CPUs |
+| SHARED_BUFFERS_SIZE               | Size of shared buffers | 16GB |
+| MAX_WORKERS                       |  Maximum number of CPUs that may be used for parallelising one query | MAX_CPUS/2 |
+| MAX_WORKERS_PER_GATHER            |  Maximum number of CPUs that may be used for parallelising part of one query | MAX_CPUS/2 |
+| EFFECTIVE_CACHE_SIZE              | Postgres cache size | 25% of total RAM |
 | FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE |
- | MAX_LOCKS | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500 | 
+ | MAX_LOCKS_PER_TRANSACTION         | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500 | 
 
 However in most cases, the defaults will be adequate.
 
 ##### Shared memory
 
-You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.
+You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command. In particular it should be more than `SHARED_BUFFERS_SIZE + MAX_LOCKS * (max_connections + max_prepared_transactions) * (sizeof(LOCK) + sizeof(LOCKTAG))`.
 
 ##### Bind Mounts and user permissions
 

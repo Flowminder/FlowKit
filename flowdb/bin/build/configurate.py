@@ -69,7 +69,7 @@ use_jit = "off" if bool_env("NO_USE_JIT") else "on"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)
 )  # Default to higher than pg default
-max_locks = int(os.getenv("MAX_LOCKS", 365 * 5 * 4 * (1 + 4)))
+max_locks = int(os.getenv("MAX_LOCKS_PER_TRANSACTION", 365 * 5 * 4 * (1 + 4)))
 
 
 config_path = os.getenv(
