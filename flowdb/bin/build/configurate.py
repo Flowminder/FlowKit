@@ -69,6 +69,8 @@ use_jit = "off" if bool_env("NO_USE_JIT") else "on"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)
 )  # Default to higher than pg default
+max_locks = int(os.getenv("MAX_LOCKS_PER_TRANSACTION", 365 * 5 * 4 * (1 + 4)))
+
 
 config_path = os.getenv(
     "AUTO_CONFIG_PATH", "/var/lib/postgresql/data/postgresql.configurator.conf"
@@ -89,6 +91,7 @@ with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
         gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         stats_target=stats_target,
         use_jit=use_jit,
+        max_locks=max_locks,
     )
 
 print("Writing config file to", config_path)

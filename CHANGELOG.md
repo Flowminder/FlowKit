@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Quickstart script now supports arbitrary countries via `EXAMPLE_COUNTRY` env var. [#5796](https://github.com/Flowminder/FlowKit/issues/5796)
+- FlowDB's maximum locks per transaction setting can now be controlled using the `MAX_LOCKS_PER_TRANSACTION` env var. [#5157](https://github.com/Flowminder/FlowKit/issues/5157)
+
+### Changed
+
+- Increased FlowDB's default maximum locks per transaction to `365 * 5 * 4 * (1 + 4)`. [#5157](https://github.com/Flowminder/FlowKit/issues/5157)
 
 ## [1.18.2]
 

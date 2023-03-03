@@ -26,6 +26,7 @@ services:
           #- MAX_WORKERS_PER_GATHER # Defaults to half max_cpus
           #- EFFECTIVE_CACHE_SIZE # Defaults to 25% of total RAM
           #- FLOWDB_ENABLE_POSTGRES_DEBUG_MODE # False by default
+          #- MAX_LOCKS_PER_TRANSACTION # Defaults to 365 * 5 * 4 * (1 + 4)
         ports:
           - ${FLOWDB_HOST_PORT:?}:5432
         user: ${FLOWDB_HOST_USER_ID:?}:${FLOWDB_HOST_GROUP_ID:?}
@@ -39,7 +40,7 @@ services:
           - type: tmpfs
             target: /dev/shm
             tmpfs:
-              size: 1000000000
+              size: 1000000000 # Should be greater than SHARED_BUFFERS_SIZE + MAX_LOCKS * (max_connections + max_prepared_transactions) * (sizeof(LOCK) + sizeof(LOCKTAG))
           - ${FLOWDB_DATA_DIR:?}:/var/lib/postgresql/data:rw
           - ${FLOWDB_ETL_DIR:?}:/etl:ro
         stdin_open: true
