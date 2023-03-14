@@ -30,13 +30,12 @@ COPY --chown=airflow . /${SOURCE_TREE}/
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libpq-dev build-essential &&  \
-    sudo -u airflow -s pip install --no-cache-dir pipenv && \
-    sudo -u airflow -s /home/airflow/.local/bin/pipenv install --clear --deploy --system && \
+    sudo -u airflow -s pip install --no-deps --no-cache-dir --ignore-installed -r requirements.txt && \
     apt-get -y remove build-essential && \
     apt purge -y --auto-remove && \
     rm -rf /var/lib/apt/lists/*
 USER airflow
-RUN cd flowetl && python setup.py install --prefix /home/airflow/.local
+RUN cd flowetl && pip install --no-deps --no-cache-dir --user .
 
 
 WORKDIR ${AIRFLOW_HOME}
