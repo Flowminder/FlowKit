@@ -13,9 +13,8 @@
 #apache-airflow[postgres] >= 2.0.0
 
 # Specifying editable install of flowetl here so we get its dependencies, but we don't want to actually install it
-# so need to specify --unsafe-package=flowetl option to pip-compile
+# so need to specify '--unsafe-package flowetl' option to pip-compile
 -e ./flowetl
 
 # Airflow version must match the version in the base docker image
-# Specifying celery extra here (not in setup.py) because it's not required by the flowetl _library_ but we do want it installed in the flowetl _application_.
-apache-airflow[celery] == ${AIRFLOW_VERSION}
+apache-airflow == ${AIRFLOW_VERSION}
