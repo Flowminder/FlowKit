@@ -647,19 +647,19 @@
         },
         "approval-utilities": {
             "hashes": [
-                "sha256:9bbcd3a2c15b46fea178e102942630467aafd441bcc0c31f74b63e90e4120165",
-                "sha256:b11bcc6fa17dc38df48a25712fa7bfd0e2ed5f65276168acb5fa095c8ac743b8"
+                "sha256:0dc191da8b5859aa7f45551e306681a84ef8d15a7be6fcd5b1afd37176d2099e",
+                "sha256:28178c6f640f663b3f0368bc8f7690d0f82fd30c70540c13d9f1a6f52b4c5f14"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==8.2.0"
+            "version": "==8.2.4"
         },
         "approvaltests": {
             "hashes": [
-                "sha256:d8abc79e59b70703d6964418d4071e1ad23ee423dd9110e5a9e980ef959e0f11",
-                "sha256:e76915a103e6fafd4e4675fed9f273affaaad58d3140c6a35ac9d49622fab981"
+                "sha256:22a828334ca8554efd5270df735db67873ba4d331bf023dcb978e6a00bc33d78",
+                "sha256:8c22532ad13f8bc7279bf7fb97b488b5927e90bedef17234cf63e922b9417aeb"
             ],
             "index": "pypi",
-            "version": "==8.2.0"
+            "version": "==8.2.4"
         },
         "asttokens": {
             "hashes": [
@@ -1071,11 +1071,11 @@
         },
         "filelock": {
             "hashes": [
-                "sha256:7b319f24340b51f55a2bf7a12ac0755a9b03e718311dac567a0f4f7fabd2f5de",
-                "sha256:f58d535af89bb9ad5cd4df046f741f8553a418c01a7856bf0d173bbc9f6bd16d"
+                "sha256:4427cdda14a1c68e264845142842d6de2d0fa2c15ba31571a3d9c9a1ec9d191c",
+                "sha256:e393782f76abea324dee598d2ea145b857a20df0e0ee4f80fcf35e72a341d2c7"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==3.9.0"
+            "version": "==3.9.1"
         },
         "fiona": {
             "hashes": [
@@ -1481,11 +1481,11 @@
         },
         "pathspec": {
             "hashes": [
-                "sha256:3a66eb970cbac598f9e5ccb5b2cf58930cd8e3ed86d393d541eaf2d8b1705229",
-                "sha256:64d338d4e0914e91c1792321e6907b5a593f1ab1851de7fc269557a21b30ebbc"
+                "sha256:2798de800fa92780e33acca925945e9a19a133b715067cf165b8866c15a31687",
+                "sha256:d8af70af76652554bd134c22b3e8a1cc46ed7d91edcdd721ef1a0c51a84a5293"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==0.11.0"
+            "version": "==0.11.1"
         },
         "pexpect": {
             "hashes": [
