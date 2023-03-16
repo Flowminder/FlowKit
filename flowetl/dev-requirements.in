@@ -4,8 +4,6 @@
 -c https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt
 -c requirements.txt
 
-## 'file:' required here to prevent compiling to absolute path (https://github.com/jazzband/pip-tools/issues/204#issuecomment-785420275)
-#-e file:./flowetl
 structlog
 pytest
 psycopg2-binary
