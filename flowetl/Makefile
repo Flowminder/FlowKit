@@ -22,6 +22,8 @@
 #       Run unit tests in virtual environment with dev requirements installed
 #   integration-tests:
 #       Run integration tests in virtual environment with dev requirements installed
+#   tests:
+#       Run all tests (unit and integration)
 #   clean:
 #       Remove virtual environment
 #   deep-clean:
@@ -64,7 +66,12 @@ unit-tests: dev-sync
 	$(ACTIVATE) pytest tests/unit
 
 integration-tests: dev-sync
-	$(ACTIVATE) pytest tests/integration
+	docker build -t flowminder/flowdb:test -f ../flowdb.Dockerfile ..
+	docker build -t flowminder/flowetl:test -f ../flowetl.Dockerfile ..
+	docker pull postgres:11.0
+	$(ACTIVATE) FLOWETL_TESTS_CONTAINER_TAG=test FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES=TRUE pytest tests/integration
+
+tests: unit-tests integration-tests
 
 clean:
 	rm -rf "$(VENVDIR)"
