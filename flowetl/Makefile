@@ -35,26 +35,31 @@ VENVDIR ?= .venv
 ACTIVATE := source $(VENVDIR)/bin/activate;
 PIP_COMPILE := pip-compile --resolver=backtracking --strip-extras --generate-hashes
 PIP_SYNC := pip-sync --pip-args "--no-deps"
+# File to keep track of when virtual env was created (not modified when new packages are installed),
+# so that virtual env can be recreated when .python-version changes
+VENVTARGET := $(VENVDIR)/.touchfile
 # Recursive variable because versions should be read when a target is made, not before
-VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell cat .python-version)
+VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
 
 .PHONY: lock upgrade sync dev-sync unit-tests integration-tests clean deep-clean
 
 lock: requirements.txt dev-requirements.txt
 
 # Create virtual env if it doesn't exist, and install pip-tools
-$(VENVDIR):
-	pyenv local # Ensure pyenv is installed
+$(VENVTARGET): .python-version
+	rm -rf "$(VENVDIR)"
+	pyenv install -s $(shell pyenv local)
 	python -m venv $(VENVDIR)
 	$(ACTIVATE) pip install --upgrade pip pip-tools
+	touch $(VENVTARGET)
 
-requirements.txt: requirements.in .python-version .airflow-version flowetl/setup.py | $(VENVDIR)
+requirements.txt: requirements.in .airflow-version flowetl/setup.py $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --unsafe-package flowetl requirements.in
 
-dev-requirements.txt: dev-requirements.in requirements.txt .python-version .airflow-version | $(VENVDIR)
+dev-requirements.txt: dev-requirements.in requirements.txt .airflow-version $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --allow-unsafe dev-requirements.in
 
-upgrade: requirements.in dev-requirements.in .python-version .airflow-version flowetl/setup.py | $(VENVDIR)
+upgrade: requirements.in dev-requirements.in .airflow-version flowetl/setup.py $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --unsafe-package flowetl requirements.in
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --allow-unsafe dev-requirements.in
 
