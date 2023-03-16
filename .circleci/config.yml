@@ -774,7 +774,7 @@ jobs:
       - run:
           name: Install required python version
           command: |
-            pyenv install $(pyenv local)
+            pyenv install $(pyenv local):latest
             python --version
       - run:
           name: Create virtual env
