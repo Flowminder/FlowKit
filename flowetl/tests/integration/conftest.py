@@ -482,7 +482,7 @@ def airflow_local_setup(airflow_home):
 
     with open(airflow_home / "scheduler.log", "w") as fout:
         with Popen(
-            ["pipenv", "run", "airflow", "scheduler"],
+            ["airflow", "scheduler"],
             shell=False,
             stdout=fout,
             stderr=fout,
