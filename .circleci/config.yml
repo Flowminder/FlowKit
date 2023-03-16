@@ -722,9 +722,9 @@ jobs:
       - restore_cache:
           key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
       - run:
-          name: Show python version
+          name: Install required python version
           command: |
-            pyenv local
+            pyenv install -s $(pyenv local)
             python --version
       - run:
           name: Create virtual env
@@ -1013,7 +1013,7 @@ jobs:
           path: /home/circleci/project/
       - run:
           name: Building wheel for <<parameters.project_name>>
-          command: python setup.py bdist_wheel
+          command: PYENV_VERSION=$(pyenv global) python setup.py bdist_wheel
       - persist_to_workspace:
           root: /home/circleci/project
           paths:
