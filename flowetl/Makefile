@@ -1,9 +1,11 @@
-#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 # Makefile for managing FlowETL dependencies and virtual environment.
 #
 # Requires pyenv to be installed, to ensure the correct python version is used for locking dependencies.
-#
-# The virtual environment directory can be configured by setting the variable VENVDIR (default is .venv)
+# The virtual environment directory can be configured by setting the variable VENVDIR (default is .venv).
 #
 # targets:
 #   lock (default):
