@@ -772,9 +772,9 @@ jobs:
             sudo apt-get update
             sudo apt install libpq-dev
       - run:
-          name: Show python version
+          name: Install required python version
           command: |
-            pyenv local
+            pyenv install $(pyenv local)
             python --version
       - run:
           name: Create virtual env
