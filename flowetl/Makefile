@@ -63,10 +63,10 @@ upgrade: requirements.in dev-requirements.in .airflow-version flowetl/setup.py $
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --unsafe-package flowetl requirements.in
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --allow-unsafe dev-requirements.in
 
-sync: requirements.txt $(VENVDIR)
+sync: requirements.txt $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt
 
-dev-sync: requirements.txt dev-requirements.txt flowetl/setup.py $(VENVDIR)
+dev-sync: requirements.txt dev-requirements.txt flowetl/setup.py $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt dev-requirements.txt && pip install --no-deps -e ./flowetl
 
 unit-tests: dev-sync
