@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM apache/airflow:2.5.0-python3.8@sha256:17958dfdf3d3cd4fe35ce095bea4fea193675d562a1d82cd056726330076b3a1
+FROM apache/airflow:2.5.2-python3.8@sha256:4c8a0e7ec54a35844d1e0bfd2ac32cc47b023ed668a79167ff2edec9a28235a5
 
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES False
@@ -30,13 +30,12 @@ COPY --chown=airflow . /${SOURCE_TREE}/
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libpq-dev build-essential &&  \
-    sudo -u airflow -s pip install --no-cache-dir pipenv && \
-    sudo -u airflow -s /home/airflow/.local/bin/pipenv install --clear --deploy --system && \
+    sudo -u airflow -s pip install --no-deps --no-cache-dir --ignore-installed -r requirements.txt && \
     apt-get -y remove build-essential && \
     apt purge -y --auto-remove && \
     rm -rf /var/lib/apt/lists/*
 USER airflow
-RUN cd flowetl && python setup.py install --prefix /home/airflow/.local
+RUN cd flowetl && pip install --no-deps --no-cache-dir --user .
 
 
 WORKDIR ${AIRFLOW_HOME}

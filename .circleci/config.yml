@@ -720,22 +720,33 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - restore_cache:
-          key: flowetl-unit-deps-6-{{ checksum "Pipfile.lock"}}
+          key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
       - run:
-          name: Install pipenv
-          command: pip install --upgrade pipenv
+          name: Install required python version
+          command: |
+            pyenv install -s $(pyenv local)
+            python --version
+      - run:
+          name: Create virtual env
+          command: |
+            python -m venv ./.venv
+            source .venv/bin/activate
+            pip install --upgrade pip pip-tools
       - run:
           name: Install python dependencies
           command: |
-            pipenv install --deploy --dev
+            source .venv/bin/activate
+            pip-sync requirements.txt dev-requirements.txt --pip-args "--no-deps"
+            pip install --no-deps -e ./flowetl
       - save_cache:
-          key: flowetl-unit-deps-6-{{ checksum "Pipfile.lock" }}
+          key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
           paths:
-            - /home/circleci/.local/share/virtualenvs/
+            - .venv
       - run:
           name: run flowetl module unit tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=flowetl \
+            source .venv/bin/activate
+            pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=flowetl \
             --cov-report xml \
             --cov-report term-missing ./tests/unit
       - store_test_results:
@@ -754,32 +765,37 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - restore_cache:
-          key: flowetl-deps-6-{{ checksum "Pipfile.lock"}}
+          key: flowetl-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
       - run:
           name: Install psycopg2 build deps
           command: |
             sudo apt-get update
             sudo apt install libpq-dev
       - run:
-          name: Set python version
+          name: Install required python version
           command: |
-            pyenv versions
-            pyenv global 3.9.4
+            pyenv install -s $(pyenv local)
+            python --version
       - run:
-          name: Install pipenv
-          command: pip install --upgrade pip pipenv
+          name: Create virtual env
+          command: |
+            python -m venv ./.venv
+            source .venv/bin/activate
+            pip install --upgrade pip pip-tools
       - run:
           name: Install python dependencies
           command: |
-            pipenv install --deploy --dev
+            source .venv/bin/activate
+            pip-sync requirements.txt dev-requirements.txt --pip-args "--no-deps"
+            pip install --no-deps -e ./flowetl
       - run:
           name: Install postgresql
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql
       - save_cache:
-          key: flowetl-deps-6-{{ checksum "Pipfile.lock" }}
+          key: flowetl-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
           paths:
-            - /home/circleci/.local/share/virtualenvs/
+            - .venv
       - run:
           name: Set FLOWETL_TESTS_CONTAINER_TAG environment variable
           command: |
@@ -787,7 +803,8 @@ jobs:
       - run:
           name: run flowetl integration tests
           command: |
-            pipenv run pytest --capture=tee-sys --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
+            source .venv/bin/activate
+            pytest --capture=tee-sys --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests/integration
       - store_test_results:
           path: test_results
       - upload_codecov:
@@ -996,7 +1013,7 @@ jobs:
           path: /home/circleci/project/
       - run:
           name: Building wheel for <<parameters.project_name>>
-          command: python setup.py bdist_wheel
+          command: PYENV_VERSION=$(pyenv global) python setup.py bdist_wheel
       - persist_to_workspace:
           root: /home/circleci/project
           paths:
