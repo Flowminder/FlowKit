@@ -34,11 +34,11 @@
         },
         "faker": {
             "hashes": [
-                "sha256:2deeee8fed3d1b8ae5f87d172d4569ddc859aab8693f7cd68eddc5d20400563a",
-                "sha256:e7c058e1f360f245f265625b32d3189d7229398ad80a8b6bac459891745de052"
+                "sha256:4c98c42984db54be2246d40e6407cd983db7b1511a70eaff64c3f383a51bace6",
+                "sha256:9bd71833146b844d848791b79720c7806108130c9603c7074123b3f77b4e97a1"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==18.3.0"
+            "version": "==18.3.1"
         },
         "geojson": {
             "hashes": [

@@ -2886,11 +2886,11 @@
         },
         "jupyterlab-server": {
             "hashes": [
-                "sha256:0203f96913187a9e7a6c8cef3556b499d2be67f014ad4ce9b76c8dcdcadb2367",
-                "sha256:75e81a8ef23f561b70f5c9a76de2ab9ebb291358b371d6260f51af7e347da719"
+                "sha256:b4f5b48eaae1be83e2fd6fb77ac49d9b639be4ca4bd2e05b5368d29632a93725",
+                "sha256:ff1e7a81deb2dcb433215d469000988590fd5a5733574aa2698d643a6c9b3ace"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2.20.0"
+            "version": "==2.21.0"
         },
         "jupyterlab-widgets": {
             "hashes": [
