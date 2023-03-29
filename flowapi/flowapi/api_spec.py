@@ -37,7 +37,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     spec = APISpec(
         title="FlowAPI",
         version=__version__,
-        openapi_version="3.0.1",
+        openapi_version="3.1.0",
         info=dict(
             description="FlowKit Analytical API",
             license=dict(name="MPLv2", url="https://www.mozilla.org/en-US/MPL/2.0/"),
