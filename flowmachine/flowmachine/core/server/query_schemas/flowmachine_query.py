@@ -92,7 +92,7 @@ def get_query_schema() -> dict:
     spec = APISpec(
         title="FlowAPI",
         version="1.0.0",
-        openapi_version="3.0.2",
+        openapi_version="3.1.0",
         plugins=[MarshmallowPlugin()],
     )
     spec.components.schema("FlowmachineQuerySchema", schema=FlowmachineQuerySchema)
