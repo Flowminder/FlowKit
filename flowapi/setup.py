@@ -25,7 +25,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     install_requires=[
         "quart",
         "pyzmq",
@@ -40,6 +40,17 @@ setup(
         "prance[osv] < 0.22.11.5.0",  # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
         "openapi_spec_validator ==0.4.0",  # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
         "werkzeug",
+        "cryptography",  # There was a prbolem with
     ],
-    extras_require={"test": ["pytest", "coverage"]},
+    extras_require={
+        "test": [
+            "pytest",
+            "coverage",
+            "pytest-asyncio",
+            "pytest-cov",
+            "asynctest",
+            "black[jupyter]==23.1.0",
+            "flowkit-jwt-generator @ ./../flowkit_jwt_generator",
+        ]
+    },
 )
