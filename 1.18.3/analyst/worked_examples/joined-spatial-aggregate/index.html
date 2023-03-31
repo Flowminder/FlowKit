@@ -1,0 +1,6638 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../unique-subscriber-counts/">
+      
+      
+        <link rel="next" href="../../autoflow/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.5">
+    
+    
+      
+        <title>Joined spatial aggregate - FlowKit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7a7fce14.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/mermaid@7.1.2/dist/mermaid.css">
+    
+      <link rel="stylesheet" href="../../../css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="../../../css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="../../../css/pandas-dataframe.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="#2977B8" data-md-color-accent="#095798">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#joined-spatial-aggregate" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="FlowKit" class="md-header__button md-logo" aria-label="FlowKit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 11a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m4-8a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.6 11.6c1.65 0 3 1.34 3 3a3 3 0 0 1-3 3c-1.66 0-3-1.35-3-3a3 3 0 0 1 3-3Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FlowKit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Joined spatial aggregate
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../.." class="md-tabs__link">
+      FlowKit
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../install/" class="md-tabs__link">
+      Installation
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
+        Analysts
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../developer/" class="md-tabs__link">
+        Developers
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../administrator/" class="md-tabs__link">
+        System Administrators
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../license/" class="md-tabs__link">
+      License
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../changelog/" class="md-tabs__link">
+      Changelog
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="FlowKit" class="md-nav__button md-logo" aria-label="FlowKit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 11a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m4-8a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.6 11.6c1.65 0 3 1.34 3 3a3 3 0 0 1-3 3c-1.66 0-3-1.35-3-3a3 3 0 0 1 3-3Z"/></svg>
+
+    </a>
+    FlowKit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        FlowKit
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Analysts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Analysts
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Analyst
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          FlowClient
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          FlowClient
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/example_usage/" class="md-nav__link">
+        Example usage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
+          Flowclient
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Flowclient
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2_1" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2_2_1" id="__nav_3_2_2_1_label" tabindex="0">
+          Flowclient
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_2_2_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_2_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Flowclient
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/" class="md-nav__link">
+        flowclient
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/_version/" class="md-nav__link">
+        _version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/aggregates/" class="md-nav__link">
+        aggregates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/api_query/" class="md-nav__link">
+        api_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/async_api_query/" class="md-nav__link">
+        async_api_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/async_client/" class="md-nav__link">
+        async_client
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/async_connection/" class="md-nav__link">
+        async_connection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/client/" class="md-nav__link">
+        client
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/connection/" class="md-nav__link">
+        connection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/errors/" class="md-nav__link">
+        errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowclient/flowclient/query_specs/" class="md-nav__link">
+        query_specs
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+          Worked examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Worked examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Worked examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flows-above-normal/" class="md-nav__link">
+        Flows above normal
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commuting-patterns/" class="md-nav__link">
+        Commuting patterns
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cell-towers-per-region/" class="md-nav__link">
+        Cell towers per region
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unique-subscriber-counts/" class="md-nav__link">
+        Unique subscriber counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Joined spatial aggregate
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Joined spatial aggregate
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#comparing-mobility-with-handset-types" class="md-nav__link">
+    Comparing mobility with handset types
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparing mobility with handset types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load-flowclient-and-connect-to-flowapi" class="md-nav__link">
+    Load FlowClient and connect to FlowAPI
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specify-flowkit-queries" class="md-nav__link">
+    Specify FlowKit queries
+  </a>
+  
+    <nav class="md-nav" aria-label="Specify FlowKit queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#locations" class="md-nav__link">
+    Locations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#radius-of-gyration" class="md-nav__link">
+    Radius of gyration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handset-type" class="md-nav__link">
+    Handset type
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#radius-of-gyration-results" class="md-nav__link">
+    Radius of gyration results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handset-type-results" class="md-nav__link">
+    Handset type results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparing-radius-of-gyration-and-handset-types" class="md-nav__link">
+    Comparing radius of gyration and handset types
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparing radius of gyration and handset types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#join-the-dataframes" class="md-nav__link">
+    Join the dataframes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correlation" class="md-nav__link">
+    Correlation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scatter-plot" class="md-nav__link">
+    Scatter plot
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../autoflow/" class="md-nav__link">
+        AutoFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+          Advanced usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced_usage/" class="md-nav__link">
+        Advanced usage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5_2" id="__nav_3_5_2_label" tabindex="0">
+          Worked examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_5_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_5_2">
+          <span class="md-nav__icon md-icon"></span>
+          Worked examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced_usage/worked_examples/mobile-data-usage/" class="md-nav__link">
+        Mobile data usage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Developers
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Developers
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/" class="md-nav__link">
+        Information for Developers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/dev_environment_setup/" class="md-nav__link">
+        Developer install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+          Flowmachine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Flowmachine
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1" id="__nav_4_3_1_label" tabindex="0">
+          Flowmachine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          Flowmachine
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/" class="md-nav__link">
+        flowmachine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/_version/" class="md-nav__link">
+        _version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_3" id="__nav_4_3_1_3_label" tabindex="0">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/" class="md-nav__link">
+        core
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/cache/" class="md-nav__link">
+        cache
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/connection/" class="md-nav__link">
+        connection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/context/" class="md-nav__link">
+        context
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/custom_query/" class="md-nav__link">
+        custom_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/date_range/" class="md-nav__link">
+        date_range
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/dependency_graph/" class="md-nav__link">
+        dependency_graph
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/dummy_query/" class="md-nav__link">
+        dummy_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_3_9" id="__nav_4_3_1_3_9_label" tabindex="0">
+          Errors
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Errors
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/errors/" class="md-nav__link">
+        errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/errors/flowmachine_errors/" class="md-nav__link">
+        flowmachine_errors
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/geotable/" class="md-nav__link">
+        geotable
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/grid/" class="md-nav__link">
+        grid
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/hour_slice/" class="md-nav__link">
+        hour_slice
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/init/" class="md-nav__link">
+        init
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/join/" class="md-nav__link">
+        join
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/join_to_location/" class="md-nav__link">
+        join_to_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/logging/" class="md-nav__link">
+        logging
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_17" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_3_17" id="__nav_4_3_1_3_17_label" tabindex="0">
+          Mixins
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_17_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_3_17">
+          <span class="md-nav__icon md-icon"></span>
+          Mixins
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/mixins/" class="md-nav__link">
+        mixins
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/mixins/exposed_datetime_mixin/" class="md-nav__link">
+        exposed_datetime_mixin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/mixins/geodata_mixin/" class="md-nav__link">
+        geodata_mixin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/mixins/graph_mixin/" class="md-nav__link">
+        graph_mixin
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/query/" class="md-nav__link">
+        query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/query_info_lookup/" class="md-nav__link">
+        query_info_lookup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/query_state/" class="md-nav__link">
+        query_state
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/random/" class="md-nav__link">
+        random
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_3_22" id="__nav_4_3_1_3_22_label" tabindex="0">
+          Server
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_22_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_3_22">
+          <span class="md-nav__icon md-icon"></span>
+          Server
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/" class="md-nav__link">
+        server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/action_handlers/" class="md-nav__link">
+        action_handlers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/action_request_schema/" class="md-nav__link">
+        action_request_schema
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/exceptions/" class="md-nav__link">
+        exceptions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_3_22_5" id="__nav_4_3_1_3_22_5_label" tabindex="0">
+          Query schemas
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_4_3_1_3_22_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_3_22_5">
+          <span class="md-nav__icon md-icon"></span>
+          Query schemas
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/" class="md-nav__link">
+        query_schemas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/active_at_reference_location_counts/" class="md-nav__link">
+        active_at_reference_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/aggregate_network_objects/" class="md-nav__link">
+        aggregate_network_objects
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/aggregation_unit/" class="md-nav__link">
+        aggregation_unit
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/base_exposed_query/" class="md-nav__link">
+        base_exposed_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling/" class="md-nav__link">
+        base_query_with_sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/base_schema/" class="md-nav__link">
+        base_schema
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/coalesced_location/" class="md-nav__link">
+        coalesced_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/consecutive_trips_od_matrix/" class="md-nav__link">
+        consecutive_trips_od_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/custom_fields/" class="md-nav__link">
+        custom_fields
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/daily_location/" class="md-nav__link">
+        daily_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/dfs_metric_total_amount/" class="md-nav__link">
+        dfs_metric_total_amount
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/displacement/" class="md-nav__link">
+        displacement
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/dummy_query/" class="md-nav__link">
+        dummy_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/event_count/" class="md-nav__link">
+        event_count
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/field_mixins/" class="md-nav__link">
+        field_mixins
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/flowmachine_query/" class="md-nav__link">
+        flowmachine_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/flows/" class="md-nav__link">
+        flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/geography/" class="md-nav__link">
+        geography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/handset/" class="md-nav__link">
+        handset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/histogram_aggregate/" class="md-nav__link">
+        histogram_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/inflows/" class="md-nav__link">
+        inflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate/" class="md-nav__link">
+        joined_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/labelled_flows/" class="md-nav__link">
+        labelled_flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/labelled_spatial_aggregate/" class="md-nav__link">
+        labelled_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/location_event_counts/" class="md-nav__link">
+        location_event_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/location_introversion/" class="md-nav__link">
+        location_introversion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/location_visits/" class="md-nav__link">
+        location_visits
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/majority_location/" class="md-nav__link">
+        majority_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/meaningful_locations/" class="md-nav__link">
+        meaningful_locations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/mobility_classification/" class="md-nav__link">
+        mobility_classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/modal_location/" class="md-nav__link">
+        modal_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/most_frequent_location/" class="md-nav__link">
+        most_frequent_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/nocturnal_events/" class="md-nav__link">
+        nocturnal_events
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/one_of_query/" class="md-nav__link">
+        one_of_query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/outflows/" class="md-nav__link">
+        outflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/pareto_interactions/" class="md-nav__link">
+        pareto_interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/radius_of_gyration/" class="md-nav__link">
+        radius_of_gyration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/random_sample/" class="md-nav__link">
+        random_sample
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/reference_location/" class="md-nav__link">
+        reference_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/spatial_aggregate/" class="md-nav__link">
+        spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/subscriber_degree/" class="md-nav__link">
+        subscriber_degree
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/subscriber_subset/" class="md-nav__link">
+        subscriber_subset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/topup_amount/" class="md-nav__link">
+        topup_amount
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/topup_balance/" class="md-nav__link">
+        topup_balance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/total_active_periods/" class="md-nav__link">
+        total_active_periods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/total_network_objects/" class="md-nav__link">
+        total_network_objects
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/trips_od_matrix/" class="md-nav__link">
+        trips_od_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/unique_location_counts/" class="md-nav__link">
+        unique_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/unique_locations/" class="md-nav__link">
+        unique_locations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/unique_subscriber_counts/" class="md-nav__link">
+        unique_subscriber_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/unique_visitor_counts/" class="md-nav__link">
+        unique_visitor_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/unmoving_at_reference_location_counts/" class="md-nav__link">
+        unmoving_at_reference_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/unmoving_counts/" class="md-nav__link">
+        unmoving_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/query_schemas/visited_most_days/" class="md-nav__link">
+        visited_most_days
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/server/" class="md-nav__link">
+        server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/server_config/" class="md-nav__link">
+        server_config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/server/zmq_helpers/" class="md-nav__link">
+        zmq_helpers
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/spatial_unit/" class="md-nav__link">
+        spatial_unit
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/sqlalchemy_table_definitions/" class="md-nav__link">
+        sqlalchemy_table_definitions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/sqlalchemy_utils/" class="md-nav__link">
+        sqlalchemy_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/subscriber_subsetter/" class="md-nav__link">
+        subscriber_subsetter
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/subset/" class="md-nav__link">
+        subset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/table/" class="md-nav__link">
+        table
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/core/union/" class="md-nav__link">
+        union
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4" id="__nav_4_3_1_4_label" tabindex="0">
+          Features
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Features
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/" class="md-nav__link">
+        features
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_2" id="__nav_4_3_1_4_2_label" tabindex="0">
+          Dfs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Dfs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/dfs/" class="md-nav__link">
+        dfs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/dfs/total_amount_for_metric/" class="md-nav__link">
+        total_amount_for_metric
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_3" id="__nav_4_3_1_4_3_label" tabindex="0">
+          Location
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Location
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/" class="md-nav__link">
+        location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/active_at_reference_location_counts/" class="md-nav__link">
+        active_at_reference_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/consecutive_trips_od_matrix/" class="md-nav__link">
+        consecutive_trips_od_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/flows/" class="md-nav__link">
+        flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/joined_spatial_aggregate/" class="md-nav__link">
+        joined_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/labelled_flows/" class="md-nav__link">
+        labelled_flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/labelled_spatial_aggregate/" class="md-nav__link">
+        labelled_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/location_introversion/" class="md-nav__link">
+        location_introversion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/meaningful_locations_aggregate/" class="md-nav__link">
+        meaningful_locations_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/meaningful_locations_od/" class="md-nav__link">
+        meaningful_locations_od
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/pwo/" class="md-nav__link">
+        pwo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_active_at_reference_location_counts/" class="md-nav__link">
+        redacted_active_at_reference_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_consecutive_trips_od_matrix/" class="md-nav__link">
+        redacted_consecutive_trips_od_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_flows/" class="md-nav__link">
+        redacted_flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_in_out_flows/" class="md-nav__link">
+        redacted_in_out_flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_joined_spatial_aggregate/" class="md-nav__link">
+        redacted_joined_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_labelled_aggregate/" class="md-nav__link">
+        redacted_labelled_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_labelled_flows/" class="md-nav__link">
+        redacted_labelled_flows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_labelled_spatial_aggregate/" class="md-nav__link">
+        redacted_labelled_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_location_introversion/" class="md-nav__link">
+        redacted_location_introversion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_location_metric/" class="md-nav__link">
+        redacted_location_metric
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_meaningful_locations_aggregate/" class="md-nav__link">
+        redacted_meaningful_locations_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_meaningful_locations_od/" class="md-nav__link">
+        redacted_meaningful_locations_od
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_spatial_aggregate/" class="md-nav__link">
+        redacted_spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_total_events/" class="md-nav__link">
+        redacted_total_events
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_trips_od_matrix/" class="md-nav__link">
+        redacted_trips_od_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_unique_subscriber_counts/" class="md-nav__link">
+        redacted_unique_subscriber_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_unique_vistor_counts/" class="md-nav__link">
+        redacted_unique_vistor_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_unmoving_at_reference_location_counts/" class="md-nav__link">
+        redacted_unmoving_at_reference_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/redacted_unmoving_counts/" class="md-nav__link">
+        redacted_unmoving_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/spatial_aggregate/" class="md-nav__link">
+        spatial_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/total_events/" class="md-nav__link">
+        total_events
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/trips_od_matrix/" class="md-nav__link">
+        trips_od_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/unique_subscriber_counts/" class="md-nav__link">
+        unique_subscriber_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/unique_visitor_counts/" class="md-nav__link">
+        unique_visitor_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/unmoving_at_reference_location_counts/" class="md-nav__link">
+        unmoving_at_reference_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/location/unmoving_counts/" class="md-nav__link">
+        unmoving_counts
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_4" id="__nav_4_3_1_4_4_label" tabindex="0">
+          Network
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Network
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/network/" class="md-nav__link">
+        network
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/network/total_network_objects/" class="md-nav__link">
+        total_network_objects
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_5" id="__nav_4_3_1_4_5_label" tabindex="0">
+          Raster
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          Raster
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/raster/" class="md-nav__link">
+        raster
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/raster/raster_statistics/" class="md-nav__link">
+        raster_statistics
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_6" id="__nav_4_3_1_4_6_label" tabindex="0">
+          Spatial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_6">
+          <span class="md-nav__icon md-icon"></span>
+          Spatial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/" class="md-nav__link">
+        spatial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/circles/" class="md-nav__link">
+        circles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/distance_matrix/" class="md-nav__link">
+        distance_matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/geography/" class="md-nav__link">
+        geography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/location_area/" class="md-nav__link">
+        location_area
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/location_cluster/" class="md-nav__link">
+        location_cluster
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/spatial/versioned_infrastructure/" class="md-nav__link">
+        versioned_infrastructure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_7" id="__nav_4_3_1_4_7_label" tabindex="0">
+          Subscriber
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_7">
+          <span class="md-nav__icon md-icon"></span>
+          Subscriber
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/" class="md-nav__link">
+        subscriber
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/active_at_reference_location/" class="md-nav__link">
+        active_at_reference_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/active_subscribers/" class="md-nav__link">
+        active_subscribers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/call_days/" class="md-nav__link">
+        call_days
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/coalesced_location/" class="md-nav__link">
+        coalesced_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/contact_balance/" class="md-nav__link">
+        contact_balance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/contact_reciprocal/" class="md-nav__link">
+        contact_reciprocal
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/contact_reference_locations_stats/" class="md-nav__link">
+        contact_reference_locations_stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/daily_location/" class="md-nav__link">
+        daily_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/day_trajectories/" class="md-nav__link">
+        day_trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/displacement/" class="md-nav__link">
+        displacement
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/distance_counterparts/" class="md-nav__link">
+        distance_counterparts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/distance_series/" class="md-nav__link">
+        distance_series
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/entropy/" class="md-nav__link">
+        entropy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/event_count/" class="md-nav__link">
+        event_count
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/event_type_proportion/" class="md-nav__link">
+        event_type_proportion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/filtered_reference_location/" class="md-nav__link">
+        filtered_reference_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/first_location/" class="md-nav__link">
+        first_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/handset_stats/" class="md-nav__link">
+        handset_stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/hartigan_cluster/" class="md-nav__link">
+        hartigan_cluster
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/imputed_distance_series/" class="md-nav__link">
+        imputed_distance_series
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/interevent_interval/" class="md-nav__link">
+        interevent_interval
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/interevent_period/" class="md-nav__link">
+        interevent_period
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/iterative_median_filter/" class="md-nav__link">
+        iterative_median_filter
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/label_event_score/" class="md-nav__link">
+        label_event_score
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/last_location/" class="md-nav__link">
+        last_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/location_visits/" class="md-nav__link">
+        location_visits
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/majority_location/" class="md-nav__link">
+        majority_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/mds_volume/" class="md-nav__link">
+        mds_volume
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/meaningful_locations/" class="md-nav__link">
+        meaningful_locations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/metaclasses/" class="md-nav__link">
+        metaclasses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/mobility_classification/" class="md-nav__link">
+        mobility_classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/modal_location/" class="md-nav__link">
+        modal_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/most_frequent_location/" class="md-nav__link">
+        most_frequent_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/new_subscribers/" class="md-nav__link">
+        new_subscribers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/nocturnal_events/" class="md-nav__link">
+        nocturnal_events
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/pareto_interactions/" class="md-nav__link">
+        pareto_interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/per_contact_event_stats/" class="md-nav__link">
+        per_contact_event_stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/per_location_event_stats/" class="md-nav__link">
+        per_location_event_stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/per_subscriber_aggregate/" class="md-nav__link">
+        per_subscriber_aggregate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/radius_of_gyration/" class="md-nav__link">
+        radius_of_gyration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/scores/" class="md-nav__link">
+        scores
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/subscriber_call_durations/" class="md-nav__link">
+        subscriber_call_durations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/subscriber_degree/" class="md-nav__link">
+        subscriber_degree
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/subscriber_stay_lengths/" class="md-nav__link">
+        subscriber_stay_lengths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/subscriber_tacs/" class="md-nav__link">
+        subscriber_tacs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/topup_amount/" class="md-nav__link">
+        topup_amount
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/topup_balance/" class="md-nav__link">
+        topup_balance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/total_active_periods/" class="md-nav__link">
+        total_active_periods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/unique_location_counts/" class="md-nav__link">
+        unique_location_counts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/unique_locations/" class="md-nav__link">
+        unique_locations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/unmoving/" class="md-nav__link">
+        unmoving
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/unmoving_at_reference_location/" class="md-nav__link">
+        unmoving_at_reference_location
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/subscriber/visited_most_days/" class="md-nav__link">
+        visited_most_days
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3_1_4_8" id="__nav_4_3_1_4_8_label" tabindex="0">
+          Utilities
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_3_1_4_8">
+          <span class="md-nav__icon md-icon"></span>
+          Utilities
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/" class="md-nav__link">
+        utilities
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/combine_first/" class="md-nav__link">
+        combine_first
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/direction_enum/" class="md-nav__link">
+        direction_enum
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/event_table_subset/" class="md-nav__link">
+        event_table_subset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/events_tables_union/" class="md-nav__link">
+        events_tables_union
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/feature_collection/" class="md-nav__link">
+        feature_collection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/group_values/" class="md-nav__link">
+        group_values
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/histogram_aggregation/" class="md-nav__link">
+        histogram_aggregation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/multilocation/" class="md-nav__link">
+        multilocation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/sets/" class="md-nav__link">
+        sets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/subscriber_locations/" class="md-nav__link">
+        subscriber_locations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/unique_values_from_queries/" class="md-nav__link">
+        unique_values_from_queries
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/features/utilities/validators/" class="md-nav__link">
+        validators
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowmachine/flowmachine/versions/" class="md-nav__link">
+        versions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/api-spec.html" class="md-nav__link">
+        FlowAPI specification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+          Architectural Decision Records (ADR)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          Architectural Decision Records (ADR)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/" class="md-nav__link">
+        Architectural Decision Records
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0001-pipenv-for-package-and-dependency-management/" class="md-nav__link">
+        Pipenv for package / dependency management and virtual environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0002-pytest-for-testing/" class="md-nav__link">
+        Pytest for testing Flowkit components
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0003-http-api/" class="md-nav__link">
+        HTTP API as Single Access Point
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0004-http-framework/" class="md-nav__link">
+        Quart as HTTP Framework
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0005-IPC-methods/" class="md-nav__link">
+        Interprocess Communication (IPC) Methods - zeromq and redis
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0006-JWTs/" class="md-nav__link">
+        JWTs for API Access Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0007-mapbox-for-worked-examples/" class="md-nav__link">
+        Mapbox GL for map visualisations in the worked examples notebooks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0008-jupyter-notebooks-for-autoflow/" class="md-nav__link">
+        Jupyter notebooks for automated notebook execution and report generation in AutoFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0009-asciidoctor-pdf-for-notebook-conversion/" class="md-nav__link">
+        Asciidoctor PDF for converting Jupyter notebooks to PDF
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/adr/0010-prefect-for-autoflow/" class="md-nav__link">
+        Prefect for workflow definition and execution in AutoFlow
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          System Administrators
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          System Administrators
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/" class="md-nav__link">
+        Administrator
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/deployment/" class="md-nav__link">
+        Deploying FlowKit
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          System management
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          System management
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/management/cache/" class="md-nav__link">
+        Caching in FlowKit
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3_2" id="__nav_5_3_2_label" tabindex="0">
+          ETL
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_3_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          ETL
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/management/etl/etl/" class="md-nav__link">
+        ETL
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3_2_2" id="__nav_5_3_2_2_label" tabindex="0">
+          Flowetl
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_3_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Flowetl
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3_2_2_1" id="__nav_5_3_2_2_1_label" tabindex="0">
+          Flowetl
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_3_2_2_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3_2_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Flowetl
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/" class="md-nav__link">
+        flowetl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/_version/" class="md-nav__link">
+        _version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3_2_2_1_4" id="__nav_5_3_2_2_1_4_label" tabindex="0">
+          Mixins
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_3_2_2_1_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3_2_2_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Mixins
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/mixins/" class="md-nav__link">
+        mixins
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/mixins/fixed_sql_mixin/" class="md-nav__link">
+        fixed_sql_mixin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/mixins/fixed_sql_with_params_mixin/" class="md-nav__link">
+        fixed_sql_with_params_mixin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/mixins/table_name_macros_mixin/" class="md-nav__link">
+        table_name_macros_mixin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/mixins/wrapping_sql_mixin/" class="md-nav__link">
+        wrapping_sql_mixin
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3_2_2_1_5" id="__nav_5_3_2_2_1_5_label" tabindex="0">
+          Operators
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_3_2_2_1_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3_2_2_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Operators
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/operators/" class="md-nav__link">
+        operators
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3_2_2_1_6" id="__nav_5_3_2_2_1_6_label" tabindex="0">
+          Sensors
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_3_2_2_1_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_3_2_2_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Sensors
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../flowetl/flowetl/sensors/" class="md-nav__link">
+        sensors
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/management/logging/" class="md-nav__link">
+        Logging and audit trails
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/management/users/" class="md-nav__link">
+        Managing users and access
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#comparing-mobility-with-handset-types" class="md-nav__link">
+    Comparing mobility with handset types
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparing mobility with handset types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load-flowclient-and-connect-to-flowapi" class="md-nav__link">
+    Load FlowClient and connect to FlowAPI
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specify-flowkit-queries" class="md-nav__link">
+    Specify FlowKit queries
+  </a>
+  
+    <nav class="md-nav" aria-label="Specify FlowKit queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#locations" class="md-nav__link">
+    Locations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#radius-of-gyration" class="md-nav__link">
+    Radius of gyration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handset-type" class="md-nav__link">
+    Handset type
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#radius-of-gyration-results" class="md-nav__link">
+    Radius of gyration results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handset-type-results" class="md-nav__link">
+    Handset type results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparing-radius-of-gyration-and-handset-types" class="md-nav__link">
+    Comparing radius of gyration and handset types
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparing radius of gyration and handset types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#join-the-dataframes" class="md-nav__link">
+    Join the dataframes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correlation" class="md-nav__link">
+    Correlation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scatter-plot" class="md-nav__link">
+    Scatter plot
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+(function() {
+  function addWidgetsRenderer() {
+    var requireJsScript = document.createElement('script');
+    requireJsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js';
+
+    var mimeElement = document.querySelector('script[type="application/vnd.jupyter.widget-view+json"]');
+    var jupyterWidgetsScript = document.createElement('script');
+    var widgetRendererSrc = 'https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js';
+    var widgetState;
+
+    // Fallback for older version:
+    try {
+      widgetState = mimeElement && JSON.parse(mimeElement.innerHTML);
+
+      if (widgetState && (widgetState.version_major < 2 || !widgetState.version_major)) {
+        widgetRendererSrc = 'jupyter-js-widgets@*/dist/embed.js';
+      }
+    } catch(e) {}
+
+    jupyterWidgetsScript.src = widgetRendererSrc;
+
+    document.body.appendChild(requireJsScript);
+    document.body.appendChild(jupyterWidgetsScript);
+  }
+
+  document.addEventListener('DOMContentLoaded', addWidgetsRenderer);
+}());
+</script>
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="joined-spatial-aggregate">Joined spatial aggregate<a class="headerlink" href="#joined-spatial-aggregate" title="Permanent link">&para;</a></h1>
+<h2 id="comparing-mobility-with-handset-types">Comparing mobility with handset types<a class="headerlink" href="#comparing-mobility-with-handset-types" title="Permanent link">&para;</a></h2>
+<p>This worked example demonstrates using <a href="../../../flowclient/flowclient/client/#joined_spatial_aggregate">joined spatial aggregate</a> queries in FlowKit. A joined spatial aggregate query calculates a metric for each subscriber, and joins the metric values to subscribers' locations before aggregating the metric by region.</p>
+<p>Suppose we want to investigate whether there is a link between subscribers' mobility and their handset types. We can calculate two joined spatial aggregates:</p>
+<ul>
+<li>Average radius of gyration per region. Radius of gyration is a measure of the spread of a subscriber's event locations - a subscriber with a large radius of gyration will have events spread over a larger area (for example, somebody who commutes over a long distance or regularly travels to regions away from their home).  </li>
+<li>Distribution of handset types (basic/feature/smartphone) per region.
+Once we have the results of these queries, we can investigate whether there is any correlation between the metrics.</li>
+</ul>
+<p>The Jupyter notebook for this worked example can be downloaded <a href="https://github.com/Flowminder/FlowKit/raw/master/docs/source/analyst/worked_examples/joined-spatial-aggregate.ipynb">here</a>, or can be run using the <a href="../../../install/#quickinstall">quick start setup</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="load-flowclient-and-connect-to-flowapi">Load FlowClient and connect to FlowAPI<a class="headerlink" href="#load-flowclient-and-connect-to-flowapi" title="Permanent link">&para;</a></h3>
+<p>We start by importing FlowClient. We also import <a href="https://pandas.pydata.org/">pandas</a>, <a href="http://geopandas.org/">geopandas</a> and <a href="https://matplotlib.org/">matplotlib</a>, which we will use for performing further analysis and visualisation of the outputs from FlowKit.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">flowclient</span> <span class="k">as</span> <span class="nn">fc</span>
+
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We must next <a href="../../#flowauth">generate a FlowAPI access token</a> using FlowAuth. If you are running this notebook using the <a href="../../../install/#quickinstall">quick start setup</a>, generating a token requires the following steps:</p>
+<ol>
+<li>Visit the FlowAuth login page at <a href="http://localhost:9091/">http://localhost:9091</a>.</li>
+<li>Log in with username <code>TEST_USER</code> and password <code>DUMMY_PASSWORD</code>.</li>
+<li>Under "My Servers", select <code>TEST_SERVER</code>.</li>
+<li>Click the <code>+</code> button to create a new token.</li>
+<li>Give the new token a name, and click <code>SAVE</code>.</li>
+<li>Copy the token string using the <code>COPY</code> button.</li>
+<li>Paste the token in this notebook as <code>TOKEN</code>.</li>
+</ol>
+<p>The steps are the same in a production setup, but the FlowAuth URL, login details and server name will differ.</p>
+<p>Once we have a token, we can start a connection to the FlowAPI system. If you are connecting to FlowAPI over https (recommended) and the system administrator has provided you with an SSL certificate file, you should provide the path to this file as the <code>ssl_certificate</code> argument to <code>flowclient.connect()</code> (in this example, you can set the path in the environment variable <code>SSL_CERTIFICATE_FILE</code>). If you are connecting over http, this argument is not required.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">conn</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;FLOWAPI_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;http://localhost:9090&quot;</span><span class="p">),</span>
+    <span class="n">token</span><span class="o">=</span><span class="n">TOKEN</span><span class="p">,</span>
+    <span class="n">ssl_certificate</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SSL_CERTIFICATE_FILE&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="specify-flowkit-queries">Specify FlowKit queries<a class="headerlink" href="#specify-flowkit-queries" title="Permanent link">&para;</a></h3>
+<p>Next, we create query specifications for the FlowKit queries we will run.</p>
+<h4 id="locations">Locations<a class="headerlink" href="#locations" title="Permanent link">&para;</a></h4>
+<p>Joined spatial aggregate queries join a per-subscriber metric to the subscribers' locations, so we need a query that assigns a single location to each subscriber. Here we use a modal location query to estimate subscribers' home locations over the period of interest (first seven days of 2016), at administrative level 3.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">date_range</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-08&quot;</span><span class="p">)</span>
+<span class="n">modal_loc</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">modal_location_from_dates_spec</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="radius-of-gyration">Radius of gyration<a class="headerlink" href="#radius-of-gyration" title="Permanent link">&para;</a></h4>
+<p>We create a joined spatial aggregate query specification to calculate the average radius of gyration per region, using locations from the modal location query above.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">radius_of_gyration_spec</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">jsa_rog_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">aggregates</span><span class="o">.</span><span class="n">joined_spatial_aggregate_spec</span><span class="p">(</span>
+    <span class="n">locations</span><span class="o">=</span><span class="n">modal_loc</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">rog_query</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="handset-type">Handset type<a class="headerlink" href="#handset-type" title="Permanent link">&para;</a></h4>
+<p>Finally, we specify a second joined spatial aggregate query, this time using a <code>handset</code> metric with the <code>"hnd_type"</code> (handset type) characteristic. The <code>handset</code> query will return a categorical variable (handset type is one of "Basic", "Feature" or "Smart"), so we must choose the <code>"distr"</code> method for the joined spatial aggregate, to get the distribution of handset types per region.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">handset_spec</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="n">date_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">characteristic</span><span class="o">=</span><span class="s2">&quot;hnd_type&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;most-common&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">jsa_handset_query</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">aggregates</span><span class="o">.</span><span class="n">joined_spatial_aggregate_spec</span><span class="p">(</span>
+    <span class="n">locations</span><span class="o">=</span><span class="n">modal_loc</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">handset_query</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;distr&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="radius-of-gyration-results">Radius of gyration results<a class="headerlink" href="#radius-of-gyration-results" title="Permanent link">&para;</a></h3>
+<p>Now that we have a FlowClient connection and we have specified our queries, we can run the queries and get the results using FlowClient's <code>get_result</code> function. First, we get the results of the radius of gyration query.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_spec</span><span class="o">=</span><span class="n">jsa_rog_query</span><span class="p">)</span>
+<span class="n">rog_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_text output_subarea ">
+<pre>
+<code>Parts run:   0%|          | 0/10 [00:00&lt;?, ?q/s]</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">NPL.1.3.3_1</td>
+<td style="text-align:right">43.2374</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">NPL.4.1.1_1</td>
+<td style="text-align:right">74.7019</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">NPL.1.1.3_1</td>
+<td style="text-align:right">45.4204</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">NPL.3.1.4_1</td>
+<td style="text-align:right">115.376</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">NPL.1.2.1_1</td>
+<td style="text-align:right">47.9872</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The resulting dataframe has two columns: <code>pcod</code> (the P-code of each region) and <code>value</code> (the average radius of gyration, in km). Later, we will want to join with other results for the same regions, so let's set the <code>pcod</code> column as the index. We also rename the <code>value</code> column, to give it the more descriptive name <code>radius_of_gyration</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">rog_results</span> <span class="o">=</span> <span class="n">rog_results</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span>
+    <span class="s2">&quot;pcod&quot;</span>
+<span class="p">)</span>
+<span class="n">rog_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><br><br>pcod</th>
+<th style="text-align:right">radius_of_gyration<br><br> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">NPL.1.3.3_1</td>
+<td style="text-align:right">43.2374</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.4.1.1_1</td>
+<td style="text-align:right">74.7019</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.3_1</td>
+<td style="text-align:right">45.4204</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.3.1.4_1</td>
+<td style="text-align:right">115.376</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.2.1_1</td>
+<td style="text-align:right">47.9872</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can get a summary of the data using the dataframe's <code>describe</code> method, and quickly see the distribution of values using <code>plot.hist</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">radius_of_gyration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">count</td>
+<td style="text-align:right">59</td>
+</tr>
+<tr>
+<td style="text-align:left">mean</td>
+<td style="text-align:right">63.5436</td>
+</tr>
+<tr>
+<td style="text-align:left">std</td>
+<td style="text-align:right">18.4134</td>
+</tr>
+<tr>
+<td style="text-align:left">min</td>
+<td style="text-align:right">39.9743</td>
+</tr>
+<tr>
+<td style="text-align:left">25%</td>
+<td style="text-align:right">49.7575</td>
+</tr>
+<tr>
+<td style="text-align:left">50%</td>
+<td style="text-align:right">58.9476</td>
+</tr>
+<tr>
+<td style="text-align:left">75%</td>
+<td style="text-align:right">75.7131</td>
+</tr>
+<tr>
+<td style="text-align:left">max</td>
+<td style="text-align:right">115.376</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">rog_results</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">();</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_17_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To see the spatial distribution of radius of gyration, we need the geographic boundaries of the administrative regions. We can get these as GeoJSON using the FlowClient <code>get_geography</code> function, and load into a GeoPandas <code>GeoDataFrame</code> using the <code>GeoDataFrame.from_features</code> method.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">geog</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="o">.</span><span class="n">from_features</span><span class="p">(</span>
+    <span class="n">fc</span><span class="o">.</span><span class="n">get_geography</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;pcod&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>plot</code> method is a quick way to see the regions described by this GeoDataFrame.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_21_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we can join the geography data to the radius of gyration results, and create a choropleth map by plotting again using the <code>radius_of_gyration</code> column to colour the regions.<br />
+(Note: the order in which we join here is important - <code>rog_results.join(geog)</code> would produce a pandas <code>DataFrame</code>, not a geopandas <code>GeoDataFrame</code>, and the <code>plot</code> method would produce a different plot).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_23_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are gaps in this choropleth map. Looking at the content of the 'radius_of_gyration' column in the joined dataframe, we can see why:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)[[</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><br><br>pcod</th>
+<th style="text-align:right">radius_of_gyration<br><br> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">NPL.1.1.1_1</td>
+<td style="text-align:right">39.9743</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.2_1</td>
+<td style="text-align:right">46.3436</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.5_1</td>
+<td style="text-align:right">45.2922</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.3_1</td>
+<td style="text-align:right">45.4204</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.4_1</td>
+<td style="text-align:right">43.6658</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are some regions for which we have no <code>radius_of_gyration</code> data, because these regions contained fewer than 15 subscribers so FlowKit redacted the results to preserve privacy. We can drop these rows using the <code>dropna</code> method. So that we can still see the shapes of the regions with no data, let's plot the <code>geog</code> data as a light grey background behind our choropleth map.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">background</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">)</span>
+<span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rog_results</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">background</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">);</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_27_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="handset-type-results">Handset type results<a class="headerlink" href="#handset-type-results" title="Permanent link">&para;</a></h3>
+<p>Next we get the results of our handset-type query.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_spec</span><span class="o">=</span><span class="n">jsa_handset_query</span><span class="p">)</span>
+<span class="n">handset_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_text output_subarea ">
+<pre>
+<code>Parts run:   0%|          | 0/10 [00:00&lt;?, ?q/s]</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:right"></th>
+<th style="text-align:left">pcod</th>
+<th style="text-align:left">metric</th>
+<th style="text-align:left">key</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:left">NPL.1.1.1_1</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.32783</td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:left">NPL.1.1.1_1</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">0.34434</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:left">NPL.1.1.1_1</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">0.32783</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:left">NPL.1.1.2_1</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">0.316327</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:left">NPL.1.1.2_1</td>
+<td style="text-align:left">value</td>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">0.326531</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This dataframe has four columns: <code>pcod</code> (the P-code, as above), <code>metric</code>, <code>key</code> (the handset type) and <code>value</code> (the proportion of subscribers in that region who have that handset type). The <code>metric</code> column just contains the value <code>"value"</code> in every row, which is not useful to us, so let's drop it. We'll also rename the <code>key</code> and <code>value</code> columns to <code>handset_type</code> and <code>proportion</code>, respectively.</p>
+<p>This time we have three rows per P-code, one for each handset type, so let's set a <code>MultiIndex</code> using the <code>pcod</code> and <code>handset_type</code> columns.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_results</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">handset_results</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;handset_type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;proportion&quot;</span><span class="p">})</span>
+    <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;metric&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;pcod&quot;</span><span class="p">,</span> <span class="s2">&quot;handset_type&quot;</span><span class="p">])</span>
+<span class="p">)</span>
+<span class="n">handset_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><br><br>pcod, handset_type</th>
+<th style="text-align:right">proportion<br><br> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">('NPL.1.1.1_1', 'Basic')</td>
+<td style="text-align:right">0.32783</td>
+</tr>
+<tr>
+<td style="text-align:left">('NPL.1.1.1_1', 'Feature')</td>
+<td style="text-align:right">0.34434</td>
+</tr>
+<tr>
+<td style="text-align:left">('NPL.1.1.1_1', 'Smart')</td>
+<td style="text-align:right">0.32783</td>
+</tr>
+<tr>
+<td style="text-align:left">('NPL.1.1.2_1', 'Basic')</td>
+<td style="text-align:right">0.316327</td>
+</tr>
+<tr>
+<td style="text-align:left">('NPL.1.1.2_1', 'Feature')</td>
+<td style="text-align:right">0.326531</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can get a summary of the data using the <code>describe</code> method, but let's first group by <code>handset_type</code> to get a summary per handset type.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;handset_type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><br><br><br>handset_type</th>
+<th style="text-align:right">proportion<br>count<br><br> </th>
+<th style="text-align:right">proportion<br>mean<br><br> </th>
+<th style="text-align:right">proportion<br>std<br><br> </th>
+<th style="text-align:right">proportion<br>min<br><br> </th>
+<th style="text-align:right">proportion<br>25%<br><br> </th>
+<th style="text-align:right">proportion<br>50%<br><br> </th>
+<th style="text-align:right">proportion<br>75%<br><br> </th>
+<th style="text-align:right">proportion<br>max<br><br> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Basic</td>
+<td style="text-align:right">59</td>
+<td style="text-align:right">0.332983</td>
+<td style="text-align:right">0.0217719</td>
+<td style="text-align:right">0.279294</td>
+<td style="text-align:right">0.317627</td>
+<td style="text-align:right">0.333996</td>
+<td style="text-align:right">0.345741</td>
+<td style="text-align:right">0.378378</td>
+</tr>
+<tr>
+<td style="text-align:left">Feature</td>
+<td style="text-align:right">59</td>
+<td style="text-align:right">0.326975</td>
+<td style="text-align:right">0.026068</td>
+<td style="text-align:right">0.254237</td>
+<td style="text-align:right">0.312838</td>
+<td style="text-align:right">0.326848</td>
+<td style="text-align:right">0.336844</td>
+<td style="text-align:right">0.409091</td>
+</tr>
+<tr>
+<td style="text-align:left">Smart</td>
+<td style="text-align:right">59</td>
+<td style="text-align:right">0.340042</td>
+<td style="text-align:right">0.0262684</td>
+<td style="text-align:right">0.245455</td>
+<td style="text-align:right">0.326129</td>
+<td style="text-align:right">0.344557</td>
+<td style="text-align:right">0.356026</td>
+<td style="text-align:right">0.40678</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To plot histograms for the three handset types, it would be convenient if the proportion data for each handset type were in separate columns. Since we set a hierarchical index on the <code>handset_results</code> dataframe, we can use the <code>unstack</code> method to unpack the innermost level of the index (<code>handset_type</code>, in this case) into separate columns.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><br>handset_type<br><br>pcod</th>
+<th style="text-align:right">proportion<br>Basic<br><br> </th>
+<th style="text-align:right">proportion<br>Feature<br><br> </th>
+<th style="text-align:right">proportion<br>Smart<br><br> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">NPL.1.1.1_1</td>
+<td style="text-align:right">0.32783</td>
+<td style="text-align:right">0.34434</td>
+<td style="text-align:right">0.32783</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.2_1</td>
+<td style="text-align:right">0.316327</td>
+<td style="text-align:right">0.326531</td>
+<td style="text-align:right">0.357143</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.3_1</td>
+<td style="text-align:right">0.330418</td>
+<td style="text-align:right">0.326848</td>
+<td style="text-align:right">0.342735</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.4_1</td>
+<td style="text-align:right">0.296226</td>
+<td style="text-align:right">0.381132</td>
+<td style="text-align:right">0.322642</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.5_1</td>
+<td style="text-align:right">0.335277</td>
+<td style="text-align:right">0.317784</td>
+<td style="text-align:right">0.346939</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This produces a dataframe with a single-level index, and a <code>MultiIndex</code> as column headers. Now the <code>plot.hist</code> method plots all three histograms on the same axes. We set <code>alpha=0.5</code> to make them slightly transparent. In this dataset we can see that there is little difference between the distributions of the different handset types - the proportions of all handset types are approximately equal in all regions.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_37_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As with the radius of gyration results, we can also join to the geography data and plot choropleth maps of the handset type distributions. We use the <code>query</code> method to select the subset of rows for a given handset type.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">handset_results_with_geo</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handset_results</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">htype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Basic&quot;</span><span class="p">,</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">]:</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">geog</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proportion (</span><span class="si">{</span><span class="n">htype</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">handset_results_with_geo</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;handset_type == &#39;</span><span class="si">{</span><span class="n">htype</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;proportion&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">);</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_39_0.png"
+>
+</div>
+</div>
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_39_1.png"
+>
+</div>
+</div>
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_39_2.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="comparing-radius-of-gyration-and-handset-types">Comparing radius of gyration and handset types<a class="headerlink" href="#comparing-radius-of-gyration-and-handset-types" title="Permanent link">&para;</a></h3>
+<h4 id="join-the-dataframes">Join the dataframes<a class="headerlink" href="#join-the-dataframes" title="Permanent link">&para;</a></h4>
+<p>Now that we have the results from both of our joined spatial aggregate queries, we can join them and compare the metrics.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">combined</span> <span class="o">=</span> <span class="n">rog_results</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handset_results</span><span class="o">.</span><span class="n">unstack</span><span class="p">())</span>
+<span class="n">combined</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><br><br>pcod</th>
+<th style="text-align:right">radius_of_gyration<br><br> </th>
+<th style="text-align:right">('proportion', 'Basic')<br><br> </th>
+<th style="text-align:right">('proportion', 'Feature')<br><br> </th>
+<th style="text-align:right">('proportion', 'Smart')<br><br> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">NPL.1.3.3_1</td>
+<td style="text-align:right">43.2374</td>
+<td style="text-align:right">0.336146</td>
+<td style="text-align:right">0.348805</td>
+<td style="text-align:right">0.315049</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.4.1.1_1</td>
+<td style="text-align:right">74.7019</td>
+<td style="text-align:right">0.318182</td>
+<td style="text-align:right">0.297521</td>
+<td style="text-align:right">0.384298</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.1.3_1</td>
+<td style="text-align:right">45.4204</td>
+<td style="text-align:right">0.330418</td>
+<td style="text-align:right">0.326848</td>
+<td style="text-align:right">0.342735</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.3.1.4_1</td>
+<td style="text-align:right">115.376</td>
+<td style="text-align:right">0.288557</td>
+<td style="text-align:right">0.38806</td>
+<td style="text-align:right">0.323383</td>
+</tr>
+<tr>
+<td style="text-align:left">NPL.1.2.1_1</td>
+<td style="text-align:right">47.9872</td>
+<td style="text-align:right">0.344686</td>
+<td style="text-align:right">0.315326</td>
+<td style="text-align:right">0.339988</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="correlation">Correlation<a class="headerlink" href="#correlation" title="Permanent link">&para;</a></h4>
+<p>The <code>corr</code> method provides a quick way to calculate the correlation between all pairs of columns. We're interested in the correlation between radius of gyration and each of the proportion columns. From these results, there appears to be no significant correlation between handset type and radius of gyration.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">combined</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">radius_of_gyration</th>
+<th style="text-align:right">('proportion', 'Basic')</th>
+<th style="text-align:right">('proportion', 'Feature')</th>
+<th style="text-align:right">('proportion', 'Smart')</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">radius_of_gyration</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">-0.0548879</td>
+<td style="text-align:right">-0.113048</td>
+<td style="text-align:right">0.157679</td>
+</tr>
+<tr>
+<td style="text-align:left">('proportion', 'Basic')</td>
+<td style="text-align:right">-0.0548879</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">-0.408362</td>
+<td style="text-align:right">-0.423581</td>
+</tr>
+<tr>
+<td style="text-align:left">('proportion', 'Feature')</td>
+<td style="text-align:right">-0.113048</td>
+<td style="text-align:right">-0.408362</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">-0.653912</td>
+</tr>
+<tr>
+<td style="text-align:left">('proportion', 'Smart')</td>
+<td style="text-align:right">0.157679</td>
+<td style="text-align:right">-0.423581</td>
+<td style="text-align:right">-0.653912</td>
+<td style="text-align:right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="scatter-plot">Scatter plot<a class="headerlink" href="#scatter-plot" title="Permanent link">&para;</a></h4>
+<p>To see whether there is any relationship that's not apparent from the correlation, let's make a scatter plot of radius of gyration against proportion of subscribers who use a smartphone.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">combined</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;proportion&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">));</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_45_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can use <code>matplotlib</code> to plot radius of gyration against proportion for each of the handset types on the same plot.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">htype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Basic&quot;</span><span class="p">,</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span> <span class="s2">&quot;Smart&quot;</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;radius_of_gyration&quot;</span><span class="p">],</span>
+        <span class="n">combined</span><span class="p">[(</span><span class="s2">&quot;proportion&quot;</span><span class="p">,</span> <span class="n">htype</span><span class="p">)],</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">htype</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Radius of gyration (km)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Handset type proportion&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="output_47_0.png"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There is no obvious pattern visible in these plots, so for this test dataset we have found no relationship between subscribers' handset types and their radius of gyration.</p>
+</div>
+</div>
+</div>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {"71bb693d2c4648699ba2fbf9c65505ef": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "e037e18063814d27913c6c094fec98af": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "73d0181e04914d0285ee5f0babd8811f": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_71bb693d2c4648699ba2fbf9c65505ef", "max": 10.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_e037e18063814d27913c6c094fec98af", "tabbable": null, "tooltip": null, "value": 10.0}}, "32b581362ac74251a863f3a342a7fb15": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "03e70a014eb9478cb7f7519e9ef2b4c4": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "913198b4d8624730af6cd20c2526da7c": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_32b581362ac74251a863f3a342a7fb15", "placeholder": "\u200b", "style": "IPY_MODEL_03e70a014eb9478cb7f7519e9ef2b4c4", "tabbable": null, "tooltip": null, "value": "Parts run: 100%"}}, "58745dacde91474aa5ab96009b7ae1db": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "71f3b66341894a9a9123e1d968ce76c3": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "094f8dded5604f0bb42162734b9fb649": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_58745dacde91474aa5ab96009b7ae1db", "placeholder": "\u200b", "style": "IPY_MODEL_71f3b66341894a9a9123e1d968ce76c3", "tabbable": null, "tooltip": null, "value": " 10/10 [00:06&lt;00:00,  1.59q/s]"}}, "b08e8cfb137d46ff977ac2d2d18d06bd": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "4fd374a8a9084ddbae57e85200562a6c": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_913198b4d8624730af6cd20c2526da7c", "IPY_MODEL_73d0181e04914d0285ee5f0babd8811f", "IPY_MODEL_094f8dded5604f0bb42162734b9fb649"], "layout": "IPY_MODEL_b08e8cfb137d46ff977ac2d2d18d06bd", "tabbable": null, "tooltip": null}}, "73b7e8d2da8941b19bf8e84fce588951": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "ee8dd8443aae4bfebec3b92bbb43ff7b": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "131eb8ef322549a58102e9b80ffe8ed3": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_73b7e8d2da8941b19bf8e84fce588951", "max": 10.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_ee8dd8443aae4bfebec3b92bbb43ff7b", "tabbable": null, "tooltip": null, "value": 10.0}}, "f6355d1b278e4b7e94036ffb0eef8a5b": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "adff4058f3dc41f9bbb7b2c183712aea": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "25e676740f3f4fc0bb31026780058354": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_f6355d1b278e4b7e94036ffb0eef8a5b", "placeholder": "\u200b", "style": "IPY_MODEL_adff4058f3dc41f9bbb7b2c183712aea", "tabbable": null, "tooltip": null, "value": "Parts run: 100%"}}, "e0aec13bf522497085a2fe55cb6bb937": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "1a0ad6c94275488abcf30d36f5fae64f": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "dae4b5e760c4434a9047c765e16a4ae6": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_e0aec13bf522497085a2fe55cb6bb937", "placeholder": "\u200b", "style": "IPY_MODEL_1a0ad6c94275488abcf30d36f5fae64f", "tabbable": null, "tooltip": null, "value": " 10/10 [00:09&lt;00:00,  1.13s/q]"}}, "84fd72c6e04f426787081b587a46e1f1": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "d81fa5febb0a4338a203867fc7115463": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_25e676740f3f4fc0bb31026780058354", "IPY_MODEL_131eb8ef322549a58102e9b80ffe8ed3", "IPY_MODEL_dae4b5e760c4434a9047c765e16a4ae6"], "layout": "IPY_MODEL_84fd72c6e04f426787081b587a46e1f1", "tabbable": null, "tooltip": null}}}, "version_major": 2, "version_minor": 0}
+</script>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.407015b8.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>
