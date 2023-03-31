@@ -1,13 +1,5 @@
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
-
 [packages]
-psutil = "*"
+flowdb = {editable = true, path = "."}
 
 [dev-packages]
-black = {extras = ["jupyter"],version = "==23.3.0"}
-
-[requires]
-python_version = "3.9"
+flowdb = {editable = true, extras = ["test"],  path = "."}

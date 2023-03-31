@@ -5,7 +5,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Setup configuration for `flowmachine`.
+Setup configuration for `flowdb`.
 
 """
 import sys
@@ -49,60 +49,26 @@ sys.dont_write_bytecode = False
 #
 readme = read("README.md")
 
-# Test requirements
-
-install_requirements = [
-    "SQLAlchemy<3.0.0",
-    "cachetools",
-    "apispec-oneofschema",
-    "marshmallow>=3.0.0",
-    "marshmallow-oneofschema>=2.0.0",
-    "numpy",
-    "networkx",
-    "pandas",
-    "pglast==4.1",
-    "python-dateutil",
-    "pytz",
-    "python-louvain",
-    "psycopg2-binary",
-    "finist",
-    "redis",
-    "pyzmq",
-    "structlog",
-    "shapely",
-    "python-rapidjson",
-    "get-secret-or-env-var",
-]
+install_requirements = ["psutil"]
 
 test_requirements = [
     "pytest",
-    "pytest-cov",
-    "pytest-asyncio",
-    "asynctest",
-    "ipykernel",
-    "ipython",
-    "pre_commit",  # Does this belong in dev instead?
-    "geojson",
-    "geopandas",
-    "descartes",
     "black[jupyter]==23.1.0",
-    "pytest-testmon",
-    "cachey",
-    "approvaltests",
-    "watchdog",
-    "ipdb",
+    "numpy",
+    "gitpython",
+    "docopt",
+    "pandas",
+    "tohu @ https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz",
+    "descartes",
 ]
 
 setup(
-    name="flowmachine",
+    name="flowdb",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    entry_points={
-        "console_scripts": ["flowmachine = flowmachine.core.server.server:main"]
-    },
-    description="Digestion program for Call Detail Record (CDR) data.",
+    description="Database for Flowmachine module.",
     long_description=readme,
-    py_module=["flowmachine"],
+    py_module=["flowdb"],
     author=__author__,
     author_email=__email__,
     url="https://github.com/Flowminder/FlowKit",
@@ -112,7 +78,7 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,
     extras_require={"test": test_requirements},
-    python_require=">=3.8",
+    python_require=">=3.9",
     include_package_data=True,
     zip_safe=False,
     platforms=["MacOS X", "Linux"],

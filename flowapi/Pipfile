@@ -1,32 +1,6 @@
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
-
 [packages]
-pyzmq = "*"
-quart = "*"
-hypercorn = "*"
-asyncpg = "*"
-quart-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
-cryptography = "*" # This _should_ get installed given the flask-jwt-extended extra, but is getting put in the develop section of the lockfile
-structlog = "*"
-python-rapidjson = "*"
-pyyaml = ">=5.1"
-apispec = {extras = ["yaml"],version = "*"}
-get-secret-or-env-var = "*"
-prance = {extras = ["osv"],version = "<0.22.11.4.0"} # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
-openapi_spec_validator  = "==0.5.5" # Pending https://github.com/RonnyPfannschmidt/prance/issues/145
-werkzeug = "*"
+flowapi = {editable = true, path='.'}
 
 [dev-packages]
-pytest = "*"
-pytest-asyncio = "*"
-"pytest-cov" = "*"
-asynctest = "*"
-black = {extras = ["jupyter"],version = "==23.1.0"}
-flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
-flowapi = {editable = true, path = "."}
+flowapi = {editable = true, extras=['test'], path = "."}
 
-[requires]
-python_version = "3.8"
