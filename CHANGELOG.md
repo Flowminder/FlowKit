@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
 ### Fixed
 
-- Null values in first column of first row of ingested data no longer cause flowetl to skip ingestion [#5090](https://github.com/Flowminder/FlowKit/issues/5090)
+### Removed
+
+## [1.18.3]
 
 ### Added
 
@@ -18,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Increased FlowDB's default maximum locks per transaction to `365 * 5 * 4 * (1 + 4)`. [#5157](https://github.com/Flowminder/FlowKit/issues/5157)
+
+### Fixed
+
+- Null values in first column of first row of ingested data no longer cause flowetl to skip ingestion [#5090](https://github.com/Flowminder/FlowKit/issues/5090)
 
 ## [1.18.2]
 
@@ -997,7 +1007,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.2...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.3...master
+[1.18.3]: https://github.com/Flowminder/FlowKit/compare/1.18.2...1.18.3
 [1.18.2]: https://github.com/Flowminder/FlowKit/compare/1.18.1...1.18.2
 [1.18.1]: https://github.com/Flowminder/FlowKit/compare/1.18.0...1.18.1
 [1.18.0]: https://github.com/Flowminder/FlowKit/compare/1.17.1...1.18.0
