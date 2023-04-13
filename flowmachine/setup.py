@@ -77,7 +77,7 @@ setup(
         "numpy",
         "networkx",
         "pandas",
-        "pglast==4.1",
+        "pglast==4.1",  # Pin pglast because different versions may produce different query IDs
         "python-dateutil",
         "pytz",
         "python-louvain",

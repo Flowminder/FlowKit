@@ -165,5 +165,7 @@ updates:
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "pglast" # pglast version is pinned because different versions may produce different query IDs
     labels:
       - FlowMachine
