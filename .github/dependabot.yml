@@ -154,6 +154,8 @@ updates:
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "openapi-schema-validator" # Required until https://github.com/Flowminder/FlowKit/issues/6006 is resolved
     labels:
       - FlowAPI
   - package-ecosystem: pip
