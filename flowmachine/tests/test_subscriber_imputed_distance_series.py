@@ -40,7 +40,7 @@ def fill_in_dates(df: pd.DataFrame, window_size: int, start: str, stop: str):
         method="backfill", inplace=True
     )  # This is just to fill in the first (window_size-1) entries
 
-    date_range = pd.date_range(start, stop, closed="left")
+    date_range = pd.date_range(start, stop, inclusive="left")
     df = df.reindex(index=date_range)  # Fill in missing dates
     df["datetime"] = df.index
     df.reset_index(inplace=True)

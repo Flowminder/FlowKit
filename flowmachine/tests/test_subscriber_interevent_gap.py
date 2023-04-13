@@ -35,9 +35,8 @@ def intervent_period(get_dataframe):
         agg = events.groupby("subscriber").agg(
             lambda x: getattr(x, postgres_stat_to_pandas_stat[stat])()
         )
-        agg = (agg["duration"].astype("timedelta64[s]")).to_dict()
 
-        return agg
+        return agg["duration"]
 
     return _intervent_period
 
@@ -69,7 +68,7 @@ def test_interevent_period(
     sample = df.head(n=5)
     want = intervent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
-    )
+    ).dt.seconds.to_dict()
     assert query.column_names == ["subscriber", "value"]
     assert (sample["value"]).to_dict() == pytest.approx(want, nan_ok=True)
 
@@ -95,11 +94,15 @@ def test_interevent_interval(
     )
     df = get_dataframe(query).set_index("subscriber")
     sample = df.head(n=5)
-    want = intervent_period(
-        start=start, stop=stop, direction=direction, stat=stat, subset=sample
+    want = (
+        intervent_period(
+            start=start, stop=stop, direction=direction, stat=stat, subset=sample
+        )
+        .dt.total_seconds()
+        .to_dict()
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (sample["value"].astype("timedelta64[s]")).to_dict() == pytest.approx(
+    assert sample["value"].dt.total_seconds().to_dict() == pytest.approx(
         want, nan_ok=True
     )
 
