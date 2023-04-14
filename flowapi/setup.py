@@ -38,7 +38,7 @@ setup(
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",
-        "openapi-schema-validator < 0.4.0",  # Pending https://github.com/Flowminder/FlowKit/issues/6015
+        "openapi-schema-validator < 0.3.0",  # Pending https://github.com/Flowminder/FlowKit/issues/6015
         "werkzeug",
     ],
     extras_require={"test": ["pytest", "coverage"]},

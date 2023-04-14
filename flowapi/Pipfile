@@ -16,7 +16,7 @@ pyyaml = ">=5.1"
 apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
 prance = {extras = ["osv"],version = "*"}
-openapi-schema-validator  = "<0.4.0" # Pending https://github.com/Flowminder/FlowKit/issues/6015
+openapi-schema-validator  = "<0.3.0" # Pending https://github.com/Flowminder/FlowKit/issues/6015
 werkzeug = "*"
 
 [dev-packages]
