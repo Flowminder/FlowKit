@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- SQLAlchemy version installed in the FlowMachine docker image is now compatible with the flowmachine library. [#6052](https://github.com/Flowminder/FlowKit/issues/6052)
+
 ### Removed
 
 ## [1.18.3]
