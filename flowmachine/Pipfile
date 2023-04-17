@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "<2.0.0"
+sqlalchemy = "<2.0.0" # https://github.com/Flowminder/FlowKit/issues/6066
 cachetools = "*"
 numpy = "*"
 networkx = "*"
@@ -19,8 +19,8 @@ structlog = "*"
 shapely = "*"
 finist = "*"
 python-rapidjson = "*"
-marshmallow = ">=3.0.0"
-marshmallow-oneofschema = ">=2.0.0"
+marshmallow = ">=3.0.0" # Constrained due to a version conflict in older versions
+marshmallow-oneofschema = ">=2.0.0" # Constrained due to a version conflict in older versions
 apispec-oneofschema = "*"
 get_secret_or_env_var = "*"
 redis = "*"
