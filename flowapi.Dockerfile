@@ -14,7 +14,7 @@ RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-b
     pip install --no-cache-dir pipenv==2021.5.29 Cython && pipenv install --clear --deploy && \
     apk del build-dependencies
 COPY . /${SOURCE_TREE}/
-RUN pipenv run python setup.py install
+RUN pipenv run pip install --no-deps --no-cache-dir .
 ENV QUART_ENV=production
 ENV FLOWAPI_PORT=9090
 EXPOSE 80

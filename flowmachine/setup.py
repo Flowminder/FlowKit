@@ -69,15 +69,15 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=[
-        "SQLAlchemy<2.0.0",
+        "SQLAlchemy<2.0.0",  # https://github.com/Flowminder/FlowKit/issues/6066
         "cachetools",
         "apispec-oneofschema",
-        "marshmallow>=3.0.0",
-        "marshmallow-oneofschema>=2.0.0",
+        "marshmallow>=3.0.0",  # Constrained due to a version conflict in older versions
+        "marshmallow-oneofschema>=2.0.0",  # Constrained due to a version conflict in older versions
         "numpy",
         "networkx",
         "pandas",
-        "pglast==4.1",
+        "pglast==4.1",  # Pin pglast because different versions may produce different query IDs
         "python-dateutil",
         "pytz",
         "python-louvain",
