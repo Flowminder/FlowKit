@@ -18,7 +18,7 @@ RUN apt-get update && \
 COPY . /${SOURCE_TREE}/
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
-        pipenv run python setup.py install && \
+        pipenv run pip install --no-deps --no-cache-dir . && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
