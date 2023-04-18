@@ -30,7 +30,7 @@ DOCKER_SERVICES_TO_START = $(patsubst flowdb%,flowdb,$(DOCKER_SERVICES))
 services := flowmachine flowmachine_query_locker flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db autoflow
 space :=
 space +=
-DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
+DOCKER_COMPOSE := docker compose -f $(DOCKER_COMPOSE_FILE)
 FLOWDB_SERVICE := $(filter flowdb%, $(DOCKER_SERVICES))
 
 # Add autoflow if specified
