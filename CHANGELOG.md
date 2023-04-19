@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- `docker-compose` has been replaces with `docker compose` in the makefile; this might break builds on machines that haven't updated their docker in a while.
+
 ### Fixed
 
 - SQLAlchemy version installed in the FlowMachine docker image is now compatible with the flowmachine library. [#6052](https://github.com/Flowminder/FlowKit/issues/6052)
