@@ -10,13 +10,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- `docker-compose` has been replaces with `docker compose` in the makefile; this might break builds on machines that haven't updated their docker in a while.
+### Fixed
+
+### Removed
+
+## [1.18.4]
+
+### Changed
+
+- `docker-compose` has been replaced with `docker compose` in the makefile; this might break builds on machines that haven't updated their docker in a while.
 
 ### Fixed
 
 - SQLAlchemy version installed in the FlowMachine docker image is now compatible with the flowmachine library. [#6052](https://github.com/Flowminder/FlowKit/issues/6052)
-
-### Removed
 
 ## [1.18.3]
 
@@ -1011,7 +1017,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.3...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.4...master
+[1.18.4]: https://github.com/Flowminder/FlowKit/compare/1.18.3...1.18.4
 [1.18.3]: https://github.com/Flowminder/FlowKit/compare/1.18.2...1.18.3
 [1.18.2]: https://github.com/Flowminder/FlowKit/compare/1.18.1...1.18.2
 [1.18.1]: https://github.com/Flowminder/FlowKit/compare/1.18.0...1.18.1
