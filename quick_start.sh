@@ -88,7 +88,7 @@ else
 fi
 
 DOCKER_ENGINE_VERSION=`docker version --format '{{.Server.Version}}'`
-DOCKER_COMPOSE_VERSION=`docker-compose version --short`
+DOCKER_COMPOSE_VERSION=`docker compose version --short`
 if [[ "$DOCKER_ENGINE_VERSION" < "17.12.0" ]]
 then
     echo "Docker version not supported. Please upgrade docker to at least v17.12.0"
@@ -118,7 +118,7 @@ curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/doc
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-testdata.yml -o "$DOCKER_WORKDIR/docker-compose-testdata.yml"
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-syntheticdata.yml -o "$DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
 
-DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
+DOCKER_COMPOSE="docker compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
 
 if [ -x "$(command -v ss)" ]; then NW_CHECK_TOOL='ss -tuna'; else NW_CHECK_TOOL='netstat -an'; fi
 
