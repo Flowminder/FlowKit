@@ -89,16 +89,15 @@ fi
 
 DOCKER_ENGINE_VERSION=`docker version --format '{{.Server.Version}}'`
 DOCKER_COMPOSE_VERSION=`docker compose version --short`
-if [[ "$DOCKER_ENGINE_VERSION" < "17.12.0" ]]
+if [[ "$DOCKER_ENGINE_VERSION" < "20.10.13" ]]
 then
-    echo "Docker version not supported. Please upgrade docker to at least v17.12.0"
+    echo "Docker version not supported. Please upgrade docker to at least v20.10.13"
     exit 1
 fi
 
-if [[ "$DOCKER_COMPOSE_VERSION" < "1.21.0" ]]
+if [[ "$DOCKER_COMPOSE_VERSION" < "2.3.3" ]]
 then
-    echo "docker-compose version not supported. Please upgrade docker to at least v1.21.0 (e.g. by running 'pip install --upgrade docker-compose'"
-    echo "or installing a newer version of Docker desktop."
+    echo "docker-compose is no longer supported by Flowkit or Docker- please upgrade to at least Docker 20.10.13."
     exit 1
 fi
 
