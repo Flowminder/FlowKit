@@ -89,13 +89,13 @@ fi
 
 DOCKER_ENGINE_VERSION=`docker version --format '{{.Server.Version}}'`
 DOCKER_COMPOSE_VERSION=`docker compose version --short`
-if [[ "$DOCKER_ENGINE_VERSION" < "20.10.13" ]]
+if [[ "$DOCKER_ENGINE_VERSION" < "20" ]]
 then
     echo "Docker version not supported. Please upgrade docker to at least v20.10.13"
     exit 1
 fi
 
-if [[ "$DOCKER_COMPOSE_VERSION" < "2.3.3" ]]
+if [[ "$DOCKER_COMPOSE_VERSION" < "2" ]]
 then
     echo "docker-compose is no longer supported by Flowkit or Docker- please upgrade to at least Docker 20.10.13."
     exit 1
