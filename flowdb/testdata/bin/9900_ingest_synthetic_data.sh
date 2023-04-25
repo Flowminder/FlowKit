@@ -52,7 +52,7 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_
       --n-days ${N_DAYS} \
       --output-root-dir ${OUTPUT_ROOT_DIR}
 elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "sql" ]; then
-  COUNTRY=${COUNTRY:-NPL}
+  COUNTRY=${COUNTRY:-"NPL"}
   wget --retry-connrefused -t=5 "https://data.biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_${COUNTRY}_shp.zip" -O /docker-entrypoint-initdb.d/data/geo.zip
   unzip /docker-entrypoint-initdb.d/data/geo.zip -d /docker-entrypoint-initdb.d/data/geo
   echo $(ls /docker-entrypoint-initdb.d/data/)
