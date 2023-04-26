@@ -89,7 +89,18 @@ RUN apt-get update \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
-
+# Add requirements for parquet building
+RUN apt update
+	&& apt install -y -V ca-certificates lsb-release wget
+	&& wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+	&& apt install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+	&& apt update
+	&& apt install -y -V libarrow-dev libparquet-dev
+	&& apt install git build-essential
+	&& git clone https://github.com/adjust/parquet_fdw.git
+	&& pushdir parquet_fdw
+	&& make install
+	&& popdir
 
 #
 #  CONFIGURATION

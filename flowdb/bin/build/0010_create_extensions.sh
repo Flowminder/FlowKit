@@ -14,7 +14,7 @@ export PGUSER="$POSTGRES_USER"
 EXTENSIONS=('postgis' 'postgis_raster' 'postgis_topology' 'fuzzystrmatch' \
             'file_fdw' 'uuid-ossp' 'plpython3u' \
             'tsm_system_rows' 'pgrouting' 'pldbgapi' 'pg_median_utils'\
-            'ogr_fdw' 'tds_fdw')
+            'ogr_fdw' 'tds_fdw','parquet_fdw')
 
 #
 #  Create the 'template_postgis' template db
@@ -52,6 +52,8 @@ echo "Creating extension servers in $DB."
 psql --dbname="$DB" <<-EOSQL
     CREATE SERVER csv_fdw 
         FOREIGN DATA WRAPPER file_fdw;
+    CREATE SERVER parquet_srv
+        FOREIGN DATA WRAPPER parquet_fdw;
 EOSQL
 
 done
