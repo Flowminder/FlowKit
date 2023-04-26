@@ -88,17 +88,16 @@ else
 fi
 
 DOCKER_ENGINE_VERSION=`docker version --format '{{.Server.Version}}'`
-DOCKER_COMPOSE_VERSION=`docker-compose version --short`
-if [[ "$DOCKER_ENGINE_VERSION" < "17.12.0" ]]
+DOCKER_COMPOSE_VERSION=`docker compose version --short`
+if [[ "$DOCKER_ENGINE_VERSION" < "20" ]]
 then
-    echo "Docker version not supported. Please upgrade docker to at least v17.12.0"
+    echo "Docker version not supported. Please upgrade docker to at least v20.10.13"
     exit 1
 fi
 
-if [[ "$DOCKER_COMPOSE_VERSION" < "1.21.0" ]]
+if [[ "$DOCKER_COMPOSE_VERSION" < "2" ]]
 then
-    echo "docker-compose version not supported. Please upgrade docker to at least v1.21.0 (e.g. by running 'pip install --upgrade docker-compose'"
-    echo "or installing a newer version of Docker desktop."
+    echo "docker-compose is no longer supported by Flowkit or Docker- please upgrade to at least Docker 20.10.13."
     exit 1
 fi
 
@@ -118,7 +117,7 @@ curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/doc
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-testdata.yml -o "$DOCKER_WORKDIR/docker-compose-testdata.yml"
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-syntheticdata.yml -o "$DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
 
-DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
+DOCKER_COMPOSE="docker compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
 
 if [ -x "$(command -v ss)" ]; then NW_CHECK_TOOL='ss -tuna'; else NW_CHECK_TOOL='netstat -an'; fi
 
