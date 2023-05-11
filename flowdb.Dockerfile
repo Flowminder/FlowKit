@@ -39,16 +39,6 @@ RUN set -ex; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"
 
-RUN set -ex; \
-# Need the older gpg key for the pgdg-archive repo
-	key='7FCC7D46ACCC4CF8'; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	mkdir -p /usr/local/share/keyrings/; \
-	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
-	gpg --batch --export --armor "$key" > /usr/local/share/keyrings/postgres-archive.gpg.asc; \
-	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME"
-
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
     && echo "deb [ signed-by=/usr/local/share/keyrings/postgres-archive.gpg.asc ] https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" > /etc/apt/sources.list.d/pgdg-archive.list \
     && echo "deb-src [ signed-by=/usr/local/share/keyrings/postgres-archive.gpg.asc ] https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg-archive main" >> /etc/apt/sources.list.d/pgdg-archive.list \
