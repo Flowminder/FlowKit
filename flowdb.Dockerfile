@@ -9,10 +9,10 @@
 #
 #  This image is based on the official
 #  PostgreSQL image, which is based
-#  on the official Debian Stretch (9) image.
+#  on the official Debian bullseye image.
 #
 
-FROM postgres:12.11@sha256:8bff0179347982a6c083e1ed69cf4b65f12b8ae76e61f63b238c8c1ba4714c86
+FROM postgres:15.2@sha256:4434eed0bfecb39db77c47e0b026242d97ce453df3b70254c381fe0bcb83497d
 
 
 ARG POSTGIS_MAJOR=3
