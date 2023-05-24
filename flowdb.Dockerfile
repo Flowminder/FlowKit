@@ -92,12 +92,14 @@ RUN apt-get update \
 # parquet foreign tables
 
 RUN apt-get update \
-  && apt install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
-  && wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
-  && apt install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
-  && apt update \
+  && apt install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION 
+  RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+  && apt install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb 
+  RUN apt update \
   && apt install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential \
-  && git clone https://github.com/adjust/parquet_fdw.git \
+  || apt install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential 
+ 
+RUN git clone https://github.com/adjust/parquet_fdw.git \
   && mv parquet_fdw /usr/local/src \
   && make -C /usr/local/src/parquet_fdw \
   && make -C /usr/local/src/parquet_fdw install \
