@@ -34,12 +34,15 @@ ENV PIPENV_PIPFILE=/docker-entrypoint-initdb.d/sql/syntheticdata/Pipfile
 #   Add synthetic data to the ingestion directory.
 #
 RUN mkdir -p /docker-entrypoint-initdb.d/sql/syntheticdata/ && \
-    mkdir -p /opt/synthetic_data/ && mkdir -p /docker-entrypoint-initdb.d/py/testdata/
+    mkdir -p /opt/synthetic_data/ && \
+    mkdir -p /docker-entrypoint-initdb.d/py/testdata/ && \
+    mkdir -p /parquet_files
 
 COPY --chown=postgres flowdb/testdata/bin/9900_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
 COPY --chown=postgres flowdb/testdata/bin/9800_population_density.sql.gz /docker-entrypoint-initdb.d/
 COPY --chown=postgres flowdb/testdata/bin/run_qa_checks.py /docker-entrypoint-initdb.d/
 COPY --chown=postgres flowdb/testdata/bin/9910_run_synthetic_dfs_data_generation_script.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres flowdb/testdata/bin/9920_run_convert_events_to_parquet.sh /docker-entrypoint-initdb.d/
 COPY --chown=postgres flowdb/testdata/test_data/py/* /docker-entrypoint-initdb.d/py/testdata/
 
 COPY --chown=postgres flowdb/testdata/bin/generate_synthetic_data*.py /opt/synthetic_data/
