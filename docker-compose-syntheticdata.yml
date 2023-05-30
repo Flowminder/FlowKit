@@ -29,3 +29,7 @@ services:
       DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
       DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
       DISASTER_REGION_PCOD: ${DISASTER_REGION_PCOD:-NPL.1.1_1}
+    # DEV MOUNT remove before merge
+    volumes:
+            - "./flowdb/testdata/test_data/py:/docker-entrypoint-initdb.d/py/testdata/"
+

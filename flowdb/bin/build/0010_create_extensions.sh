@@ -52,6 +52,7 @@ echo "Creating extension servers in $DB."
 psql --dbname="$DB" <<-EOSQL
     CREATE SERVER csv_fdw 
         FOREIGN DATA WRAPPER file_fdw;
+    CREATE SERVER parquet_srv FOREIGN DATA WRAPPER parquet_fdw;
 EOSQL
 
 done
