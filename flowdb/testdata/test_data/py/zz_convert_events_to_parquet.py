@@ -14,8 +14,6 @@ from tempfile import NamedTemporaryFile
 
 # From
 # https://dba.stackexchange.com/questions/40441/get-all-partition-names-for-a-table
-EVENT_TYPES = ["sms", "calls", "data"]
-
 LIST_EVENT_TABLES_SQL = """
 SELECT
 child.relname       AS child_schema
@@ -23,7 +21,7 @@ FROM pg_inherits
 JOIN pg_class parent ON pg_inherits.inhparent =parent.oid
 JOIN pg_class child ON pg_inherits.inhrelid = child.oid
 JOIN pg_namespace nmsp_parent ON nmsp_parent.oid = parent.relnamespace
-JOIN pg_namespace nmsp_child ON nmsp_child.oid= child.relnamespace
+JOIN pg_namespace nmsp_child ON nmsp_child.oid= child.relnamespace;
 """
 
 DUMP_CSV_SQL = """
@@ -32,15 +30,15 @@ COPY events.{table_name} TO '{csv_fp}' DELIMITER ',' CSV HEADER;
 """
 
 MOUNT_PARQUET_SQL = """
-CREATE FOREIGN TABLE IF NOT EXISTS events.parq_{table_name}
-INHERITS events.{event_type}
+DROP FOREIGN TABLE events.parq_{table_name};
+CREATE FOREIGN TABLE IF NOT EXISTS events.parq_{table_name} ()
+PARTITION OF events.{event_type} 
+    FOR VALUES FROM ('{start_date}') TO ('{end_date}') 
 SERVER parquet_srv 
 OPTIONS(
-    filename '{parquet_path}',
-    sorted 'msisdn start_time'
+    filename '{parquet_path}'
 );
 
-ALTER TABLE events.parq_{table_name} NO INHERIT events.{event_type};
 
 """
 
@@ -62,6 +60,8 @@ def get_event_table_list():
 def convert_table_to_parquet(table_name):
     with (NamedTemporaryFile() as csv_fp, engine.connect() as conn):
         event_type, date = table_name.split("_")
+        start_date = datetime.datetime.strptime(date, "%Y%m%d")
+        end_date = start_date + datetime.timedelta(days = 1)
         shutil.chown(csv_fp.name, "postgres")
         conn.execute(
             text(DUMP_CSV_SQL.format(table_name=table_name, csv_fp=csv_fp.name))
@@ -74,6 +74,8 @@ def convert_table_to_parquet(table_name):
                     table_name=table_name,
                     event_type=event_type,
                     parquet_path=parquet_path,
+                    start_date=start_date.strftime('%Y-%m-%d'),
+                    end_date = end_date.strftime('%Y-%m-%d')
                 )
             )
         )
@@ -81,9 +83,13 @@ def convert_table_to_parquet(table_name):
 
 def csv_to_parquet(csv_path, parquet_path):
     table = pyarrow.csv.read_csv(csv_path)
+    #TODO: add 'compression='ZTSD' once working
+    #TODO: find a way to explicitly set column dtypes
     pyarrow.parquet.write_table(table, parquet_path)
 
 
+
 if __name__ == "__main__":
+    print("foo")
     for event_table in get_event_table_list():
         convert_table_to_parquet(event_table)
