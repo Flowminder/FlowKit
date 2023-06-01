@@ -5,6 +5,7 @@
 import datetime
 import os
 import shutil
+import pyarrow
 import pyarrow.csv
 import pyarrow.parquet
 from contextlib import contextmanager
@@ -26,21 +27,48 @@ JOIN pg_namespace nmsp_child ON nmsp_child.oid= child.relnamespace;
 
 DUMP_CSV_SQL = """
 COPY events.{table_name} TO '{csv_fp}' DELIMITER ',' CSV HEADER;
---DROP TABLE events.{table_name};
+DROP TABLE events.{table_name};
 """
+
+DUMP_COL_TYPES_SQL = """
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = '{table_name}';
+"""
+
 
 MOUNT_PARQUET_SQL = """
-DROP FOREIGN TABLE events.parq_{table_name};
-CREATE FOREIGN TABLE IF NOT EXISTS events.parq_{table_name} ()
-PARTITION OF events.{event_type} 
-    FOR VALUES FROM ('{start_date}') TO ('{end_date}') 
+DROP TABLE events.{table_name};
+CREATE FOREIGN TABLE events.{table_name} ()
+INHERITS (events.{event_type})
 SERVER parquet_srv 
 OPTIONS(
-    filename '{parquet_path}'
+filename '{parquet_path}'
 );
 
+--ALTER TABLE events.{event_type} 
+    --ATTACH PARTITION events.{table_name}
+    --FOR VALUES FROM ('{start_date}') TO ('{end_date}');
 
 """
+
+PARQUET_COL_DTYPE_MAPPING = {
+    "datetime": pyarrow.timestamp('ns', tz='UTC'),
+    "duration": pyarrow.int64(),
+    "outgoing": pyarrow.bool_(),
+    "volume_total": pyarrow.int64(),
+    "volume_upload": pyarrow.int64(),
+    "volume_download": pyarrow.int64(),
+    "msisdn": pyarrow.string(),
+    "location_id": pyarrow.string(),
+    "imsi": pyarrow.string(),
+    "imei": pyarrow.string(),
+    "tac": pyarrow.int64(),
+    "network": pyarrow.string(),
+    "operator_code": pyarrow.int64(),
+    "country_code": pyarrow.int64()
+}
+
 
 PARQUET_FOLDER = Path("/parquet_files")
 
@@ -50,10 +78,10 @@ conn_str = f"postgresql://{db_user}@/{db_name}"
 engine = create_engine(conn_str)
 
 
+
 def get_event_table_list():
     with engine.connect() as conn:
         rows = conn.execute(text(LIST_EVENT_TABLES_SQL))
-        print(rows)
         return rows.scalars().all()
 
 
@@ -62,12 +90,11 @@ def convert_table_to_parquet(table_name):
         event_type, date = table_name.split("_")
         start_date = datetime.datetime.strptime(date, "%Y%m%d")
         end_date = start_date + datetime.timedelta(days = 1)
-        shutil.chown(csv_fp.name, "postgres")
-        conn.execute(
-            text(DUMP_CSV_SQL.format(table_name=table_name, csv_fp=csv_fp.name))
-        )
+        
+        cols = dump_to_csv(table_name, csv_fp.name)
         parquet_path = PARQUET_FOLDER / table_name
-        csv_to_parquet(csv_fp, str(parquet_path))
+        csv_to_parquet(csv_fp, str(parquet_path), cols)
+        
         conn.execute(
             text(
                 MOUNT_PARQUET_SQL.format(
@@ -81,15 +108,36 @@ def convert_table_to_parquet(table_name):
         )
 
 
-def csv_to_parquet(csv_path, parquet_path):
+def dump_to_csv(table_name, csv_path):
+    print(f"Dumping {table_name} to {csv_path}")
+    with engine.connect() as conn:
+        cols = conn.execute(
+            text(DUMP_COL_TYPES_SQL.format(table_name=table_name))
+        )
+        shutil.chown(csv_path, "postgres")
+        conn.execute(
+            text(DUMP_CSV_SQL.format(table_name=table_name, csv_fp=csv_path))
+        )
+        return {col_name:col_dtype for (col_name,col_dtype) in cols}
+
+
+def csv_to_parquet(csv_path, parquet_path, cols):
+    print(f"Converting {csv_path} to parquet at {parquet_path}")
     table = pyarrow.csv.read_csv(csv_path)
     #TODO: add 'compression='ZTSD' once working
-    #TODO: find a way to explicitly set column dtypes
-    pyarrow.parquet.write_table(table, parquet_path)
-
+    options = pyarrow.csv.ConvertOptions(
+        column_types = {
+            k:v 
+            for k,v 
+            in PARQUET_COL_DTYPE_MAPPING.items()
+            if k in table.column_names
+        }
+    )
+    pyarrow.parquet.write_table(table, parquet_path, options)
 
 
 if __name__ == "__main__":
     print("foo")
     for event_table in get_event_table_list():
+        print(f"Converting {event_table} to parquet")
         convert_table_to_parquet(event_table)
