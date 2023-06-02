@@ -123,17 +123,19 @@ def dump_to_csv(table_name, csv_path):
 
 def csv_to_parquet(csv_path, parquet_path, cols):
     print(f"Converting {csv_path} to parquet at {parquet_path}")
-    table = pyarrow.csv.read_csv(csv_path)
     #TODO: add 'compression='ZTSD' once working
     options = pyarrow.csv.ConvertOptions(
         column_types = {
             k:v 
             for k,v 
             in PARQUET_COL_DTYPE_MAPPING.items()
-            if k in table.column_names
-        }
+            if k in cols.keys()
+        },
+        true_values = ['t'],
+        false_values = ['f']
     )
-    pyarrow.parquet.write_table(table, parquet_path, options)
+    table = pyarrow.csv.read_csv(csv_path, convert_options = options)
+    pyarrow.parquet.write_table(table, parquet_path, compression='ZTSD')
 
 
 if __name__ == "__main__":
