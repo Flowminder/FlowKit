@@ -135,7 +135,7 @@ def csv_to_parquet(csv_path, parquet_path, cols):
         false_values = ['f']
     )
     table = pyarrow.csv.read_csv(csv_path, convert_options = options)
-    pyarrow.parquet.write_table(table, parquet_path, compression='ZTSD')
+    pyarrow.parquet.write_table(table, parquet_path, compression='ZSTD')
 
 
 if __name__ == "__main__":
