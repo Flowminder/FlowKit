@@ -26,8 +26,9 @@ RUN apt update && apt install git -y --no-install-recommends && \
 # Install python dependencies
 #
 COPY --chown=postgres flowdb/testdata/test_data/Pipfile* /docker-entrypoint-initdb.d/
+USER postgres
 RUN cd /docker-entrypoint-initdb.d/ && pipenv install --clear --deploy
-
+USER root
 #
 #   Add test data to the ingestion directory. 
 #

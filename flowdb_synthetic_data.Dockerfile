@@ -25,9 +25,10 @@ RUN apt update && apt install git -y --no-install-recommends && \
 #
 # Install python dependencies
 #
-COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /opt/synthetic_data/
-RUN cd /opt/synthetic_data/ && pipenv install --clear --deploy
-
+COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /docker-entrypoint-initdb.d/sql/syntheticdata/
+USER postgres
+RUN cd /docker-entrypoint-initdb.d/sql/syntheticdata/ && pipenv install --clear --deploy
+USER root
 #
 #   Add synthetic data to the ingestion directory.
 #
