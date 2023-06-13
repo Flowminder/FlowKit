@@ -23,6 +23,7 @@ def test_file_pipeline(
     6. Table is indexed
     7. Table is clustered
     8. Table is date constrained
+    9. All location IDs today are in events.location_ids table
 
     """
     exit_code, output = run_dag(dag_id="filesystem_dag", exec_date="2016-03-01")
@@ -127,7 +128,7 @@ def test_file_pipeline(
     # Check qa checks
 
     qa_check_query = "SELECT count(*) from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
-    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 23
+    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 24
 
 
 def test_file_pipeline_bad_file(
