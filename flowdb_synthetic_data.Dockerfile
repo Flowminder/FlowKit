@@ -18,7 +18,7 @@ FROM flowminder/flowdb:${CODE_VERSION}
 
 RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list \
         && apt-get -y update \
-        && apt-get -y install python3.9 python3.9-distutils python3-psutil \
+        && apt-get -y install python3.9 python3-distutils python3-psutil \
         && pip3 install --no-cache-dir pipenv \
         && pip3 install --upgrade pip \
         && apt-get clean --yes \
