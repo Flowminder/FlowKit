@@ -16,23 +16,14 @@ FROM flowminder/flowdb:${CODE_VERSION}
 #   Install Python 3.9 (needed to run the data generation scripts)
 #
 
-RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list \
-        && apt-get -y update \
-        && apt-get -y install python3.9 python3.9-distutils python3-psutil \
-        && pip3 install --no-cache-dir pipenv \
-        && pip3 install --upgrade pip \
-        && apt-get clean --yes \
-        && apt-get autoclean --yes \
-        && apt-get autoremove --yes \
-        && rm -rf /var/cache/debconf/*-old \
-        && rm -rf /var/lib/apt/lists/*
+RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+
 
 #
 # Install python dependencies
 #
-COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /tmp/
-RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy \
-    && rm /tmp/Pipfile*
+COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /opt/synthetic_data/
+RUN cd /opt/synthetic_data/ && pipenv install --clear --deploy
 
 #
 #   Add synthetic data to the ingestion directory.
