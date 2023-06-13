@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- FlowETL now updates a new table `events.location_ids` each time a new day of CDR data is ingested, to record the first and last date that each location ID appears in the data. [#5376](https://github.com/Flowminder/FlowKit/issues/5376)
+- New FlowETL QA check "count_locatable_events", which counts the number of added rows with location ID corresponding to a cell with a known location. [#5289](https://github.com/Flowminder/FlowKit/issues/5289)
+
 ### Changed
 
 ### Fixed
