@@ -13,10 +13,13 @@ ARG CODE_VERSION=latest
 FROM flowminder/flowdb:${CODE_VERSION}
 
 #
-#   Install Python 3.9 (needed to run the data generation scripts)
+#   Install pyenv to avoid being pinned to debian python
 #
 
-RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+RUN apt update && apt install git -y --no-install-recommends && \
+    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get purge -y --auto-remove
 
 
 #
