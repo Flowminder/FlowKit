@@ -29,6 +29,7 @@ COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /docker-entrypoint
 USER postgres
 RUN cd /docker-entrypoint-initdb.d/sql/syntheticdata/ && pipenv install --clear --deploy
 USER root
+ENV PIPENV_PIPFILE=/docker-entrypoint-initdb.d/sql/syntheticdata/Pipfile
 #
 #   Add synthetic data to the ingestion directory.
 #
