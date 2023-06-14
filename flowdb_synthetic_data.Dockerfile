@@ -13,27 +13,23 @@ ARG CODE_VERSION=latest
 FROM flowminder/flowdb:${CODE_VERSION}
 
 #
-#   Install Python 3.9 (needed to run the data generation scripts)
+#   Install pyenv to avoid being pinned to debian python
 #
 
-RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list \
-        && apt-get -y update \
-        && apt-get -y install python3.9 python3.9-distutils python3-psutil \
-        && pip3 install --no-cache-dir pipenv \
-        && pip3 install --upgrade pip \
-        && apt-get clean --yes \
-        && apt-get autoclean --yes \
-        && apt-get autoremove --yes \
-        && rm -rf /var/cache/debconf/*-old \
-        && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install git -y --no-install-recommends && \
+    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get purge -y --auto-remove
+
 
 #
 # Install python dependencies
 #
-COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /tmp/
-RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy \
-    && rm /tmp/Pipfile*
-
+COPY --chown=postgres flowdb/testdata/synthetic_data/Pipfile* /docker-entrypoint-initdb.d/sql/syntheticdata/
+USER postgres
+RUN cd /docker-entrypoint-initdb.d/sql/syntheticdata/ && pipenv install --clear --deploy
+USER root
+ENV PIPENV_PIPFILE=/docker-entrypoint-initdb.d/sql/syntheticdata/Pipfile
 #
 #   Add synthetic data to the ingestion directory.
 #

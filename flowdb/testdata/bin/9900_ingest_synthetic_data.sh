@@ -42,7 +42,7 @@ fi
 #
 
 if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "python" ]; then
-  python3 /opt/synthetic_data/generate_synthetic_data.py \
+  pipenv run python /opt/synthetic_data/generate_synthetic_data.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
@@ -56,7 +56,7 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC
   wget --retry-connrefused -t=5 "https://data.biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_${COUNTRY}_shp.zip" -O /docker-entrypoint-initdb.d/data/geo.zip
   unzip /docker-entrypoint-initdb.d/data/geo.zip -d /docker-entrypoint-initdb.d/data/geo
   echo $(ls /docker-entrypoint-initdb.d/data/)
-  python3 /opt/synthetic_data/generate_synthetic_data_sql.py \
+  pipenv run python /opt/synthetic_data/generate_synthetic_data_sql.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
