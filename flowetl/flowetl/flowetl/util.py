@@ -265,6 +265,9 @@ def create_dag(
     )
     from flowetl.operators.extract_from_view_operator import ExtractFromViewOperator
     from flowetl.operators.update_etl_table_operator import UpdateETLTableOperator
+    from flowetl.operators.update_location_ids_table_operator import (
+        UpdateLocationIDsTableOperator,
+    )
     from flowetl.sensors.data_present_sensor import DataPresentSensor
     from flowetl.sensors.file_flux_sensor import FileFluxSensor
     from flowetl.sensors.table_flux_sensor import TableFluxSensor
@@ -367,6 +370,9 @@ def create_dag(
             task_id="analyze_parent", target="{{ parent_table }}", pool="postgres_etl"
         )
         update_records = UpdateETLTableOperator(task_id="update_records")
+        update_location_ids_table = UpdateLocationIDsTableOperator(
+            task_id="update_location_ids_table"
+        )
 
         from_stage = extract
 
@@ -389,6 +395,7 @@ def create_dag(
         )
         attach >> [
             update_records,
+            update_location_ids_table,
             *get_qa_checks(additional_qa_check_paths=additional_qa_check_paths),
         ]
     globals()[dag_id] = dag

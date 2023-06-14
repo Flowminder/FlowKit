@@ -23,6 +23,7 @@ def test_file_pipeline(
     6. Table is indexed
     7. Table is clustered
     8. Table is date constrained
+    9. All location IDs today are in events.location_ids table
 
     """
     exit_code, output = run_dag(dag_id="filesystem_dag", exec_date="2016-03-01")
@@ -106,10 +107,28 @@ def test_file_pipeline(
     etl_meta_query = "SELECT EXISTS(SELECT * FROM etl.etl_records WHERE cdr_date='2016-03-01' AND state='ingested' and cdr_type='calls');"
     assert flowdb_transaction.execute(etl_meta_query).fetchall()[0][0]
 
+    # Check all location IDs today are in events.location_ids table
+
+    location_ids_query = """
+    SELECT NOT EXISTS (
+        SELECT location_id
+        FROM events.calls_20160301
+        LEFT JOIN (
+            SELECT location_id
+            FROM events.location_ids
+            WHERE cdr_type = 'calls'
+            AND '2016-03-01'::date BETWEEN first_active_date AND last_active_date
+        ) active_location_ids
+        USING (location_id)
+        WHERE active_location_ids.location_id IS NULL
+    )
+    """
+    assert flowdb_transaction.execute(location_ids_query).fetchall()[0][0]
+
     # Check qa checks
 
     qa_check_query = "SELECT count(*) from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
-    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 23
+    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 24
 
 
 def test_file_pipeline_bad_file(
