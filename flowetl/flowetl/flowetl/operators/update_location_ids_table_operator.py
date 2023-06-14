@@ -7,14 +7,6 @@ from flowetl.mixins.fixed_sql_mixin import fixed_sql_operator
 UpdateLocationIDsTableOperator = fixed_sql_operator(
     class_name="UpdateLocationIDsTableOperator",
     sql="""
-        CREATE TABLE IF NOT EXISTS events.location_ids (
-            location_id TEXT,
-            cdr_type TEXT,
-            first_active_date DATE,
-            last_active_date DATE,
-            PRIMARY KEY(location_id, cdr_type)
-        );
-
         INSERT INTO events.location_ids (location_id, cdr_type, first_active_date, last_active_date)
         SELECT location_id,
                '{{ params.cdr_type }}' AS cdr_type,

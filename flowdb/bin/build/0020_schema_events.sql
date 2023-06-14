@@ -30,6 +30,13 @@ cause a great toll to the ingestion process. IDs are not
 mandatory, but a number of features created by `flowmachine`
 require this field.
 
+This schema also includes a table 'location_ids', for
+recording all location IDs that appear in the CDR
+with the earliest and latest date that each location ID
+appears. The data ingestion pipeline defined in FlowETL
+includes a task that updates the 'location_ids' table when
+new CDR records are ingested.
+
 -----------------------------------------------------------
 */
 CREATE SCHEMA IF NOT EXISTS events;
@@ -149,4 +156,12 @@ CREATE SCHEMA IF NOT EXISTS events;
         operator_code NUMERIC,
         country_code NUMERIC
 
+        );
+
+    CREATE TABLE IF NOT EXISTS events.location_ids (
+        location_id TEXT,
+        cdr_type TEXT,
+        first_active_date DATE,
+        last_active_date DATE,
+        PRIMARY KEY(location_id, cdr_type)
         );
