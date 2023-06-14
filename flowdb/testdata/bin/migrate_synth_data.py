@@ -396,3 +396,10 @@ if __name__ == "__main__":
                         FROM interactions.event_supertable NATURAL JOIN interactions.sms;
                 """
                 )
+        with log_duration("Drop events tables"):
+            with engine.begin() as trans:
+                trans.execute(
+                    """
+                    DROP SCHEMA events CASCADE;
+                    """
+                )
