@@ -70,7 +70,7 @@ PARQUET_COL_DTYPE_MAPPING = {
 }
 
 
-PARQUET_FOLDER = Path("/parquet_files")
+PARQUET_FOLDER = Path("/data/parquet_files")
 
 db_user = os.environ["POSTGRES_USER"]
 db_name = os.environ["POSTGRES_DB"]
@@ -139,7 +139,8 @@ def csv_to_parquet(csv_path, parquet_path, cols):
 
 
 if __name__ == "__main__":
-    print("foo")
+    print(f"Creating parquet_folder at {PARQUET_PATH}")
+    os.mkdir(PARQUET_PATH)
     for event_table in get_event_table_list():
         print(f"Converting {event_table} to parquet")
         convert_table_to_parquet(event_table)
