@@ -91,7 +91,7 @@ RUN apt-get update \
 
 # parquet foreign tables
 
-  && apt install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
+  RUN apt install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION \
   && wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
   && apt install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
   && apt update \
