@@ -96,6 +96,7 @@ RUN apt-get update \
   RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
   && apt install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
   && apt update \
+  # Next line repeated due to https://github.com/apache/arrow/issues/35292
   && apt install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential \
   || apt install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential
   RUN git clone https://github.com/adjust/parquet_fdw.git \
