@@ -70,10 +70,9 @@ PARQUET_COL_DTYPE_MAPPING = {
 }
 
 
-PARQUET_FOLDER = Path("/data/parquet_files")
-
 db_user = os.environ["POSTGRES_USER"]
 db_name = os.environ["POSTGRES_DB"]
+parquet_folder = Path(os.environ["parquet_folder"])
 conn_str = f"postgresql://{db_user}@/{db_name}"
 engine = create_engine(conn_str)
 
@@ -92,7 +91,7 @@ def convert_table_to_parquet(table_name):
         end_date = start_date + datetime.timedelta(days = 1)
         
         cols = dump_to_csv(table_name, csv_fp.name)
-        parquet_path = PARQUET_FOLDER / table_name
+        parquet_path = parquet_folder / table_name
         csv_to_parquet(csv_fp, str(parquet_path), cols)
         
         conn.execute(
