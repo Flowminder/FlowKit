@@ -72,7 +72,8 @@ PARQUET_COL_DTYPE_MAPPING = {
 
 db_user = os.environ["POSTGRES_USER"]
 db_name = os.environ["POSTGRES_DB"]
-parquet_folder = Path(os.environ["parquet_folder"])
+# Bind mount - location on host set in PARQUET_FOLDER env var
+parquet_folder = Path("/parquet_files")
 conn_str = f"postgresql://{db_user}@/{db_name}"
 engine = create_engine(conn_str)
 
@@ -122,7 +123,6 @@ def dump_to_csv(table_name, csv_path):
 
 def csv_to_parquet(csv_path, parquet_path, cols):
     print(f"Converting {csv_path} to parquet at {parquet_path}")
-    #TODO: add 'compression='ZTSD' once working
     options = pyarrow.csv.ConvertOptions(
         column_types = {
             k:v 
