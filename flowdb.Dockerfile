@@ -81,29 +81,22 @@ RUN apt-get update \
         && git clone https://github.com/EnterpriseDB/pldebugger.git \
         && mv pldebugger /usr/local/src \
         && make -C /usr/local/src/pldebugger \
-        && make -C /usr/local/src/pldebugger install \
-        && apt-get remove -y libssl-dev \
-        libkrb5-dev \
-        build-essential \
-        git \
-        && apt purge -y --auto-remove \
-        && rm -rf /var/lib/apt/lists/*
-
+        && make -C /usr/local/src/pldebugger install 
 # parquet foreign tables
 
-  RUN apt update -y \
-  && apt install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION git
-  RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
-  && apt install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
-  RUN apt update \
-  # Next line repeated due to https://github.com/apache/arrow/issues/35292
-  && apt install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential \
-  || apt install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential
+  RUN apt-get install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION 
+  RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb 
+  RUN apt-get install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+  RUN apt-get update -y 
+  RUN apt-get install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential \
+  || apt-get install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential
+  RUN pip3 install pyarrow
   RUN git clone https://github.com/adjust/parquet_fdw.git \
   && mv parquet_fdw /usr/local/src \
   && make -C /usr/local/src/parquet_fdw \
   && make -C /usr/local/src/parquet_fdw install \
-  && apt-get remove -y build-essential git \
+  && apt-get remove -y build-essential \
+        git \
   && apt purge -y --auto-remove \
   && rm -rf /var/lib/apt/lists/*
 
