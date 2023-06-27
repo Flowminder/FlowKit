@@ -7,7 +7,7 @@
 #
 
 # Base image pinned due to https://github.com/Flowminder/FlowKit/issues/5374
-FROM jupyter/scipy-notebook:2022-08-22
+FROM jupyter/scipy-notebook:2023-06-26
 
 RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION=0+unknown
