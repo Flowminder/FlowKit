@@ -31,7 +31,7 @@ flask-migrate = "*"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-black = {extras = ["jupyter"],version = "==23.3.0"}
+black = {extras = ["jupyter"],version = "==23.7.0"}
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 
