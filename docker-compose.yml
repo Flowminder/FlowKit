@@ -11,11 +11,24 @@ x-flowetl-common:
   &flowetl-common
   image: flowminder/flowetl:${CONTAINER_TAG:-latest}
   restart: always
+  group_add:
+    - "998"
   tty: true
   stdin_open: true
 
   volumes:
-    - ${HOST_DAGS_DIR:?Must set HOST_DAGS_DIR env var}:/opt/airflow/dags:ro
+    - type: bind
+      source: ${HOST_DAGS_DIR:?Must set HOST_DAGS_DIR env var}
+      target: /opt/airflow/dags
+      read_only: true
+    - type: bind
+      source: ${HOST_NOTEBOOK_DIR:?Must set HOST_NOTEBOOK_DIR env var}
+      target: /opt/airflow/notebooks
+      bind:
+        selinux: z
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
 
   environment:
     &flowetl-envs
@@ -25,8 +38,14 @@ x-flowetl-common:
     AIRFLOW__CORE__FERNET_KEY: ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
     AIRFLOW__CELERY__RESULT_BACKEND: "db+${SQL_ALCHEMY_CONN:?}"
     AIRFLOW__CELERY__BROKER_URL: redis://:${FLOWETL_REDIS_PASSWORD:?Must set FLOWETL_REDIS_PASSWORD}@flowetl_redis:6379/0
+    AIRFLOW__WEBSERVER__SECRET_KEY: "replaceme"
     POSTGRES_HOST: flowetl_db
     FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT: 4
+    POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
+    POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
+    HOST_NOTEBOOK_DIR: ${HOST_NOTEBOOK_DIR:?Must set HOST_NOTEBOOK_DIR env var}
+    HOST_SECRETS_DIR: ${HOST_SECRETS_DIR:?Must set HOST_SECRETS_DIR env var}
+    AIRFLOW_VAR_FLOWAPI_TOKEN: ${FLOWAPI_TOKEN:?Must set FLOWAPI_TOKEN env var}
 
   depends_on:
     &flowetl-deps
@@ -182,7 +201,7 @@ services:
       - flowetl
 
   flowetl_db:
-    image: postgres:11.0
+    image: postgres:15.3
     container_name: flowetl_db
     tty: true
     stdin_open: true
@@ -228,7 +247,9 @@ services:
       replicas: ${FLOWETL_WORKER_COUNT:-1}
     networks:
       - flowetl
-      - db
+      - api
+    environment:
+      <<: *flowetl-envs
 
   flowetl_webserver:
     container_name: flowetl_webserver
@@ -250,6 +271,8 @@ services:
     restart: always
     networks:
       - flowetl
+    environment:
+      <<: *flowetl-envs
 
   flowetl_triggerer:
     container_name: flowetl_triggerer
@@ -258,6 +281,8 @@ services:
     restart: always
     networks:
       - flowetl
+    environment:
+      <<: *flowetl-envs
 
   flowetl_init:
     container_name: flowetl_init
