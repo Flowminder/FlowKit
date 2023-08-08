@@ -5,11 +5,14 @@
 """
 Unit tests for EventTableSubset
 """
+import weakref
+
 import pytest
 import pytz
 
 from datetime import datetime
 
+import flowmachine.core
 from flowmachine.core.errors import MissingDateError
 from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
@@ -111,6 +114,26 @@ def test_can_subset_by_hour(get_dataframe):
     assert 3 in df.day
     assert 2 in df.day
     assert 1 in df.day
+
+
+def test_hash_consistency():
+    """
+    EventTableSubset hashes consistenly
+    """
+    id_a = EventTableSubset(
+        start="2016-01-01 00:00:00", stop="2016-01-02 00:00:00", hours=(23, 0)
+    ).query_id
+    assert (
+        EventTableSubset(
+            start="2016-01-01 00:00:00", stop="2016-01-02 00:00:00", hours=(23, 0)
+        ).query_id
+        == id_a
+    )
+    flowmachine.core.Query._QueryPool = weakref.WeakValueDictionary()
+    id_b = EventTableSubset(
+        start="2016-01-01 00:00:00", stop="2016-01-02 00:00:00", hours=(23, 0)
+    ).query_id
+    assert id_a == id_b
 
 
 def test_handles_backwards_hours(get_dataframe):
