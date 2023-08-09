@@ -1,6 +1,7 @@
 from typing import Callable
 
 from airflow.decorators import task, dag as dag_dec
+from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 import os
 from datetime import datetime
@@ -14,7 +15,7 @@ def build_flowpyter_task(task_name=None) -> Callable:
         mount_tmp_dir=False,
         mounts=[
             Mount(
-                source="/home/john/projects/airflow_notebooks/notebooks",
+                source=Variable.get("host_notebook_dir"),
                 target="/opt/airflow/notebooks/",
                 type="bind",
             ),

@@ -133,3 +133,4 @@ docs/source/_static/openapi-redoc.json
 
 secrets_quickstart/flowdb_pgdata
 local_ci_process.yml
+flowetl/mounts/notebooks/out
