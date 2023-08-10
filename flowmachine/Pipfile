@@ -13,6 +13,7 @@ pglast = "==4.1" # Pin pglast because different versions may produce different q
 python-dateutil = "*"
 pytz = "*"
 python-louvain = "*"
+pyyaml = ">=6.0.1"
 pyzmq = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
