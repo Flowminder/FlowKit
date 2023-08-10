@@ -34,7 +34,7 @@ setup(
         "structlog",
         "quart-jwt-extended[asymmetric_crypto]",
         "asyncpg",
-        "pyyaml >= 6.0.1",
+        "pyyaml ==5.3.1",
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",
