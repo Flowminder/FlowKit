@@ -6051,7 +6051,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-hourandminutestimestamp">Class <strong>HourAndMinutesTimestamp</strong><a class="headerlink" href="#class-hourandminutestimestamp" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">HourAndMinutesTimestamp</span><span class="p">(</span><span class="n">hour_str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L149">flowmachine/core/hour_slice.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L152">flowmachine/core/hour_slice.py</a></p>
 <p>Represents an HH:MM period of the day and allows filtering a timestamp column accordingly.</p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6064,7 +6064,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="filter_timestamp_column">filter_timestamp_column<a class="headerlink" href="#filter_timestamp_column" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">filter_timestamp_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts_col</span><span class="p">,</span> <span class="n">cmp_op</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">built</span><span class="o">-</span><span class="ow">in</span> <span class="n">function</span> <span class="nb">callable</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">ColumnElement</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L200">flowmachine/core/hour_slice.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L203">flowmachine/core/hour_slice.py</a></p>
 <p>Filter timestamp column by comparing to this hour-of-day using the given comparison operator.</p>
 <h5 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h5>
 <ul>
@@ -6087,7 +6087,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-hourinterval">Class <strong>HourInterval</strong><a class="headerlink" href="#class-hourinterval" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">HourInterval</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_hour</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop_hour</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">freq</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">weekday</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L220">flowmachine/core/hour_slice.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L223">flowmachine/core/hour_slice.py</a></p>
 <p>Represents an interval of hours during the day which is repeated regularly, for example each day, or every Tuesday. The interval is considered to be half-open, i.e. the left endpoint is included and the right endpoint is excluded. For example: 08:30 &lt;= HH:MM &lt; 16:00.</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6112,7 +6112,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="filter_timestamp_column_1">filter_timestamp_column<a class="headerlink" href="#filter_timestamp_column_1" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">filter_timestamp_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts_col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">ColumnElement</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L259">flowmachine/core/hour_slice.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L262">flowmachine/core/hour_slice.py</a></p>
 <p>Filter timestamp column using this hour interval.</p>
 <h5 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h5>
 <ul>
@@ -6131,7 +6131,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-hourslice">Class <strong>HourSlice</strong><a class="headerlink" href="#class-hourslice" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">HourSlice</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">hour_intervals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">hour_slice</span><span class="o">.</span><span class="n">HourInterval</span><span class="p">])</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L282">flowmachine/core/hour_slice.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L285">flowmachine/core/hour_slice.py</a></p>
 <p>Represents a collection of multiple non-overlapping hour intervals.</p>
 <h3 id="parameters_7">Parameters<a class="headerlink" href="#parameters_7" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6144,7 +6144,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="get_subsetting_condition">get_subsetting_condition<a class="headerlink" href="#get_subsetting_condition" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">get_subsetting_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts_col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">ColumnElement</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L302">flowmachine/core/hour_slice.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/hour_slice.py#L305">flowmachine/core/hour_slice.py</a></p>
 <p>Return sqlalchemy expression which represents subsetting the given timestamp column by hours of the day.</p>
 <h5 id="parameters_8">Parameters<a class="headerlink" href="#parameters_8" title="Permanent link">&para;</a></h5>
 <ul>
