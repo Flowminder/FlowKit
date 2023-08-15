@@ -37,7 +37,7 @@ class Listing extends React.Component {
     deleteAction(obj_id).then((json) =>
       this.setState({
         objs: this.state.objs.filter((obj) => obj.id !== obj_id),
-      })
+      }),
     );
   };
 

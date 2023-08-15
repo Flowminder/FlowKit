@@ -6,7 +6,7 @@ describe("Public key viewing", function () {
   let public_key;
   beforeEach(function () {
     const blob = Cypress.Blob.base64StringToBlob(
-      Cypress.env("PUBLIC_JWT_SIGNING_KEY")
+      Cypress.env("PUBLIC_JWT_SIGNING_KEY"),
     );
     Cypress.Blob.blobToBinaryString(blob).then((key) => {
       public_key = key;
@@ -22,7 +22,7 @@ describe("Public key viewing", function () {
   it("Public key is shown", function () {
     cy.get("#public_key_body").should(
       "have.text",
-      public_key.replace(/\n|\r/g, "")
+      public_key.replace(/\n|\r/g, ""),
     );
   });
 

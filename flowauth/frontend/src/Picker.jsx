@@ -56,7 +56,7 @@ class Picker extends React.Component {
     } = this.props;
     // This is super ugly, but we need to ensure that the objects will compare equivalent
     const objs_selected = all_objs.filter(
-      (obj) => objs.map((s) => s.id).indexOf(obj.id) !== -1
+      (obj) => objs.map((s) => s.id).indexOf(obj.id) !== -1,
     );
     if (hasError) throw error;
     return (

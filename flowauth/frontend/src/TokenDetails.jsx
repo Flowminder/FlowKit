@@ -124,7 +124,7 @@ class TokenDetails extends React.Component {
           latest_expiry: expiry,
         });
       },
-      (err) => console.log(err)
+      (err) => console.log(err),
     );
   }
 

@@ -89,7 +89,7 @@ MessageSnackbarContent.propTypes = {
 };
 
 const MessageSnackbarContentWrapper = withStyles(styles1)(
-  MessageSnackbarContent
+  MessageSnackbarContent,
 );
 
 const styles2 = (theme) => ({

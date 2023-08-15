@@ -54,11 +54,11 @@ function TokenBuilder(props) {
   useEffect(() => {
     getServer(activeServer).then(
       (server) => setServerName(server.name),
-      (err) => console.log(err)
+      (err) => console.log(err),
     );
     getMyRolesOnServer(activeServer).then(
       (roles) => setRoleState(roles),
-      (err) => console.log(err)
+      (err) => console.log(err),
     );
   }, []);
 
@@ -81,7 +81,7 @@ function TokenBuilder(props) {
       setNameIsValid(false);
     } else {
       setNameHelperText(
-        "Token name may only contain letters, numbers and underscores."
+        "Token name may only contain letters, numbers and underscores.",
       );
       setNameIsValid(false);
     }
@@ -112,7 +112,7 @@ function TokenBuilder(props) {
         console.log(err);
         setTokenError(err.message);
         setTokenErrorOpen(true);
-      }
+      },
     );
   };
 

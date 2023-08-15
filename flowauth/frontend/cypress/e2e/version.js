@@ -10,18 +10,18 @@ describe("Login screen", function () {
 
   it("Should show the version on the login screen", function () {
     cy.exec(
-      'git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g'
+      'git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g',
     ).then((result) => {
       cy.get("#flowauth_version").should(
         "contain",
-        "FlowAuth v" + result.stdout
+        "FlowAuth v" + result.stdout,
       );
     });
   });
 
   it("Should show the version after logging in", function () {
     cy.exec(
-      'git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g'
+      'git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g',
     ).then((result) => {
       cy.login_admin()
         .goto("/")

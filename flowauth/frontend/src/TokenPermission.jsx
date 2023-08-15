@@ -22,7 +22,7 @@ class TokenPermission extends React.Component {
     this.setState({ enabledRights: value });
     const { fullRights } = this.state;
     parentUpdate(
-      fullRights.filter((r) => value.some((cur) => r.startsWith(cur)))
+      fullRights.filter((r) => value.some((cur) => r.startsWith(cur))),
     );
   };
 
@@ -31,7 +31,7 @@ class TokenPermission extends React.Component {
     if (rights.length > 0) {
       const scopesObj = rights.reduce(
         (obj, cur) => ({ ...obj, [cur]: {} }),
-        {}
+        {},
       );
 
       const scopeGraph = scopesGraph(scopesObj);
@@ -40,7 +40,7 @@ class TokenPermission extends React.Component {
         scopeGraph,
         [],
         Object.keys(scopesObj).filter((k) => scopesObj[k]),
-        enabledKeys
+        enabledKeys,
       );
       parentUpdate(Object.keys(scopesObj));
 
