@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 mkdocs = "*"
-black = {extras = ["jupyter"],version = "==23.1.0"}
+black = {extras = ["jupyter"],version = "==23.7.0"}
 jupyter-client = "*"
 nbconvert = "*"
 pygments = "*"
@@ -25,7 +25,7 @@ flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 mktheapidocs = "*"
 mknotebooks = "*"
 mapboxgl = "*"
-markdown = "==3.3.5" # Working around version conflict caused by airflow's aggressive pinning
+markdown = "*"
 chroma-py = "==0.1.0.dev1"
 ipywidgets = "*"
 mike = "*"
