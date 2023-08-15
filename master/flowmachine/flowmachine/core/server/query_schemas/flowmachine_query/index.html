@@ -15,7 +15,7 @@
         <link rel="next" href="../flows/">
       
       <link rel="icon" href="../../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.6">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.ded33207.min.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.eebd395e.min.css">
       
         
-        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -120,6 +120,8 @@
         </div>
       </div>
     </div>
+    
+      
     
     
     
@@ -1863,13 +1865,6 @@
           <li class="md-nav__item">
   <a href="#dict_class" class="md-nav__link">
     dict_class
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#set_class" class="md-nav__link">
-    set_class
   </a>
   
 </li>
@@ -5359,13 +5354,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#set_class" class="md-nav__link">
-    set_class
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#type_schemas" class="md-nav__link">
     type_schemas
   </a>
@@ -5394,7 +5382,7 @@
 
 <h1 id="flowmachinecoreserverquery_schemasflowmachine_query">flowmachine.core.server.query_schemas.flowmachine_query<a class="headerlink" href="#flowmachinecoreserverquery_schemasflowmachine_query" title="Permanent link">&para;</a></h1>
 <h2 id="class-flowmachinequeryschema">Class <strong>FlowmachineQuerySchema</strong><a class="headerlink" href="#class-flowmachinequeryschema" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">FlowmachineQuerySchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;dict | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="s1">&#39;bool | types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="s1">&#39;str | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">FlowmachineQuerySchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;dict | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="s1">&#39;bool | types.StrSequenceOrSet | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="s1">&#39;str | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/flowmachine_query.py#L47">flowmachine/core/server/query_schemas/flowmachine_query.py</a></p>
 <p>Schema for top-level queries exposed through FlowAPI</p>
@@ -5404,9 +5392,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p><a href="#dict_class"><code>dict_class</code></a></p>
 </li>
 <li>
-<p><a href="#set_class"><code>set_class</code></a></p>
-</li>
-<li>
 <p><a href="#type_schemas"><code>type_schemas</code></a></p>
 </li>
 </ul>
@@ -5414,11 +5399,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="dict_class">dict_class<a class="headerlink" href="#dict_class" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">dict_class</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L417">marshmallow/schema.py</a></p>
-<h4 id="set_class">set_class<a class="headerlink" href="#set_class" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">set_class</span>
-</code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L421">marshmallow/schema.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L413">marshmallow/schema.py</a></p>
 <h4 id="type_schemas">type_schemas<a class="headerlink" href="#type_schemas" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">type_schemas</span>
 </code></pre></div>
@@ -5488,12 +5469,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../../../assets/javascripts/bundle.51198bba.min.js"></script>
+      <script src="../../../../../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
-        <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+        
+          <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+        
       
     
   </body>

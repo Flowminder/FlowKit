@@ -15,7 +15,7 @@
         <link rel="next" href="../modal_location/">
       
       <link rel="icon" href="../../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.6">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.ded33207.min.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.eebd395e.min.css">
       
         
-        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -120,6 +120,8 @@
         </div>
       </div>
     </div>
+    
+      
     
     
     
@@ -2140,13 +2142,6 @@
           <li class="md-nav__item">
   <a href="#dict_class" class="md-nav__link">
     dict_class
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#set_class" class="md-nav__link">
-    set_class
   </a>
   
 </li>
@@ -5513,13 +5508,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#set_class" class="md-nav__link">
-    set_class
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -5583,19 +5571,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_exposed_query.py#L61">flowmachine/core/server/query_schemas/base_exposed_query.py</a></p>
 <h2 id="class-mobilityclassificationschema">Class <strong>MobilityClassificationSchema</strong><a class="headerlink" href="#class-mobilityclassificationschema" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="n">MobilityClassificationSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;dict | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="s1">&#39;bool | types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="s1">&#39;str | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><span class="n">MobilityClassificationSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">many</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;dict | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">dump_only</span><span class="p">:</span> <span class="s1">&#39;types.StrSequenceOrSet&#39;</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">partial</span><span class="p">:</span> <span class="s1">&#39;bool | types.StrSequenceOrSet | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="s1">&#39;str | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/mobility_classification.py#L37">flowmachine/core/server/query_schemas/mobility_classification.py</a></p>
 <p>Base schema class with which to define custom schemas.
 Example usage:  .. code-block:: python      import datetime as dt     from dataclasses import dataclass      from marshmallow import Schema, fields      @dataclass     class Album:         title: str         release_date: dt.date      class AlbumSchema(Schema):         title = fields.Str()         release_date = fields.Date()      album = Album("Beggars Banquet", dt.date(1968, 12, 6))     schema = AlbumSchema()     data = schema.dump(album)     data  # {'release_date': '1968-12-06', 'title': 'Beggars Banquet'}  :param only: Whitelist of the declared fields to select when     instantiating the Schema. If None, all fields are used. Nested fields     can be represented with dot delimiters. :param exclude: Blacklist of the declared fields to exclude     when instantiating the Schema. If a field appears in both <code>only</code> and     <code>exclude</code>, it is not used. Nested fields can be represented with dot     delimiters. :param many: Should be set to <code>True</code> if <code>obj</code> is a collection     so that the object will be serialized to a list. :param context: Optional context passed to :class:<code>fields.Method</code> and     :class:<code>fields.Function</code> fields. :param load_only: Fields to skip during serialization (write-only fields) :param dump_only: Fields to skip during deserialization (read-only fields) :param partial: Whether to ignore missing fields and not require     any fields declared. Propagates down to <code>Nested</code> fields as well. If     its value is an iterable, only missing fields listed in that iterable     will be ignored. Use dot delimiters to specify nested fields. :param unknown: Whether to exclude, include, or raise an error for unknown     fields in the data. Use <code>EXCLUDE</code>, <code>INCLUDE</code> or <code>RAISE</code>.  .. versionchanged:: 3.0.0     <code>prefix</code> parameter removed.  .. versionchanged:: 2.0.0     <code>__validators__</code>, <code>__preprocessors__</code>, and <code>__data_handlers__</code> are removed in favor of     <code>marshmallow.decorators.validates_schema</code>,     <code>marshmallow.decorators.pre_load</code> and <code>marshmallow.decorators.post_dump</code>.     <code>__accessor__</code> and <code>__error_handler__</code> are deprecated. Implement the     <code>handle_error</code> and <code>get_attribute</code> methods instead.</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
 <ul>
-<li>
-<p><a href="#dict_class"><code>dict_class</code></a></p>
-</li>
-<li>
-<p><a href="#set_class"><code>set_class</code></a></p>
-</li>
+<li><a href="#dict_class"><code>dict_class</code></a></li>
 </ul>
 <h2 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h2>
 <h4 id="validate_locations">validate_locations<a class="headerlink" href="#validate_locations" title="Permanent link">&para;</a></h4>
@@ -5605,11 +5588,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="dict_class">dict_class<a class="headerlink" href="#dict_class" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">dict_class</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L417">marshmallow/schema.py</a></p>
-<h4 id="set_class">set_class<a class="headerlink" href="#set_class" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="n">set_class</span>
-</code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L421">marshmallow/schema.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/schema.py#L413">marshmallow/schema.py</a></p>
 
 
 
@@ -5675,12 +5654,14 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../../../assets/javascripts/bundle.51198bba.min.js"></script>
+      <script src="../../../../../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
-        <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+        
+          <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+        
       
     
   </body>
