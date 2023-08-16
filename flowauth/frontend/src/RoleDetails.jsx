@@ -89,7 +89,7 @@ function RoleDetails(props) {
             fetch_scopes().catch(handle_scope_error);
           }
         },
-        (err) => console.error(err)
+        (err) => console.error(err),
       );
     }
   }, [server_id]);
@@ -125,7 +125,7 @@ function RoleDetails(props) {
       setNameIsValid(false);
     } else {
       setNameHelperText(
-        "Role name may only contain letters, numbers and underscores."
+        "Role name may only contain letters, numbers and underscores.",
       );
       setNameIsValid(false);
     }
@@ -192,7 +192,7 @@ function RoleDetails(props) {
           scopes.map((s) => s.id),
           members,
           expiryDate,
-          maxLifetime
+          maxLifetime,
         );
         onClick();
       } catch (err) {
@@ -209,7 +209,7 @@ function RoleDetails(props) {
           scopes.map((s) => s.id),
           members,
           expiryDate,
-          maxLifetime
+          maxLifetime,
         );
         onClick();
       } catch (err) {

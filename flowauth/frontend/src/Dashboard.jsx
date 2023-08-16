@@ -170,7 +170,7 @@ class Dashboard extends React.Component {
             position="absolute"
             className={classNames(
               classes.appBar,
-              this.state.open && classes.appBarShift
+              this.state.open && classes.appBarShift,
             )}
             color={is_admin ? "secondary" : "primary"}
           >
@@ -184,7 +184,7 @@ class Dashboard extends React.Component {
                 onClick={this.handleDrawerOpen}
                 className={classNames(
                   classes.menuButton,
-                  this.state.open && classes.menuButtonHidden
+                  this.state.open && classes.menuButtonHidden,
                 )}
               >
                 <MenuIcon />
@@ -219,7 +219,7 @@ class Dashboard extends React.Component {
             classes={{
               paper: classNames(
                 classes.drawerPaper,
-                !this.state.open && classes.drawerPaperClose
+                !this.state.open && classes.drawerPaperClose,
               ),
             }}
             open={this.state.open}

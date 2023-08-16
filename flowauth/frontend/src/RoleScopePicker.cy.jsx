@@ -44,7 +44,7 @@ describe("<RoleScopePicker>", () => {
           id: 7,
           name: "get_results",
         },
-      ]
+      ],
     ).as("getServerScopes");
 
     cy.intercept(
@@ -65,13 +65,13 @@ describe("<RoleScopePicker>", () => {
           id: 7,
           name: "get_results",
         },
-      ]
+      ],
     ).as("getRoleScopes");
   });
 
   it("mounts", () => {
     cy.mount(
-      <RoleScopePicker updateScopes={() => {}} server_id={1} role_id={1} />
+      <RoleScopePicker updateScopes={() => {}} server_id={1} role_id={1} />,
     );
     cy.wait("@getServerScopes");
     cy.wait("@getRoleScopes");
@@ -79,7 +79,7 @@ describe("<RoleScopePicker>", () => {
 
   it("expands", () => {
     cy.mount(
-      <RoleScopePicker updateScopes={() => {}} server_id={1} role_id={1} />
+      <RoleScopePicker updateScopes={() => {}} server_id={1} role_id={1} />,
     );
     cy.get("[data-cy=nested-admin0]")
       .within(() => {
@@ -90,7 +90,7 @@ describe("<RoleScopePicker>", () => {
 
   it("cascades correctly", () => {
     cy.mount(
-      <RoleScopePicker updateScopes={() => {}} server_id={1} role_id={1} />
+      <RoleScopePicker updateScopes={() => {}} server_id={1} role_id={1} />,
     );
     // Check admin0 starts indeterminant
     cy.get("[data-cy=nested-admin0")

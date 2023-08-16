@@ -104,7 +104,7 @@ function NestedScopeList(props) {
     }
     flipScopeCallback(
       inner_scopes.map((s) => s.key),
-      is_checked
+      is_checked,
     );
   };
 
@@ -174,9 +174,9 @@ function ScopeList(props) {
                   key: cs.key,
                   enabled: cs.enabled,
                   id: cs.id,
-                })
+                }),
             ),
-        })
+        }),
     );
     setNestedScopes(nested_scopes);
   }, [scopes]);
@@ -230,7 +230,7 @@ function RoleScopePicker(props) {
             key: srv_scope.name,
             enabled: role_scopes.map((y) => y.name).includes(srv_scope.name),
             id: srv_scope.id,
-          })
+          }),
       );
       setCheckedScopes(checked_scopes);
     };
@@ -244,12 +244,12 @@ function RoleScopePicker(props) {
   // Callback that flips all checkboxes
   const flipScopes = (changed_scope_names, enabled) => {
     console.debug(
-      `Flipping ${changed_scope_names} to ${enabled} from RoleScopeCallback`
+      `Flipping ${changed_scope_names} to ${enabled} from RoleScopeCallback`,
     );
     const new_scopes = checkedScopes.map((s) =>
       changed_scope_names.includes(s.name)
         ? { name: s.name, key: s.key, enabled: enabled, id: s.id }
-        : s
+        : s,
     );
     setCheckedScopes(new_scopes);
   };

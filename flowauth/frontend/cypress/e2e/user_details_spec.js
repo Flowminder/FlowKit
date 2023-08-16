@@ -45,7 +45,7 @@ describe("User details screen", function () {
     cy.get("#error-dialog-title").should("contain", "Error");
     cy.get("#error-dialog-description").should(
       "contain",
-      "Password incorrect."
+      "Password incorrect.",
     );
   });
 
@@ -59,7 +59,7 @@ describe("User details screen", function () {
     cy.get("#error-dialog-title").should("contain", "Error");
     cy.get("#error-dialog-description").should(
       "contain",
-      "Passwords do not match."
+      "Passwords do not match.",
     );
   });
 
@@ -73,7 +73,7 @@ describe("User details screen", function () {
     cy.get("#error-dialog-title").should("contain", "Error");
     cy.get("#error-dialog-description").should(
       "contain",
-      "Password not complex enough."
+      "Password not complex enough.",
     );
   });
 

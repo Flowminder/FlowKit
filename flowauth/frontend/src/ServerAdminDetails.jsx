@@ -92,7 +92,7 @@ class ServerAdminDetails extends React.Component {
         ...obj,
         [cur]: enabledRights.some((r) => cur.startsWith(r)),
       }),
-      {}
+      {},
     );
 
     if (
@@ -107,7 +107,7 @@ class ServerAdminDetails extends React.Component {
             item_id,
             name,
             new Date(latest_expiry).toISOString(),
-            max_life
+            max_life,
           )
         : createServer(name, new Date(latest_expiry).toISOString(), max_life);
       try {
@@ -166,7 +166,7 @@ class ServerAdminDetails extends React.Component {
         const capAwait = getScopes(item_id);
         const limitsAwait = getTimeLimits(item_id);
         const rights = await capAwait.then((resp) =>
-          resp.reduce((p_x, x) => ({ [x.name]: x.enabled, ...p_x }), {})
+          resp.reduce((p_x, x) => ({ [x.name]: x.enabled, ...p_x }), {}),
         );
         const scope_graph = scopesGraph(rights);
         const enabledKeys = [];

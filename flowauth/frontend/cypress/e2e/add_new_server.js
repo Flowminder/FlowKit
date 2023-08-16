@@ -16,7 +16,7 @@ describe("Server management", function () {
     cy.get("#max-life").type(" ", { force: true }).clear({ force: true });
     cy.get("#max-life-helper-text").should(
       "have.text",
-      "Maximum lifetime minutes can not be blank."
+      "Maximum lifetime minutes can not be blank.",
     );
     cy.get("#max-life").type("1234", { force: true });
     cy.get("#max-life-helper-text").should("not.exist");
@@ -32,7 +32,7 @@ describe("Server management", function () {
     //checking error dialogue text
     cy.get("#error-dialog-description").should(
       "have.text",
-      "Server with this name already exists."
+      "Server with this name already exists.",
     );
     cy.contains("OK").click();
     cy.get("#error-dialog-description").should("not.exist");
@@ -62,7 +62,7 @@ describe("Server management", function () {
     cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
     cy.get(".rs-picker-toggle-value").click().wait(1);
     cy.get(
-      ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper"
+      ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper",
     ).click();
     cy.get(".MuiGrid-align-items-xs-center > :nth-child(1)").click(); //click off the picker
     cy.contains("Save").click().wait(50);
@@ -104,7 +104,7 @@ describe("Server management", function () {
     /* Delete it again */
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").click();
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").should(
-      "not.exist"
+      "not.exist",
     );
   });
 });
