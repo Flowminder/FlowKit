@@ -96,6 +96,13 @@ def _search_for_nested_keys(in_iter: dict, search_keys: Any) -> Any:
     return out
 
 
+@functools.lru_cache(maxsize=1)
+def get_resolved_queries(schema_string: str) -> dict:
+    return ResolvingParser(spec_string=schema_string).specification["components"][
+        "schemas"
+    ]["FlowmachineQuerySchema"]
+
+
 def schema_to_scopes(schema: dict) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
@@ -131,9 +138,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
 
     ["dummy", "run&dummy", "get_result&available_dates"],
     """
-    resolved_queries = ResolvingParser(spec_string=dumps(schema)).specification[
-        "components"
-    ]["schemas"]["FlowmachineQuerySchema"]
+    resolved_queries = get_resolved_queries(dumps(schema))
     unique_scopes = set()
     for tl_query in resolved_queries["oneOf"]:
         tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
