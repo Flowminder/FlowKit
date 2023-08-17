@@ -17,13 +17,6 @@ from flowapi.flowapi_errors import (
     BadQueryError,
 )
 
-try:
-    logger = current_app.debug_logger
-except RuntimeError:
-    import structlog
-
-    logger = structlog.get_logger(__name__)
-
 
 @functools.singledispatch
 def grab_on_key_list(in_iter, search_keys):
@@ -98,6 +91,7 @@ def _search_for_nested_keys(in_iter: dict, search_keys: Any) -> Any:
 
 @functools.lru_cache(maxsize=1)
 def get_resolved_queries(schema_string: str) -> dict:
+    current_app.flowapi_logger.debug("Resolving and parsing schema.")
     return ResolvingParser(spec_string=schema_string).specification["components"][
         "schemas"
     ]["FlowmachineQuerySchema"]
@@ -142,7 +136,7 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     unique_scopes = set()
     for tl_query in resolved_queries["oneOf"]:
         tl_query_name = tl_query["properties"]["query_kind"]["enum"][0]
-        logger.debug(f"Looking for {tl_query_name}")
+        current_app.flowapi_logger.debug(f"Looking for {tl_query_name}")
         query_list = grab_on_key_list(
             tl_query,
             ["properties", "query_kind", "enum", 0],
