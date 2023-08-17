@@ -100,7 +100,8 @@ pytest_plugins = "pytest_asyncio"
         ),
     ],
 )
-def test_schema_to_scopes(tree, expected, monkeypatch):
+@pytest.mark.asyncio
+async def test_schema_to_scopes(tree, expected, monkeypatch, app):
     # Shouldn't try and fit a full spec in here, this test is large enough as it is - we skip ResolvingParser instead
     class MockResolvingParser:
         def __init__(self, spec_string, **kwargs):
@@ -113,23 +114,17 @@ def test_schema_to_scopes(tree, expected, monkeypatch):
     # It looks like we can't mock out ResolvingParser, so we mock out it's parent instead
     monkeypatch.setattr(prance, "BaseParser", MockResolvingParser)
 
-    class MockFlowApiLogger:
-        @staticmethod
-        def warning(msg):
-            print(msg)
-
-    class MockCurrentApp:
-        flowapi_logger = MockFlowApiLogger()
-
-    monkeypatch.setattr(quart, "current_app", MockCurrentApp)
-    assert schema_to_scopes(tree) == expected
+    async with app.app.app_context():
+        assert schema_to_scopes(tree) == expected
 
 
-def test_schema_to_scopes_bad_input():
+@pytest.mark.asyncio
+async def test_schema_to_scopes_bad_input(app):
     with pytest.raises(
         AssertionError, match="No specification parsed, cannot validate!"
     ):
-        schema_to_scopes({})
+        async with app.app.app_context():
+            schema_to_scopes({})
 
 
 def test_scopes_from_query():
