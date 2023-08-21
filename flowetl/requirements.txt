@@ -119,12 +119,14 @@ apache-airflow==2.6.3 \
     # via
     #   -r requirements.in
     #   apache-airflow-providers-common-sql
+    #   apache-airflow-providers-docker
     #   apache-airflow-providers-ftp
     #   apache-airflow-providers-http
     #   apache-airflow-providers-imap
     #   apache-airflow-providers-postgres
     #   apache-airflow-providers-sqlite
     #   flowetl
+    #   flowpyter-task
 apache-airflow-providers-common-sql==1.5.2 \
     --hash=sha256:413bfe5cab5deb1c973d3e12e2499a0427de6b8c4d5ec5d0aaa091f0aa2a09bb \
     --hash=sha256:ddd2bbe613147b0c6afb7ca497d68fa4e61c6a7da4fb0e111676345b227c18be
@@ -133,6 +135,12 @@ apache-airflow-providers-common-sql==1.5.2 \
     #   apache-airflow
     #   apache-airflow-providers-postgres
     #   apache-airflow-providers-sqlite
+apache-airflow-providers-docker==3.7.1 \
+    --hash=sha256:73d9a2d04dbb9c1db5c72b15da5a883f1e17787006e24151d63e0031352416e4 \
+    --hash=sha256:db1d267e935ad011923f4b2ccb47bbebd4777195fa5215825820b171ab7c40c4
+    # via
+    #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
+    #   flowpyter-task
 apache-airflow-providers-ftp==3.4.2 \
     --hash=sha256:697541059f3a1660d1699c39232e82b423c09209ae3ace26f1c58640aab96141 \
     --hash=sha256:c36208a2c3d353419a2c2d505c14164c1c7063bc8b386be8326768fab386fc9c
@@ -470,6 +478,12 @@ dnspython==2.3.0 \
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
     #   email-validator
+docker==6.1.3 \
+    --hash=sha256:aa6d17830045ba5ef0168d5eaa34d37beeb113948c413affe1d5991fc11f9a20 \
+    --hash=sha256:aecd2277b8bf8e506e484f6ab7aec39abe0038e29fa4a6d3ba86c3fe01844ed9
+    # via
+    #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
+    #   apache-airflow-providers-docker
 docutils==0.20.1 \
     --hash=sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6 \
     --hash=sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b
@@ -561,6 +575,10 @@ flask-wtf==1.1.1 \
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
     #   apache-airflow
     #   flask-appbuilder
+flowpyter-task==0.1.3 \
+    --hash=sha256:cb1f2d23ef1d17d1e9ca7035a3a1ce248bbb6f2de87ad0d2e6886777f9d3b726 \
+    --hash=sha256:ff0d89c02a308d0289b1d850e04996eef00de414758083bd3c3b1a4eea0b5b63
+    # via -r requirements.in
 frozenlist==1.3.3 \
     --hash=sha256:008a054b75d77c995ea26629ab3a0c0d7281341f2fa7e1e85fa6153ae29ae99c \
     --hash=sha256:02c9ac843e3390826a265e331105efeab489ffaf4dd86384595ee8ce6d35ae7f \
@@ -1143,6 +1161,7 @@ packaging==21.3 \
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
     #   apache-airflow
     #   connexion
+    #   docker
     #   limits
     #   marshmallow
 pathspec==0.9.0 \
@@ -1278,6 +1297,7 @@ psycopg2-binary==2.9.6 \
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
     #   apache-airflow-providers-postgres
+    #   flowpyter-task
 pycparser==2.21 \
     --hash=sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9 \
     --hash=sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206
@@ -1360,6 +1380,12 @@ python-dateutil==2.8.2 \
     #   croniter
     #   flask-appbuilder
     #   pendulum
+python-dotenv==1.0.0 \
+    --hash=sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba \
+    --hash=sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a
+    # via
+    #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
+    #   apache-airflow-providers-docker
 python-nvd3==0.15.0 \
     --hash=sha256:fbd75ff47e0ef255b4aa4f3a8b10dc8b4024aa5a9a7abed5b2406bd3cb817715
     # via
@@ -1445,6 +1471,7 @@ requests==2.31.0 \
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
     #   apache-airflow-providers-http
     #   connexion
+    #   docker
     #   requests-toolbelt
 requests-toolbelt==1.0.0 \
     --hash=sha256:7681a0a3d047012b5bdc0ee37d7f8f07ebe76ab08caeccfc3921ce23c88d5bc6 \
@@ -1798,7 +1825,14 @@ urllib3==1.26.16 \
     --hash=sha256:8f135f6502756bde6b2a9b28989df5fbe87c9970cecaa69041edcce7f0589b14
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
+    #   docker
     #   requests
+websocket-client==1.6.1 \
+    --hash=sha256:c951af98631d24f8df89ab1019fc365f2227c0892f12fd150e935607c79dd0dd \
+    --hash=sha256:f1f9f2ad5291f0225a49efad77abf9e700b6fef553900623060dad6e26503b9d
+    # via
+    #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt
+    #   docker
 werkzeug==2.2.3 \
     --hash=sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe \
     --hash=sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612

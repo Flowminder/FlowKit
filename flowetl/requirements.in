@@ -16,3 +16,6 @@
 
 # Airflow version must match the version in the base docker image
 apache-airflow == ${AIRFLOW_VERSION}
+
+# Flowpytertask for flowpyterhub
+flowpyter-task
