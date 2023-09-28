@@ -28,7 +28,7 @@
     "cy:verify": "cypress verify"
   },
   "devDependencies": {
-    "cypress": "^12.17.4",
+    "cypress": "^13.3.0",
     "husky": "^8.0.3",
     "otp-cli": "^0.2.0",
     "prettier": "^3.0.3",
