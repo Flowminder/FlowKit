@@ -286,9 +286,9 @@ six==1.16.0 \
     # via
     #   -c requirements.txt
     #   python-dateutil
-structlog==23.1.0 \
-    --hash=sha256:270d681dd7d163c11ba500bc914b2472d2b50a8ef00faa999ded5ff83a2f906b \
-    --hash=sha256:79b9e68e48b54e373441e130fa447944e6f87a05b35de23138e475c05d0f7e0e
+structlog==23.2.0 \
+    --hash=sha256:16a167e87b9fa7fae9a972d5d12805ef90e04857a93eba479d4be3801a6a1482 \
+    --hash=sha256:334666b94707f89dbc4c81a22a8ccd34449f0201d5b1ee097a030b577fa8c858
     # via -r dev-requirements.in
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
@@ -304,9 +304,9 @@ urllib3==1.26.15 \
     #   -c requirements.txt
     #   docker
     #   requests
-versioneer==0.28 \
-    --hash=sha256:11ffc09427ac99db4ce61bdc85785dae819618d0de28153adfce3085956125a8 \
-    --hash=sha256:7175ca8e7bb4dd0e3c9779dd2745e5b4a6036304af3f5e50bd896f10196586d6
+versioneer==0.29 \
+    --hash=sha256:0f1a137bb5d6811e96a79bb0486798aeae9b9c6efc24b389659cebb0ee396cb9 \
+    --hash=sha256:5ab283b9857211d61b53318b7c792cf68e798e765ee17c27ade9f6c924235731
     # via -r dev-requirements.in
 websocket-client==1.5.1 \
     --hash=sha256:3f09e6d8230892547132177f575a4e3e73cfdf06526e20cc02aa1c3b47184d40 \
