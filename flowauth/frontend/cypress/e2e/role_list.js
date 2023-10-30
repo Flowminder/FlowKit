@@ -28,7 +28,7 @@ describe("role list screen", function () {
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
-      "Role name cannot be blank."
+      "Role name cannot be blank.",
     );
     cy.get("#name").type("TEST_ROLE");
     cy.contains("#name-helper-text").should("not.exist");
@@ -42,7 +42,7 @@ describe("role list screen", function () {
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
-      "Role name may only contain letters, numbers and underscores."
+      "Role name may only contain letters, numbers and underscores.",
     );
     cy.get("#name").type(" ").clear();
     cy.get("#name").type("TEST_ROLE");

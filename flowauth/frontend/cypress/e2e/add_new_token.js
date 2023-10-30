@@ -23,7 +23,7 @@ describe("Token generation", function () {
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
-      "Token name may only contain letters, numbers and underscores."
+      "Token name may only contain letters, numbers and underscores.",
     );
     cy.get("#name").clear({
       force: true,
@@ -47,7 +47,7 @@ describe("Token generation", function () {
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
-      "Token name cannot be blank."
+      "Token name cannot be blank.",
     );
     cy.get("#name").clear({
       force: true,
@@ -67,7 +67,7 @@ describe("Token generation", function () {
     cy.contains("Save").click();
     cy.get(".MuiDialog-container").should(
       "have.text",
-      "ErrorAt least one role must be selectedClose"
+      "ErrorAt least one role must be selectedClose",
     );
   });
 

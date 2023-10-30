@@ -41,7 +41,7 @@ describe("Two-factor setup", function () {
                   .get("[data-button-id=submit]")
                   .click();
                 cy.contains("My Servers", { timeout: 5000 }).should(
-                  "be.visible"
+                  "be.visible",
                 );
                 cy.get("#logout").click();
                 cy.get("#username")
@@ -57,7 +57,7 @@ describe("Two-factor setup", function () {
                   .get("#error-dialog-description")
                   .should("have.text", "Code not valid.");
                 cy.get("#error-dialog-ok").click();
-              }
+              },
             );
           });
         cy.get("#signin-button")

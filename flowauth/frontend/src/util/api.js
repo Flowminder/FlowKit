@@ -88,7 +88,7 @@ export async function editUser(
   is_admin,
   require_two_factor,
   has_two_factor,
-  roles
+  roles,
 ) {
   var dat = {
     method: "PATCH",
@@ -158,7 +158,7 @@ export async function getAllAggregationUnits() {
 
 export async function getTimeLimits(server_id) {
   return await getResponseDefault(
-    "/admin/servers/" + server_id + "/time_limits"
+    "/admin/servers/" + server_id + "/time_limits",
   );
 }
 
@@ -167,7 +167,7 @@ export async function createUser(
   password,
   is_admin,
   require_two_factor,
-  roles
+  roles,
 ) {
   var dat = {
     method: "POST",
@@ -201,7 +201,7 @@ export async function editServer(
   server_id,
   server_name,
   latest_token_expiry,
-  longest_token_life_minutes
+  longest_token_life_minutes,
 ) {
   var dat = {
     method: "PATCH",
@@ -217,7 +217,7 @@ export async function editServer(
 export async function createServer(
   server_name,
   latest_token_expiry,
-  longest_token_life_minutes
+  longest_token_life_minutes,
 ) {
   var dat = {
     method: "POST",
@@ -302,7 +302,7 @@ export async function createRole(
   scopes,
   users,
   latest_token_expiry,
-  longest_token_life_minutes
+  longest_token_life_minutes,
 ) {
   console.log("Creating role " + role_name);
   var dat = {
@@ -332,7 +332,7 @@ export async function getUserRoles(user_id) {
 
 export async function getUserRolesOnServer(server_id, user_id) {
   return await getResponseDefault(
-    "/roles/server/" + server_id + "/user/" + user_id
+    "/roles/server/" + server_id + "/user/" + user_id,
   );
 }
 
@@ -346,7 +346,7 @@ export async function editRole(
   scopes,
   users,
   latest_token_expiry,
-  longest_token_life_minutes
+  longest_token_life_minutes,
 ) {
   console.log("Editing role " + role_id);
   var dat = {
@@ -450,7 +450,7 @@ export async function confirmTwoFactorBackups(backup_codes_signature) {
 export async function confirmTwoFactor(
   two_factor_code,
   secret,
-  backup_codes_signature
+  backup_codes_signature,
 ) {
   var dat = {
     method: "POST",

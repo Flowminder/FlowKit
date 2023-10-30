@@ -40,7 +40,7 @@ class TwoFactorActivate extends React.Component {
     const json = confirmTwoFactor(
       this.state.two_factor_code,
       secret,
-      backup_codes_signature
+      backup_codes_signature,
     );
     try {
       this.setState(await json);

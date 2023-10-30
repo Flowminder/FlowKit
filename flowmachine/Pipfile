@@ -13,6 +13,7 @@ pglast = "==4.1" # Pin pglast because different versions may produce different q
 python-dateutil = "*"
 pytz = "*"
 python-louvain = "*"
+pyyaml = ">=6.0.1"
 pyzmq = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
@@ -32,7 +33,7 @@ pre_commit = "*"
 geojson = "*"
 geopandas = "*"
 descartes = "*"
-black = {extras = ["jupyter"],version = "==23.3.0"}
+black = {extras = ["jupyter"],version = "==23.9.1"}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"

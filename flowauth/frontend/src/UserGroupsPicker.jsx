@@ -28,7 +28,7 @@ class UserGroupsPicker extends React.Component {
         this.setState({
           groups: json.map(
             (member) =>
-              all_groups[all_groups.map((user) => user.id).indexOf(member.id)]
+              all_groups[all_groups.map((user) => user.id).indexOf(member.id)],
           ),
           all_groups: all_groups,
         });

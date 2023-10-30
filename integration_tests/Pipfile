@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
-black = {extras = ["jupyter"],version = "==23.1.0"} # required by papermill
+black = {extras = ["jupyter"],version = "==23.7.0"} # required by papermill
 pytest = "<7.3.0" # https://github.com/taverntesting/tavern/issues/859
 pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}

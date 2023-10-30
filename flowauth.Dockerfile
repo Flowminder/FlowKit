@@ -17,9 +17,9 @@ WORKDIR /${SOURCE_TREE}/flowauth
 COPY ./flowauth/Pipfile* ./
 
 # Install dependencies required for argon crypto & psycopg2
-RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
-    libressl-dev libffi-dev mariadb-connector-c-dev curl && \
-    pip install --no-cache-dir --upgrade pip pipenv && pipenv install --clear --deploy --system && \
+RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev pkgconfig musl-dev \
+    libressl-dev libffi-dev mariadb-connector-c-dev mariadb-dev curl && \
+    pip install --no-cache-dir --upgrade pip pipenv && pipenv install --verbose --clear --deploy --system && \
     apk del build-dependencies && \
     apk add --no-cache libpq libgcc mariadb-connector-c # Required for psycopg2 & mysqlclient
 ENV STATIC_PATH /app/static

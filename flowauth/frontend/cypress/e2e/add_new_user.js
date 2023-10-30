@@ -19,7 +19,7 @@ describe("User management", function () {
     //checking validation text
     cy.get("#username-helper-text").should(
       "have.text",
-      "Username may only contain letters, numbers and underscores."
+      "Username may only contain letters, numbers and underscores.",
     );
     cy.get("#username").type(" ").clear();
     cy.get("#username").type("USER_TEST01");
@@ -32,7 +32,7 @@ describe("User management", function () {
     //checking validation text
     cy.get("#username-helper-text").should(
       "have.text",
-      "Username can not be blank."
+      "Username can not be blank.",
     );
     cy.get("#username").type("USER_TEST01");
     cy.contains("#username-helper-text").should("not.exist");
@@ -46,7 +46,7 @@ describe("User management", function () {
     //checking error dialogue text
     cy.get("#error-dialog-description").should(
       "have.text",
-      "Username already exists."
+      "Username already exists.",
     );
   });
   it("Add blank Password", function () {
@@ -55,7 +55,7 @@ describe("User management", function () {
     cy.get("#password").type(" ").clear();
     cy.get("#password-helper-text").should(
       "have.text",
-      "Use a few words, avoid common phrases"
+      "Use a few words, avoid common phrases",
     );
     cy.get("#password").type("C>K,7|~44]44:ibK");
     cy.get("#password-helper-text").should("not.exist");
@@ -66,7 +66,7 @@ describe("User management", function () {
     cy.get("#password").type("USER_TEST");
     cy.get("#password-helper-text").should(
       "have.text",
-      "Add another word or two. Uncommon words are better."
+      "Add another word or two. Uncommon words are better.",
     );
     cy.get("#password").type(" ").clear();
     cy.get("#password").type("C>K,7|~44]44:ibK");

@@ -31,7 +31,7 @@ const {
 // Regex developed and explained at https://regex101.com/r/oBJsrs/1
 const pep440_regex = new RegExp(
   "(?<version>[0-9]+(?:.[0-9]+)+)-(?<dev>[0-9]*)-(?<revision>w*)(-(?<dirty>dirty))?",
-  "mg"
+  "mg",
 );
 
 function getCookieValue(a) {
@@ -55,7 +55,7 @@ Cypress.Commands.add("login", () =>
   cy.goto("/").request("POST", "/signin", {
     username: "TEST_USER",
     password: "DUMMY_PASSWORD",
-  })
+  }),
 );
 Cypress.Commands.add("create_two_factor_user", (username, password) =>
   cy.login_admin().then((response) => {
@@ -71,7 +71,7 @@ Cypress.Commands.add("create_two_factor_user", (username, password) =>
         headers: { "X-CSRF-Token": getCookieValue("X-CSRF") },
       })
       .its("body");
-  })
+  }),
 );
 Cypress.Commands.add("create_user", (username, password) =>
   cy.login_admin().then((response) =>
@@ -83,8 +83,8 @@ Cypress.Commands.add("create_user", (username, password) =>
         password: password,
       },
       headers: { "X-CSRF-Token": getCookieValue("X-CSRF") },
-    })
-  )
+    }),
+  ),
 );
 Cypress.Commands.add("create_role", (role_name) =>
   cy.login_admin().then((response) =>
@@ -102,8 +102,8 @@ Cypress.Commands.add("create_role", (role_name) =>
         },
         headers: { "X-CSRF-Token": getCookieValue("X-CSRF") },
       })
-      .its("body")
-  )
+      .its("body"),
+  ),
 );
 Cypress.Commands.add("create_user_and_log_in", (username, password) =>
   cy
@@ -116,13 +116,13 @@ Cypress.Commands.add("create_user_and_log_in", (username, password) =>
         username: username,
         password: password,
       }).its("body");
-    })
+    }),
 );
 Cypress.Commands.add("login_admin", () =>
   cy.request("POST", "/signin", {
     username: "TEST_ADMIN",
     password: "DUMMY_PASSWORD",
-  })
+  }),
 );
 
 /*
@@ -165,5 +165,5 @@ Cypress.Commands.add(
       el.files = dataTransfer.files;
       cy.wrap(subject).trigger("change", { force: true });
     });
-  }
+  },
 );

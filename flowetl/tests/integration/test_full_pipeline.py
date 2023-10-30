@@ -186,5 +186,8 @@ def test_wait_when_in_flux(growing_test_data_table, run_task):
     return_code, result = run_task(
         dag_id="remote_table_dag", task_id="check_not_in_flux", exec_date="2016-06-15"
     )
+    print(
+        f"Dag: remote_table_dag, task: check_not_in_flux, exec date: 2016-06-15.\n\n{result}\n\n"
+    )
     assert "Success criteria met. Exiting." not in str(result)
     assert return_code == 0

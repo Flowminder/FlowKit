@@ -56,10 +56,10 @@ class TokenList extends React.Component {
 
     const now = Date.parse(new Date());
     const activeTokens = tokens.filter(
-      (token) => Date.parse(token.expires) > now
+      (token) => Date.parse(token.expires) > now,
     );
     const expiredTokens = tokens.filter(
-      (token) => Date.parse(token.expires) <= now
+      (token) => Date.parse(token.expires) <= now,
     );
 
     return (

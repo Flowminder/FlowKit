@@ -12,7 +12,7 @@
 
 # Specifying editable install of flowetl here so we get its dependencies, but we don't want to actually install it
 # so need to specify '--unsafe-package flowetl' option to pip-compile
--e ./flowetl
+-e flowetl @ ./flowetl
 
 # Airflow version must match the version in the base docker image
 apache-airflow == ${AIRFLOW_VERSION}

@@ -49,7 +49,7 @@ class RoleMembersPicker extends React.Component {
         this.setState({
           members: members.map(
             (member) =>
-              all_users[all_users.map((user) => user.id).indexOf(member.id)]
+              all_users[all_users.map((user) => user.id).indexOf(member.id)],
           ),
           all_users: all_users,
         });

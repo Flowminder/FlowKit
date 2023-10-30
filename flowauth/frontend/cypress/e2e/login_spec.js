@@ -26,7 +26,7 @@ describe("Login screen", function () {
     cy.get("#error-dialog-title").should("contain", "Error");
     cy.get("#error-dialog-description").should(
       "contain",
-      "Incorrect username or password."
+      "Incorrect username or password.",
     );
   });
 
@@ -39,7 +39,7 @@ describe("Login screen", function () {
     cy.get("#error-dialog-title").should("contain", "Error");
     cy.get("#error-dialog-description").should(
       "contain",
-      "Incorrect username or password."
+      "Incorrect username or password.",
     );
   });
 

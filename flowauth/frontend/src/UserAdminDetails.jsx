@@ -137,14 +137,14 @@ class UserAdminDetails extends React.Component {
               is_admin,
               require_two_factor,
               has_two_factor,
-              roles.map((r) => r.id)
+              roles.map((r) => r.id),
             )
           : createUser(
               name,
               password,
               is_admin,
               require_two_factor,
-              roles.map((r) => r.id)
+              roles.map((r) => r.id),
             ));
         onClick();
       } catch (err) {
