@@ -9,6 +9,7 @@ pandas = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
 tohu = "==0.6.7"
+numpy = "<=1.26.0"
 
 [dev-packages]
 
