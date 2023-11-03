@@ -1234,6 +1234,7 @@ workflows:
             - build_flowmachine_wheel
             - build_flowclient_wheel
             - build_flowetl_wheel
+            - build_flowkit_jwt_generator_wheel
             - run_flowmachine_tests
             - run_autoflow_tests
             - build_autoflow
