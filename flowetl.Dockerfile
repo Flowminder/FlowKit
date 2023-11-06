@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM apache/airflow:2.7.2-python3.8@sha256:4c04bdbb4288846c23c80e1dda7059b6ca6ad288afd9422bbc86ccc535431fa1
+FROM apache/airflow:2.7.3-python3.8@sha256:e8560e89f83ebcabd26abc09ec65e6525a1d747cb286a1fd541cb8e1c9bb4447
 
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES False

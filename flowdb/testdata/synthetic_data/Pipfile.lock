@@ -42,11 +42,11 @@
         },
         "geojson": {
             "hashes": [
-                "sha256:e49df982b204ed481e4c1236c57f587adf71537301cf8faf7120ab27d73c7568",
-                "sha256:ff3d75acab60b1e66504a11f7ea12c104bad32ff3c410a807788663b966dee4a"
+                "sha256:58a7fa40727ea058efc28b0e9ff0099eadf6d0965e04690830208d3ef571adac",
+                "sha256:68a9771827237adb8c0c71f8527509c8f5bef61733aa434cefc9c9d4f0ebe8f3"
             ],
-            "markers": "python_version < '3.12' and python_version >= '3.7'",
-            "version": "==3.0.1"
+            "markers": "python_version >= '3.7'",
+            "version": "==3.1.0"
         },
         "greenlet": {
             "hashes": [
