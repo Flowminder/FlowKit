@@ -8,15 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- FlowETL now updates a new table `events.location_ids` each time a new day of CDR data is ingested, to record the first and last date that each location ID appears in the data. [#5376](https://github.com/Flowminder/FlowKit/issues/5376)
-- New FlowETL QA check "count_locatable_events", which counts the number of added rows with location ID corresponding to a cell with a known location. [#5289](https://github.com/Flowminder/FlowKit/issues/5289)
-- flowkit_jwt_generator is now published as a wheel via pypi
-
 ### Changed
 
 ### Fixed
 
 ### Removed
+
+## [1.19.0]
+
+### Added
+
+- FlowETL now updates a new table `events.location_ids` each time a new day of CDR data is ingested, to record the first and last date that each location ID appears in the data. [#5376](https://github.com/Flowminder/FlowKit/issues/5376)
+- New FlowETL QA check "count_locatable_events", which counts the number of added rows with location ID corresponding to a cell with a known location. [#5289](https://github.com/Flowminder/FlowKit/issues/5289)
+- flowkit_jwt_generator is now published as a wheel via pypi
 
 ## [1.18.4]
 
@@ -1021,7 +1025,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.18.4...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.19.0...master
+[1.19.0]: https://github.com/Flowminder/FlowKit/compare/1.18.4...1.19.0
 [1.18.4]: https://github.com/Flowminder/FlowKit/compare/1.18.3...1.18.4
 [1.18.3]: https://github.com/Flowminder/FlowKit/compare/1.18.2...1.18.3
 [1.18.2]: https://github.com/Flowminder/FlowKit/compare/1.18.1...1.18.2
