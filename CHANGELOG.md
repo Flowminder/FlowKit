@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+- Removed AutoFlow. [#6394](https://github.com/Flowminder/FlowKit/issues/6394)
+
 ## [1.19.0]
 
 ### Added
