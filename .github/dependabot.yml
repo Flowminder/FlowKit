@@ -11,15 +11,6 @@ updates:
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "apache/airflow" # Airflow image version needs to stay in sync with version in flowetl Pipfile
-  - package-ecosystem: bundler
-    directory: "/autoflow"
-    schedule:
-      interval: daily
-      time: "04:00"
-      timezone: Europe/London
-    pull-request-branch-name:
-      separator: "-"
-    open-pull-requests-limit: 10
   - package-ecosystem: npm
     directory: "/flowauth/frontend"
     schedule:
