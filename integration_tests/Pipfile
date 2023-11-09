@@ -19,7 +19,7 @@ flowclient = {editable = true, path = "./../flowclient"}
 tavern = {extras = ["pytest"],version = "*"}
 
 [requires]
-python_version = "3.8.5"
+python_version = "3.8"
 
 [scripts]
 run-tests = "bash run_tests.sh"
