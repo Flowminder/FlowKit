@@ -965,11 +965,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../analyst/autoflow/" class="md-nav__link">
+      <a href="../../analyst/autoflow.md" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    AutoFlow
+    None
   </span>
   
 
@@ -6811,13 +6811,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#autoflow-production-deployment" class="md-nav__link">
-    AutoFlow production deployment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#demonstrating-successful-deployment" class="md-nav__link">
     Demonstrating successful deployment
   </a>
@@ -7726,13 +7719,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#autoflow-production-deployment" class="md-nav__link">
-    AutoFlow production deployment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#demonstrating-successful-deployment" class="md-nav__link">
     Demonstrating successful deployment
   </a>
@@ -8290,50 +8276,6 @@ flask<span class="w"> </span>db<span class="w"> </span>upgrade
 <span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>(This generates a certificate valid for the <code>flow.api</code> domain as well, which you can use by adding a corresponding entry to your <code>/etc/hosts</code> file.)</p>
-<h4 id="autoflow-production-deployment">AutoFlow production deployment<a class="headerlink" href="#autoflow-production-deployment" title="Permanent link">&para;</a></h4>
-<p>Analysts with permission to run docker containers may choose to run their own AutoFlow instances. Instructions for doing so can be found in the <a href="../../analyst/autoflow/#running-autoflow">AutoFlow documentation</a>. A sample stack file for deploying AutoFlow along with the rest of the FlowKit stack can be found <a href="https://github.com/Flowminder/FlowKit/blob/master/autoflow/docker-stack.yml">here</a>, which adds an AutoFlow service, and an additionl Postgres database used by AutoFlow to record workflow runs. This makes use of the <code>cert-flowkit.pem</code> secret provided to FlowAPI, and also requires two other secrets:</p>
-<table>
-<thead>
-<tr>
-<th>Secret name</th>
-<th>Secret purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>AUTOFLOW_DB_PASSWORD</td>
-<td>Password for AutoFlow's database</td>
-</tr>
-<tr>
-<td>FLOWAPI_TOKEN</td>
-<td>API token AutoFlow will use to connect to FlowAPI</td>
-</tr>
-</tbody>
-</table>
-<p>You should also set the following environment variables:</p>
-<table>
-<thead>
-<tr>
-<th>Variable name</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>AUTOFLOW_INPUTS_DIR</td>
-<td>Path on the host to the directory where input files to AutoFlow are stored</td>
-</tr>
-<tr>
-<td>AUTOFLOW_OUTPUTS_DIR</td>
-<td>Path on the host to a directory where AutoFLow should store output files</td>
-</tr>
-</tbody>
-</table>
-<p>and optionally set the <code>AUTOFLOW_LOG_LEVEL</code> environment variable (default 'ERROR').</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>AutoFlow input files (Jupyter notebooks and <code>workflows.yml</code>) should be in the inputs directory before starting the AutoFlow container. Files added later will not be picked up by AutoFlow.</p>
-</div>
 <h4 id="demonstrating-successful-deployment">Demonstrating successful deployment<a class="headerlink" href="#demonstrating-successful-deployment" title="Permanent link">&para;</a></h4>
 <p>Once FlowKit installation is complete, you can verify that the system has been successfully set up by visiting <code>http&lt;s&gt;://&lt;flowapi_url&gt;:&lt;flowapi_port&gt;/api/0/spec/redoc</code>. Once all the services have come up, you will be able to view the interactive API specification.
 We also recommend running the provided <a href="../../analyst/worked_examples/">worked examples</a> against the deployed FlowKit to check that everything is working correctly.</p>

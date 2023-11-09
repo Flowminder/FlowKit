@@ -965,11 +965,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../analyst/autoflow/" class="md-nav__link">
+      <a href="../../analyst/autoflow.md" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    AutoFlow
+    None
   </span>
   
 
@@ -7559,25 +7559,17 @@
 <li><a href="https://pipenv.readthedocs.io/en/latest/">Pipenv</a> (to manage separate pipenv environment for each FlowKit component)</li>
 <li>FlowMachine server: <code>Python &gt;= 3.7</code></li>
 <li>FlowAuth: <code>npm</code> (we recommend installing it via <a href="https://github.com/nvm-sh/nvm">nvm</a>); <a href="https://www.cypress.io/">Cypress</a> for testing</li>
-<li>AutoFlow: <a href="https://pandoc.org/installing.html">pandoc</a>, <code>Ruby</code> (we recommend installing Ruby via <a href="https://rvm.io/">RVM</a>), and <a href="https://bundler.io/">Bundler</a> (to manage Ruby package dependencies).</li>
 </ul>
 <h2 id="setting-up-flowkit-for-development">Setting up FlowKit for development<a class="headerlink" href="#setting-up-flowkit-for-development" title="Permanent link">&para;</a></h2>
-<p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code> (this will set the required environment variables) followed by <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the FlowKit docker containers using the <code>docker-compose.yml</code> file. The docker containers to start can be selected by running <code>make up DOCKER_SERVICES="&lt;service 1&gt; &lt;service 2&gt; ..."</code>, where the services can be any of <code>flowmachine</code>, <code>flowmachine_query_locker</code>, <code>flowapi</code>, <code>flowauth</code>, <code>flowdb</code>, <code>worked_examples</code>, <code>flowdb_testdata</code>, <code>flowdb_synthetic_data</code>, <code>flowetl</code>, <code>flowetl_db</code> or <code>autoflow</code> (at most one of the <code>flowdb</code> containers). The default is to start <code>flowdb</code>, <code>flowapi</code>, <code>flowmachine</code>, <code>flowauth</code>, <code>flowmachine_query_locker</code>, <code>flowetl</code>, <code>flowetl_db</code> and <code>worked_examples</code>. Alternatively, containers can be built, started or stopped individually by running <code>make &lt;service&gt;-build</code>, <code>make &lt;service&gt;-up</code> or <code>make &lt;service&gt;-down</code>, respectively.</p>
-<p>To run the <code>autoflow</code> service, a valid FlowAPI token must be set as the environment variable <code>FLOWAPI_TOKEN</code> (in addition to the environment variables set by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code>).</p>
+<p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>set -a &amp;&amp; . development_environment &amp;&amp; set +a</code> (this will set the required environment variables) followed by <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the FlowKit docker containers using the <code>docker-compose.yml</code> file. The docker containers to start can be selected by running <code>make up DOCKER_SERVICES="&lt;service 1&gt; &lt;service 2&gt; ..."</code>, where the services can be any of <code>flowmachine</code>, <code>flowmachine_query_locker</code>, <code>flowapi</code>, <code>flowauth</code>, <code>flowdb</code>, <code>worked_examples</code>, <code>flowdb_testdata</code>, <code>flowdb_synthetic_data</code>, <code>flowetl</code> or <code>flowetl_db</code> (at most one of the <code>flowdb</code> containers). The default is to start <code>flowdb</code>, <code>flowapi</code>, <code>flowmachine</code>, <code>flowauth</code>, <code>flowmachine_query_locker</code>, <code>flowetl</code>, <code>flowetl_db</code> and <code>worked_examples</code>. Alternatively, containers can be built, started or stopped individually by running <code>make &lt;service&gt;-build</code>, <code>make &lt;service&gt;-up</code> or <code>make &lt;service&gt;-down</code>, respectively.</p>
 <p>FlowKit uses <a href="https://pipenv.readthedocs.io/">pipenv</a> to manage Python environments. To start a Python session in which you can use FlowClient:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>flowclient
 pipenv<span class="w"> </span>install
 pipenv<span class="w"> </span>run<span class="w"> </span>python
 &gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>flowclient
 </code></pre></div>
-<p>To run the tests in the <code>flowapi</code>, <code>flowclient</code>, <code>flowdb</code>, <code>flowmachine</code>, <code>autoflow</code>, <code>flowetl</code> or <code>integration_tests</code> directory:</p>
+<p>To run the tests in the <code>flowapi</code>, <code>flowclient</code>, <code>flowdb</code>, <code>flowmachine</code>, <code>flowetl</code> or <code>integration_tests</code> directory:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>&lt;directory&gt;
-pipenv<span class="w"> </span>install<span class="w"> </span>--dev
-pipenv<span class="w"> </span>run<span class="w"> </span>pytest
-</code></pre></div>
-<p>AutoFlow additionally has dependencies on Ruby packages, which we manage using <a href="https://bundler.io/">Bundler</a> which works similarly to pipenv. To run the tests in the <code>autoflow</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>autoflow
-bundle<span class="w"> </span>install
 pipenv<span class="w"> </span>install<span class="w"> </span>--dev
 pipenv<span class="w"> </span>run<span class="w"> </span>pytest
 </code></pre></div>
