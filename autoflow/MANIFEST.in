@@ -1,2 +1,0 @@
-include versioneer.py
-include autoflow/_version.py

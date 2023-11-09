@@ -314,28 +314,6 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
 
-
-#### AutoFlow production deployment
-
-Analysts with permission to run docker containers may choose to run their own AutoFlow instances. Instructions for doing so can be found in the [AutoFlow documentation](../analyst/autoflow.md#running-autoflow). A sample stack file for deploying AutoFlow along with the rest of the FlowKit stack can be found [here](https://github.com/Flowminder/FlowKit/blob/master/autoflow/docker-stack.yml), which adds an AutoFlow service, and an additionl Postgres database used by AutoFlow to record workflow runs. This makes use of the `cert-flowkit.pem` secret provided to FlowAPI, and also requires two other secrets:
-
-| Secret name | Secret purpose |
-| ----------- | -------------- |
-| AUTOFLOW_DB_PASSWORD | Password for AutoFlow's database |
-| FLOWAPI_TOKEN | API token AutoFlow will use to connect to FlowAPI |
-
-You should also set the following environment variables:
-
-| Variable name | Purpose |
-| ------------- | ------- |
-| AUTOFLOW_INPUTS_DIR | Path on the host to the directory where input files to AutoFlow are stored |
-| AUTOFLOW_OUTPUTS_DIR | Path on the host to a directory where AutoFLow should store output files |
-
-and optionally set the `AUTOFLOW_LOG_LEVEL` environment variable (default 'ERROR').
-
-!!!note
-    AutoFlow input files (Jupyter notebooks and `workflows.yml`) should be in the inputs directory before starting the AutoFlow container. Files added later will not be picked up by AutoFlow.
-
 #### Demonstrating successful deployment
 
 Once FlowKit installation is complete, you can verify that the system has been successfully set up by visiting `http<s>://<flowapi_url>:<flowapi_port>/api/0/spec/redoc`. Once all the services have come up, you will be able to view the interactive API specification.

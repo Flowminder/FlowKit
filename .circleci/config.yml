@@ -637,56 +637,12 @@ jobs:
       - upload_codecov:
           test: test_results
 
-  run_autoflow_tests:
-    docker:
-      - image: cimg/python:3.8
-    working_directory: /home/circleci/project/autoflow
-    steps:
-      - checkout:
-          path: /home/circleci/project/
-      - restore_cache:
-          keys:
-            - autoflow-deps-6-{{ checksum "Pipfile.lock" }}
-      - run: &install_autoflow_deps
-          name: Install non-python autoflow dependencies
-          command: |
-            sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y postgresql pandoc ruby
-            sudo gem i rubygems-update -v '<3' 
-            sudo update_rubygems
-            sudo gem install bundler -v 2.3.26
-            sudo gem install bundle 
-            bundle install
-      - run:
-          name: Install python dependencies
-          command: |
-            pipenv install --deploy --dev
-      - save_cache:
-          key: autoflow-deps-6-{{ checksum "Pipfile.lock" }}
-          paths:
-            - /home/circleci/.local/share/virtualenvs/
-      - run:
-          name: Run autoflow unit tests
-          command: |
-            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=./ \
-             --cov-report term --cov-report xml --durations=10
-      - store_test_results:
-          path: test_results
-      - upload_codecov:
-          test: test_results
-
   build_docker_image:
     parameters:
       component:
         type: enum
         enum:
-          [
-            "flowmachine",
-            "flowauth",
-            "flowapi",
-            "flowkit-examples",
-            "flowetl",
-            "autoflow",
-          ]
+          ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl"]
       component_path:
         type: string
     machine:
@@ -826,11 +782,6 @@ jobs:
           at: /home/circleci
       - restore_cache:
           key: integration-test-deps-6-{{ checksum "Pipfile.lock" }}
-      - when:
-          condition:
-            equal: ["not query_tests", << parameters.pytest_selector >>]
-          steps:
-            - run: *install_autoflow_deps
       - run: pipenv install --deploy --dev
       - save_cache:
           key: integration-test-deps-6-{{ checksum "Pipfile.lock" }}
@@ -841,7 +792,7 @@ jobs:
           name: Run integration tests
           command: |
             PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run pytest -sv --junitxml=test_results/pytest/results.xml --durations=10 \
-            --cov=../flowmachine --cov=../flowclient --cov=../flowapi --cov=../autoflow \
+            --cov=../flowmachine --cov=../flowclient --cov=../flowapi \
             --cov-report xml \
             --cov-report term \
             -k "<<parameters.pytest_selector>>"
@@ -1052,7 +1003,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-oracle flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl autoflow; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-oracle flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -1106,8 +1057,6 @@ workflows:
           requires:
             - build_flowdb_synthdata
           <<: *run_always_org_context
-      - run_autoflow_tests:
-          <<: *run_always_org_context
       - build_docker_image:
           name: build_examples
           component: flowkit-examples
@@ -1138,11 +1087,6 @@ workflows:
           name: build_flowapi
           component: flowapi
           component_path: flowapi
-          <<: *run_always_org_context
-      - build_docker_image:
-          name: build_autoflow
-          component: autoflow
-          component_path: autoflow
           <<: *run_always_org_context
       - run_flowauth_end_to_end_tests:
           requires:
@@ -1236,8 +1180,6 @@ workflows:
             - build_flowetl_wheel
             - build_flowkit_jwt_generator_wheel
             - run_flowmachine_tests
-            - run_autoflow_tests
-            - build_autoflow
             - build_flowdb_oracle
           <<: *master_only_org_context
       - retag_images:
