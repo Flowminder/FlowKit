@@ -80,7 +80,6 @@
                 "sha256:dbea0bb8575c6b6303cc65017b46351dc5953eea5c0a59d7b7e3a2d2f433a911",
                 "sha256:fc7f6a44d52747e65a02558e1d807c82df1d66ffa80a601862040a43ec2e3142"
             ],
-            "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==23.11.0"
         },
