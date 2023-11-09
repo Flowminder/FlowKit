@@ -162,3 +162,8 @@ updates:
       - dependency-name: "pglast" # pglast version is pinned because different versions may produce different query IDs
     labels:
       - FlowMachine
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      # Check for updates to GitHub Actions every week
+      interval: "weekly"
