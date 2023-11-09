@@ -165,7 +165,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2004:2023.10.1
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -264,7 +264,7 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2004:2023.10.1
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
@@ -690,7 +690,7 @@ jobs:
       component_path:
         type: string
     machine:
-      image: ubuntu-2004:2023.07.1
+      image: ubuntu-2004:2023.10.1
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -756,7 +756,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2004:2023.10.1
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
@@ -857,7 +857,7 @@ jobs:
         enum: ["", "examples smaller_data"]
         default: ""
     machine:
-      image: ubuntu-2004:2023.04.2
+      image: ubuntu-2004:2023.10.1
     working_directory: /home/circleci/project
     steps:
       - checkout:
