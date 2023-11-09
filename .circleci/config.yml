@@ -72,7 +72,7 @@ executors:
     parameters:
       python_version:
         type: enum
-        enum: ["3.7", "3.8", "3.9"]
+        enum: ["3.7", "3.8", "3.9", "3.11"]
         default: "3.8"
       flowdb_image:
         type: enum
@@ -179,10 +179,10 @@ jobs:
       - restore_cache:
           key: flowdb-deps-6-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.9.4"
+          name: "Switch to Python v3.11.5"
           command: |
             pyenv versions
-            pyenv global 3.9.4
+            pyenv global 3.11.5
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv virtualenv
@@ -271,10 +271,10 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.9.4"
+          name: "Switch to Python v3.11.5"
           command: |
             pyenv versions
-            pyenv global 3.9.4
+            pyenv global 3.11.5
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -472,7 +472,7 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
-      python_version: "3.9"
+      python_version: "3.11"
     working_directory: /home/circleci/project/flowdb/tests
     steps:
       - checkout:
