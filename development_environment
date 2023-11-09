@@ -153,25 +153,3 @@ PUBLIC_JWT_SIGNING_KEY=LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUNJakFOQmdrcWhra
 
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
-
-## AutoFlow settings
-# Directory containing AutoFlow input files
-AUTOFLOW_INPUTS_DIR=./autoflow/examples/inputs
-# Directory to store AutoFlow output files
-AUTOFLOW_OUTPUTS_DIR=./autoflow/examples/outputs
-# Error and debugging log level
-AUTOFLOW_LOG_LEVEL=DEBUG
-# Path to prefect config file
-PREFECT__USER_CONFIG_PATH=./autoflow/config/config.toml
-# Path to asciidoc template
-PREFECT__ASCIIDOC_TEMPLATE_PATH=./autoflow/config/asciidoc_extended.tpl
-# FlowAPI URL
-FLOWAPI_URL=http://localhost:9090
-# URI of database for storing workflow run metadata
-AUTOFLOW_DB_URI=sqlite:////tmp/test.db
-# Password for AutoFlow database
-#AUTOFLOW_DB_PASSWORD
-# FlowAPI token
-#FLOWAPI_TOKEN
-# Path to SSL certificate for FlowAPI
-#SSL_CERTIFICATE_FILE

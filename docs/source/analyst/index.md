@@ -30,10 +30,6 @@ To connect FlowClient to FlowAPI, an access token must be generated using FlowAu
 
 5. Click "COPY" to copy the token string, "DOWNLOAD" to download the token as a text file, or "VIEW" to display the token string.
 
-## AutoFlow
-
-AutoFlow is a tool to automate workflows consisting of Jupyter notebooks that interact with FlowKit. Use-cases include automatically producing a PDF report for each day of CDR data available in a FlowKit instance. Documentation for AutoFlow can be found [here](autoflow.md).
-
 ## FlowAPI
 
 Advanced users may wish to write their own clients that interface directly to FlowAPI. This is discussed in more detail in the [Developer](../developer/index.md) section of these documents.
