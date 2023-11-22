@@ -18,4 +18,4 @@
 apache-airflow == ${AIRFLOW_VERSION}
 
 # Flowpytertask for flowpyterhub
-flowpyter-task == 1.0.0
+flowpyter-task == 1.1.0
