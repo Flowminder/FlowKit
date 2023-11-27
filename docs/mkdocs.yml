@@ -37,7 +37,6 @@ nav:
           - analyst/worked_examples/cell-towers-per-region.ipynb
           - analyst/worked_examples/unique-subscriber-counts.ipynb
           - analyst/worked_examples/joined-spatial-aggregate.ipynb
-      - analyst/autoflow.md
       - Advanced usage:
           - analyst/advanced_usage/index.md
           - Worked examples:
