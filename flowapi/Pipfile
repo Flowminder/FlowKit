@@ -13,7 +13,7 @@ cryptography = "*" # This _should_ get installed given the flask-jwt-extended ex
 structlog = "*"
 python-rapidjson = "*"
 pyyaml = "==6.0.1" # Pending https://github.com/Flowminder/FlowKit/issues/6015
-jsonschema = "==4.17.3" # Pending https://github.com/Flowminder/FlowKit/issues/6015
+jsonschema = "==4.20.0" # Pending https://github.com/Flowminder/FlowKit/issues/6015
 apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
 prance = {extras = ["osv"],version = "*"}
