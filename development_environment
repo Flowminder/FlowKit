@@ -145,6 +145,9 @@ FLOWETL_REDIS_PASSWORD=flowetl
 FLOWETL_WEBSERVER_PASSWORD=admin
 
 HOST_DAGS_DIR=./flowetl/mounts/dags
+HOST_NOTEBOOK_DIR=./flowetl/mounts/notebooks
+FLOWAPI_TOKEN=unset
+
 
 # JWT keypair
 
