@@ -14,7 +14,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+## [1.20.0]
+
+### Changed
+
+- Updated flowpyter-task to 1.1.0
+
+### Removed
+
 - Removed AutoFlow. [#6394](https://github.com/Flowminder/FlowKit/issues/6394)
+
+## [1.19.1]
+
+### Added
+
+- Added flowpyter-task to FlowETL container
 
 ## [1.19.0]
 
@@ -1027,7 +1041,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.19.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.20.0...master
+[1.20.0]: https://github.com/Flowminder/FlowKit/compare/1.19.1...1.20.0
+[1.19.1]: https://github.com/Flowminder/FlowKit/compare/1.19.0...1.19.1
 [1.19.0]: https://github.com/Flowminder/FlowKit/compare/1.18.4...1.19.0
 [1.18.4]: https://github.com/Flowminder/FlowKit/compare/1.18.3...1.18.4
 [1.18.3]: https://github.com/Flowminder/FlowKit/compare/1.18.2...1.18.3
