@@ -175,3 +175,38 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
         hnd_type TEXT
 
         );
+
+    -- Table to keep records of all cells (including those excluded due to data quality issues, and old versions of cells that have moved/changed).
+    -- Keeping all cell info in this table allows us to reconstruct the cells table as it was at a previous point in time, if necessary.
+    CREATE TABLE IF NOT EXISTS infrastructure.cell_info(
+        cell_id TEXT, -- 'id' in infrastructure.cells
+        version INTEGER,
+        longitude DOUBLE PRECISION, -- x component of 'geom_point' in infrastructure.cells
+        latitude DOUBLE PRECISION, -- y component of 'geom_point' in infrastructure.cells
+        dates_of_service TSTZRANGE, -- [date_of_first_service,date_of_last_service) in infrastructure.cells
+        technology TEXT, -- 'type' in infrastructure.cells
+        cell_name TEXT, -- 'name' in infrastructure.cells
+        mno_site_id TEXT, -- 'site_id' in infrastructure.cells
+        msc TEXT,
+        bsc_rnc TEXT,
+        antenna_type TEXT,
+        status TEXT,
+        lac TEXT,
+        height NUMERIC,
+        azimuth NUMERIC,
+        transmitter TEXT,
+        max_range NUMERIC,
+        min_range NUMERIC,
+        electrical_tilt NUMERIC,
+        mechanical_downtilt NUMERIC,
+        to_include BOOLEAN, -- Flag to indicate whether or not cell should be used in analysis
+        first_received DATE, -- Date of first cell info file to include this cell
+        last_received DATE, -- Date of last cell info file to include this cell
+        ingested_at TIMESTAMPTZ, -- Date/time at which this cell was first ingested
+        excluded_at TIMESTAMPTZ, -- Date/time at which this cell was first marked as excluded from analysis
+        notes TEXT, -- Free text field for adding notes related to this cell (e.g. reason for exclusion)
+        additional_metadata JSONB, -- JSON field to catch any fields provided in cell info files that don't fit into the infrastructure.cells table structure
+        PRIMARY KEY (cell_id, version),
+        EXCLUDE USING GIST (cell_id WITH =, dates_of_service WITH &&) WHERE (to_include) -- ensure cell ID is unique across simultaneously-valid cells
+            -- Note: this exclude constraint requires btree_gist extension (https://dba.stackexchange.com/questions/37351/postgresql-exclude-using-error-data-type-integer-has-no-default-operator-class)
+    );
