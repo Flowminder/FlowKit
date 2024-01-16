@@ -182,7 +182,7 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
         ingested_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
         source_filename TEXT,
         file_hash TEXT,
-        file_date DATE,
+        file_date DATE
     );
 
     -- Table to keep records of all cells (including those excluded due to data quality issues, and old versions of cells that have moved/changed).
