@@ -166,6 +166,9 @@ def create_app(test_config=None):
     principals = Principal()
     principals.init_app(app)
 
+    # Register for migrations
+    migrate = Migrate(app, db)
+
     # Set up csrf protection
     csrf = CSRFProtect()
     csrf.init_app(app)
@@ -207,9 +210,6 @@ def create_app(test_config=None):
 
     with app.app_context():
         app.config["DB_IS_SET_UP"].wait()  # Cause workers to wait for db to set up
-
-    # Register for migrations
-    migrate = Migrate(app, db)
 
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)
