@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added new FlowDB tables `infrastructure.cell_info` and `infrastructure.cells_table_versions` to keep track of changes to the cell info over time (note: the new tables have not yet replaced `infrastructure.cells` as the source of cell information for FlowKit queries). [#6184](https://github.com/Flowminder/FlowKit/issues/6184)
+
 ### Changed
 
 ### Fixed

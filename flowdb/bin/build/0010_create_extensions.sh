@@ -14,7 +14,7 @@ export PGUSER="$POSTGRES_USER"
 EXTENSIONS=('postgis' 'postgis_raster' 'postgis_topology' 'fuzzystrmatch' \
             'file_fdw' 'uuid-ossp' 'plpython3u' \
             'tsm_system_rows' 'pgrouting' 'pldbgapi' 'pg_median_utils'\
-            'ogr_fdw' 'tds_fdw')
+            'ogr_fdw' 'tds_fdw' 'btree_gist')
 
 #
 #  Create the 'template_postgis' template db
