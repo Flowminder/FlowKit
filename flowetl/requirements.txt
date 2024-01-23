@@ -606,9 +606,9 @@ flask-wtf==1.2.1 \
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.8.txt
     #   apache-airflow
     #   flask-appbuilder
-flowpyter-task==1.1.0 \
-    --hash=sha256:0917003a86c8e47900093ebc0f3f49134967359f8267f0ee2c37926a97351db5 \
-    --hash=sha256:5385dc10c35cd8531595939d02121f65ddb3174b57d013d35de2089d1caf5171
+flowpyter-task==1.1.2 \
+    --hash=sha256:152ff807e95e854b98067a839fbef6e966aef2a6e02f420136152d21aa13f878 \
+    --hash=sha256:fda1607a009934295c9921b48ea78e7f32ea9cbe9a15c2195e789138f957da3d
     # via -r requirements.in
 frozenlist==1.4.1 \
     --hash=sha256:04ced3e6a46b4cfffe20f9ae482818e34eba9b5fb0ce4056e4cc9b6e212d09b7 \
