@@ -9,7 +9,7 @@ COPY flowauth/frontend /
 RUN npm install --production
 RUN PUBLIC_URL=/static npm run-script build
 
-FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine@sha256:39af034c4ed0e88785b5b9cc75b930118b61a5bd71389e6a963e6faaae135bed
+FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine@sha256:ad66f0f49009c3c5079afd333c74567aa15efaed4f34a44ac66cc5d3bc3637c8
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
