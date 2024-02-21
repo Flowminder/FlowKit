@@ -7,8 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowETL sensor `NRowsPresentSensor` which checks for a specified minimum number of rows.
 
 ### Changed
+- `ForeignStagingTableOperator` will now error if the underlying file cannot be read or the command returns an error. [#5763](https://github.com/Flowminder/FlowKit/issues/5763)
 
 ### Fixed
 

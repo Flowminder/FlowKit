@@ -66,6 +66,7 @@ class CreateForeignStagingTableOperator(TableNameMacrosMixin, PostgresOperator):
                    escape '{{{{ params.escape }}}}'
                    {{% if params.encoding is defined %}}, {{{{ params.encoding }}}} {{% endif %}} 
                    );
+            SELECT EXISTS(SELECT * FROM {{{{ staging_table }}}} LIMIT 1); 
                 """
         fields_string = ",\n\t".join(
             f"{field_name} {field_type.upper()}"
