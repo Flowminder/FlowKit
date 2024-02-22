@@ -123,7 +123,7 @@ class Cells(Base):
     site_id = Column(Text)
 
 
-select_stmt = select([Cells.cell_id.label("cell_id"), Cells.version, Cells.site_id])
+select_stmt = select(Cells.cell_id.label("cell_id"), Cells.version, Cells.site_id)
 df_cells = pd.read_sql(select_stmt, engine)
 
 # Pick only the latest version for each cell
