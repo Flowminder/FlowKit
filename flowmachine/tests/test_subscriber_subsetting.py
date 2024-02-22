@@ -66,13 +66,13 @@ def subscriber_list_table(subscriber_list, flowmachine_connect):
     engine = get_db().engine
     with engine.begin():
         sql = """CREATE TABLE subscriber_list (subscriber TEXT)"""
-        engine.execute(sql)
+        engine.exec_driver_sql(sql)
 
         formatted_subscribers = ",".join("('{}')".format(u) for u in subscriber_list)
         sql = """INSERT INTO subscriber_list (subscriber) VALUES {}""".format(
             formatted_subscribers
         )
-        engine.execute(sql)
+        engine.exec_driver_sql(sql)
     subs_table = Table("subscriber_list")
     yield subs_table
     subs_table.invalidate_db_cache(drop=True)

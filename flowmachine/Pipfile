@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "<2.0.0" # https://github.com/Flowminder/FlowKit/issues/6066
+sqlalchemy = "*"
 cachetools = "*"
 numpy = "*"
 networkx = "*"

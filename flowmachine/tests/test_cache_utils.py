@@ -110,7 +110,7 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     Touching a cache record for a table should update access count and last accessed but not touch score, or counter.
     """
     table = Table("events.calls_20160101")
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.query_id
     )  # Compute time for tables is zero, so set to 1 to avoid zeroing out
     assert 0 == get_score(get_db(), table.query_id)
@@ -195,10 +195,10 @@ def test_shrink_one(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET cache_score_multiplier = 1 WHERE query_id='{dl_aggregate.query_id}'"
     )
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     removed_query, table_size = next(shrink_one(get_db(), protected_period=-1))
@@ -271,10 +271,10 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET cache_score_multiplier = 1000 WHERE query_id='{dl_aggregate.query_id}'"
     )
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     table_size = get_size_of_table(get_db(), dl.table_name, "cache")
@@ -290,10 +290,10 @@ def test_shrink_one(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET cache_score_multiplier = 1000 WHERE query_id='{dl_aggregate.query_id}'"
     )
-    get_db().engine.execute(
+    get_db().engine.exec_driver_sql(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     removed_query, table_size = next(shrink_one(get_db(), protected_period=-1))

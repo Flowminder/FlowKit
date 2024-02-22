@@ -34,13 +34,13 @@ def test_tables(flowmachine_connect):
         INSERT INTO test_table_b VALUES ('1', 'foo', '300') ON CONFLICT (id) DO NOTHING;
     END;
     """
-    get_db().engine.execute(q)
+    get_db().engine.exec_driver_sql(q)
     yield flowmachine_connect
     q = """
             DROP TABLE IF EXISTS test_table_a;
             DROP TABLE IF EXISTS test_table_b;
         """
-    get_db().engine.execute(q)
+    get_db().engine.exec_driver_sql(q)
 
 
 def test_fetches_query_from_database(test_tables):

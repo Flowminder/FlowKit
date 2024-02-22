@@ -112,7 +112,7 @@ def run_ops_list_and_return_execution_time(
     plan_time = 0
     for ddl_op in query_ddl_ops:
         try:
-            ddl_op_result = connection.execute(ddl_op)
+            ddl_op_result = connection.exec_driver_sql(ddl_op)
         except Exception as e:
             logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
             raise e
@@ -266,7 +266,7 @@ def write_cache_metadata(
     self_storage = b""
 
     try:
-        in_cache = connection.execute(
+        in_cache = connection.exec_driver_sql(
             f"SELECT EXISTS (SELECT 1 FROM cache.cached WHERE query_id='{query.query_id}' LIMIT 1)"
         ).fetchall()[0][0]
         if not in_cache:
@@ -282,7 +282,7 @@ def write_cache_metadata(
         cache_score_multiplier, class, schema, tablename, obj) 
         VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
          ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
-        connection.execute(
+        connection.exec_driver_sql(
             cache_record_insert,
             (
                 query.query_id,
@@ -294,13 +294,15 @@ def write_cache_metadata(
                 psycopg2.Binary(self_storage),
             ),
         )
-        connection.execute("SELECT touch_cache(%s);", query.query_id)
+        connection.exec_driver_sql(
+            "SELECT touch_cache(%(ident)s);", dict(ident=query.query_id)
+        )
 
         if not in_cache:
             for dep in query._get_stored_dependencies(exclude_self=True):
-                connection.execute(
-                    "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                    (query.query_id, dep.query_id),
+                connection.exec_driver_sql(
+                    "INSERT INTO cache.dependencies values (%(query_id)s, %(dep_id)s) ON CONFLICT DO NOTHING",
+                    dict(query_id=query.query_id, dep_id=dep.query_id),
                 )
             logger.debug(f"{query.fully_qualified_table_name} added to cache.")
         else:
@@ -327,7 +329,9 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
     try:
         with connection.engine.begin() as trans:
             return float(
-                trans.execute(f"SELECT touch_cache('{query_id}')").fetchall()[0][0]
+                trans.exec_driver_sql(f"SELECT touch_cache('{query_id}')").fetchall()[
+                    0
+                ][0]
             )
     except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
@@ -362,20 +366,20 @@ def reset_cache(
     # will also point to that table.
 
     with connection.engine.begin() as trans:
-        qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
-        tables = trans.execute(qry).fetchall()
+        qry = "SELECT tablename FROM cache.cached WHERE schema='cache'"
+        tables = trans.exec_driver_sql(qry).fetchall()
 
     with connection.engine.begin() as trans:
-        trans.execute("SELECT setval('cache.cache_touches', 1)")
+        trans.exec_driver_sql("SELECT setval('cache.cache_touches', 1)")
     for table in tables:
         with connection.engine.begin() as trans:
-            trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
+            trans.exec_driver_sql(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
     if protect_table_objects:
         with connection.engine.begin() as trans:
-            trans.execute(f"DELETE FROM cache.cached WHERE schema='cache'")
+            trans.exec_driver_sql(f"DELETE FROM cache.cached WHERE schema='cache'")
     else:
         with connection.engine.begin() as trans:
-            trans.execute("TRUNCATE cache.cached CASCADE")
+            trans.exec_driver_sql("TRUNCATE cache.cached CASCADE")
     resync_redis_with_cache(connection=connection, redis=redis)
 
 
@@ -740,7 +744,7 @@ def set_cache_half_life(connection: "Connection", cache_half_life: float) -> Non
 
     sql = f"UPDATE cache.cache_config SET value='{float(cache_half_life)}' WHERE key='half_life'"
     with connection.engine.begin() as trans:
-        trans.execute(sql)
+        trans.exec_driver_sql(sql)
 
 
 def get_cache_protected_period(connection: "Connection") -> float:
@@ -774,7 +778,7 @@ def set_cache_protected_period(connection: "Connection", protected_period: int) 
 
     sql = f"UPDATE cache.cache_config SET value='{int(protected_period)}' WHERE key='protected_period'"
     with connection.engine.begin() as trans:
-        trans.execute(sql)
+        trans.exec_driver_sql(sql)
 
 
 def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> None:
@@ -790,7 +794,7 @@ def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> No
     """
     sql = f"UPDATE cache.cache_config SET value='{int(cache_size_limit)}' WHERE key='cache_size'"
     with connection.engine.begin() as trans:
-        trans.execute(sql)
+        trans.exec_driver_sql(sql)
 
 
 def get_compute_time(connection: "Connection", query_id: str) -> float:
