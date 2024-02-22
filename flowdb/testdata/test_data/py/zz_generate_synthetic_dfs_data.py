@@ -57,7 +57,7 @@ def export_dataframe_to_sql(df, *, table, engine, schema, if_exists="replace"):
         # Workaround for the fact that pandas can't drop a table if other
         # tables depend on it. Thus we issue a `TRUNCATE ... CASCADE` here
         # so that we can simply append the data to the (now empty) table.
-        engine.execute(f"TRUNCATE {schema}.{table} CASCADE")
+        engine.exec_driver_sql(f"TRUNCATE {schema}.{table} CASCADE")
         if_exists = "append"
 
     conn = engine.raw_connection()
