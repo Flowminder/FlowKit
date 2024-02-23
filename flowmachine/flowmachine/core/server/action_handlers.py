@@ -460,6 +460,22 @@ async def action_handler__get_available_dates(
     return ZMQReply(status="success", payload=available_dates)
 
 
+async def action_handler__list_qa_checks(config: "FlowmachineServerConfig"):
+    conn = get_db()
+    return ZMQReply(
+        status="success", payload={"qa_checks": conn.available_qa_checks.items()}
+    )
+
+
+async def action_handler__get_qa_check(
+    config: "FlowmachineServerConfig", check_id: str
+):
+    conn = get_db()
+    return ZMQReply(
+        status="success", payload={"qa_checks": conn.get_qa_check(check_id)}
+    )
+
+
 def get_action_handler(action: str) -> Callable:
     """Exception should be raised for handlers that don't exist."""
     try:
@@ -520,4 +536,6 @@ ACTION_HANDLERS = {
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
     "get_aggregation_unit": action_handler__get_aggregation_unit,
+    "list_qa_checks": action_handler__list_qa_checks,
+    "get_qa_check": action_handler__get_qa_check,
 }

@@ -26,6 +26,7 @@ from flowmachine.core.server.action_handlers import (
     action_handler__run_query,
     action_handler__get_aggregation_unit,
     get_action_handler,
+    action_handler__list_qa_checks,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
@@ -291,3 +292,10 @@ async def test_get_aggregation_unit(
     )
     assert msg["status"] == ZMQReplyStatus.SUCCESS
     assert msg.payload["aggregation_unit"] == expected_aggregation_unit
+
+
+@pytest.mark.asyncio
+async def test_get_qa_checks(server_config):
+    msg = await action_handler__list_qa_checks(config=server_config)
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    assert msg.payload == ["LETSFINDOUT"]

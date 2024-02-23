@@ -204,6 +204,12 @@ class Connection:
             ),
         )
 
+    @property
+    def available_qa_checks(self) -> List[str]:
+        return self.fetch(
+            "SELECT cdr_type, type_of_query_or_check FROM etl.deduped_post_etl_queries"
+        )
+
     def min_date(self, table: str = "calls") -> datetime.date:
         """
         Finds the minimum date in the given events table.

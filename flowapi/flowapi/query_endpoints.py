@@ -409,3 +409,42 @@ async def get_available_dates():
     else:
         assert reply["status"] == "error"
         return {"status": "error", "msg": reply["msg"]}, 500
+
+
+@blueprint.route("/qa/<check_id>")
+@jwt_required
+async def get_qa_check(check_id):
+    current_user.can_get_qa()
+    current_app.query_run_logger.info("get_qa_check", dict(check=check_id))
+    request.socket.send_json(
+        dict(
+            request_id=request.request_id,
+            action="get_qa_check",
+            params=dict(check_id=check_id),
+        )
+    )
+    reply = await request.socket.recv_json()
+    if reply["status"] == "success":
+        return {"qa_check": reply["payload"]}, 200
+    else:
+        assert reply["status"] == "error"
+        return {"status": "error", "msg": reply["msg"]}, 500
+
+
+@blueprint.route("/qa")
+@jwt_required
+async def list_qa_checks():
+    current_user.can_get_qa()
+    current_app.query_run_logger.info("list_qa_checks")
+    request.socket.send_json(
+        dict(
+            request_id=request.request_id,
+            action="list_qa_checks",
+        )
+    )
+    reply = await request.socket.recv_json()
+    if reply["status"] == "success":
+        return {"available_qa_checks": reply["payload"]}, 200
+    else:
+        assert reply["status"] == "error"
+        return {"status": "error", "msg": reply["msg"]}, 500
