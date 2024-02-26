@@ -95,3 +95,7 @@ def test_location_id(flowmachine_connect):
 def test_location_tables(flowmachine_connect):
     """Test that connection's location_tables attribute is correctly calculated"""
     assert sorted(["calls", "mds", "sms", "topups"]) == sorted(get_db().location_tables)
+
+
+def test_list_qa_checks(flowmachine_connect):
+    assert True == False

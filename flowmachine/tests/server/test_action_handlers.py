@@ -295,7 +295,7 @@ async def test_get_aggregation_unit(
 
 
 @pytest.mark.asyncio
-async def test_get_qa_checks(server_config):
+async def test_get_qa_checks(server_config, real_connections):
     msg = await action_handler__list_qa_checks(config=server_config)
     assert msg["status"] == ZMQReplyStatus.SUCCESS
     assert msg.payload == ["LETSFINDOUT"]
