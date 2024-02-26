@@ -110,7 +110,7 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     Touching a cache record for a table should update access count and last accessed but not touch score, or counter.
     """
     table = Table("events.calls_20160101")
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql(
             f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%(ident)s",
             dict(ident=table.query_id),
@@ -197,7 +197,7 @@ def test_shrink_one(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql(
             f"UPDATE cache.cached SET cache_score_multiplier = 1 WHERE query_id='{dl_aggregate.query_id}'"
         )
@@ -274,7 +274,7 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql(
             f"UPDATE cache.cached SET cache_score_multiplier = 1000 WHERE query_id='{dl_aggregate.query_id}'"
         )
@@ -294,7 +294,7 @@ def test_shrink_one(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql(
             f"UPDATE cache.cached SET cache_score_multiplier = 1000 WHERE query_id='{dl_aggregate.query_id}'"
         )

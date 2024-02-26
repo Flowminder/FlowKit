@@ -19,10 +19,10 @@ def test_table_schema(flowmachine_connect):
     Fixture which creates a schema called 'tests' before every test
     and destroys it again after the test has finished.
     """
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql("CREATE SCHEMA IF NOT EXISTS tests")
     yield
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql("DROP SCHEMA tests CASCADE")
 
 
@@ -44,7 +44,7 @@ def test_can_force_rewrite(flowmachine_connect, get_length):
     # We're going to delete everything from the table, then
     # force a rewrite, and check that the table now has data.
     sql = """DELETE FROM tests.test_rewrite"""
-    with get_db().engine.connect() as conn:
+    with get_db().engine.begin() as conn:
         conn.exec_driver_sql(sql)
     assert 0 == get_length(Table("tests.test_rewrite"))
     query.invalidate_db_cache(name="test_rewrite", schema="tests")
