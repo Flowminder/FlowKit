@@ -112,8 +112,8 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     table = Table("events.calls_20160101")
     with get_db().engine.connect() as conn:
         conn.exec_driver_sql(
-            f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s",
-            table.query_id,
+            f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%(ident)s",
+            dict(ident=table.query_id),
         )  # Compute time for tables is zero, so set to 1 to avoid zeroing out
     assert 0 == get_score(get_db(), table.query_id)
     assert (
@@ -338,7 +338,9 @@ def test_cache_miss_value_error_rescore():
     """
     connection_mock = Mock()
     trans_mock = MagicMock()
-    trans_mock.__enter__.return_value.execute.return_value.fetchall.return_value = []
+    trans_mock.__enter__.return_value.exec_driver_sql.return_value.fetchall.return_value = (
+        []
+    )
     connection_mock.engine.begin.return_value = trans_mock
     with pytest.raises(ValueError):
         touch_cache(connection_mock, "NOT_IN_CACHE")
