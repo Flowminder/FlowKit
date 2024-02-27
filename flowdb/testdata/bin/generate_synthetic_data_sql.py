@@ -177,11 +177,13 @@ if __name__ == "__main__":
         logger.info("Found shapefiles", file=available_files)
         homes_level = 0
         with engine.begin() as trans:
-            trans.execute("TRUNCATE TABLE geography.geoms CASCADE;")
+            trans.exec_driver_sql("TRUNCATE TABLE geography.geoms CASCADE;")
         for level in range(4):
             with engine.begin() as trans:
                 try:
-                    trans.execute(f"DROP TABLE IF EXISTS geography.admin{level};")
+                    trans.exec_driver_sql(
+                        f"DROP TABLE IF EXISTS geography.admin{level};"
+                    )
                 except Exception as exc:
                     logger.error("Couldn't drop geo table.", level=level, exc=exc)
         with engine.begin() as trans:
@@ -192,10 +194,10 @@ if __name__ == "__main__":
                     with log_duration(
                         job=f"Loading admin level.", admin_level=level, file=shape_file
                     ):
-                        trans.execute(
+                        trans.exec_driver_sql(
                             f"DROP SERVER IF EXISTS admin{level}_boundaries CASCADE;"
                         )
-                        trans.execute(
+                        trans.exec_driver_sql(
                             f"""
                         CREATE SERVER admin{level}_boundaries
                           FOREIGN DATA WRAPPER ogr_fdw
@@ -205,7 +207,7 @@ if __name__ == "__main__":
                         """
                         )
                         if level > 0:
-                            trans.execute(
+                            trans.exec_driver_sql(
                                 f"""
                             CREATE FOREIGN TABLE admin{level} (
                               GID_{level} text,
@@ -216,7 +218,7 @@ if __name__ == "__main__":
                             OPTIONS (layer 'gadm36_{country}_{level}');
                             """
                             )
-                            trans.execute(
+                            trans.exec_driver_sql(
                                 f"""
                                 INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom, additional_metadata)
                                   SELECT GID_{level} as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom,
@@ -224,7 +226,7 @@ if __name__ == "__main__":
                                     FROM admin{level};"""
                             )
                         else:
-                            trans.execute(
+                            trans.exec_driver_sql(
                                 f"""
                                 CREATE FOREIGN TABLE admin{level} (
                                   NAME_{level} text,
@@ -233,17 +235,17 @@ if __name__ == "__main__":
                                 OPTIONS (layer 'gadm36_{country}_{level}');
                                 """
                             )
-                            trans.execute(
+                            trans.exec_driver_sql(
                                 f"""
                                 INSERT INTO geography.geoms (short_name, long_name, spatial_resolution, geom)
                                   SELECT '{country[:2]}' as short_name, NAME_{level} as long_name, {level} as spatial_resolution, ST_Multi(ST_MakeValid(geom)) as geom
                                     FROM admin{level};"""
                             )
 
-                        trans.execute(
+                        trans.exec_driver_sql(
                             f"""DROP VIEW IF EXISTS geography.admin{level};"""
                         )
-                        trans.execute(
+                        trans.exec_driver_sql(
                             f"""
                         CREATE VIEW geography.admin{level} AS
                             SELECT row_number() over() as gid,
@@ -257,10 +259,10 @@ if __name__ == "__main__":
 
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
-            trans.execute("DROP TABLE IF EXISTS tmp_sites;")
-            trans.execute("TRUNCATE TABLE infrastructure.sites CASCADE;")
+            trans.exec_driver_sql("DROP TABLE IF EXISTS tmp_sites;")
+            trans.exec_driver_sql("TRUNCATE TABLE infrastructure.sites CASCADE;")
             with log_duration(job=f"Generating {num_sites} sites."):
-                trans.execute(
+                trans.exec_driver_sql(
                     f"""
                 CREATE UNLOGGED TABLE tmp_sites  WITH (autovacuum_enabled=f) AS 
                 SELECT row_number() over() AS rid, md5(uuid_generate_v4()::text) AS id, 
@@ -281,14 +283,14 @@ if __name__ == "__main__":
                     geography.geoms USING (short_name)
                 ) as site_counts) _;"""
                 )
-                trans.execute(
+                trans.exec_driver_sql(
                     "INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) SELECT id, version, date_of_first_service, geom_point FROM tmp_sites;"
                 )
 
             with log_duration(f"Generating {num_cells} cells."):
-                trans.execute("DROP TABLE IF EXISTS tmp_cells;")
-                trans.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS tmp_cells;")
+                trans.exec_driver_sql("TRUNCATE TABLE infrastructure.cells CASCADE;")
+                trans.exec_driver_sql(
                     f"""CREATE UNLOGGED TABLE tmp_cells  WITH (autovacuum_enabled=f) as
                     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
                     (SELECT md5(uuid_generate_v4()::text)::char(32) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
@@ -308,14 +310,14 @@ if __name__ == "__main__":
                     CREATE INDEX ON tmp_cells USING gist(geom_point);
                     """
                 )
-                trans.execute(
+                trans.exec_driver_sql(
                     "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
                 )
 
             with log_duration(f"Generating {num_tacs} tacs."):
-                trans.execute("DROP TABLE IF EXISTS tacs;")
-                trans.execute("TRUNCATE TABLE infrastructure.tacs CASCADE;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS tacs;")
+                trans.exec_driver_sql("TRUNCATE TABLE infrastructure.tacs CASCADE;")
+                trans.exec_driver_sql(
                     f"""CREATE UNLOGGED TABLE tacs  WITH (autovacuum_enabled=f) as
                 (SELECT (row_number() over())::numeric(8, 0) AS tac, 
                 (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] AS brand, 
@@ -323,13 +325,13 @@ if __name__ == "__main__":
                 (ARRAY['Smart', 'Feature', 'Basic'])[floor((random()*3 + 1))::int] AS  hnd_type 
                 FROM generate_series(1, {num_tacs}));"""
                 )
-                trans.execute(
+                trans.exec_driver_sql(
                     "INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) SELECT tac AS id, brand, model, hnd_type FROM tacs;"
                 )
 
             with log_duration(f"Generating {num_subscribers} subscribers."):
-                trans.execute("DROP TABLE IF EXISTS subs;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS subs;")
+                trans.exec_driver_sql(
                     f"""
                 CREATE UNLOGGED TABLE subs  WITH (autovacuum_enabled=f) as
                 (SELECT row_number() over() AS id, md5(uuid_generate_v4()::text) AS msisdn, md5(uuid_generate_v4()::text) AS imei, 
@@ -342,16 +344,16 @@ if __name__ == "__main__":
 
         with log_duration("Generating disaster."):
             with engine.begin() as trans:
-                trans.execute("DROP TABLE IF EXISTS bad_cells;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS bad_cells;")
+                trans.exec_driver_sql(
                     f"CREATE UNLOGGED TABLE bad_cells  WITH (autovacuum_enabled=f) AS SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.geoms WHERE short_name = '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)"
                 )
-                trans.execute("DROP TABLE IF EXISTS good_cells;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS good_cells;")
+                trans.exec_driver_sql(
                     f"CREATE UNLOGGED TABLE good_cells  WITH (autovacuum_enabled=f) AS SELECT tmp_cells.id FROM tmp_cells LEFT JOIN bad_cells ON tmp_cells.id=bad_cells.id WHERE bad_cells.id IS NULL;"
                 )
-                trans.execute("DROP TABLE IF EXISTS available_cells;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS available_cells;")
+                trans.exec_driver_sql(
                     f"""CREATE UNLOGGED TABLE available_cells  WITH (autovacuum_enabled=f) AS 
                         SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
                         CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
@@ -362,15 +364,15 @@ if __name__ == "__main__":
                         FROM generate_series(0, {num_days}) AS t(rid);"""
                 )
             with engine.begin() as trans:
-                trans.execute("CREATE INDEX ON available_cells (day);")
-                trans.execute("ANALYZE available_cells;")
+                trans.exec_driver_sql("CREATE INDEX ON available_cells (day);")
+                trans.exec_driver_sql("ANALYZE available_cells;")
 
         with log_duration("Assigning subscriber home regions."):
             with log_duration("Initial homes."):
                 with engine.begin() as trans:
-                    trans.execute("DROP TABLE IF EXISTS homes;")
-                    trans.execute("DROP TABLE IF EXISTS tmp_homes;")
-                    trans.execute(
+                    trans.exec_driver_sql("DROP TABLE IF EXISTS homes;")
+                    trans.exec_driver_sql("DROP TABLE IF EXISTS tmp_homes;")
+                    trans.exec_driver_sql(
                         f"""
                     CREATE UNLOGGED TABLE tmp_homes WITH (autovacuum_enabled=f) AS
                         SELECT s.id, 
@@ -399,7 +401,7 @@ if __name__ == "__main__":
                     ):
                         try:
                             with engine.begin() as trans:
-                                trans.execute(
+                                trans.exec_driver_sql(
                                     f"""
                                     WITH subs_to_move_randomly AS (
                                         SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
@@ -435,7 +437,7 @@ if __name__ == "__main__":
                 else:
                     with log_duration("Assigning subscriber home regions.", day=date):
                         with engine.begin() as trans:
-                            trans.execute(
+                            trans.exec_driver_sql(
                                 f"""
                                 WITH subs_to_move_randomly AS (
                                     SELECT id, '{date.strftime("%Y-%m-%d")}' as moved_in, 
@@ -459,7 +461,7 @@ if __name__ == "__main__":
                             )
             with log_duration("Partitioning homes."):
                 with engine.begin() as trans:
-                    trans.execute(
+                    trans.exec_driver_sql(
                         """CREATE UNLOGGED TABLE homes  WITH (autovacuum_enabled=f) AS
                     SELECT id, daterange(moved_in, lead(moved_in) over (partition by id order by moved_in asc)) as home_date, cells
                     FROM tmp_homes;
@@ -467,17 +469,19 @@ if __name__ == "__main__":
                     )
             with log_duration("Analyzing and indexing subscriber home regions."):
                 with engine.begin() as trans:
-                    trans.execute("CREATE INDEX ON homes (id);")
-                    trans.execute("CREATE INDEX ON homes USING GIST(home_date);")
-                    trans.execute("CREATE INDEX ON homes (home_date, id);")
-                    trans.execute("ANALYZE homes;")
+                    trans.exec_driver_sql("CREATE INDEX ON homes (id);")
+                    trans.exec_driver_sql(
+                        "CREATE INDEX ON homes USING GIST(home_date);"
+                    )
+                    trans.exec_driver_sql("CREATE INDEX ON homes (home_date, id);")
+                    trans.exec_driver_sql("ANALYZE homes;")
 
         with log_duration(
             f"Generating {num_subscribers * interactions_multiplier} interaction pairs."
         ):
             with engine.begin() as trans:
-                trans.execute("DROP TABLE IF EXISTS interactions;")
-                trans.execute(
+                trans.exec_driver_sql("DROP TABLE IF EXISTS interactions;")
+                trans.exec_driver_sql(
                     f"""CREATE UNLOGGED TABLE interactions  WITH (autovacuum_enabled=f) AS SELECT 
                         row_number() over() AS rid, callee_id, caller_id, caller.msisdn AS caller_msisdn, 
                             caller.tac AS caller_tac, caller.imsi AS caller_imsi, caller.imei AS caller_imei, 
@@ -491,8 +495,8 @@ if __name__ == "__main__":
                         LEFT JOIN subs AS callee ON pairs.callee_id = callee.id
                     """
                 )
-                trans.execute("CREATE INDEX ON interactions (rid);")
-                trans.execute("ANALYZE interactions;")
+                trans.exec_driver_sql("CREATE INDEX ON interactions (rid);")
+                trans.exec_driver_sql("ANALYZE interactions;")
 
         event_creation_sql = []
         sql = []
@@ -730,7 +734,7 @@ if __name__ == "__main__":
             msg, sql = args
             with log_duration(msg):
                 with engine.begin() as trans:
-                    res = trans.execute(sql)
+                    res = trans.exec_driver_sql(sql)
                     try:
                         logger.info(f"SQL result", job=msg, result=res.fetchall())
                     except ResourceClosedError:

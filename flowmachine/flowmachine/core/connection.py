@@ -171,7 +171,7 @@ class Connection:
             exists_query = "{} AND table_schema='{}'".format(exists_query, schema)
         exists_query = "SELECT EXISTS({})".format(exists_query)
         with self.engine.begin() as trans:
-            return trans.execute(exists_query).fetchall()[0][0]
+            return trans.exec_driver_sql(exists_query).fetchall()[0][0]
 
     @property
     def available_dates(self) -> Dict[str, List[datetime.date]]:

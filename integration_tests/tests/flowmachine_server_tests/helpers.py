@@ -62,9 +62,9 @@ def cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=True):
 
     if check_internal_tables_are_empty:
         # Check that cache.cached and cache.dependencies are empty
-        res1 = fm_conn.engine.execute("SELECT COUNT(*) FROM cache.cached")
-        res2 = fm_conn.engine.execute("SELECT COUNT(*) FROM cache.dependencies")
-        if res1.fetchone()[0] != 0 or res2.fetchone()[0] != 0:
+        res1 = fm_conn.fetch("SELECT COUNT(*) FROM cache.cached")
+        res2 = fm_conn.fetch("SELECT COUNT(*) FROM cache.dependencies")
+        if res1[0][0] != 0 or res2[0][0] != 0:
             return False
 
     return True

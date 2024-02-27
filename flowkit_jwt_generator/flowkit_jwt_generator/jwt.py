@@ -23,7 +23,6 @@ except ImportError:
 from typing import Iterable, List, Optional, Tuple, Union
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from functools import lru_cache
@@ -50,7 +49,7 @@ def decompress_claims(claims):
 
 # Duplicated in FlowAuth (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
-def load_private_key(key_string: str) -> _RSAPrivateKey:
+def load_private_key(key_string: str) -> rsa.RSAPrivateKey:
     """
     Load a private key from a string, which may be base64 encoded.
 
@@ -77,7 +76,7 @@ def load_private_key(key_string: str) -> _RSAPrivateKey:
 
 # Duplicated in FlowAPI (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
-def load_public_key(key_string: str) -> _RSAPublicKey:
+def load_public_key(key_string: str) -> rsa.RSAPublicKey:
     """
     Load a public key from a string, which may be base64 encoded.
 
@@ -212,7 +211,7 @@ def generate_token(
     flowapi_identifier: Optional[str] = None,
     flowauth_identifier: Optional[str] = None,
     username: str,
-    private_key: Union[str, _RSAPrivateKey],
+    private_key: Union[str, rsa.RSAPrivateKey],
     lifetime: datetime.timedelta,
     roles: dict,
     compress: bool = True,

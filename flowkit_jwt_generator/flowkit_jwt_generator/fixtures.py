@@ -10,7 +10,7 @@ from datetime import timedelta
 from typing import Dict, Union, List, Callable, Optional
 
 import pytest
-from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
+from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 
 from flowkit_jwt_generator import (
@@ -22,7 +22,7 @@ from flowkit_jwt_generator import (
 
 
 @pytest.fixture
-def private_key() -> _RSAPrivateKey:
+def private_key() -> rsa.RSAPrivateKey:
     """
     Fixture which returns a private key loaded from a PRIVATE_JWT_SIGNING_KEY env var.
     """
@@ -30,7 +30,7 @@ def private_key() -> _RSAPrivateKey:
 
 
 @pytest.fixture
-def public_key() -> _RSAPublicKey:
+def public_key() -> rsa.RSAPublicKey:
     """
     Fixture which returns a public key loaded from a PUBLIC_JWT_SIGNING_KEY env var.
     """

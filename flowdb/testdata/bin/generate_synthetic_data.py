@@ -385,7 +385,7 @@ if __name__ == "__main__":
             with log_duration(msg):
                 started = datetime.datetime.now()
                 with engine.begin() as trans:
-                    res = trans.execute(sql)
+                    res = trans.exec_driver_sql(sql)
                     try:
                         logger.info(f"Ran", job=msg, result=res.fetchall())
                     except ResourceClosedError:

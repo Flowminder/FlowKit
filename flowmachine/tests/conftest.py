@@ -250,7 +250,7 @@ def test_events_table(flowmachine_connect):
         flowdb_password=os.getenv("POSTGRES_PASSWORD"),
     ):
         con = get_db().engine
-        con.execute(
+        con.exec_driver_sql(
             """
             DROP TABLE IF EXISTS events.test;
             CREATE TABLE events.test (
@@ -267,7 +267,7 @@ def test_events_table(flowmachine_connect):
         flowdb_user=os.getenv("POSTGRES_USER"),
         flowdb_password=os.getenv("POSTGRES_PASSWORD"),
     ):
-        con.execute("""DROP TABLE events.test""")
+        con.exec_driver_sql("""DROP TABLE events.test""")
 
 
 class DummyRedis:
