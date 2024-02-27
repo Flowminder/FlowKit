@@ -124,7 +124,6 @@ SubsetDates = EventTableSubset  # Backwards compatibility for unpicking queries 
 
 
 class SubscriberLocationSubset(Query):
-
     """
     Query to get a subset of users who have made min_calls
     number of calls within a given region during

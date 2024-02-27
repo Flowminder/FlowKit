@@ -87,9 +87,11 @@ def get_qa_checks(
     template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
     return [
         QACheckOperator(
-            task_id=tmpl.stem
-            if tmpl.parent.stem == "qa_checks"
-            else f"{tmpl.stem}.{tmpl.parent.stem}",
+            task_id=(
+                tmpl.stem
+                if tmpl.parent.stem == "qa_checks"
+                else f"{tmpl.stem}.{tmpl.parent.stem}"
+            ),
             sql=str(tmpl),
             dag=dag,
         )

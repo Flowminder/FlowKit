@@ -274,9 +274,11 @@ async def get_query_result(query_id, filetype="json"):
     )
     msg = {
         "request_id": request.request_id,
-        "action": "get_geo_sql_for_query_result"
-        if filetype == "geojson"
-        else "get_sql_for_query_result",
+        "action": (
+            "get_geo_sql_for_query_result"
+            if filetype == "geojson"
+            else "get_sql_for_query_result"
+        ),
         "params": {"query_id": query_id},
     }
     request.socket.send_json(msg)

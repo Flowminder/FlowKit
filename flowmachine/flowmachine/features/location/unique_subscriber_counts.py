@@ -27,7 +27,6 @@ from ..utilities.subscriber_locations import SubscriberLocations
 
 
 class UniqueSubscriberCounts(GeoDataMixin, Query):
-
     """
     Class that defines counts of unique subscribers for each location.
     Each location for the given spatial unit is accompanied by the count of unique subscribers.

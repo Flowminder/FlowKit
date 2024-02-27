@@ -21,7 +21,6 @@ from .metaclasses import SubscriberFeature
 
 
 class UniqueLocationCounts(SubscriberFeature):
-
     """
     Class that defines counts of unique locations for each subscriber.
     Each subscriber is accompanied by the count of unique locations.

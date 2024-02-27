@@ -146,25 +146,25 @@ print(f"Writing table {dfs_schema}.transaction_types.... ", flush=True, end="")
 
 tx_columns = ["id", "descr", "user_type_a_party", "user_type_b_party"]
 df_transaction_types = pd.DataFrame(columns=tx_columns)
-df_transaction_types[
-    ["descr", "user_type_a_party", "user_type_b_party"]
-] = pd.DataFrame(
-    [
-        ("Customer checks balance", "customer", "special_1"),
-        ("Customer transfers to other customer", "customer", "customer"),
-        ("Customer withdraws from agent", "customer", "agent"),
-        ("Customer buys airtime", "customer", "special_2"),
-        ("Customer pays bill", "customer", "special_3"),
-        ("Agent deposits to customer", "agent", "customer"),
-        ("Agent transfers to other agent", "agent", "agent"),
-        ("Agent withdraws from superagent", "agent", "superagent"),
-        ("Agent checks balance", "agent", "special_4"),
-        ("Agent buys airtime for customer", "agent", "special_5"),
-        ("Agent asks for help from superagent", "superagent", "agent"),
-        ("Superagent deposits to agent", "superagent", "agent"),
-        ("Superagent transfers to other superagent", "superagent", "superagent"),
-        ("Superagent checks balance", "superagent", "special_6"),
-    ]
+df_transaction_types[["descr", "user_type_a_party", "user_type_b_party"]] = (
+    pd.DataFrame(
+        [
+            ("Customer checks balance", "customer", "special_1"),
+            ("Customer transfers to other customer", "customer", "customer"),
+            ("Customer withdraws from agent", "customer", "agent"),
+            ("Customer buys airtime", "customer", "special_2"),
+            ("Customer pays bill", "customer", "special_3"),
+            ("Agent deposits to customer", "agent", "customer"),
+            ("Agent transfers to other agent", "agent", "agent"),
+            ("Agent withdraws from superagent", "agent", "superagent"),
+            ("Agent checks balance", "agent", "special_4"),
+            ("Agent buys airtime for customer", "agent", "special_5"),
+            ("Agent asks for help from superagent", "superagent", "agent"),
+            ("Superagent deposits to agent", "superagent", "agent"),
+            ("Superagent transfers to other superagent", "superagent", "superagent"),
+            ("Superagent checks balance", "superagent", "special_6"),
+        ]
+    )
 )
 df_transaction_types["id"] = range(1, len(df_transaction_types) + 1)
 export_dataframe_to_sql(

@@ -30,9 +30,9 @@ def _substitute_lat_lon(location_dict):
     if "lon" in location_copy and "lat" in location_copy:
         lon = location_copy.pop("lon")
         lat = location_copy.pop("lat")
-        location_copy[
-            "ST_SetSRID(ST_Point(lon, lat), 4326)"
-        ] = f"ST_SetSRID(ST_Point({lon}, {lat}), 4326)"
+        location_copy["ST_SetSRID(ST_Point(lon, lat), 4326)"] = (
+            f"ST_SetSRID(ST_Point({lon}, {lat}), 4326)"
+        )
     return location_copy
 
 
@@ -512,9 +512,11 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             mapping_table=mapping_table,
             geom_column=geom_column,
             geom_table_join_on=geom_table_join_on,
-            location_table_join_on="id"
-            if mapping_table is not None and location_table_join_on is None
-            else location_table_join_on,
+            location_table_join_on=(
+                "id"
+                if mapping_table is not None and location_table_join_on is None
+                else location_table_join_on
+            ),
         )
 
     def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
