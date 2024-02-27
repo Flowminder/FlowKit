@@ -16188,7 +16188,7 @@ The helper function 'make_spatial_unit' can be used to create spatial unit objec
 <h2 id="class-adminspatialunit">Class <strong>AdminSpatialUnit</strong><a class="headerlink" href="#class-adminspatialunit" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">AdminSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">region_id_column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L742">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L744">flowmachine/core/spatial_unit.py</a></p>
 <p>Subclass of PolygonSpatialUnit object that maps all cells (aka sites) to an admin region. This assumes that you have geography data in the standard location in FlowDB.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -16322,7 +16322,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="canonical_name">canonical_name<a class="headerlink" href="#canonical_name" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">canonical_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L791">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L793">flowmachine/core/spatial_unit.py</a></p>
 <p>Get the canonical name for this type of spatial unit, to allow checking access rights in FlowAPI.</p>
 <h5 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h5>
 <ul>
@@ -16953,7 +16953,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-gridspatialunit">Class <strong>GridSpatialUnit</strong><a class="headerlink" href="#class-gridspatialunit" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">GridSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">location_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L796">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L798">flowmachine/core/spatial_unit.py</a></p>
 <p>Subclass of PolygonSpatialUnit that maps all the sites in the database to a grid of arbitrary size.</p>
 <h2 id="attributes_3">Attributes<a class="headerlink" href="#attributes_3" title="Permanent link">&para;</a></h2>
 <ul>
@@ -17079,7 +17079,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="canonical_name_3">canonical_name<a class="headerlink" href="#canonical_name_3" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">canonical_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L824">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L826">flowmachine/core/spatial_unit.py</a></p>
 <p>Get the canonical name for this type of spatial unit, to allow checking access rights in FlowAPI.</p>
 <h5 id="returns_48">Returns<a class="headerlink" href="#returns_48" title="Permanent link">&para;</a></h5>
 <ul>
@@ -17351,7 +17351,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="location_subset_clause_4">location_subset_clause<a class="headerlink" href="#location_subset_clause_4" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L537">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L539">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations. This method differs from the default implementation in its handling of lon-lat values, i.e. it returns     WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(<lon_value>, <lat_value>), 4326)' instead of     WHERE lon = '<lon_value>' AND lat = '<lat_value>'</p>
 <h5 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h5>
 <ul>
@@ -17401,7 +17401,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="canonical_name_4">canonical_name<a class="headerlink" href="#canonical_name_4" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">canonical_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L526">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L528">flowmachine/core/spatial_unit.py</a></p>
 <p>Get the canonical name for this type of spatial unit, to allow checking access rights in FlowAPI.</p>
 <h5 id="returns_67">Returns<a class="headerlink" href="#returns_67" title="Permanent link">&para;</a></h5>
 <ul>
@@ -17523,7 +17523,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="location_id_columns_4">location_id_columns<a class="headerlink" href="#location_id_columns_4" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L530">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L532">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
 <h5 id="returns_78">Returns<a class="headerlink" href="#returns_78" title="Permanent link">&para;</a></h5>
 <ul>
@@ -17580,7 +17580,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-polygonspatialunit">Class <strong>PolygonSpatialUnit</strong><a class="headerlink" href="#class-polygonspatialunit" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">PolygonSpatialUnit</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">geom_table_column_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">,</span> <span class="n">geom_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L631">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L633">flowmachine/core/spatial_unit.py</a></p>
 <p>Class that provides a mapping from cell/site data in the location table to spatial regions defined by geography information in a table.</p>
 <h2 id="attributes_5">Attributes<a class="headerlink" href="#attributes_5" title="Permanent link">&para;</a></h2>
 <ul>
@@ -17718,7 +17718,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="canonical_name_5">canonical_name<a class="headerlink" href="#canonical_name_5" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">canonical_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L691">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L693">flowmachine/core/spatial_unit.py</a></p>
 <p>Get the canonical name for this type of spatial unit, to allow checking access rights in FlowAPI.</p>
 <h5 id="returns_86">Returns<a class="headerlink" href="#returns_86" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18020,7 +18020,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-versionedcellspatialunit">Class <strong>VersionedCellSpatialUnit</strong><a class="headerlink" href="#class-versionedcellspatialunit" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">VersionedCellSpatialUnit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L696">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L698">flowmachine/core/spatial_unit.py</a></p>
 <p>Subclass of LonLatSpatialUnit that maps cell location_id to a cell version and lon-lat coordinates.</p>
 <h2 id="attributes_7">Attributes<a class="headerlink" href="#attributes_7" title="Permanent link">&para;</a></h2>
 <ul>
@@ -18089,7 +18089,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="location_subset_clause_7">location_subset_clause<a class="headerlink" href="#location_subset_clause_7" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L537">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L539">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations. This method differs from the default implementation in its handling of lon-lat values, i.e. it returns     WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(<lon_value>, <lat_value>), 4326)' instead of     WHERE lon = '<lon_value>' AND lat = '<lat_value>'</p>
 <h5 id="parameters_19">Parameters<a class="headerlink" href="#parameters_19" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18139,7 +18139,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="canonical_name_7">canonical_name<a class="headerlink" href="#canonical_name_7" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">canonical_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L712">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L714">flowmachine/core/spatial_unit.py</a></p>
 <p>Get the canonical name for this type of spatial unit, to allow checking access rights in FlowAPI.</p>
 <h5 id="returns_112">Returns<a class="headerlink" href="#returns_112" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18261,7 +18261,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="location_id_columns_7">location_id_columns<a class="headerlink" href="#location_id_columns_7" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L530">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L532">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
 <h5 id="returns_123">Returns<a class="headerlink" href="#returns_123" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18318,7 +18318,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-versionedsitespatialunit">Class <strong>VersionedSiteSpatialUnit</strong><a class="headerlink" href="#class-versionedsitespatialunit" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">VersionedSiteSpatialUnit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L717">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L719">flowmachine/core/spatial_unit.py</a></p>
 <p>Subclass of LonLatSpatialUnit that maps cell location_id to a site version and lon-lat coordinates.</p>
 <h2 id="attributes_8">Attributes<a class="headerlink" href="#attributes_8" title="Permanent link">&para;</a></h2>
 <ul>
@@ -18387,7 +18387,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="location_subset_clause_8">location_subset_clause<a class="headerlink" href="#location_subset_clause_8" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_subset_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">check_column_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L537">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L539">flowmachine/core/spatial_unit.py</a></p>
 <p>Return a SQL "WHERE" clause to subset a query (joined to this spatial unit) to a location or set of locations. This method differs from the default implementation in its handling of lon-lat values, i.e. it returns     WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(<lon_value>, <lat_value>), 4326)' instead of     WHERE lon = '<lon_value>' AND lat = '<lat_value>'</p>
 <h5 id="parameters_21">Parameters<a class="headerlink" href="#parameters_21" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18437,7 +18437,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="canonical_name_8">canonical_name<a class="headerlink" href="#canonical_name_8" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">canonical_name</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L737">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L739">flowmachine/core/spatial_unit.py</a></p>
 <p>Get the canonical name for this type of spatial unit, to allow checking access rights in FlowAPI.</p>
 <h5 id="returns_131">Returns<a class="headerlink" href="#returns_131" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18559,7 +18559,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="location_id_columns_8">location_id_columns<a class="headerlink" href="#location_id_columns_8" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="n">location_id_columns</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L530">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L532">flowmachine/core/spatial_unit.py</a></p>
 <p>Names of the columns that identify a location.</p>
 <h5 id="returns_142">Returns<a class="headerlink" href="#returns_142" title="Permanent link">&para;</a></h5>
 <ul>
@@ -18616,7 +18616,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="make_spatial_unit">make_spatial_unit<a class="headerlink" href="#make_spatial_unit" title="Permanent link">&para;</a></h2>
 <p><div class="highlight"><pre><span></span><code><span class="n">make_spatial_unit</span><span class="p">(</span><span class="n">spatial_unit_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">region_id_column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;geom&#39;</span><span class="p">,</span> <span class="n">mapping_table</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">geom_table_join_on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">CellSpatialUnit</span><span class="p">,</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">spatial_unit</span><span class="o">.</span><span class="n">GeomSpatialUnit</span><span class="p">]</span>
 </code></pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L832">flowmachine/core/spatial_unit.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/spatial_unit.py#L834">flowmachine/core/spatial_unit.py</a></p>
 <p>Helper function to create an object representing a spatial unit.</p>
 <h3 id="parameters_23">Parameters<a class="headerlink" href="#parameters_23" title="Permanent link">&para;</a></h3>
 <ul>
