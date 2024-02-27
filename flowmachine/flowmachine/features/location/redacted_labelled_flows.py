@@ -12,7 +12,6 @@ from flowmachine.features.location.redacted_labelled_aggregate import (
 
 
 class RedactedLabelledFlows(FlowLike, RedactedLabelledAggregate):
-
     """
     Query that drops any flows that, when disaggregated by label, reveal a number of subscribers
     less than redaction_threshold
