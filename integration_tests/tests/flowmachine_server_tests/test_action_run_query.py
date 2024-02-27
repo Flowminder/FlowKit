@@ -121,11 +121,7 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     #
     output_cache_table = f"x{expected_query_id}"
     assert output_cache_table in get_cache_tables(get_db())
-    num_rows = (
-        get_db()
-        .engine.execute(f"SELECT COUNT(*) FROM cache.{output_cache_table}")
-        .fetchone()[0]
-    )
+    num_rows = get_db().fetch(f"SELECT COUNT(*) FROM cache.{output_cache_table}")[0][0]
     assert num_rows == 14
 
     #
@@ -137,12 +133,8 @@ def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         ("524 1 03 13", 20),
         ("524 3 08 43", 35),
     ]
-    first_few_rows = (
-        get_db()
-        .engine.execute(
-            f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
-        )
-        .fetchall()
+    first_few_rows = get_db().fetch(
+        f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
     )
     assert first_few_rows_expected == first_few_rows
 

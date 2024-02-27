@@ -223,7 +223,7 @@ class EventTableSubset(Query):
             )
             for column_str in self.columns
         ]
-        select_stmt = select(sqlalchemy_columns)
+        select_stmt = select(*sqlalchemy_columns)
 
         if self.start is not None:
             select_stmt = select_stmt.where(
