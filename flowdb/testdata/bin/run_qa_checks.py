@@ -2,20 +2,13 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from itertools import product
 from pathlib import Path
-from typing import Generator
 from jinja2 import Environment, PackageLoader, Template
 from sqlalchemy import create_engine
 import os
+import argparse
+
 
 env = Environment(loader=PackageLoader("flowetl", "qa_checks/qa_checks"))
-
-db_user = os.getenv("POSTGRES_USER", "flowdb")
-db_name = os.getenv("POSTGRES_DB", "flowdb")
-db_port = os.getenv("POSTGRES_PORT", "9000")
-db_password = os.getenv("POSTGRES_PASSWORD", "flowflow")  # In here for dev, don't think
-conn_str = f"postgresql://{db_user}:{db_password}@localhost:{db_port}/{db_name}"
-engine = create_engine(conn_str)
-
 
 # @James; if something like this already exists, I'll grab
 # that instead
@@ -68,28 +61,52 @@ def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
     )
 
 
-qa_scn = MockQaScenario(dates=[date(2016, 1, 1), date(2016, 1, 2)], tables=["calls"])
-
-templates = (
-    QaTemplate(Path(t).name, env.get_template(t)) for t in env.list_templates(".sql")
-)
-
-
-qa_rows = (
-    QaRow(
-        date,
-        type,
-        template.display_name,
-        render_qa_check(template.template, date, type),
-        "Made from mock data",
-        datetime.now(),
+if __name__ == "__main__()":
+    parser = argparse.ArgumentParser(
+        description="Runs all flowetl checks for ingested data"
     )
-    for date, type, template in product(qa_scn.dates, qa_scn.tables, templates)
-)
+    parser.add_argument(
+        "--dates",
+        type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
+        help="Date to run ingestion check on. Can be specified multiple times.",
+        nargs="+",
+    )
+    parser.add_argument(
+        "--event_types", help="Event tables to run qa checks on.", nargs="+"
+    )
+    args = parser.parse_args()
 
-with engine.connect() as conn:
-    for row in qa_rows:
-        conn.execute(update_template.render(**asdict(row)))
+    db_user = os.getenv("POSTGRES_USER", "flowdb")
+    db_name = os.getenv("POSTGRES_DB", "flowdb")
+    db_port = os.getenv("POSTGRES_PORT", "9000")
+    db_password = os.getenv(
+        "POSTGRES_PASSWORD", "flowflow"
+    )  # In here for dev, don't think we'll need it in prod
+    conn_str = f"postgresql://{db_user}:{db_password}@localhost:{db_port}/{db_name}"
+    engine = create_engine(conn_str)
 
-    out = conn.execute("SELECT * FROM etl.post_etl_queries")
-    print(out.fetchall())
+    qa_scn = MockQaScenario(dates=args.dates, tables=args.tables)
+
+    templates = (
+        QaTemplate(Path(t).name, env.get_template(t))
+        for t in env.list_templates(".sql")
+    )
+
+    qa_rows = (
+        QaRow(
+            date,
+            type,
+            template.display_name,
+            render_qa_check(template.template, date, type),
+            "Made from mock data",
+            datetime.now(),
+        )
+        for date, type, template in product(qa_scn.dates, qa_scn.tables, templates)
+    )
+
+    with engine.connect() as conn:
+        for row in qa_rows:
+            conn.execute(update_template.render(**asdict(row)))
+
+        out = conn.execute("SELECT * FROM etl.post_etl_queries")
+        print(out.fetchall())
