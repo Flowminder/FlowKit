@@ -31,3 +31,7 @@ if [ $count != 0 ]; then
       echo "$DIR is empty."
   fi
 fi
+
+if [ "$TEST_QA_CHECK" ]; then
+   pipenv run python ./run_qa_checks.py --dates ${DISASTER_END:-"2015-01-01"} --event-types calls mds sms
+fi

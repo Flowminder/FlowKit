@@ -72,7 +72,7 @@ if __name__ == "__main__()":
         nargs="+",
     )
     parser.add_argument(
-        "--event_types", help="Event tables to run qa checks on.", nargs="+"
+        "--event-types", help="Event tables to run qa checks on.", nargs="+"
     )
     args = parser.parse_args()
 
