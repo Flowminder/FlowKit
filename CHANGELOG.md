@@ -7,15 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.22.0]
+
+### Added
 - FlowETL sensor `NRowsPresentSensor` which checks for a specified minimum number of rows.
 
 ### Changed
 - `ForeignStagingTableOperator` will now error if the underlying file cannot be read or the command returns an error. [#5763](https://github.com/Flowminder/FlowKit/issues/5763)
 - Flowmachine now requires SQLAlchemy >= 2.0.0 [#6066](https://github.com/Flowminder/FlowKit/issues/6066)
-
-### Fixed
-
-### Removed
 
 ## [1.21.1]
 
@@ -1059,7 +1065,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.21.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.22.0...master
+[1.22.0]: https://github.com/Flowminder/FlowKit/compare/1.21.1...1.22.0
 [1.21.1]: https://github.com/Flowminder/FlowKit/compare/1.21.0...1.21.1
 [1.21.0]: https://github.com/Flowminder/FlowKit/compare/1.20.0...1.21.0
 [1.20.0]: https://github.com/Flowminder/FlowKit/compare/1.19.1...1.20.0
