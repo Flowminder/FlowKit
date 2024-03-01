@@ -2,6 +2,7 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from itertools import product
 from pathlib import Path
+from typing import List
 from jinja2 import Environment, PackageLoader, Template
 from sqlalchemy import create_engine
 import os
@@ -47,8 +48,8 @@ class QaRow:
 
 @dataclass
 class MockQaScenario:
-    dates: list[date]
-    tables: list[str]
+    dates: List[date]
+    tables: List[str]
 
 
 # NOTE: given this gets run _after_ all the ingestion, 'dates' may be an irrelevence
