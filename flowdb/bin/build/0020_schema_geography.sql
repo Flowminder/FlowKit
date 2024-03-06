@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS geography.geoms (
     geo_kind_id INT REFERENCES geography.geo_kinds(geo_kind_id) DEFAULT 1, /* The type of the geom - admin unit, coverage polygon etc. */
     spatial_resolution INT, /* Admin level, grid spatial resolution */
     additional_metadata JSON, /* Catch all field for additional metadata */
-    geom geometry(MULTIPOLYGON,4267,2)
+    geom geometry(MULTIPOLYGON,4326,2)
 );
 CREATE INDEX "geography_geom_gist" ON "geography"."geoms" USING GIST ("geom");
 CREATE INDEX "geography_geog_gist" ON "geography"."geoms" USING GIST (geography(geom));
