@@ -3,10 +3,12 @@ SELECT ranked.subscriber,
 FROM (SELECT times_visited.subscriber,
              pcod,
              row_number() OVER (PARTITION BY times_visited.subscriber
-                                ORDER BY total DESC) AS rank
+                                ORDER BY total DESC,
+                                         dt DESC) AS rank
       FROM (SELECT subscriber_locs.subscriber,
                    pcod,
-                   count(*) AS total
+                   count(*) AS total,
+                   max(time) AS dt
             FROM (SELECT subscriber,
                          datetime AS time,
                          pcod

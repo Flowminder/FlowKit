@@ -35,10 +35,10 @@ def test_redaction(get_dataframe):
 
     target = pd.DataFrame(
         [
-            ["524 3 08 44", "Feature", 36],
-            ["524 3 08 44", "Smart", 28],
-            ["524 4 12 62", "Feature", 44],
-            ["524 4 12 62", "Smart", 19],
+            ["524 3 08 44", "Feature", 37],
+            ["524 3 08 44", "Smart", 31],
+            ["524 4 12 62", "Feature", 40],
+            ["524 4 12 62", "Smart", 26],
         ],
         columns=["pcod", "value_label", "value"],
     )
