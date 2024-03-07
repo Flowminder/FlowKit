@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Repinned: https://github.com/eslint/eslint-scope/issues/55
-FROM node:16 as builder
+FROM node:21 as builder
 
 COPY flowauth/frontend /
 RUN npm install --production
