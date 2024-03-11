@@ -15,8 +15,6 @@ import argparse
 
 env = Environment(loader=PackageLoader("flowetl", "qa_checks/qa_checks"))
 
-# @James; if something like this already exists, I'll grab
-# that instead
 update_template_string = """
 INSERT INTO etl.post_etl_queries
     (cdr_date, cdr_type, type_of_query_or_check, outcome, optional_comment_or_description, timestamp)
@@ -56,8 +54,6 @@ class MockQaScenario:
     tables: List[str]
 
 
-# NOTE: given this gets run _after_ all the ingestion, 'dates' may be an irrelevence
-# unless final_table is normally one of the dated partitions
 def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
     return template.render(
         final_table=f"events.{cdr_type}",
@@ -100,16 +96,16 @@ if __name__ == "__main__()":
     qa_rows = (
         QaRow(
             date,
-            type,
+            cdr_type,
             template.display_name,
-            render_qa_check(template.template, date, type),
+            render_qa_check(template.template, date, cdr_type),
             "Made from mock data",
             datetime.now(),
         )
-        for date, type, template in product(qa_scn.dates, qa_scn.tables, templates)
+        for date, cdr_type, template in product(qa_scn.dates, qa_scn.tables, templates)
     )
 
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         for row in qa_rows:
             conn.execute(update_template.render(**asdict(row)))
 

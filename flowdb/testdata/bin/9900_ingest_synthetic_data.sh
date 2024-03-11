@@ -76,6 +76,7 @@ else
     echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
     exit 1
 fi
-if [ "$TEST_QA_CHECK" ]; then
+if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
+   echo "Running QA checks on test data"
    pipenv run python ./run_qa_checks.py --dates ${DISASTER_END:-"2015-01-01"} --event-types calls mds sms
 fi

@@ -32,6 +32,7 @@ if [ $count != 0 ]; then
   fi
 fi
 
-if [ "$TEST_QA_CHECK" ]; then
+# &{VAR,,} should lowercase the variable on interpolation
+if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
    pipenv run python ./run_qa_checks.py --dates ${DISASTER_END:-"2015-01-01"} --event-types calls mds sms
 fi
