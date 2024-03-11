@@ -6,15 +6,14 @@
 # Provides all worked examples from the FlowKit docs in a ready-to-go JupyterLab install
 #
 
-# Base image pinned due to https://github.com/Flowminder/FlowKit/issues/5374
-FROM jupyter/scipy-notebook:2022-08-22
+FROM quay.io/jupyter/scipy-notebook
 
 RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-COPY docs/source/analyst/worked_examples/*.ipynb /home/$NB_USER/
-COPY docs/source/analyst/advanced_usage/worked_examples/*.ipynb /home/$NB_USER/
+COPY --chown=${NB_UID}:${NB_GID} docs/source/analyst/worked_examples/*.ipynb /home/$NB_USER/
+COPY --chown=${NB_UID}:${NB_GID} docs/source/analyst/advanced_usage/worked_examples/*.ipynb /home/$NB_USER/
 COPY flowmachine /${SOURCE_TREE}/flowmachine
 COPY flowclient /${SOURCE_TREE}/flowclient
 USER root

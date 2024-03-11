@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "<2.0.0" # https://github.com/Flowminder/FlowKit/issues/6066
+sqlalchemy = "*"
 cachetools = "*"
 numpy = "*"
 networkx = "*"
@@ -33,7 +33,7 @@ pre_commit = "*"
 geojson = "*"
 geopandas = "*"
 descartes = "*"
-black = {extras = ["jupyter"],version = "==23.11.0"}
+black = {extras = ["jupyter"],version = "==24.2.0"}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"

@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import jwt
 import pytest
+import warnings
 
 from flowclient.errors import FlowclientConnectionError
 from flowclient import Connection
@@ -24,9 +25,9 @@ def test_https_warning(token):
 
 def test_no_warning_for_https(token, monkeypatch):
     """Test that no insecure warning is raised when connecting via https."""
-    with pytest.warns(None) as warnings_record:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         c = Connection(url="https://foo", token=token)
-    assert not warnings_record.list
 
 
 def test_login(token):

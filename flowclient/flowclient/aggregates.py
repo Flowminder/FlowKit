@@ -68,9 +68,9 @@ def location_event_counts_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -942,9 +942,9 @@ def unique_subscriber_counts_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -1033,9 +1033,9 @@ def location_introversion_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -1126,9 +1126,9 @@ def total_network_objects_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 

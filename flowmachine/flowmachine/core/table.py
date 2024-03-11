@@ -144,7 +144,7 @@ class Table(Query):
 
     def get_query(self):
         with get_db().engine.begin() as trans:
-            trans.execute(
+            trans.exec_driver_sql(
                 f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{self.query_id}'"
             )
         return self._make_query()

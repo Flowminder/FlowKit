@@ -7,8 +7,8 @@ import logging
 
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.backends.openssl.rsa import _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from get_secret_or_env_var import environ, getenv
 
 
@@ -20,7 +20,7 @@ class UndefinedConfigOption(Exception):
 
 # Duplicated in flowkit_jwt_generator (cannot re-use the implementation
 # there because the module is outside the docker build context for flowauth).
-def load_public_key(key_string: str) -> _RSAPublicKey:
+def load_public_key(key_string: str) -> rsa.RSAPublicKey:
     """
     Load a public key from a string, which may be base64 encoded.
 

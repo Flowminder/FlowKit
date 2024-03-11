@@ -10,7 +10,7 @@ import os
 import pandas as pd
 from functools import partial
 from io import StringIO
-from sqlalchemy import create_engine, select, Column, Text
+from sqlalchemy import create_engine, select, Column, Text, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from tohu import (
     CustomGenerator,
@@ -53,12 +53,13 @@ def export_dataframe_to_sql(df, *, table, engine, schema, if_exists="replace"):
     a raw COPY statement, which is much faster than pandas.to_sql().
     """
 
-    if if_exists == "replace" and engine.has_table(table, schema=schema):
+    if if_exists == "replace" and inspect(engine).has_table(table, schema=schema):
         # Workaround for the fact that pandas can't drop a table if other
         # tables depend on it. Thus we issue a `TRUNCATE ... CASCADE` here
         # so that we can simply append the data to the (now empty) table.
-        engine.execute(f"TRUNCATE {schema}.{table} CASCADE")
-        if_exists = "append"
+        with engine.begin() as trans:
+            trans.exec_driver_sql(f"TRUNCATE {schema}.{table} CASCADE")
+            if_exists = "append"
 
     conn = engine.raw_connection()
     cur = conn.cursor()
@@ -123,7 +124,7 @@ class Cells(Base):
     site_id = Column(Text)
 
 
-select_stmt = select([Cells.cell_id.label("cell_id"), Cells.version, Cells.site_id])
+select_stmt = select(Cells.cell_id.label("cell_id"), Cells.version, Cells.site_id)
 df_cells = pd.read_sql(select_stmt, engine)
 
 # Pick only the latest version for each cell
@@ -145,25 +146,25 @@ print(f"Writing table {dfs_schema}.transaction_types.... ", flush=True, end="")
 
 tx_columns = ["id", "descr", "user_type_a_party", "user_type_b_party"]
 df_transaction_types = pd.DataFrame(columns=tx_columns)
-df_transaction_types[
-    ["descr", "user_type_a_party", "user_type_b_party"]
-] = pd.DataFrame(
-    [
-        ("Customer checks balance", "customer", "special_1"),
-        ("Customer transfers to other customer", "customer", "customer"),
-        ("Customer withdraws from agent", "customer", "agent"),
-        ("Customer buys airtime", "customer", "special_2"),
-        ("Customer pays bill", "customer", "special_3"),
-        ("Agent deposits to customer", "agent", "customer"),
-        ("Agent transfers to other agent", "agent", "agent"),
-        ("Agent withdraws from superagent", "agent", "superagent"),
-        ("Agent checks balance", "agent", "special_4"),
-        ("Agent buys airtime for customer", "agent", "special_5"),
-        ("Agent asks for help from superagent", "superagent", "agent"),
-        ("Superagent deposits to agent", "superagent", "agent"),
-        ("Superagent transfers to other superagent", "superagent", "superagent"),
-        ("Superagent checks balance", "superagent", "special_6"),
-    ]
+df_transaction_types[["descr", "user_type_a_party", "user_type_b_party"]] = (
+    pd.DataFrame(
+        [
+            ("Customer checks balance", "customer", "special_1"),
+            ("Customer transfers to other customer", "customer", "customer"),
+            ("Customer withdraws from agent", "customer", "agent"),
+            ("Customer buys airtime", "customer", "special_2"),
+            ("Customer pays bill", "customer", "special_3"),
+            ("Agent deposits to customer", "agent", "customer"),
+            ("Agent transfers to other agent", "agent", "agent"),
+            ("Agent withdraws from superagent", "agent", "superagent"),
+            ("Agent checks balance", "agent", "special_4"),
+            ("Agent buys airtime for customer", "agent", "special_5"),
+            ("Agent asks for help from superagent", "superagent", "agent"),
+            ("Superagent deposits to agent", "superagent", "agent"),
+            ("Superagent transfers to other superagent", "superagent", "superagent"),
+            ("Superagent checks balance", "superagent", "special_6"),
+        ]
+    )
 )
 df_transaction_types["id"] = range(1, len(df_transaction_types) + 1)
 export_dataframe_to_sql(

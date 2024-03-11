@@ -161,9 +161,9 @@ def daily_location_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -294,9 +294,9 @@ def radius_of_gyration_spec(
         "end_date": end_date,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -398,9 +398,9 @@ def unique_location_counts_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -441,9 +441,9 @@ def topup_balance_spec(
         "end_date": end_date,
         "statistic": statistic,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -489,9 +489,9 @@ def subscriber_degree_spec(
         "direction": direction,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -532,9 +532,9 @@ def topup_amount_spec(
         "end_date": end_date,
         "statistic": statistic,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -580,9 +580,9 @@ def event_count_spec(
         "direction": direction,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -633,9 +633,9 @@ def displacement_spec(
         "reference_location": reference_location,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -681,9 +681,9 @@ def pareto_interactions_spec(
         "proportion": proportion,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -779,9 +779,9 @@ def handset_spec(
         "method": method,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
