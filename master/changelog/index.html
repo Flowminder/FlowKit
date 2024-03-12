@@ -12582,7 +12582,11 @@
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>MostFrequentLocation</code> now breaks ties based on the last used location, instead of by arbitrary Postgres sort order. <a href="https://github.com/Flowminder/FlowKit/issues/6268">#6268</a></li>
+<li>Users no longer have write access to the public schema in FlowDB following a change introduced in <a href="https://www.postgresql.org/about/news/postgresql-15-released-2526/">PostgreSQL 15</a></li>
+<li>FlowDB is now built on PostgreSQL 16, debian bullseye
+  #### Warning</li>
 </ul>
+<p>You may need to update your docker version to use newer releases of FlowDB. You will also need to create a fresh database and reimport data if you are upgrading from a previous FlowDB release.</p>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1220"><a href="https://github.com/Flowminder/FlowKit/compare/1.21.1...1.22.0">1.22.0</a><a class="headerlink" href="#1220" title="Permanent link">&para;</a></h2>
