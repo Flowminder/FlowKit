@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import List
 from jinja2 import Environment, PackageLoader, Template
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 import os
 import argparse
 
@@ -62,7 +63,19 @@ def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
     )
 
 
-if __name__ == "__main__()":
+def get_available_tables(engine: Engine):
+    with engine.begin() as conn:
+        tables = conn.execute("SELECT table_name FROM available_tables")
+        return tables.all()
+
+
+def get_available_dates(engine: Engine):
+    with engine.begin() as conn:
+        dates = conn.execute("SELECT cdr_date FROM etl.available_dates")
+        return dates.all()
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Runs all flowetl checks for ingested data"
     )
@@ -70,21 +83,24 @@ if __name__ == "__main__()":
         "--dates",
         type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
         help="Date to run ingestion check on. Can be specified multiple times.",
-        nargs="+",
+        nargs="*",
     )
     parser.add_argument(
-        "--event-types", help="Event tables to run qa checks on.", nargs="+"
+        "--event-types", help="Event tables to run qa checks on.", nargs="*"
     )
     args = parser.parse_args()
 
-    db_user = os.getenv("POSTGRES_USER", "flowdb")
-    db_name = os.getenv("POSTGRES_DB", "flowdb")
-    db_port = os.getenv("POSTGRES_PORT", "9000")
-    db_password = os.getenv(
-        "POSTGRES_PASSWORD", "flowflow"
-    )  # In here for dev, don't think we'll need it in prod
-    conn_str = f"postgresql://{db_user}:{db_password}@localhost:{db_port}/{db_name}"
+    db_user = os.environ["POSTGRES_USER"]
+    db_password = os.environ["POSTGRES_PASSWORD"]
+    conn_str = f"postgresql://{db_user}:{db_password}@localhost:5432/flowdb"
     engine = create_engine(conn_str)
+
+    breakpoint()
+    if "dates" not in args.keys():
+        args["dates"] = get_available_dates(engine)
+
+    if "event-types" not in args.keys():
+        args["event-types"] = get_available_tables(engine)
 
     qa_scn = MockQaScenario(dates=args.dates, tables=args.tables)
 

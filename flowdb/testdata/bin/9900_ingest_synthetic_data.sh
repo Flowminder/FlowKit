@@ -78,5 +78,5 @@ else
 fi
 if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
    echo "Running QA checks on test data"
-   pipenv run python ./run_qa_checks.py --dates ${DISASTER_END:-"2015-01-01"} --event-types calls mds sms
+   pipenv run python ../test_data/py/run_qa_checks.py 
 fi
