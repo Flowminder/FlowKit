@@ -37,6 +37,7 @@ update_template = env.from_string(update_template_string)
 class QaTemplate:
     display_name: str
     template: Template
+    event_type: str
 
 
 @dataclass
@@ -65,14 +66,16 @@ def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
 
 def get_available_tables(engine: Engine):
     with engine.begin() as conn:
-        tables = conn.execute("SELECT table_name FROM available_tables")
-        return tables.all()
+        tables = conn.execute(
+            "SELECT table_name FROM available_tables WHERE has_subscribers"
+        )
+    return [t[0] for t in tables.all()]
 
 
 def get_available_dates(engine: Engine):
     with engine.begin() as conn:
         dates = conn.execute("SELECT cdr_date FROM etl.available_dates")
-        return dates.all()
+    return [d[0] for d in dates.all()]
 
 
 if __name__ == "__main__":
@@ -86,26 +89,30 @@ if __name__ == "__main__":
         nargs="*",
     )
     parser.add_argument(
-        "--event-types", help="Event tables to run qa checks on.", nargs="*"
+        "--event_types", help="Event tables to run qa checks on.", nargs="*"
     )
     args = parser.parse_args()
 
     db_user = os.environ["POSTGRES_USER"]
     db_password = os.environ["POSTGRES_PASSWORD"]
-    conn_str = f"postgresql://{db_user}:{db_password}@localhost:5432/flowdb"
+    db_port = os.getenv("POSTGRES_PORT", 5432)  # For local running
+    conn_str = f"postgresql://{db_user}:{db_password}@localhost:{db_port}/flowdb"
     engine = create_engine(conn_str)
 
-    breakpoint()
-    if "dates" not in args.keys():
-        args["dates"] = get_available_dates(engine)
+    dates = get_available_dates(engine) if not args.dates else args.dates
 
-    if "event-types" not in args.keys():
-        args["event-types"] = get_available_tables(engine)
+    event_types = (
+        get_available_tables(engine) if not args.event_types else args.event_types
+    )
 
-    qa_scn = MockQaScenario(dates=args.dates, tables=args.tables)
+    qa_scn = MockQaScenario(dates=dates, tables=event_types)
 
     templates = (
-        QaTemplate(Path(t).name, env.get_template(t))
+        QaTemplate(
+            Path(t).name,
+            env.get_template(t),
+            Path(t).parent if Path(t).parent != Path(".") else "any",
+        )
         for t in env.list_templates(".sql")
     )
 
@@ -119,6 +126,7 @@ if __name__ == "__main__":
             datetime.now(),
         )
         for date, cdr_type, template in product(qa_scn.dates, qa_scn.tables, templates)
+        if template.event_type in [cdr_type, "any"]
     )
 
     with engine.begin() as conn:
