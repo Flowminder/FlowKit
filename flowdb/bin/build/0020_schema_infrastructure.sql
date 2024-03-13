@@ -43,27 +43,13 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
+        geom_point geometry(POINT, 4326, 2),
+        geom_polygon geometry(MULTIPOLYGON, 4326, 2),
 
         UNIQUE (id, version)
 
         );
-    
-    /*
 
-        Here we use PostGIS' AddGeometryColumn
-        for creating the geometry columns `geom_point`
-        and `geom_polygon` on the infrasturcture.*
-        columns. That function has advantages because
-        it registers the SRID of columns with PostGIS
-        metadata and creates a typmod geometry column
-        for checking the SRID and the column specific
-        geometry type (e.g `POINT`, `MULTIPOLYGON`).
-        The same operations is repeated in the 
-        infrastructure.sites column.
-
-    */
-    SELECT AddGeometryColumn('infrastructure', 'sites', 'geom_point', 4326, 'POINT', 2);
-    SELECT AddGeometryColumn('infrastructure', 'sites', 'geom_polygon', 4326, 'MULTIPOLYGON', 2);
 
     CREATE INDEX IF NOT EXISTS infrastructure_sites_geom_point_index
         ON infrastructure.sites
@@ -101,11 +87,10 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
+        geom_point geometry(POINT, 4326, 2),
+        geom_polygon geometry(MULTIPOLYGON, 4326, 2),
         UNIQUE (id, version)
         );
-
-    SELECT AddGeometryColumn('infrastructure', 'cells', 'geom_point', 4326, 'POINT', 2);
-    SELECT AddGeometryColumn('infrastructure', 'cells', 'geom_polygon', 4326, 'MULTIPOLYGON', 2);
 
     CREATE INDEX IF NOT EXISTS infrastructure_cells_geom_point_index
         ON infrastructure.cells
