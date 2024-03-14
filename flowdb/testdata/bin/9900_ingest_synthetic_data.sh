@@ -76,7 +76,7 @@ else
     echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
     exit 1
 fi
-if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
+if [ "${SKIP_TEST_QA_CHECK}" != "true" ]; then
    echo "Running QA checks on test data"
    pipenv run python run_qa_checks.py
 fi
