@@ -58,7 +58,7 @@ class MockQaScenario:
 
 def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
     return template.render(
-        final_table=f"events.{cdr_type}",
+        final_table=f"events.{cdr_type}_{date.strftime('%Y%m%d')",
         cdr_type=cdr_type,
         ds=date.strftime("%Y-%m-%d"),
     )
