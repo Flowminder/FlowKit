@@ -34,5 +34,5 @@ fi
 
 # &{VAR,,} should lowercase the variable on interpolation
 if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
-   pipenv run python ../test_data/py/run_qa_checks.py
+   pipenv run python run_qa_checks.py
 fi

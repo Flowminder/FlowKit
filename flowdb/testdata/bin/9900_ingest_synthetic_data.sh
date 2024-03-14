@@ -78,5 +78,5 @@ else
 fi
 if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
    echo "Running QA checks on test data"
-   pipenv run python ../test_data/py/run_qa_checks.py 
+   pipenv run python run_qa_checks.py
 fi
