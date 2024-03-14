@@ -328,8 +328,7 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker:
-          version: 20.10.7
+      - setup_remote_docker
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -353,8 +352,7 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker:
-          version: 20.10.7
+      - setup_remote_docker
       - attach_workspace:
           at: /home/circleci/
       - run:

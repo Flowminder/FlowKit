@@ -10,11 +10,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Test and synthetic data generators now perform QA checks on the generated data. [#6467](https://github.com/Flowminder/FlowKit/issues/6467)
 
 ### Changed
-- `MostFrequentLocation` now breaks ties based on the last used location, instead of by arbitrary Postgres sort order. [#6268](https://github.com/Flowminder/FlowKit/issues/6268)
 
 ### Fixed
 
 ### Removed
+
+## [1.23.0]
+
+### Changed
+- `MostFrequentLocation` now breaks ties based on the last used location, instead of by arbitrary Postgres sort order. [#6268](https://github.com/Flowminder/FlowKit/issues/6268)
+- Users no longer have write access to the public schema in FlowDB following a change introduced in [PostgreSQL 15](https://www.postgresql.org/about/news/postgresql-15-released-2526/)
+- FlowDB is now built on PostgreSQL 16, debian bullseye
+  #### Warning
+
+  You may need to update your docker version to use newer releases of FlowDB. You will also need to create a fresh database and reimport data if you are upgrading from a previous FlowDB release.
+
 
 ## [1.22.0]
 
@@ -1067,7 +1077,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.22.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.23.0...master
+[1.23.0]: https://github.com/Flowminder/FlowKit/compare/1.22.0...1.23.0
 [1.22.0]: https://github.com/Flowminder/FlowKit/compare/1.21.1...1.22.0
 [1.21.1]: https://github.com/Flowminder/FlowKit/compare/1.21.0...1.21.1
 [1.21.0]: https://github.com/Flowminder/FlowKit/compare/1.20.0...1.21.0
