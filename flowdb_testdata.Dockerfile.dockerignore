@@ -19,3 +19,5 @@
 !flowdb/testdata/test_data/sql/
 !flowdb/testdata/test_data/py/
 !flowdb/testdata/test_data/data/
+!flowetl/flowetl/flowetl/qa_checks/qa_checks
+
