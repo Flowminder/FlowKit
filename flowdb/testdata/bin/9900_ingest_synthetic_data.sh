@@ -79,5 +79,8 @@ else
 fi
 if [ "${SKIP_TEST_QA_CHECK}" != "true" ]; then
    echo "Running QA checks on test data"
-   pipenv run python run_qa_checks.py /docker-entrypoint-initdb.d/qa_checks
+   pushd ../synthetic_data
+   pipenv shell
+   popd
+   python run_qa_checks.py /docker-entrypoint-initdb.d/qa_checks
 fi
