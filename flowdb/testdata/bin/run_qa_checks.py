@@ -7,8 +7,8 @@ from datetime import date, datetime
 from itertools import product
 from pathlib import Path
 from typing import List
-from jinja2 import Environment, PackageLoader, Template
-from sqlalchemy import create_engine
+from jinja2 import Environment, FileSystemLoader, Template
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 import os
 import argparse
@@ -63,14 +63,14 @@ def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
 def get_available_tables(engine: Engine):
     with engine.begin() as conn:
         tables = conn.execute(
-            "SELECT table_name FROM available_tables WHERE has_subscribers"
+            text("SELECT table_name FROM available_tables WHERE has_subscribers")
         )
     return [t[0] for t in tables.all()]
 
 
 def get_available_dates(engine: Engine):
     with engine.begin() as conn:
-        dates = conn.execute("SELECT cdr_date FROM etl.available_dates")
+        dates = conn.execute(text("SELECT cdr_date FROM etl.available_dates"))
     return [d[0] for d in dates.all()]
 
 
@@ -89,13 +89,11 @@ if __name__ == "__main__":
         "--event_types", help="Event tables to run qa checks on.", nargs="*"
     )
     args = parser.parse_args()
-    env = Environment(loader=PathLoader(args.qa_template_path))
+    env = Environment(loader=FileSystemLoader(args.template_path))
     update_template = env.from_string(update_template_string)
 
     db_user = os.environ["POSTGRES_USER"]
-    db_password = os.environ["POSTGRES_PASSWORD"]
-    db_port = os.getenv("POSTGRES_PORT", 5432)  # For local running
-    conn_str = f"postgresql://{db_user}:{db_password}@localhost:{db_port}/flowdb"
+    conn_str = f"postgresql://{db_user}@/flowdb"
     engine = create_engine(conn_str)
 
     dates = get_available_dates(engine) if not args.dates else args.dates
@@ -130,7 +128,7 @@ if __name__ == "__main__":
 
     with engine.begin() as conn:
         for row in qa_rows:
-            conn.execute(update_template.render(**asdict(row)))
+            conn.execute(text(update_template.render(**asdict(row))))
 
-        out = conn.execute("SELECT * FROM etl.post_etl_queries")
+        out = conn.execute(text("SELECT * FROM etl.post_etl_queries LIMIT 10"))
         print(out.fetchall())
