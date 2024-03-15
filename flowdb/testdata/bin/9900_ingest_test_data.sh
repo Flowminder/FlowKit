@@ -35,5 +35,6 @@ fi
 
 # &{VAR,,} should lowercase the variable on interpolation
 if [ "${SKIP_TEST_QA_CHECK,,}" != "true" ]; then
-   pipenv run python run_qa_checks.py
+   echo "Running qa checks in /docker-entrypoint-initdb.d/qa_checks"
+   pipenv run python run_qa_checks.py /docker-entrypoint-initdb.d/qa_checks
 fi

@@ -44,6 +44,10 @@ COPY --chown=postgres flowdb/testdata/test_data/py/* /docker-entrypoint-initdb.d
 COPY --chown=postgres flowdb/testdata/bin/generate_synthetic_data*.py /opt/synthetic_data/
 ADD --chown=postgres flowdb/testdata/test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
 ADD --chown=postgres flowdb/testdata/synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
+# Copy QA templates from flowetl
+
+COPY --chown=postgres flowetl/flowetl/flowetl/qa_checks/qa_checks /docker-entrypoint-initdb.d/qa_checks
+
 # Need to make postgres is owner of any subdirectrories
 RUN mkdir docker-entrypoint-initdb.d/sql/syntheticdata/sql &&  chown -R postgres /docker-entrypoint-initdb.d
 # Need to relax the permissions in case the container is running as an arbitrary user with a bind mount

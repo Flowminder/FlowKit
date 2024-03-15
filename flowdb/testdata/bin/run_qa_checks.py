@@ -14,8 +14,6 @@ import os
 import argparse
 
 
-env = Environment(loader=PackageLoader("flowetl", "qa_checks/qa_checks"))
-
 update_template_string = """
 INSERT INTO etl.post_etl_queries
     (cdr_date, cdr_type, type_of_query_or_check, outcome, optional_comment_or_description, timestamp)
@@ -29,8 +27,6 @@ VALUES(
 )
 
 """
-
-update_template = env.from_string(update_template_string)
 
 
 @dataclass
@@ -58,7 +54,7 @@ class MockQaScenario:
 
 def render_qa_check(template: Template, date: date, cdr_type: str) -> str:
     return template.render(
-        final_table=f"events.{cdr_type}_{date.strftime('%Y%m%d')",
+        final_table=f"events.{cdr_type}_{date.strftime('%Y%m%d')}",
         cdr_type=cdr_type,
         ds=date.strftime("%Y-%m-%d"),
     )
@@ -82,6 +78,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Runs all flowetl checks for ingested data"
     )
+    parser.add_argument("template_path", help="Path to the QA templates")
     parser.add_argument(
         "--dates",
         type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
@@ -92,6 +89,8 @@ if __name__ == "__main__":
         "--event_types", help="Event tables to run qa checks on.", nargs="*"
     )
     args = parser.parse_args()
+    env = Environment(loader=PathLoader(args.qa_template_path))
+    update_template = env.from_string(update_template_string)
 
     db_user = os.environ["POSTGRES_USER"]
     db_password = os.environ["POSTGRES_PASSWORD"]
