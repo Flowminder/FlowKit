@@ -19,7 +19,7 @@ fi
 if [ $count != 0 ]; then
   echo "Found $count SQL data files in directory."
   if [ "$(ls -A $DIR)" ]; then
-      pushdir $DIR
+      pushd $DIR
       for f in *.sql
       do
         echo "Running"
@@ -27,7 +27,7 @@ if [ $count != 0 ]; then
         psql --dbname="$POSTGRES_DB" -f $f
         echo "------------- // Done // ---------------"
       done
-      popdir
+      popd
   else
       echo "$DIR is empty."
   fi
