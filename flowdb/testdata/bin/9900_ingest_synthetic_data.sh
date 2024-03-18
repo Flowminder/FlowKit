@@ -23,7 +23,7 @@ fi
 if [ $count != 0 ]; then
   echo "Found $count SQL data files in directory."
   if [ "$(ls -A $DIR)" ]; then
-      pushd $DIR
+      cd $DIR
       for f in *.sql
       do
         echo "Running"
@@ -31,7 +31,6 @@ if [ $count != 0 ]; then
         psql --dbname="$POSTGRES_DB" -f $f
         echo "------------- // Done // ---------------"
       done
-      popd
   else
       echo "$DIR is empty."
   fi
@@ -78,6 +77,7 @@ else
     exit 1
 fi
 if [ "${SKIP_TEST_QA_CHECK}" != "true" ]; then
+   cd /docker-entrypoint-initdb.d
    echo "Running QA checks on test data"
    pipenv run python run_qa_checks.py qa_checks
 fi
