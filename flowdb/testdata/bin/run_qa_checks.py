@@ -90,11 +90,12 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     env = Environment(loader=FileSystemLoader(args.template_path))
+    print(f"Loaded {len(env.list_templates)} templates")
     update_template = env.from_string(update_template_string)
-
     db_user = os.environ["POSTGRES_USER"]
     conn_str = f"postgresql://{db_user}@/flowdb"
     engine = create_engine(conn_str)
+    print(f"Connecting to flowdb on {conn_str}.")
 
     dates = get_available_dates(engine) if not args.dates else args.dates
 
@@ -128,6 +129,9 @@ if __name__ == "__main__":
 
     with engine.begin() as conn:
         for row in qa_rows:
+            print(
+                f"Running {row.type_of_query_or_check} for cdr type {row.cdr_type} date {row.cdr_date}"
+            )
             conn.execute(text(update_template.render(**asdict(row))))
 
         out = conn.execute(text("SELECT * FROM etl.post_etl_queries LIMIT 10"))
