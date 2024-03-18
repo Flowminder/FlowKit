@@ -90,7 +90,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     env = Environment(loader=FileSystemLoader(args.template_path))
-    print(f"Loaded {len(env.list_templates)} templates")
+    print(f"Loaded {len(env.list_templates())} templates")
     update_template = env.from_string(update_template_string)
     db_user = os.environ["POSTGRES_USER"]
     conn_str = f"postgresql://{db_user}@/flowdb"
