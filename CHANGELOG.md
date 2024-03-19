@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Test and synthetic data generators now perform QA checks on the generated data. [#6467](https://github.com/Flowminder/FlowKit/issues/6467)
 
 ### Changed
 

@@ -7,6 +7,7 @@ name = "pypi"
 tohu = "*"
 "geoalchemy2" = "*"
 sqlalchemy = "*"
+jinja2 = "*"
 
 [dev-packages]
 black = {extras = ["jupyter"],version = "==24.2.0"}

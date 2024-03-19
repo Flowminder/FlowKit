@@ -122,6 +122,7 @@ SUBSCRIBERS_SEED=12345
 CALLS_SEED=22222
 CELLS_SEED=99999
 OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
+SKIP_TEST_QA_CHECK=False
 
 # Integration tests
 
