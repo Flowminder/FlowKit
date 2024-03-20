@@ -465,12 +465,24 @@ async def action_handler__list_qa_checks(config: "FlowmachineServerConfig"):
     return ZMQReply(status="success", payload={"qa_checks": conn.available_qa_checks})
 
 
-async def action_handler__get_qa_check(
-    config: "FlowmachineServerConfig", check_id: str
+async def action_handler__get_qa_checks(
+    config: "FlowmachineServerConfig",
+    cdr_type: str,
+    start_date: str,
+    end_date: str,
+    check_type: str,
 ):
     conn = get_db()
     return ZMQReply(
-        status="success", payload={"qa_checks": conn.get_qa_check(check_id)}
+        status="success",
+        payload={
+            "qa_checks": conn.get_qa_checks(
+                start_date=start_date,
+                end_date=end_date,
+                cdr_type=cdr_type,
+                check_type=check_type,
+            )
+        },
     )
 
 
@@ -535,5 +547,5 @@ ACTION_HANDLERS = {
     "get_available_dates": action_handler__get_available_dates,
     "get_aggregation_unit": action_handler__get_aggregation_unit,
     "list_qa_checks": action_handler__list_qa_checks,
-    "get_qa_check": action_handler__get_qa_check,
+    "get_qa_check": action_handler__get_qa_checks,
 }

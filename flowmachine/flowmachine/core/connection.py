@@ -205,10 +205,39 @@ class Connection:
         )
 
     @property
-    def available_qa_checks(self) -> List[str]:
-        return self.fetch(
-            "SELECT cdr_type, type_of_query_or_check FROM etl.deduped_post_etl_queries"
+    def available_qa_checks(self) -> List[dict]:
+        out = self.fetch(
+            "SELECT DISTINCT(cdr_type, type_of_query_or_check) FROM etl.deduped_post_etl_queries"
         )
+        # Some day I will understand this comprehension, but not today
+        flat_outs = (inner for inners in out for inner in inners)
+        list_outs = (row.strip("()").split(",") for row in flat_outs)
+        return [
+            dict(cdr_type=row[0], type_of_query_or_check=row[1]) for row in list_outs
+        ]
+
+    def get_qa_checks(self, cdr_type, start_date, end_date, check_type) -> List[dict]:
+        # Whitelist protection on this?
+        if (
+            dict(cdr_type=cdr_type, type_of_query_or_check=check_type)
+            not in self.available_qa_checks
+        ):
+            raise Exception
+        result = self.fetch(
+            f"""SELECT outcome, cdr_date, type_of_query_or_check 
+            FROM etl.deduped_post_etl_queries 
+            WHERE cdr_type='{cdr_type}' 
+            AND cdr_date BETWEEN '{start_date}' AND '{end_date}'
+            AND type_of_query_or_check='{check_type}'"""
+        )
+        return [
+            dict(
+                outcome=row[0],
+                cdr_date=row[1].strftime("%Y-%m-%d"),
+                type_of_query_or_check=row[2],
+            )
+            for row in result
+        ]
 
     def min_date(self, table: str = "calls") -> datetime.date:
         """

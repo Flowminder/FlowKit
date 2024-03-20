@@ -21,6 +21,7 @@ from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
     action_handler__get_geography,
+    action_handler__get_qa_checks,
     action_handler__get_query_params,
     action_handler__get_sql,
     action_handler__run_query,
@@ -296,6 +297,26 @@ async def test_get_aggregation_unit(
 
 @pytest.mark.asyncio
 async def test_get_qa_checks(server_config, real_connections):
+    # This assumes that flowdb_test_data is being used for this
     msg = await action_handler__list_qa_checks(config=server_config)
     assert msg["status"] == ZMQReplyStatus.SUCCESS
-    assert msg.payload == ["LETSFINDOUT"]
+    assert len(msg.payload["qa_checks"]) == 64
+
+
+@pytest.mark.asyncio
+async def test_get_qa_check(server_config, real_connections):
+    msg = await action_handler__get_qa_checks(
+        start_date="2016-01-01",
+        end_date="2016-02-01",
+        cdr_type="calls",
+        check_type="count_duplicated.sql",
+        config=server_config,
+    )
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    target = dict(
+        cdr_date="2016-01-01",
+        outcome="0",
+        type_of_query_or_check="count_duplicated.sql",
+    )
+    assert target in msg.payload["qa_checks"]
+    assert len(msg.payload["qa_checks"]) == 7
