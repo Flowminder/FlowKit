@@ -107,13 +107,13 @@ if __name__ == "__main__":
 
     templates = (
         QaTemplate(
-            (
-                ".".join(Path(t).stem, Path(t).parent)
+            display_name=(
+                ".".join((Path(t).stem, Path(t).parent.stem))
                 if Path(t).parent != Path(".")
                 else Path(t).stem
             ),
-            env.get_template(t),
-            Path(t).parent if Path(t).parent != Path(".") else "any",
+            template=env.get_template(t),
+            event_type=Path(t).parent.stem if Path(t).parent != Path(".") else "any",
         )
         for t in env.list_templates(".sql")
     )
