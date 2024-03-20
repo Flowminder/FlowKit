@@ -411,17 +411,20 @@ async def get_available_dates():
         return {"status": "error", "msg": reply["msg"]}, 500
 
 
-@blueprint.route("/qa/<check_id>")
+@blueprint.route("/qa", methods=["POST"])
 @jwt_required
-async def get_qa_check(check_id):
+async def get_qa_checks():
     current_user.can_get_qa()
-    current_app.query_run_logger.info("get_qa_check", dict(check=check_id))
+    request_dict = await request.get_json()
+    params_dict = dict(
+        start_date=request_dict["start_date"],
+        end_date=request_dict["end_date"],
+        check_id=request_dict["check_id"],
+        cdr_type=request_dict["cdr_type"],
+    )
+    current_app.query_run_logger.info("get_qa_check", params_dict)
     request.socket.send_json(
-        dict(
-            request_id=request.request_id,
-            action="get_qa_check",
-            params=dict(check_id=check_id),
-        )
+        dict(request_id=request.request_id, action="get_qa_check", params=params_dict)
     )
     reply = await request.socket.recv_json()
     if reply["status"] == "success":
@@ -431,7 +434,7 @@ async def get_qa_check(check_id):
         return {"status": "error", "msg": reply["msg"]}, 500
 
 
-@blueprint.route("/qa")
+@blueprint.route("/qa", methods=["GET"])
 @jwt_required
 async def list_qa_checks():
     current_user.can_get_qa()
