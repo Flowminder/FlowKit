@@ -5,6 +5,7 @@
 from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context
 from .stream_results import stream_result_as_json, stream_result_as_csv
+import datetime as dt
 
 blueprint = Blueprint("query", __name__)
 
@@ -411,16 +412,28 @@ async def get_available_dates():
         return {"status": "error", "msg": reply["msg"]}, 500
 
 
-@blueprint.route("/qa", methods=["POST"])
+@blueprint.route("/qa/<cdr_type>/<check_id>", methods=["GET"])
 @jwt_required
-async def get_qa_checks():
+async def get_qa_date_range(cdr_type, check_id):
     current_user.can_get_qa()
-    request_dict = await request.get_json()
+    return await get_qa_checks(
+        cdr_type, check_id, request.args.get("start_date"), request.args.get("end_date")
+    )
+
+
+@blueprint.route("/qa/<cdr_type>/<check_id>/<date>")
+@jwt_required
+async def get_qa_on_date(cdr_type, check_id, check_date):
+    current_user.can_get_qa()
+    return await get_qa_checks(cdr_type, check_id, check_date, check_date)
+
+
+async def get_qa_checks(cdr_type, check_id, start_date, end_date):
     params_dict = dict(
-        start_date=request_dict["start_date"],
-        end_date=request_dict["end_date"],
-        check_id=request_dict["check_id"],
-        cdr_type=request_dict["cdr_type"],
+        start_date=start_date,
+        end_date=end_date,
+        check_id=check_id,
+        cdr_type=cdr_type,
     )
     current_app.query_run_logger.info("get_qa_check", params_dict)
     request.socket.send_json(
@@ -428,7 +441,13 @@ async def get_qa_checks():
     )
     reply = await request.socket.recv_json()
     if reply["status"] == "success":
-        return {"qa_check": reply["payload"]}, 200
+        if len(reply["payload"]["qa_checks"] == 0):
+            return {
+                "status": "not found",
+                "msg": f"No qa checks found for {cdr_type}, {check_id} between {start_date} and {end_date}",
+            }, 404
+        else:
+            return {"qa_checks": reply["payload"]}, 200
     else:
         assert reply["status"] == "error"
         return {"status": "error", "msg": reply["msg"]}, 500
@@ -449,5 +468,4 @@ async def list_qa_checks():
     if reply["status"] == "success":
         return {"available_qa_checks": reply["payload"]}, 200
     else:
-        assert reply["status"] == "error"
         return {"status": "error", "msg": reply["msg"]}, 500

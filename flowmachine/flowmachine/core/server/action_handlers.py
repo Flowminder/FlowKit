@@ -547,5 +547,5 @@ ACTION_HANDLERS = {
     "get_available_dates": action_handler__get_available_dates,
     "get_aggregation_unit": action_handler__get_aggregation_unit,
     "list_qa_checks": action_handler__list_qa_checks,
-    "get_qa_check": action_handler__get_qa_checks,
+    "get_qa_checks": action_handler__get_qa_checks,
 }
