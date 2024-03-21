@@ -421,7 +421,7 @@ async def get_qa_date_range(cdr_type, check_id):
     )
 
 
-@blueprint.route("/qa/<cdr_type>/<check_id>/<check_date>")
+@blueprint.route("/qa/<cdr_type>/<check_id>/<date>")
 @jwt_required
 async def get_qa_on_date(cdr_type, check_id, check_date):
     current_user.can_get_qa()

@@ -27,6 +27,10 @@ from structlog import get_logger
 logger = get_logger(__name__)
 
 
+class MissingCheckError(Exception):
+    pass
+
+
 class Connection:
     """
     Establishes a connection with the database and provide methods for
@@ -217,12 +221,13 @@ class Connection:
         ]
 
     def get_qa_checks(self, cdr_type, start_date, end_date, check_type) -> List[dict]:
-        # Whitelist protection on this?
         if (
             dict(cdr_type=cdr_type, type_of_query_or_check=check_type)
             not in self.available_qa_checks
         ):
-            raise Exception
+            raise MissingCheckError(
+                f"No check for {cdr_type}, {check_type} between {start_date} and {end_date} inclusive"
+            )
         result = self.fetch(
             f"""SELECT outcome, cdr_date, type_of_query_or_check 
             FROM etl.deduped_post_etl_queries 
