@@ -421,7 +421,7 @@ async def get_qa_date_range(cdr_type, check_id):
     )
 
 
-@blueprint.route("/qa/<cdr_type>/<check_id>/<date>")
+@blueprint.route("/qa/<cdr_type>/<check_id>/<check_date>")
 @jwt_required
 async def get_qa_on_date(cdr_type, check_id, check_date):
     current_user.can_get_qa()
@@ -441,7 +441,7 @@ async def get_qa_checks(cdr_type, check_id, start_date, end_date):
     )
     reply = await request.socket.recv_json()
     if reply["status"] == "success":
-        if len(reply["payload"]["qa_checks"] == 0):
+        if len(reply["payload"]["qa_checks"]) == 0:
             return {
                 "status": "not found",
                 "msg": f"No qa checks found for {cdr_type}, {check_id} between {start_date} and {end_date}",
