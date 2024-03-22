@@ -35,7 +35,7 @@ async def test_qa_test_bad_date(app, access_token_builder, dummy_zmq_server):
         "/api/0/qa/dummy_type/dummy_query/notadate",
         headers={"Authorization": f"Bearer {token}"},
     )
-    assert response.status_code == 500
+    assert response.status_code == 400
 
 
 @pytest.mark.asyncio

@@ -210,15 +210,13 @@ class Connection:
 
     @property
     def available_qa_checks(self) -> List[dict]:
-        out = self.fetch(
-            "SELECT DISTINCT(cdr_type, type_of_query_or_check) FROM etl.deduped_post_etl_queries"
-        )
-        # Some day I will understand this comprehension, but not today
-        flat_outs = (inner for inners in out for inner in inners)
-        list_outs = (row.strip("()").split(",") for row in flat_outs)
-        return [
-            dict(cdr_type=row[0], type_of_query_or_check=row[1]) for row in list_outs
-        ]
+        with self.engine.begin() as trans:
+            return [
+                row._mapping
+                for row in trans.exec_driver_sql(
+                    "SELECT cdr_type, type_of_query_or_check FROM etl.deduped_post_etl_queries GROUP BY cdr_type, type_of_query_or_check"
+                ).fetchall()
+            ]
 
     def get_qa_checks(self, cdr_type, start_date, end_date, check_type) -> List[dict]:
         if (

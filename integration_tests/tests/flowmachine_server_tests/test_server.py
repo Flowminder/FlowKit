@@ -39,7 +39,7 @@ def test_unknown_action_returns_error(zmq_host, zmq_port):
         "msg": "Invalid action request.",
         "payload": {
             "action": [
-                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geo_sql_for_query_result, get_geography, get_available_dates, get_aggregation_unit."
+                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geo_sql_for_query_result, get_geography, get_available_dates, get_aggregation_unit, list_qa_checks, get_qa_checks."
             ]
         },
     }

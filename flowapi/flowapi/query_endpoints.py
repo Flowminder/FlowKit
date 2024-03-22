@@ -429,6 +429,17 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
 
 
 async def get_qa_checks(cdr_type, check_id, start_date, end_date):
+    try:
+        dt.datetime.strptime(start_date, "%Y-%m-%d")
+        dt.datetime.strptime(end_date, "%Y-%m-%d")
+    except ValueError:
+        return (
+            dict(
+                status="bad request",
+                msg=f"Could not parse {start_date} or {end_date}; expected for format is YYYY-MM-DD",
+            ),
+            400,
+        )
     params_dict = dict(
         start_date=start_date,
         end_date=end_date,
