@@ -608,9 +608,8 @@ def make_demodata():
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
+    init_db(force=True)
     current_app.logger.debug("Creating demo data.")
-    db.drop_all()
-    db.create_all()
 
     # Add some servers
     test_server = Server(
