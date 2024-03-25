@@ -1,19 +1,19 @@
 version: '3.7'
 secrets:
   PRIVATE_JWT_SIGNING_KEY: # Secret used to sign api tokens
-    external: true
+    file: secrets/tokens-private-key.key
   FLOWAUTH_FERNET_KEY: # Used for encrypted-at-rest storage of tokens in flowauth
-    external: true
+    file: secrets/FLOWAUTH_FERNET_KEY
   FLOWAUTH_ADMIN_USERNAME: # Default flowauth administrator username
-    external: true
+    file: secrets/FLOWAUTH_ADMIN_USERNAME
   FLOWAUTH_ADMIN_PASSWORD: # Default flowauth administrator password
-    external: true
+    file: secrets/FLOWAUTH_ADMIN_PASSWORD
   FLOWAUTH_DB_PASSWORD: # Password for flowauth's database
-    external: true
+    file: secrets/FLOWAUTH_DB_PASSWORD
   FLOWAUTH_REDIS_PASSWORD: # Password for flowauth's redis instance
-    external: true
+    file: secrets/FLOWAUTH_REDIS_PASSWORD
   SECRET_KEY:
-    external: true # Flask secret key
+    file: secrets/SECRET_KEY
 networks:
   web:
   flowauth_database:
