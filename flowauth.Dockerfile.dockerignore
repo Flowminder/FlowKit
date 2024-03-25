@@ -26,6 +26,6 @@
 
 # migrations
 
-!flowauth/migrations/versions/*.py
-!flowauth/alembic.ini
-!flowauth/env.py
+!flowauth/backend/migrations/versions/*.py
+!flowauth/backend/migrations/alembic.ini
+!flowauth/backend/migrations/env.py
