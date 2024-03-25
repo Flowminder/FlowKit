@@ -564,7 +564,8 @@ def init_db(force: bool = False) -> None:
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
     # Since this is a fresh db, set the revision inside alembic to HEAD
-    migration_dir = str(Path(__file__).parent.parent / "migrations")
+    current_app.logger.debug("Collecting migrations.")
+    migration_dir = str(Path(__file__).parent / "migrations")
     cfg = flask_migrate.Config()
     cfg.set_main_option("script_location", migration_dir)
     flask_migrate.stamp(directory=migration_dir, revision="head")
