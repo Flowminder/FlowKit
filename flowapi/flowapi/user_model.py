@@ -184,7 +184,6 @@ class UserObject:
     def can_get_available_dates(self) -> bool:
         return self.has_access(requested_scopes=["get_available_dates"])
 
-    # TODO: Add this token to FlowAuth
     def can_get_qa(self) -> bool:
         return self.has_access(requested_scopes=["get_qa_checks"])
 
