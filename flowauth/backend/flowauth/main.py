@@ -53,6 +53,8 @@ structlog.configure(
 
 def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
