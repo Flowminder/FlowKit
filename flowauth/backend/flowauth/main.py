@@ -5,6 +5,7 @@ import datetime
 import logging
 import sys
 import uuid
+import pathlib
 from functools import partial
 
 import flask
@@ -167,7 +168,7 @@ def create_app(test_config=None):
     principals.init_app(app)
 
     # Register for migrations
-    migrate = Migrate(app, db)
+    migrate = Migrate(app, db, directory=pathlib.Path(__file__).parent / "migrations")
 
     # Set up csrf protection
     csrf = CSRFProtect()
