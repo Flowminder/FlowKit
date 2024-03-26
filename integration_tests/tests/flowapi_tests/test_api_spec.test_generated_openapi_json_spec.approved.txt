@@ -3640,6 +3640,7 @@
           "admin3:unmoving_counts:unique_locations",
           "admin3:unmoving_counts:unmoving_counts",
           "get_available_dates",
+          "get_qa_checks",
           "get_result",
           "lon-lat:active_at_reference_location_counts:active_at_reference_location_counts",
           "lon-lat:active_at_reference_location_counts:coalesced_location",
