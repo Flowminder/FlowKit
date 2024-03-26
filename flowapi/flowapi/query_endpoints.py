@@ -415,6 +415,47 @@ async def get_available_dates():
 @blueprint.route("/qa/<cdr_type>/<check_id>", methods=["GET"])
 @jwt_required
 async def get_qa_date_range(cdr_type, check_id):
+    """
+    Returns QA values for a given check type and call id between two dates
+    ---
+    get:
+      parameters:
+        - start_date:
+          type: text
+          format: date
+        - end_date:
+          type: text
+          format: date
+      responses:
+        '200':
+          description: Dates available for each event type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qa_checks
+                  type: array
+                  item:
+                    type: object
+                    properties:
+                      outcome:
+                        type: string
+                      type_of_query_or_check:
+                        type: string
+                      cdr_date:
+                        type: string
+                        format:date
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized.
+        '404':
+          description: No QA checks of type specified found on date
+        '500':
+          description: Server error.
+      summary: Returns QA values for a given check type and call id between two dates
+    """
     current_user.can_get_qa()
     return await get_qa_checks(
         cdr_type, check_id, request.args.get("start_date"), request.args.get("end_date")
@@ -424,6 +465,41 @@ async def get_qa_date_range(cdr_type, check_id):
 @blueprint.route("/qa/<cdr_type>/<check_id>/<check_date>")
 @jwt_required
 async def get_qa_on_date(cdr_type, check_id, check_date):
+    """
+    Returns QA values for a given check type and call id on a date
+    ---
+    get:
+      responses:
+        '200':
+          description: Dates available for each event type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qa_checks
+                  type: array
+                  item:
+                    type: object
+                    properties:
+                      outcome:
+                        type: string
+                      type_of_query_or_check:
+                        type: string
+                      cdr_date:
+                        type: string
+                        format:date
+
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized.
+        '404':
+          description: No QA checks of type specified found on date
+        '500':
+          description: Server error.
+      summary: Returns QA values for a given check type and call id on a date
+    """
     current_user.can_get_qa()
     return await get_qa_checks(cdr_type, check_id, check_date, check_date)
 
@@ -467,6 +543,28 @@ async def get_qa_checks(cdr_type, check_id, start_date, end_date):
 @blueprint.route("/qa", methods=["GET"])
 @jwt_required
 async def list_qa_checks():
+    """
+    Lists available QA checkons
+    ---
+    get:
+      responses:
+        '200':
+          description: Dates available for each event type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available_qa_checks
+                  type: array
+                  item:
+                    type: string
+        '401':
+          description: Unauthorized.
+        '500':
+          description: Server error.
+      summary: Get the dates available to query over.
+    """
     current_user.can_get_qa()
     current_app.query_run_logger.info("list_qa_checks")
     request.socket.send_json(
