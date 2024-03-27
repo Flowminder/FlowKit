@@ -63,10 +63,10 @@ async def get_qa_date_range(cdr_type, check_id):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Returns QA values for a given check type and call id between two dates
+      summary: Get QA outcomes for a given check type and call id between two dates
     """
     current_user.can_get_qa()
-    return await get_qa_checks(
+    return get_qa_checks(
         cdr_type, check_id, request.args.get("start_date"), request.args.get("end_date")
     )
 
@@ -99,22 +99,9 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
         '200':
           description: Dates available for each event type.
           content:
-            application/json:
+            text/html:
               schema:
-                type: object
-                properties:
-                  qa_checks:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        outcome:
-                          type: string
-                        type_of_query_or_check:
-                          type: string
-                        cdr_date:
-                          type: string
-                          format: date
+                type: string
         '400':
           description: Bad request
         '401':
@@ -123,10 +110,15 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Returns QA values for a given cdr and check type on a given date
+      summary: Get QA check outcomes for a given cdr and check type on a given date
     """
     current_user.can_get_qa()
-    return await get_qa_checks(cdr_type, check_id, check_date, check_date)
+    reply, code = await get_qa_checks(cdr_type, check_id, check_date, check_date)
+    if code == 404:
+        reply.msg = f"No qa checks found for {cdr_type}, {check_id} on {check_date}"
+    elif code == 200:
+        reply = reply["qa_checks"][0]["outcome"]
+    return reply, code
 
 
 async def get_qa_checks(cdr_type, check_id, start_date, end_date):
@@ -159,7 +151,7 @@ async def get_qa_checks(cdr_type, check_id, start_date, end_date):
                 "msg": f"No qa checks found for {cdr_type}, {check_id} between {start_date} and {end_date}",
             }, 404
         else:
-            return {"qa_checks": reply["payload"]}, 200
+            return reply["payload"], 200
     else:
         assert reply["status"] == "error"
         return {"status": "error", "msg": reply["msg"]}, 500
@@ -188,7 +180,7 @@ async def list_qa_checks():
           description: Unauthorized.
         '500':
           description: Server error.
-      summary: Get the available types of QA checks for all CDR types
+      summary: Returns the available types of QA checks for all CDR types
     """
     current_user.can_get_qa()
     current_app.query_run_logger.info("list_qa_checks")

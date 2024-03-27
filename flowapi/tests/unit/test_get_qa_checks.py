@@ -26,6 +26,8 @@ async def test_get_qa_checks(app, access_token_builder, dummy_zmq_server):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
+    value = await response.data
+    assert value == b"0"
 
 
 @pytest.mark.asyncio
