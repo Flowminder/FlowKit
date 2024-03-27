@@ -11,6 +11,7 @@ omit =
     */versioneer.py
     *__init__*
     */setup.py
+    */flowauth/migrations/*
 
 exclude_lines =
     # Need to explicitly re-enable the standard pragma
