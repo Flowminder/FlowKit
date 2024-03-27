@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Test QA check IDs are now of the same format as those produced by FlowETL. [#6472](https://github.com/Flowminder/FlowKit/issues/6472)
+- FlowAuth now runs migrations correctly on startup. [#6480](https://github.com/Flowminder/FlowKit/issues/6480)
 
 ### Removed
 
