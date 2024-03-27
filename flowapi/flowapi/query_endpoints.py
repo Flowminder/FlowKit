@@ -592,7 +592,12 @@ async def list_qa_checks():
                   available_qa_checks:
                     type: array
                     items:
-                      type: string
+                      type: object
+                      properties:
+                        cdr_type:
+                          type: string
+                        type_of_query_or_check:
+                          type: string
         '401':
           description: Unauthorized.
         '500':
