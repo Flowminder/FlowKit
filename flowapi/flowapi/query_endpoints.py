@@ -9,6 +9,9 @@ import datetime as dt
 
 blueprint = Blueprint("query", __name__)
 
+# Note for future maintainers: Would recommend using https://editor.swagger.io/
+# for writing docstrings
+
 
 @blueprint.route("/run", methods=["POST"])
 @jwt_required
@@ -420,12 +423,28 @@ async def get_qa_date_range(cdr_type, check_id):
     ---
     get:
       parameters:
-        - start_date:
-          type: text
+      - name: cdr_type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: check_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: start_date
+        required: true
+        schema:
+          type: string
           format: date
-        - end_date:
-          type: text
+        in: query
+      - name: end_date
+        required: true
+        schema:
+          type: string
           format: date
+        in: query
       responses:
         '200':
           description: Dates available for each event type.
@@ -434,18 +453,18 @@ async def get_qa_date_range(cdr_type, check_id):
               schema:
                 type: object
                 properties:
-                  qa_checks
-                  type: array
-                  item:
-                    type: object
-                    properties:
-                      outcome:
-                        type: string
-                      type_of_query_or_check:
-                        type: string
-                      cdr_date:
-                        type: string
-                        format:date
+                  qa_checks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        outcome:
+                          type: string
+                        type_of_query_or_check:
+                          type: string
+                        cdr_date:
+                          type: string
+                          format: date
         '400':
           description: Bad request
         '401':
@@ -454,7 +473,6 @@ async def get_qa_date_range(cdr_type, check_id):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Returns QA values for a given check type and call id between two dates
     """
     current_user.can_get_qa()
     return await get_qa_checks(
@@ -468,7 +486,24 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
     """
     Returns QA values for a given check type and call id on a date
     ---
-    get:
+        get:
+      parameters:
+      - name: cdr_type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: check_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: check_date
+        in: path
+        required: true
+        schema:
+          type: string
+          format: date
       responses:
         '200':
           description: Dates available for each event type.
@@ -477,19 +512,18 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
               schema:
                 type: object
                 properties:
-                  qa_checks
-                  type: array
-                  item:
-                    type: object
-                    properties:
-                      outcome:
-                        type: string
-                      type_of_query_or_check:
-                        type: string
-                      cdr_date:
-                        type: string
-                        format:date
-
+                  qa_checks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        outcome:
+                          type: string
+                        type_of_query_or_check:
+                          type: string
+                        cdr_date:
+                          type: string
+                          format: date
         '400':
           description: Bad request
         '401':
@@ -498,7 +532,7 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Returns QA values for a given check type and call id on a date
+      summary: Returns QA values for a given cdr and check type on a given date
     """
     current_user.can_get_qa()
     return await get_qa_checks(cdr_type, check_id, check_date, check_date)
@@ -555,10 +589,10 @@ async def list_qa_checks():
               schema:
                 type: object
                 properties:
-                  available_qa_checks
-                  type: array
-                  item:
-                    type: string
+                  available_qa_checks:
+                    type: array
+                    items:
+                      type: string
         '401':
           description: Unauthorized.
         '500':
