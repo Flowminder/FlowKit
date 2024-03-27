@@ -8,7 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Test and synthetic data generators now perform QA checks on the generated data. [#6467](https://github.com/Flowminder/FlowKit/issues/6467)
-- QA checks are now exposed through FlowAPI `list_qa_checks` and `get_qa_checks` endpoints [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
+- Added new `/qa` endpoint to FlowAPI, which supports getting the results of QA checks run by FlowETL [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
+- Added new `available_qa_checks` property to flowmachine `Connection` objects [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
+- Added new `get_qa_checks` method to flowmachine `Connection` objects [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
 
 ### Changed
 
