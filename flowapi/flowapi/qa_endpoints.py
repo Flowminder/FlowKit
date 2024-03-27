@@ -63,6 +63,7 @@ async def get_qa_date_range(cdr_type, check_id):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
+      summary: Returns QA values for a given check type and call id between two dates
     """
     current_user.can_get_qa()
     return await get_qa_checks(
@@ -76,7 +77,7 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
     """
     Returns QA values for a given check type and call id on a date
     ---
-        get:
+    get:
       parameters:
       - name: cdr_type
         in: path
@@ -168,7 +169,7 @@ async def get_qa_checks(cdr_type, check_id, start_date, end_date):
 @jwt_required
 async def list_qa_checks():
     """
-    Lists available QA checkons
+    Lists available QA checks per CDR type for all CDR types.
     ---
     get:
       responses:
@@ -187,7 +188,7 @@ async def list_qa_checks():
           description: Unauthorized.
         '500':
           description: Server error.
-      summary: Get the dates available to query over.
+      summary: Get the available types of QA checks for all CDR types
     """
     current_user.can_get_qa()
     current_app.query_run_logger.info("list_qa_checks")
