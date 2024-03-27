@@ -532,7 +532,7 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Returns QA values for a given cdr and check type on a given date
+      summary: Get the result of one QA check
     """
     current_user.can_get_qa()
     return await get_qa_checks(cdr_type, check_id, check_date, check_date)
