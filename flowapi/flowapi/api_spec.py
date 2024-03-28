@@ -50,6 +50,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
         "run",
         "get_available_dates",
         "get_result",
+        "get_qa_checks",
     ]
     spec.components.security_scheme(
         "token",
