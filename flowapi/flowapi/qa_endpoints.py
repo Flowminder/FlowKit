@@ -18,6 +18,13 @@ async def get_qa_date_range(cdr_type, check_id):
         required: true
         schema:
           type: string
+          enum:
+          - calls
+          - sms
+          - mds
+          - topups
+          - forwards
+          - cell_info
       - name: check_id
         in: path
         required: true
@@ -84,6 +91,13 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
         required: true
         schema:
           type: string
+          enum:
+          - calls
+          - sms
+          - mds
+          - topups
+          - forwards
+          - cell_info
       - name: check_id
         in: path
         required: true
