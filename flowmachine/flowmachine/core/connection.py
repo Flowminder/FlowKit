@@ -15,6 +15,7 @@ from collections import defaultdict
 
 from typing import Dict, List, Optional
 
+from flowmachine.flowmachine.utils import parse_datestring
 import sqlalchemy
 
 from urllib.parse import quote_plus as urlquote
@@ -218,14 +219,21 @@ class Connection:
                 ).fetchall()
             ]
 
-    def get_qa_checks(self, cdr_type, start_date, end_date, check_type) -> List[dict]:
+    def get_qa_checks(
+        self, cdr_type: str, start_date: str, end_date: str, check_type: str
+    ) -> List[dict]:
+        """
+        Returns deduped QA checks between start_date and end_date
+        """
         if (
-            dict(cdr_type=cdr_type, type_of_query_or_check=check_type)
+            dict(cdr_type=cdr_type.lower(), type_of_query_or_check=check_type.lower())
             not in self.available_qa_checks
         ):
             raise MissingCheckError(
                 f"No check for {cdr_type}, {check_type} between {start_date} and {end_date} inclusive"
             )
+        start_date = parse_datestring(start_date).strftime("%Y-%m-%d")
+        end_date = parse_datestring(end_date).strftime("%Y-%m-%d")
         result = self.fetch(
             f"""SELECT outcome, cdr_date, type_of_query_or_check 
             FROM etl.deduped_post_etl_queries 
