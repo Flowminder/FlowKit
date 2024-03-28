@@ -15,7 +15,7 @@ from collections import defaultdict
 
 from typing import Dict, List, Optional
 
-from flowmachine.flowmachine.utils import parse_datestring
+from utils import parse_datestring
 import sqlalchemy
 
 from urllib.parse import quote_plus as urlquote
