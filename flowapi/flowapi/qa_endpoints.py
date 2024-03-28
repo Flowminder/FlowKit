@@ -66,7 +66,7 @@ async def get_qa_date_range(cdr_type, check_id):
       summary: Get QA outcomes for a given check type and call id between two dates
     """
     current_user.can_get_qa()
-    return get_qa_checks(
+    return await get_qa_checks(
         cdr_type, check_id, request.args.get("start_date"), request.args.get("end_date")
     )
 
@@ -153,7 +153,6 @@ async def get_qa_checks(cdr_type, check_id, start_date, end_date):
         else:
             return reply["payload"], 200
     else:
-        assert reply["status"] == "error"
         return {"status": "error", "msg": reply["msg"]}, 500
 
 
