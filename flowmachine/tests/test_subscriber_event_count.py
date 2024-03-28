@@ -19,20 +19,16 @@ def test_event_count(get_dataframe):
         "2016-01-01",
         "2016-01-08",
         direction="both",
-        tables=["events.calls", "events.sms", "events.mds", "events.topups"],
+        tables=["calls", "sms", "mds", "topups"],
     )
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["DzpZJ2EaVQo2X5vM"].value == 69
 
-    query = EventCount(
-        "2016-01-01", "2016-01-08", direction="both", tables=["events.mds"]
-    )
+    query = EventCount("2016-01-01", "2016-01-08", direction="both", tables=["mds"])
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["E0LZAa7AyNd34Djq"].value == 8
 
-    query = EventCount(
-        "2016-01-01", "2016-01-08", direction="both", tables="events.mds"
-    )
+    query = EventCount("2016-01-01", "2016-01-08", direction="both", tables="mds")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["E0LZAa7AyNd34Djq"].value == 8
 
@@ -80,6 +76,4 @@ def test_directed_count_undirected_tables_raises():
     Test that requesting directed counts of undirected tables raises warning and errors.
     """
     with pytest.raises(ValueError):
-        query = EventCount(
-            "2016-01-01", "2016-01-08", direction="out", tables=["events.mds"]
-        )
+        query = EventCount("2016-01-01", "2016-01-08", direction="out", tables=["mds"])

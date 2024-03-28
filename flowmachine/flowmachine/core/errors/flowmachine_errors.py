@@ -6,6 +6,27 @@
 """
 Custom errors raised by flowmachine.
 """
+from typing import List, Dict
+
+
+class PreFlightFailedException(Exception):
+    """
+    Exception indicating that preflight checks for a query failed.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    failures : dict
+        Mapping from query reps to lists of exceptions raised in preflight
+    """
+
+    def __init__(self, query_id: str, errors: Dict[str, List[Exception]]):
+        self.errors = errors
+        self.query_id = query_id
+        Exception.__init__(
+            self, f"Pre-flight failed for '{self.query_id}'. Errors: {errors}"
+        )
 
 
 class StoreFailedException(Exception):
