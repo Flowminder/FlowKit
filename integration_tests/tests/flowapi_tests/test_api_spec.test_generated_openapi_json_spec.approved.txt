@@ -4187,6 +4187,14 @@
             "name": "cdr_type",
             "required": true,
             "schema": {
+              "enum": [
+                "calls",
+                "sms",
+                "mds",
+                "topups",
+                "forwards",
+                "cell_info"
+              ],
               "type": "string"
             }
           },
@@ -4273,6 +4281,14 @@
             "name": "cdr_type",
             "required": true,
             "schema": {
+              "enum": [
+                "calls",
+                "sms",
+                "mds",
+                "topups",
+                "forwards",
+                "cell_info"
+              ],
               "type": "string"
             }
           },
