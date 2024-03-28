@@ -5,6 +5,7 @@ import datetime
 import logging
 import sys
 import uuid
+import pathlib
 from functools import partial
 
 import flask
@@ -52,6 +53,8 @@ structlog.configure(
 
 def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
@@ -167,7 +170,7 @@ def create_app(test_config=None):
     principals.init_app(app)
 
     # Register for migrations
-    migrate = Migrate(app, db)
+    migrate = Migrate(app, db, directory=pathlib.Path(__file__).parent / "migrations")
 
     # Set up csrf protection
     csrf = CSRFProtect()

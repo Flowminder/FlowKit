@@ -559,15 +559,15 @@ def init_db(force: bool = False) -> None:
         return
     current_app.logger.debug("Initialising db.")
     if force:
+        # Because we're starting fresh, we don't need to migrate and can mark the
+        # created schema as current
         current_app.logger.debug("Dropping existing db.")
         db.drop_all()
-    db.create_all()
+        db.create_all()
+        flask_migrate.stamp()
+
+    flask_migrate.upgrade()
     current_app.config["DB_IS_SET_UP"].set()
-    # Since this is a fresh db, set the revision inside alembic to HEAD
-    migration_dir = str(Path(__file__).parent.parent / "migrations")
-    cfg = flask_migrate.Config()
-    cfg.set_main_option("script_location", migration_dir)
-    flask_migrate.stamp(directory=migration_dir, revision="head")
     current_app.logger.debug("Initialised db.")
 
 
@@ -608,9 +608,8 @@ def make_demodata():
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
+    init_db(force=True)
     current_app.logger.debug("Creating demo data.")
-    db.drop_all()
-    db.create_all()
 
     # Add some servers
     test_server = Server(
