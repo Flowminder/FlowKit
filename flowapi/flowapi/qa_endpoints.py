@@ -1,5 +1,6 @@
 from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request
+from typing import Tuple, List, Union
 import datetime as dt
 
 blueprint = Blueprint("qa", __name__)
@@ -44,7 +45,7 @@ async def get_qa_date_range(cdr_type, check_id):
         in: query
       responses:
         '200':
-          description: Dates available for each event type.
+          description: QA outcomes.
           content:
             application/json:
               schema:
@@ -111,7 +112,7 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
           format: date
       responses:
         '200':
-          description: Dates available for each event type.
+          description: QA check outcome.
           content:
             text/html:
               schema:
@@ -135,7 +136,28 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
     return reply, code
 
 
-async def get_qa_checks(cdr_type, check_id, start_date, end_date):
+async def get_qa_checks(
+    cdr_type: str, check_id: str, start_date: str, end_date: str
+) -> Tuple[Union[dict, List[dict]], int]:
+    """
+    Validates start_date and end_date are date formatted strings, and then requests the list of QA
+    checks via zeromq from flowmachine.
+
+    Parameters
+    ----------
+    cdr_type : str
+      The event type to get checks on
+    check_id : str
+      The specific check to get outcomes of
+    start_date, end_date : str
+      YYYY-MM-dd format strings for interval to get checks over (end_date inclusive)
+
+    Returns
+    -------
+    tuple of dict or list and int
+      A tuple with either of list of qa outcome dicts, or an error message dict, with the
+      appropriate HTTP status code in either case.
+    """
     try:
         dt.datetime.strptime(start_date, "%Y-%m-%d")
         dt.datetime.strptime(end_date, "%Y-%m-%d")
@@ -179,16 +201,27 @@ async def list_qa_checks():
     get:
       responses:
         '200':
-          description: Dates available for each event type.
+          description: Types of QA checks for all CDR types.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  available_qa_checks:
+                  qa_checks:
                     type: array
                     items:
-                      type: string
+                      type: object
+                      properties:
+                        cdr_type:
+                            enum:
+                              - calls
+                              - sms
+                              - mds
+                              - topups
+                              - forwards
+                              - cell_info
+                        type_of_query_or_check:
+                          type: string
         '401':
           description: Unauthorized.
         '500':

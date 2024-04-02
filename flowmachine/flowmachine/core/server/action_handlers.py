@@ -471,7 +471,7 @@ async def action_handler__get_qa_checks(
     start_date: str,
     end_date: str,
     check_type: str,
-):
+) -> ZMQReply:
     conn = get_db()
     return ZMQReply(
         status="success",
