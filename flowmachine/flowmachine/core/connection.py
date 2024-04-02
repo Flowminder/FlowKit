@@ -213,7 +213,7 @@ class Connection:
     def available_qa_checks(self) -> List[dict]:
         with self.engine.begin() as trans:
             return [
-                row._mapping
+                dict(row._mapping)
                 for row in trans.exec_driver_sql(
                     "SELECT cdr_type, type_of_query_or_check FROM etl.deduped_post_etl_queries GROUP BY cdr_type, type_of_query_or_check"
                 ).fetchall()

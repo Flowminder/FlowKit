@@ -462,7 +462,7 @@ async def action_handler__get_available_dates(
 
 async def action_handler__list_qa_checks(config: "FlowmachineServerConfig"):
     conn = get_db()
-    return ZMQReply(status="success", payload={"qa_checks": conn.available_qa_checks})
+    return ZMQReply(status="success", payload=conn.available_qa_checks)
 
 
 async def action_handler__get_qa_checks(
