@@ -38,6 +38,8 @@ from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
 
+from ..connection import MissingCheckError
+
 from ..dependency_graph import query_progress
 
 
@@ -462,7 +464,10 @@ async def action_handler__get_available_dates(
 
 async def action_handler__list_qa_checks(config: "FlowmachineServerConfig"):
     conn = get_db()
-    return ZMQReply(status="success", payload=conn.available_qa_checks)
+    available_checks = conn.available_qa_checks
+    return ZMQReply(
+        status="success", payload={"available_qa_checks": conn.available_qa_checks}
+    )
 
 
 async def action_handler__get_qa_checks(
@@ -473,17 +478,23 @@ async def action_handler__get_qa_checks(
     check_type: str,
 ) -> ZMQReply:
     conn = get_db()
-    return ZMQReply(
-        status="success",
-        payload={
-            "qa_checks": conn.get_qa_checks(
-                start_date=start_date,
-                end_date=end_date,
-                cdr_type=cdr_type,
-                check_type=check_type,
-            )
-        },
-    )
+    try:
+        return ZMQReply(
+            status="success",
+            payload={
+                "qa_checks": conn.get_qa_checks(
+                    start_date=start_date,
+                    end_date=end_date,
+                    cdr_type=cdr_type,
+                    check_type=check_type,
+                )
+            },
+        )
+    except MissingCheckError:
+        return ZMQReply(
+            status="success",  # Checked successfully, but no matches
+            payload={"qa_checks": []},
+        )
 
 
 def get_action_handler(action: str) -> Callable:
