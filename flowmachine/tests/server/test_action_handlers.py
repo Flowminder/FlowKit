@@ -300,7 +300,7 @@ async def test_get_qa_checks(server_config, real_connections):
     # This assumes that flowdb_test_data is being used for this
     msg = await action_handler__list_qa_checks(config=server_config)
     assert msg["status"] == ZMQReplyStatus.SUCCESS
-    assert len(msg.payload["qa_checks"]) == 77
+    assert len(msg.payload["available_qa_checks"]) == 77
 
 
 @pytest.mark.asyncio
