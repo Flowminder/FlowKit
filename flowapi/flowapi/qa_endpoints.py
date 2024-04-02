@@ -172,12 +172,12 @@ async def get_qa_checks(
     params_dict = dict(
         start_date=start_date,
         end_date=end_date,
-        check_id=check_id,
+        check_type=check_id,
         cdr_type=cdr_type,
     )
-    current_app.query_run_logger.info("get_qa_check", params_dict)
+    current_app.query_run_logger.info("get_qa_checks", params_dict)
     request.socket.send_json(
-        dict(request_id=request.request_id, action="get_qa_check", params=params_dict)
+        dict(request_id=request.request_id, action="get_qa_checks", params=params_dict)
     )
     reply = await request.socket.recv_json()
     if reply["status"] == "success":
