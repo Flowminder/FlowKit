@@ -49,20 +49,17 @@ async def get_qa_date_range(cdr_type, check_id):
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  qa_checks:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        outcome:
-                          type: string
-                        type_of_query_or_check:
-                          type: string
-                        cdr_date:
-                          type: string
-                          format: date
+                type: array
+                items:
+                  type: object
+                  properties:
+                    outcome:
+                      type: string
+                    type_of_query_or_check:
+                      type: string
+                    cdr_date:
+                      type: string
+                      format: date
         '400':
           description: Bad request
         '401':
@@ -125,14 +122,14 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Get QA check outcomes for a given cdr and check type on a given date
+      summary: Get QA check outcome for a given cdr and check type on a given date
     """
     current_user.can_get_qa()
     reply, code = await get_qa_checks(cdr_type, check_id, check_date, check_date)
     if code == 404:
-        reply.msg = f"No qa checks found for {cdr_type}, {check_id} on {check_date}"
+        reply["msg"] = f"No qa checks found for {cdr_type}, {check_id} on {check_date}"
     elif code == 200:
-        reply = reply["qa_checks"][0]["outcome"]
+        reply = reply[0]["outcome"]
     return reply, code
 
 
@@ -187,7 +184,7 @@ async def get_qa_checks(
                 "msg": f"No qa checks found for {cdr_type}, {check_id} between {start_date} and {end_date}",
             }, 404
         else:
-            return reply["payload"], 200
+            return reply["payload"]["qa_checks"], 200
     else:
         return {"status": "error", "msg": reply["msg"]}, 500
 
@@ -205,23 +202,20 @@ async def list_qa_checks():
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  qa_checks:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        cdr_type:
-                            enum:
-                              - calls
-                              - sms
-                              - mds
-                              - topups
-                              - forwards
-                              - cell_info
-                        type_of_query_or_check:
-                          type: string
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cdr_type:
+                        enum:
+                          - calls
+                          - sms
+                          - mds
+                          - topups
+                          - forwards
+                          - cell_info
+                    type_of_query_or_check:
+                      type: string
         '401':
           description: Unauthorized.
         '500':
@@ -238,6 +232,6 @@ async def list_qa_checks():
     )
     reply = await request.socket.recv_json()
     if reply["status"] == "success":
-        return {"available_qa_checks": reply["payload"]}, 200
+        return reply["payload"]["available_qa_checks"], 200
     else:
         return {"status": "error", "msg": reply["msg"]}, 500
