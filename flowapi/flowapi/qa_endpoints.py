@@ -10,7 +10,7 @@ blueprint = Blueprint("qa", __name__)
 @jwt_required
 async def get_qa_date_range(cdr_type, check_id):
     """
-    Returns QA values for a given check type and call id between two dates
+    Returns QA values for a given check on a datatype between two dates
     ---
     get:
       parameters:
@@ -68,7 +68,7 @@ async def get_qa_date_range(cdr_type, check_id):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Get QA outcomes for a given check type and call id between two dates
+      summary: Get QA outcomes for a given check on a datatype between two dates
     """
     current_user.can_get_qa()
     return await get_qa_checks(
@@ -80,7 +80,7 @@ async def get_qa_date_range(cdr_type, check_id):
 @jwt_required
 async def get_qa_on_date(cdr_type, check_id, check_date):
     """
-    Returns QA values for a given check type and call id on a date
+    Returns QA values for a given check on a date of a datatype.
     ---
     get:
       parameters:
@@ -122,7 +122,7 @@ async def get_qa_on_date(cdr_type, check_id, check_date):
           description: No QA checks of type specified found on date
         '500':
           description: Server error.
-      summary: Get QA check outcome for a given cdr and check type on a given date
+      summary: Get QA check outcome for a check on one date of a datatype.
     """
     current_user.can_get_qa()
     reply, code = await get_qa_checks(cdr_type, check_id, check_date, check_date)
@@ -193,12 +193,12 @@ async def get_qa_checks(
 @jwt_required
 async def list_qa_checks():
     """
-    Lists available QA checks per CDR type for all CDR types.
+    Lists available QA checks per datatype for all datatypes.
     ---
     get:
       responses:
         '200':
-          description: Types of QA checks for all CDR types.
+          description: Types of QA checks for all datatypes.
           content:
             application/json:
               schema:
@@ -220,7 +220,7 @@ async def list_qa_checks():
           description: Unauthorized.
         '500':
           description: Server error.
-      summary: Returns the available types of QA checks for all CDR types
+      summary: Returns the available types of QA checks for all datatypes
     """
     current_user.can_get_qa()
     current_app.query_run_logger.info("list_qa_checks")
