@@ -7,18 +7,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.24.0]
+
+### Added
 - Test and synthetic data generators now perform QA checks on the generated data. [#6467](https://github.com/Flowminder/FlowKit/issues/6467)
 - Added new `/qa` endpoint to FlowAPI and FlowClient, which supports getting the results of QA checks run by FlowETL [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
 - Added new `available_qa_checks` property to flowmachine `Connection` objects [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
 - Added new `get_qa_checks` method to flowmachine `Connection` objects [#2704](https://github.com/Flowminder/FlowKit/issues/2704)
 
-### Changed
-
 ### Fixed
 - Test QA check IDs are now of the same format as those produced by FlowETL. [#6472](https://github.com/Flowminder/FlowKit/issues/6472)
 - FlowAuth now runs migrations correctly on startup. [#6480](https://github.com/Flowminder/FlowKit/issues/6480)
 
-### Removed
 
 ## [1.23.0]
 
@@ -1082,7 +1089,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.23.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.24.0...master
+[1.24.0]: https://github.com/Flowminder/FlowKit/compare/1.23.0...1.24.0
 [1.23.0]: https://github.com/Flowminder/FlowKit/compare/1.22.0...1.23.0
 [1.22.0]: https://github.com/Flowminder/FlowKit/compare/1.21.1...1.22.0
 [1.21.1]: https://github.com/Flowminder/FlowKit/compare/1.21.0...1.21.1
