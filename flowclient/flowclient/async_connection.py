@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import logging
 import warnings
-from typing import Union
+from typing import Union, Optional
 
 import httpx
 import jwt
@@ -95,7 +95,11 @@ class ASyncConnection:
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
     async def get_url(
-        self, *, route: str, data: Union[None, dict] = None
+        self,
+        *,
+        route: str,
+        data: Union[None, dict] = None,
+        params: Optional[dict] = None,
     ) -> httpx.Response:
         """
         Attempt to get something from the API, and return the raw
@@ -110,6 +114,9 @@ class ASyncConnection:
         data : dict, optional
             JSON data to send in the request body (optional)
 
+        params : dict, optional
+            Query parameters
+
         Returns
         -------
         requests.Response
@@ -118,10 +125,7 @@ class ASyncConnection:
         logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
         try:
             response = await self.session.request(
-                "GET",
-                route,
-                follow_redirects=False,
-                json=data,
+                "GET", route, follow_redirects=False, json=data, params=params
             )
         except RequestError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"

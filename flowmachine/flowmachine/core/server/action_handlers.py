@@ -38,6 +38,8 @@ from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
 
+from ..connection import MissingCheckError
+
 from ..dependency_graph import query_progress
 
 
@@ -460,6 +462,40 @@ async def action_handler__get_available_dates(
     return ZMQReply(status="success", payload=available_dates)
 
 
+async def action_handler__list_qa_checks(config: "FlowmachineServerConfig"):
+    conn = get_db()
+    return ZMQReply(
+        status="success", payload={"available_qa_checks": conn.available_qa_checks}
+    )
+
+
+async def action_handler__get_qa_checks(
+    config: "FlowmachineServerConfig",
+    cdr_type: str,
+    start_date: str,
+    end_date: str,
+    check_type: str,
+) -> ZMQReply:
+    conn = get_db()
+    try:
+        return ZMQReply(
+            status="success",
+            payload={
+                "qa_checks": conn.get_qa_checks(
+                    start_date=start_date,
+                    end_date=end_date,
+                    cdr_type=cdr_type,
+                    check_type=check_type,
+                )
+            },
+        )
+    except MissingCheckError:
+        return ZMQReply(
+            status="success",  # Checked successfully, but no matches
+            payload={"qa_checks": []},
+        )
+
+
 def get_action_handler(action: str) -> Callable:
     """Exception should be raised for handlers that don't exist."""
     try:
@@ -520,4 +556,6 @@ ACTION_HANDLERS = {
     "get_geography": action_handler__get_geography,
     "get_available_dates": action_handler__get_available_dates,
     "get_aggregation_unit": action_handler__get_aggregation_unit,
+    "list_qa_checks": action_handler__list_qa_checks,
+    "get_qa_checks": action_handler__get_qa_checks,
 }

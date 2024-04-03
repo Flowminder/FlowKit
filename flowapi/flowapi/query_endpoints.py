@@ -5,8 +5,12 @@
 from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context
 from .stream_results import stream_result_as_json, stream_result_as_csv
+import datetime as dt
 
 blueprint = Blueprint("query", __name__)
+
+# Note for future maintainers: Would recommend using https://editor.swagger.io/
+# for writing docstrings
 
 
 @blueprint.route("/run", methods=["POST"])

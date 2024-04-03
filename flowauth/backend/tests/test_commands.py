@@ -84,7 +84,7 @@ def test_demo_data_only_sets_up_once(app, caplog):
         result = runner.invoke(demo_data)
         result = runner.invoke(demo_data)
         assert len(User.query.all()) == 2
-        assert len(Scope.query.all()) == 586
+        assert len(Scope.query.all()) == 587
     assert "Database already set up by another worker, skipping." in caplog.text
 
 
@@ -111,4 +111,4 @@ def test_demo_data(app):
         assert len(User.query.all()) == 2
         assert len(Role.query.all()) == 2
         assert len(Server.query.all()) == 1
-        assert len(Scope.query.all()) == 586
+        assert len(Scope.query.all()) == 587
