@@ -5,6 +5,7 @@ import datetime
 import logging
 import sys
 import uuid
+import pathlib
 from functools import partial
 
 import flask
@@ -52,6 +53,8 @@ structlog.configure(
 
 def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
@@ -148,7 +151,8 @@ def create_app(test_config=None):
     app.config.from_mapping(get_config())
 
     # Connect the logger
-    app.before_first_request(connect_logger)
+    with app.app_context():
+        connect_logger()
 
     if test_config is not None:
         # load the test config if passed in
@@ -164,6 +168,9 @@ def create_app(test_config=None):
     # Set up flask-principal for roles management
     principals = Principal()
     principals.init_app(app)
+
+    # Register for migrations
+    migrate = Migrate(app, db, directory=pathlib.Path(__file__).parent / "migrations")
 
     # Set up csrf protection
     csrf = CSRFProtect()
@@ -184,31 +191,28 @@ def create_app(test_config=None):
     if app.config["DEMO_MODE"]:  # Create demo data
         from flowauth.models import make_demodata
 
-        app.before_first_request(make_demodata)
+        with app.app_context():
+            make_demodata()
     else:
         # Initialise the database
         from flowauth.models import init_db
         from flowauth.models import add_admin
 
-        app.before_first_request(lock(partial(init_db, force=app.config["RESET_DB"])))
-        # Create an admin user
+        with app.app_context():
+            lock(
+                partial(init_db, force=app.config["RESET_DB"])
+            )()  # Create an admin user
 
-        app.before_first_request(
             lock(
                 partial(
                     add_admin,
                     username=app.config["ADMIN_USER"],
                     password=app.config["ADMIN_PASSWORD"],
                 )
-            )
-        )
+            )()
 
-    app.before_first_request(
-        app.config["DB_IS_SET_UP"].wait
-    )  # Cause workers to wait for db to set up
-
-    # Register for migrations
-    migrate = Migrate(app, db)
+    with app.app_context():
+        app.config["DB_IS_SET_UP"].wait()  # Cause workers to wait for db to set up
 
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)

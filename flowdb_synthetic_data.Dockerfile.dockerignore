@@ -16,4 +16,6 @@
 !flowdb/testdata/synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson
 !flowdb/testdata/synthetic_data/Pipfile*
 !flowdb/testdata/bin/9910_run_synthetic_dfs_data_generation_script.sh
+!flowdb/testdata/bin/run_qa_checks.py
 !flowdb/testdata/test_data/py/
+!flowetl/flowetl/flowetl/qa_checks/qa_checks

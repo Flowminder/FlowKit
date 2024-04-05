@@ -16,7 +16,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-logger = structlog.get_logger("flowauth.flask_migrate")
+logger = structlog.get_logger("flowauth.migration")
 
 
 def get_engine():

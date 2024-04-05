@@ -24,8 +24,3 @@
 !flowauth/backend/versioneer.py
 !flowkit_jwt_generator/flowkit_jwt_generator/jwt.py
 
-# migrations
-
-!flowauth/migrations/versions/*.py
-!flowauth/alembic.ini
-!flowauth/env.py
