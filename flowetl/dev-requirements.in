@@ -15,4 +15,4 @@ pandas
 docker
 versioneer
 pytest-cov
-black == 24.2.0
+black == 24.3.0
