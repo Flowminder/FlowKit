@@ -15,6 +15,7 @@ from collections import defaultdict
 
 from typing import Dict, List, Optional
 
+from flowmachine.utils import parse_datestring
 import sqlalchemy
 
 from urllib.parse import quote_plus as urlquote
@@ -25,6 +26,10 @@ from cachetools import cached, TTLCache
 from structlog import get_logger
 
 logger = get_logger(__name__)
+
+
+class MissingCheckError(Exception):
+    pass
 
 
 class Connection:
@@ -203,6 +208,47 @@ class Connection:
                 "SELECT cdr_type, array_agg(cdr_date) FROM etl.available_dates GROUP BY cdr_type"
             ),
         )
+
+    @property
+    def available_qa_checks(self) -> List[dict]:
+        with self.engine.begin() as trans:
+            return [
+                dict(row._mapping)
+                for row in trans.exec_driver_sql(
+                    "SELECT cdr_type, type_of_query_or_check FROM etl.deduped_post_etl_queries GROUP BY cdr_type, type_of_query_or_check"
+                ).fetchall()
+            ]
+
+    def get_qa_checks(
+        self, cdr_type: str, start_date: str, end_date: str, check_type: str
+    ) -> List[dict]:
+        """
+        Returns deduped QA checks between start_date and end_date
+        """
+        if (
+            dict(cdr_type=cdr_type.lower(), type_of_query_or_check=check_type.lower())
+            not in self.available_qa_checks
+        ):
+            raise MissingCheckError(
+                f"No check for {cdr_type}, {check_type} between {start_date} and {end_date} inclusive"
+            )
+        start_date = parse_datestring(start_date).strftime("%Y-%m-%d")
+        end_date = parse_datestring(end_date).strftime("%Y-%m-%d")
+        result = self.fetch(
+            f"""SELECT outcome, cdr_date, type_of_query_or_check 
+            FROM etl.deduped_post_etl_queries 
+            WHERE cdr_type='{cdr_type}' 
+            AND cdr_date BETWEEN '{start_date}' AND '{end_date}'
+            AND type_of_query_or_check='{check_type}'"""
+        )
+        return [
+            dict(
+                outcome=row[0],
+                cdr_date=row[1].strftime("%Y-%m-%d"),
+                type_of_query_or_check=row[2],
+            )
+            for row in result
+        ]
 
     def min_date(self, table: str = "calls") -> datetime.date:
         """
