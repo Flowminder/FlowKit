@@ -13,7 +13,7 @@ numpy = "<=1.26.2" # Tohu uses float division where it should be using int divis
                    # This used to work, but doesn't as of numpy 1.26.0 (although I haven't managed to track down the relevant change or find a corresponding issue or changelog entry)
 
 [dev-packages]
-black = {extras = ["jupyter"],version = "==24.2.0"}
+black = {extras = ["jupyter"],version = "==24.3.0"}
 
 [requires]
 python_version = "3.9"

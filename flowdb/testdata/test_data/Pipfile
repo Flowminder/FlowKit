@@ -9,7 +9,7 @@ tohu = "*"
 sqlalchemy = "*"
 
 [dev-packages]
-black = {extras = ["jupyter"],version = "==24.2.0"}
+black = {extras = ["jupyter"],version = "==24.3.0"}
 
 [requires]
 python_version = "3.9"
