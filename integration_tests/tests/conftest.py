@@ -2,26 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+import os
 from functools import partial
+from multiprocessing import Process
 from pathlib import Path
+from time import sleep
 
+import pandas as pd
+import pytest
 from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
-from multiprocessing import Process
-from time import sleep
-
-import pytest
-import os
-import pandas as pd
 
 import flowmachine
+import flowmachine.core.server.server
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.context import get_db, get_redis, get_executor
-import flowmachine.core.server.server
-
+from flowmachine.core.context import get_db, get_executor, get_redis
 
 here = os.path.dirname(os.path.abspath(__file__))
 flowkit_toplevel_dir = os.path.join(here, "..", "..")

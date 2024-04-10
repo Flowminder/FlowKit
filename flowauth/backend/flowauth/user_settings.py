@@ -5,17 +5,15 @@ import random
 import string
 
 from flask import Blueprint, jsonify, request
+from flask_login import current_user, login_required
+from flowauth.roles import roles_to_json
 from itsdangerous import (
     BadSignature,
     SignatureExpired,
     TimedSerializer,
     TimestampSigner,
 )
-
-from flask_login import current_user, login_required
 from zxcvbn import zxcvbn
-
-from flowauth.roles import roles_to_json
 
 from .invalid_usage import InvalidUsage
 from .models import *

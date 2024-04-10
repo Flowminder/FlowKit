@@ -10,10 +10,9 @@ Create Date: 2024-03-26 13:07:58.023590
 
 """
 
-from alembic import op
 import sqlalchemy as sa
 import structlog
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "73ea696e203d"

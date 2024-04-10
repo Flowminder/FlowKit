@@ -13,14 +13,14 @@ at the network level.
 
 from typing import List, Optional, Tuple, Union
 
+from flowmachine.utils import Statistic, standardise_date
+
+from ...core import location_joined_query, make_spatial_unit
 from ...core.context import get_db
 from ...core.mixins import GeoDataMixin
-from ...core import location_joined_query, make_spatial_unit
-from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
+from ...core.spatial_unit import AnySpatialUnit
 from ..utilities import EventsTablesUnion
-from flowmachine.utils import standardise_date, Statistic
-
 
 valid_periods = ["second", "minute", "hour", "day", "month", "year"]
 

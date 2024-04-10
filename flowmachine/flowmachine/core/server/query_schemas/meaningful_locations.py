@@ -2,16 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from typing import Dict, List, Optional, Union
+
 from marshmallow import fields
 from marshmallow.validate import OneOf
-from typing import Union, Dict, List, Optional
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
-    MeaningfulLocations,
-    HartiganCluster,
     CallDays,
     EventScore,
+    HartiganCluster,
+    MeaningfulLocations,
     SubscriberLocations,
 )
 from flowmachine.features.location.meaningful_locations_aggregate import (
@@ -24,15 +25,12 @@ from flowmachine.features.location.redacted_meaningful_locations_aggregate impor
 from flowmachine.features.location.redacted_meaningful_locations_od import (
     RedactedMeaningfulLocationsOD,
 )
-from .base_exposed_query import BaseExposedQuery
-from .field_mixins import StartAndEndField, EventTypesField, SubscriberSubsetField
-from .base_schema import BaseSchema
-from .custom_fields import (
-    TowerHourOfDayScores,
-    TowerDayOfWeekScores,
-    ISODateTime,
-)
+
 from .aggregation_unit import AggregationUnitMixin
+from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
+from .custom_fields import ISODateTime, TowerDayOfWeekScores, TowerHourOfDayScores
+from .field_mixins import EventTypesField, StartAndEndField, SubscriberSubsetField
 
 __all__ = [
     "MeaningfulLocationsAggregateSchema",

@@ -7,9 +7,9 @@ Tests for the ContactsBalance() class.
 """
 
 
-from flowmachine.features.subscriber import ContactBalance
-
 import pytest
+
+from flowmachine.features.subscriber import ContactBalance
 
 
 def test_some_results(get_dataframe):

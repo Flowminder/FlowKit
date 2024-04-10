@@ -5,37 +5,37 @@
 """
 Tests for cache management utilities.
 """
-from cachey import Scorer
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
 
 import pytest
+from cachey import Scorer
 
-from flowmachine.core import Table, Query
+from flowmachine.core import Query, Table
 from flowmachine.core.cache import (
+    cache_table_exists,
+    get_cache_half_life,
+    get_cache_protected_period,
+    get_cached_query_objects_ordered_by_score,
     get_compute_time,
-    shrink_below_size,
-    shrink_one,
+    get_max_size_of_cache,
+    get_query_object_by_id,
+    get_score,
     get_size_of_cache,
     get_size_of_table,
-    get_score,
-    get_query_object_by_id,
-    get_cached_query_objects_ordered_by_score,
-    touch_cache,
-    get_max_size_of_cache,
-    set_max_size_of_cache,
-    get_cache_half_life,
-    set_cache_half_life,
     invalidate_cache_by_id,
-    cache_table_exists,
-    resync_redis_with_cache,
     reset_cache,
+    resync_redis_with_cache,
+    set_cache_half_life,
+    set_cache_protected_period,
+    set_max_size_of_cache,
+    shrink_below_size,
+    shrink_one,
+    touch_cache,
+    watch_and_shrink_cache,
     write_cache_metadata,
     write_query_to_cache,
-    get_cache_protected_period,
-    set_cache_protected_period,
-    watch_and_shrink_cache,
 )
-from flowmachine.core.context import get_db, get_redis, get_executor
+from flowmachine.core.context import get_db, get_executor, get_redis
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
 

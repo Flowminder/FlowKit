@@ -1,15 +1,13 @@
 import pytest
-
 from pandas.testing import assert_series_equal
 
-from flowmachine.features.location.spatial_aggregate import SpatialAggregate
-from flowmachine.core.dummy_query import DummyQuery
-from flowmachine.features import TotalLocationEvents
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import SubscriberHandsetCharacteristic
+from flowmachine.core.dummy_query import DummyQuery
+from flowmachine.features import SubscriberHandsetCharacteristic, TotalLocationEvents
 from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
 )
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 

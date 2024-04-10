@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from flowmachine.features import DayTrajectories, daily_location
 from flowmachine.core import make_spatial_unit
+from flowmachine.features import DayTrajectories, daily_location
 
 
 def test_column_names_day_trajectories(exemplar_spatial_unit_param):

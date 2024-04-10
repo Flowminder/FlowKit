@@ -9,15 +9,16 @@ from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_introversion import (
     RedactedLocationIntroversion,
 )
+
+from .aggregation_unit import AggregationUnitMixin
+from .base_exposed_query import BaseExposedQuery
 from .custom_fields import Direction
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
-from .base_exposed_query import BaseExposedQuery
-from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 

@@ -10,19 +10,17 @@ reducing the dimensionality of the problem.
 from typing import List
 
 import pandas as pd
-
-
 import pytest
 from geopandas import GeoSeries
-from shapely.geometry import box, MultiPoint
+from shapely.geometry import MultiPoint, box
 
-from flowmachine.core import Table, CustomQuery, make_spatial_unit
-from flowmachine.core.query import Query
+from flowmachine.core import CustomQuery, Table, make_spatial_unit
 from flowmachine.core.mixins import GeoDataMixin
+from flowmachine.core.query import Query
 from flowmachine.features import (
     CallDays,
-    HartiganCluster,
     EventScore,
+    HartiganCluster,
     SubscriberLocations,
 )
 

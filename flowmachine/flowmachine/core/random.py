@@ -6,8 +6,8 @@
 Classes to select random samples from queries or tables.
 """
 import random
-from typing import List, Optional, Dict, Any, Union, Type, Tuple
 from abc import ABCMeta, abstractmethod
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from .query import Query
 from .table import Table

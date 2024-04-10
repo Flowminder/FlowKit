@@ -13,10 +13,10 @@ from flowmachine.core.server.query_schemas.modal_location import ModalLocationSc
 from flowmachine.core.server.query_schemas.most_frequent_location import (
     MostFrequentLocationSchema,
 )
+from flowmachine.core.server.query_schemas.one_of_query import OneOfQuerySchema
 from flowmachine.core.server.query_schemas.visited_most_days import (
     VisitedMostDaysSchema,
 )
-from flowmachine.core.server.query_schemas.one_of_query import OneOfQuerySchema
 
 
 class ReferenceLocationSchema(OneOfQuerySchema):

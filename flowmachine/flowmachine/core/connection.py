@@ -7,23 +7,19 @@
 Class(es) representing our connection to the database, along with utilities
 regarding the database.
 """
-import os
 import datetime
+import os
 import warnings
-from _md5 import md5
 from collections import defaultdict
-
 from typing import Dict, List, Optional
-
-from flowmachine.utils import parse_datestring
-import sqlalchemy
-
 from urllib.parse import quote_plus as urlquote
 
-
-from cachetools import cached, TTLCache
-
+import sqlalchemy
+from _md5 import md5
+from cachetools import TTLCache, cached
 from structlog import get_logger
+
+from flowmachine.utils import parse_datestring
 
 logger = get_logger(__name__)
 
@@ -118,7 +114,7 @@ class Connection:
         is compatible with this version of flowmachine.
         """
 
-        from ..versions import __version__, __min_flowdb_version__
+        from ..versions import __min_flowdb_version__, __version__
 
         query_output = self.fetch("SELECT * FROM flowdb_version();")
         flowdb_version = query_output[0][0]

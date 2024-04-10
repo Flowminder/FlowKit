@@ -6,11 +6,11 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features.location.unique_subscriber_counts import (
-    UniqueSubscriberCounts,
-)
 from flowmachine.features.location.active_at_reference_location_counts import (
     ActiveAtReferenceLocationCounts,
+)
+from flowmachine.features.location.unique_subscriber_counts import (
+    UniqueSubscriberCounts,
 )
 
 

@@ -3,10 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from cryptography.hazmat.primitives import serialization
 from flask import Blueprint, jsonify, request
-
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
-
 from flowauth.models import current_app
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)

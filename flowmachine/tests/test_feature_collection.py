@@ -8,7 +8,7 @@ Tests for flowmachine.feature_collection
 
 from flowmachine import feature_collection
 from flowmachine.core import CustomQuery
-from flowmachine.features import RadiusOfGyration, NocturnalEvents, SubscriberDegree
+from flowmachine.features import NocturnalEvents, RadiusOfGyration, SubscriberDegree
 from flowmachine.features.utilities.feature_collection import (
     feature_collection_from_list_of_classes,
 )

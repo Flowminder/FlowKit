@@ -12,8 +12,8 @@ specified time period.
 """
 from typing import List
 
-from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations
+from .metaclasses import SubscriberFeature
 
 
 class CallDays(SubscriberFeature):

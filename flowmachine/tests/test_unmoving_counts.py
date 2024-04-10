@@ -3,9 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import UniqueLocations, SubscriberLocations
-from flowmachine.features.subscriber.unmoving import Unmoving
+from flowmachine.features import SubscriberLocations, UniqueLocations
 from flowmachine.features.location.unmoving_counts import UnmovingCounts
+from flowmachine.features.subscriber.unmoving import Unmoving
 
 
 def test_unmoving_counts_column_names(get_column_names_from_run):

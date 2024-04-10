@@ -6,11 +6,10 @@
 Unit tests for EventTableSubset
 """
 import weakref
+from datetime import datetime
 
 import pytest
 import pytz
-
-from datetime import datetime
 
 import flowmachine.core
 from flowmachine.core.errors import MissingDateError

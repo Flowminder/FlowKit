@@ -2,11 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.core import Query
-from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 from flowmachine.features.location.flows import FlowLike
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
+from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 
 
 class RedactedTripsODMatrix(RedactedLocationMetric, FlowLike, Query):

@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
 import pandas as pd
+import pytest
 from pandas.testing import assert_frame_equal
 
 from flowmachine.core.custom_query import CustomQuery
-from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.core.errors import MissingColumnsError
-from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features.location.flows import Flows
+from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
 from flowmachine.features.utilities.combine_first import CombineFirst
 
 

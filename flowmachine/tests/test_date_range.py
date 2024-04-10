@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime as dt
+
 import pytest
 
 from flowmachine.core.date_range import DateRange

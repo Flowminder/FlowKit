@@ -4,7 +4,6 @@
 
 import click
 from cryptography.fernet import Fernet
-
 from flowauth.models import add_admin, init_db, make_demodata
 
 

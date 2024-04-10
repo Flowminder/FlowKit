@@ -4,24 +4,25 @@
 
 
 import datetime
-import pandas as pd
 import warnings
-from sqlalchemy import select
 from typing import List, Optional, Tuple
+
+import pandas as pd
+import structlog
+from sqlalchemy import select
+
+from flowmachine.core.hour_slice import HourInterval, HourSlice
+from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
+from flowmachine.utils import list_of_dates, standardise_date
 
 from ...core import Query, Table
 from ...core.context import get_db
 from ...core.errors import MissingDateError
 from ...core.sqlalchemy_utils import (
+    get_sql_string,
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
-    get_sql_string,
 )
-from flowmachine.utils import list_of_dates, standardise_date
-from flowmachine.core.hour_slice import HourSlice, HourInterval
-from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
-
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

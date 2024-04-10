@@ -6,8 +6,9 @@
 Test the subscriber degree class
 """
 
-from flowmachine.features.subscriber.subscriber_degree import *
 import pytest
+
+from flowmachine.features.subscriber.subscriber_degree import *
 
 
 def test_returns_correct_column_names(get_dataframe):

@@ -7,17 +7,17 @@
 
 import os
 from datetime import timedelta
-from typing import Dict, Union, List, Callable, Optional
+from typing import Callable, Dict, List, Optional, Union
 
 import pytest
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 from flowkit_jwt_generator import (
+    generate_token,
+    get_all_claims_from_flowapi,
     load_private_key,
     load_public_key,
-    get_all_claims_from_flowapi,
-    generate_token,
 )
 
 

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import UniqueLocations, SubscriberLocations
+from flowmachine.features import SubscriberLocations, UniqueLocations
 from flowmachine.features.subscriber.unmoving import Unmoving
 
 

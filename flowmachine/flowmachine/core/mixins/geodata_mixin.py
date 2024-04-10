@@ -10,11 +10,9 @@ Mixin providing utility methods for geographic type queries.
 
 """
 import rapidjson as json
-
+import structlog
 
 from flowmachine.utils import proj4string
-
-import structlog
 
 from ..context import get_db
 

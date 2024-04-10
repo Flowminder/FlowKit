@@ -7,14 +7,14 @@
 Commonly used testing fixtures for flowdb.
 """
 
+import logging
 import os
 import re
-import pytest
-import logging
+from collections import OrderedDict
+
 import psycopg2 as pg
 import psycopg2.extras
-
-from collections import OrderedDict
+import pytest
 
 logger = logging.getLogger()
 

@@ -11,14 +11,14 @@ import pytest
 
 from flowmachine.core.cache import (
     cache_table_exists,
-    write_cache_metadata,
     get_obj_or_stub,
+    write_cache_metadata,
 )
 from flowmachine.core.context import get_db
 from flowmachine.core.errors.flowmachine_errors import QueryCancelledException
 from flowmachine.core.query import Query
 from flowmachine.core.query_state import QueryState
-from flowmachine.features import daily_location, ModalLocation, Flows
+from flowmachine.features import Flows, ModalLocation, daily_location
 
 
 def test_table_records_removed(flowmachine_connect):

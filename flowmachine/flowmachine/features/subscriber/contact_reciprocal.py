@@ -6,13 +6,13 @@
 """
 Classes for searching and dealing with reciprocal contacts.
 """
-from typing import Union, Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from flowmachine.core.mixins.graph_mixin import GraphMixin
 from flowmachine.features.subscriber.contact_balance import ContactBalance
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.utils import make_where, standardise_date
 
 

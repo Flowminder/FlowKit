@@ -7,6 +7,7 @@ Tests for checking if the Oracle_fdw has been built correctly.
 """
 
 import os
+
 import pytest
 
 

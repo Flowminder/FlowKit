@@ -3,17 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import networkx as nx
 import sys
-import structlog
-from io import BytesIO
-from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional, List, Set
 from concurrent.futures import wait
 from functools import lru_cache
+from io import BytesIO
+from typing import Any, Callable, Dict, List, Optional, Sequence, Set, Tuple, Union
 
-from flowmachine.core.context import get_redis, get_db
+import networkx as nx
+import structlog
+
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.errors import UnstorableQueryError
-from flowmachine.core.query_state import QueryStateMachine, QueryState
+from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -293,7 +294,7 @@ def plot_dependency_graph(
     IPython.display.Image or IPython.display.SVG
     """
     try:  # pragma: no cover
-        from IPython.display import Image, SVG
+        from IPython.display import SVG, Image
     except ImportError:
         raise ImportError("requires IPython ", "https://ipython.org/")
 

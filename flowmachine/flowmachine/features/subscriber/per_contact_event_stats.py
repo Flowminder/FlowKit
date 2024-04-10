@@ -4,9 +4,10 @@
 
 # -*- coding: utf-8 -*-
 
-from .metaclasses import SubscriberFeature
 from flowmachine.features.subscriber.contact_balance import ContactBalance
 from flowmachine.utils import Statistic
+
+from .metaclasses import SubscriberFeature
 
 
 class PerContactEventStats(SubscriberFeature):

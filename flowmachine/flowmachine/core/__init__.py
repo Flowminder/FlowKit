@@ -8,15 +8,15 @@ and associated code.
 """
 
 from .connection import Connection
-from .query import Query
-from .table import Table
-from .geotable import GeoTable
-from .init import connect
-from .logging import init_logging, set_log_level
-from .spatial_unit import make_spatial_unit
-from .join_to_location import JoinToLocation, location_joined_query
 from .custom_query import CustomQuery
+from .geotable import GeoTable
 from .grid import Grid
+from .init import connect
+from .join_to_location import JoinToLocation, location_joined_query
+from .logging import init_logging, set_log_level
+from .query import Query
+from .spatial_unit import make_spatial_unit
+from .table import Table
 
 sub_modules = ["errors", "mixins", "api"]
 

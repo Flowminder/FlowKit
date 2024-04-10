@@ -11,11 +11,9 @@ a series of features.
 """
 from .location import *
 from .network import *
-from .subscriber import *
-
 from .raster import *
 from .spatial import *
-
+from .subscriber import *
 from .utilities import *
 
 loc = [

@@ -13,8 +13,9 @@ from typing import List, Optional, Tuple
 
 from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
-from ..utilities.subscriber_locations import BaseLocation, SubscriberLocations
 from flowmachine.utils import standardise_date
+
+from ..utilities.subscriber_locations import BaseLocation, SubscriberLocations
 
 
 class MostFrequentLocation(BaseLocation, Query):

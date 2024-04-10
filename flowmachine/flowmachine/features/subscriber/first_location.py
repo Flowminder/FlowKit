@@ -14,9 +14,10 @@ from typing import List, Optional, Tuple
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
-from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.utils import standardise_date
+
+from ..utilities.subscriber_locations import SubscriberLocations
+from .metaclasses import SubscriberFeature
 
 
 class FirstLocation(SubscriberFeature):

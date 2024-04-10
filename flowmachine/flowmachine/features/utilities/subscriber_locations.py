@@ -14,18 +14,18 @@ later used for computing subscriber features.
 """
 
 
-from .events_tables_union import EventsTablesUnion
+import structlog
+
+from flowmachine.core import location_joined_query, make_spatial_unit
+from flowmachine.core.errors import MissingColumnsError
+from flowmachine.core.query import Query
+from flowmachine.core.spatial_unit import AnySpatialUnit
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
-from flowmachine.core.query import Query
-from flowmachine.core import location_joined_query, make_spatial_unit
-from flowmachine.core.spatial_unit import AnySpatialUnit
-from flowmachine.core.errors import MissingColumnsError
-
-import structlog
+from .events_tables_union import EventsTablesUnion
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

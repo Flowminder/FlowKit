@@ -2,13 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import pandas as pd
 import pytest
-from flowmachine.features import DistanceSeries, SubscriberLocations
 
 from flowmachine.core import make_spatial_unit
-
-import pandas as pd
-
+from flowmachine.features import DistanceSeries, SubscriberLocations
 from flowmachine.features.subscriber.imputed_distance_series import (
     ImputedDistanceSeries,
 )

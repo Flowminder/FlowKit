@@ -9,11 +9,11 @@ Tests the subscriber TAC information tools.
 import pytest
 
 from flowmachine.features.subscriber import (
-    SubscriberTACs,
-    SubscriberTAC,
     SubscriberHandset,
-    SubscriberHandsets,
     SubscriberHandsetCharacteristic,
+    SubscriberHandsets,
+    SubscriberTAC,
+    SubscriberTACs,
 )
 
 

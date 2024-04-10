@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from datetime import datetime
 
+import pandas as pd
 import pytest
-from flowmachine.features import DistanceSeries, daily_location, SubscriberLocations
 
 from flowmachine.core import make_spatial_unit
-import pandas as pd
+from flowmachine.features import DistanceSeries, SubscriberLocations, daily_location
 
 
 @pytest.mark.parametrize(

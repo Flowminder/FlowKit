@@ -13,10 +13,11 @@ a subscriber.
 import warnings
 from typing import List, Optional, Tuple
 
+from flowmachine.utils import standardise_date
+
+from ...core import Table
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from ...core import Table
-from flowmachine.utils import standardise_date
 
 valid_characteristics = {
     "brand",

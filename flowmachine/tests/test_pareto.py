@@ -3,9 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from flowmachine.features import ParetoInteractions, ContactBalance
-import pandas as pd
 import math
+
+import pandas as pd
+
+from flowmachine.features import ContactBalance, ParetoInteractions
 
 
 def percent_pareto_interactions(subscriber_count, percentage=0.8):

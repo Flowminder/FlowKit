@@ -2,9 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validates_schema, ValidationError
+from marshmallow import ValidationError, fields, validates_schema
 from marshmallow.validate import OneOf
 
+from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
+from flowmachine.core.server.query_schemas.event_count import EventCountSchema
+from flowmachine.core.server.query_schemas.handset import HandsetSchema
+from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
+from flowmachine.core.server.query_schemas.pareto_interactions import (
+    ParetoInteractionsSchema,
+)
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
 )
@@ -12,18 +19,10 @@ from flowmachine.core.server.query_schemas.subscriber_degree import (
     SubscriberDegreeSchema,
 )
 from flowmachine.core.server.query_schemas.topup_amount import TopUpAmountSchema
-from flowmachine.core.server.query_schemas.event_count import EventCountSchema
-from flowmachine.core.server.query_schemas.handset import HandsetSchema
-from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
+from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
-from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
-from flowmachine.core.server.query_schemas.pareto_interactions import (
-    ParetoInteractionsSchema,
-)
-from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
-
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
@@ -31,9 +30,9 @@ from flowmachine.features.location.redacted_joined_spatial_aggregate import (
     RedactedJoinedSpatialAggregate,
 )
 from flowmachine.utils import Statistic
-from .base_exposed_query import BaseExposedQuery
-from .aggregation_unit import AggregationUnitKind
 
+from .aggregation_unit import AggregationUnitKind
+from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 

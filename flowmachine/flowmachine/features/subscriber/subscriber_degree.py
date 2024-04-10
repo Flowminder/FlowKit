@@ -9,11 +9,11 @@ have done over a certain time period.
 
 
 """
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.utils import make_where, standardise_date
 
 

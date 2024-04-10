@@ -5,6 +5,6 @@
 """
 Features calculated at the network level.
 """
-from .total_network_objects import TotalNetworkObjects, AggregateNetworkObjects
+from .total_network_objects import AggregateNetworkObjects, TotalNetworkObjects
 
 __all__ = ["TotalNetworkObjects", "AggregateNetworkObjects"]

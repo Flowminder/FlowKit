@@ -5,12 +5,11 @@ import datetime
 import logging
 import re
 from asyncio import sleep
+from typing import Dict, List, Optional, Tuple, Union
 
 import httpx
 import pandas as pd
-from typing import Tuple, Union, List, Optional, Dict
 from tqdm.auto import tqdm
-
 
 import flowclient.errors
 from flowclient.async_connection import ASyncConnection

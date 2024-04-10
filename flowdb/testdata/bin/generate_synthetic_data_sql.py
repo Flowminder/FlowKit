@@ -13,20 +13,18 @@ Produces sites, cells, tacs, call, sms and mds data.
 Optionally simulates a 'disaster' where all subscribers must leave a designated region
 for a period of time.
 """
-from pathlib import Path
-
-import os
 import argparse
 import datetime
+import json
+import os
 from concurrent.futures.thread import ThreadPoolExecutor
 from contextlib import contextmanager
 from multiprocessing import cpu_count
+from pathlib import Path
 
 import sqlalchemy as sqlalchemy
-from sqlalchemy.exc import ResourceClosedError
-
 import structlog
-import json
+from sqlalchemy.exc import ResourceClosedError
 
 structlog.configure(
     processors=[

@@ -12,7 +12,7 @@ import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.errors import InvalidSpatialUnitError
-from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
+from flowmachine.features import AggregateNetworkObjects, TotalNetworkObjects
 
 
 def test_tno_at_lon_lat(get_dataframe):

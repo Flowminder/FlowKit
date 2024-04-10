@@ -1,7 +1,8 @@
-from quart_jwt_extended import jwt_required, current_user
-from quart import Blueprint, current_app, request
-from typing import Tuple, List, Union
 import datetime as dt
+from typing import List, Tuple, Union
+
+from quart import Blueprint, current_app, request
+from quart_jwt_extended import current_user, jwt_required
 
 blueprint = Blueprint("qa", __name__)
 

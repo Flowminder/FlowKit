@@ -5,9 +5,9 @@
 from marshmallow import fields
 
 from flowmachine.core.server.query_schemas.custom_fields import (
+    EventTypes,
     Hours,
     ISODateTime,
-    EventTypes,
 )
 from flowmachine.core.server.query_schemas.subscriber_subset import SubscriberSubset
 

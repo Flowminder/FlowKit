@@ -8,15 +8,11 @@ from marshmallow.validate import OneOf, Range
 from flowmachine.features import NocturnalEvents
 
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from .custom_fields import Hours
-from .field_mixins import (
-    StartAndEndField,
-    EventTypesField,
-    SubscriberSubsetField,
-)
+from .field_mixins import EventTypesField, StartAndEndField, SubscriberSubsetField
 
 __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
 

@@ -8,12 +8,13 @@ Here you find metaclasses for building subscriber features.
 
 """
 
-from ...core.query import Query
+import structlog
+
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
 
-import structlog
+from ...core.query import Query
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

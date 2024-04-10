@@ -4,16 +4,14 @@
 
 # -*- coding: utf-8 -*-
 
-import pytest
-
 from json import loads
 
-from flowmachine.features.location.redacted_labelled_flows import (
-    RedactedLabelledFlows,
-)
-from flowmachine.features.location.labelled_flows import LabelledFlows
+import pytest
+
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import SubscriberHandsetCharacteristic
+from flowmachine.features.location.labelled_flows import LabelledFlows
+from flowmachine.features.location.redacted_labelled_flows import RedactedLabelledFlows
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 

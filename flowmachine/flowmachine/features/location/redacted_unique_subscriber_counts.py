@@ -5,11 +5,11 @@
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features.location.unique_subscriber_counts import (
-    UniqueSubscriberCounts,
-)
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
+)
+from flowmachine.features.location.unique_subscriber_counts import (
+    UniqueSubscriberCounts,
 )
 
 

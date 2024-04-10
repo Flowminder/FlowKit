@@ -3,14 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from typing import Union, Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from flowmachine.core import location_joined_query
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date, Statistic
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.utils import Statistic, make_where, standardise_date
 
 
 class PerLocationEventStats(SubscriberFeature):

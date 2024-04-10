@@ -6,15 +6,16 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
+
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
 

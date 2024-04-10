@@ -7,8 +7,8 @@
 from typing import List, Union
 
 from flowmachine.core import Query
-from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
 class MajorityLocation(BaseLocation, Query):

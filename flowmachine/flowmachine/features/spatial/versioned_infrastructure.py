@@ -9,11 +9,11 @@ Methods for fetching a set of versioned infrastructure elements.
 A version is selected based on the date in which that version is valid.
 
 """
+from datetime import datetime
 from typing import List
 
-from datetime import datetime
-
 from flowmachine.core import Table
+
 from ...core.query import Query
 
 

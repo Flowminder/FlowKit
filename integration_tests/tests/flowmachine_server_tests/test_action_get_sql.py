@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.core import make_spatial_unit
-from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine.features import daily_location
 from flowmachine.features.location.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
-from flowmachine.features import daily_location
-from .helpers import poll_until_done
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
+from .helpers import poll_until_done
 
 # TODO: add test for code path that raises QueryProxyError with the 'get_sql' action
 

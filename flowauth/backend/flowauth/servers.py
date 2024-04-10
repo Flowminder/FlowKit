@@ -5,13 +5,11 @@ import datetime
 import logging
 from hashlib import md5
 
-from flask import Blueprint, jsonify, request, current_app
-
+from flask import Blueprint, current_app, jsonify, request
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
-
 from flowauth.invalid_usage import InvalidUsage
-from flowauth.models import Role, Server, Scope, db
+from flowauth.models import Role, Scope, Server, db
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 admin_permission = Permission(RoleNeed("admin"))

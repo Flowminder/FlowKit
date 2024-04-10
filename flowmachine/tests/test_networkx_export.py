@@ -11,8 +11,7 @@ import pytest
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GraphMixin
-
-from flowmachine.features import daily_location, Flows
+from flowmachine.features import Flows, daily_location
 
 
 def test_nx_object():

@@ -10,10 +10,10 @@ from typing import List
 import pytest
 
 from flowmachine.core import Table
-from flowmachine.core.join import Join
-from flowmachine.features import daily_location
-from flowmachine.core.query import Query
 from flowmachine.core.custom_query import CustomQuery
+from flowmachine.core.join import Join
+from flowmachine.core.query import Query
+from flowmachine.features import daily_location
 
 
 # Define a class that gives us some sample data to join on

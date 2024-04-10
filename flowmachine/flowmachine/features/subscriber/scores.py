@@ -8,14 +8,13 @@ Calculates an event score for each event based
 on a scoring dictionary.
 """
 
-from typing import Dict, Union, Tuple, Optional
+from typing import Dict, List, Optional, Tuple, Union
 
-from typing import List
+from flowmachine.utils import standardise_date
 
-from ..utilities import EventsTablesUnion
 from ...core import Query, location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
-from flowmachine.utils import standardise_date
+from ..utilities import EventsTablesUnion
 
 
 class EventScore(Query):

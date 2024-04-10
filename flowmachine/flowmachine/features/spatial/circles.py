@@ -13,7 +13,7 @@ to implement Radiation model of mobility.
 """
 from typing import List
 
-from ...core import Query, CustomQuery
+from ...core import CustomQuery, Query
 from ...core.mixins import GeoDataMixin
 from ..raster import RasterStatistics
 

@@ -4,9 +4,8 @@
 import pytest
 
 from flowmachine.features import SubscriberLocations
-
-from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 from flowmachine.features.location.redacted_trips_od_matrix import RedactedTripsODMatrix
+from flowmachine.features.location.trips_od_matrix import TripsODMatrix
 
 
 def test_redacted_trips_column_names(get_column_names_from_run):

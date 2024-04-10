@@ -9,14 +9,14 @@ Calculates the number of events at a location
 during a specified time period.
 """
 
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
-from flowmachine.core.query import Query
 from flowmachine.core.join_to_location import location_joined_query
 from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
+from flowmachine.core.query import Query
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.utils import make_where, standardise_date
 
 

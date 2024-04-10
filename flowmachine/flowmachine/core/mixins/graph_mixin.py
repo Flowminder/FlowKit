@@ -9,6 +9,7 @@ Mixin providing utility methods for graph type queries.
 
 """
 import warnings
+
 import networkx as nx
 
 

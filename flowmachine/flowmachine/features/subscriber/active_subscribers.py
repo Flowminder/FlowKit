@@ -3,7 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from datetime import date, datetime
-from typing import List, Union, Optional, Literal, NewType, Tuple
+from typing import List, Literal, NewType, Optional, Tuple, Union
+
+import dateutil.rrule as rr
+from dateutil.relativedelta import relativedelta
 
 from flowmachine.core.mixins.exposed_datetime_mixin import ExposedDatetimeMixin
 from flowmachine.core.query import Query
@@ -11,8 +14,6 @@ from flowmachine.features.subscriber.total_active_periods import (
     TotalActivePeriodsSubscriber,
 )
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
-import dateutil.rrule as rr
-from dateutil.relativedelta import relativedelta
 
 SubscriberSubsetType = NewType("SubscriberSubsetType", Union[str, list, Query, "Table"])
 

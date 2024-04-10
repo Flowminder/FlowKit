@@ -12,11 +12,11 @@ dailylocations objects, although they can be.
 """
 
 
+import structlog
+
 from flowmachine.utils import parse_datestring, standardise_date
 
 from ...core import CustomQuery
-
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

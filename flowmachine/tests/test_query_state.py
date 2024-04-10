@@ -5,22 +5,21 @@
 """
 Tests for the query state machine.
 """
-from unittest.mock import Mock
-
 import time
+from unittest.mock import Mock
 
 import pytest
 
 import flowmachine
+import flowmachine.utils
 from flowmachine.core import Query
-from flowmachine.core.context import get_redis, get_db
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
     QueryResetFailedException,
 )
-from flowmachine.core.query_state import QueryStateMachine, QueryState, QueryEvent
-import flowmachine.utils
+from flowmachine.core.query_state import QueryEvent, QueryState, QueryStateMachine
 
 
 class DummyQuery(Query):

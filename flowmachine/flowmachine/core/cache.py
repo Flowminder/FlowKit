@@ -9,25 +9,24 @@ Functions which deal with inspecting and managing the query cache.
 """
 import asyncio
 import pickle
-import sqlalchemy.engine
-from contextvars import copy_context
 from concurrent.futures import Executor, TimeoutError
+from contextvars import copy_context
 from functools import partial
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+
+import psycopg2
+import sqlalchemy.engine
+from redis import StrictRedis
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
-from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
-
-from redis import StrictRedis
-import psycopg2
-from sqlalchemy.engine import Engine
-
+from flowmachine import __version__
 from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
     StoreFailedException,
 )
-from flowmachine.core.query_state import QueryStateMachine, QueryEvent
-from flowmachine import __version__
+from flowmachine.core.query_state import QueryEvent, QueryStateMachine
 
 if TYPE_CHECKING:
     from .query import Query

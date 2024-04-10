@@ -4,11 +4,11 @@
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
-    MeaningfulLocations,
-    HartiganCluster,
     CallDays,
-    SubscriberLocations,
     EventScore,
+    HartiganCluster,
+    MeaningfulLocations,
+    SubscriberLocations,
 )
 from flowmachine.features.location.meaningful_locations_aggregate import (
     MeaningfulLocationsAggregate,

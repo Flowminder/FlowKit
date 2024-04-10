@@ -1,4 +1,5 @@
 import pytest
+
 from flowmachine.core.query_info_lookup import QueryInfoLookup, QueryInfoLookupError
 
 

@@ -2,13 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.core.query import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features.location.redacted_labelled_aggregate import (
-    RedactedLabelledAggregate,
-)
+from flowmachine.core.query import Query
 from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
+)
+from flowmachine.features.location.redacted_labelled_aggregate import (
+    RedactedLabelledAggregate,
 )
 
 

@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from flowmachine.core.server.server_config import get_server_config, get_env_as_bool
+from flowmachine.core.server.server_config import get_env_as_bool, get_server_config
 
 
 @pytest.mark.parametrize(

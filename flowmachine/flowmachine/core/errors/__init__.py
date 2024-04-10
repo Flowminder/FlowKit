@@ -7,12 +7,12 @@ Custom Errors
 """
 
 from .flowmachine_errors import (
+    InvalidSpatialUnitError,
+    MissingColumnsError,
+    MissingDateError,
     NameTooLongError,
     NotConnectedError,
-    InvalidSpatialUnitError,
-    MissingDateError,
     UnstorableQueryError,
-    MissingColumnsError,
 )
 
 __all__ = [

@@ -10,6 +10,7 @@ own custom query via a python string.
 from typing import List, Set, Union
 
 from flowmachine.utils import pretty_sql
+
 from .query import Query
 
 

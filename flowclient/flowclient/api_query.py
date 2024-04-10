@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import Union, Optional
+from typing import Optional, Union
 
 from flowclient.client import (
-    run_query,
-    get_status,
-    get_result_by_query_id,
     get_geojson_result_by_query_id,
+    get_result_by_query_id,
+    get_status,
+    run_query,
     wait_for_query_to_be_ready,
 )
 from flowclient.connection import Connection

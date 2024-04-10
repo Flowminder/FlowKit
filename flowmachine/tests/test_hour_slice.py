@@ -2,12 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
-from operator import ge as greater_or_equal, lt as less_than
+from operator import ge as greater_or_equal
+from operator import lt as less_than
 
+import pytest
+
+from flowmachine.core.hour_slice import HourAndMinutesTimestamp, HourInterval, HourSlice
 from flowmachine.core.sqlalchemy_table_definitions import EventsCallsTable
 from flowmachine.core.sqlalchemy_utils import get_string_representation
-from flowmachine.core.hour_slice import HourAndMinutesTimestamp, HourInterval, HourSlice
 
 
 def test_filter_by_hour_of_day():

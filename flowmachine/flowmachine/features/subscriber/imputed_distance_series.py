@@ -9,8 +9,10 @@ Per subscriber time series of distances from some reference location.
 from typing import List
 
 from flowmachine.core import Query
-from flowmachine.features.subscriber.distance_series import DistanceSeries
-from flowmachine.features.subscriber.distance_series import valid_time_buckets
+from flowmachine.features.subscriber.distance_series import (
+    DistanceSeries,
+    valid_time_buckets,
+)
 from flowmachine.features.utilities.validators import valid_median_window
 
 

@@ -1,29 +1,27 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from freezegun import freeze_time
-from time import sleep
-
-from functools import partial
-
 import datetime
 from collections import namedtuple
+from functools import partial
 from itertools import product
+from time import sleep
 
 import pyotp
 import pytest
 import sqlalchemy
 from flowauth.main import create_app
 from flowauth.models import (
+    Role,
+    Scope,
     Server,
     TwoFactorAuth,
     TwoFactorBackup,
     User,
     db,
-    Scope,
-    Role,
 )
 from flowauth.user_settings import generate_backup_codes
+from freezegun import freeze_time
 
 TestUser = namedtuple("TestUser", ["id", "username", "password"])
 TestTwoFactorUser = namedtuple(

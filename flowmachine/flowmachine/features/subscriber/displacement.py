@@ -6,13 +6,14 @@
 """
 The maximum displacement of a user from its home location
 """
-from typing import List, Union, Tuple, Optional
+from typing import List, Optional, Tuple, Union
 
-from flowmachine.features.spatial import DistanceMatrix
-from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.core import Query
-from flowmachine.utils import standardise_date, Statistic
+from flowmachine.features.spatial import DistanceMatrix
+from flowmachine.utils import Statistic, standardise_date
+
+from ..utilities.subscriber_locations import BaseLocation, SubscriberLocations
+from .metaclasses import SubscriberFeature
 
 
 class Displacement(SubscriberFeature):

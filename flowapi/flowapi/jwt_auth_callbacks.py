@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from typing import Any, Dict, Tuple
+
+from quart import Response, current_app, request
 from quart_jwt_extended import JWTManager, get_jwt_identity
 from quart_jwt_extended.default_callbacks import (
     default_expired_token_callback,
@@ -9,8 +12,6 @@ from quart_jwt_extended.default_callbacks import (
     default_revoked_token_callback,
     default_unauthorized_callback,
 )
-from quart import current_app, request, Response
-from typing import Any, Dict, Tuple
 
 
 def register_logging_callbacks(jwt: JWTManager):

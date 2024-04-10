@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.contact_reciprocal import *
 import pandas as pd
-
 import pytest
+
+from flowmachine.features.subscriber.contact_reciprocal import *
 
 
 def test_contact_reciprocal(get_dataframe):

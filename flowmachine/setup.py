@@ -9,11 +9,12 @@ Setup configuration for `flowmachine`.
 
 """
 import sys
-import versioneer
 from os import path as p
 
+import versioneer
+
 try:
-    from setuptools import setup, find_packages
+    from setuptools import find_packages, setup
 
 except ImportError:
     from distutils.core import setup

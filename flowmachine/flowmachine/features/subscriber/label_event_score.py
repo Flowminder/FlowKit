@@ -1,13 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # # License, v. 2.0. If a copy of the MPL was not distributed with this
 # # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from typing import Any, Dict, List, Union
+
 from shapely.geometry import shape
 from shapely.geometry.base import BaseGeometry
-from typing import List, Dict, Union, Any
 
-from .scores import EventScore
-from .hartigan_cluster import _JoinedHartiganCluster
 from ...core import Query
+from .hartigan_cluster import _JoinedHartiganCluster
+from .scores import EventScore
 
 
 class LabelEventScore(Query):

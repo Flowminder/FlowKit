@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, validates_schema, ValidationError, post_load
+from marshmallow import Schema, ValidationError, fields, post_load, validates_schema
 from marshmallow.validate import OneOf, Range
 from marshmallow_oneofschema import OneOfSchema
 

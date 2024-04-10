@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from sqlalchemy import Column, Text, Boolean, TIMESTAMP, Numeric
+from sqlalchemy import TIMESTAMP, Boolean, Column, Numeric, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 __all__ = ["EventsCallsTable"]

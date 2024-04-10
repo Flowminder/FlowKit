@@ -4,17 +4,17 @@
 
 # -*- coding: utf-8 -*-
 
-from flowmachine.features import DayTrajectories, daily_location
-from flowmachine.features.subscriber.majority_location import majority_location
-from flowmachine.features.subscriber.location_visits import LocationVisits
-from flowmachine.features.location.total_events import TotalLocationEvents
-from flowmachine.features.subscriber.handset_stats import HandsetStats
-from flowmachine.core.custom_query import CustomQuery
-from flowmachine.core.spatial_unit import CellSpatialUnit
+import pytest
 from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
 
-import pytest
+from flowmachine.core.custom_query import CustomQuery
+from flowmachine.core.spatial_unit import CellSpatialUnit
+from flowmachine.features import DayTrajectories, daily_location
+from flowmachine.features.location.total_events import TotalLocationEvents
+from flowmachine.features.subscriber.handset_stats import HandsetStats
+from flowmachine.features.subscriber.location_visits import LocationVisits
+from flowmachine.features.subscriber.majority_location import majority_location
 
 
 @pytest.fixture

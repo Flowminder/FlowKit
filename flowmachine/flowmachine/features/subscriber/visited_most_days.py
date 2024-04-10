@@ -3,7 +3,9 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
 from typing import List
+
 from flowmachine.core import Query
+
 from ..utilities.subscriber_locations import BaseLocation, SubscriberLocations
 
 

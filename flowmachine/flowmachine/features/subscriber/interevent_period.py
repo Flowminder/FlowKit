@@ -7,13 +7,14 @@
 Intervent period statistics, such as the average and standard deviation of the
 duration between calls.
 """
-from typing import List, Union, Tuple, Optional
+from typing import List, Optional, Tuple, Union
 
 from flowmachine.core import Query
 from flowmachine.features.subscriber.interevent_interval import IntereventInterval
-from .metaclasses import SubscriberFeature
-from ..utilities.direction_enum import Direction
+
 from ...utils import Statistic
+from ..utilities.direction_enum import Direction
+from .metaclasses import SubscriberFeature
 
 time_resolutions = dict(
     second=1, minute=60, hour=3600, day=86400, month=2592000, year=31557600

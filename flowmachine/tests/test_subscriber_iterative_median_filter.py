@@ -3,14 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+
+from flowmachine.core import CustomQuery, make_spatial_unit
 from flowmachine.features import (
     DistanceSeries,
-    SubscriberLocations,
     ImputedDistanceSeries,
     IterativeMedianFilter,
+    SubscriberLocations,
 )
-
-from flowmachine.core import make_spatial_unit, CustomQuery
 
 
 @pytest.mark.parametrize(

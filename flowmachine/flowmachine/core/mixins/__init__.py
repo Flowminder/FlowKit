@@ -8,8 +8,8 @@ are generally used in feature classes that inherit
 from the Query class.
 
 """
-from .graph_mixin import GraphMixin
-from .geodata_mixin import GeoDataMixin
 from .exposed_datetime_mixin import ExposedDatetimeMixin
+from .geodata_mixin import GeoDataMixin
+from .graph_mixin import GraphMixin
 
 __all__ = ["GraphMixin", "GeoDataMixin", "ExposedDatetimeMixin"]

@@ -14,9 +14,10 @@ of events see feature subscriber_locations.
 from typing import List
 
 from flowmachine.core import Query
-from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from ..utilities.multilocation import MultiLocation
 from flowmachine.core.union import Union
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
+
+from ..utilities.multilocation import MultiLocation
 
 
 class DayTrajectories(MultiLocation, BaseLocation, Query):

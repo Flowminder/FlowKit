@@ -2,10 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import pytest
+
 from flowmachine.core import CustomQuery
 from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core.spatial_unit import *
-import pytest
 
 
 def test_spatial_unit_column_names(exemplar_spatial_unit_param):

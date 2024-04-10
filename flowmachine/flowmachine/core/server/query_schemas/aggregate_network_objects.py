@@ -6,11 +6,12 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import AggregateNetworkObjects
+
 from .aggregation_unit import AggregationUnitKind
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema
+from .custom_fields import AggregateBy, Statistic
 from .total_network_objects import TotalNetworkObjectsSchema
-from .custom_fields import Statistic, AggregateBy
 
 __all__ = ["AggregateNetworkObjectsSchema", "AggregateNetworkObjectsExposed"]
 

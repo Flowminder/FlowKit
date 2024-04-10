@@ -12,11 +12,11 @@ import pytest
 from flowmachine.core import Table
 from flowmachine.core.context import get_db
 from flowmachine.features import (
-    RadiusOfGyration,
+    EventTableSubset,
     ModalLocation,
+    RadiusOfGyration,
     UniqueSubscribers,
     daily_location,
-    EventTableSubset,
 )
 from flowmachine.utils import list_of_dates
 

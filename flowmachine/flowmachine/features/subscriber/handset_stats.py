@@ -7,7 +7,6 @@ from typing import Union
 
 from ...utils import Statistic
 
-
 valid_characteristics = {
     "width",
     "height",

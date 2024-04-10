@@ -8,9 +8,9 @@ Tests for the DistanceMatrix() class.
 
 import pytest
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.core.errors import UnstorableQueryError
 from flowmachine.features.spatial import DistanceMatrix
-from flowmachine.core import make_spatial_unit
 
 
 def test_some_results(get_dataframe):

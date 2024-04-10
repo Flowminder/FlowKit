@@ -12,10 +12,11 @@ can be calculated in `km` or `m`.
 """
 from typing import List, Optional, Tuple
 
-from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.core import make_spatial_unit
 from flowmachine.utils import standardise_date
+
+from ..utilities.subscriber_locations import SubscriberLocations
+from .metaclasses import SubscriberFeature
 
 
 class RadiusOfGyration(SubscriberFeature):

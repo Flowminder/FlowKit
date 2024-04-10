@@ -26,19 +26,17 @@ References
 """
 
 import warnings
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
+import structlog
 
-from flowmachine.core.query import Query
-from flowmachine.features.subscriber import daily_location
-from flowmachine.utils import list_of_dates, standardise_date
-from flowmachine.features.subscriber import ModalLocation
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.query import Query
 from flowmachine.core.spatial_unit import LonLatSpatialUnit
 from flowmachine.features.spatial.distance_matrix import DistanceMatrix
-
-import structlog
+from flowmachine.features.subscriber import ModalLocation, daily_location
+from flowmachine.utils import list_of_dates, standardise_date
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.event_count import *
-
 import pytest
+
+from flowmachine.features.subscriber.event_count import *
 
 
 def test_event_count(get_dataframe):

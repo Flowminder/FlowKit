@@ -4,17 +4,16 @@
 import asyncio
 import collections
 import functools
-from typing import Iterable, Any
+from typing import Any, Iterable
+
 from prance import ResolvingParser
+from quart import current_app, request
 from rapidjson import dumps
 
-from quart import request, current_app
-
-
 from flowapi.flowapi_errors import (
+    BadQueryError,
     JSONHTTPException,
     MissingQueryKindError,
-    BadQueryError,
 )
 
 try:

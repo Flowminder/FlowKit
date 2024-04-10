@@ -1,31 +1,26 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import logging
+import sys
+import uuid
 from functools import partial
 
-import rapidjson
-
-import uuid
-import sys
-
-from quart import Quart, request, current_app, has_request_context
 import asyncpg
-import logging
+import rapidjson
+import structlog
 import zmq
+from quart import Quart, current_app, has_request_context, request
+from quart_jwt_extended import JWTManager, get_jwt_identity
 from zmq.asyncio import Context
 
-from flowapi.config import get_config
-from flowapi.jwt_auth_callbacks import register_logging_callbacks
-from flowapi.query_endpoints import blueprint as query_endpoints_blueprint
-from flowapi.geography import blueprint as geography_blueprint
 from flowapi.api_spec import blueprint as spec_blueprint
+from flowapi.config import get_config
+from flowapi.geography import blueprint as geography_blueprint
+from flowapi.jwt_auth_callbacks import register_logging_callbacks
 from flowapi.qa_endpoints import blueprint as qa_check_blueprint
-from quart_jwt_extended import JWTManager, get_jwt_identity
-
-import structlog
-
+from flowapi.query_endpoints import blueprint as query_endpoints_blueprint
 from flowapi.user_model import user_loader_callback
-
 
 root_logger = logging.getLogger("flowapi")
 root_logger.setLevel(logging.DEBUG)

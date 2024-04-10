@@ -2,10 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
+import pytest
+
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
-from flowmachine.core import make_spatial_unit
-import pytest
 
 
 def test_visited_most_days_column_names(get_dataframe):

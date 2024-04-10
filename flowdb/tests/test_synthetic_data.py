@@ -7,8 +7,9 @@
 Test the synthetic data.
 """
 
-import pytest
 import time
+
+import pytest
 
 
 @pytest.fixture(scope="module", autouse=True)

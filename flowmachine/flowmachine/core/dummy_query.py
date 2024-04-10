@@ -7,7 +7,7 @@ A dummy query class, primarily useful for testing.
 
 import structlog
 
-from .context import get_redis, get_db
+from .context import get_db, get_redis
 from .query import Query
 from .query_state import QueryStateMachine
 

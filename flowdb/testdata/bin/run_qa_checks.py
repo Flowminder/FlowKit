@@ -2,17 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import argparse
+import os
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from itertools import product
 from pathlib import Path
 from typing import List
+
 from jinja2 import Environment, FileSystemLoader, Template
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
-import os
-import argparse
-
 
 update_template_string = """
 INSERT INTO etl.post_etl_queries

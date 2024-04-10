@@ -7,20 +7,19 @@ Utility classes for subsetting CDRs.
 
 """
 
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Tuple, Union
 
-from .direction_enum import Direction
-from .event_table_subset import EventTableSubset
-from .events_tables_union import EventsTablesUnion
+import structlog
+from numpy import inf
+
+from flowmachine.utils import standardise_date
+
 from ...core import Query, make_spatial_unit
 from ...core.context import get_db
 from ...core.spatial_unit import AnySpatialUnit
-
-from numpy import inf
-
-import structlog
-
-from flowmachine.utils import standardise_date
+from .direction_enum import Direction
+from .event_table_subset import EventTableSubset
+from .events_tables_union import EventsTablesUnion
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 valid_subscriber_identifiers = ("msisdn", "imei", "imsi")

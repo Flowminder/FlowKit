@@ -2,9 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from datetime import date, datetime
+
 import pytest
+
 from flowmachine.core.mixins import ExposedDatetimeMixin
-from datetime import datetime, date
 
 
 class DummyDatetime(ExposedDatetimeMixin):

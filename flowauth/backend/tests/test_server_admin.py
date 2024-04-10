@@ -3,10 +3,9 @@
 # file, You can obtain one at http.//mozilla.org/MPL/2.0/.
 import datetime
 
+import pytest
 from freezegun import freeze_time
 from werkzeug.http import http_date
-
-import pytest
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")

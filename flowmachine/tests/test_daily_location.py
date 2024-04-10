@@ -4,9 +4,9 @@
 
 import pytest
 
-from flowmachine.core.errors import MissingDateError
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import daily_location, MostFrequentLocation
+from flowmachine.core.errors import MissingDateError
+from flowmachine.features import MostFrequentLocation, daily_location
 
 
 def test_equivalent_to_locate_subscribers(get_dataframe):

@@ -2,9 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
 from unittest.mock import Mock
-from asynctest import Mock as AMock, CoroutineMock
+
+import pytest
+from asynctest import CoroutineMock
+from asynctest import Mock as AMock
 
 from flowclient.async_api_query import ASyncAPIQuery
 

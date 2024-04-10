@@ -6,8 +6,8 @@
 """
 Test that utility functions are installed and working properly.
 """
-import pytest
 import numpy as np
+import pytest
 
 
 @pytest.fixture

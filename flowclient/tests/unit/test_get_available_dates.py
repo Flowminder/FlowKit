@@ -5,6 +5,7 @@
 from unittest.mock import Mock
 
 import pytest
+
 from flowclient.client import get_available_dates
 from flowclient.errors import FlowclientConnectionError
 

@@ -6,8 +6,9 @@
 Utility method for calculating raster
 statistics.
 """
-from ...core.query import Query
 from typing import List
+
+from ...core.query import Query
 
 
 class RasterStatistics(Query):

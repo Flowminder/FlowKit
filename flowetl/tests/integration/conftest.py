@@ -6,9 +6,11 @@
 """
 Conftest for flowetl integration tests
 """
+import logging
 import os
 import random
 import string
+import sys
 import warnings
 from pathlib import Path
 from subprocess import Popen, run
@@ -17,17 +19,14 @@ from time import sleep
 
 import docker
 import jinja2
+import pytest
 import requests
 import structlog
 from docker.types import Mount
-from requests.exceptions import RequestException
-
-import pytest
 from pendulum import duration, now
+from requests.exceptions import RequestException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import logging
-import sys
 
 here = Path(__file__).parent
 logging.basicConfig(

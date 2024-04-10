@@ -5,11 +5,9 @@ import datetime
 from functools import reduce
 
 from flask import Blueprint, jsonify, request
-
 from flask_login import current_user, login_required
-from sqlalchemy import select
-
 from flowauth.jwt import generate_token
+from sqlalchemy import select
 
 from .invalid_usage import InvalidUsage, Unauthorized
 from .models import *

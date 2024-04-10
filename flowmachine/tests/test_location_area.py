@@ -9,7 +9,6 @@ import pytest
 
 from flowmachine.features import LocationArea
 
-
 n_sites = 30
 site_ids = ["o9yyxY", "B8OaG5", "DbWg4K", "0xqNDj"]
 

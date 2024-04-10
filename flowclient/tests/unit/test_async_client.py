@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from unittest.mock import Mock
 
-from asynctest import Mock as AMock, CoroutineMock
-
 import pytest
+from asynctest import CoroutineMock
+from asynctest import Mock as AMock
 
 from flowclient.async_client import (
-    query_is_ready,
-    get_geography,
-    get_status,
-    get_json_dataframe,
-    get_geojson_result_by_query_id,
-    run_query,
     get_available_dates,
-    get_result_location_from_id_when_ready,
-    get_result,
+    get_geography,
     get_geojson_result,
+    get_geojson_result_by_query_id,
+    get_json_dataframe,
+    get_result,
+    get_result_location_from_id_when_ready,
+    get_status,
+    query_is_ready,
+    run_query,
 )
 from flowclient.errors import FlowclientConnectionError
 

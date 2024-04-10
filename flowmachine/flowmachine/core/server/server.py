@@ -3,32 +3,30 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
-from concurrent.futures import Executor
-from json import JSONDecodeError
-import traceback
-
-import rapidjson
-
-
 import signal
-import structlog
-import zmq
+import traceback
+from concurrent.futures import Executor
 from functools import partial
+from json import JSONDecodeError
 from typing import NoReturn
 
+import rapidjson
+import structlog
+import zmq
 from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 import flowmachine
-from flowmachine.core import Query, Connection
+from flowmachine.core import Connection, Query
 from flowmachine.core.cache import watch_and_shrink_cache
-from flowmachine.core.context import get_db, get_executor, action_request_context
-from flowmachine.utils import convert_dict_keys_to_strings
-from .exceptions import FlowmachineServerError
-from .zmq_helpers import ZMQReply
+from flowmachine.core.context import action_request_context, get_db, get_executor
 from flowmachine.core.server.action_request_schema import ActionRequest
+from flowmachine.utils import convert_dict_keys_to_strings
+
 from .action_handlers import perform_action
+from .exceptions import FlowmachineServerError
 from .server_config import get_server_config
+from .zmq_helpers import ZMQReply
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")

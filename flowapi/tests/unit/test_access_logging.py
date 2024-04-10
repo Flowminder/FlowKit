@@ -7,9 +7,9 @@ import pytest
 from quart import request
 
 from flowapi.jwt_auth_callbacks import (
-    invalid_token_callback,
-    expired_token_callback,
     claims_verification_failed_callback,
+    expired_token_callback,
+    invalid_token_callback,
     revoked_token_callback,
 )
 

@@ -4,11 +4,11 @@
 
 # -*- coding: utf-8 -*-
 
-from flowmachine.features.subscriber.topup_balance import *
+import pytest
+
 from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber.daily_location import locate_subscribers
-
-import pytest
+from flowmachine.features.subscriber.topup_balance import *
 
 
 @pytest.mark.parametrize(

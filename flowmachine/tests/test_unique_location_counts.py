@@ -4,9 +4,9 @@
 
 import pytest
 
-from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import UniqueLocationCounts, SubscriberLocations
+from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.features import SubscriberLocations, UniqueLocationCounts
 
 
 def test_returns_errors():

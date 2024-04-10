@@ -4,10 +4,11 @@
 
 from concurrent.futures.thread import ThreadPoolExecutor
 from unittest.mock import Mock
-from asynctest import Mock as AMock
 
 import pytest
 import zmq
+from asynctest import Mock as AMock
+
 from flowmachine.core.context import context
 from flowmachine.core.server.server_config import FlowmachineServerConfig
 

@@ -14,9 +14,9 @@ the original query object otherwise.
 """
 from typing import List, Union
 
-from .query import Query
-from .spatial_unit import SpatialUnitMixin, AnySpatialUnit, GeomSpatialUnit
 from .errors import InvalidSpatialUnitError
+from .query import Query
+from .spatial_unit import AnySpatialUnit, GeomSpatialUnit, SpatialUnitMixin
 
 
 class JoinToLocation(Query):

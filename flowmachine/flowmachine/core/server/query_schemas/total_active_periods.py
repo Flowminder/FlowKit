@@ -6,14 +6,11 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TotalActivePeriodsSubscriber
+
 from .base_query_with_sampling import BaseExposedQueryWithSampling
 from .base_schema import BaseSchema
-from .field_mixins import (
-    EventTypesField,
-    SubscriberSubsetField,
-    HoursField,
-)
 from .custom_fields import ISODateTime
+from .field_mixins import EventTypesField, HoursField, SubscriberSubsetField
 
 __all__ = ["TotalActivePeriodsSchema", "TotalActivePeriodsExposed"]
 

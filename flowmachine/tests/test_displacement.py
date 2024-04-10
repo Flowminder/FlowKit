@@ -2,12 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from unittest.mock import Mock
+
 import pytest
-from flowmachine.features import Displacement, daily_location
 from numpy import isnan
 
 from flowmachine.core import make_spatial_unit
-from unittest.mock import Mock
+from flowmachine.features import Displacement, daily_location
 
 
 @pytest.mark.parametrize(

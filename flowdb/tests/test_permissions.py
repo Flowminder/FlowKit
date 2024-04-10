@@ -9,10 +9,10 @@ container. The tests herein check that the `flowdb` Docker container contains
 the same permissions as stipulated by environment variables.
 """
 import os
-import pytest
-
-from pwd import getpwuid
 from grp import getgrgid
+from pwd import getpwuid
+
+import pytest
 
 
 @pytest.fixture(scope="module")

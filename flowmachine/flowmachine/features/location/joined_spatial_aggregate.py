@@ -7,7 +7,7 @@ from typing import List, Union
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.utils import parse_datestring, Statistic
+from flowmachine.utils import Statistic, parse_datestring
 
 
 class JoinedSpatialAggregate(GeoDataMixin, Query):

@@ -5,20 +5,20 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
+from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
+
+from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
-from .aggregation_unit import AggregationUnitMixin
-from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
-from flowmachine.features.subscriber.visited_most_days import VisitedMostDays
-
 
 __all__ = [
     "VisitedMostDaysSchema",

@@ -7,8 +7,8 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.core.server.query_schemas.base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
 from flowmachine.features.subscriber.majority_location import majority_location

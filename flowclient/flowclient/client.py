@@ -4,11 +4,11 @@
 import datetime
 import logging
 import re
+import time
+from typing import Dict, List, Optional, Tuple, Union
 
 import httpx
 import pandas as pd
-import time
-from typing import Tuple, Union, List, Optional, Dict
 from tqdm.auto import tqdm
 
 from flowclient.connection import Connection

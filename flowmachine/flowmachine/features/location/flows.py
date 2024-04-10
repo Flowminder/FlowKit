@@ -12,16 +12,14 @@ aggregated to a spatial unit.
 
 """
 from enum import Enum
-
 from typing import List
 
-from flowmachine.core.query import Query
-from flowmachine.core.mixins import GeoDataMixin, GraphMixin
-from flowmachine.core.errors import InvalidSpatialUnitError
-
-from flowmachine.core.join import Join
-
 import structlog
+
+from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.core.join import Join
+from flowmachine.core.mixins import GeoDataMixin, GraphMixin
+from flowmachine.core.query import Query
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

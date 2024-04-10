@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features.location.unmoving_at_reference_location_counts import (
-    UnmovingAtReferenceLocationCounts,
-)
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
+)
+from flowmachine.features.location.unmoving_at_reference_location_counts import (
+    UnmovingAtReferenceLocationCounts,
 )
 
 

@@ -2,12 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validates_schema, ValidationError
+from marshmallow import ValidationError, fields, validates_schema
 from marshmallow.validate import OneOf
 
-
-from flowmachine.features.location.labelled_flows import LabelledFlows
-from flowmachine.features.location.redacted_labelled_flows import RedactedLabelledFlows
 from flowmachine.core.join import Join
 from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
@@ -17,6 +14,8 @@ from flowmachine.core.server.query_schemas.coalesced_location import (
 from flowmachine.core.server.query_schemas.mobility_classification import (
     MobilityClassificationSchema,
 )
+from flowmachine.features.location.labelled_flows import LabelledFlows
+from flowmachine.features.location.redacted_labelled_flows import RedactedLabelledFlows
 
 __all__ = ["LabelledFlowsSchema", "LabelledFlowsExposed"]
 

@@ -6,11 +6,12 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TopUpAmount
-from .custom_fields import Statistic
+
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
+from .custom_fields import Statistic
 from .field_mixins import HoursField, StartAndEndField, SubscriberSubsetField
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]

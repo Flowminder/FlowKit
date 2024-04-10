@@ -5,12 +5,6 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
-    RedactedLabelledSpatialAggregate,
-)
-from flowmachine.features.location.labelled_spatial_aggregate import (
-    LabelledSpatialAggregate,
-)
 from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 from flowmachine.core.server.query_schemas.coalesced_location import (
@@ -18,6 +12,12 @@ from flowmachine.core.server.query_schemas.coalesced_location import (
 )
 from flowmachine.core.server.query_schemas.mobility_classification import (
     MobilityClassificationSchema,
+)
+from flowmachine.features.location.labelled_spatial_aggregate import (
+    LabelledSpatialAggregate,
+)
+from flowmachine.features.location.redacted_labelled_spatial_aggregate import (
+    RedactedLabelledSpatialAggregate,
 )
 
 __all__ = [

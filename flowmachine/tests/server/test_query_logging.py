@@ -3,15 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
-
-import pytest
 import sys
 from logging import getLogger
 
+import pytest
+
+from flowmachine.core import Query
 from flowmachine.core.context import get_redis
 from flowmachine.core.logging import set_log_level
 from flowmachine.core.server.server import get_reply_for_message
-from flowmachine.core import Query
 
 
 @pytest.mark.asyncio

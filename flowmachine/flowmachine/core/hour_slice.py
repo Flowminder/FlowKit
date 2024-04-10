@@ -4,13 +4,14 @@
 
 
 import datetime as dt
-from dateutil.parser import parse
-from operator import lt as less_than, ge as greater_or_equal
+from operator import ge as greater_or_equal
+from operator import lt as less_than
 from typing import List, Union
 
-from sqlalchemy.sql import func, and_, or_, true
-from sqlalchemy.sql.elements import ColumnElement
+from dateutil.parser import parse
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql import and_, func, or_, true
+from sqlalchemy.sql.elements import ColumnElement
 
 __all__ = ["HourInterval", "HourSlice"]
 

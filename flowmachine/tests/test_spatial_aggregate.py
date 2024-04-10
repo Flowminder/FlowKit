@@ -5,8 +5,8 @@
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     ModalLocation,
-    daily_location,
     SubscriberHandsetCharacteristic,
+    daily_location,
 )
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,

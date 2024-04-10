@@ -9,6 +9,7 @@ from flowmachine.features.location.redacted_spatial_aggregate import (
     RedactedSpatialAggregate,
 )
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+
 from .aggregation_unit import AggregationUnitKind
 from .base_exposed_query import BaseExposedQuery
 from .base_schema import BaseSchema

@@ -8,7 +8,6 @@ Tests for the PopulationWeightedOpportunities() class.
 import pandas as pd
 import pytest
 
-
 from flowmachine.features.location.pwo import PopulationWeightedOpportunities
 
 

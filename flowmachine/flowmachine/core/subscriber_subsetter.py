@@ -2,13 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import numpy as np
-import pandas as pd
+from abc import abstractmethod
 from hashlib import md5
 from typing import List
 
-from abc import abstractmethod
-from sqlalchemy.sql import ClauseElement, select, text, column
+import numpy as np
+import pandas as pd
+from sqlalchemy.sql import ClauseElement, column, select, text
+
 from .query import Query
 
 __all__ = [

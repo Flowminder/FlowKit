@@ -6,13 +6,13 @@
 """
 Per subscriber time series of distances from some reference location.
 """
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Tuple, Union
 
 from flowmachine.features.spatial import DistanceMatrix
-from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
-from flowmachine.utils import standardise_date, Statistic
+from flowmachine.utils import Statistic, standardise_date
 
+from ..utilities.subscriber_locations import BaseLocation, SubscriberLocations
+from .metaclasses import SubscriberFeature
 
 valid_time_buckets = [
     "second",

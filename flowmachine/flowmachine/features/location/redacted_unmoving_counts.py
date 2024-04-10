@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features.location.unmoving_counts import UnmovingCounts
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
+from flowmachine.features.location.unmoving_counts import UnmovingCounts
 
 
 class RedactedUnmovingCounts(RedactedLocationMetric, GeoDataMixin, Query):

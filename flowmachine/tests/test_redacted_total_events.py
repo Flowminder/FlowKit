@@ -2,11 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import (
-    TotalLocationEvents,
-    UniqueSubscriberCounts,
-)
-
+from flowmachine.features import TotalLocationEvents, UniqueSubscriberCounts
 from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
 from flowmachine.features.location.redacted_unique_subscriber_counts import (
     RedactedUniqueSubscriberCounts,

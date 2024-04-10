@@ -1,8 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from quart_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, stream_with_context
+from quart_jwt_extended import current_user, jwt_required
+
 from .stream_results import stream_result_as_json
 
 blueprint = Blueprint("geography", __name__)

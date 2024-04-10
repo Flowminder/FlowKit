@@ -7,14 +7,14 @@ Classes that map cell (or tower or site) IDs to a spatial unit.
 
 The helper function 'make_spatial_unit' can be used to create spatial unit objects.
 """
-from abc import abstractmethod, ABCMeta
-from typing import Union, List, Iterable, Optional
+from abc import ABCMeta, abstractmethod
+from typing import Iterable, List, Optional, Union
 
-from flowmachine.utils import get_name_and_alias
-from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core import Query, Table
 from flowmachine.core.context import get_db
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core.grid import Grid
+from flowmachine.utils import get_name_and_alias
 
 # TODO: Currently most spatial units require a FlowDB connection at init time.
 # It would be useful to remove this requirement wherever possible, and instead

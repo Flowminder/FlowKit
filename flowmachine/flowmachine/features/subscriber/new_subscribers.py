@@ -13,8 +13,8 @@ comparison time period.
 """
 from typing import List
 
-from ..utilities.sets import UniqueSubscribers
 from ...core.query import Query
+from ..utilities.sets import UniqueSubscribers
 
 
 class NewSubscribers(Query):

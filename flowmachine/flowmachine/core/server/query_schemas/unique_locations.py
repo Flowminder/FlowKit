@@ -7,15 +7,16 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberLocations
 from flowmachine.features.subscriber.unique_locations import UniqueLocations
+
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
 

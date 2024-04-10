@@ -4,7 +4,6 @@
 import pytest
 
 from flowmachine.features import SubscriberLocations
-
 from flowmachine.features.location.consecutive_trips_od_matrix import (
     ConsecutiveTripsODMatrix,
 )

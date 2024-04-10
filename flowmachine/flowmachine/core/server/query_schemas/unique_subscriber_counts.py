@@ -9,19 +9,19 @@ from flowmachine.features import UniqueSubscriberCounts
 from flowmachine.features.location.redacted_unique_subscriber_counts import (
     RedactedUniqueSubscriberCounts,
 )
-from .base_exposed_query import BaseExposedQuery
+
 from .aggregation_unit import AggregationUnitMixin
+from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
+from .base_schema import BaseSchema
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
-
-from .base_schema import BaseSchema
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):

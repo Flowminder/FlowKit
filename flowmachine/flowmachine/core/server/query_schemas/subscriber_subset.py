@@ -5,15 +5,14 @@
 # This file contains a custom definition for the subscriber_subset field for use
 # by the flowmachine query schemas.
 import typing
-
 from typing import Union
 
 from marshmallow import ValidationError, fields
-from marshmallow.validate import Validator
 from marshmallow.utils import missing
+from marshmallow.validate import Validator
 
 from flowmachine.core.cache import cache_table_exists, get_query_object_by_id
-from flowmachine.core.context import get_redis, get_db
+from flowmachine.core.context import get_db, get_redis
 from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
 from flowmachine.core.table import Table
 

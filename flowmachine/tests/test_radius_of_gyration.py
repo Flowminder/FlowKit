@@ -1,13 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import pandas as pd
 import pytest
 
 from flowmachine.core import make_spatial_unit
-from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.features.subscriber import *
-
-import pandas as pd
+from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
 def test_has_right_columns():

@@ -2,10 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
+from marshmallow import Schema, ValidationError, fields, post_load, validates_schema
 from marshmallow.validate import OneOf
 
 from flowmachine.core.server.query_schemas.custom_fields import Bounds
+from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
+from flowmachine.core.server.query_schemas.event_count import EventCountSchema
+from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
+from flowmachine.core.server.query_schemas.pareto_interactions import (
+    ParetoInteractionsSchema,
+)
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
 )
@@ -13,26 +19,19 @@ from flowmachine.core.server.query_schemas.subscriber_degree import (
     SubscriberDegreeSchema,
 )
 from flowmachine.core.server.query_schemas.topup_amount import TopUpAmountSchema
-from flowmachine.core.server.query_schemas.event_count import EventCountSchema
-from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
+from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
-from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
-from flowmachine.core.server.query_schemas.pareto_interactions import (
-    ParetoInteractionsSchema,
-)
-from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
-
 from flowmachine.features import HistogramAggregation
-from .base_exposed_query import BaseExposedQuery
 
+from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["HistogramAggregateSchema", "HistogramAggregateExposed"]
 
 from .base_schema import BaseSchema
-from .total_active_periods import TotalActivePeriodsSchema
 from .one_of_query import OneOfQuerySchema
+from .total_active_periods import TotalActivePeriodsSchema
 
 
 class HistogrammableMetrics(OneOfQuerySchema):

@@ -11,7 +11,6 @@
 
 from enum import Enum
 
-
 __all__ = ["ZMQReplyStatus", "ZMQReplyMessage", "ZMQReplyPayload", "ZMQReply"]
 
 

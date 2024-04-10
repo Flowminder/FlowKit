@@ -1,14 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import warnings
 from unittest.mock import Mock
 
 import jwt
 import pytest
-import warnings
 
-from flowclient.errors import FlowclientConnectionError
 from flowclient import Connection
+from flowclient.errors import FlowclientConnectionError
 
 pytestmark = pytest.mark.usefixtures("session_mock")
 

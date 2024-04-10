@@ -2,12 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowauth.cli import (
-    add_admin_command,
-    demo_data,
-    init_db_command,
-)
-from flowauth.models import User, db, Role, Scope, Server
+from flowauth.cli import add_admin_command, demo_data, init_db_command
+from flowauth.models import Role, Scope, Server, User, db
 
 
 def test_add_admin(app):

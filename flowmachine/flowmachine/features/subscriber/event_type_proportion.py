@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import Union, Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from flowmachine.features.subscriber.event_count import EventCount
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature

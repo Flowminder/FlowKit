@@ -6,16 +6,17 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import TotalNetworkObjects
+
+from .aggregation_unit import AggregationUnitMixin
 from .base_exposed_query import BaseExposedQuery
-from .field_mixins import (
-    HoursField,
-    StartAndEndField,
-    EventTypesField,
-    SubscriberSubsetField,
-)
 from .base_schema import BaseSchema
 from .custom_fields import TotalBy
-from .aggregation_unit import AggregationUnitMixin
+from .field_mixins import (
+    EventTypesField,
+    HoursField,
+    StartAndEndField,
+    SubscriberSubsetField,
+)
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 

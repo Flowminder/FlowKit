@@ -5,17 +5,17 @@
 # This file is executed before running any Jupyter notebook during the docs build.
 # It is set as the 'preamble' option to the 'mknotebooks' plugin in mkdocs.yml
 
-import pprint
-import warnings
 import logging
 import os
+import pprint
+import warnings
+from datetime import timedelta
+
 from flowkit_jwt_generator.jwt import (
     generate_token,
     get_all_claims_from_flowapi,
     load_private_key,
 )
-from datetime import timedelta
-
 
 # Ignore warnings in notebook output
 

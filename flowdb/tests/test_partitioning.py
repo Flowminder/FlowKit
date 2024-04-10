@@ -7,8 +7,9 @@
 Tests for the database partitioning system.
 """
 
-import pytest
 import datetime as dt
+
+import pytest
 
 
 @pytest.fixture

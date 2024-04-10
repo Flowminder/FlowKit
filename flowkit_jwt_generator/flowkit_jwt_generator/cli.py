@@ -8,8 +8,8 @@ import click
 
 from flowkit_jwt_generator import (
     generate_token,
-    load_private_key,
     get_all_claims_from_flowapi,
+    load_private_key,
 )
 from flowkit_jwt_generator.jwt import get_audience_from_flowapi
 

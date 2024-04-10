@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import warnings
-
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
@@ -47,9 +46,9 @@ def get_qa_checks(
     -------
     list of QACheckOperator
     """
-    from flowetl.operators.qa_check_operator import QACheckOperator
-    from airflow.models.dag import DagContext
     from airflow import settings
+    from airflow.models.dag import DagContext
+    from flowetl.operators.qa_check_operator import QACheckOperator
 
     if dag is None:
         dag = DagContext.get_current_dag()

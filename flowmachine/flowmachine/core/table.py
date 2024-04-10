@@ -7,16 +7,17 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-from typing import List, Iterable, Optional
+from typing import Iterable, List, Optional
+
+import structlog
 
 from flowmachine.core.query_state import QueryStateMachine
+
+from .cache import write_cache_metadata
 from .context import get_db, get_redis
 from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
-from .cache import write_cache_metadata
-
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

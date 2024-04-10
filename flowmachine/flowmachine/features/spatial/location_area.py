@@ -10,12 +10,12 @@ need to be point collections with geographic properties.
 
 
 """
-import structlog
 from typing import List
 
-from ...core.query import Query
-from ...core.mixins import GeoDataMixin
+import structlog
 
+from ...core.mixins import GeoDataMixin
+from ...core.query import Query
 from .versioned_infrastructure import VersionedInfrastructure
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)

@@ -9,8 +9,8 @@ Given a list of queries and a list of columns, returns a table of each unique co
 
 from typing import List, Union
 
-from flowmachine.core.query import Query
 from flowmachine.core.errors import MissingColumnsError
+from flowmachine.core.query import Query
 
 
 class UniqueValuesFromQueries(Query):

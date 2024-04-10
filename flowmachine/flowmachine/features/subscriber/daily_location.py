@@ -14,11 +14,12 @@ representing where an subscriber is on a given day.
 import datetime
 from typing import Optional, Tuple
 
+from flowmachine.utils import parse_datestring, standardise_date
+
 from ...core import make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
-from flowmachine.utils import parse_datestring, standardise_date
 
 
 def locate_subscribers(

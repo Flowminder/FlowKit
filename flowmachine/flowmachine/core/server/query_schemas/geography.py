@@ -6,8 +6,9 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import Geography
-from .base_exposed_query import BaseExposedQuery
+
 from .aggregation_unit import AggregationUnitMixin
+from .base_exposed_query import BaseExposedQuery
 
 __all__ = ["GeographySchema", "GeographyExposed"]
 

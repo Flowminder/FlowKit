@@ -5,13 +5,11 @@ import datetime
 from os import environ
 
 import jwt
-
 import pytest
 from flowauth.jwt import decompress_claims
-from pytest import approx
+from flowauth.models import User, db
 from freezegun import freeze_time
-
-from flowauth.models import db, User
+from pytest import approx
 
 
 @freeze_time(datetime.datetime(year=2020, month=12, day=31))

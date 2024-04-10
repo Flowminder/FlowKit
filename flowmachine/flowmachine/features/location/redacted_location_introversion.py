@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
+
 # -*- coding: utf-8 -*-
 from flowmachine.core.query import Query
-from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
 from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,

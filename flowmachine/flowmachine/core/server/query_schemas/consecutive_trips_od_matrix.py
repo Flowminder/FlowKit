@@ -5,22 +5,23 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
+from flowmachine.features.location.consecutive_trips_od_matrix import (
+    ConsecutiveTripsODMatrix,
+)
 from flowmachine.features.location.redacted_consecutive_trips_od_matrix import (
     RedactedConsecutiveTripsODMatrix,
 )
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
-from flowmachine.features.location.consecutive_trips_od_matrix import (
-    ConsecutiveTripsODMatrix,
-)
+
 from . import BaseExposedQuery
+from .aggregation_unit import AggregationUnitMixin
+from .base_schema import BaseSchema
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
-from .base_schema import BaseSchema
-from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["ConsecutiveTripsODMatrixSchema", "ConsecutiveTripsODMatrixExposed"]
 

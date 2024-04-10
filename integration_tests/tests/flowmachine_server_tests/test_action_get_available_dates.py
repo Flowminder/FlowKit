@@ -6,7 +6,6 @@ import pytest
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 
-
 # TODO: add test for code path that raises QueryProxyError with the 'get_params' action
 
 

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 
 
 class Direction(str, Enum):

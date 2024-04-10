@@ -4,10 +4,10 @@
 
 import pytest
 
-from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.core.errors import InvalidSpatialUnitError
-from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features.subscriber.coalesced_location import CoalescedLocation
+from flowmachine.features.subscriber.most_frequent_location import MostFrequentLocation
 
 
 def test_coalesced_location_column_names(

@@ -1,15 +1,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from flask import Blueprint, jsonify, request, current_app
 import datetime
 
+from flask import Blueprint, current_app, jsonify, request
 from flask_login import current_user, login_required
 from flask_principal import Permission, RoleNeed
 from sqlalchemy.exc import IntegrityError
 
-from .models import Role, Scope, Server, User, db
 from .invalid_usage import InvalidUsage
+from .models import Role, Scope, Server, User, db
 
 blueprint = Blueprint(__name__.split(".").pop(), __name__)
 

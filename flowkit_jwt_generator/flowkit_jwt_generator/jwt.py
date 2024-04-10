@@ -2,11 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import base64
-import gzip
-import io
-
 import binascii
 import datetime
+import gzip
+import io
 import uuid
 
 try:
@@ -20,14 +19,13 @@ except ImportError:
         import json
         from json import JSONEncoder
 
+from functools import lru_cache
 from typing import Iterable, List, Optional, Tuple, Union
 
+import jwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from functools import lru_cache
-
-import jwt
 
 
 def compress_claims(claims):

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
-from flowmachine.features import CircleGeometries, Circle
+from flowmachine.features import Circle, CircleGeometries
 
 lons = [85.3240, 83.9956]
 lats = [27.7172, 28.2380]

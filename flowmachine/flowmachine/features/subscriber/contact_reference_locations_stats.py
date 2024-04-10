@@ -9,8 +9,8 @@ location and its contacts' modal location.
 """
 from typing import Union
 
-from .metaclasses import SubscriberFeature
 from ...utils import Statistic
+from .metaclasses import SubscriberFeature
 
 
 class ContactReferenceLocationStats(SubscriberFeature):

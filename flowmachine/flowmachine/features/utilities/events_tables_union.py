@@ -2,15 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import structlog
 import warnings
 from typing import List, Optional, Tuple
+
+import structlog
+
+from flowmachine.utils import standardise_date
 
 from ...core import Query
 from ...core.context import get_db
 from ...core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
-from flowmachine.utils import standardise_date
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

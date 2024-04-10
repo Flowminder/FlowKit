@@ -7,7 +7,7 @@
 from typing import List, Union
 
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import ModalLocation, LastLocation, MostFrequentLocation
+from flowmachine.features import LastLocation, ModalLocation, MostFrequentLocation
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.subscriber.unique_locations import UniqueLocations
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations

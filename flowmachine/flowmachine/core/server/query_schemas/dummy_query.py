@@ -7,6 +7,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.core.dummy_query import DummyQuery
+
 from .aggregation_unit import AggregationUnitMixin
 from .base_exposed_query import BaseExposedQuery
 

@@ -6,18 +6,17 @@
 """
 Commonly used testing fixtures for flowmachine.
 """
-import json
-import os
 import concurrent.futures.thread
+import json
+import logging
+import os
 from functools import partial
 from json import JSONDecodeError
 from pathlib import Path
+from unittest.mock import MagicMock, Mock
 
 import pandas as pd
 import pytest
-import logging
-from unittest.mock import Mock, MagicMock
-
 from _pytest.capture import CaptureResult
 from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
@@ -28,11 +27,11 @@ import flowmachine
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.cache import reset_cache
 from flowmachine.core.context import (
-    redis_connection,
-    get_db,
-    get_redis,
-    get_executor,
     bind_context,
+    get_db,
+    get_executor,
+    get_redis,
+    redis_connection,
 )
 from flowmachine.core.init import connections
 from flowmachine.features import EventTableSubset

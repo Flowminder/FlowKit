@@ -4,15 +4,15 @@
 
 # -*- coding: utf-8 -*-
 import pytest
+from pandas.testing import assert_frame_equal
 
+from flowmachine.core.errors import MissingColumnsError
+from flowmachine.features.subscriber.last_location import LastLocation
+from flowmachine.features.utilities.events_tables_union import EventTableSubset
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.utilities.unique_values_from_queries import (
     UniqueValuesFromQueries,
 )
-from flowmachine.features.utilities.events_tables_union import EventTableSubset
-from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
-from flowmachine.features.subscriber.last_location import LastLocation
-from flowmachine.core.errors import MissingColumnsError
-from pandas.testing import assert_frame_equal
 
 
 def test_unique_subscribers_from_queries(get_dataframe):

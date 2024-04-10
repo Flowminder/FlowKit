@@ -11,13 +11,13 @@ From a developer perspective, this is where one-time operations
 should live - for example configuring loggers.
 """
 import warnings
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+from typing import Optional, Tuple
 
 import redis
 import structlog
-from concurrent.futures import ThreadPoolExecutor
-from typing import Tuple, Optional
-
+from get_secret_or_env_var import environ, getenv
 from redis import StrictRedis
 
 import flowmachine
@@ -25,7 +25,6 @@ from flowmachine.core import Connection
 from flowmachine.core.context import bind_context, context, get_db
 from flowmachine.core.errors import NotConnectedError
 from flowmachine.core.logging import set_log_level
-from get_secret_or_env_var import environ, getenv
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

@@ -7,9 +7,9 @@ Context variables for Flowmachine to talk to FlowDB and Redis, and a common thre
 managing queries.
 """
 
-from contextvars import ContextVar, copy_context
 from concurrent.futures import Executor, Future
 from contextlib import contextmanager
+from contextvars import ContextVar, copy_context
 from typing import Callable, NamedTuple
 
 from redis import StrictRedis

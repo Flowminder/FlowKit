@@ -5,9 +5,9 @@ import base64
 from datetime import timedelta
 
 import jwt
-
 import pytest
-from flowkit_jwt_generator.jwt import generate_token, squashed_scopes, decompress_claims
+
+from flowkit_jwt_generator.jwt import decompress_claims, generate_token, squashed_scopes
 
 
 @pytest.mark.parametrize(

@@ -4,10 +4,9 @@
 
 from json import loads
 
-from tests.unit.zmq_helpers import ZMQReply
-
 import pytest
 from asynctest import CoroutineMock
+from tests.unit.zmq_helpers import ZMQReply
 
 
 @pytest.mark.parametrize(

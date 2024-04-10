@@ -1,8 +1,10 @@
 import json
-import flowapi
-import yaml
-from flowmachine.utils import sort_recursively
+
 import requests
+import yaml
+
+import flowapi
+from flowmachine.utils import sort_recursively
 
 
 def test_generated_openapi_json_spec(flowapi_url, diff_reporter):

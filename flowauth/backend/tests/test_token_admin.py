@@ -1,11 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from cryptography.hazmat.primitives import serialization
 from os import environ
-from flowkit_jwt_generator import load_public_key
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+
+from flowkit_jwt_generator import load_public_key
 
 
 @pytest.mark.usefixtures("test_data")

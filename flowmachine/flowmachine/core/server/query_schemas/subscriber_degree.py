@@ -6,15 +6,16 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberDegree
+
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from .custom_fields import Direction
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
 

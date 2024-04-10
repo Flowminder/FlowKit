@@ -2,10 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from quart_jwt_extended import jwt_required, current_user
-from quart import Blueprint, current_app, request, url_for, stream_with_context
-from .stream_results import stream_result_as_json, stream_result_as_csv
 import datetime as dt
+
+from quart import Blueprint, current_app, request, stream_with_context, url_for
+from quart_jwt_extended import current_user, jwt_required
+
+from .stream_results import stream_result_as_csv, stream_result_as_json
 
 blueprint = Blueprint("query", __name__)
 

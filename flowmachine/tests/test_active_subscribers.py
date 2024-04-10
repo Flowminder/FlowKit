@@ -3,12 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import pytest
-from flowmachine.features.subscriber.active_subscribers import ActiveSubscribers
 from datetime import date, datetime
-from flowmachine.core.context import get_db
+
+import pytest
 from pandas import DataFrame as df
 from pandas.testing import assert_frame_equal
+
+from flowmachine.core.context import get_db
+from flowmachine.features.subscriber.active_subscribers import ActiveSubscribers
 
 
 def test_active_subscribers_one_day(get_dataframe):

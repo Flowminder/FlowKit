@@ -5,11 +5,11 @@ from datetime import timedelta
 from sys import base_prefix
 from time import strptime
 from urllib import response
-import pytest
-from freezegun import freeze_time
 
-from flowauth.models import db
+import pytest
 from flowauth.invalid_usage import InvalidUsage
+from flowauth.models import db
+from freezegun import freeze_time
 
 
 @freeze_time("2020-12-31")

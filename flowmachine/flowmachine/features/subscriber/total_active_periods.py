@@ -20,13 +20,15 @@ References
 ----------
 [1] Veronique Lefebvre, https://docs.google.com/document/d/1BVOAM8bVacen0U0wXbxRmEhxdRbW8J_lyaOcUtDGhx8/edit
 """
-from typing import List, Tuple, Union as UnionType, Optional
+from typing import List, Optional, Tuple
+from typing import Union as UnionType
 
 from flowmachine.core import Query
-from .metaclasses import SubscriberFeature
-from flowmachine.utils import time_period_add, standardise_date
-from ..utilities.sets import UniqueSubscribers
+from flowmachine.utils import standardise_date, time_period_add
+
 from ...core.union import Union
+from ..utilities.sets import UniqueSubscribers
+from .metaclasses import SubscriberFeature
 
 
 class TotalActivePeriodsSubscriber(SubscriberFeature):

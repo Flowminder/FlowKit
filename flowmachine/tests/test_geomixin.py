@@ -5,19 +5,16 @@
 """
 Tests for the GeoDataMixin mixin.
 """
-import os
 import json
+import os
 from typing import List
 
 import geojson
-
-
 import pytest
 
-from flowmachine.core import Query
+from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.context import get_db
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location
 from flowmachine.utils import proj4string
 

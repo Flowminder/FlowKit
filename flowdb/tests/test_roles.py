@@ -14,8 +14,8 @@ The database has three different roles:
                   reference tables.
 """
 
-import pytest
 import psycopg2 as pg
+import pytest
 
 
 @pytest.fixture

@@ -12,36 +12,35 @@ from flowmachine.core.server.query_schemas.joined_spatial_aggregate import (
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     SpatialAggregateSchema,
 )
-from .histogram_aggregate import HistogramAggregateSchema
+
 from .active_at_reference_location_counts import ActiveAtReferenceLocationCountsSchema
+from .aggregate_network_objects import AggregateNetworkObjectsSchema
 from .consecutive_trips_od_matrix import ConsecutiveTripsODMatrixSchema
+from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 from .dummy_query import DummyQuerySchema
 from .flows import FlowsSchema
-from .outflows import OutflowsSchema
+from .geography import GeographySchema
+from .histogram_aggregate import HistogramAggregateSchema
 from .inflows import InflowsSchema
+from .labelled_flows import LabelledFlowsSchema
+from .labelled_spatial_aggregate import LabelledSpatialAggregateSchema
+from .location_event_counts import LocationEventCountsSchema
+from .location_introversion import LocationIntroversionSchema
 from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
-    MeaningfulLocationsBetweenLabelODMatrixSchema,
     MeaningfulLocationsBetweenDatesODMatrixSchema,
+    MeaningfulLocationsBetweenLabelODMatrixSchema,
 )
-
-from .aggregate_network_objects import AggregateNetworkObjectsSchema
-
-from .geography import GeographySchema
-from .location_event_counts import LocationEventCountsSchema
+from .one_of_query import OneOfQuerySchema
+from .outflows import OutflowsSchema
+from .total_network_objects import TotalNetworkObjectsSchema
 from .trips_od_matrix import TripsODMatrixSchema
 from .unique_subscriber_counts import UniqueSubscriberCountsSchema
-from .location_introversion import LocationIntroversionSchema
-from .total_network_objects import TotalNetworkObjectsSchema
-from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 from .unique_visitor_counts import UniqueVisitorCountsSchema
 from .unmoving_at_reference_location_counts import (
     UnmovingAtReferenceLocationCountsSchema,
 )
 from .unmoving_counts import UnmovingCountsSchema
-from .labelled_spatial_aggregate import LabelledSpatialAggregateSchema
-from .labelled_flows import LabelledFlowsSchema
-from .one_of_query import OneOfQuerySchema
 
 
 class FlowmachineQuerySchema(OneOfQuerySchema):

@@ -7,11 +7,11 @@ Tests for the DistanceCounterparts().
 """
 
 
+import pytest
+
+from flowmachine.features.spatial.distance_matrix import DistanceMatrix
 from flowmachine.features.subscriber import DistanceCounterparts
 from flowmachine.features.utilities import EventsTablesUnion
-from flowmachine.features.spatial.distance_matrix import DistanceMatrix
-
-import pytest
 
 
 @pytest.fixture()

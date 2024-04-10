@@ -4,7 +4,7 @@
 
 import datetime as dt
 
-from flowmachine.utils import standardise_date, parse_datestring
+from flowmachine.utils import parse_datestring, standardise_date
 
 
 class DateRange:

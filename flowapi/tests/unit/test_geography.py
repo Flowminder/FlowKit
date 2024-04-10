@@ -4,9 +4,8 @@
 
 from json import loads
 
-from tests.unit.zmq_helpers import ZMQReply
-
 import pytest
+from tests.unit.zmq_helpers import ZMQReply
 
 
 @pytest.mark.asyncio

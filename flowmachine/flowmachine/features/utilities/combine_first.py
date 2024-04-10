@@ -4,8 +4,8 @@
 
 from typing import Collection, List, Union
 
-from flowmachine.core.query import Query
 from flowmachine.core.errors import MissingColumnsError
+from flowmachine.core.query import Query
 
 
 class CombineFirst(Query):

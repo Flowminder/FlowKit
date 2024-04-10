@@ -4,11 +4,11 @@
 
 from typing import List, Union
 
+from flowmachine.core import Query
 from flowmachine.features.location.labelled_flows import LabelledFlows
 from flowmachine.features.location.labelled_spatial_aggregate import (
     LabelledSpatialAggregate,
 )
-from flowmachine.core import Query
 
 
 class RedactedLabelledAggregate(Query):

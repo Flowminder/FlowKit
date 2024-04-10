@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+from collections import namedtuple
 from json import JSONDecodeError
 
 import asyncpg
@@ -9,11 +10,10 @@ import pytest
 import pytest_asyncio
 import zmq
 from _pytest.capture import CaptureResult
+from asynctest import CoroutineMock, MagicMock, Mock
+from zmq.asyncio import Context
 
 from flowapi.main import create_app
-from asynctest import MagicMock, Mock, CoroutineMock
-from zmq.asyncio import Context
-from collections import namedtuple
 
 TestApp = namedtuple("TestApp", ["client", "db_pool", "tmpdir", "app", "log_capture"])
 CaptureResult = namedtuple("CaptureResult", ["debug", "access"])

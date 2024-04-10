@@ -7,16 +7,17 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import TotalLocationEvents
 from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
+
+from .aggregation_unit import AggregationUnitMixin
 from .base_exposed_query import BaseExposedQuery
+from .base_schema import BaseSchema
 from .custom_fields import Direction
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
-from .base_schema import BaseSchema
-from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
 

@@ -2,18 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from unittest.mock import Mock, PropertyMock, MagicMock, call
+from unittest.mock import MagicMock, Mock, PropertyMock, call
 
 import pytest
+
 import flowclient
 import flowclient.client
-from flowclient.client import (
-    get_result_by_query_id,
-    get_result,
-    query_is_ready,
-)
-from flowclient.errors import FlowclientConnectionError
 from flowclient import Connection
+from flowclient.client import get_result, get_result_by_query_id, query_is_ready
+from flowclient.errors import FlowclientConnectionError
 
 
 def test_get_result_by_params(monkeypatch, token):

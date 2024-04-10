@@ -8,8 +8,8 @@ Tests the check the queries subset method.
 import pandas as pd
 import pytest
 
-from flowmachine.features import daily_location, RadiusOfGyration
 from flowmachine.core import Table
+from flowmachine.features import RadiusOfGyration, daily_location
 
 
 def test_can_numsubset_with_low_and_high(get_dataframe):

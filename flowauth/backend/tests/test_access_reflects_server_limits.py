@@ -1,18 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 from hashlib import md5
 
-import datetime
-
 import pytest
-
-from flowauth.models import (
-    Server,
-    User,
-    db,
-    Role,
-)
+from flowauth.models import Role, Server, User, db
 
 
 def test_disallow_right_on_server_disallows_for_role(

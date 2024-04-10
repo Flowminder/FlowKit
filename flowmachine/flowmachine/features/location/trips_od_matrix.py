@@ -6,8 +6,8 @@
 
 from typing import List
 
-from flowmachine.features.location.flows import FlowLike
 from flowmachine.core.query import Query
+from flowmachine.features.location.flows import FlowLike
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 
 

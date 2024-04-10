@@ -6,11 +6,12 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.dfs import DFSTotalMetricAmount
+
+from .aggregation_unit import AggregationUnitKind
 from .base_exposed_query import BaseExposedQuery
-from .field_mixins import StartAndEndField
 from .base_schema import BaseSchema
 from .custom_fields import DFSMetric
-from .aggregation_unit import AggregationUnitKind
+from .field_mixins import StartAndEndField
 
 __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 

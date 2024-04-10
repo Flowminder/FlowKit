@@ -8,9 +8,10 @@ Class for calculating MDS volume statistics.
 """
 from typing import Optional, Tuple
 
+from flowmachine.utils import Statistic, standardise_date
+
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date, Statistic
 
 
 class MDSVolume(SubscriberFeature):

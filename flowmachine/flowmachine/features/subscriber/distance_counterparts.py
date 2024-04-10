@@ -6,13 +6,13 @@
 """
 Calculate metrics related with distance between caller and her/his counterparts.
 """
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.spatial.distance_matrix import DistanceMatrix
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date, Statistic
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.utils import Statistic, make_where, standardise_date
 
 
 class DistanceCounterparts(SubscriberFeature):

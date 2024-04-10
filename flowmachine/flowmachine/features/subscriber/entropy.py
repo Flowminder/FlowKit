@@ -9,15 +9,15 @@ period.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
-from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.subscriber.contact_balance import ContactBalance
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.utils import make_where, standardise_date
 
 

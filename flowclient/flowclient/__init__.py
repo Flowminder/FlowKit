@@ -11,75 +11,73 @@ __version__ = get_versions()["version"]
 del get_versions
 
 from flowclient.api_query import APIQuery
-from .connection import Connection
+from flowclient.async_api_query import ASyncAPIQuery
+from flowclient.async_client import connect_async
 from flowclient.client import connect
 
-from flowclient.async_api_query import ASyncAPIQuery
+from . import aggregates
+from .aggregates import (
+    active_at_reference_location_counts,
+    aggregate_network_objects,
+    consecutive_trips_od_matrix,
+    flows,
+    histogram_aggregate,
+    inflows,
+    joined_spatial_aggregate,
+    labelled_flows,
+    labelled_spatial_aggregate,
+    location_event_counts,
+    location_introversion,
+    meaningful_locations_aggregate,
+    meaningful_locations_between_dates_od_matrix,
+    meaningful_locations_between_label_od_matrix,
+    outflows,
+    spatial_aggregate,
+    total_network_objects,
+    trips_od_matrix,
+    unique_subscriber_counts,
+    unmoving_at_reference_location_counts,
+    unmoving_counts,
+)
 from .async_connection import ASyncConnection
-from flowclient.async_client import connect_async
-
-
 from .client import (
-    get_geography,
-    get_result,
-    get_result_by_query_id,
-    get_geojson_result,
-    get_status,
-    query_is_ready,
-    run_query,
     get_available_dates,
+    get_available_qa_checks,
+    get_available_qa_checks_df,
+    get_geography,
+    get_geojson_result,
     get_qa_check_outcome,
     get_qa_check_outcomes,
     get_qa_check_outcomes_df,
-    get_available_qa_checks,
-    get_available_qa_checks_df,
+    get_result,
+    get_result_by_query_id,
+    get_status,
+    query_is_ready,
+    run_query,
 )
+from .connection import Connection
 from .query_specs import (
+    coalesced_location_spec,
     daily_location_spec,
-    modal_location_spec,
-    modal_location_from_dates_spec,
-    radius_of_gyration_spec,
-    unique_location_counts_spec,
-    topup_balance_spec,
-    subscriber_degree_spec,
-    topup_amount_spec,
-    event_count_spec,
     displacement_spec,
-    pareto_interactions_spec,
-    nocturnal_events_spec,
+    event_count_spec,
     handset_spec,
-    random_sample_spec,
-    unique_locations_spec,
-    most_frequent_location_spec,
-    total_active_periods_spec,
     location_visits_spec,
     majority_location_spec,
-    coalesced_location_spec,
     mobility_classification_spec,
-)
-from . import aggregates
-from .aggregates import (
-    location_event_counts,
-    meaningful_locations_aggregate,
-    meaningful_locations_between_label_od_matrix,
-    meaningful_locations_between_dates_od_matrix,
-    flows,
-    inflows,
-    outflows,
-    unique_subscriber_counts,
-    location_introversion,
-    total_network_objects,
-    aggregate_network_objects,
-    spatial_aggregate,
-    joined_spatial_aggregate,
-    histogram_aggregate,
-    active_at_reference_location_counts,
-    unmoving_at_reference_location_counts,
-    unmoving_counts,
-    consecutive_trips_od_matrix,
-    trips_od_matrix,
-    labelled_spatial_aggregate,
-    labelled_flows,
+    modal_location_from_dates_spec,
+    modal_location_spec,
+    most_frequent_location_spec,
+    nocturnal_events_spec,
+    pareto_interactions_spec,
+    radius_of_gyration_spec,
+    random_sample_spec,
+    subscriber_degree_spec,
+    topup_amount_spec,
+    topup_balance_spec,
+    total_active_periods_spec,
+    unique_location_counts_spec,
+    unique_locations_spec,
 )
 
 __all__ = [

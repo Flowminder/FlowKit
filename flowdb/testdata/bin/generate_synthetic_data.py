@@ -16,20 +16,19 @@ Nepal found in ../synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geoj
 Makes use of the tohu module for generation of random data.
 """
 
+import argparse
+import datetime
+import json
 import os
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from contextlib import contextmanager
 from multiprocessing import cpu_count
 
 import pandas as pd
 import sqlalchemy
+import structlog
 from sqlalchemy.exc import ResourceClosedError
 from tohu import *
-import argparse
-import datetime
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-
-import structlog
-import json
 
 structlog.configure(
     processors=[

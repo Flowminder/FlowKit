@@ -2,12 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validates, ValidationError
-from marshmallow.validate import OneOf, Length
+from marshmallow import ValidationError, fields, validates
+from marshmallow.validate import Length, OneOf
 
 from flowmachine.core.server.query_schemas.base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
 from flowmachine.core.server.query_schemas.coalesced_location import (
     CoalescedLocationSchema,

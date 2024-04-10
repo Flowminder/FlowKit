@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.per_contact_event_stats import *
-from flowmachine.features import ContactBalance
-
 import pytest
+
+from flowmachine.features import ContactBalance
+from flowmachine.features.subscriber.per_contact_event_stats import *
 
 
 @pytest.mark.parametrize(

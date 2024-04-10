@@ -4,9 +4,9 @@
 
 # -*- coding: utf-8 -*-
 
-from flowmachine.features.subscriber.mds_volume import *
-
 import pytest
+
+from flowmachine.features.subscriber.mds_volume import *
 
 
 @pytest.mark.parametrize(

@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from functools import singledispatch
+from itertools import count
+from typing import List, Optional, Tuple, Union
 
 from ...core.query import Query
-from itertools import count
-from typing import List, Tuple, Optional, Union
 
 
 @singledispatch

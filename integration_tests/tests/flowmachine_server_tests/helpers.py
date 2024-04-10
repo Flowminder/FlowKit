@@ -1,7 +1,8 @@
 import itertools
-import zmq
 import textwrap
 import time
+
+import zmq
 from sqlalchemy import inspect
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply

@@ -8,44 +8,29 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-from functools import partial
-
-import rapidjson as json
 import pickle
 import weakref
+from abc import ABCMeta, abstractmethod
 from concurrent.futures import Future
-
-
-import structlog
+from functools import partial
+from hashlib import md5
 from typing import List, Union
 
 import pandas as pd
-
-from hashlib import md5
-
-from flowmachine.core.cache import touch_cache, get_obj_or_stub
-from flowmachine.core.context import (
-    get_db,
-    get_redis,
-    submit_to_executor,
-)
-from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
-from flowmachine.core.query_state import QueryStateMachine
-from abc import ABCMeta, abstractmethod
-
-from flowmachine.core.errors import (
-    NameTooLongError,
-    UnstorableQueryError,
-)
+import rapidjson as json
+import structlog
 
 import flowmachine
-from flowmachine.utils import _sleep, pretty_sql
+from flowmachine.core.cache import get_obj_or_stub, touch_cache, write_query_to_cache
+from flowmachine.core.context import get_db, get_redis, submit_to_executor
 from flowmachine.core.dependency_graph import (
     store_queries_in_order,
     unstored_dependencies_graph,
 )
-
-from flowmachine.core.cache import write_query_to_cache
+from flowmachine.core.errors import NameTooLongError, UnstorableQueryError
+from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.utils import _sleep, pretty_sql
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 

@@ -6,8 +6,9 @@
 # by the flowmachine query schemas.
 import datetime
 
-from marshmallow import fields, Schema, validates_schema, ValidationError, post_load
-from marshmallow.validate import Range, Length, OneOf
+from marshmallow import Schema, ValidationError, fields, post_load, validates_schema
+from marshmallow.validate import Length, OneOf, Range
+
 from flowmachine.utils import Statistic as ValidStats
 
 

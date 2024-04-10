@@ -8,12 +8,11 @@ days where an subscriber has made at least one call
 """
 
 
+import numpy as np
 import pytest
-
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import CallDays, SubscriberLocations
-import numpy as np
 
 
 @pytest.mark.usefixtures("skip_datecheck")

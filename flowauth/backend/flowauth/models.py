@@ -2,22 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from pathlib import Path
-
 import datetime
+import json
+from pathlib import Path
+from typing import Dict, List, Union
 
 import flask_migrate
-from sqlalchemy import UniqueConstraint
-from typing import Dict, List, Union
-import json
-
-from flask import current_app
-
 import pyotp
+from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flowauth.invalid_usage import Unauthorized
 from flowauth.util import get_fernet
 from passlib.hash import argon2
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 
 db = SQLAlchemy()

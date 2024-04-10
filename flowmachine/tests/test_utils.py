@@ -5,8 +5,8 @@
 """
 Tests for flowmachine small helper functions
 """
-import pytest
 import pglast
+import pytest
 
 from flowmachine.core.context import get_db
 from flowmachine.utils import *

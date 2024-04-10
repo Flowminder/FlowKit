@@ -5,31 +5,31 @@
 """
 Tests for flowmachine dependency graph functions
 """
-import pytest
 import re
 import textwrap
-import IPython
 from io import StringIO
 from unittest.mock import Mock
 
+import IPython
+import pytest
+
 from flowmachine.core import CustomQuery
 from flowmachine.core.context import get_db
+from flowmachine.core.dependency_graph import (
+    calculate_dependency_graph,
+    dependencies_eligible_for_store,
+    executing_dependencies,
+    plot_dependency_graph,
+    print_dependency_tree,
+    query_progress,
+    queued_dependencies,
+    store_queries_in_order,
+    unstored_dependencies_graph,
+)
 from flowmachine.core.dummy_query import DummyQuery
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
-from flowmachine.features import daily_location, EventTableSubset
-
-from flowmachine.core.dependency_graph import (
-    print_dependency_tree,
-    calculate_dependency_graph,
-    unstored_dependencies_graph,
-    plot_dependency_graph,
-    store_queries_in_order,
-    dependencies_eligible_for_store,
-    queued_dependencies,
-    executing_dependencies,
-    query_progress,
-)
+from flowmachine.features import EventTableSubset, daily_location
 
 
 def test_print_dependency_tree():

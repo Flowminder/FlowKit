@@ -6,13 +6,13 @@
 
 from typing import List, Union
 
-from flowmachine.features.subscriber.first_location import FirstLocation
-from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.subscriber import (
+    LastLocation,
     ModalLocation,
     MostFrequentLocation,
-    LastLocation,
 )
+from flowmachine.features.subscriber.first_location import FirstLocation
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.subscriber.unique_locations import UniqueLocations
 from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 

@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from ...core import Query
-from . import LabelEventScore, HartiganCluster, EventScore
+from . import EventScore, HartiganCluster, LabelEventScore
 
 
 class MeaningfulLocations(Query):

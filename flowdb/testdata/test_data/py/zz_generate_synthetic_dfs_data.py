@@ -3,21 +3,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
-
-from itertools import chain
-
 import os
-import pandas as pd
 from functools import partial
 from io import StringIO
-from sqlalchemy import create_engine, select, Column, Text, inspect
+from itertools import chain
+
+import pandas as pd
+from sqlalchemy import Column, Text, create_engine, inspect, select
 from sqlalchemy.ext.declarative import declarative_base
 from tohu import (
     CustomGenerator,
-    SeedGenerator,
-    HashDigest,
     DigitString,
+    HashDigest,
     Integer,
+    SeedGenerator,
     SelectOne,
     Timestamp,
 )

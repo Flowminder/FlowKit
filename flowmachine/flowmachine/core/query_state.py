@@ -10,10 +10,9 @@ waiting for a query to finish running, and reporting status to the user.
 
 import logging
 from enum import Enum
-
-from finist import Finist
 from typing import Tuple
 
+from finist import Finist
 from redis import StrictRedis
 
 from flowmachine.utils import _sleep

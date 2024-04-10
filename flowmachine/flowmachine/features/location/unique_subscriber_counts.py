@@ -4,10 +4,11 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
+
+from flowmachine.utils import standardise_date
 
 from ..subscriber.unique_locations import UniqueLocations
-from flowmachine.utils import standardise_date
 
 """
 Class for UniqueSubscriberCounts. UniqueSubscriberCounts counts
@@ -18,11 +19,10 @@ visited in a given period of time.
 
 
 """
-from ...core.query import Query
-from ...core.mixins import GeoDataMixin
 from ...core import make_spatial_unit
+from ...core.mixins import GeoDataMixin
+from ...core.query import Query
 from ...core.spatial_unit import AnySpatialUnit
-
 from ..utilities.subscriber_locations import SubscriberLocations
 
 

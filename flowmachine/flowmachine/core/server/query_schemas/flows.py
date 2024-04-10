@@ -2,24 +2,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validates_schema, ValidationError
+from marshmallow import ValidationError, fields, validates_schema
 from marshmallow.validate import OneOf
 
-
-from flowmachine.features import Flows
-from flowmachine.features.location.redacted_flows import (
-    RedactedFlows,
-)
 from flowmachine.core.join import Join
 from flowmachine.core.server.query_schemas.base_exposed_query import BaseExposedQuery
 from flowmachine.core.server.query_schemas.base_schema import BaseSchema
+from flowmachine.features import Flows
+from flowmachine.features.location.redacted_flows import RedactedFlows
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
 from .aggregation_unit import AggregationUnitKind
-from .reference_location import ReferenceLocationSchema
 from .one_of_query import OneOfQuerySchema
-
+from .reference_location import ReferenceLocationSchema
 from .unique_locations import UniqueLocationsSchema
 
 

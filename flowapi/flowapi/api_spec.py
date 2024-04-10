@@ -3,8 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from apispec import APISpec, yaml_utils
-from quart import Blueprint, request, render_template, current_app
+from quart import Blueprint, current_app, render_template, request
 from zmq.asyncio import Socket
+
 from flowapi import __version__
 from flowapi.permissions import schema_to_scopes
 

@@ -5,6 +5,7 @@
 # -*- coding: utf-8 -*-
 
 from typing import List
+
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.utils import Statistic
 

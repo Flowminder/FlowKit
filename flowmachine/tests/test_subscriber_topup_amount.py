@@ -4,9 +4,9 @@
 
 # -*- coding: utf-8 -*-
 
-from flowmachine.features.subscriber.topup_amount import *
-
 import pytest
+
+from flowmachine.features.subscriber.topup_amount import *
 
 
 @pytest.mark.parametrize(

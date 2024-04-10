@@ -6,13 +6,14 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
-from .custom_fields import ISODateTime
+
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
-from .field_mixins import HoursField, EventTypesField, SubscriberSubsetField
+from .custom_fields import ISODateTime
+from .field_mixins import EventTypesField, HoursField, SubscriberSubsetField
 
 __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 

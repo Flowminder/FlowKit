@@ -2,17 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validates_schema, ValidationError
+from marshmallow import ValidationError, fields, validates_schema
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.active_at_reference_location_counts import (
     ActiveAtReferenceLocationCounts,
 )
-from flowmachine.features.subscriber.active_at_reference_location import (
-    ActiveAtReferenceLocation,
-)
 from flowmachine.features.location.redacted_active_at_reference_location_counts import (
     RedactedActiveAtReferenceLocationCounts,
+)
+from flowmachine.features.subscriber.active_at_reference_location import (
+    ActiveAtReferenceLocation,
 )
 
 from . import BaseExposedQuery
@@ -24,9 +24,7 @@ __all__ = [
 ]
 
 from .base_schema import BaseSchema
-
 from .reference_location import ReferenceLocationSchema
-
 from .unique_locations import UniqueLocationsSchema
 
 

@@ -6,17 +6,18 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_trips_od_matrix import RedactedTripsODMatrix
-from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
 from flowmachine.features.location.trips_od_matrix import TripsODMatrix
+from flowmachine.features.utilities.subscriber_locations import SubscriberLocations
+
 from . import BaseExposedQuery
+from .aggregation_unit import AggregationUnitMixin
+from .base_schema import BaseSchema
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
-from .base_schema import BaseSchema
-from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TripsODMatrixSchema", "TripsODMatrixExposed"]
 

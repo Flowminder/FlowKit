@@ -18,13 +18,14 @@ and inherit from FlowMachine's main `Query()` class.
 
 """
 
-from .versions import __version__
-from .core.init import connect, connections
-from .features.utilities import GroupValues, feature_collection
-from flowmachine.core.logging import init_logging
+import flowmachine.core
 import flowmachine.features
 import flowmachine.utils
-import flowmachine.core
+from flowmachine.core.logging import init_logging
+
+from .core.init import connect, connections
+from .features.utilities import GroupValues, feature_collection
+from .versions import __version__
 
 methods = ["GroupValues", "feature_collection", "connect", "connections"]
 sub_modules = ["core", "features", "utils"]

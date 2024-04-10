@@ -2,9 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from asynctest import CoroutineMock
-
 import pytest
+from asynctest import CoroutineMock
 from httpx import Response
 
 from flowclient import ASyncConnection

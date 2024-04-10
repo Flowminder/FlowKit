@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, validates_schema, ValidationError
+from marshmallow import ValidationError, fields, validates_schema
 from marshmallow.validate import OneOf
 
 from flowmachine.features.location.redacted_unmoving_at_reference_location_counts import (
@@ -14,6 +14,7 @@ from flowmachine.features.location.unmoving_at_reference_location_counts import 
 from flowmachine.features.subscriber.unmoving_at_reference_location import (
     UnmovingAtReferenceLocation,
 )
+
 from . import BaseExposedQuery
 from .aggregation_unit import AggregationUnitKind
 from .base_schema import BaseSchema

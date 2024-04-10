@@ -8,10 +8,7 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features.location.flows import (
-    FlowLike,
-    Direction,
-)
+from flowmachine.features.location.flows import Direction, FlowLike
 
 
 class LabelledFlows(FlowLike, GeoDataMixin, Query):

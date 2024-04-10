@@ -6,13 +6,12 @@
 Tests for the Geography class.
 """
 
+import geojson
 import pytest
 
-import geojson
-
-from flowmachine.features.spatial import Geography
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.features.spatial import Geography
 
 
 def test_geography_column_names(exemplar_spatial_unit_param):

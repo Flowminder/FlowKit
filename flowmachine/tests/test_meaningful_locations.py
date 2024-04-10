@@ -5,10 +5,10 @@ import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
-    HartiganCluster,
     CallDays,
-    SubscriberLocations,
     EventScore,
+    HartiganCluster,
+    SubscriberLocations,
 )
 from flowmachine.features.subscriber.meaningful_locations import MeaningfulLocations
 

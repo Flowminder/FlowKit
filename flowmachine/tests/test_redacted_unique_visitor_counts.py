@@ -4,8 +4,8 @@
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     SubscriberLocations,
-    daily_location,
     UniqueSubscriberCounts,
+    daily_location,
 )
 from flowmachine.features.location.active_at_reference_location_counts import (
     ActiveAtReferenceLocationCounts,

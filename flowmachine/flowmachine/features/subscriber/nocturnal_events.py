@@ -11,11 +11,11 @@ hour definitions can be specified.
 
 
 """
-from typing import Union, Tuple
+from typing import Tuple, Union
 
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.utils import make_where, standardise_date
 
 

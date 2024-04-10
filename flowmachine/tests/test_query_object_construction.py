@@ -3,26 +3,27 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
+
 import pytest
 from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
-from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
-from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
-from flowmachine.core.server.query_schemas.mobility_classification import (
-    MobilityClassificationSchema,
+from flowmachine.core.server.query_schemas.active_at_reference_location_counts import (
+    ActiveAtReferenceLocationCountsSchema,
 )
 from flowmachine.core.server.query_schemas.coalesced_location import (
     CoalescedLocationSchema,
 )
-from flowmachine.core.server.query_schemas.active_at_reference_location_counts import (
-    ActiveAtReferenceLocationCountsSchema,
-)
 from flowmachine.core.server.query_schemas.flows import FlowsSchema
+from flowmachine.core.server.query_schemas.labelled_flows import LabelledFlowsSchema
+from flowmachine.core.server.query_schemas.location_visits import LocationVisitsSchema
+from flowmachine.core.server.query_schemas.mobility_classification import (
+    MobilityClassificationSchema,
+)
+from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
 from flowmachine.core.server.query_schemas.unique_visitor_counts import (
     UniqueVisitorCountsSchema,
 )
-from flowmachine.core.server.query_schemas.labelled_flows import LabelledFlowsSchema
 
 
 # Currently LabelledSpatialUnit and LabelledFlows only accept coalesced_location as input,

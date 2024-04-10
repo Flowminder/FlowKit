@@ -10,11 +10,11 @@ that fraction of their contacts who account for 80% of their interactions.
 
 
 """
-from typing import List, Union, Tuple, Optional
+from typing import List, Optional, Tuple, Union
 
 from flowmachine.features.subscriber.contact_balance import ContactBalance
-from flowmachine.features.subscriber.subscriber_degree import SubscriberDegree
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.subscriber.subscriber_degree import SubscriberDegree
 from flowmachine.features.utilities.direction_enum import Direction
 from flowmachine.utils import standardise_date
 

@@ -10,9 +10,10 @@ matrix from a given point collection.
 from typing import List, Optional
 
 from flowmachine.core import Table
-from ...core.query import Query
-from ...core.mixins import GraphMixin
+
 from ...core import make_spatial_unit
+from ...core.mixins import GraphMixin
+from ...core.query import Query
 from ...core.spatial_unit import LonLatSpatialUnit
 
 

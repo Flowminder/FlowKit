@@ -4,12 +4,12 @@
 
 from typing import List
 
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
-from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.features.subscriber.subscriber_stay_lengths import (
     SubscriberStayLengths,
 )
-from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
 class MobilityClassification(SubscriberFeature):

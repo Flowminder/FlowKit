@@ -2,18 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
 import numpy as np
+import pytest
 
-from flowmachine.core.spatial_unit import make_spatial_unit, CellSpatialUnit
 from flowmachine.core.custom_query import CustomQuery
-from flowmachine.core.spatial_unit import CellSpatialUnit
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.core.spatial_unit import CellSpatialUnit, make_spatial_unit
 from flowmachine.features.subscriber.daily_location import daily_location
-from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.features.subscriber.subscriber_stay_lengths import (
     SubscriberStayLengths,
 )
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
 
 
 class OneLocation(CustomQuery, BaseLocation):

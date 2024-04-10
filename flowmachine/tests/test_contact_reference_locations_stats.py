@@ -2,13 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.contact_reference_locations_stats import *
-
 import pytest
+
 from flowmachine.core import CustomQuery, make_spatial_unit
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.features import ContactBalance, ModalLocation, daily_location
+from flowmachine.features.subscriber.contact_reference_locations_stats import *
 from flowmachine.utils import list_of_dates
-from flowmachine.features import daily_location, ContactBalance, ModalLocation
 
 
 @pytest.mark.parametrize(

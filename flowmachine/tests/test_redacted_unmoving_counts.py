@@ -4,12 +4,12 @@
 import pytest
 
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import UniqueLocations, SubscriberLocations
-from flowmachine.features.subscriber.unmoving import Unmoving
-from flowmachine.features.location.unmoving_counts import UnmovingCounts
+from flowmachine.features import SubscriberLocations, UniqueLocations
 from flowmachine.features.location.redacted_unmoving_counts import (
     RedactedUnmovingCounts,
 )
+from flowmachine.features.location.unmoving_counts import UnmovingCounts
+from flowmachine.features.subscriber.unmoving import Unmoving
 
 
 def test_unmoving_counts_column_names(get_column_names_from_run):

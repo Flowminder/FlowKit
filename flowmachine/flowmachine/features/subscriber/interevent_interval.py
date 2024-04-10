@@ -8,13 +8,13 @@ Intervent period statistics, such as the average and standard deviation of the
 duration between calls.
 """
 
-from typing import Union, Tuple, List, Optional
+from typing import List, Optional, Tuple, Union
 
 from flowmachine.core import Query
-from flowmachine.features.utilities import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
+from flowmachine.features.utilities import EventsTablesUnion
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date, Statistic
+from flowmachine.utils import Statistic, make_where, standardise_date
 
 
 class IntereventInterval(SubscriberFeature):

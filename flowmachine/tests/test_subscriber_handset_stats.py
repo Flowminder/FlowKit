@@ -4,11 +4,10 @@
 
 # -*- coding: utf-8 -*-
 
-from flowmachine.features.subscriber.handset_stats import *
-
 import pytest
 
 from flowmachine.features import SubscriberHandsets
+from flowmachine.features.subscriber.handset_stats import *
 
 
 @pytest.mark.parametrize(

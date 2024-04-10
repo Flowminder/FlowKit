@@ -4,16 +4,16 @@
 
 import pytest
 
+from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.features.subscriber.daily_location import daily_location
+from flowmachine.features.subscriber.majority_location import majority_location
 from flowmachine.features.subscriber.mobility_classification import (
     MobilityClassification,
 )
-from flowmachine.features.subscriber.majority_location import majority_location
 from flowmachine.features.subscriber.subscriber_call_durations import (
     PerLocationSubscriberCallDurations,
 )
-from flowmachine.features.subscriber.daily_location import daily_location
-from flowmachine.core.spatial_unit import make_spatial_unit
-from flowmachine.core.errors import InvalidSpatialUnitError
 
 
 @pytest.mark.parametrize(

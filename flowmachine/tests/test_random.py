@@ -8,14 +8,15 @@ samples from the database.
 """
 
 
-import pytest
 import pickle
 
-from flowmachine.core.mixins import GraphMixin
-from flowmachine.features import daily_location, Flows
-from flowmachine.features.utilities.sets import UniqueSubscribers
+import pytest
+
 from flowmachine.core.custom_query import CustomQuery
+from flowmachine.core.mixins import GraphMixin
 from flowmachine.core.table import Table
+from flowmachine.features import Flows, daily_location
+from flowmachine.features.utilities.sets import UniqueSubscribers
 
 
 def test_random_msisdn(get_dataframe):

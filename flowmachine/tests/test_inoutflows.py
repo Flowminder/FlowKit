@@ -7,8 +7,8 @@ Tests for the inout flows methods
 """
 
 
-from flowmachine.features import Flows, daily_location
 from flowmachine.core import make_spatial_unit
+from flowmachine.features import Flows, daily_location
 
 
 def test_inoutflow_with_double_column_location():

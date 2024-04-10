@@ -3,9 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logging
+import sys
+
 import rapidjson
 import structlog
-import sys
+
 from flowmachine.core.context import get_action_request
 
 __all__ = ["init_logging", "set_log_level"]

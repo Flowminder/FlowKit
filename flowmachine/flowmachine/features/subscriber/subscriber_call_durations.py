@@ -10,14 +10,14 @@ Total and per-counterpart call durations for subscribers.
 
 """
 import warnings
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Tuple, Union
 
 from flowmachine.core import location_joined_query
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
-from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date, Statistic
+from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
+from flowmachine.utils import Statistic, make_where, standardise_date
 
 
 class SubscriberCallDurations(SubscriberFeature):

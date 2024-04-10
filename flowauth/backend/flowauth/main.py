@@ -3,18 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
 import logging
+import pathlib
 import sys
 import uuid
-import pathlib
 from functools import partial
 
 import flask
+import simplejson
 import structlog
 from flask import Flask, current_app, request
-from flask_migrate import Migrate
-
-import simplejson
 from flask_login import LoginManager, current_user
+from flask_migrate import Migrate
 from flask_principal import Principal, RoleNeed, UserNeed, identity_loaded
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 from flowauth.invalid_usage import InvalidUsage
@@ -129,22 +128,23 @@ def on_identity_loaded(sender, identity):
 
 
 def create_app(test_config=None):
+    from flowauth.cli import (
+        add_admin_command,
+        demo_data,
+        init_db_command,
+        make_flowauth_fernet_key,
+    )
     from flowauth.config import get_config
     from flowauth.models import db
-    from flowauth.cli import (
-        init_db_command,
-        add_admin_command,
-        make_flowauth_fernet_key,
-        demo_data,
-    )
+
     from .admin import blueprint as admin_blueprint
-    from .users import blueprint as users_blueprint
+    from .login import blueprint as login_blueprint
+    from .roles import blueprint as roles_blueprint
     from .servers import blueprint as servers_blueprint
     from .token_management import blueprint as token_management_blueprint
-    from .login import blueprint as login_blueprint
     from .user_settings import blueprint as user_settings_blueprint
+    from .users import blueprint as users_blueprint
     from .version import blueprint as version_blueprint
-    from .roles import blueprint as roles_blueprint
 
     app = Flask(__name__)
 
@@ -195,8 +195,7 @@ def create_app(test_config=None):
             make_demodata()
     else:
         # Initialise the database
-        from flowauth.models import init_db
-        from flowauth.models import add_admin
+        from flowauth.models import add_admin, init_db
 
         with app.app_context():
             lock(

@@ -6,16 +6,15 @@
 """
 Various simple utilities.
 """
-from enum import Enum
-
 import datetime
 import re
+from enum import Enum
 from functools import singledispatch
+from time import sleep
+from typing import Tuple, Union
 
 from pglast import prettify
 from psycopg2._psycopg import adapt
-from time import sleep
-from typing import Union, Tuple
 
 
 class Statistic(str, Enum):

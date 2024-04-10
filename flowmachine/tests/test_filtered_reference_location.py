@@ -3,12 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
-from flowmachine.features import LocationVisits, daily_location, DayTrajectories
+from flowmachine.core import make_spatial_unit
+from flowmachine.features import DayTrajectories, LocationVisits, daily_location
 from flowmachine.features.subscriber.filtered_reference_location import (
     FilteredReferenceLocation,
 )
 from flowmachine.utils import list_of_dates
-from flowmachine.core import make_spatial_unit
 
 
 def test_column_names_filtered_reference_location(exemplar_spatial_unit_param):

@@ -6,13 +6,13 @@
 """
 Class for calculating top-up balance statistics.
 """
+import warnings
 from typing import Optional, Tuple
 
-import warnings
+from flowmachine.utils import Statistic, standardise_date
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date, Statistic
 
 
 class TopUpBalance(SubscriberFeature):

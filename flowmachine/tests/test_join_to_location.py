@@ -2,15 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
-
 from datetime import datetime, timezone
 
 import numpy as np
+import pytest
 
-from flowmachine.features import SubscriberLocations
 from flowmachine.core import JoinToLocation, location_joined_query, make_spatial_unit
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.features import SubscriberLocations
 
 
 def test_join_to_location_column_names(exemplar_spatial_unit_param):

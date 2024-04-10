@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import pytest
 import numpy as np
+import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber.entropy import *

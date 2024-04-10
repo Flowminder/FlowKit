@@ -6,18 +6,19 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import Displacement
-from .custom_fields import Statistic
-from .reference_location import ReferenceLocationSchema
+
 from .base_query_with_sampling import (
-    BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
+    BaseQueryWithSamplingSchema,
 )
+from .custom_fields import Statistic
 from .field_mixins import (
+    EventTypesField,
     HoursField,
     StartAndEndField,
-    EventTypesField,
     SubscriberSubsetField,
 )
+from .reference_location import ReferenceLocationSchema
 
 __all__ = ["DisplacementSchema", "DisplacementExposed"]
 

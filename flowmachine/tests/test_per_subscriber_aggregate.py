@@ -4,16 +4,15 @@
 
 # -*- coding: utf-8 -*-
 
+import pytest
+
+from flowmachine.core.dummy_query import DummyQuery
 from flowmachine.features.subscriber.per_subscriber_aggregate import (
     PerSubscriberAggregate,
 )
 from flowmachine.features.subscriber.subscriber_call_durations import (
     PerLocationSubscriberCallDurations,
 )
-from flowmachine.core.dummy_query import DummyQuery
-
-import pytest
-
 from flowmachine.utils import Statistic
 
 

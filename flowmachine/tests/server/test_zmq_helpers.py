@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
+import rapidjson
 from asynctest import CoroutineMock
 
-import rapidjson
-
 from flowmachine.core.server.server import (
-    get_reply_for_message,
     calculate_and_send_reply_for_message,
+    get_reply_for_message,
 )
 from flowmachine.core.server.zmq_helpers import *
 

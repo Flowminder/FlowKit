@@ -1,7 +1,6 @@
-from tests.unit.zmq_helpers import ZMQReply
-
 import pytest
 from asynctest import return_once
+from tests.unit.zmq_helpers import ZMQReply
 
 
 @pytest.mark.asyncio

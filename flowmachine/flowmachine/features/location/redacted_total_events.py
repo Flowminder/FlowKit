@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.core.query import Query
-from flowmachine.features.location.total_events import TotalLocationEvents
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
+from flowmachine.features.location.total_events import TotalLocationEvents
 from flowmachine.utils import make_where
 
 

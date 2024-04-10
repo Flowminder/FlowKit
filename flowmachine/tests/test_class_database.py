@@ -7,6 +7,7 @@ Unit tests for the Connection() class.
 """
 import datetime
 from unittest.mock import Mock
+
 import pytest
 
 from flowmachine.core.context import get_db

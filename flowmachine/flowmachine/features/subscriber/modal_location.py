@@ -10,14 +10,14 @@ The modal daily location of a subscriber.
 
 
 """
-from typing import List
-
 from functools import reduce
+from typing import List
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from ..utilities.multilocation import MultiLocation
+
 from ...core.union import Union
+from ..utilities.multilocation import MultiLocation
 
 
 class ModalLocation(MultiLocation, BaseLocation, Query):

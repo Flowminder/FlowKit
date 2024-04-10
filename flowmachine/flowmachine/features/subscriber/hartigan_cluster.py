@@ -13,10 +13,10 @@ problem in hand.
 
 from typing import List, Union
 
-from ..utilities import SubscriberLocations
 from ...core import make_spatial_unit
-from ...core.query import Query
 from ...core.mixins import GeoDataMixin
+from ...core.query import Query
+from ..utilities import SubscriberLocations
 from .call_days import CallDays
 
 

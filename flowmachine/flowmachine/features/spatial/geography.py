@@ -9,8 +9,8 @@ location_id_columns and geometry for a spatial unit.
 """
 from typing import List
 
-from ...core.query import Query
 from ...core.mixins import GeoDataMixin
+from ...core.query import Query
 from ...core.spatial_unit import GeomSpatialUnit
 
 

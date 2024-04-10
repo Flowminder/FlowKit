@@ -4,9 +4,9 @@
 from functools import partial
 
 import geojson
-import flowclient
-
 import pytest
+
+import flowclient
 
 queries = [
     partial(

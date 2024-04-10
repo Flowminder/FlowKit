@@ -1,22 +1,18 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import binhex
-
 import base64
+import binhex
+import logging
+import os
+from multiprocessing import Event
 
+from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from dogpile.cache import make_region, CacheRegion
-from multiprocessing import Event
-
+from dogpile.cache import CacheRegion, make_region
 from get_secret_or_env_var import environ, getenv
-
-import logging
-
-import os
-from cryptography.fernet import Fernet
 
 
 class UndefinedConfigOption(Exception):
