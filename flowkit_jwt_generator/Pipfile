@@ -16,6 +16,7 @@ versioneer = "*"
 pytest-cov = "*"
 flowkit-jwt-generator = {editable = true,path = ".", extras=["pytest", "cli"]}
 black = {extras = ["jupyter"],version = "==24.3.0"}
+isort = "*"
 
 [requires]
 python_version = "3.8"

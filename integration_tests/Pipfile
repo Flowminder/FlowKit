@@ -14,6 +14,7 @@ pytest-cov = "*"
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 geojson = "*"
 flowclient = {editable = true, path = "./../flowclient"}
+isort = "*"
 
 [dev-packages]
 tavern = {extras = ["pytest"],version = "*"}

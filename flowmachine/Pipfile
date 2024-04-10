@@ -34,6 +34,7 @@ geojson = "*"
 geopandas = "*"
 descartes = "*"
 black = {extras = ["jupyter"],version = "==24.3.0"}
+isort = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"

@@ -8,6 +8,7 @@ psutil = "*"
 
 [dev-packages]
 black = {extras = ["jupyter"],version = "==24.3.0"}
+isort = "*"
 
 [requires]
 python_version = "3.9"
