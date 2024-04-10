@@ -406,6 +406,10 @@ jobs:
           name: Linting files with black
           # Installed the version of Black from flowmachine's lockfile
           command: pushd flowmachine && pip install $(pipenv graph | grep black) && popd && black --check .
+      - run:
+          name: Linting files with isort
+          # Installed the version of isort from flowmachine's lockfile
+          command: pushd flowmachine && pip install $(pipenv graph | grep isort) && popd && isort --check .
 
   lint_js:
     docker:
