@@ -35,7 +35,7 @@
 
 VENVDIR ?= .venv
 ACTIVATE := source $(VENVDIR)/bin/activate;
-PIP_COMPILE := pip-compile --resolver=backtracking --strip-extras --generate-hashes
+PIP_COMPILE := pip-compile --strip-extras --generate-hashes --allow-unsafe
 PIP_SYNC := pip-sync --pip-args "--no-deps"
 FLOWETL_BUILD_FILES := flowetl/setup.py flowetl/setup.cfg flowetl/pyproject.toml
 # File to keep track of when virtual env was created (not modified when new packages are installed),
@@ -57,30 +57,32 @@ $(VENVTARGET): .python-version
 	$(ACTIVATE) pip install --upgrade pip pip-tools
 	touch $(VENVTARGET)
 
-requirements.txt: requirements.in .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
+requirements.txt: constraints.txt .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 ifdef CI
 # requirements files should not be rebuilt when running in CI
 	$(error requirements.txt is out of date)
 else
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --unsafe-package flowetl requirements.in
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) -c constraints.txt --output-file requirements.txt flowetl/setup.py
 endif
 
-dev-requirements.txt: dev-requirements.in requirements.txt .airflow-version .python-version | $(VENVTARGET)
+dev-requirements.txt: requirements.txt constraints.txt .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 ifdef CI
 # requirements files should not be rebuilt when running in CI
 	$(error dev-requirements.txt is out of date)
 else
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --allow-unsafe dev-requirements.in
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
 endif
 
-upgrade: requirements.in dev-requirements.in .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --unsafe-package flowetl requirements.in
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --allow-unsafe dev-requirements.in
+upgrade: constraints.txt .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c constraints.txt --output-file requirements.txt flowetl/setup.py
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
 
 sync: requirements.txt | $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt
 
 dev-sync: requirements.txt dev-requirements.txt $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
+# Note: dev-requirements alone should have everything in it, but by specifying both requirements.txt and dev-requirements.txt
+# this should fail if the two have somehow got out of sync, which is probably the behaviour we want.
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt dev-requirements.txt && pip install --no-deps -e ./flowetl
 
 unit-tests: dev-sync

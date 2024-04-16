@@ -2,17 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# FlowETL additional dev requirements
+# FlowETL constraints
 
 # Airflow and python versions must match the versions in the base docker image
 -c https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt
--c requirements.txt
 
-structlog
-pytest
-psycopg2-binary
-pandas
-docker
-versioneer
-pytest-cov
-black == 24.3.0
+# Airflow version must match the version in the base docker image
+apache-airflow == ${AIRFLOW_VERSION}
