@@ -7,6 +7,8 @@
 # Requires pyenv to be installed, to ensure the correct python version is used for locking dependencies.
 # The virtual environment directory can be configured by setting the variable VENVDIR (default is .venv).
 #
+# If running in CI, set CI variable to prevent requirements files from being rebuilt
+#
 # targets:
 #   lock (default):
 #       Compile requirements.txt and dev-requirements.txt from requirements.in and dev-requirements.in
@@ -42,7 +44,7 @@ VENVTARGET := $(VENVDIR)/.created
 # Recursive variable because versions should be read when a target is made, not before
 VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
 
-.PHONY: lock upgrade sync dev-sync unit-tests integration-tests clean deep-clean
+.PHONY: lock upgrade sync dev-sync unit-tests integration-tests tests clean deep-clean
 
 lock: requirements.txt dev-requirements.txt
 
@@ -55,10 +57,20 @@ $(VENVTARGET): .python-version
 	touch $(VENVTARGET)
 
 requirements.txt: requirements.in .airflow-version $(FLOWETL_BUILD_FILES) $(VENVTARGET)
+ifdef CI
+# requirements files should not be rebuilt when running in CI
+	$(error requirements.txt is out of date)
+else
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --unsafe-package flowetl requirements.in
+endif
 
 dev-requirements.txt: dev-requirements.in requirements.txt .airflow-version $(VENVTARGET)
+ifdef CI
+# requirements files should not be rebuilt when running in CI
+	$(error dev-requirements.txt is out of date)
+else
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --allow-unsafe dev-requirements.in
+endif
 
 upgrade: requirements.in dev-requirements.in .airflow-version $(FLOWETL_BUILD_FILES) $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --unsafe-package flowetl requirements.in
