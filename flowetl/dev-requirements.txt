@@ -200,7 +200,6 @@ docker==7.0.0 \
     --hash=sha256:323736fb92cd9418fc5e7133bc953e11a9da04f4483f828b527db553f1e7e5a3
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.4/constraints-3.10.txt
-    #   -c requirements.txt
     #   -r dev-requirements.in
 exceptiongroup==1.2.0 \
     --hash=sha256:4bfd3996ac73b41e9b9628b04e079f193850720ea5945fc96a08633c66912f14 \
