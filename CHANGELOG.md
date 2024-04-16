@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Removed
+- Removed `flowpyter-task` from the FlowETL Docker image.
 
 ## [1.24.0]
 
