@@ -677,22 +677,8 @@ jobs:
       - restore_cache:
           key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
       - run:
-          name: Install required python version
-          command: |
-            pyenv install -s $(pyenv local)
-            python --version
-      - run:
-          name: Create virtual env
-          command: |
-            python -m venv ./.venv
-            source .venv/bin/activate
-            pip install --upgrade pip pip-tools
-      - run:
           name: Install python dependencies
-          command: |
-            source .venv/bin/activate
-            pip-sync requirements.txt dev-requirements.txt --pip-args "--no-deps"
-            pip install --no-deps -e ./flowetl
+          command: make CI=true dev-sync
       - save_cache:
           key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
           paths:
@@ -727,22 +713,8 @@ jobs:
             sudo apt-get update
             sudo apt install libpq-dev
       - run:
-          name: Install required python version
-          command: |
-            pyenv install -s $(pyenv local)
-            python --version
-      - run:
-          name: Create virtual env
-          command: |
-            python -m venv ./.venv
-            source .venv/bin/activate
-            pip install --upgrade pip pip-tools
-      - run:
           name: Install python dependencies
-          command: |
-            source .venv/bin/activate
-            pip-sync requirements.txt dev-requirements.txt --pip-args "--no-deps"
-            pip install --no-deps -e ./flowetl
+          command: make CI=true dev-sync
       - run:
           name: Install postgresql
           command: |
