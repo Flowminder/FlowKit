@@ -57,7 +57,7 @@ $(VENVTARGET): .python-version
 	$(ACTIVATE) pip install --upgrade pip pip-tools
 	touch $(VENVTARGET)
 
-requirements.txt: requirements.in .airflow-version $(FLOWETL_BUILD_FILES) $(VENVTARGET)
+requirements.txt: requirements.in .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 ifdef CI
 # requirements files should not be rebuilt when running in CI
 	$(error requirements.txt is out of date)
@@ -65,7 +65,7 @@ else
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --unsafe-package flowetl requirements.in
 endif
 
-dev-requirements.txt: dev-requirements.in requirements.txt .airflow-version $(VENVTARGET)
+dev-requirements.txt: dev-requirements.in requirements.txt .airflow-version .python-version | $(VENVTARGET)
 ifdef CI
 # requirements files should not be rebuilt when running in CI
 	$(error dev-requirements.txt is out of date)
@@ -73,14 +73,14 @@ else
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --allow-unsafe dev-requirements.in
 endif
 
-upgrade: requirements.in dev-requirements.in .airflow-version $(FLOWETL_BUILD_FILES) $(VENVTARGET)
+upgrade: requirements.in dev-requirements.in .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --unsafe-package flowetl requirements.in
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade --allow-unsafe dev-requirements.in
 
-sync: requirements.txt $(VENVTARGET)
+sync: requirements.txt | $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt
 
-dev-sync: requirements.txt dev-requirements.txt $(FLOWETL_BUILD_FILES) $(VENVTARGET)
+dev-sync: requirements.txt dev-requirements.txt $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt dev-requirements.txt && pip install --no-deps -e ./flowetl
 
 unit-tests: dev-sync
