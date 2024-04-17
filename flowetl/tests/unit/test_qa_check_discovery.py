@@ -56,11 +56,13 @@ def test_additional_checks_collected(tmpdir):
     assert len(check_operators) > len(qa_checks)
 
 
-def test_additional_checks_collected_from_home():
+def test_additional_checks_collected_from_dag_folder():
     from airflow import DAG, settings
     from flowetl.util import get_qa_checks
 
-    checks_folder = Path(settings.DAGS_FOLDER) / "qa_checks"
+    checks_folder = (
+        Path(settings.DAGS_FOLDER) / "ETL_SUBDIR_OF_DAGS_FOLDER" / "qa_checks"
+    )
     checks_folder.mkdir(parents=True)
     (checks_folder / "DUMMY_CHECK.sql").touch()
     check_operators = get_qa_checks(dag=DAG("DUMMY_DAG", start_date=datetime.now()))

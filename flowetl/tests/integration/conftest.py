@@ -174,7 +174,7 @@ def mounts(tmpdir_factory, flowetl_mounts_dir):
     pgdata = tmpdir_factory.mktemp("pgdata")
 
     dags_mount = Mount(
-        "/opt/airflow/dags/ARBITRARY_SUBDIR_OF_DAGS_FOLDER",
+        "/opt/airflow/dags/ETL_SUBDIR_OF_DAGS_FOLDER",
         f"{flowetl_mounts_dir}/dags",
         type="bind",
     )
