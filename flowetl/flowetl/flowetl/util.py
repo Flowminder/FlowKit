@@ -56,22 +56,32 @@ def get_qa_checks(
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
 
-    # The issue is that the file folder is getting added to the search path
-    # here, this will be this file's parent
-    # but later, it will be the dags folder by the look of it
-    # even worse, airflow is actually setting this to the folder containing the file
-    # of the caller of this function, so we want to use that if called from this file
-    # and otherwise explicitly add the qa checks dir?
-    default_path = (
-        dag.folder
-        if dag.fileloc == str(Path(__file__))
-        else Path(__file__).parent / "qa_checks"
-    )
-    dag.template_searchpath = [
+    default_path = Path(__file__).parent  # Contains the default checks
+    qa_check_paths = [
         *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
+        default_path,
+    ]
+    if dag.fileloc == str(Path(__file__)):
+        # If we're in a DAG that's created by `create_dag()`, then `dag.fileloc` will be
+        # the location of this file (but later - once `create_dag()` has finished
+        # executing, I think - `dag.fileloc` will be the location of the file that called
+        # `create_dag()`). In this case, the actual DAG folder won't yet be in the
+        # template searchpath, so we need to explicitly add the DAGs folder here to pick
+        # up any additional user-defined QA checks.
+        #
+        # On the other hand, if the DAG is explicitly defined in a file in the DAGs
+        # folder (i.e. not using `create_dag()`), then `dag.folder` (which is the default
+        # template searchpath) will already point to the correct location. In this case,
+        # and if the DAG file is in a subdir of the root DAGs folder (e.g.
+        # DAGS_FOLDER/etl/my_dag.py), then adding `settings.DAGS_FOLDER` to the
+        # searchpath would result in both DAGS_FOLDER and DAGS_FOLDER/etl being in the
+        # searchpath, which would result in additional user-defined QA checks being
+        # picked up twice. So we only add `settings.DAGS_FOLDER` to the searchpath if
+        # this function is being called from within a `create_dag()` call.
+        qa_check_paths.append(settings.DAGS_FOLDER)
+    dag.template_searchpath = [
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
-        default_path,  # Contains the default checks
-        settings.DAGS_FOLDER,
+        *qa_check_paths,
     ]
     jinja_env = dag.get_template_env()
     templates = [
