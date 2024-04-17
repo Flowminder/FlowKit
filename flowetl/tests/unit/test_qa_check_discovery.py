@@ -11,11 +11,7 @@ qa_checks = {
     f.stem: str(Path("qa_checks") / f.name)
     for f in sorted(
         (
-            Path(__file__).parent.parent.parent
-            / "flowetl"
-            / "flowetl"
-            / "qa_checks"
-            / "qa_checks"
+            Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
         ).glob("*.sql")
     )
 }
@@ -120,7 +116,7 @@ def test_module_path_added_to_dag_template_locations():
     dag = DAG("DUMMY_DAG", start_date=datetime.now())
     get_qa_checks(dag=dag)
     assert (
-        Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
+        Path(__file__).parent.parent.parent / "flowetl" / "flowetl"
         in dag.template_searchpath
     )
 
@@ -132,7 +128,7 @@ def test_uses_context_dag():
     with DAG("DUMMY_DAG", start_date=datetime.now()) as dag:
         get_qa_checks()
     assert (
-        Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
+        Path(__file__).parent.parent.parent / "flowetl" / "flowetl"
         in dag.template_searchpath
     )
 
