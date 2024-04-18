@@ -291,6 +291,7 @@ def create_dag(
     ) as dag:
         # Airflow assumes that the DAG constructor is called directly in the DAG definition file.
         # In this case the DAG file is the one calling this function, so we need to set dag.fileloc accordingly.
+        # This is a slightly unpleasant hack, but it's the same hack that Airflow uses in DAG.__init__
         back = currentframe().f_back
         dag.fileloc = back.f_code.co_filename if back else ""
 
