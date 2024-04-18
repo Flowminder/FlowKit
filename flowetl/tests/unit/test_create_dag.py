@@ -174,8 +174,7 @@ def test_correct_dag_folder():
         cdr_type="TEST",
         start_date=datetime.now(),
         extract_sql="DUMMY SQL",
-        filename="DUMMY FILE PATTERN",
-        fields=dict(DUMMY_FIELD="DUMMY_TYPE"),
-        use_flux_sensor=use_flux_sensor,
+        staging_view_sql="DUMMY STAGING SQL",
+        source_table="DUMMY_SOURCE_TABLE",
     )
     assert dag.folder == Path(__file__).parent
