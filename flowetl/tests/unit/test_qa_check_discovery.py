@@ -60,7 +60,7 @@ def test_additional_checks_collected(tmpdir):
     assert len(check_operators) > len(qa_checks)
 
 
-def test_additional_checks_collected_from_dag_folder(monkeypatch):
+def test_additional_checks_collected_from_dag_folder():
     from airflow import DAG, settings
     from flowetl.util import get_qa_checks
 
@@ -69,7 +69,7 @@ def test_additional_checks_collected_from_dag_folder(monkeypatch):
     checks_folder.mkdir(parents=True)
     (checks_folder / "DUMMY_CHECK.sql").touch()
     dag = DAG("DUMMY_DAG", start_date=datetime.now())
-    monkeypatch.setattr(dag, "folder", str(dag_folder))
+    dag.fileloc = dag_folder / "DUMMY_DAG.py"
     check_operators = get_qa_checks(dag=dag)
 
     assert len(check_operators) > len(qa_checks)
