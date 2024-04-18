@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
+from inspect import currentframe
 
 from pendulum import Duration
 
@@ -57,31 +58,10 @@ def get_qa_checks(
         raise TypeError("Must set dag argument or be in a dag context manager.")
 
     default_path = Path(__file__).parent  # Contains the default checks
-    qa_check_paths = [
-        *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
-        default_path,
-    ]
-    if dag.fileloc == str(Path(__file__)):
-        # If we're in a DAG that's created by `create_dag()`, then `dag.fileloc` will be
-        # the location of this file (but later - once `create_dag()` has finished
-        # executing, I think - `dag.fileloc` will be the location of the file that called
-        # `create_dag()`). In this case, the actual DAG folder won't yet be in the
-        # template searchpath, so we need to explicitly add the DAGs folder here to pick
-        # up any additional user-defined QA checks.
-        #
-        # On the other hand, if the DAG is explicitly defined in a file in the DAGs
-        # folder (i.e. not using `create_dag()`), then `dag.folder` (which is the default
-        # template searchpath) will already point to the correct location. In this case,
-        # and if the DAG file is in a subdir of the root DAGs folder (e.g.
-        # DAGS_FOLDER/etl/my_dag.py), then adding `settings.DAGS_FOLDER` to the
-        # searchpath would result in both DAGS_FOLDER and DAGS_FOLDER/etl being in the
-        # searchpath, which would result in additional user-defined QA checks being
-        # picked up twice. So we only add `settings.DAGS_FOLDER` to the searchpath if
-        # this function is being called from within a `create_dag()` call.
-        qa_check_paths.append(settings.DAGS_FOLDER)
     dag.template_searchpath = [
+        *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
-        *qa_check_paths,
+        default_path,
     ]
     jinja_env = dag.get_template_env()
     templates = [
@@ -309,6 +289,11 @@ def create_dag(
         user_defined_macros=macros,
         params=dict(cdr_type=cdr_type),
     ) as dag:
+        # Airflow assumes that the DAG constructor is called directly in the DAG definition file.
+        # In this case the DAG file is the one calling this function, so we need to set dag.fileloc accordingly.
+        back = currentframe().f_back
+        dag.fileloc = back.f_code.co_filename if back else ""
+
         if staging_view_sql is not None and source_table is not None:
             create_staging_view = CreateStagingViewOperator(
                 task_id="create_staging_view", sql=staging_view_sql

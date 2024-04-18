@@ -177,4 +177,4 @@ def test_correct_dag_folder():
         staging_view_sql="DUMMY STAGING SQL",
         source_table="DUMMY_SOURCE_TABLE",
     )
-    assert dag.folder == Path(__file__).parent
+    assert dag.folder == str(Path(__file__).parent)
