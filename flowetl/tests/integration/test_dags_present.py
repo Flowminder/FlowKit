@@ -25,7 +25,7 @@ def test_dags_present():
             dag_folder=dag_folder,
             include_examples=False,
         ).dag_ids
-    ) == set(["remote_table_dag", "filesystem_dag", "test_dag"])
+    ) == set(["remote_table_dag", "filesystem_dag", "test_dag", "test_qa_dag"])
 
 
 @pytest.mark.usefixtures("airflow_local_setup")
@@ -47,7 +47,7 @@ def test_dags_present():
                 "count_duplicates",
                 "count_location_ids",
                 "count_msisdns",
-                "dumy_qa_check",
+                "dummy_qa_check",
                 "earliest_timestamp",
                 "latest_timestamp",
                 "count_imeis",
