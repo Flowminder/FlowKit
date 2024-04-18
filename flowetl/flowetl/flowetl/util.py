@@ -57,7 +57,7 @@ def get_qa_checks(
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
 
-    default_path = Path(__file__).parent  # Contains the default checks
+    default_path = Path(__file__).parent / "qa_checks"  # Contains the default checks
     dag.template_searchpath = [
         *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
