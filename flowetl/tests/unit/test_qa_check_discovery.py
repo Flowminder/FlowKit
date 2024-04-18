@@ -64,12 +64,13 @@ def test_additional_checks_collected_from_dag_folder():
     from airflow import DAG, settings
     from flowetl.util import get_qa_checks
 
-    checks_folder = (
-        Path(settings.DAGS_FOLDER) / "ETL_SUBDIR_OF_DAGS_FOLDER" / "qa_checks"
-    )
+    dag_folder = Path(settings.DAGS_FOLDER) / "ETL_SUBDIR_OF_DAGS_FOLDER"
+    checks_folder = dag_folder / "qa_checks"
     checks_folder.mkdir(parents=True)
     (checks_folder / "DUMMY_CHECK.sql").touch()
-    check_operators = get_qa_checks(dag=DAG("DUMMY_DAG", start_date=datetime.now()))
+    dag = DAG("DUMMY_DAG", start_date=datetime.now())
+    dag.folder = str(dag_folder)
+    check_operators = get_qa_checks(dag=dag)
 
     assert len(check_operators) > len(qa_checks)
 
