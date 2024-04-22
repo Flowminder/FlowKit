@@ -127,8 +127,38 @@ def test_file_pipeline(
 
     # Check qa checks
 
-    qa_check_query = "SELECT count(*) from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
-    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 24
+    qa_check_query = "SELECT type_of_query_or_check from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
+    assert sorted(
+        row[0] for row in flowdb_transaction.execute(qa_check_query).fetchall()
+    ) == sorted(
+        [
+            "count_added_rows",
+            "count_duplicated",
+            "count_duplicates",
+            "count_location_ids",
+            "count_msisdns",
+            "dummy_qa_check",
+            "earliest_timestamp",
+            "latest_timestamp",
+            "count_imeis",
+            "count_imsis",
+            "count_locatable_events",
+            "count_locatable_location_ids",
+            "count_null_imeis",
+            "count_null_imsis",
+            "count_null_location_ids",
+            "max_msisdns_per_imei",
+            "max_msisdns_per_imsi",
+            "count_added_rows_outgoing.calls",
+            "count_null_counterparts.calls",
+            "count_null_durations.calls",
+            "count_onnet_msisdns_incoming.calls",
+            "count_onnet_msisdns_outgoing.calls",
+            "count_onnet_msisdns.calls",
+            "max_duration.calls",
+            "median_duration.calls",
+        ]
+    )
 
 
 def test_file_pipeline_bad_file(
