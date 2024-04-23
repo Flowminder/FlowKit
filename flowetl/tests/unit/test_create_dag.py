@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 from flowetl.util import create_dag
@@ -161,3 +162,19 @@ def test_invalid_flux_sensor_error():
             source_table="DUMMY_SOURCE_TABLE",
             use_flux_sensor="file",
         )
+
+
+def test_correct_dag_folder():
+    """
+    DAG created using 'create_dag' has dag.folder pointing to the parent of the caller file,
+    not the parent of flowetl/util.py
+    """
+    dag = create_dag(
+        dag_id="TEST",
+        cdr_type="TEST",
+        start_date=datetime.now(),
+        extract_sql="DUMMY SQL",
+        staging_view_sql="DUMMY STAGING SQL",
+        source_table="DUMMY_SOURCE_TABLE",
+    )
+    assert dag.folder == str(Path(__file__).parent)
