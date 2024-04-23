@@ -102,9 +102,9 @@ anyio==4.3.0 \
     # via
     #   -c requirements.txt
     #   httpcore
-apache-airflow==2.8.4 \
-    --hash=sha256:48f4f81333a73e0c25b24ce4c981b70cd58c43aab608d370c63b585bd1d6e4d2 \
-    --hash=sha256:899dac9916ad2d973a0dd1b6c5c8d365d04bd2b8839f504d0f287e657365b77e
+apache-airflow==2.9.0 \
+    --hash=sha256:52494e03d8a5976491cf548320a3d42ed07f4150f1d05ab1dcc74906b570291f \
+    --hash=sha256:bffa176e532d8fef5ccf463153958dd6b23c845b8eddd5ec5bac3a0bde47ae70
     # via
     #   -c requirements.txt
     #   apache-airflow-providers-common-io
