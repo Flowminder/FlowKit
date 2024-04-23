@@ -678,7 +678,10 @@ jobs:
           key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
       - run:
           name: Install python dependencies
-          command: make CI=true dev-sync
+          # Touching requirements files here so that make doesn't rebuild them - we can't rely on file timestamps in a fresh repo clone
+          command: |
+            touch requirements.txt dev-requirements.txt
+            make CI=true dev-sync
       - save_cache:
           key: flowetl-unit-deps-6-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}
           paths:
@@ -714,7 +717,10 @@ jobs:
             sudo apt install libpq-dev
       - run:
           name: Install python dependencies
-          command: make CI=true dev-sync
+          # Touching requirements files here so that make doesn't rebuild them - we can't rely on file timestamps in a fresh repo clone
+          command: |
+            touch requirements.txt dev-requirements.txt
+            make CI=true dev-sync
       - run:
           name: Install postgresql
           command: |
