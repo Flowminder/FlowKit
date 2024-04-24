@@ -51,9 +51,8 @@ lock: requirements.txt dev-requirements.txt
 # Create virtual env if it doesn't exist, and install pip-tools
 $(VENVTARGET): .python-version
 	rm -rf "$(VENVDIR)"
-	eval "$(shell pyenv init --path)"
 	pyenv install -s $(shell pyenv local)
-	python -m venv $(VENVDIR)
+	eval "$(shell pyenv init --path)"; python -m venv $(VENVDIR)
 	$(ACTIVATE) pip install --upgrade pip pip-tools
 	touch $(VENVTARGET)
 
