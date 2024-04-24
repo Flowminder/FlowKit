@@ -74,7 +74,7 @@ endif
 
 upgrade: constraints.txt .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c constraints.txt --output-file requirements.txt flowetl/setup.py
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c constraints.txt -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
 
 sync: requirements.txt | $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt
