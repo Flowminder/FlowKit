@@ -69,7 +69,7 @@ ifdef CI
 # requirements files should not be rebuilt when running in CI
 	$(error dev-requirements.txt is out of date)
 else
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) -c constraints.txt -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
 endif
 
 upgrade: constraints.txt .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
