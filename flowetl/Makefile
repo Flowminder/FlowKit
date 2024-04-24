@@ -42,7 +42,7 @@ FLOWETL_BUILD_FILES := flowetl/setup.py flowetl/setup.cfg flowetl/pyproject.toml
 # so that virtual env can be recreated when .python-version changes
 VENVTARGET := $(VENVDIR)/.created
 # Recursive variable because versions should be read when a target is made, not before
-VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
+VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell $(VENVDIR)/bin/python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
 
 .PHONY: lock upgrade sync dev-sync unit-tests integration-tests tests clean deep-clean
 
@@ -51,9 +51,8 @@ lock: requirements.txt dev-requirements.txt
 # Create virtual env if it doesn't exist, and install pip-tools
 $(VENVTARGET): .python-version
 	rm -rf "$(VENVDIR)"
-	eval "$(shell pyenv init --path)"
 	pyenv install -s $(shell pyenv local)
-	python -m venv $(VENVDIR)
+	eval "$(shell pyenv init --path)"; python -m venv $(VENVDIR)
 	$(ACTIVATE) pip install --upgrade pip pip-tools
 	touch $(VENVTARGET)
 
@@ -70,12 +69,12 @@ ifdef CI
 # requirements files should not be rebuilt when running in CI
 	$(error dev-requirements.txt is out of date)
 else
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) -c constraints.txt -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
 endif
 
 upgrade: constraints.txt .airflow-version .python-version $(FLOWETL_BUILD_FILES) | $(VENVTARGET)
 	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c constraints.txt --output-file requirements.txt flowetl/setup.py
-	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
+	$(ACTIVATE) $(VERSION_ENVS) $(PIP_COMPILE) --upgrade -c constraints.txt -c requirements.txt --output-file dev-requirements.txt --extra dev flowetl/setup.py
 
 sync: requirements.txt | $(VENVTARGET)
 	$(ACTIVATE) $(PIP_SYNC) requirements.txt
