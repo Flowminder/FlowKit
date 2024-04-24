@@ -42,7 +42,7 @@ FLOWETL_BUILD_FILES := flowetl/setup.py flowetl/setup.cfg flowetl/pyproject.toml
 # so that virtual env can be recreated when .python-version changes
 VENVTARGET := $(VENVDIR)/.created
 # Recursive variable because versions should be read when a target is made, not before
-VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
+VERSION_ENVS = AIRFLOW_VERSION=$(shell cat .airflow-version) PYTHON_VERSION=$(shell $(VENVDIR)/bin/python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
 
 .PHONY: lock upgrade sync dev-sync unit-tests integration-tests tests clean deep-clean
 
