@@ -36,5 +36,17 @@ setup(
         "apache-airflow[postgres] >= 2.0.0",
         "click",
     ],
+    extras_require={
+        "dev": [
+            "structlog",
+            "pytest",
+            "psycopg2-binary",
+            "pandas",
+            "docker",
+            "versioneer",
+            "pytest-cov",
+            "black == 24.3.0",
+        ]
+    },
     python_requires=">=3.6",
 )
