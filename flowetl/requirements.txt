@@ -1716,8 +1716,8 @@ python-dateutil==2.9.0.post0 \
     #   flask-appbuilder
     #   pendulum
     #   time-machine
-python-nvd3==0.15.0 \
-    --hash=sha256:fbd75ff47e0ef255b4aa4f3a8b10dc8b4024aa5a9a7abed5b2406bd3cb817715
+python-nvd3==0.16.0 \
+    --hash=sha256:0115887289b3f751716ddd05c7b53ac5f05e71201e52496decdac453a50dcf7e
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.4/constraints-3.10.txt
     #   apache-airflow
