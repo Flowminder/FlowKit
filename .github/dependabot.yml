@@ -133,7 +133,7 @@ updates:
       separator: "-"
     open-pull-requests-limit: 10
     ignore:
-      - dependency-name: "apache-airflow" # Airflow package version needs to stay in sync with Airflow docker image version
+      - dependency-name: "*" # Dependabot can't handle the constraints for airflow
     labels:
       - FlowETL
   - package-ecosystem: pip
