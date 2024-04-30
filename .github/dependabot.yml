@@ -1,0 +1,169 @@
+version: 2
+updates:
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "apache/airflow" # Airflow image version needs to stay in sync with version in flowetl Pipfile
+  - package-ecosystem: npm
+    directory: "/flowauth/frontend"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    labels:
+      - FlowAuth
+  - package-ecosystem: pip
+    directory: "/integration_tests"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 0
+    labels:
+      - tests
+    allow:
+      - dependency-type: direct
+      - dependency-type: indirect
+  - package-ecosystem: pip
+    directory: "/docs"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 0
+    labels:
+      - docs
+    allow:
+      - dependency-type: direct
+      - dependency-type: indirect
+  - package-ecosystem: pip
+    directory: "/flowkit_jwt_generator"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+  - package-ecosystem: pip
+    directory: "/flowclient"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    labels:
+      - FlowClient
+  - package-ecosystem: pip
+    directory: "/flowauth"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    labels:
+      - FlowAuth
+  - package-ecosystem: pip
+    directory: "/flowdb/test_data"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    labels:
+      - FlowDB
+  - package-ecosystem: pip
+    directory: "/flowdb/testdata/synthetic_data"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    labels:
+      - FlowDB
+  - package-ecosystem: pip
+    directory: "/flowdb"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    labels:
+      - FlowDB
+  - package-ecosystem: pip
+    directory: "/deployment"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+  - package-ecosystem: pip
+    directory: "/flowetl"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "apache-airflow" # Airflow package version needs to stay in sync with Airflow docker image version
+    labels:
+      - FlowETL
+  - package-ecosystem: pip
+    directory: "/flowapi"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "openapi-schema-validator" # Required until https://github.com/Flowminder/FlowKit/issues/6006 is resolved
+    labels:
+      - FlowAPI
+  - package-ecosystem: pip
+    directory: "/flowmachine"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: Europe/London
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "pglast" # pglast version is pinned because different versions may produce different query IDs
+    labels:
+      - FlowMachine
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      # Check for updates to GitHub Actions every week
+      interval: "weekly"
