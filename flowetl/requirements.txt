@@ -494,9 +494,9 @@ exceptiongroup==1.2.0 \
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.4/constraints-3.10.txt
     #   anyio
-flask==2.2.5 \
-    --hash=sha256:58107ed83443e86067e41eff4631b058178191a355886f8e479e347fa1285fdf \
-    --hash=sha256:edee9b0a7ff26621bd5a8c10ff484ae28737a2410d99b0bb9a6850c7fb977aa0
+flask==3.0.3 \
+    --hash=sha256:34e815dfaa43340d1d15a5c3a02b8476004037eb4840b34910c6e21679d288f3 \
+    --hash=sha256:ceb27b0af3823ea2737928a4d99d125a06175b8512c445cbd9a9ce200ef76842
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.4/constraints-3.10.txt
     #   apache-airflow
