@@ -410,9 +410,9 @@ configupdater==3.2 \
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.4/constraints-3.10.txt
     #   apache-airflow
-connexion==2.14.2 \
-    --hash=sha256:a73b96a0e07b16979a42cde7c7e26afe8548099e352cf350f80c57185e0e0b36 \
-    --hash=sha256:dbc06f52ebeebcf045c9904d570f24377e8bbd5a6521caef15a06f634cf85646
+connexion==3.0.6 \
+    --hash=sha256:6dba2e3d3920653a16d41b373ee8b104281d078c2a3916b773b575c8e919eb1b \
+    --hash=sha256:9172600de1fd315ca368d6005f6cd56672559f4c7a3b5b239f0b3d473a10758f
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.8.4/constraints-3.10.txt
     #   apache-airflow
