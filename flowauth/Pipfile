@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "<=2.2.5"
-sqlalchemy = "<1.4.45"
+flask = "<=3.0.3"
+sqlalchemy = "<2.0.30"
 flask-sqlalchemy = "*"
 flask-login = "*"
 flask-principal = "*"
@@ -31,7 +31,7 @@ flask-migrate = "*"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-black = {extras = ["jupyter"],version = "==24.3.0"}
+black = {extras = ["jupyter"],version = "==24.4.2"}
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 

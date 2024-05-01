@@ -13,7 +13,7 @@ cryptography = "*" # This _should_ get installed given the flask-jwt-extended ex
 structlog = "*"
 python-rapidjson = "*"
 pyyaml = "==5.3.1" # Pinned to v5.3.1 pending https://github.com/Flowminder/FlowKit/issues/6015
-jsonschema = "==4.17.3" # Pinned to v4.17.3 pending https://github.com/Flowminder/FlowKit/issues/6015
+jsonschema = "==4.22.0" # Pinned to v4.17.3 pending https://github.com/Flowminder/FlowKit/issues/6015
 apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
 prance = {extras = ["osv"],version = "*"}
@@ -25,7 +25,7 @@ pytest = "*"
 pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
-black = {extras = ["jupyter"],version = "==24.3.0"}
+black = {extras = ["jupyter"],version = "==24.4.2"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}
 flowapi = {editable = true, path = "."}
 
