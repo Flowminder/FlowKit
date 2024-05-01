@@ -12,7 +12,7 @@ quart-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
 cryptography = "*" # This _should_ get installed given the flask-jwt-extended extra, but is getting put in the develop section of the lockfile
 structlog = "*"
 python-rapidjson = "*"
-pyyaml = "==5.3.1" # Pinned to v5.3.1 pending https://github.com/Flowminder/FlowKit/issues/6015
+pyyaml = "==5.4" # Pinned to v5.3.1 pending https://github.com/Flowminder/FlowKit/issues/6015
 jsonschema = "==4.22.0" # Pinned to v4.17.3 pending https://github.com/Flowminder/FlowKit/issues/6015
 apispec = {extras = ["yaml"],version = "*"}
 get-secret-or-env-var = "*"
