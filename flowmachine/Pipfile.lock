@@ -722,20 +722,20 @@
         },
         "approval-utilities": {
             "hashes": [
-                "sha256:892916ce07694fbc95611310b6b478fbe5ce740acce6b75ed374daedd860a886",
-                "sha256:e5beee1882102ce7dccc0261d66a72fac426f78523578f51df92ff260a36857d"
+                "sha256:0e0cc217a8182e4c05d4520060b0d06909dac189f0a233b9e956e803f828cbed",
+                "sha256:7df6cc6d1c527fdb7843ea5b75c376629992e3e7d93cf0e63c8b8949a57ad1d3"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==11.2.1"
+            "version": "==12.0.0"
         },
         "approvaltests": {
             "hashes": [
-                "sha256:822a8d77bad82597c34ee19ddebd7db3b0edcac71ec1dae0fc06c26bcb79d6c3",
-                "sha256:9d9fc766cd5e024f4d03e6863231100e7b4bea2bcaff590c54eb358dd5cd6c57"
+                "sha256:2769c981b2dd6388253441a83799bbc4cd7a77eed55b6c71d713d0d47dd21621",
+                "sha256:390466cd444af20342cdef9301b5b00d19d29d16704a6c3a421b57c2d39cf7f6"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==11.2.1"
+            "version": "==12.0.0"
         },
         "asttokens": {
             "hashes": [
@@ -2257,7 +2257,6 @@
                 "sha256:fd1592b3fdf65fff2ad0004b5e363300ef59ced41c2e6b3a99d4089fa8c5435d",
                 "sha256:fd66fc5d0da6d9815ba2cebeb4205f95818ff4b79c3ebe268e75d961704af52f"
             ],
-            "index": "pypi",
             "markers": "python_version >= '3.6'",
             "version": "==6.0.1"
         },
@@ -2519,11 +2518,11 @@
         },
         "testfixtures": {
             "hashes": [
-                "sha256:80848990304859c3a2b68dfe4bcaf77b6e6425a3925047bc25a52755277bfa6d",
-                "sha256:ec70aa421ed18004f0aff31fa8f319fd2322253f557796a2f754d785dc40495d"
+                "sha256:2896b81ece2e30356baf8d76931a7bf4b8f0d58a707ea120dd5d021b20e7d5af",
+                "sha256:ef43b657134c87e8a3044f4b02a32ae2ebddf44b2b97bc7989a20116403988ee"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==8.1.0"
+            "version": "==8.2.0"
         },
         "tokenize-rt": {
             "hashes": [
@@ -2570,7 +2569,7 @@
                 "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0",
                 "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_version >= '3.8'",
             "version": "==4.11.0"
         },
         "tzdata": {
