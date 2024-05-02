@@ -66,12 +66,12 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:4e65e9e0d80fc9e609574b9983cf32579f305c718afb30d7233ab818571768c3",
-                "sha256:f085493f79efb0644f270a9bf2892843142d80d7174bbbd2f3713f2a589dc633"
+                "sha256:70b54a6282f4704d12c0a41599682c5c5450e843b9ec406308653b47c59648a1",
+                "sha256:82408deadd8b33d56338d2182d455db632c6313aa2af61916672146bb32edc56"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==3.21.1"
+            "version": "==3.21.2"
         },
         "marshmallow-oneofschema": {
             "hashes": [
