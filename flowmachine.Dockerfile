@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM python:3.8-slim-bullseye@sha256:2dc9bed48390a98fb7f7cc926e8974d646a18fed52b542f384df812414e4d5c7
+FROM python:3.12-slim-bullseye@sha256:4cfeb1de1e0c1e55def8091b5efa9c058c0787c607e720431725b078e5512a48
 
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
