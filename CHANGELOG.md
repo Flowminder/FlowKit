@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+## [1.25.0]
+
+### Fixed
+- FlowETL `get_qa_checks` no longer attempts to create duplicate tasks for QA checks defined in the DAG folder. [#6494](https://github.com/Flowminder/FlowKit/issues/6494)
+
+### Removed
+- Removed `flowpyter-task` from the FlowETL Docker image. For a Docker image with `flowpyter-task` included, see (flowminder/flowbot)[https://hub.docker.com/r/flowminder/flowbot].
+
 ## [1.24.0]
 
 ### Added
@@ -1090,7 +1098,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.24.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.25.0...master
+[1.25.0]: https://github.com/Flowminder/FlowKit/compare/1.24.0...1.25.0
 [1.24.0]: https://github.com/Flowminder/FlowKit/compare/1.23.0...1.24.0
 [1.23.0]: https://github.com/Flowminder/FlowKit/compare/1.22.0...1.23.0
 [1.22.0]: https://github.com/Flowminder/FlowKit/compare/1.21.1...1.22.0
