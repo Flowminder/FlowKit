@@ -210,7 +210,7 @@ async def query_to_scopes(query_dict):
     except Exception:
         raise BadQueryError
     agg_unit = await get_agg_unit(query_dict)
-    return [f"{agg_unit}:{tl_query_name}:{query_name}" for query_name in query_list]
+    return list(set(f"{agg_unit}:{tl_query_name}:{query_name}" for query_name in query_list))
 
 
 def tl_schema_scope_string(tl_query, query_string) -> set:
