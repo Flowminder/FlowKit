@@ -72,21 +72,21 @@ def grab_on_key_list(in_iter, search_keys):
 @grab_on_key_list.register
 def _(in_iter: dict, search_keys: list):
     for key, value in in_iter.items():
-        try:
-            yield _search_for_nested_keys(in_iter, search_keys)
-        except (KeyError, TypeError):
-            pass
         yield from grab_on_key_list(value, search_keys)
+    try:
+        yield _search_for_nested_keys(in_iter, search_keys)
+    except (KeyError, TypeError):
+        pass
 
 
 @grab_on_key_list.register
 def _(in_iter: list, search_keys: list):
     for value in in_iter:
-        try:
-            yield _search_for_nested_keys(value, search_keys)
-        except (KeyError, TypeError):
-            pass
         yield from grab_on_key_list(value, search_keys)
+    try:
+        yield _search_for_nested_keys(value, search_keys)
+    except (KeyError, TypeError):
+        pass
 
 
 def _search_for_nested_keys(in_iter: dict, search_keys: Any) -> Any:

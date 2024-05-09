@@ -3,7 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import prance
 import quart
+from flowapi import permissions
 from flowapi.permissions import (
+    query_to_scopes,
     tl_schema_scope_string,
     schema_to_scopes,
     grab_on_key_list,
@@ -146,6 +148,32 @@ def test_scopes_from_query():
         "DUMMY_UNIT_2:test_query:nested_query",
     }
     assert tl_schema_scope_string(tl_query, input) == expected
+
+    # TODO Test that params dedupe properly
+
+
+async def test_query_dedupes(monkeypatch):
+    async def mock_get_agg_unit(query_dict):
+        return "dummy_agg_unit"
+
+    monkeypatch.setattr(permissions, "get_agg_unit", mock_get_agg_unit)
+    input = dict(
+        query_kind="test",
+        aggregation_unit="dummy_agg_unit",
+        sub_param_1=dict(
+            query_kind="dummy_query",
+            aggregation_unit="dummy_agg_unit",
+            date="2020/01/01",
+        ),
+        sub_param_2=dict(
+            query_kind="dummy_query",
+            aggregation_unit="dummy_agg_unit",
+            date="2020/01/02",
+        ),
+    )
+    expected = ["dummy_agg_unit:test:test", "dummy_agg_unit:test:dummy_query"]
+    result = await query_to_scopes(input)
+    assert sorted(expected) == sorted(result)
 
 
 def test_grab_on_key_list():
