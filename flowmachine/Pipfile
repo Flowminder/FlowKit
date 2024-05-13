@@ -33,7 +33,7 @@ pre_commit = "*"
 geojson = "*"
 geopandas = "*"
 descartes = "*"
-black = {extras = ["jupyter"],version = "==24.4.2"}
+black = {extras = ["jupyter"],version = "==24.3.0"}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
