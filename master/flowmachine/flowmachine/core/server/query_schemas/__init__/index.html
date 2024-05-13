@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../logging/">
+        <link rel="prev" href="../../exceptions/">
       
       
-        <link rel="next" href="exposed_datetime_mixin/">
+        <link rel="next" href="../active_at_reference_location_counts/">
       
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
     
     
       
-        <title>mixins - FlowKit</title>
+        <title>query_schemas - FlowKit</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.732c4fb1.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,17 +46,17 @@
       
     
     
-      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../../../../../stylesheets/extra.css">
     
       <link rel="stylesheet" href="https://unpkg.com/mermaid@7.1.2/dist/mermaid.css">
     
-      <link rel="stylesheet" href="../../../../css/ansi-colours.css">
+      <link rel="stylesheet" href="../../../../../../css/ansi-colours.css">
     
-      <link rel="stylesheet" href="../../../../css/jupyter-cells.css">
+      <link rel="stylesheet" href="../../../../../../css/jupyter-cells.css">
     
-      <link rel="stylesheet" href="../../../../css/pandas-dataframe.css">
+      <link rel="stylesheet" href="../../../../../../css/pandas-dataframe.css">
     
-    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#flowmachinecoremixins" class="md-skip">
+        <a href="#flowmachinecoreserverquery_schemas" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="FlowKit" class="md-header__button md-logo" aria-label="FlowKit" data-md-component="logo">
+    <a href="../../../../../.." title="FlowKit" class="md-header__button md-logo" aria-label="FlowKit" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 11a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m4-8a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.6 11.6c1.65 0 3 1.34 3 3a3 3 0 0 1-3 3c-1.66 0-3-1.35-3-3a3 3 0 0 1 3-3Z"/></svg>
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              mixins
+              query_schemas
             
           </span>
         </div>
@@ -162,7 +162,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../.." class="md-tabs__link">
+      <a href="../../../../../.." class="md-tabs__link">
         
   
     
@@ -179,7 +179,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../install/" class="md-tabs__link">
+      <a href="../../../../../../install/" class="md-tabs__link">
         
   
     
@@ -198,7 +198,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../analyst/" class="md-tabs__link">
+        <a href="../../../../../../analyst/" class="md-tabs__link">
           
   
   Analysts
@@ -218,7 +218,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../../../developer/" class="md-tabs__link">
+        <a href="../../../../../../developer/" class="md-tabs__link">
           
   
   Developers
@@ -236,7 +236,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../administrator/" class="md-tabs__link">
+        <a href="../../../../../../administrator/" class="md-tabs__link">
           
   
   System Administrators
@@ -252,7 +252,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../license/" class="md-tabs__link">
+      <a href="../../../../../../license/" class="md-tabs__link">
         
   
     
@@ -269,7 +269,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../changelog/" class="md-tabs__link">
+      <a href="../../../../../../changelog/" class="md-tabs__link">
         
   
     
@@ -303,7 +303,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="FlowKit" class="md-nav__button md-logo" aria-label="FlowKit" data-md-component="logo">
+    <a href="../../../../../.." title="FlowKit" class="md-nav__button md-logo" aria-label="FlowKit" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 11a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m4-8a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.6 11.6c1.65 0 3 1.34 3 3a3 3 0 0 1-3 3c-1.66 0-3-1.35-3-3a3 3 0 0 1 3-3Z"/></svg>
@@ -333,7 +333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../.." class="md-nav__link">
+      <a href="../../../../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -353,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../install/" class="md-nav__link">
+      <a href="../../../../../../install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -411,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/" class="md-nav__link">
+      <a href="../../../../../../analyst/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -470,7 +470,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/flowclient/example_usage/" class="md-nav__link">
+      <a href="../../../../../../analyst/flowclient/example_usage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -567,7 +567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -588,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/_version/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/_version/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -609,7 +609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/aggregates/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/aggregates/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -630,7 +630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/api_query/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/api_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -651,7 +651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/async_api_query/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/async_api_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -672,7 +672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/async_client/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/async_client/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -693,7 +693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/async_connection/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/async_connection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -714,7 +714,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/client/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/client/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -735,7 +735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/connection/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/connection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -756,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/errors/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/errors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -777,7 +777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowclient/flowclient/query_specs/" class="md-nav__link">
+      <a href="../../../../../../flowclient/flowclient/query_specs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -860,7 +860,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/worked_examples/" class="md-nav__link">
+      <a href="../../../../../../analyst/worked_examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -881,7 +881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/worked_examples/flows-above-normal/" class="md-nav__link">
+      <a href="../../../../../../analyst/worked_examples/flows-above-normal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -902,7 +902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/worked_examples/commuting-patterns/" class="md-nav__link">
+      <a href="../../../../../../analyst/worked_examples/commuting-patterns/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -923,7 +923,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/worked_examples/cell-towers-per-region/" class="md-nav__link">
+      <a href="../../../../../../analyst/worked_examples/cell-towers-per-region/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -944,7 +944,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/worked_examples/unique-subscriber-counts/" class="md-nav__link">
+      <a href="../../../../../../analyst/worked_examples/unique-subscriber-counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -965,7 +965,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/worked_examples/joined-spatial-aggregate/" class="md-nav__link">
+      <a href="../../../../../../analyst/worked_examples/joined-spatial-aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1032,7 +1032,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/advanced_usage/" class="md-nav__link">
+      <a href="../../../../../../analyst/advanced_usage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1091,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../analyst/advanced_usage/worked_examples/mobile-data-usage/" class="md-nav__link">
+      <a href="../../../../../../analyst/advanced_usage/worked_examples/mobile-data-usage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1178,7 +1178,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/" class="md-nav__link">
+      <a href="../../../../../../developer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1199,7 +1199,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/dev_environment_setup/" class="md-nav__link">
+      <a href="../../../../../../developer/dev_environment_setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1300,7 +1300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../../../../__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1321,7 +1321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../_version/" class="md-nav__link">
+      <a href="../../../../_version/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1382,7 +1382,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../../__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1403,7 +1403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cache/" class="md-nav__link">
+      <a href="../../../cache/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1424,7 +1424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../connection/" class="md-nav__link">
+      <a href="../../../connection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1445,7 +1445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../context/" class="md-nav__link">
+      <a href="../../../context/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1466,7 +1466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../custom_query/" class="md-nav__link">
+      <a href="../../../custom_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1487,7 +1487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../date_range/" class="md-nav__link">
+      <a href="../../../date_range/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1508,7 +1508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dependency_graph/" class="md-nav__link">
+      <a href="../../../dependency_graph/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1529,7 +1529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dummy_query/" class="md-nav__link">
+      <a href="../../../dummy_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1588,7 +1588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../errors/" class="md-nav__link">
+      <a href="../../../errors/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1609,7 +1609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../errors/flowmachine_errors/" class="md-nav__link">
+      <a href="../../../errors/flowmachine_errors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1638,7 +1638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../geotable/" class="md-nav__link">
+      <a href="../../../geotable/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1659,7 +1659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../grid/" class="md-nav__link">
+      <a href="../../../grid/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1680,7 +1680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hour_slice/" class="md-nav__link">
+      <a href="../../../hour_slice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1701,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../init/" class="md-nav__link">
+      <a href="../../../init/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1722,7 +1722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../join/" class="md-nav__link">
+      <a href="../../../join/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1743,7 +1743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../join_to_location/" class="md-nav__link">
+      <a href="../../../join_to_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1764,7 +1764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../logging/" class="md-nav__link">
+      <a href="../../../logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1782,8 +1782,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1793,11 +1791,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_17" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_17" >
         
           
           <label class="md-nav__link" for="__nav_4_3_1_3_17" id="__nav_4_3_1_3_17_label" tabindex="0">
@@ -1811,7 +1809,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_17_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_17_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3_1_3_17">
             <span class="md-nav__icon md-icon"></span>
             Mixins
@@ -1822,19 +1820,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../mixins/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1843,7 +1832,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1856,7 +1844,7 @@
   
   
     <li class="md-nav__item">
-      <a href="exposed_datetime_mixin/" class="md-nav__link">
+      <a href="../../../mixins/exposed_datetime_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1877,7 +1865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="geodata_mixin/" class="md-nav__link">
+      <a href="../../../mixins/geodata_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1898,7 +1886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="graph_mixin/" class="md-nav__link">
+      <a href="../../../mixins/graph_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1927,7 +1915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../query/" class="md-nav__link">
+      <a href="../../../query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1948,7 +1936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../query_info_lookup/" class="md-nav__link">
+      <a href="../../../query_info_lookup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1969,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../query_state/" class="md-nav__link">
+      <a href="../../../query_state/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1990,7 +1978,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../random/" class="md-nav__link">
+      <a href="../../../random/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2008,6 +1996,8 @@
                 
   
   
+    
+  
   
   
     
@@ -2017,11 +2007,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22" checked>
         
           
           <label class="md-nav__link" for="__nav_4_3_1_3_22" id="__nav_4_3_1_3_22_label" tabindex="0">
@@ -2035,7 +2025,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_22_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_22_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_3_1_3_22">
             <span class="md-nav__icon md-icon"></span>
             Server
@@ -2049,7 +2039,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/" class="md-nav__link">
+      <a href="../../__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2070,7 +2060,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/action_handlers/" class="md-nav__link">
+      <a href="../../action_handlers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2091,7 +2081,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/action_request_schema/" class="md-nav__link">
+      <a href="../../action_request_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2112,7 +2102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/exceptions/" class="md-nav__link">
+      <a href="../../exceptions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2130,6 +2120,8 @@
                 
   
   
+    
+  
   
   
     
@@ -2139,11 +2131,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22_5" checked>
         
           
           <label class="md-nav__link" for="__nav_4_3_1_3_22_5" id="__nav_4_3_1_3_22_5_label" tabindex="0">
@@ -2157,7 +2149,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_4_3_1_3_22_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_4_3_1_3_22_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_3_1_3_22_5">
             <span class="md-nav__icon md-icon"></span>
             Query schemas
@@ -2168,10 +2160,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../server/query_schemas/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -2180,6 +2181,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -2192,7 +2194,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/active_at_reference_location_counts/" class="md-nav__link">
+      <a href="../active_at_reference_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2213,7 +2215,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/aggregate_network_objects/" class="md-nav__link">
+      <a href="../aggregate_network_objects/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2234,7 +2236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/aggregation_unit/" class="md-nav__link">
+      <a href="../aggregation_unit/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2255,7 +2257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/base_exposed_query/" class="md-nav__link">
+      <a href="../base_exposed_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2276,7 +2278,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/base_query_with_sampling/" class="md-nav__link">
+      <a href="../base_query_with_sampling/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2297,7 +2299,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/base_schema/" class="md-nav__link">
+      <a href="../base_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2318,7 +2320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/coalesced_location/" class="md-nav__link">
+      <a href="../coalesced_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2339,7 +2341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/consecutive_trips_od_matrix/" class="md-nav__link">
+      <a href="../consecutive_trips_od_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2360,7 +2362,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/custom_fields/" class="md-nav__link">
+      <a href="../custom_fields/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2381,7 +2383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/daily_location/" class="md-nav__link">
+      <a href="../daily_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2402,7 +2404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/dfs_metric_total_amount/" class="md-nav__link">
+      <a href="../dfs_metric_total_amount/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2423,7 +2425,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/displacement/" class="md-nav__link">
+      <a href="../displacement/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2444,7 +2446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/dummy_query/" class="md-nav__link">
+      <a href="../dummy_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2465,7 +2467,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/event_count/" class="md-nav__link">
+      <a href="../event_count/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2486,7 +2488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/field_mixins/" class="md-nav__link">
+      <a href="../field_mixins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2507,7 +2509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/flowmachine_query/" class="md-nav__link">
+      <a href="../flowmachine_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2528,7 +2530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/flows/" class="md-nav__link">
+      <a href="../flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2549,7 +2551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/geography/" class="md-nav__link">
+      <a href="../geography/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2570,7 +2572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/handset/" class="md-nav__link">
+      <a href="../handset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2591,7 +2593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/histogram_aggregate/" class="md-nav__link">
+      <a href="../histogram_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2612,7 +2614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/inflows/" class="md-nav__link">
+      <a href="../inflows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2633,7 +2635,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/joined_spatial_aggregate/" class="md-nav__link">
+      <a href="../joined_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2654,7 +2656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/labelled_flows/" class="md-nav__link">
+      <a href="../labelled_flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2675,7 +2677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/labelled_spatial_aggregate/" class="md-nav__link">
+      <a href="../labelled_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2696,7 +2698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/location_event_counts/" class="md-nav__link">
+      <a href="../location_event_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2717,7 +2719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/location_introversion/" class="md-nav__link">
+      <a href="../location_introversion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2738,7 +2740,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/location_visits/" class="md-nav__link">
+      <a href="../location_visits/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2759,7 +2761,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/majority_location/" class="md-nav__link">
+      <a href="../majority_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2780,7 +2782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/meaningful_locations/" class="md-nav__link">
+      <a href="../meaningful_locations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2801,7 +2803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/mobility_classification/" class="md-nav__link">
+      <a href="../mobility_classification/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2822,7 +2824,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/modal_location/" class="md-nav__link">
+      <a href="../modal_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2843,7 +2845,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/most_frequent_location/" class="md-nav__link">
+      <a href="../most_frequent_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2864,7 +2866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/nocturnal_events/" class="md-nav__link">
+      <a href="../nocturnal_events/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2885,7 +2887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/one_of_query/" class="md-nav__link">
+      <a href="../one_of_query/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2906,7 +2908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/outflows/" class="md-nav__link">
+      <a href="../outflows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2927,7 +2929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/pareto_interactions/" class="md-nav__link">
+      <a href="../pareto_interactions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2948,7 +2950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/radius_of_gyration/" class="md-nav__link">
+      <a href="../radius_of_gyration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2969,7 +2971,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/random_sample/" class="md-nav__link">
+      <a href="../random_sample/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2990,7 +2992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/reference_location/" class="md-nav__link">
+      <a href="../reference_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3011,7 +3013,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/spatial_aggregate/" class="md-nav__link">
+      <a href="../spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3032,7 +3034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/subscriber_degree/" class="md-nav__link">
+      <a href="../subscriber_degree/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3053,7 +3055,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/subscriber_subset/" class="md-nav__link">
+      <a href="../subscriber_subset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3074,7 +3076,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/topup_amount/" class="md-nav__link">
+      <a href="../topup_amount/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3095,7 +3097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/topup_balance/" class="md-nav__link">
+      <a href="../topup_balance/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3116,7 +3118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/total_active_periods/" class="md-nav__link">
+      <a href="../total_active_periods/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3137,7 +3139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/total_network_objects/" class="md-nav__link">
+      <a href="../total_network_objects/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3158,7 +3160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/trips_od_matrix/" class="md-nav__link">
+      <a href="../trips_od_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3179,7 +3181,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/unique_location_counts/" class="md-nav__link">
+      <a href="../unique_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3200,7 +3202,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/unique_locations/" class="md-nav__link">
+      <a href="../unique_locations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3221,7 +3223,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/unique_subscriber_counts/" class="md-nav__link">
+      <a href="../unique_subscriber_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3242,7 +3244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/unique_visitor_counts/" class="md-nav__link">
+      <a href="../unique_visitor_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3263,7 +3265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/unmoving_at_reference_location_counts/" class="md-nav__link">
+      <a href="../unmoving_at_reference_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3284,7 +3286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/unmoving_counts/" class="md-nav__link">
+      <a href="../unmoving_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3305,7 +3307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/query_schemas/visited_most_days/" class="md-nav__link">
+      <a href="../visited_most_days/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3334,7 +3336,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/server/" class="md-nav__link">
+      <a href="../../server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3355,7 +3357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/server_config/" class="md-nav__link">
+      <a href="../../server_config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3376,7 +3378,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/utils/" class="md-nav__link">
+      <a href="../../utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3397,7 +3399,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/zmq_helpers/" class="md-nav__link">
+      <a href="../../zmq_helpers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3426,7 +3428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../spatial_unit/" class="md-nav__link">
+      <a href="../../../spatial_unit/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3447,7 +3449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sqlalchemy_table_definitions/" class="md-nav__link">
+      <a href="../../../sqlalchemy_table_definitions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3468,7 +3470,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sqlalchemy_utils/" class="md-nav__link">
+      <a href="../../../sqlalchemy_utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3489,7 +3491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../subscriber_subsetter/" class="md-nav__link">
+      <a href="../../../subscriber_subsetter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3510,7 +3512,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../subset/" class="md-nav__link">
+      <a href="../../../subset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3531,7 +3533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../table/" class="md-nav__link">
+      <a href="../../../table/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3552,7 +3554,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../union/" class="md-nav__link">
+      <a href="../../../union/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3619,7 +3621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/" class="md-nav__link">
+      <a href="../../../../features/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3678,7 +3680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/dfs/" class="md-nav__link">
+      <a href="../../../../features/dfs/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3699,7 +3701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/dfs/total_amount_for_metric/" class="md-nav__link">
+      <a href="../../../../features/dfs/total_amount_for_metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3766,7 +3768,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/" class="md-nav__link">
+      <a href="../../../../features/location/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3787,7 +3789,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/active_at_reference_location_counts/" class="md-nav__link">
+      <a href="../../../../features/location/active_at_reference_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3808,7 +3810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/consecutive_trips_od_matrix/" class="md-nav__link">
+      <a href="../../../../features/location/consecutive_trips_od_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3829,7 +3831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/flows/" class="md-nav__link">
+      <a href="../../../../features/location/flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3850,7 +3852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/joined_spatial_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/joined_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3871,7 +3873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/labelled_flows/" class="md-nav__link">
+      <a href="../../../../features/location/labelled_flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3892,7 +3894,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/labelled_spatial_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/labelled_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3913,7 +3915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/location_introversion/" class="md-nav__link">
+      <a href="../../../../features/location/location_introversion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3934,7 +3936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/meaningful_locations_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/meaningful_locations_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3955,7 +3957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/meaningful_locations_od/" class="md-nav__link">
+      <a href="../../../../features/location/meaningful_locations_od/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3976,7 +3978,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/pwo/" class="md-nav__link">
+      <a href="../../../../features/location/pwo/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3997,7 +3999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_active_at_reference_location_counts/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_active_at_reference_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4018,7 +4020,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_consecutive_trips_od_matrix/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_consecutive_trips_od_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4039,7 +4041,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_flows/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4060,7 +4062,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_in_out_flows/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_in_out_flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4081,7 +4083,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_joined_spatial_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_joined_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4102,7 +4104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_labelled_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_labelled_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4123,7 +4125,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_labelled_flows/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_labelled_flows/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4144,7 +4146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_labelled_spatial_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_labelled_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4165,7 +4167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_location_introversion/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_location_introversion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4186,7 +4188,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_location_metric/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_location_metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4207,7 +4209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_meaningful_locations_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_meaningful_locations_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4228,7 +4230,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_meaningful_locations_od/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_meaningful_locations_od/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4249,7 +4251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_spatial_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4270,7 +4272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_total_events/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_total_events/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4291,7 +4293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_trips_od_matrix/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_trips_od_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4312,7 +4314,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_unique_subscriber_counts/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_unique_subscriber_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4333,7 +4335,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_unique_vistor_counts/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_unique_vistor_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4354,7 +4356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_unmoving_at_reference_location_counts/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_unmoving_at_reference_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4375,7 +4377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/redacted_unmoving_counts/" class="md-nav__link">
+      <a href="../../../../features/location/redacted_unmoving_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4396,7 +4398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/spatial_aggregate/" class="md-nav__link">
+      <a href="../../../../features/location/spatial_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4417,7 +4419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/total_events/" class="md-nav__link">
+      <a href="../../../../features/location/total_events/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4438,7 +4440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/trips_od_matrix/" class="md-nav__link">
+      <a href="../../../../features/location/trips_od_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4459,7 +4461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/unique_subscriber_counts/" class="md-nav__link">
+      <a href="../../../../features/location/unique_subscriber_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4480,7 +4482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/unique_visitor_counts/" class="md-nav__link">
+      <a href="../../../../features/location/unique_visitor_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4501,7 +4503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/unmoving_at_reference_location_counts/" class="md-nav__link">
+      <a href="../../../../features/location/unmoving_at_reference_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4522,7 +4524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/location/unmoving_counts/" class="md-nav__link">
+      <a href="../../../../features/location/unmoving_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4589,7 +4591,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/network/" class="md-nav__link">
+      <a href="../../../../features/network/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4610,7 +4612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/network/total_network_objects/" class="md-nav__link">
+      <a href="../../../../features/network/total_network_objects/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4677,7 +4679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/raster/" class="md-nav__link">
+      <a href="../../../../features/raster/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4698,7 +4700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/raster/raster_statistics/" class="md-nav__link">
+      <a href="../../../../features/raster/raster_statistics/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4765,7 +4767,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/" class="md-nav__link">
+      <a href="../../../../features/spatial/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4786,7 +4788,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/circles/" class="md-nav__link">
+      <a href="../../../../features/spatial/circles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4807,7 +4809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/distance_matrix/" class="md-nav__link">
+      <a href="../../../../features/spatial/distance_matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4828,7 +4830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/geography/" class="md-nav__link">
+      <a href="../../../../features/spatial/geography/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4849,7 +4851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/location_area/" class="md-nav__link">
+      <a href="../../../../features/spatial/location_area/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4870,7 +4872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/location_cluster/" class="md-nav__link">
+      <a href="../../../../features/spatial/location_cluster/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4891,7 +4893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/spatial/versioned_infrastructure/" class="md-nav__link">
+      <a href="../../../../features/spatial/versioned_infrastructure/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4958,7 +4960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/" class="md-nav__link">
+      <a href="../../../../features/subscriber/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4979,7 +4981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/active_at_reference_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/active_at_reference_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5000,7 +5002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/active_subscribers/" class="md-nav__link">
+      <a href="../../../../features/subscriber/active_subscribers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5021,7 +5023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/call_days/" class="md-nav__link">
+      <a href="../../../../features/subscriber/call_days/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5042,7 +5044,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/coalesced_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/coalesced_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5063,7 +5065,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/contact_balance/" class="md-nav__link">
+      <a href="../../../../features/subscriber/contact_balance/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5084,7 +5086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/contact_reciprocal/" class="md-nav__link">
+      <a href="../../../../features/subscriber/contact_reciprocal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5105,7 +5107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/contact_reference_locations_stats/" class="md-nav__link">
+      <a href="../../../../features/subscriber/contact_reference_locations_stats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5126,7 +5128,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/daily_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/daily_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5147,7 +5149,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/day_trajectories/" class="md-nav__link">
+      <a href="../../../../features/subscriber/day_trajectories/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5168,7 +5170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/displacement/" class="md-nav__link">
+      <a href="../../../../features/subscriber/displacement/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5189,7 +5191,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/distance_counterparts/" class="md-nav__link">
+      <a href="../../../../features/subscriber/distance_counterparts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5210,7 +5212,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/distance_series/" class="md-nav__link">
+      <a href="../../../../features/subscriber/distance_series/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5231,7 +5233,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/entropy/" class="md-nav__link">
+      <a href="../../../../features/subscriber/entropy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5252,7 +5254,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/event_count/" class="md-nav__link">
+      <a href="../../../../features/subscriber/event_count/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5273,7 +5275,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/event_type_proportion/" class="md-nav__link">
+      <a href="../../../../features/subscriber/event_type_proportion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5294,7 +5296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/filtered_reference_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/filtered_reference_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5315,7 +5317,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/first_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/first_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5336,7 +5338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/handset_stats/" class="md-nav__link">
+      <a href="../../../../features/subscriber/handset_stats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5357,7 +5359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/hartigan_cluster/" class="md-nav__link">
+      <a href="../../../../features/subscriber/hartigan_cluster/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5378,7 +5380,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/imputed_distance_series/" class="md-nav__link">
+      <a href="../../../../features/subscriber/imputed_distance_series/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5399,7 +5401,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/interevent_interval/" class="md-nav__link">
+      <a href="../../../../features/subscriber/interevent_interval/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5420,7 +5422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/interevent_period/" class="md-nav__link">
+      <a href="../../../../features/subscriber/interevent_period/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5441,7 +5443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/iterative_median_filter/" class="md-nav__link">
+      <a href="../../../../features/subscriber/iterative_median_filter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5462,7 +5464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/label_event_score/" class="md-nav__link">
+      <a href="../../../../features/subscriber/label_event_score/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5483,7 +5485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/last_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/last_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5504,7 +5506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/location_visits/" class="md-nav__link">
+      <a href="../../../../features/subscriber/location_visits/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5525,7 +5527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/majority_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/majority_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5546,7 +5548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/mds_volume/" class="md-nav__link">
+      <a href="../../../../features/subscriber/mds_volume/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5567,7 +5569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/meaningful_locations/" class="md-nav__link">
+      <a href="../../../../features/subscriber/meaningful_locations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5588,7 +5590,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/metaclasses/" class="md-nav__link">
+      <a href="../../../../features/subscriber/metaclasses/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5609,7 +5611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/mobility_classification/" class="md-nav__link">
+      <a href="../../../../features/subscriber/mobility_classification/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5630,7 +5632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/modal_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/modal_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5651,7 +5653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/most_frequent_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/most_frequent_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5672,7 +5674,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/new_subscribers/" class="md-nav__link">
+      <a href="../../../../features/subscriber/new_subscribers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5693,7 +5695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/nocturnal_events/" class="md-nav__link">
+      <a href="../../../../features/subscriber/nocturnal_events/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5714,7 +5716,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/pareto_interactions/" class="md-nav__link">
+      <a href="../../../../features/subscriber/pareto_interactions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5735,7 +5737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/per_contact_event_stats/" class="md-nav__link">
+      <a href="../../../../features/subscriber/per_contact_event_stats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5756,7 +5758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/per_location_event_stats/" class="md-nav__link">
+      <a href="../../../../features/subscriber/per_location_event_stats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5777,7 +5779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/per_subscriber_aggregate/" class="md-nav__link">
+      <a href="../../../../features/subscriber/per_subscriber_aggregate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5798,7 +5800,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/radius_of_gyration/" class="md-nav__link">
+      <a href="../../../../features/subscriber/radius_of_gyration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5819,7 +5821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/scores/" class="md-nav__link">
+      <a href="../../../../features/subscriber/scores/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5840,7 +5842,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/subscriber_call_durations/" class="md-nav__link">
+      <a href="../../../../features/subscriber/subscriber_call_durations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5861,7 +5863,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/subscriber_degree/" class="md-nav__link">
+      <a href="../../../../features/subscriber/subscriber_degree/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5882,7 +5884,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/subscriber_stay_lengths/" class="md-nav__link">
+      <a href="../../../../features/subscriber/subscriber_stay_lengths/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5903,7 +5905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/subscriber_tacs/" class="md-nav__link">
+      <a href="../../../../features/subscriber/subscriber_tacs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5924,7 +5926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/topup_amount/" class="md-nav__link">
+      <a href="../../../../features/subscriber/topup_amount/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5945,7 +5947,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/topup_balance/" class="md-nav__link">
+      <a href="../../../../features/subscriber/topup_balance/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5966,7 +5968,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/total_active_periods/" class="md-nav__link">
+      <a href="../../../../features/subscriber/total_active_periods/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5987,7 +5989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/unique_location_counts/" class="md-nav__link">
+      <a href="../../../../features/subscriber/unique_location_counts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6008,7 +6010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/unique_locations/" class="md-nav__link">
+      <a href="../../../../features/subscriber/unique_locations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6029,7 +6031,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/unmoving/" class="md-nav__link">
+      <a href="../../../../features/subscriber/unmoving/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6050,7 +6052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/unmoving_at_reference_location/" class="md-nav__link">
+      <a href="../../../../features/subscriber/unmoving_at_reference_location/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6071,7 +6073,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/subscriber/visited_most_days/" class="md-nav__link">
+      <a href="../../../../features/subscriber/visited_most_days/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6138,7 +6140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/" class="md-nav__link">
+      <a href="../../../../features/utilities/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6159,7 +6161,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/combine_first/" class="md-nav__link">
+      <a href="../../../../features/utilities/combine_first/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6180,7 +6182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/direction_enum/" class="md-nav__link">
+      <a href="../../../../features/utilities/direction_enum/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6201,7 +6203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/event_table_subset/" class="md-nav__link">
+      <a href="../../../../features/utilities/event_table_subset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6222,7 +6224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/events_tables_union/" class="md-nav__link">
+      <a href="../../../../features/utilities/events_tables_union/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6243,7 +6245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/feature_collection/" class="md-nav__link">
+      <a href="../../../../features/utilities/feature_collection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6264,7 +6266,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/group_values/" class="md-nav__link">
+      <a href="../../../../features/utilities/group_values/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6285,7 +6287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/histogram_aggregation/" class="md-nav__link">
+      <a href="../../../../features/utilities/histogram_aggregation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6306,7 +6308,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/multilocation/" class="md-nav__link">
+      <a href="../../../../features/utilities/multilocation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6327,7 +6329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/sets/" class="md-nav__link">
+      <a href="../../../../features/utilities/sets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6348,7 +6350,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/subscriber_locations/" class="md-nav__link">
+      <a href="../../../../features/utilities/subscriber_locations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6369,7 +6371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/unique_values_from_queries/" class="md-nav__link">
+      <a href="../../../../features/utilities/unique_values_from_queries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6390,7 +6392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/utilities/validators/" class="md-nav__link">
+      <a href="../../../../features/utilities/validators/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6427,7 +6429,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/" class="md-nav__link">
+      <a href="../../../../utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6448,7 +6450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../versions/" class="md-nav__link">
+      <a href="../../../../versions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6485,7 +6487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/api-spec.html" class="md-nav__link">
+      <a href="../../../../../../developer/api-spec.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6544,7 +6546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6565,7 +6567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0001-pipenv-for-package-and-dependency-management/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0001-pipenv-for-package-and-dependency-management/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6586,7 +6588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0002-pytest-for-testing/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0002-pytest-for-testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6607,7 +6609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0003-http-api/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0003-http-api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6628,7 +6630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0004-http-framework/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0004-http-framework/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6649,7 +6651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0005-IPC-methods/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0005-IPC-methods/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6670,7 +6672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0006-JWTs/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0006-JWTs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6691,7 +6693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0007-mapbox-for-worked-examples/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0007-mapbox-for-worked-examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6712,7 +6714,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0008-jupyter-notebooks-for-autoflow/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0008-jupyter-notebooks-for-autoflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6733,7 +6735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0009-asciidoctor-pdf-for-notebook-conversion/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0009-asciidoctor-pdf-for-notebook-conversion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6754,7 +6756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../developer/adr/0010-prefect-for-autoflow/" class="md-nav__link">
+      <a href="../../../../../../developer/adr/0010-prefect-for-autoflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6828,7 +6830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../administrator/" class="md-nav__link">
+      <a href="../../../../../../administrator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6849,7 +6851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../administrator/deployment/" class="md-nav__link">
+      <a href="../../../../../../administrator/deployment/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6908,7 +6910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../administrator/management/cache/" class="md-nav__link">
+      <a href="../../../../../../administrator/management/cache/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6967,7 +6969,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../administrator/management/etl/etl/" class="md-nav__link">
+      <a href="../../../../../../administrator/management/etl/etl/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7064,7 +7066,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7085,7 +7087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/_version/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/_version/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7106,7 +7108,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/cli/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7165,7 +7167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/mixins/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/mixins/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7186,7 +7188,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/mixins/fixed_sql_mixin/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/mixins/fixed_sql_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7207,7 +7209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/mixins/fixed_sql_with_params_mixin/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/mixins/fixed_sql_with_params_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7228,7 +7230,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/mixins/table_name_macros_mixin/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/mixins/table_name_macros_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7249,7 +7251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/mixins/wrapping_sql_mixin/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/mixins/wrapping_sql_mixin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7316,7 +7318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/operators/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/operators/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7383,7 +7385,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../flowetl/flowetl/sensors/" class="md-nav__link">
+      <a href="../../../../../../flowetl/flowetl/sensors/__init__/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7436,7 +7438,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../administrator/management/logging/" class="md-nav__link">
+      <a href="../../../../../../administrator/management/logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7457,7 +7459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../administrator/management/users/" class="md-nav__link">
+      <a href="../../../../../../administrator/management/users/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7493,7 +7495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../license/" class="md-nav__link">
+      <a href="../../../../../../license/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7513,7 +7515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../changelog/" class="md-nav__link">
+      <a href="../../../../../../changelog/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7559,9 +7561,7 @@
                   
 
 
-<h1 id="flowmachinecoremixins">flowmachine.core.mixins<a class="headerlink" href="#flowmachinecoremixins" title="Permanent link">&para;</a></h1>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/__init__.py#L0">flowmachine/core/mixins/__init__.py</a></p>
-<p>Different mixins used to enhance classes. These are generally used in feature classes that inherit from the Query class.</p>
+<h1 id="flowmachinecoreserverquery_schemas">flowmachine.core.server.query_schemas<a class="headerlink" href="#flowmachinecoreserverquery_schemas" title="Permanent link">&para;</a></h1>
 
 
 
@@ -7639,10 +7639,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../../../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.3220b9d7.min.js"></script>
+      <script src="../../../../../../assets/javascripts/bundle.5cfa9459.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
       
