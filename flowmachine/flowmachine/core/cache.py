@@ -135,6 +135,7 @@ def write_query_to_cache(
     ddl_ops_func: Callable[[str, str], List[str]],
     schema: Optional[str] = "cache",
     sleep_duration: Optional[int] = 1,
+    analyze=True,
 ) -> "Query":
     """
     Write a Query object into a postgres table and update the cache metadata about it.
@@ -159,6 +160,8 @@ def write_query_to_cache(
         Name of the schema to write to
     sleep_duration : int, default 1
         Number of seconds to wait between polls when monitoring a query being written from elsewhere
+    analyze : bool, default True
+        Set to False to _disable_ running analyze on the newly created table to generate statistics
 
     Returns
     -------
@@ -203,6 +206,10 @@ def write_query_to_cache(
                 except Exception as exc:
                     logger.error(f"Error executing SQL. Error was {exc}")
                     raise exc
+                if analyze:
+                    logger.debug(f"Running analyze for {schema}.{name}.")
+                    trans.exec_driver_sql(f"ANALYZE {schema}.{name};")
+                    logger.debug(f"Ran analyze for {schema}.{name}.")
                 if schema == "cache":
                     try:
                         write_cache_metadata(
