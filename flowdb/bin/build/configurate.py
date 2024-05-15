@@ -80,6 +80,13 @@ preload_libraries = ["pg_stat_statements"]
 if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):
     preload_libraries.append("plugin_debugger")
 
+possible_log_destinations = ["stderr", "jsonlog", "csvlog"]
+log_destination = os.getenv("FLOWDB_LOG_DEST", "jsonlog").lower()
+if log_destination not in possible_log_destinations:
+    raise ValueError(
+        f"Invalid log destination. Valid values for FLOWDB_LOG_DEST are {possible_log_destinations}"
+    )
+
 with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
     config_file = fin.read().format(
         cores=cores,
@@ -92,6 +99,8 @@ with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
         stats_target=stats_target,
         use_jit=use_jit,
         max_locks=max_locks,
+        log_destination=log_destination,
+        collecter_on="on" if log_destination != "stderr" else "off",
     )
 
 print("Writing config file to", config_path)

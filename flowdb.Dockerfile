@@ -139,6 +139,9 @@ ENV FLOWAPI_FLOWDB_USER=flowapi
 # Default location table
 ENV LOCATION_TABLE=infrastructure.cells
 
+# Default logging destination
+ENV FLOWDB_LOG_DEST=jsonlog
+
 #
 #  Copy file spinup build scripts to be execed.
 #
