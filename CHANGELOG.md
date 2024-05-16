@@ -8,11 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Added FlowDB table `infrastructure.invalid_cell_info` for recording cell information that could not be included in `infrastructure.cell_info` (including cells with null or duplicate cell IDs). [#6626](https://github.com/Flowminder/FlowKit/issues/6626)
+- The file name of FlowDB's automatically generated at init config file can now be specified by setting the `AUTO_CONFIG_FILE_NAME` environment variable. By default this is `postgresql.configurator.conf`.
 
 ### Changed
 - FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum
 - FlowDB now produces JSON formatted logs by default. Set `FLOWDB_LOG_DEST=csvlog` for the old default behaviour.
 - The logging destination of FlowDB can now be configured at init by setting the `FLOWDB_LOG_DEST` environment variable, valid options are `stderr`, `csvlog`, and `jsonlog`.
+- The location inside the container of FlowDB's automatically generated config file has changed to `/flowdb_autoconf/$AUTO_CONFIG_FILE_NAME`.
+
 
 
 ### Fixed

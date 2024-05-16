@@ -42,6 +42,8 @@ You may also provide the following environment variables:
 | FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE                                          |
 | MAX_LOCKS_PER_TRANSACTION         | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500                                          | 
 | FLOWDB_LOG_DEST                   | Controls the logging destination, may be be one of `stderr`, `jsonlog`, `csvlog`.                                  | `jsonlog`                                       |
+| AUTO_CONFIG_FILE_NAME | The path in the container of the automatically generated config file located at /flowdb_autoconf | `postgresql.configurator.conf` |
+
 
 However in most cases, the defaults will be adequate.
 

@@ -72,9 +72,7 @@ stats_target = int(
 max_locks = int(os.getenv("MAX_LOCKS_PER_TRANSACTION", 365 * 5 * 4 * (1 + 4)))
 
 
-config_path = os.getenv(
-    "AUTO_CONFIG_PATH", "/var/lib/postgresql/data/postgresql.configurator.conf"
-)
+config_path = f"/flowdb_autoconf/{os.getenv('AUTO_CONFIG_FILE_NAME', 'postgresql.configurator.conf')}"
 
 preload_libraries = ["pg_stat_statements"]
 if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):

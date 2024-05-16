@@ -142,6 +142,9 @@ ENV LOCATION_TABLE=infrastructure.cells
 # Default logging destination
 ENV FLOWDB_LOG_DEST=jsonlog
 
+# Default autoconfig file
+ENV AUTO_CONFIG_FILE_NAME=postgresql.configurator.conf
+
 #
 #  Copy file spinup build scripts to be execed.
 #
@@ -155,5 +158,7 @@ COPY --chown=postgres ./flowdb/bin/build/* /docker-entrypoint-initdb.d/
 ADD --chown=postgres ./flowdb/data/* /docker-entrypoint-initdb.d/data/csv/
 # Need to make postgres owner
 RUN chown -R postgres /docker-entrypoint-initdb.d
+# Make postgres owner of the autoconf directory
+RUN mkdir /flowdb_autoconf && chown -R postgres /flowdb_autoconf && chmod a+w /flowdb_autoconf
 
 EXPOSE 5432
