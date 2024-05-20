@@ -802,12 +802,12 @@
         },
         "quart": {
             "hashes": [
-                "sha256:581d959bda40d3c45500c50007a6451a157fd381c70d3556811bdd334adb9657",
-                "sha256:fbe3cff25cd18b5c0e8d82bbeeaa43d78f35e5221ca5c50bb0b7c20255c87ab8"
+                "sha256:89ddda6da24300a5ea4f21e4582d5e89bc8ea678e724e0b747767143401e4558",
+                "sha256:f9092310f4eb120903da692a5e4354f05d48c28ca7ec3054d3d94dd862412c58"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==0.19.5"
+            "version": "==0.19.6"
         },
         "quart-jwt-extended": {
             "extras": [
@@ -1088,11 +1088,11 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:206f5a15f2af3dbaee80769fb7dc6f249695e940acca08dfb2a4769fe61e538b",
-                "sha256:2884ed22e7d8961de1c9a05142eb69a247f120291bc0206a00a7642f09b5b715"
+                "sha256:6278d9ddbcfb1f1089a88fde84481528b07b0e10474e09dcfe53dad4069fa059",
+                "sha256:dce197b859eb796242b0622af1b8beb0a722d52aa2f57133ead08edd5bf5374e"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==3.18.1"
+            "version": "==3.18.2"
         }
     },
     "develop": {
