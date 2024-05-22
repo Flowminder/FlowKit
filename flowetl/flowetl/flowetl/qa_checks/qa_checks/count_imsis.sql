@@ -5,5 +5,6 @@ FROM (
         imsi
     FROM
         {{ final_table }}
+    WHERE imsi IS NOT NULL
     GROUP BY
         imsi) _
