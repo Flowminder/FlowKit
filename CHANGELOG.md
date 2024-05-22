@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - FlowDB now enables partitionwise aggregation planning by default
+- FlowDB now uses a default fillfactor of 100 for cache table indexes
 
 ### Fixed
 - Queries that have multiple of the same subquery with different parameters no longer cause duplicate scopes in tokens. [#6580](https://github.com/Flowminder/FlowKit/issues/6580)
