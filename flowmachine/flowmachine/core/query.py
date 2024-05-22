@@ -531,7 +531,7 @@ class Query(metaclass=ABCMeta):
         queries.append(f"ALTER TABLE {full_name} OWNER TO flowmachine;")
         for ix in self.index_cols:
             queries.append(
-                "CREATE INDEX ON {tbl} ({ixen})".format(
+                "CREATE INDEX ON {tbl} ({ixen}) WITH (fillfactor = 100)".format(
                     tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
                 )
             )
