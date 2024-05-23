@@ -13,4 +13,4 @@ jinja2 = "*"
 black = {extras = ["jupyter"],version = "==24.3.0"}
 
 [requires]
-python_version = "3.9"
+python_version = "3.12"

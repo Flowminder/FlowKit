@@ -20,7 +20,7 @@ commands:
 
 defaults:
   - &base_docker
-    - image: cimg/python:3.8
+    - image: cimg/python:3.12
       environment:
         FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
@@ -73,8 +73,8 @@ executors:
     parameters:
       python_version:
         type: enum
-        enum: ["3.7", "3.8", "3.9", "3.11"]
-        default: "3.8"
+        enum: ["3.7", "3.8", "3.9", "3.11", "3.12"]
+        default: "3.12"
       flowdb_image:
         type: enum
         enum: ["synthetic-data", "testdata"]
@@ -180,10 +180,10 @@ jobs:
       - restore_cache:
           key: flowdb-deps-6-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.11.5"
+          name: "Switch to Python v3.12.3"
           command: |
             pyenv versions
-            pyenv global 3.11.5
+            pyenv global 3.12.3
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv virtualenv
@@ -272,10 +272,10 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.11.5"
+          name: "Switch to Python v3.12.3"
           command: |
             pyenv versions
-            pyenv global 3.11.5
+            pyenv global 3.12.3
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -323,7 +323,7 @@ jobs:
 
   build_flowdb_testdata:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.12
     working_directory: /home/circleci/project
     steps:
       - checkout:
@@ -347,7 +347,7 @@ jobs:
 
   build_flowdb_synthdata:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.12
     working_directory: /home/circleci/project
     steps:
       - checkout:
@@ -471,7 +471,7 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
-      python_version: "3.11"
+      python_version: "3.12"
     working_directory: /home/circleci/project/flowdb/tests
     steps:
       - checkout:
@@ -490,7 +490,7 @@ jobs:
 
   run_token_generator_tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.12
     environment:
       FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowkit_jwt_generator
@@ -519,7 +519,7 @@ jobs:
 
   run_flowkit_api_tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.12
         environment:
           FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowapi
@@ -620,7 +620,7 @@ jobs:
 
   run_flowclient_tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.12
     working_directory: /home/circleci/project/flowclient
     steps:
       - checkout:
@@ -669,7 +669,7 @@ jobs:
 
   run_flowetl_unit_tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
@@ -750,7 +750,7 @@ jobs:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
-      python_version: "3.8"
+      python_version: "3.12"
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:

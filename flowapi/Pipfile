@@ -30,4 +30,4 @@ flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", ex
 flowapi = {editable = true, path = "."}
 
 [requires]
-python_version = "3.8"
+python_version = "3.12"

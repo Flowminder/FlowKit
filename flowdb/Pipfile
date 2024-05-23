@@ -10,4 +10,4 @@ psutil = "*"
 black = {extras = ["jupyter"],version = "==24.4.2"}
 
 [requires]
-python_version = "3.9"
+python_version = "3.12"
