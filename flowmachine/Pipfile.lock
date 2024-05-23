@@ -734,20 +734,20 @@
         },
         "approval-utilities": {
             "hashes": [
-                "sha256:16569c771a33ce0e1cd9866227d02b93e2691c095f6e4387b4b936642b376e76",
-                "sha256:cfec9d457174822cc6ae337d3eee5837382b2abb7d080e499d54911ce95e888d"
+                "sha256:65d265d3a62b20eda2286b3b17e238443c3dcb068bdda4d89aeee2b4075fd46d",
+                "sha256:f263e1ee637c415f357efd35a56ba9c59d4aee026ad183444708da43e098e8c6"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==12.1.0"
+            "version": "==12.2.0"
         },
         "approvaltests": {
             "hashes": [
-                "sha256:5874ffc5d46d6f1ce9921b628e62a2a80bdccf409fcd7550d7bcecd07994244c",
-                "sha256:dd23e0a64667f1fbdfdbdc90a78babaa687f2ab095a976cc171612df0cc8c8a5"
+                "sha256:71ad37f0bc3fad4f2e1a712b7a0749e3df5eec9791b6bded4ba0805488110ea1",
+                "sha256:d7b383e13264303fa94196e1e5ddfa2e06252df105dfb9114fdf2c04331580f1"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==12.1.0"
+            "version": "==12.2.0"
         },
         "asttokens": {
             "hashes": [
@@ -2269,7 +2269,6 @@
                 "sha256:fd1592b3fdf65fff2ad0004b5e363300ef59ced41c2e6b3a99d4089fa8c5435d",
                 "sha256:fd66fc5d0da6d9815ba2cebeb4205f95818ff4b79c3ebe268e75d961704af52f"
             ],
-            "index": "pypi",
             "markers": "python_version >= '3.6'",
             "version": "==6.0.1"
         },
@@ -2379,12 +2378,11 @@
         },
         "requests": {
             "hashes": [
-                "sha256:f2c3881dddb70d056c5bd7600a4fae312b2a300e39be6a118d30b90bd27262b5",
-                "sha256:fa5490319474c82ef1d2c9bc459d3652e3ae4ef4c4ebdd18a21145a47ca4b6b8"
+                "sha256:dd951ff5ecf3e3b3aa26b40703ba77495dab41da839ae72ef3c8e5d8e2433289",
+                "sha256:fc06670dd0ed212426dfeb94fc1b983d917c4f9847c863f313c9dfaaffb7c23c"
             ],
-            "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==2.32.0"
+            "version": "==2.32.2"
         },
         "setuptools": {
             "hashes": [
@@ -2583,7 +2581,7 @@
                 "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0",
                 "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_version >= '3.8'",
             "version": "==4.11.0"
         },
         "tzdata": {
