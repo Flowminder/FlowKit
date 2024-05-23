@@ -11,7 +11,7 @@ WORKDIR /${SOURCE_TREE}/flowmachine
 COPY ./flowmachine/Pipfile* ./
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
-        pip install --no-cache-dir pipenv && pipenv install --clear --deploy && \
+        pip install --no-cache-dir --upgrade pipenv && pipenv install --clear --deploy && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
