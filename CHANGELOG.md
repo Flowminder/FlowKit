@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Queries that have multiple of the same subquery with different parameters no longer cause duplicate scopes in tokens. [#6580](https://github.com/Flowminder/FlowKit/issues/6580)
+- FlowETL QA checks `count_imeis`, `count_imsis`, `max_msisdns_per_imei` and `max_msisdns_per_imsi` now only count non-null IMEIs/IMSIs. [#6619](https://github.com/Flowminder/FlowKit/issues/6619)
 
 ### Removed
 
