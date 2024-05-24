@@ -9,7 +9,7 @@ cachetools = "*"
 numpy = "*"
 networkx = "*"
 pandas = "*"
-pglast = "==4.1" # Pin pglast because different versions may produce different query IDs
+pglast = "==6.2" # Pin pglast because different versions may produce different query IDs
 python-dateutil = "*"
 pytz = "*"
 python-louvain = "*"
