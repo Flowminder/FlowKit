@@ -67,7 +67,7 @@ class MDSVolume(SubscriberFeature):
         self.hours = hours
         self.volume = volume
         self.statistic = Statistic(statistic.lower())
-        self.tables = "events.mds"
+        self.tables = "mds"
 
         if self.volume not in {"total", "upload", "download"}:
             raise ValueError(f"{self.volume} is not a valid volume.")

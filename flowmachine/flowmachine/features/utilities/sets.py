@@ -46,9 +46,7 @@ class UniqueSubscribers(Query):
     table : str, default 'all'
         Table on which to perform the query. By default it will look
         at ALL tables, which are any tables with subscriber information
-        in them, specified via subscriber_tables in flowmachine.yml. Otherwise
-        you need to specify a full table (with a schema) such as
-        'events.calls'.
+        in them, specified via subscriber_tables in flowmachine.yml.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None

@@ -56,7 +56,7 @@ class EventTypes(fields.List):
     """
     A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
 
-    When deserialised, will be deduped, and prefixed with "events."
+    When deserialised, will be deduped.
     """
 
     def __init__(
@@ -76,13 +76,6 @@ class EventTypes(fields.List):
             missing=missing,
             **kwargs,
         )
-
-    def _deserialize(self, value, attr, data, **kwargs):
-        # Temporary workaround for https://github.com/Flowminder/FlowKit/issues/1015 until underlying issue resolved
-        return [
-            f"events.{event_type}"
-            for event_type in set(super()._deserialize(value, attr, data, **kwargs))
-        ]
 
 
 class TotalBy(fields.String):

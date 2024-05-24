@@ -29,6 +29,7 @@ from flowmachine.core.errors.flowmachine_errors import (
 from flowmachine.core.query_state import QueryStateMachine, QueryEvent
 from flowmachine import __version__
 
+
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
@@ -188,8 +189,10 @@ def write_query_to_cache(
         if this_thread_is_owner:
             logger.debug(f"In charge of executing '{query.query_id}'.")
             try:
+                query.preflight()
                 query_ddl_ops = ddl_ops_func(name, schema)
             except Exception as exc:
+                q_state_machine.raise_error()
                 logger.error(f"Error generating SQL. Error was {exc}")
                 raise exc
             logger.debug("Made SQL.")
@@ -201,6 +204,7 @@ def write_query_to_cache(
                     )
                     logger.debug("Executed queries.")
                 except Exception as exc:
+                    q_state_machine.raise_error()
                     logger.error(f"Error executing SQL. Error was {exc}")
                     raise exc
                 if schema == "cache":
@@ -212,6 +216,7 @@ def write_query_to_cache(
                             executed_sql=";\n".join(query_ddl_ops),
                         )
                     except Exception as exc:
+                        q_state_machine.raise_error()
                         logger.error(f"Error writing cache metadata. Error was {exc}")
                         raise exc
             q_state_machine.finish()
@@ -222,7 +227,6 @@ def write_query_to_cache(
     finally:
         if this_thread_is_owner and not q_state_machine.is_finished_executing:
             q_state_machine.cancel()
-
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
     if q_state_machine.is_completed:
         return query
@@ -294,6 +298,7 @@ def write_cache_metadata(
                 psycopg2.Binary(self_storage),
             ),
         )
+        logger.debug("Touching cache.", query_id=query.query_id, query=str(query))
         connection.exec_driver_sql(
             "SELECT touch_cache(%(ident)s);", dict(ident=query.query_id)
         )
@@ -327,6 +332,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         The new cache score
     """
     try:
+        logger.debug("Touching cache.", query_id=query_id)
         with connection.engine.begin() as trans:
             return float(
                 trans.exec_driver_sql(f"SELECT touch_cache('{query_id}')").fetchall()[
@@ -474,6 +480,18 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
+def _get_protected_classes():
+    from flowmachine.core.events_table import events_table_map
+    from flowmachine.core.infrastructure_table import infrastructure_table_map
+
+    return [
+        "Table",
+        "GeoTable",
+        *[cls.__name__ for cls in events_table_map.values()],
+        *[cls.__name__ for cls in infrastructure_table_map.values()],
+    ]
+
+
 def get_cached_query_objects_ordered_by_score(
     connection: "Connection",
     protected_period: Optional[int] = None,
@@ -495,6 +513,7 @@ def get_cached_query_objects_ordered_by_score(
         Returns a list of cached Query objects with their on disk sizes
 
     """
+
     protected_period_clause = (
         (f" AND NOW()-created > INTERVAL '{protected_period} seconds'")
         if protected_period is not None
@@ -502,7 +521,7 @@ def get_cached_query_objects_ordered_by_score(
     )
     qry = f"""SELECT query_id, table_size(tablename, schema) as table_size
         FROM cache.cached
-        WHERE cached.class!='Table' AND cached.class!='GeoTable'
+        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))
         {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
@@ -682,9 +701,9 @@ def get_size_of_cache(connection: "Connection") -> int:
         Number of bytes in total used by cache tables
 
     """
-    sql = """SELECT sum(table_size(tablename, schema)) as total_bytes 
+    sql = f"""SELECT sum(table_size(tablename, schema)) as total_bytes 
         FROM cache.cached  
-        WHERE cached.class!='Table' AND cached.class!='GeoTable'"""
+        WHERE NOT (cached.class=ANY(ARRAY{_get_protected_classes()}))"""
     cache_bytes = connection.fetch(sql)[0][0]
     return 0 if cache_bytes is None else int(cache_bytes)
 
