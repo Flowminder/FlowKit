@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added FlowDB table `infrastructure.invalid_cell_info` for recording cell information that could not be included in `infrastructure.cell_info` (including cells with null or duplicate cell IDs). [#6627](https://github.com/Flowminder/FlowKit/issues/6627)
 
 ### Changed
 - FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - FlowDB now enables partitionwise aggregation planning by default
 - FlowDB now uses a default fillfactor of 100 for cache table indexes
+- `EXCLUDE` constraint on FlowDB `infrastructure.cell_info` table requires unique `mno_cell_id` across _all_ simultaneously-valid cells per `cells_table_version`, regardless of `to_include`. [#6627](https://github.com/Flowminder/FlowKit/issues/6627)
 
 ### Fixed
 - Queries that have multiple of the same subquery with different parameters no longer cause duplicate scopes in tokens. [#6580](https://github.com/Flowminder/FlowKit/issues/6580)
