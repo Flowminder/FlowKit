@@ -374,12 +374,12 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:3827860f7e0cf0320a1288f0762c10483617de19dae08cfc3fbeb2b3323a6ffb",
-                "sha256:eaa97b13c1fd8857cf31af34640704382ce3ed53cff6b3192869ea5f8244c6b1"
+                "sha256:059215dec34537f9d40a69258d323f56344805efb462959e727152b0aa504547",
+                "sha256:1b37802ee3ac52d2d85270700d565787ab16cf19e1462ccfa9f089ca17574165"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==0.17.2"
+            "version": "==0.17.3"
         },
         "hyperframe": {
             "hashes": [
