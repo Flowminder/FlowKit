@@ -166,7 +166,7 @@ executors:
 jobs:
   build_flowdb:
     machine:
-      image: ubuntu-2004:2023.10.1
+      image: ubuntu-2004:2024.04.4
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
@@ -180,10 +180,10 @@ jobs:
       - restore_cache:
           key: flowdb-deps-6-{{ checksum "flowdb/tests/Pipfile.lock"}}
       - run:
-          name: "Switch to Python v3.12.3"
+          name: "Switch to Python v3.12.2"
           command: |
             pyenv versions
-            pyenv global 3.12.3
+            pyenv global 3.12.2
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv virtualenv
@@ -265,17 +265,17 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: ubuntu-2004:2023.10.1
+      image: ubuntu-2004:2024.04.4
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: "Switch to Python v3.12.3"
+          name: "Switch to Python v3.12.2"
           command: |
             pyenv versions
-            pyenv global 3.12.3
+            pyenv global 3.12.2
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -645,7 +645,7 @@ jobs:
       component_path:
         type: string
     machine:
-      image: ubuntu-2004:2023.10.1
+      image: ubuntu-2004:2024.04.4
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -700,7 +700,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-2004:2023.10.1
+      image: ubuntu-2004:2024.04.4
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
@@ -785,7 +785,7 @@ jobs:
         enum: ["", "examples smaller_data"]
         default: ""
     machine:
-      image: ubuntu-2004:2023.10.1
+      image: ubuntu-2004:2024.04.4
     working_directory: /home/circleci/project
     steps:
       - checkout:
