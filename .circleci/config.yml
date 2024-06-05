@@ -591,6 +591,11 @@ jobs:
       - restore_cache:
           keys:
             - flowauth-deps-6-{{ checksum "package.json" }}
+        #add required reporters (or add to package.json)
+      - run:
+          name: Install coverage reporter
+          command: |
+            npm install --save-dev cypress-circleci-reporter
       - run:
           name: Cypress setup
           command: npm ci
@@ -606,8 +611,9 @@ jobs:
             npm install -g wait-on
             wait-on tcp:localhost:5432 -t 300000
       - run:
-          name: Run Cypress end-to-end tests
-          command: DEBUG="cypress:*" npx cypress run --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
+          name: Cypress e2e tests
+          command: |
+            circleci tests glob "cypress/e2e/*.js" | circleci tests run --command="DEBUG='cypress:*' xargs npx cypress run --record --reporter cypress-circleci-reporter --spec" --verbose
       - run:
           name: Run Cypress component tests
           command: DEBUG="cypress:*" npx cypress run --component --record --reporter junit --reporter-options "mochaFile=results/flowauth-component.[hash].xml"
