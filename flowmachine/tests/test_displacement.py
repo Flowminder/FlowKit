@@ -136,15 +136,23 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
     subscriber = "OdM7np8LYEp1mkvP"
 
-    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location(
+        "2016-01-01",
+        spatial_unit=make_spatial_unit("lon-lat"),
+        subscriber_subset=[subscriber],
+    )
     rl.store()
     d = Displacement(
-        p2[0], p2[1], reference_location=rl, return_subscribers_not_seen=True
+        p2[0],
+        p2[1],
+        reference_location=rl,
+        return_subscribers_not_seen=True,
+        subscriber_subset=[subscriber],
     )
 
     df = get_dataframe(d).set_index("subscriber")
-
-    assert isnan(df.loc[subscriber].value)
+    sub = df.loc[subscriber].value
+    assert sub is None
 
 
 def test_subscriber_with_home_loc_but_no_calls_is_ommitted(get_dataframe):
