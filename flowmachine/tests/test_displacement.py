@@ -116,6 +116,7 @@ def test_get_all_users_in_reference_location(get_dataframe):
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
 
     rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl.store()
     d = Displacement(
         p2[0], p2[1], reference_location=rl, return_subscribers_not_seen=True
     )
@@ -136,6 +137,7 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     subscriber = "OdM7np8LYEp1mkvP"
 
     rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl.store()
     d = Displacement(
         p2[0], p2[1], reference_location=rl, return_subscribers_not_seen=True
     )
