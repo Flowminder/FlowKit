@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from unittest.mock import Mock
-from asynctest import Mock as AMock, CoroutineMock
+from unittest.mock import Mock, AsyncMock
 
 from flowclient.async_api_query import ASyncAPIQuery
 
@@ -14,8 +13,8 @@ async def test_query_run():
     """
     Test that the 'run' method runs the query and records the query ID internally.
     """
-    connection_mock = AMock()
-    connection_mock.post_json = CoroutineMock(
+    connection_mock = AsyncMock()
+    connection_mock.post_json = AsyncMock(
         return_value=Mock(
             status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
         )
@@ -55,13 +54,13 @@ async def test_query_status():
     """
     Test that the 'status' property returns the status reported by the API.
     """
-    connection_mock = AMock()
-    connection_mock.post_json = CoroutineMock(
+    connection_mock = AsyncMock()
+    connection_mock.post_json = AsyncMock(
         return_value=Mock(
             status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
         )
     )
-    connection_mock.get_url = CoroutineMock(
+    connection_mock.get_url = AsyncMock(
         return_value=Mock(
             status_code=202,
             json=Mock(
@@ -101,7 +100,7 @@ async def test_wait_until_ready(monkeypatch):
             }
         )
     )
-    ready_mock = CoroutineMock(
+    ready_mock = AsyncMock(
         side_effect=[
             (
                 False,
@@ -111,8 +110,8 @@ async def test_wait_until_ready(monkeypatch):
         ]
     )
     monkeypatch.setattr("flowclient.async_client.query_is_ready", ready_mock)
-    connection_mock = AMock()
-    connection_mock.post_json = CoroutineMock(
+    connection_mock = AsyncMock()
+    connection_mock.post_json = AsyncMock(
         return_value=Mock(
             status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
         )
@@ -145,10 +144,10 @@ async def test_wait_until_ready_raises():
 )
 @pytest.mark.asyncio
 async def test_query_get_result_pandas(monkeypatch, format, function):
-    get_result_mock = CoroutineMock(return_value="DUMMY_RESULT")
+    get_result_mock = AsyncMock(return_value="DUMMY_RESULT")
     monkeypatch.setattr(f"flowclient.async_api_query.{function}", get_result_mock)
-    connection_mock = AMock()
-    connection_mock.post_json = CoroutineMock(
+    connection_mock = AsyncMock()
+    connection_mock.post_json = AsyncMock(
         return_value=Mock(
             status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
         )
@@ -171,13 +170,13 @@ async def test_query_get_result_runs(monkeypatch):
     """
     Test that get_result runs the query if it's not already running.
     """
-    get_result_mock = CoroutineMock(return_value="DUMMY_RESULT")
+    get_result_mock = AsyncMock(return_value="DUMMY_RESULT")
     monkeypatch.setattr(
         f"flowclient.async_api_query.get_result_by_query_id", get_result_mock
     )
-    connection_mock = AMock()
+    connection_mock = AsyncMock()
     query_spec = {"query_kind": "dummy_query"}
-    connection_mock.post_json = CoroutineMock(
+    connection_mock.post_json = AsyncMock(
         return_value=Mock(
             status_code=202, headers={"Location": "DUMMY_LOCATION/DUMMY_ID"}
         )

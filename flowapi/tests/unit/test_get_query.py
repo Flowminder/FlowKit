@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from json import loads
+from unittest.mock import AsyncMock
 
 from tests.unit.zmq_helpers import ZMQReply
 
 import pytest
-from asynctest import CoroutineMock
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,7 @@ async def test_get_query(
     # This is a long chain of mocks corresponding to getting a connection using
     # the pool's context manager, getting the cursor on that, and then looping
     # over the values in cursor
-    app.db_pool.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
+    app.db_pool.return_value.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
         {"key": "value1"},
         {"key": "value2"},
     ]
@@ -190,7 +190,7 @@ async def test_get_error_message_without_query_state(
     # of replies as side-effects of dummy_zmq_server just to verify token permissions
     monkeypatch.setattr(
         "flowapi.user_model.UserObject.can_get_results_by_query_id",
-        CoroutineMock(return_value=True),
+        AsyncMock(return_value=True),
     )
     dummy_zmq_server.return_value = ZMQReply(status="error", msg="DUMMY_ERROR_MESSAGE")
     response = await app.client.get(

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 from json import JSONDecodeError
+from unittest.mock import AsyncMock, Mock
 
 import asyncpg
 import pytest
@@ -11,8 +12,6 @@ import zmq
 from _pytest.capture import CaptureResult
 
 from flowapi.main import create_app
-from asynctest import MagicMock, Mock, CoroutineMock
-from zmq.asyncio import Context
 from collections import namedtuple
 
 TestApp = namedtuple("TestApp", ["client", "db_pool", "tmpdir", "app", "log_capture"])
@@ -49,12 +48,12 @@ def dummy_zmq_server(monkeypatch):
 
     Yields
     ------
-    asynctest.CoroutineMock
+    unittest.AsyncMock
         Coroutine mocking for the recv_json method of the socket
 
     """
     dummy = Mock()
-    dummy.return_value.socket.return_value.recv_json = CoroutineMock()
+    dummy.return_value.socket.return_value.recv_json = AsyncMock()
     monkeypatch.setattr(zmq.asyncio.Context, "instance", dummy)
     yield dummy.return_value.socket.return_value.recv_json
 
@@ -69,17 +68,25 @@ def dummy_db_pool(monkeypatch):
     MagicMock
         The mock db connection that will be used
     """
-    dummy = MagicMock()
 
-    # A MagicMock can't be used in an 'await' expression,
-    # so we need to make connection.set_type_codec a CoroutineMock
-    # (awaited in stream_result_as_json())
-    dummy.acquire.return_value.__aenter__.return_value.set_type_codec = CoroutineMock()
+    dummy = AsyncMock(return_value=AsyncMock(acquire=AsyncMock()))
+    dummy.return_value.acquire = Mock()
+    dummy.return_value.acquire.return_value.__aenter__ = AsyncMock(
+        return_value=Mock(
+            set_type_codec=AsyncMock(),
+            cursor=Mock(return_value=AsyncMock(ident="cursor")),
+            transaction=Mock(return_value=AsyncMock()),
+        ),
+    )
+    dummy.return_value.acquire.return_value.__aenter__.return_value.transaction.__aenter__ = (
+        AsyncMock()
+    )
+    dummy.return_value.acquire.return_value.__aenter__.return_value.transaction.__aexit__ = (
+        AsyncMock()
+    )
+    dummy.return_value.acquire.return_value.__aexit__ = AsyncMock()
 
-    async def f(*args, **kwargs):
-        return dummy
-
-    monkeypatch.setattr(asyncpg, "create_pool", f)
+    monkeypatch.setattr(asyncpg, "create_pool", dummy)
     yield dummy
 
 

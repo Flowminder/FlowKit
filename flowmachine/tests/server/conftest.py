@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from concurrent.futures.thread import ThreadPoolExecutor
-from unittest.mock import Mock
-from asynctest import Mock as AMock
+from unittest.mock import Mock, AsyncMock
 
 import pytest
 import zmq
@@ -26,11 +25,11 @@ def dummy_zmq_server(monkeypatch):
 
     Yields
     ------
-    asynctest.Mock
+    unittest.AsyncMock
         The dummy zeromq socket
 
     """
-    dummy = AMock()
+    dummy = AsyncMock()
     dummy.socket.return_value = dummy
 
     def f(*args, **kwargs):

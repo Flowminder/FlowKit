@@ -5,7 +5,6 @@
 from tests.unit.zmq_helpers import ZMQReply
 
 import pytest
-from asynctest import return_once
 
 
 @pytest.mark.asyncio
@@ -18,13 +17,13 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
         {"test_role": ["run", "DUMMY_AGGREGATION_UNIT:modal_location:modal_location"]}
     )
 
-    dummy_zmq_server.side_effect = return_once(
+    dummy_zmq_server.side_effect = [
         ZMQReply(
             status="error",
             msg=f"Unknown query id: 'DUMMY_QUERY_ID'",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "awol"},
         )
-    )
+    ]
     response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
@@ -109,12 +108,12 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
     token = access_token_builder({"modal_location": {"permissions": {"poll": True}}})
 
     # TODO: Fix the logic that makes this necessary
-    dummy_zmq_server.side_effect = return_once(
+    dummy_zmq_server.side_effect = [
         ZMQReply(
             status="error",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "error"},
         ),
-    )
+    ]
     response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )

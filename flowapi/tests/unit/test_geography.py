@@ -20,7 +20,7 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
     # This is a long chain of mocks corresponding to getting a connection using
     # the pool's context manager, getting the cursor on that, and then looping
     # over the values in cursor
-    app.db_pool.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
+    app.db_pool.return_value.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
         {"some": "valid"},
         {"json": "bits"},
     ]
@@ -61,10 +61,10 @@ async def test_get_geography_status(
     """
 
     token = access_token_builder(
-        ["get_result&geography.aggregation_unit.DUMMY_AGGREGATION"]
+        {"test_role": ["get_result", f"DUMMY_AGGREGATION:geography:geography"]}
     )
     zmq_reply = ZMQReply(status="error", msg="Some error")
-    dummy_zmq_server.side_effect = (zmq_reply,)
+    dummy_zmq_server.return_value = zmq_reply
     response = await app.client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},
@@ -80,7 +80,7 @@ async def test_geography_errors(response, app, dummy_zmq_server, access_token_bu
     """
 
     token = access_token_builder(
-        ["get_result&geography.aggregation_unit.DUMMY_AGGREGATION"]
+        {"test_role": ["get_result", f"DUMMY_AGGREGATION:geography:geography"]}
     )
 
     dummy_zmq_server.side_effect = (response,)

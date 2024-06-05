@@ -49,7 +49,8 @@ async def stream_result_as_json(
             logger.debug("Got transaction.", request_id=request.request_id)
             logger.debug(f"Running {sql_query}", request_id=request.request_id)
             try:
-                async for row in connection.cursor(sql_query):
+                cursor = connection.cursor(sql_query)
+                async for row in cursor:
                     yield f"{prepend}{json.dumps(dict(row.items()), number_mode=json.NM_DECIMAL, datetime_mode=json.DM_ISO8601)}".encode()
                     prepend = ", "
                 logger.debug("Finishing up.", request_id=request.request_id)
