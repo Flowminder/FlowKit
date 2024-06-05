@@ -8,9 +8,7 @@ sqlalchemy = "*"
 pandas = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
-tohu = "==0.6.7"
-numpy = "<=1.26.4" # Tohu uses float division where it should be using int division, and hence passes a float where numpy expects an int (https://github.com/maxalbert/tohu/blob/3adf0c58b13ef1e1d716d7d613484d2adc58fb60/tohu/v6/primitive_generators.py#L335)
-                   # This used to work, but doesn't as of numpy 1.26.0 (although I haven't managed to track down the relevant change or find a corresponding issue or changelog entry)
+
 jinja2 = "*"
 [dev-packages]
 black = {extras = ["jupyter"],version = "==24.4.2"}

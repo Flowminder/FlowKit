@@ -249,51 +249,6 @@
     ],
     "type": "object"
   },
-  "DFSTotalMetricAmount": {
-    "properties": {
-      "aggregation_unit": {
-        "enum": [
-          "admin0",
-          "admin1",
-          "admin2",
-          "admin3",
-          "lon-lat"
-        ],
-        "type": "string"
-      },
-      "end_date": {
-        "format": "date-time",
-        "type": "string"
-      },
-      "metric": {
-        "enum": [
-          "amount",
-          "commission",
-          "discount",
-          "fee"
-        ],
-        "type": "string"
-      },
-      "query_kind": {
-        "enum": [
-          "dfs_metric_total_amount"
-        ],
-        "type": "string"
-      },
-      "start_date": {
-        "format": "date-time",
-        "type": "string"
-      }
-    },
-    "required": [
-      "aggregation_unit",
-      "end_date",
-      "metric",
-      "query_kind",
-      "start_date"
-    ],
-    "type": "object"
-  },
   "DailyLocation": {
     "properties": {
       "aggregation_unit": {
@@ -579,7 +534,6 @@
         "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
         "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
         "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
-        "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
@@ -613,9 +567,6 @@
       },
       {
         "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
-      },
-      {
-        "$ref": "#/components/schemas/DFSTotalMetricAmount"
       },
       {
         "$ref": "#/components/schemas/DummyQuery"

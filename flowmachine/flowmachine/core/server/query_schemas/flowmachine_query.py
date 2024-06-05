@@ -33,7 +33,6 @@ from .trips_od_matrix import TripsODMatrixSchema
 from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 from .location_introversion import LocationIntroversionSchema
 from .total_network_objects import TotalNetworkObjectsSchema
-from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 from .unique_visitor_counts import UniqueVisitorCountsSchema
 from .unmoving_at_reference_location_counts import (
     UnmovingAtReferenceLocationCountsSchema,
@@ -63,7 +62,6 @@ class FlowmachineQuerySchema(OneOfQuerySchema):
         LocationIntroversionSchema,
         TotalNetworkObjectsSchema,
         AggregateNetworkObjectsSchema,
-        DFSTotalMetricAmountSchema,
         SpatialAggregateSchema,
         JoinedSpatialAggregateSchema,
         HistogramAggregateSchema,

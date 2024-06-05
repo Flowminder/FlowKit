@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-tohu = "*"
 "geoalchemy2" = "*"
 sqlalchemy = "*"
+"psycopg2-binary" = "*"
 jinja2 = "*"
 
 [dev-packages]
