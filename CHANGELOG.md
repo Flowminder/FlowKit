@@ -9,14 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+
+### Fixed
+
+### Removed
+
+## [1.26.0]
+
+### Changed
 - FlowDB now enables partitionwise aggregation planning by default
 - FlowDB now uses a default fillfactor of 100 for cache table indexes
 
 ### Fixed
 - Queries that have multiple of the same subquery with different parameters no longer cause duplicate scopes in tokens. [#6580](https://github.com/Flowminder/FlowKit/issues/6580)
 - FlowETL QA checks `count_imeis`, `count_imsis`, `max_msisdns_per_imei` and `max_msisdns_per_imsi` now only count non-null IMEIs/IMSIs. [#6619](https://github.com/Flowminder/FlowKit/issues/6619)
-
-### Removed
 
 ## [1.25.0]
 
@@ -1101,7 +1107,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.25.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.26.0...master
+[1.26.0]: https://github.com/Flowminder/FlowKit/compare/1.25.0...1.26.0
 [1.25.0]: https://github.com/Flowminder/FlowKit/compare/1.24.0...1.25.0
 [1.24.0]: https://github.com/Flowminder/FlowKit/compare/1.23.0...1.24.0
 [1.23.0]: https://github.com/Flowminder/FlowKit/compare/1.22.0...1.23.0
