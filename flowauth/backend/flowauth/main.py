@@ -229,7 +229,7 @@ def create_app(test_config=None):
 
     def _dispose_db_pool():
         with app.app_context():
-            db.engine.dispose()
+            db.engine.dispose(close=False)
 
     try:
         from uwsgidecorators import postfork
