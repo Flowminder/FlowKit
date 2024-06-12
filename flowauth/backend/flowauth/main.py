@@ -226,4 +226,16 @@ def create_app(test_config=None):
     app.cli.add_command(init_db_command)
     app.cli.add_command(add_admin_command)
     app.cli.add_command(make_flowauth_fernet_key)
+
+    def _dispose_db_pool():
+        with app.app_context():
+            db.engine.dispose()
+
+    try:
+        from uwsgidecorators import postfork
+
+        postfork(_dispose_db_pool)
+    except ImportError:
+        pass
+
     return app
