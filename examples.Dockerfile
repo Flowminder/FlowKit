@@ -6,7 +6,7 @@
 # Provides all worked examples from the FlowKit docs in a ready-to-go JupyterLab install
 #
 
-FROM quay.io/jupyter/scipy-notebook:ubuntu-22.04@sha256:053aea4c54792943a08ccef2a267851a2e91837552d97506d056b9ef4fd43262
+FROM quay.io/jupyter/scipy-notebook:ubuntu-22.04@sha256:01a2c6c1f5404f73a5be37efb9857ff2fd5675b5174a10f0f083798069a23458
 
 RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION=0+unknown
