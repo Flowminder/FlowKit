@@ -12825,6 +12825,9 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/Flowminder/FlowKit/compare/1.26.0...master">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added FlowDB table <code>infrastructure.invalid_cell_info</code> for recording cell information that could not be included in <code>infrastructure.cell_info</code> (including cells with null or duplicate cell IDs). <a href="https://github.com/Flowminder/FlowKit/issues/6626">#6626</a></li>
+</ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum</li>
@@ -12836,6 +12839,7 @@
 <ul>
 <li>FlowDB now enables partitionwise aggregation planning by default</li>
 <li>FlowDB now uses a default fillfactor of 100 for cache table indexes</li>
+<li><code>EXCLUDE</code> constraint on FlowDB <code>infrastructure.cell_info</code> table requires unique <code>mno_cell_id</code> across <em>all</em> simultaneously-valid cells per <code>cells_table_version</code>, regardless of <code>to_include</code>. <a href="https://github.com/Flowminder/FlowKit/issues/6626">#6626</a></li>
 </ul>
 <h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
 <ul>
