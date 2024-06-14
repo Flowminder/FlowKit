@@ -12827,12 +12827,14 @@
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Added FlowDB table <code>infrastructure.invalid_cell_info</code> for recording cell information that could not be included in <code>infrastructure.cell_info</code> (including cells with null or duplicate cell IDs). <a href="https://github.com/Flowminder/FlowKit/issues/6626">#6626</a></li>
+<li>The file name of FlowDB's automatically generated at init config file can now be specified by setting the <code>AUTO_CONFIG_FILE_NAME</code> environment variable. By default this is <code>postgresql.configurator.conf</code>.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum</li>
 <li>FlowDB now produces JSON formatted logs by default. Set <code>FLOWDB_LOG_DEST=csvlog</code> for the old default behaviour.</li>
 <li>The logging destination of FlowDB can now be configured at init by setting the <code>FLOWDB_LOG_DEST</code> environment variable, valid options are <code>stderr</code>, <code>csvlog</code>, and <code>jsonlog</code>.</li>
+<li>The location inside the container of FlowDB's automatically generated config file has changed to <code>/flowdb_autoconf/$AUTO_CONFIG_FILE_NAME</code>.</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
