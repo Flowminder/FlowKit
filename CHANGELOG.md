@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum
+- FlowDB now produces JSON formatted logs by default. Set `FLOWDB_LOG_DEST=csvlog` for the old default behaviour.
+- The logging destination of FlowDB can now be configured at init by setting the `FLOWDB_LOG_DEST` environment variable, valid options are `stderr`, `csvlog`, and `jsonlog`.
+
 
 ### Fixed
 

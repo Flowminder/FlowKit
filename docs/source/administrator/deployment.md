@@ -29,18 +29,19 @@ FlowDB is distributed as a docker container. To run it, you will need to provide
 
 You may also provide the following environment variables:
 
-| Variable name                     | Purpose | Default value |
-|-----------------------------------| ------- | ------------- |
-| CACHE_SIZE                        | Maximum size of the cache schema | 1 tenth of available space in pgdata directory |
-| CACHE_PROTECTED_PERIOD            | Amount of time to protect cache tables from being cleaned up | 86400 (24 hours) |
-| CACHE_HALF_LIFE                   | Speed at which cache tables expire when not used | 1000 |
-| MAX_CPUS                          | Maximum number of CPUs that may be used for parallelising queries | The greater of 1 or 1 less than all CPUs |
-| SHARED_BUFFERS_SIZE               | Size of shared buffers | 16GB |
-| MAX_WORKERS                       |  Maximum number of CPUs that may be used for parallelising one query | MAX_CPUS/2 |
-| MAX_WORKERS_PER_GATHER            |  Maximum number of CPUs that may be used for parallelising part of one query | MAX_CPUS/2 |
-| EFFECTIVE_CACHE_SIZE              | Postgres cache size | 25% of total RAM |
-| FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE |
- | MAX_LOCKS_PER_TRANSACTION         | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500 | 
+| Variable name                     | Purpose                                                                                                           | Default value                                  |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| CACHE_SIZE                        | Maximum size of the cache schema                                                                                  | 1 tenth of available space in pgdata directory |
+| CACHE_PROTECTED_PERIOD            | Amount of time to protect cache tables from being cleaned up                                                      | 86400 (24 hours)                               |
+| CACHE_HALF_LIFE                   | Speed at which cache tables expire when not used                                                                  | 1000                                           |
+| MAX_CPUS                          | Maximum number of CPUs that may be used for parallelising queries                                                 | The greater of 1 or 1 less than all CPUs       |
+| SHARED_BUFFERS_SIZE               | Size of shared buffers                                                                                            | 16GB                                           |
+| MAX_WORKERS                       | Maximum number of CPUs that may be used for parallelising one query                                               | MAX_CPUS/2                                     |
+| MAX_WORKERS_PER_GATHER            | Maximum number of CPUs that may be used for parallelising part of one query                                       | MAX_CPUS/2                                     |
+| EFFECTIVE_CACHE_SIZE              | Postgres cache size                                                                                               | 25% of total RAM                               |
+| FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE                                          |
+| MAX_LOCKS_PER_TRANSACTION         | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500                                          | 
+| FLOWDB_LOG_DEST                   | Controls the logging destination, may be be one of `stderr`, `jsonlog`, `csvlog`.                                  | `jsonlog`                                       |
 
 However in most cases, the defaults will be adequate.
 
