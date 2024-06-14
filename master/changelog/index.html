@@ -12831,6 +12831,8 @@
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum</li>
+<li>FlowDB now produces JSON formatted logs by default. Set <code>FLOWDB_LOG_DEST=csvlog</code> for the old default behaviour.</li>
+<li>The logging destination of FlowDB can now be configured at init by setting the <code>FLOWDB_LOG_DEST</code> environment variable, valid options are <code>stderr</code>, <code>csvlog</code>, and <code>jsonlog</code>.</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
