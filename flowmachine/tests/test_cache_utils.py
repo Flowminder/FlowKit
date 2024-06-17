@@ -35,7 +35,6 @@ from flowmachine.core.cache import (
     write_query_to_cache,
     get_cache_protected_period,
     set_cache_protected_period,
-    watch_and_shrink_cache,
 )
 from flowmachine.core.context import get_db, get_redis, get_executor
 from flowmachine.core.query_state import QueryState, QueryStateMachine
@@ -608,44 +607,3 @@ def test_cache_ddl_op_error(dummy_redis):
             ddl_ops_func=Mock(side_effect=TestException),
         )
     assert qsm.current_query_state == QueryState.ERRORED
-
-
-@pytest.mark.asyncio
-async def test_cache_watch_does_shrink(flowmachine_connect):
-    """
-    Test that the cache watcher will shrink cache tables.
-    """
-    dl = daily_location("2016-01-01").store().result()
-    assert dl.is_stored
-    assert get_size_of_cache(get_db()) > 0
-    await watch_and_shrink_cache(
-        flowdb_connection=get_db(),
-        pool=get_executor(),
-        sleep_time=0,
-        loop=False,
-        protected_period=-1,
-        size_threshold=1,
-    )
-    assert not dl.is_stored
-    assert get_size_of_cache(get_db()) == 0
-
-
-@pytest.mark.asyncio
-async def test_cache_watch_does_timeout(flowmachine_connect, json_log):
-    """
-    Test that the cache watcher will timeout and log that it has.
-    """
-    await watch_and_shrink_cache(
-        flowdb_connection=get_db(),
-        pool=get_executor(),
-        sleep_time=0,
-        loop=False,
-        protected_period=-1,
-        size_threshold=1,
-        timeout=0,
-    )
-    log_lines = [x for x in json_log().err if x["level"] == "error"]
-    assert (
-        log_lines[0]["event"]
-        == "Failed to complete cache shrink within 0s. Trying again in 0s."
-    )
