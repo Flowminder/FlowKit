@@ -101,7 +101,7 @@ def main():
     logger.info(
         "Starting cache cleanup service.",
     )
-    # Run receive loop which receives zmq messages and sends back replies
+    # Run loop which periodically checks if the cache can/should be resized
     asyncio.run(
         watch_and_shrink_cache(
             flowdb_connection=get_db(),
