@@ -21,8 +21,9 @@ RUN apt-get update && \
         pipenv run pip install --no-deps --no-cache-dir . && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
-        rm -rf /var/lib/apt/lists/*
-CMD ["pipenv", "run", "flowmachine"]
+        rm -rf /var/lib/apt/lists/* \
+ENTRYPOINT ["pipenv", "run"]
+CMD ["flowmachine"]
 # FlowDB has a default role named flowmachine for use with the flowmachine server
 # when starting the container with a different user, that user must be in the flowmachine
 # role
