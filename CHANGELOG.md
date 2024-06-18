@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.27.0]
+
 ### Added
 - Added FlowDB table `infrastructure.invalid_cell_info` for recording cell information that could not be included in `infrastructure.cell_info` (including cells with null or duplicate cell IDs). [#6626](https://github.com/Flowminder/FlowKit/issues/6626)
 - The file name of FlowDB's automatically generated at init config file can now be specified by setting the `AUTO_CONFIG_FILE_NAME` environment variable. By default this is `postgresql.configurator.conf`.
@@ -1116,7 +1118,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.26.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.27.0...master
+[1.27.0]: https://github.com/Flowminder/FlowKit/compare/1.26.0...1.27.0
 [1.26.0]: https://github.com/Flowminder/FlowKit/compare/1.25.0...1.26.0
 [1.25.0]: https://github.com/Flowminder/FlowKit/compare/1.24.0...1.25.0
 [1.24.0]: https://github.com/Flowminder/FlowKit/compare/1.23.0...1.24.0
