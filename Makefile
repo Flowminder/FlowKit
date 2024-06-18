@@ -25,19 +25,14 @@ DOCKER_COMPOSE_SYNTHETICDATA_FILE ?= docker-compose-syntheticdata.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 DOCKER_COMPOSE_TESTDATA_FILE_BUILD ?= docker-compose-testdata-build.yml
 DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD ?= docker-compose-syntheticdata-build.yml
-DOCKER_SERVICES ?= flowdb flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
+DOCKER_SERVICES ?= flowdb flowapi flowmachine flowauth flowmachine_query_locker flowmachine_cache_cleanup flowetl flowetl_db worked_examples
 DOCKER_SERVICES_TO_START = $(patsubst flowdb%,flowdb,$(DOCKER_SERVICES))
-services := flowmachine flowmachine_query_locker flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
+services := flowmachine flowmachine_query_locker flowmachine_cache_cleanup flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
 space :=
 space +=
 DOCKER_COMPOSE := docker compose -f $(DOCKER_COMPOSE_FILE)
 FLOWDB_SERVICE := $(filter flowdb%, $(DOCKER_SERVICES))
 
-# Add autoflow if specified
-NUM_AUTOFLOW=$(words $(filter autoflow%, $(DOCKER_SERVICES)))
-ifeq ($(NUM_AUTOFLOW),1)
-    DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_AUTOFLOW_FILE)
-endif
 
 # Check that at most one flowdb service is present in DOCKER_SERVICES
 NUM_SPECIFIED_FLOWDB_SERVICES=$(words $(filter flowdb%, $(DOCKER_SERVICES)))
