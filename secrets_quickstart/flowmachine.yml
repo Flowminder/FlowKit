@@ -38,27 +38,25 @@ services:
           - redis
           - zero
     flowmachine_cache_cleanup:
-      container_name: flowmachine_cache_cleanup
       image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
-      depends_on:
-        - flowmachine_query_locker
       command:
         - "cache-cleanup"
       environment:
-        - FLOWMACHINE_PORT=5555
-        - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:?Must set FLOWMACHINE_LOG_LEVEL env var}
-        - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
-        - FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=${FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING:?Must set FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING env var}
-        - FLOWDB_PORT=5432
-        - FLOWDB_HOST=flowdb
-        - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
-        - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
-        - REDIS_HOST=flowmachine_query_locker
-        - REDIS_PORT=6379
-        - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+          FLOWDB_PORT: 5432
+          FLOWDB_HOST: flowdb
+          FLOWMACHINE_LOG_LEVEL: ${FLOWMACHINE_LOG_LEVEL:-error}
+          FLOWMACHINE_SERVER_DEBUG_MODE: ${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
+          FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING: ${FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING:-False}
+          REDIS_HOST: flowmachine_query_locker
+          FLOWMACHINE_SERVER_THREADPOOL_SIZE: ${FLOWMACHINE_SERVER_THREADPOOL_SIZE:-False}
+          DB_CONNECTION_POOL_SIZE: ${DB_CONNECTION_POOL_SIZE:-5}
+          DB_CONNECTION_POOL_OVERFLOW: ${DB_CONNECTION_POOL_OVERFLOW:-1}
+      secrets:
+          - FLOWMACHINE_FLOWDB_PASSWORD
+          - REDIS_PASSWORD
       restart: always
       networks:
-        - db
+        - flowdb
         - redis
     flowmachine_query_locker:
         image: bitnami/redis:latest
