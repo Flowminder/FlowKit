@@ -126,6 +126,15 @@ RUN apt-get update \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
+RUN cd /tmp/ \
+    && wget -c https://github.com/duckdb/duckdb/releases/download/v0.6.1/libduckdb-linux-amd64.zip \
+    && unzip -d libduckdb libduckdb-linux-amd64.zip && cp libduckdb/libduckdb.so $(pg_config --libdir) \
+    && apt-get update && apt-get install -y --no-install-recommends build-essential git \
+    && git clone https://github.com/alitrack/duckdb_fdw \
+    && cd duckdb_fdw \
+    && make USE_PGXS=1 \
+    && make install USE_PGXS=1
+
 # Version Information
 # Set the version & release date
 ARG FLOWDB_VERSION=v1.7.2
