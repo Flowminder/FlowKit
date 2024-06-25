@@ -127,7 +127,7 @@ RUN apt-get update \
         && rm -rf /var/lib/apt/lists/*
 
 RUN cd /tmp/ \
-    && wget -c https://github.com/duckdb/duckdb/releases/download/v0.9.2/libduckdb-linux-amd64.zip \
+    && wget -c https://github.com/duckdb/duckdb/releases/download/v1.0.0/libduckdb-linux-amd64.zip \
     && unzip -d libduckdb libduckdb-linux-amd64.zip && cp libduckdb/libduckdb.so $(pg_config --libdir) \
     && apt-get update && apt-get install -y --no-install-recommends build-essential git \
     && git clone https://github.com/alitrack/duckdb_fdw \
