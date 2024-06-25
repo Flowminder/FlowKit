@@ -5,7 +5,7 @@
 
 
 
-set -e
+set -euo pipefail
 export PGUSER="$POSTGRES_USER"
 
 
