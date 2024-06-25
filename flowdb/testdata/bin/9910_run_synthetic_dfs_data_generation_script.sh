@@ -4,7 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-set -e
+set -euo pipefail
 export PGUSER="$POSTGRES_USER"
 
 #

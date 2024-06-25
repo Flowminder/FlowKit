@@ -4,7 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-set -e
+set -euo pipefail
 
 export DOCKER_SERVICES="flowdb_testdata flowmachine_query_locker"
 

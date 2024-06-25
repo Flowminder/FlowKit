@@ -4,7 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-set -e
+set -euo pipefail
 
 npm_command="${1:-start}"
 if [ "$#" -gt "1" ]; then
