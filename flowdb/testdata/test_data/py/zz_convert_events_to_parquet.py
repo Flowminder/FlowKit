@@ -130,8 +130,6 @@ def csv_to_parquet(csv_path, parquet_path, cols):
 
 
 if __name__ == "__main__":
-    print(f"Creating parquet_folder at {PARQUET_PATH}")
-    os.mkdir(PARQUET_PATH)
     for event_table in get_event_table_list():
         print(f"Converting {event_table} to parquet")
         convert_table_to_parquet(event_table)
