@@ -23,12 +23,9 @@ def test_tables():
     dates = [dt.date(2017, 1, 1) + dt.timedelta(days=i) for i in range(10)]
     tables = {
         f"events.calls_{d.strftime('%Y%m%d')}": f"""
-            CREATE TABLE IF NOT EXISTS events.calls_{d.strftime('%Y%m%d')} (
-                        CHECK (
-                            datetime >= '{d.strftime('%Y%m%d')}'::timestamptz AND
-                            datetime < '{(d + dt.timedelta(days=1)).strftime('%Y%m%d')}'::timestamptz
-                            )
-                    ) INHERITS (events.calls);
+            CREATE TABLE IF NOT EXISTS events.calls_{d.strftime('%Y%m%d')} 
+            PARTITION OF events.calls FOR VALUES FROM ('{d.strftime('%Y%m%d')}')
+            TO ('{(d + dt.timedelta(days=1)).strftime('%Y%m%d')}');
             """
         for d in dates
     }
