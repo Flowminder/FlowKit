@@ -53,7 +53,7 @@ filename '{parquet_path}'
 """
 
 PARQUET_COL_DTYPE_MAPPING = {
-    "datetime": pyarrow.timestamp('ns', tz='UTC'),
+    "datetime": pyarrow.timestamp("ns", tz="UTC"),
     "duration": pyarrow.int64(),
     "outgoing": pyarrow.bool_(),
     "volume_total": pyarrow.int64(),
@@ -66,7 +66,7 @@ PARQUET_COL_DTYPE_MAPPING = {
     "tac": pyarrow.int64(),
     "network": pyarrow.string(),
     "operator_code": pyarrow.int64(),
-    "country_code": pyarrow.int64()
+    "country_code": pyarrow.int64(),
 }
 
 
@@ -78,7 +78,6 @@ conn_str = f"postgresql://{db_user}@/{db_name}"
 engine = create_engine(conn_str)
 
 
-
 def get_event_table_list():
     with engine.connect() as conn:
         rows = conn.execute(text(LIST_EVENT_TABLES_SQL))
@@ -86,23 +85,23 @@ def get_event_table_list():
 
 
 def convert_table_to_parquet(table_name):
-    with (NamedTemporaryFile() as csv_fp, engine.connect() as conn):
+    with NamedTemporaryFile() as csv_fp, engine.connect() as conn:
         event_type, date = table_name.split("_")
         start_date = datetime.datetime.strptime(date, "%Y%m%d")
-        end_date = start_date + datetime.timedelta(days = 1)
-        
+        end_date = start_date + datetime.timedelta(days=1)
+
         cols = dump_to_csv(table_name, csv_fp.name)
         parquet_path = parquet_folder / table_name
         csv_to_parquet(csv_fp, str(parquet_path), cols)
-        
+
         conn.execute(
             text(
                 MOUNT_PARQUET_SQL.format(
                     table_name=table_name,
                     event_type=event_type,
                     parquet_path=parquet_path,
-                    start_date=start_date.strftime('%Y-%m-%d'),
-                    end_date = end_date.strftime('%Y-%m-%d')
+                    start_date=start_date.strftime("%Y-%m-%d"),
+                    end_date=end_date.strftime("%Y-%m-%d"),
                 )
             )
         )
@@ -111,30 +110,23 @@ def convert_table_to_parquet(table_name):
 def dump_to_csv(table_name, csv_path):
     print(f"Dumping {table_name} to {csv_path}")
     with engine.connect() as conn:
-        cols = conn.execute(
-            text(DUMP_COL_TYPES_SQL.format(table_name=table_name))
-        )
+        cols = conn.execute(text(DUMP_COL_TYPES_SQL.format(table_name=table_name)))
         shutil.chown(csv_path, "postgres")
-        conn.execute(
-            text(DUMP_CSV_SQL.format(table_name=table_name, csv_fp=csv_path))
-        )
-        return {col_name:col_dtype for (col_name,col_dtype) in cols}
+        conn.execute(text(DUMP_CSV_SQL.format(table_name=table_name, csv_fp=csv_path)))
+        return {col_name: col_dtype for (col_name, col_dtype) in cols}
 
 
 def csv_to_parquet(csv_path, parquet_path, cols):
     print(f"Converting {csv_path} to parquet at {parquet_path}")
     options = pyarrow.csv.ConvertOptions(
-        column_types = {
-            k:v 
-            for k,v 
-            in PARQUET_COL_DTYPE_MAPPING.items()
-            if k in cols.keys()
+        column_types={
+            k: v for k, v in PARQUET_COL_DTYPE_MAPPING.items() if k in cols.keys()
         },
-        true_values = ['t'],
-        false_values = ['f']
+        true_values=["t"],
+        false_values=["f"],
     )
-    table = pyarrow.csv.read_csv(csv_path, convert_options = options)
-    pyarrow.parquet.write_table(table, parquet_path, compression='ZSTD')
+    table = pyarrow.csv.read_csv(csv_path, convert_options=options)
+    pyarrow.parquet.write_table(table, parquet_path, compression="ZSTD")
 
 
 if __name__ == "__main__":
