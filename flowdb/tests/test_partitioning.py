@@ -37,9 +37,6 @@ def test_tables():
 def test_native_partitions(cursor, test_tables):
     """Native partitioning only scans filtered tables."""
 
-    excluded_tables = set(test_tables.keys())
-    excluded_tables.remove("events.calls_20170104")
-
     sql = """
         EXPLAIN (ANALYZE, FORMAT JSON)
             SELECT count(*)
@@ -49,10 +46,10 @@ def test_native_partitions(cursor, test_tables):
         """
     cursor.execute(sql)
     result = list(cursor.fetchall())[0]
-    for plan in result["QUERY PLAN"][0]["Plan"]["Plans"][0]["Plans"]:
-        assert not plan["Relation Name"] in [
-            s.replace("events.", "") for s in excluded_tables
-        ]
+    assert len(result["QUERY PLAN"][0]["Plan"]["Plans"]) == 1
+    assert (
+        result["QUERY PLAN"][0]["Plan"]["Plans"][0]["Relation Name"] == "calls_20170104"
+    )
 
 
 @pytest.mark.usefixtures("create_test_tables")
