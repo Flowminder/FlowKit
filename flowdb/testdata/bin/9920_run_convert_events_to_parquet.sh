@@ -20,4 +20,4 @@ export PGUSER="$POSTGRES_USER"
 export DIR=/docker-entrypoint-initdb.d/py/testdata
 
 echo "Running Python script to convert events tables to Parquet partitions."
-python3 ${DIR}/zz_convert_events_to_parquet.py
+pipenv run python ${DIR}/zz_convert_events_to_parquet.py
