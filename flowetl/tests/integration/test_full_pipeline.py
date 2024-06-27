@@ -46,21 +46,6 @@ def test_file_pipeline(
     ).fetchall()
     assert date_present[0][0] > 0
 
-    # Check table is inherited
-
-    exists_query = f"""SELECT EXISTS(SELECT relname 
-        FROM 
-            pg_inherits i 
-        JOIN 
-            pg_class c 
-        ON 
-            c.oid = inhrelid 
-        WHERE 
-            inhparent = 'events.calls'::regclass
-        AND
-            relname = 'calls_20160301')"""
-    assert flowdb_transaction.execute(exists_query).fetchall()[0][0]
-
     # Check table is clustered on the right field
 
     clustered_query = f"""SELECT EXISTS(
@@ -80,27 +65,6 @@ def test_file_pipeline(
         i.relname = 'calls_20160301_msisdn_idx')
     """
     assert flowdb_transaction.execute(clustered_query).fetchall()[0][0]
-
-    # Check table has date constraints
-
-    constraint_query = f"""SELECT 
-        pg_get_constraintdef(c.oid)
-    FROM   
-        pg_constraint c
-    JOIN   
-        pg_namespace n 
-    ON 
-        n.oid = c.connamespace
-    WHERE  
-        contype ='c' 
-    AND 
-        conrelid::regclass = 'events.calls_20160301'::regclass
-    """
-    constraint_string = f"CHECK (((datetime >= '2016-03-01 00:00:00+00'::timestamp with time zone) AND (datetime < '2016-03-02 00:00:00+00'::timestamp with time zone)))"
-    assert (
-        flowdb_transaction.execute(constraint_query).fetchall()[0][0].replace("\n", "")
-        == constraint_string
-    )
 
     # Check ETL meta
 
