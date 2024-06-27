@@ -91,7 +91,7 @@ RUN apt-get update \
   RUN apt-get install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential \
   || apt-get install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential
   RUN pip3 install pyarrow
-  RUN git clone https://github.com/adjust/parquet_fdw.git \
+  RUN git clone --branch pg16-compatibility --single-branch https://github.com/adjust/parquet_fdw.git \
   && mv parquet_fdw /usr/local/src \
   && make -C /usr/local/src/parquet_fdw \
   && make -C /usr/local/src/parquet_fdw install \
