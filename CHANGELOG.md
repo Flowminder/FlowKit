@@ -10,7 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added support for Parquet foreign tables using [parquet_fdw](https://github.com/adjust/parquet_fdw)
 
 ### Changed
-- FlowKit test and synthetic data now uses parquet foreign tables
+- FlowKit test and synthetic data now uses parquet foreign tables.
+> [!WARNING]
+> The location of the parquet files in the container is `/parquet_data`, if you are testing with larger amounts of data you may wish to add an additional bind mount for this location.
 
 ### Fixed
 
