@@ -100,8 +100,6 @@ CACHE_PROTECTED_PERIOD=3600
 #JIT
 # Default stats target for tables
 #STATS_TARGET
-# Location on host to store parquet files
-#PARQUET_FOLDER 
 
 # Synthetic data settings
 # Which data generator to use
