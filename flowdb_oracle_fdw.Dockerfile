@@ -33,7 +33,7 @@ ADD $ORACLE_BINARY_SOURCE/instantclient-sqlplus-linux.x64-$INSTANT_CLIENT_VERSIO
 #  Download and install oracle binaries, and the oracle_fdw
 #
 RUN apt-get update \
-            && apt-get install --yes --no-install-recommends build-essential \
+            && apt-get install --yes --no-install-recommends build-essential wget \
             && apt-get clean --yes \
             && apt-get autoclean --yes \
             && apt-get autoremove --yes \
@@ -56,7 +56,7 @@ RUN apt-get update \
             && cd .. \
             && rm ORACLE_FDW_$ORACLE_FDW_VERSION.zip \
             && rm -rf oracle_fdw-ORACLE_FDW_$ORACLE_FDW_VERSION/ \
-            && apt-get remove -y build-essential \
+            && apt-get remove -y build-essential wget \
             && apt purge -y --auto-remove \
             && rm -rf /var/lib/apt/lists/*
 COPY flowdb/oracle_fdw/000_create_oracle_fdw_extension.sql /docker-entrypoint-initdb.d/
