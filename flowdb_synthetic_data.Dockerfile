@@ -16,7 +16,7 @@ FROM flowminder/flowdb:${CODE_VERSION}
 #   Install pyenv to avoid being pinned to debian python
 #
 
-RUN apt update && apt install git -y --no-install-recommends && \
+RUN apt update && apt install git wget -y --no-install-recommends && \
     curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get purge -y --auto-remove
