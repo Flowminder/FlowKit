@@ -81,24 +81,27 @@ RUN apt-get update \
         && git clone https://github.com/EnterpriseDB/pldebugger.git \
         && mv pldebugger /usr/local/src \
         && make -C /usr/local/src/pldebugger \
-        && make -C /usr/local/src/pldebugger install 
-# parquet foreign tables
+        && make -C /usr/local/src/pldebugger install \
+        && apt-get remove -y build-essential git \
+        && apt purge -y --auto-remove \
+        && rm -rf /var/lib/apt/lists/*
 
-  RUN apt-get install -y --no-install-recommends ca-certificates lsb-release wget postgresql-server-dev-$PG_MAJOR=$PG_VERSION 
-  RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb 
-  RUN apt-get install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-  RUN apt-get update -y 
-  RUN apt-get install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential \
-  || apt-get install -y --no-install-recommends libarrow-dev libparquet-dev git build-essential
-  RUN pip3 install pyarrow
-  RUN git clone --branch pg16-compatibility --single-branch https://github.com/adjust/parquet_fdw.git \
-  && mv parquet_fdw /usr/local/src \
-  && make -C /usr/local/src/parquet_fdw \
-  && make -C /usr/local/src/parquet_fdw install \
-  && apt-get remove -y build-essential \
-        git \
-  && apt purge -y --auto-remove \
-  && rm -rf /var/lib/apt/lists/*
+# Parquet foreign tables
+RUN apt-get update -y && apt-get install -y --no-install-recommends git build-essential ca-certificates lsb-release wget \
+        && wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+        && apt-get install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+        && rm ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+        && apt-get update -y \
+        && apt-get install -y --no-install-recommends libarrow-dev libparquet-dev \
+        && pip3 install pyarrow \
+        && git clone --branch pg16-compatibility --single-branch https://github.com/adjust/parquet_fdw.git \
+        && mv parquet_fdw /usr/local/src \
+        && make -C /usr/local/src/parquet_fdw \
+        && make -C /usr/local/src/parquet_fdw install \
+        && rm -rf /usr/local/src/parquet_fdw \
+        && apt-get remove -y build-essential git wget libarrow-dev libparquet-dev \
+        && apt purge -y --auto-remove \
+        && rm -rf /var/lib/apt/lists/*
 
 
 #
