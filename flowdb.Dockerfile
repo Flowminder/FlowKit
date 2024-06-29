@@ -98,7 +98,6 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends git build-es
         && mv parquet_fdw /usr/local/src \
         && make -C /usr/local/src/parquet_fdw \
         && make -C /usr/local/src/parquet_fdw install \
-        && rm -rf /usr/local/src/parquet_fdw \
         && apt-get remove -y build-essential git wget libarrow-dev libparquet-dev \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
