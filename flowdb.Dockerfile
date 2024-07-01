@@ -92,7 +92,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends git build-es
         && apt-get install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
         && rm ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
         && apt-get update -y \
-        && apt-get install -y --no-install-recommends libarrow-dev libparquet-dev \
+        && apt-get install -y --no-install-recommends libarrow-dev libparquet-dev libparquet1600 libarrow1600 \
         && pip3 install pyarrow \
         && git clone --branch pg16-compatibility --single-branch https://github.com/adjust/parquet_fdw.git \
         && mv parquet_fdw /usr/local/src \

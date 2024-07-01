@@ -5,7 +5,7 @@
 
 
 
-set -e
+set -euo pipefail
 
 #
 #  Perform all actions as $POSTGRES_USER
