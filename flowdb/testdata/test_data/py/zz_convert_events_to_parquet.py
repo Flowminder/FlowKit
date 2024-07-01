@@ -40,13 +40,13 @@ WHERE table_name = '{table_name}';
 MOUNT_PARQUET_SQL = """
 DROP TABLE events.{table_name};
 CREATE FOREIGN TABLE events.{table_name}
-PARTITION OF events.{table_name}
+PARTITION OF events.{event_type}
 FOR VALUES FROM ('{start_date}') TO ('{end_date}')
 SERVER parquet_srv 
 OPTIONS(
 filename '{parquet_path}'
 );
-
+ANALYZE events.{table_name};
 """
 
 PARQUET_COL_DTYPE_MAPPING = {
