@@ -30,8 +30,7 @@ def test_tables(env):
     tables = {
         "events.calls_20160101": """
             CREATE TABLE IF NOT EXISTS
-                events.calls_20160101 ()
-                INHERITS (events.calls)
+                events.calls_20160101 PARTITION OF events.calls FOR VALUES FROM ('2016-01-01') TO ('2016-01-02')
             """,
         "routing.foo": """
             CREATE TABLE IF NOT EXISTS

@@ -9,71 +9,50 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 BEGIN;
 DELETE FROM events.calls;
-CREATE TABLE IF NOT EXISTS events.calls_20160909 () INHERITS (events.calls);
-CREATE TABLE IF NOT EXISTS events.calls_20160101 (
-    CHECK ( datetime >= '20160101'::TIMESTAMPTZ
-        AND datetime < '20160102'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160909 PARTITION OF events.calls FOR VALUES FROM ('2016-09-09') TO ('2016-09-10');
+CREATE TABLE IF NOT EXISTS events.calls_20160101 PARTITION OF events.calls FOR VALUES FROM ('2016-01-01') TO ('2016-01-02');
 
 COPY events.calls_20160101( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160101.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.calls_20160102 (
-    CHECK ( datetime >= '20160102'::TIMESTAMPTZ
-        AND datetime < '20160103'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160102 PARTITION OF events.calls FOR VALUES FROM ('2016-01-02') TO ('2016-01-03');
 
 COPY events.calls_20160102( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160102.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.calls_20160103 (
-    CHECK ( datetime >= '20160103'::TIMESTAMPTZ
-        AND datetime < '20160104'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160103 PARTITION OF events.calls FOR VALUES FROM ('2016-01-03') TO ('2016-01-04');
 
 COPY events.calls_20160103( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160103.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.calls_20160104 (
-    CHECK ( datetime >= '20160104'::TIMESTAMPTZ
-        AND datetime < '20160105'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160104 PARTITION OF events.calls FOR VALUES FROM ('2016-01-04') TO ('2016-01-05');
 
 COPY events.calls_20160104( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160104.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.calls_20160105 (
-    CHECK ( datetime >= '20160105'::TIMESTAMPTZ
-        AND datetime < '20160106'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160105 PARTITION OF events.calls FOR VALUES FROM ('2016-01-05') TO ('2016-01-06');
 
 COPY events.calls_20160105( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160105.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.calls_20160106 (
-    CHECK ( datetime >= '20160106'::TIMESTAMPTZ
-        AND datetime < '20160107'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160106 PARTITION OF events.calls FOR VALUES FROM ('2016-01-06') TO ('2016-01-07');
 
 COPY events.calls_20160106( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160106.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.calls_20160107 (
-    CHECK ( datetime >= '20160107'::TIMESTAMPTZ
-        AND datetime < '20160108'::TIMESTAMPTZ)
-    ) INHERITS (events.calls);
+CREATE TABLE IF NOT EXISTS events.calls_20160107 PARTITION OF events.calls FOR VALUES FROM ('2016-01-07') TO ('2016-01-08');
 
 COPY events.calls_20160107( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration, tac )
     FROM '/docker-entrypoint-initdb.d/data/records/calls/calls_20160107.csv'
