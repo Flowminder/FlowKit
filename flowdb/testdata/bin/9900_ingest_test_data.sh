@@ -6,6 +6,7 @@
 
 set -e
 export PGUSER="$POSTGRES_USER"
+SKIP_TEST_QA_CHECK=${SKIP_TEST_QA_CHECK:-"false"}
 
 #
 #  Ingest test data.
