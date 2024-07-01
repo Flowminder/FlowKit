@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Added support for Parquet foreign tables using [parquet_fdw](https://github.com/adjust/parquet_fdw)
+
+### Changed
+- FlowKit test and synthetic data now uses parquet foreign tables.
+> [!WARNING]
+> The location of the parquet files in the container is `/parquet_data`, if you are testing with larger amounts of data you may wish to add an additional bind mount for this location.
+
+### Fixed
+
+### Removed
+
 ## [1.27.0]
 
 ### Added
@@ -18,11 +30,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The logging destination of FlowDB can now be configured at init by setting the `FLOWDB_LOG_DEST` environment variable, valid options are `stderr`, `csvlog`, and `jsonlog`.
 - The location inside the container of FlowDB's automatically generated config file has changed to `/flowdb_autoconf/$AUTO_CONFIG_FILE_NAME`.
 
-
-
-### Fixed
-
-### Removed
 
 ## [1.26.0]
 
