@@ -39,16 +39,13 @@ WHERE table_name = '{table_name}';
 
 MOUNT_PARQUET_SQL = """
 DROP TABLE events.{table_name};
-CREATE FOREIGN TABLE events.{table_name} ()
-INHERITS (events.{event_type})
+CREATE FOREIGN TABLE events.{table_name}
+PARTITION OF events.{table_name}
+FOR VALUES FROM ('{start_date}') TO ('{end_date}')
 SERVER parquet_srv 
 OPTIONS(
 filename '{parquet_path}'
 );
-
---ALTER TABLE events.{event_type} 
-    --ATTACH PARTITION events.{table_name}
-    --FOR VALUES FROM ('{start_date}') TO ('{end_date}');
 
 """
 
