@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowKit test and synthetic data now uses parquet foreign tables.
 > [!WARNING]
 > The location of the parquet files in the container is `/parquet_data`, if you are testing with larger amounts of data you may wish to add an additional bind mount for this location.
+- FlowDB now uses [declarative partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE)
+- FlowETL now attached new data as partitions, rather than subtables
+> [!WARNING]
+> This change is not backwards compatible with earlier releases of FlowDB, and you will need to repopulate your deployment. We recommend combining this change with the new parquet support.
 
 ### Fixed
 
