@@ -12901,6 +12901,12 @@
 The location of the parquet files in the container is <code>/parquet_data</code>, if you are testing with larger amounts of data you may wish to add an additional bind mount for this location.</p>
 </blockquote>
 </li>
+<li>FlowDB now uses <a href="https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE">declarative partitioning</a></li>
+<li>FlowETL now attached new data as partitions, rather than subtables<blockquote>
+<p>[!WARNING]
+This change is not backwards compatible with earlier releases of FlowDB, and you will need to repopulate your deployment. We recommend combining this change with the new parquet support.</p>
+</blockquote>
+</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
