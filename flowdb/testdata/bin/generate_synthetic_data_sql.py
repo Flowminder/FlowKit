@@ -334,8 +334,8 @@ if __name__ == "__main__":
                 trans.exec_driver_sql(
                     f"""
                 CREATE UNLOGGED TABLE subs  WITH (autovacuum_enabled=f) as
-                (SELECT row_number() over() AS id, md5(uuid_generate_v4()::text) AS msisdn, md5(uuid_generate_v4()::text) AS imei, 
-                md5(uuid_generate_v4()::text) AS imsi, floor(random() * {num_tacs} + 1)::numeric(8, 0) AS tac 
+                (SELECT row_number() over() AS id, md5(uuid_generate_v4()::text)::bytea AS msisdn, md5(uuid_generate_v4()::text)::bytea AS imei, 
+                md5(uuid_generate_v4()::text)::bytea AS imsi, floor(random() * {num_tacs} + 1)::numeric(8, 0) AS tac 
                 FROM generate_series(1, {num_subscribers}));
                 CREATE INDEX on subs (id);
                 ANALYZE subs;
