@@ -720,7 +720,7 @@ jobs:
           name: Install python dependencies
           # Touching requirements files here so that make doesn't rebuild them - we can't rely on file timestamps in a fresh repo clone
           command: |
-            git config --global --add safe.directory /opt/circleci/.pyenv/
+            git config --global --add safe.directory /opt/circleci/.pyenv
             cd /opt/circleci/.pyenv/
             git pull
             cd -
