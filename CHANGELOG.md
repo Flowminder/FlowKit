@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now attached new data as partitions, rather than subtables
 > [!WARNING]
 > This change is not backwards compatible with earlier releases of FlowDB, and you will need to repopulate your deployment. We recommend combining this change with the new parquet support.
+- FlowETL airflow bumped to 2.9.2 p
 
 ### Fixed
 
