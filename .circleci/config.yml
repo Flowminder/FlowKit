@@ -720,6 +720,7 @@ jobs:
           name: Install python dependencies
           # Touching requirements files here so that make doesn't rebuild them - we can't rely on file timestamps in a fresh repo clone
           command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             touch requirements.txt dev-requirements.txt
             make CI=true dev-sync
       - run:
