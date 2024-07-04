@@ -681,6 +681,7 @@ jobs:
           name: Install python dependencies
           # Touching requirements files here so that make doesn't rebuild them - we can't rely on file timestamps in a fresh repo clone
           command: |
+            pyenv update
             touch requirements.txt dev-requirements.txt
             make CI=true dev-sync
       - save_cache:
@@ -701,7 +702,7 @@ jobs:
 
   run_flowetl_integration_tests:
     machine:
-      image: ubuntu-2004:2023.10.1
+      image: ubuntu-2404:2024.05.1
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
