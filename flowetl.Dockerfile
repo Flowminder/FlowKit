@@ -35,7 +35,7 @@ RUN apt-get update && \
     apt purge -y --auto-remove && \
     rm -rf /var/lib/apt/lists/*
 USER airflow
-RUN cd flowetl && pip install --no-deps --no-cache-dir --user .
+RUN cd flowetl && pip install --no-deps --no-cache-dir .
 
 
 WORKDIR ${AIRFLOW_HOME}
