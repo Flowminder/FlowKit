@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+- Fixed 500 error when getting api spec from FlowAPI [#6686](https://github.com/Flowminder/FlowKit/issues/6686)
+
+### Removed
+
+## [1.28.0]
+
+### Added
 - Added support for Parquet foreign tables using [parquet_fdw](https://github.com/adjust/parquet_fdw)
 
 ### Changed
@@ -19,9 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 > This change is not backwards compatible with earlier releases of FlowDB, and you will need to repopulate your deployment. We recommend combining this change with the new parquet support.
 - FlowETL is now built on Airflow 2.9.2
 
-### Fixed
 
-### Removed
 
 ## [1.27.0]
 
@@ -1130,7 +1139,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.27.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.28.0...master
+[1.28.0]: https://github.com/Flowminder/FlowKit/compare/1.28.0...1.28.0
 [1.27.0]: https://github.com/Flowminder/FlowKit/compare/1.26.0...1.27.0
 [1.26.0]: https://github.com/Flowminder/FlowKit/compare/1.25.0...1.26.0
 [1.25.0]: https://github.com/Flowminder/FlowKit/compare/1.24.0...1.25.0
