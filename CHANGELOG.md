@@ -11,9 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Fixed 500 error when getting api spec from FlowAPI [#6686](https://github.com/Flowminder/FlowKit/issues/6686)
 
 ### Removed
+
+## [1.28.1]
+
+### Fixed
+- Fixed 500 error when getting api spec from FlowAPI [#6686](https://github.com/Flowminder/FlowKit/issues/6686)
 
 ## [1.28.0]
 
@@ -1139,8 +1143,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.28.0...master
-[1.28.0]: https://github.com/Flowminder/FlowKit/compare/1.28.0...1.28.0
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.28.1...master
+[1.28.1]: https://github.com/Flowminder/FlowKit/compare/1.28.0...1.28.1
+[1.28.0]: https://github.com/Flowminder/FlowKit/compare/1.27.0...1.28.0
 [1.27.0]: https://github.com/Flowminder/FlowKit/compare/1.26.0...1.27.0
 [1.26.0]: https://github.com/Flowminder/FlowKit/compare/1.25.0...1.26.0
 [1.25.0]: https://github.com/Flowminder/FlowKit/compare/1.24.0...1.25.0
