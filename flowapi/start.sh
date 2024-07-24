@@ -7,8 +7,8 @@
 
 if [ -f /run/secrets/cert-flowkit.pem ] && [ -f /run/secrets/key-flowkit.pem ];
 then
-    hypercorn --bind 0.0.0.0:${FLOWAPI_PORT:-443} --certfile /run/secrets/cert-flowkit.pem --keyfile /run/secrets/key-flowkit.pem "flowapi.main:create_app()" --access-logfile - --error-logfile -
+    hypercorn --bind 0.0.0.0:${FLOWAPI_PORT:-443} --certfile /run/secrets/cert-flowkit.pem --keyfile /run/secrets/key-flowkit.pem "flowapi.main:create_app()" --access-logfile - --error-logfile - --log-level debug
 else
     echo "WARNING: No certificate file provided. Communications with the API server will NOT BE SECURE."
-    hypercorn --bind 0.0.0.0:${FLOWAPI_PORT:-80} "flowapi.main:create_app()" --access-logfile - --error-logfile -
+    hypercorn --bind 0.0.0.0:${FLOWAPI_PORT:-80} "flowapi.main:create_app()" --access-logfile - --error-logfile - --log-level debug
 fi
