@@ -12,12 +12,10 @@ The modal daily location of a subscriber.
 """
 from typing import List
 
-from functools import reduce
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from ..utilities.multilocation import MultiLocation
-from ...core.union import Union
 
 
 class ModalLocation(MultiLocation, BaseLocation, Query):
@@ -39,13 +37,9 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
         """
         location_columns_string = ", ".join(self.spatial_unit.location_id_columns)
 
-        # This query represents the concatenated locations of the
-        # subscribers
-        all_locs = Union(*[self._append_date(dl) for dl in self._all_dls])
-
         times_visited = f"""
         SELECT all_locs.subscriber, {location_columns_string}, count(*) AS total, max(all_locs.date) as date
-        FROM ({all_locs.get_query()}) AS all_locs
+        FROM ({self.unioned.get_query()}) AS all_locs
         GROUP BY all_locs.subscriber, {location_columns_string}
         """
 
