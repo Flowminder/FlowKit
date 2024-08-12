@@ -138,9 +138,9 @@ apache-airflow-providers-common-sql==1.14.2 \
     #   apache-airflow
     #   apache-airflow-providers-postgres
     #   apache-airflow-providers-sqlite
-apache-airflow-providers-fab==1.2.1 \
-    --hash=sha256:6782709e96d83213a4c996062a5b5a93809a4cc90db1cf038f93033bca053b8f \
-    --hash=sha256:d36d0eda3fd599a817832e1d8137ee41467b37dde26cc773cd64285fbd5bd79d
+apache-airflow-providers-fab==1.2.2 \
+    --hash=sha256:38d1e6ab60b28ed2ad16adf00972858b48b7b60288de56a050c2099bf65a5a20 \
+    --hash=sha256:430e041e947001f274671283175229788773a866616a2bfd52c1a52189987d99
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.9.3/constraints-3.10.txt
     #   -c requirements.txt
@@ -2561,9 +2561,9 @@ zipp==3.19.2 \
     #   importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==72.0.0 \
-    --hash=sha256:5a0d9c6a2f332881a0153f629d8000118efd33255cfa802757924c53312c76da \
-    --hash=sha256:98b4d786a12fadd34eabf69e8d014b84e5fc655981e4ff419994700434ace132
+setuptools==72.1.0 \
+    --hash=sha256:5a03e1860cf56bb6ef48ce186b0e557fdba433237481a9a625176c2831be15d1 \
+    --hash=sha256:8d243eff56d095e5817f796ede6ae32941278f542e0f941867cc05ae52b162ec
     # via
     #   -c requirements.txt
     #   python-daemon
