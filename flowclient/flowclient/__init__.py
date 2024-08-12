@@ -81,6 +81,7 @@ from .aggregates import (
     labelled_spatial_aggregate,
     labelled_flows,
     calendar_activity,
+    localised_calendar_activity,
 )
 
 __all__ = [
@@ -125,6 +126,7 @@ __all__ = [
     "labelled_spatial_aggregate",
     "labelled_flows",
     "calendar_activity",
+    "localised_calendar_activity",
 ]
 
 from . import _version
