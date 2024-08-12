@@ -12,6 +12,7 @@ from flowmachine.core.server.query_schemas.joined_spatial_aggregate import (
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     SpatialAggregateSchema,
 )
+from .calendar_activity import CalendarActivitySchema
 from .histogram_aggregate import HistogramAggregateSchema
 from .active_at_reference_location_counts import ActiveAtReferenceLocationCountsSchema
 from .consecutive_trips_od_matrix import ConsecutiveTripsODMatrixSchema
@@ -75,6 +76,7 @@ class FlowmachineQuerySchema(OneOfQuerySchema):
         TripsODMatrixSchema,
         LabelledSpatialAggregateSchema,
         LabelledFlowsSchema,
+        CalendarActivitySchema,
     )
 
 
