@@ -82,6 +82,8 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "trips_od_matrix",
                 "labelled_spatial_aggregate",
                 "labelled_flows",
+                "calendar_activity",
+                "localised_calendar_activity",
             ]
         },
     }
