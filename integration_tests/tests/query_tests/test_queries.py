@@ -16,7 +16,7 @@ queries = [
         event_types=["calls", "sms"],
     ),
     partial(
-        flowclient.calendar_activity,
+        flowclient.localised_calendar_activity,
         start_date="2016-01-01",
         total_periods=1,
         event_types=["calls", "sms"],

@@ -18,6 +18,7 @@ from .active_at_reference_location_counts import ActiveAtReferenceLocationCounts
 from .consecutive_trips_od_matrix import ConsecutiveTripsODMatrixSchema
 from .dummy_query import DummyQuerySchema
 from .flows import FlowsSchema
+from .localised_calendar_activity import LocalisedCalendarActivitySchema
 from .outflows import OutflowsSchema
 from .inflows import InflowsSchema
 from .meaningful_locations import (
@@ -77,6 +78,7 @@ class FlowmachineQuerySchema(OneOfQuerySchema):
         LabelledSpatialAggregateSchema,
         LabelledFlowsSchema,
         CalendarActivitySchema,
+        LocalisedCalendarActivitySchema,
     )
 
 
