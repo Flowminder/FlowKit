@@ -103,6 +103,14 @@ ut = [
     "EventTableSubset",
 ]
 
-sub_modules = ["location", "subscriber", "network", "utilities", "raster", "spatial"]
+sub_modules = [
+    "location",
+    "subscriber",
+    "network",
+    "utilities",
+    "raster",
+    "spatial",
+    "nonspatial_aggregates",
+]
 
 __all__ = loc + nw + subs + rast + ut + spat + sub_modules

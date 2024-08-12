@@ -17,7 +17,8 @@ from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date, Statistic
+from flowmachine.utils import make_where, standardise_date
+from flowmachine.core.statistic_types import Statistic
 
 
 class SubscriberCallDurations(SubscriberFeature):

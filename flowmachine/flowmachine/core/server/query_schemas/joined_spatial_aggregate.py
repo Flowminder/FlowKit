@@ -30,7 +30,7 @@ from flowmachine.features.location.joined_spatial_aggregate import (
 from flowmachine.features.location.redacted_joined_spatial_aggregate import (
     RedactedJoinedSpatialAggregate,
 )
-from flowmachine.utils import Statistic
+from ...statistic_types import Statistic
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnitKind
 

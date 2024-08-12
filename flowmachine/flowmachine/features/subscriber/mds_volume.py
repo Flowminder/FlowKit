@@ -10,7 +10,8 @@ from typing import Optional, Tuple
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
-from flowmachine.utils import standardise_date, Statistic
+from flowmachine.utils import standardise_date
+from ...core.statistic_types import Statistic
 
 
 class MDSVolume(SubscriberFeature):

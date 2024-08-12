@@ -14,7 +14,7 @@ from flowmachine.core.dummy_query import DummyQuery
 
 import pytest
 
-from flowmachine.utils import Statistic
+from flowmachine.core.statistic_types import Statistic
 
 
 @pytest.fixture()

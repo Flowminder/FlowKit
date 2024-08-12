@@ -24,7 +24,9 @@ from flowmachine.core.server.query_schemas.pareto_interactions import (
 )
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 
-from flowmachine.features import HistogramAggregation
+from flowmachine.features.nonspatial_aggregates.histogram_aggregation import (
+    HistogramAggregation,
+)
 from .base_exposed_query import BaseExposedQuery
 
 

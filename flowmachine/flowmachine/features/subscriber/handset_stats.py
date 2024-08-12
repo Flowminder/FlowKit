@@ -5,8 +5,7 @@
 # -*- coding: utf-8 -*-
 from typing import Union
 
-from ...utils import Statistic
-
+from ...core.statistic_types import Statistic
 
 valid_characteristics = {
     "width",
