@@ -12,7 +12,8 @@ from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.core import Query
-from flowmachine.utils import standardise_date, Statistic
+from flowmachine.utils import standardise_date
+from ...core.statistic_types import Statistic
 
 
 class Displacement(SubscriberFeature):

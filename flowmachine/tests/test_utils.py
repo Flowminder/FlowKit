@@ -9,6 +9,7 @@ import pytest
 import pglast
 
 from flowmachine.core.context import get_db
+from flowmachine.core.statistic_types import Statistic
 from flowmachine.utils import *
 from flowmachine.utils import _makesafe
 

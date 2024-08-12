@@ -6,7 +6,7 @@
 
 from typing import List
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
-from flowmachine.utils import Statistic
+from flowmachine.core.statistic_types import Statistic
 
 
 class PerSubscriberAggregate(SubscriberFeature):
