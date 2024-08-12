@@ -15,7 +15,7 @@ jinja2 = "*"
 pyarrow = "*"
 
 [dev-packages]
-black = {extras = ["jupyter"],version = "==24.4.2"}
+black = {extras = ["jupyter"],version = "==24.8.0"}
 
 [requires]
 python_version = "3.9"
