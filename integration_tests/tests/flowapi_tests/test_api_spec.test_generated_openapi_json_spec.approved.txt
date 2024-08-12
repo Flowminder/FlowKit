@@ -138,6 +138,78 @@
         ],
         "type": "object"
       },
+      "CalendarActivity": {
+        "properties": {
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          },
+          "period_length": {
+            "default": 1,
+            "type": "integer"
+          },
+          "period_unit": {
+            "default": "days",
+            "enum": [
+              "days",
+              "hours",
+              "minutes"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "calendar_activity"
+            ],
+            "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
+          "start_date": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "nullable": true,
+            "type": "string"
+          },
+          "total_periods": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start_date",
+          "total_periods"
+        ],
+        "type": "object"
+      },
       "CoalescedLocation": {
         "properties": {
           "fallback_location": {
@@ -580,6 +652,7 @@
           "mapping": {
             "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
             "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
+            "calendar_activity": "#/components/schemas/CalendarActivity",
             "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
             "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
             "dummy_query": "#/components/schemas/DummyQuery",
@@ -590,6 +663,7 @@
             "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
             "labelled_flows": "#/components/schemas/LabelledFlows",
             "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
+            "localised_calendar_activity": "#/components/schemas/LocalisedCalendarActivity",
             "location_event_counts": "#/components/schemas/LocationEventCounts",
             "location_introversion": "#/components/schemas/LocationIntroversion",
             "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
@@ -612,6 +686,9 @@
           },
           {
             "$ref": "#/components/schemas/AggregateNetworkObjects"
+          },
+          {
+            "$ref": "#/components/schemas/CalendarActivity"
           },
           {
             "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
@@ -642,6 +719,9 @@
           },
           {
             "$ref": "#/components/schemas/LabelledSpatialAggregate"
+          },
+          {
+            "$ref": "#/components/schemas/LocalisedCalendarActivity"
           },
           {
             "$ref": "#/components/schemas/LocationEventCounts"
@@ -1228,6 +1308,92 @@
           "labels",
           "locations",
           "query_kind"
+        ],
+        "type": "object"
+      },
+      "LocalisedCalendarActivity": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0",
+              "admin1",
+              "admin2",
+              "admin3",
+              "lon-lat"
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "event_types": {
+            "default": null,
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
+          "hours": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          },
+          "period_length": {
+            "default": 1,
+            "type": "integer"
+          },
+          "period_unit": {
+            "default": "days",
+            "enum": [
+              "days",
+              "hours",
+              "minutes"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "localised_calendar_activity"
+            ],
+            "type": "string"
+          },
+          "reference_location": {
+            "$ref": "#/components/schemas/ReferenceLocation"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
+          "start_date": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "nullable": true,
+            "type": "string"
+          },
+          "total_periods": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start_date",
+          "total_periods"
         ],
         "type": "object"
       },
@@ -3253,6 +3419,14 @@
           "admin0:labelled_spatial_aggregate:majority_location",
           "admin0:labelled_spatial_aggregate:mobility_classification",
           "admin0:labelled_spatial_aggregate:modal_location",
+          "admin0:localised_calendar_activity:coalesced_location",
+          "admin0:localised_calendar_activity:daily_location",
+          "admin0:localised_calendar_activity:localised_calendar_activity",
+          "admin0:localised_calendar_activity:location_visits",
+          "admin0:localised_calendar_activity:majority_location",
+          "admin0:localised_calendar_activity:modal_location",
+          "admin0:localised_calendar_activity:most_frequent_location",
+          "admin0:localised_calendar_activity:visited_most_days",
           "admin0:location_event_counts:location_event_counts",
           "admin0:location_introversion:location_introversion",
           "admin0:meaningful_locations_aggregate:meaningful_locations_aggregate",
@@ -3366,6 +3540,14 @@
           "admin1:labelled_spatial_aggregate:majority_location",
           "admin1:labelled_spatial_aggregate:mobility_classification",
           "admin1:labelled_spatial_aggregate:modal_location",
+          "admin1:localised_calendar_activity:coalesced_location",
+          "admin1:localised_calendar_activity:daily_location",
+          "admin1:localised_calendar_activity:localised_calendar_activity",
+          "admin1:localised_calendar_activity:location_visits",
+          "admin1:localised_calendar_activity:majority_location",
+          "admin1:localised_calendar_activity:modal_location",
+          "admin1:localised_calendar_activity:most_frequent_location",
+          "admin1:localised_calendar_activity:visited_most_days",
           "admin1:location_event_counts:location_event_counts",
           "admin1:location_introversion:location_introversion",
           "admin1:meaningful_locations_aggregate:meaningful_locations_aggregate",
@@ -3479,6 +3661,14 @@
           "admin2:labelled_spatial_aggregate:majority_location",
           "admin2:labelled_spatial_aggregate:mobility_classification",
           "admin2:labelled_spatial_aggregate:modal_location",
+          "admin2:localised_calendar_activity:coalesced_location",
+          "admin2:localised_calendar_activity:daily_location",
+          "admin2:localised_calendar_activity:localised_calendar_activity",
+          "admin2:localised_calendar_activity:location_visits",
+          "admin2:localised_calendar_activity:majority_location",
+          "admin2:localised_calendar_activity:modal_location",
+          "admin2:localised_calendar_activity:most_frequent_location",
+          "admin2:localised_calendar_activity:visited_most_days",
           "admin2:location_event_counts:location_event_counts",
           "admin2:location_introversion:location_introversion",
           "admin2:meaningful_locations_aggregate:meaningful_locations_aggregate",
@@ -3592,6 +3782,14 @@
           "admin3:labelled_spatial_aggregate:majority_location",
           "admin3:labelled_spatial_aggregate:mobility_classification",
           "admin3:labelled_spatial_aggregate:modal_location",
+          "admin3:localised_calendar_activity:coalesced_location",
+          "admin3:localised_calendar_activity:daily_location",
+          "admin3:localised_calendar_activity:localised_calendar_activity",
+          "admin3:localised_calendar_activity:location_visits",
+          "admin3:localised_calendar_activity:majority_location",
+          "admin3:localised_calendar_activity:modal_location",
+          "admin3:localised_calendar_activity:most_frequent_location",
+          "admin3:localised_calendar_activity:visited_most_days",
           "admin3:location_event_counts:location_event_counts",
           "admin3:location_introversion:location_introversion",
           "admin3:meaningful_locations_aggregate:meaningful_locations_aggregate",
@@ -3708,6 +3906,14 @@
           "lon-lat:labelled_spatial_aggregate:majority_location",
           "lon-lat:labelled_spatial_aggregate:mobility_classification",
           "lon-lat:labelled_spatial_aggregate:modal_location",
+          "lon-lat:localised_calendar_activity:coalesced_location",
+          "lon-lat:localised_calendar_activity:daily_location",
+          "lon-lat:localised_calendar_activity:localised_calendar_activity",
+          "lon-lat:localised_calendar_activity:location_visits",
+          "lon-lat:localised_calendar_activity:majority_location",
+          "lon-lat:localised_calendar_activity:modal_location",
+          "lon-lat:localised_calendar_activity:most_frequent_location",
+          "lon-lat:localised_calendar_activity:visited_most_days",
           "lon-lat:location_event_counts:location_event_counts",
           "lon-lat:location_introversion:location_introversion",
           "lon-lat:meaningful_locations_aggregate:meaningful_locations_aggregate",
@@ -3755,6 +3961,7 @@
           "lon-lat:unmoving_at_reference_location_counts:visited_most_days",
           "lon-lat:unmoving_counts:unique_locations",
           "lon-lat:unmoving_counts:unmoving_counts",
+          "nonspatial:calendar_activity:calendar_activity",
           "nonspatial:histogram_aggregate:coalesced_location",
           "nonspatial:histogram_aggregate:daily_location",
           "nonspatial:histogram_aggregate:displacement",

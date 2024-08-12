@@ -136,6 +136,78 @@
     ],
     "type": "object"
   },
+  "CalendarActivity": {
+    "properties": {
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "period_length": {
+        "default": 1,
+        "type": "integer"
+      },
+      "period_unit": {
+        "default": "days",
+        "enum": [
+          "days",
+          "hours",
+          "minutes"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "calendar_activity"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
+      "total_periods": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "query_kind",
+      "start_date",
+      "total_periods"
+    ],
+    "type": "object"
+  },
   "CoalescedLocation": {
     "properties": {
       "fallback_location": {
@@ -578,6 +650,7 @@
       "mapping": {
         "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
         "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
+        "calendar_activity": "#/components/schemas/CalendarActivity",
         "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
@@ -588,6 +661,7 @@
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
         "labelled_flows": "#/components/schemas/LabelledFlows",
         "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
+        "localised_calendar_activity": "#/components/schemas/LocalisedCalendarActivity",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
@@ -610,6 +684,9 @@
       },
       {
         "$ref": "#/components/schemas/AggregateNetworkObjects"
+      },
+      {
+        "$ref": "#/components/schemas/CalendarActivity"
       },
       {
         "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
@@ -640,6 +717,9 @@
       },
       {
         "$ref": "#/components/schemas/LabelledSpatialAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/LocalisedCalendarActivity"
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
@@ -1226,6 +1306,92 @@
       "labels",
       "locations",
       "query_kind"
+    ],
+    "type": "object"
+  },
+  "LocalisedCalendarActivity": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "period_length": {
+        "default": 1,
+        "type": "integer"
+      },
+      "period_unit": {
+        "default": "days",
+        "enum": [
+          "days",
+          "hours",
+          "minutes"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "localised_calendar_activity"
+        ],
+        "type": "string"
+      },
+      "reference_location": {
+        "$ref": "#/components/schemas/ReferenceLocation"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
+      "total_periods": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "query_kind",
+      "start_date",
+      "total_periods"
     ],
     "type": "object"
   },
