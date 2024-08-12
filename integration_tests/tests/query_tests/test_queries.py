@@ -10,6 +10,23 @@ import pytest
 
 queries = [
     partial(
+        flowclient.calendar_activity,
+        start_date="2016-01-01",
+        total_periods=1,
+        event_types=["calls", "sms"],
+    ),
+    partial(
+        flowclient.calendar_activity,
+        start_date="2016-01-01",
+        total_periods=1,
+        event_types=["calls", "sms"],
+        locations=flowclient.daily_location_spec(
+            date="2016-01-01",
+            aggregation_unit="admin3",
+            method="last",
+        ),
+    ),
+    partial(
         flowclient.joined_spatial_aggregate,
         locations=flowclient.daily_location_spec(
             date="2016-01-01",

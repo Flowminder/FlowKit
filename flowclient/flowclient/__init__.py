@@ -80,6 +80,7 @@ from .aggregates import (
     trips_od_matrix,
     labelled_spatial_aggregate,
     labelled_flows,
+    calendar_activity,
 )
 
 __all__ = [
@@ -123,6 +124,7 @@ __all__ = [
     "trips_od_matrix",
     "labelled_spatial_aggregate",
     "labelled_flows",
+    "calendar_activity",
 ]
 
 from . import _version
