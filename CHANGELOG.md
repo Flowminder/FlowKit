@@ -7,8 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- New flowmachine query `CalendarActivity`, which retrives subscribers pattern of active days
+- New flowmachine queries `PerValueAggregate` and `RedactedPerValueAggregate`, which group by the value column of another query and apply an aggregate to subscribers with that grouping.
+- New flowapi queries and flowclient functions for `calendar_activity` and `localised_calendar_activity`, which return counts of subscribers per sequence of active days, and per sequence of active days additionally grouped by the subscribers reference location
+- Added new `StringStatistic` enum, which enumerates valid statistics for use with postgres string types
 
 ### Changed
+- `HistogramAggregation` has moved to `flowmachine.features.nonspatial_aggregates`
+- `Statistic` moved to `flowmachine.core.statistic_types`
+- `TotalActivePeriodsSubscriber` no longer returns an extra `inactive_periods` column
 
 ### Fixed
 
