@@ -1,0 +1,9008 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../management/cache/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
+    
+    
+      
+        <title>Deploying FlowKit - FlowKit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3cba04c6.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/mermaid@7.1.2/dist/mermaid.css">
+    
+      <link rel="stylesheet" href="../../css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="../../css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="../../css/pandas-dataframe.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="#2977B8" data-md-color-accent="#095798">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deployment-scenarios" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FlowKit" class="md-header__button md-logo" aria-label="FlowKit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 11a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m4-8a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.6 11.6c1.65 0 3 1.34 3 3a3 3 0 0 1-3 3c-1.66 0-3-1.35-3-3a3 3 0 0 1 3-3Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FlowKit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deploying FlowKit
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  FlowKit
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../analyst/" class="md-tabs__link">
+          
+  
+  Analysts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer/" class="md-tabs__link">
+          
+  
+  Developers
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  System Administrators
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FlowKit" class="md-nav__button md-logo" aria-label="FlowKit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 11a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m4-8a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.6 11.6c1.65 0 3 1.34 3 3a3 3 0 0 1-3 3c-1.66 0-3-1.35-3-3a3 3 0 0 1 3-3Z"/></svg>
+
+    </a>
+    FlowKit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlowKit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Analysts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Analysts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analyst
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    FlowClient
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            FlowClient
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/flowclient/example_usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Example usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Flowclient
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Flowclient
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_2_1" id="__nav_3_2_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Flowclient
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_2_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Flowclient
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flowclient
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/_version/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    _version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/aggregates/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    aggregates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/api_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    api_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/async_api_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    async_api_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/async_client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    async_client
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/async_connection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    async_connection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    client
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/connection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    connection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowclient/flowclient/query_specs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    query_specs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Worked examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Worked examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/worked_examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Worked examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/worked_examples/flows-above-normal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Flows above normal
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/worked_examples/commuting-patterns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commuting patterns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/worked_examples/cell-towers-per-region/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cell towers per region
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/worked_examples/unique-subscriber-counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Unique subscriber counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/worked_examples/joined-spatial-aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Joined spatial aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Advanced usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/advanced_usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Advanced usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4_2" id="__nav_3_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Worked examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Worked examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analyst/advanced_usage/worked_examples/mobile-data-usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mobile data usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Developers
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Developers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Information for Developers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/dev_environment_setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developer install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Flowmachine
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Flowmachine
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1" id="__nav_4_3_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Flowmachine
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Flowmachine
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flowmachine
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/_version/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    _version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3" id="__nav_4_3_1_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Core
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            Core
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    core
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/cache/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cache
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/connection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    connection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/context/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/custom_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    custom_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/date_range/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    date_range
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/dependency_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dependency_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/dummy_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dummy_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3_9" id="__nav_4_3_1_3_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Errors
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            Errors
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/errors/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/errors/flowmachine_errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flowmachine_errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/geotable/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    geotable
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/grid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    grid
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/hour_slice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hour_slice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/init/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    init
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/join/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    join
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/join_to_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    join_to_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    logging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3_17" id="__nav_4_3_1_3_17_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Mixins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3_17">
+            <span class="md-nav__icon md-icon"></span>
+            Mixins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/mixins/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mixins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/mixins/exposed_datetime_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exposed_datetime_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/mixins/geodata_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    geodata_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/mixins/graph_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    graph_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/query_info_lookup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    query_info_lookup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/query_state/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    query_state
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/random/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    random
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3_22" id="__nav_4_3_1_3_22_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Server
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_3_22_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3_22">
+            <span class="md-nav__icon md-icon"></span>
+            Server
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/action_handlers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    action_handlers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/action_request_schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    action_request_schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_22_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3_22_5" id="__nav_4_3_1_3_22_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Query schemas
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_4_3_1_3_22_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3_22_5">
+            <span class="md-nav__icon md-icon"></span>
+            Query schemas
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    query_schemas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/active_at_reference_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    active_at_reference_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/aggregate_network_objects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    aggregate_network_objects
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/aggregation_unit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    aggregation_unit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/base_exposed_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    base_exposed_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/base_query_with_sampling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    base_query_with_sampling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/base_schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    base_schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/calendar_activity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    calendar_activity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/coalesced_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    coalesced_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/consecutive_trips_od_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    consecutive_trips_od_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/custom_fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    custom_fields
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/daily_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    daily_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/dfs_metric_total_amount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dfs_metric_total_amount
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/displacement/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    displacement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/dummy_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dummy_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/event_count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    event_count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/field_mixins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    field_mixins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/flowmachine_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flowmachine_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/geography/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    geography
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/handset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    handset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/histogram_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    histogram_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/inflows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    inflows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    joined_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/labelled_flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    labelled_flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/labelled_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    labelled_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/localised_calendar_activity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    localised_calendar_activity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/location_event_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_event_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/location_introversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_introversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/location_visits/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_visits
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/majority_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    majority_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/meaningful_locations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    meaningful_locations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/mobility_classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mobility_classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/modal_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    modal_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/most_frequent_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    most_frequent_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/nocturnal_events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nocturnal_events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/one_of_query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    one_of_query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/outflows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    outflows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/pareto_interactions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pareto_interactions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/radius_of_gyration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    radius_of_gyration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/random_sample/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    random_sample
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/reference_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    reference_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/subscriber_degree/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_degree
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/subscriber_subset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_subset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/topup_amount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    topup_amount
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/topup_balance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    topup_balance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/total_active_periods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    total_active_periods
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/total_network_objects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    total_network_objects
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/trips_od_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    trips_od_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/unique_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/unique_locations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_locations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/unique_subscriber_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_subscriber_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/unique_visitor_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_visitor_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/unmoving_at_reference_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unmoving_at_reference_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/unmoving_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unmoving_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/query_schemas/visited_most_days/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    visited_most_days
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/server_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    server_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/server/zmq_helpers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zmq_helpers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/spatial_unit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    spatial_unit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/sqlalchemy_table_definitions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sqlalchemy_table_definitions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/sqlalchemy_utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sqlalchemy_utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/statistic_types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    statistic_types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/subscriber_subsetter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_subsetter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/subset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/table/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    table
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/union/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    union
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/core/union_with_fixed_values/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    union_with_fixed_values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4" id="__nav_4_3_1_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_2" id="__nav_4_3_1_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Dfs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Dfs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/dfs/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dfs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/dfs/total_amount_for_metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    total_amount_for_metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_3" id="__nav_4_3_1_4_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Location
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Location
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/active_at_reference_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    active_at_reference_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/consecutive_trips_od_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    consecutive_trips_od_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/joined_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    joined_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/labelled_flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    labelled_flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/labelled_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    labelled_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/location_introversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_introversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/meaningful_locations_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    meaningful_locations_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/meaningful_locations_od/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    meaningful_locations_od
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/pwo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pwo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_active_at_reference_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_active_at_reference_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_consecutive_trips_od_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_consecutive_trips_od_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_in_out_flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_in_out_flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_joined_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_joined_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_labelled_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_labelled_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_labelled_flows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_labelled_flows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_labelled_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_labelled_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_location_introversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_location_introversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_location_metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_location_metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_meaningful_locations_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_meaningful_locations_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_meaningful_locations_od/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_meaningful_locations_od
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_total_events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_total_events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_trips_od_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_trips_od_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_unique_subscriber_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_unique_subscriber_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_unique_vistor_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_unique_vistor_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_unmoving_at_reference_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_unmoving_at_reference_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/redacted_unmoving_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_unmoving_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/spatial_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    spatial_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/total_events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    total_events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/trips_od_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    trips_od_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/unique_subscriber_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_subscriber_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/unique_visitor_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_visitor_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/unmoving_at_reference_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unmoving_at_reference_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/location/unmoving_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unmoving_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_4" id="__nav_4_3_1_4_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Network
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Network
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/network/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/network/total_network_objects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    total_network_objects
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_5" id="__nav_4_3_1_4_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Nonspatial aggregates
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Nonspatial aggregates
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/nonspatial_aggregates/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nonspatial_aggregates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/nonspatial_aggregates/histogram_aggregation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    histogram_aggregation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/nonspatial_aggregates/per_value_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    per_value_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/nonspatial_aggregates/redacted_per_value_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    redacted_per_value_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_6" id="__nav_4_3_1_4_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Raster
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Raster
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/raster/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    raster
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/raster/raster_statistics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    raster_statistics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_7" id="__nav_4_3_1_4_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Spatial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            Spatial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    spatial
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/circles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    circles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/distance_matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    distance_matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/geography/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    geography
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/location_area/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_area
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/location_cluster/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_cluster
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/spatial/versioned_infrastructure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    versioned_infrastructure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_8" id="__nav_4_3_1_4_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Subscriber
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_8">
+            <span class="md-nav__icon md-icon"></span>
+            Subscriber
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/active_at_reference_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    active_at_reference_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/active_subscribers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    active_subscribers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/calendar_activity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    calendar_activity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/call_days/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_days
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/coalesced_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    coalesced_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/contact_balance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    contact_balance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/contact_reciprocal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    contact_reciprocal
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/contact_reference_locations_stats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    contact_reference_locations_stats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/daily_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    daily_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/day_trajectories/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    day_trajectories
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/displacement/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    displacement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/distance_counterparts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    distance_counterparts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/distance_series/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    distance_series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/entropy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    entropy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/event_count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    event_count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/event_type_proportion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    event_type_proportion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/filtered_reference_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    filtered_reference_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/first_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    first_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/handset_stats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    handset_stats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/hartigan_cluster/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hartigan_cluster
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/imputed_distance_series/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    imputed_distance_series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/interevent_interval/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    interevent_interval
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/interevent_period/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    interevent_period
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/iterative_median_filter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    iterative_median_filter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/label_event_score/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    label_event_score
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/last_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    last_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/location_visits/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    location_visits
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/majority_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    majority_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/mds_volume/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mds_volume
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/meaningful_locations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    meaningful_locations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/metaclasses/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    metaclasses
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/mobility_classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mobility_classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/modal_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    modal_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/most_frequent_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    most_frequent_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/new_subscribers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    new_subscribers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/nocturnal_events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nocturnal_events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/pareto_interactions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pareto_interactions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/per_contact_event_stats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    per_contact_event_stats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/per_location_event_stats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    per_location_event_stats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/per_subscriber_aggregate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    per_subscriber_aggregate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/radius_of_gyration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    radius_of_gyration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/scores/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    scores
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/subscriber_call_durations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_call_durations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/subscriber_degree/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_degree
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/subscriber_stay_lengths/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_stay_lengths
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/subscriber_tacs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_tacs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/topup_amount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    topup_amount
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/topup_balance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    topup_balance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/total_active_periods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    total_active_periods
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/unique_location_counts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_location_counts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/unique_locations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_locations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/unmoving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unmoving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/unmoving_at_reference_location/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unmoving_at_reference_location
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/subscriber/visited_most_days/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    visited_most_days
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_4_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_4_9" id="__nav_4_3_1_4_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_4_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_4_9">
+            <span class="md-nav__icon md-icon"></span>
+            Utilities
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utilities
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/combine_first/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    combine_first
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/direction_enum/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    direction_enum
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/event_table_subset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    event_table_subset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/events_tables_union/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    events_tables_union
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/feature_collection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    feature_collection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/group_values/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    group_values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/multilocation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multilocation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/sets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/subscriber_locations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    subscriber_locations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/unique_values_from_queries/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    unique_values_from_queries
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/features/utilities/validators/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    validators
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowmachine/flowmachine/versions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/api-spec.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlowAPI specification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Architectural Decision Records (ADR)
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Architectural Decision Records (ADR)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architectural Decision Records
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0001-pipenv-for-package-and-dependency-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pipenv for package / dependency management and virtual environments
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0002-pytest-for-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pytest for testing Flowkit components
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0003-http-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HTTP API as Single Access Point
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0004-http-framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quart as HTTP Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0005-IPC-methods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interprocess Communication (IPC) Methods - zeromq and redis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0006-JWTs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    JWTs for API Access Control
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0007-mapbox-for-worked-examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mapbox GL for map visualisations in the worked examples notebooks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0008-jupyter-notebooks-for-autoflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jupyter notebooks for automated notebook execution and report generation in AutoFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0009-asciidoctor-pdf-for-notebook-conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asciidoctor PDF for converting Jupyter notebooks to PDF
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/adr/0010-prefect-for-autoflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefect for workflow definition and execution in AutoFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    System Administrators
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            System Administrators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Administrator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Deploying FlowKit
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Deploying FlowKit
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowdb-and-flowetl-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB and FlowETL only
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowDB and FlowETL only">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shared memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bind-mounts-and-user-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bind Mounts and user permissions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowetl" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowETL
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowETL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sample-stack-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample stack files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sample stack files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowdb_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowetl_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowETL
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowdb-flowetl-and-flowmachine" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB, FlowETL and FlowMachine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowKit
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowKit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-a-key-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generating a key pair
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowAuth
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowAuth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Two-factor authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-stack-files_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample stack files
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowmachine-and-flowapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowMachine and FlowAPI
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowMachine and FlowAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowmachine" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowMachine
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowAPI
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-the-new-server-to-flowauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding the new server to FlowAuth
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-stack-files_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample stack files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sample stack files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowmachine_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowMachine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowapi_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowAPI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secrets Quickstart
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demonstrating-successful-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demonstrating successful deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional support
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    System management
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            System management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../management/cache/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Caching in FlowKit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2" id="__nav_5_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            ETL
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../management/etl/etl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2_2" id="__nav_5_3_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Flowetl
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_3_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Flowetl
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2_2_1" id="__nav_5_3_2_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Flowetl
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_3_2_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Flowetl
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    flowetl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/_version/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    _version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cli
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2_2_1_4" id="__nav_5_3_2_2_1_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Mixins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_3_2_2_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2_2_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            Mixins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/mixins/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mixins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/mixins/fixed_sql_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fixed_sql_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/mixins/fixed_sql_with_params_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fixed_sql_with_params_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/mixins/table_name_macros_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    table_name_macros_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/mixins/wrapping_sql_mixin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wrapping_sql_mixin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2_2_1_5" id="__nav_5_3_2_2_1_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operators
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_3_2_2_1_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2_2_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            Operators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/operators/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    operators
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2_2_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2_2_1_6" id="__nav_5_3_2_2_1_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Sensors
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_3_2_2_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2_2_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            Sensors
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flowetl/flowetl/sensors/__init__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../management/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging and audit trails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../management/users/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing users and access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowdb-and-flowetl-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB and FlowETL only
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowDB and FlowETL only">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shared memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bind-mounts-and-user-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bind Mounts and user permissions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowetl" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowETL
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowETL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sample-stack-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample stack files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sample stack files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowdb_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowetl_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowETL
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowdb-flowetl-and-flowmachine" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowDB, FlowETL and FlowMachine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowKit
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowKit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-a-key-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generating a key pair
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowAuth
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowAuth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Two-factor authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-stack-files_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample stack files
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowmachine-and-flowapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowMachine and FlowAPI
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowMachine and FlowAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowmachine" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowMachine
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowAPI
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FlowAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-the-new-server-to-flowauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding the new server to FlowAuth
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-stack-files_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample stack files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sample stack files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowmachine_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowMachine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowapi_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      FlowAPI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secrets Quickstart
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demonstrating-successful-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demonstrating successful deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional support
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Deploying FlowKit</h1>
+
+<p>A complete FlowKit deployment consists of FlowDB, FlowMachine, FlowETL, FlowAPI, FlowAuth, and redis. FlowDB, FlowMachine, FlowETL, FlowAPI and redis are deployed inside your firewall and work together to provide a complete running system. FlowAuth can be installed <em>outside</em> your firewall, and does not require a direct connection to the rest of the system.</p>
+<p>We strongly recommend using <a href="https://docs.docker.com/engine/swarm/">docker swarm</a> to deploy all the components, to support you in safely managing <a href="https://docs.docker.com/engine/swarm/secrets/">secrets</a> to ensure a secure system. Ensure you understand how to <a href="https://docs.docker.com/engine/reference/commandline/swarm_init/">create a swarm</a>, <a href="https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands">manage secrets</a>, and <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/#compose-file">deploy stacks using compose files</a> before continuing.</p>
+<h2 id="deployment-scenarios">Deployment scenarios<a class="headerlink" href="#deployment-scenarios" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If updating from FlowKit v. 1.16 or earlier, it is <strong>strongly recommended</strong> that you take a backup of the flowetl_db database. Airflow has been bumped to v2 from v1.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If updating Flowauth from v 1.17 to 1.18.1 or later, your will need to migrate Flowauth's database. See <a href="#migration">migration</a></p>
+</div>
+<h3 id="flowdb-and-flowetl-only">FlowDB and FlowETL only<a class="headerlink" href="#flowdb-and-flowetl-only" title="Permanent link">&para;</a></h3>
+<p>FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.</p>
+<h4 id="flowdb">FlowDB<a class="headerlink" href="#flowdb" title="Permanent link">&para;</a></h4>
+<p>FlowDB is distributed as a docker container. To run it, you will need to provide several secrets:</p>
+<table>
+<thead>
+<tr>
+<th>Secret name</th>
+<th>Secret purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWAPI_FLOWDB_USER</td>
+<td>Database user used by FlowAPI</td>
+<td>Role with <em>read</em> access to tables under the cache and geography schemas</td>
+</tr>
+<tr>
+<td>FLOWAPI_FLOWDB_PASSWORD</td>
+<td>Password for the FlowAPI database user</td>
+<td></td>
+</tr>
+<tr>
+<td>FLOWMACHINE_FLOWDB_PASSWORD</td>
+<td>Password for flowmachine user</td>
+<td></td>
+</tr>
+<tr>
+<td>FLOWDB_POSTGRES_PASSWORD</td>
+<td>Postgres superuser password for flowdb</td>
+<td>Username <code>flowdb</code>, user with super user access to flowdb database</td>
+</tr>
+</tbody>
+</table>
+<p>You may also provide the following environment variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable name</th>
+<th>Purpose</th>
+<th>Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CACHE_SIZE</td>
+<td>Maximum size of the cache schema</td>
+<td>1 tenth of available space in pgdata directory</td>
+</tr>
+<tr>
+<td>CACHE_PROTECTED_PERIOD</td>
+<td>Amount of time to protect cache tables from being cleaned up</td>
+<td>86400 (24 hours)</td>
+</tr>
+<tr>
+<td>CACHE_HALF_LIFE</td>
+<td>Speed at which cache tables expire when not used</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>MAX_CPUS</td>
+<td>Maximum number of CPUs that may be used for parallelising queries</td>
+<td>The greater of 1 or 1 less than all CPUs</td>
+</tr>
+<tr>
+<td>SHARED_BUFFERS_SIZE</td>
+<td>Size of shared buffers</td>
+<td>16GB</td>
+</tr>
+<tr>
+<td>MAX_WORKERS</td>
+<td>Maximum number of CPUs that may be used for parallelising one query</td>
+<td>MAX_CPUS/2</td>
+</tr>
+<tr>
+<td>MAX_WORKERS_PER_GATHER</td>
+<td>Maximum number of CPUs that may be used for parallelising part of one query</td>
+<td>MAX_CPUS/2</td>
+</tr>
+<tr>
+<td>EFFECTIVE_CACHE_SIZE</td>
+<td>Postgres cache size</td>
+<td>25% of total RAM</td>
+</tr>
+<tr>
+<td>FLOWDB_ENABLE_POSTGRES_DEBUG_MODE</td>
+<td>When set to TRUE, enables use of the <a href="https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html">pgadmin debugger</a></td>
+<td>FALSE</td>
+</tr>
+<tr>
+<td>MAX_LOCKS_PER_TRANSACTION</td>
+<td>Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers.</td>
+<td>36500</td>
+</tr>
+<tr>
+<td>FLOWDB_LOG_DEST</td>
+<td>Controls the logging destination, may be be one of <code>stderr</code>, <code>jsonlog</code>, <code>csvlog</code>.</td>
+<td><code>jsonlog</code></td>
+</tr>
+<tr>
+<td>AUTO_CONFIG_FILE_NAME</td>
+<td>The path in the container of the automatically generated config file located at /flowdb_autoconf</td>
+<td><code>postgresql.configurator.conf</code></td>
+</tr>
+</tbody>
+</table>
+<p>However in most cases, the defaults will be adequate.</p>
+<h5 id="shared-memory">Shared memory<a class="headerlink" href="#shared-memory" title="Permanent link">&para;</a></h5>
+<p>You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting <code>shm_size</code> for the FlowDB container in your compose or stack file, or by passing the <code>--shm-size</code> argument to the <code>docker run</code> command. In particular it should be more than <code>SHARED_BUFFERS_SIZE + MAX_LOCKS * (max_connections + max_prepared_transactions) * (sizeof(LOCK) + sizeof(LOCKTAG))</code>.</p>
+<h5 id="bind-mounts-and-user-permissions">Bind Mounts and user permissions<a class="headerlink" href="#bind-mounts-and-user-permissions" title="Permanent link">&para;</a></h5>
+<p>By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.</p>
+<p>However, you will often wish to set up bind mounts to hold the data, allow access to the postgres logs, and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.</p>
+<p>Adding a bind mount using <code>docker-compose</code> is simple:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">flowdb</span><span class="p">:</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;HOST_USER_ID&gt;:&lt;HOST_GROUP_ID&gt;</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">volumes</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/store/data/on/host:/var/lib/postgresql/data</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/consume/data/from/host:/etl:ro</span>
+</code></pre></div>
+<p>This creates two bind mounts, the first is FlowDB's internal storage, and the second is a <em>read only</em> mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the bind mounted directories do not exist, docker will create them and you will need to <code>chown</code> them to the correct user.</p>
+</div>
+<p>And similarly when using <code>docker run</code>:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>flowdb_testdata<span class="w"> </span>-e<span class="w"> </span><span class="nv">FLOWMACHINE_FLOWDB_PASSWORD</span><span class="o">=</span>foo<span class="w"> </span>-e<span class="w"> </span><span class="nv">FLOWAPI_FLOWDB_PASSWORD</span><span class="o">=</span>foo<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--publish<span class="w"> </span><span class="m">9000</span>:5432<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--user<span class="w"> </span>HOST_USER_ID:HOST_GROUP_ID<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>-v<span class="w"> </span>/path/to/store/data/on/host:/var/lib/postgresql/data<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>-v<span class="w"> </span>/path/to/consume/data/from/host:/etl:ro<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--detach<span class="w"> </span>flowminder/flowdb-testdata:latest
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To run as the current user, you can simply replace <code>HOST_USER_ID:HOST_GROUP_ID</code> with <code>$(id -u):$(id -g)</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Using the <code>--user</code> flag without a bind mount specified will not work, and you will see an error
+like this: <code>initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted</code>.</p>
+<p>When using docker volumes, docker will manage the permissions for you.</p>
+</div>
+<h4 id="flowetl">FlowETL<a class="headerlink" href="#flowetl" title="Permanent link">&para;</a></h4>
+<p>To run FlowETL, you will need to provide the following secrets:</p>
+<table>
+<thead>
+<tr>
+<th>Secret name</th>
+<th>Secret purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWETL_AIRFLOW_ADMIN_USERNAME</td>
+<td>Default administrative user logon name for the FlowETL web interface</td>
+<td></td>
+</tr>
+<tr>
+<td>FLOWETL_AIRFLOW_ADMIN_PASSWORD</td>
+<td>Password for the administrative user</td>
+<td></td>
+</tr>
+<tr>
+<td>AIRFLOW_DATABASE__SQL_ALCHEMY_CONN</td>
+<td>Connection string for the backing database</td>
+<td>Should take the form <code>postgres://flowetl:&lt;FLOWETL_POSTGRES_PASSWORD&gt;@flowetl_db:5432/flowetl</code></td>
+</tr>
+<tr>
+<td>AIRFLOW__CORE__FERNET_KEY</td>
+<td>Ferney key used to encrypt (at rest) database credentials</td>
+<td></td>
+</tr>
+<tr>
+<td>AIRFLOW_CONN_FLOWDB</td>
+<td>Connection string for the FlowDB database</td>
+<td>Should take the form <code>postgres://flowdb:&lt;FLOWDB_POSTGRES_PASSWORD&gt;@flowdb:5432/flowdb</code></td>
+</tr>
+<tr>
+<td>FLOWETL_POSTGRES_PASSWORD</td>
+<td>Superuser password for FlowETL's backing database</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>We recommend running FlowETL using the celery scheduler, in which case you will also need to provide additional environment variables and secrets as described in the <a href="https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html">main airflow documentation</a>. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Any environment variable can be provided as a secret with the same name for the FlowETL container.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Generating Fernet keys</p>
+<p>A convenient way to generate Fernet keys is to use the python <a href="https://cryptography.io/">cryptography</a> package. After installing, you can generate a new key by running <code>python -c "from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())"</code>.</p>
+</div>
+<p>See also the <a href="https://airflow.apache.org/docs/stable/">airflow documentation</a> for other configuration options which you can provide as environment variables.</p>
+<p>When deploying to production you are strongly advised to create a bind mount for logs generated by the airflow scheduler, as these can grow very large. This should bind mount <code>/opt/airflow/logs</code> inside the container to a directory where the flowetl user has <em>read-write access</em>. </p>
+<p>The <a href="../management/etl/etl/">ETL</a> documentation gives detail on how to use FlowETL to load data into FlowDB.</p>
+<h5 id="sample-stack-files">Sample stack files<a class="headerlink" href="#sample-stack-files" title="Permanent link">&para;</a></h5>
+<h6 id="flowdb_1">FlowDB<a class="headerlink" href="#flowdb_1" title="Permanent link">&para;</a></h6>
+<p>You can find a sample FlowDB stack file <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowdb.yml">here</a>. To use it, you should first create the secrets, and additionally set the following environment variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable name</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWDB_HOST_PORT</td>
+<td>Localhost port where FlowDB will be accessible</td>
+</tr>
+<tr>
+<td>FLOWDB_HOST_USER_ID</td>
+<td>uid of the host user for FlowDB</td>
+</tr>
+<tr>
+<td>FLOWDB_HOST_GROUP_ID</td>
+<td>gid of the host user for FlowDB</td>
+</tr>
+<tr>
+<td>FLOWDB_DATA_DIR</td>
+<td>Path on the host to a directory owned by FLOWDB_HOST_USER_ID where FlowDB will store data and write logs</td>
+</tr>
+<tr>
+<td>FLOWDB_ETL_DIR</td>
+<td>Path on the host to a directory readable by FLOWDB_HOST_USER_ID from which data may be loaded, mounted inside the container at /etl</td>
+</tr>
+</tbody>
+</table>
+<p>Once the FlowDB service has started, you will be able to access it using <code>psql</code> as with any standard PostgreSQL database.</p>
+<h6 id="flowetl_1">FlowETL<a class="headerlink" href="#flowetl_1" title="Permanent link">&para;</a></h6>
+<p>You can find a sample FlowETL stack file <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowetl.yml">here</a> which should be used with the <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowdb.yml">FlowDB stack file</a>. To use it, you should first create the required secrets, and additionally set the following environment variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable name</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWETL_HOST_PORT</td>
+<td>Localhost port on which the FlowETL airflow web interface will be available</td>
+</tr>
+<tr>
+<td>FLOWETL_HOST_USER_ID</td>
+<td>uid of the host user for FlowETL</td>
+</tr>
+<tr>
+<td>FLOWETL_HOST_GROUP_ID</td>
+<td>gid of the host user for FlowETL</td>
+</tr>
+<tr>
+<td>FLOWETL_HOST_DAG_DIR</td>
+<td>Path on the host to a directory where dag files will be stored</td>
+</tr>
+<tr>
+<td>FLOWETL_WORKER_COUNT</td>
+<td>The number of workers which will be available to run tasks</td>
+</tr>
+<tr>
+<td>FLOWETL_CELERY_PORT</td>
+<td>Port which the Celery user interface will be available on</td>
+</tr>
+</tbody>
+</table>
+<p>Once your stack has come up, you will be able to access FlowETL's web user interface which allows you to monitor the progress of ETL tasks. </p>
+<h3 id="flowdb-flowetl-and-flowmachine">FlowDB, FlowETL and FlowMachine<a class="headerlink" href="#flowdb-flowetl-and-flowmachine" title="Permanent link">&para;</a></h3>
+<p>For cases where your users require individual level data access, you can support the use of FlowMachine as a library. In this mode, users connect directly to FlowDB via the <a href="https://pypi.org/project/flowmachine/">FlowMachine Python module</a>. Many of the benefits of a complete FlowKit deployment are available in this scenario, including query caching.</p>
+<p>You will need to host a redis service, to allow the FlowMachine users to coordinate processing. See the <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml">FlowMachine stack file</a> for an example of deploying redis using docker.</p>
+<p>You will need to <a href="../management/users/">create database users</a> for each user who needs access, and provide them with the password to the redis instance. Users should install FlowMachine individually, using pip (<code>pip install flowmachine</code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A FlowMachine Docker service is not required for using FlowMachine as a library - users can install the FlowMachine module individually. A redis service is required, and all users should connect to the same redis instance.</p>
+</div>
+<h3 id="flowkit">FlowKit<a class="headerlink" href="#flowkit" title="Permanent link">&para;</a></h3>
+<p>A complete FlowKit deployment makes aggregated insights easily available to end users via a web API and FlowClient, while allowing administrators granular control over who can access what data, and for how long.</p>
+<p>To deploy a complete FlowKit system, you will first need to generate a key pair which will be used to connect FlowAuth and FlowAPI. (If you have an existing FlowAuth deployment, you do not need to generate a new key pair - you can use the <em>same</em> public key with all the FlowAPI servers managed by that FlowAuth server).</p>
+<h4 id="generating-a-key-pair">Generating a key pair<a class="headerlink" href="#generating-a-key-pair" title="Permanent link">&para;</a></h4>
+<p>FlowAuth uses a private key to sign the tokens it generates, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding <em>public</em> key, to allow them to verify the tokens were produced by the right instance of FlowAuth.</p>
+<p>You can use <code>openssl</code> to generate a private key:</p>
+<div class="highlight"><pre><span></span><code>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>flowauth-private-key.key<span class="w"> </span><span class="m">4096</span>
+</code></pre></div>
+<p>And then create a public key from the key file (<code>openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub</code>). Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. <code>base64 -i flowauth-private-key.key</code>). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><em>Always keep your private key secure</em> </p>
+<p>If your key is destroyed, you will need to generate a new one and redeploy any instances of FlowAuth and FlowAPI. If you key is <em>leaked</em>, unauthorised parties will be able to sign tokens for your instances of FlowAPI. </p>
+</div>
+<h4 id="flowauth">FlowAuth<a class="headerlink" href="#flowauth" title="Permanent link">&para;</a></h4>
+<p>FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. <a href="https://github.com/jwilder/nginx-proxy">nginx-proxy</a> combined with <a href="https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion">letsencrypt-nginx-proxy-companion</a>).</p>
+<p>To run FlowAuth, you should set the following secrets:</p>
+<table>
+<thead>
+<tr>
+<th>Secret name</th>
+<th>Secret purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWAUTH_ADMIN_USER</td>
+<td>Admin user name</td>
+</tr>
+<tr>
+<td>FLOWAUTH_ADMIN_PASSWORD</td>
+<td>Admin user password</td>
+</tr>
+<tr>
+<td>FLOWAUTH_DB_PASSWORD</td>
+<td>Password for FlowAuth's backing database</td>
+</tr>
+<tr>
+<td>FLOWAUTH_FERNET_KEY</td>
+<td>Reversible encryption key for storing tokens at rest</td>
+</tr>
+<tr>
+<td>SECRET_KEY</td>
+<td>Secures session and CSRF protection cookies</td>
+</tr>
+<tr>
+<td>PRIVATE_JWT_SIGNING_KEY</td>
+<td>Used to sign the tokens generated by FlowAuth, which ensures that they can be trusted by FlowAPI</td>
+</tr>
+</tbody>
+</table>
+<p>You may also set the following environment variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable name</th>
+<th>Purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB_URI</td>
+<td>URI for the backing database</td>
+<td>Should be of the form <code>postgresql://flowauth:{}@flowauth_postgres:5432/flowauth</code>. If not set, a temporary sqlite database will be created. The <code>{}</code> will be populated using the value of the <code>FLOWAUTH_DB_PASSWORD</code> secret.</td>
+</tr>
+<tr>
+<td>RESET_FLOWAUTH_DB</td>
+<td>Set to true to reset the database</td>
+<td></td>
+</tr>
+<tr>
+<td>FLOWAUTH_CACHE_BACKEND</td>
+<td>Backend to use for two factor auth last used key cache</td>
+<td>Defaults to 'file'. May be set to 'memory' if deploying a single instance on only one CPU, or to 'redis' for larger deployments</td>
+</tr>
+</tbody>
+</table>
+<h5 id="migration">Migration<a class="headerlink" href="#migration" title="Permanent link">&para;</a></h5>
+<p>If updating an existing installation of FlowAuth to v1.18.1 or newer, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data, and then re-upload the API specifications for any existing servers in the new 1.18.1+ format. <strong>It is recommended that you take a backup of your flowauth db before migration.</strong></p>
+<p>You can migrate the Flowauth db to 1.18.1+ with the following commands:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;flowauth-container&gt;<span class="w"> </span>sh
+<span class="nb">cd</span><span class="w"> </span>/FlowKit-&lt;version&gt;/flowauth/backend
+flask<span class="w"> </span>db<span class="w"> </span>upgrade
+</code></pre></div>
+<h5 id="two-factor-authentication">Two-factor authentication<a class="headerlink" href="#two-factor-authentication" title="Permanent link">&para;</a></h5>
+<p>FlowAuth supports optional two-factor authentication for user accounts, using the Google Authenticator app or similar. This can be enabled either by an administrator, or by individual users.</p>
+<p>To safeguard two-factor codes, FlowAuth prevents users from authenticating more than once with the same code within a short window. When deploying to production, you may wish to deploy a redis backend to support this feature - for example if you are deploying multiple instances of the FlowAuth container which need to be able to record the last used codes for users in a common place.</p>
+<p>To configure FlowAuth for use with redis, set the <code>FLOWAUTH_CACHE_BACKEND</code> environment variable to <code>redis</code>. You will also need to set the following secrets:</p>
+<table>
+<thead>
+<tr>
+<th>Secret name</th>
+<th>Purpose</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWAUTH_REDIS_HOST</td>
+<td>The hostname to connect to redis on.</td>
+<td></td>
+</tr>
+<tr>
+<td>FLOWAUTH_REDIS_PORT</td>
+<td>The port to use to connect to redis</td>
+<td>6379</td>
+</tr>
+<tr>
+<td>FLOWAUTH_REDIS_PASSWORD</td>
+<td>The password for the redis database</td>
+<td></td>
+</tr>
+<tr>
+<td>FLOWAUTH_REDIS_DB</td>
+<td>The database <em>number</em> to connect to</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>By default, FlowAuth will use a dbm file backend to track last used two-factor codes. This file will be created at <code>/dev/shm/flowauth_last_used_cache</code> inside the container (i.e. in Docker's shared memory area), and can be mounted to a volume or pointed to an alternative location by setting the  <code>FLOWAUTH_CACHE_FILE</code> environment variable.</p>
+<h5 id="sample-stack-files_1">Sample stack files<a class="headerlink" href="#sample-stack-files_1" title="Permanent link">&para;</a></h5>
+<p>You can find an example docker stack file for FlowAuth <a href="https://github.com/Flowminder/FlowKit/blob/master/flowauth/docker-compose.yml">here</a>. This will bring up instances of FlowAuth, redis, and postgres. You can combine this with the <a href="https://github.com/Flowminder/FlowKit/blob/master/flowauth/docker-compose.letsencrypt.yml">letsencrypt</a> stack file to automatically acquire an SSL certificate.</p>
+<h4 id="flowmachine-and-flowapi">FlowMachine and FlowAPI<a class="headerlink" href="#flowmachine-and-flowapi" title="Permanent link">&para;</a></h4>
+<p>Once you have FlowAuth, FlowDB, and FlowETL running, you are ready to add FlowMachine and FlowAPI.</p>
+<h5 id="flowmachine">FlowMachine<a class="headerlink" href="#flowmachine" title="Permanent link">&para;</a></h5>
+<p>The FlowMachine server requires one additional secret: <code>REDIS_PASSWORD</code>, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the <code>FLOWMACHINE_FLOWDB_PASSWORD</code> secrets defined for FlowDB.</p>
+<p>You may also set the following environment variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable name</th>
+<th>Purpose</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLOWMACHINE_PORT</td>
+<td>Port FlowAPI should communicate on</td>
+<td>5555</td>
+</tr>
+<tr>
+<td>FLOWMACHINE_SERVER_DEBUG_MODE</td>
+<td>Set to True to enable debug mode for asyncio</td>
+<td>False</td>
+</tr>
+<tr>
+<td>FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING</td>
+<td>Set to True to disable automatically pre-caching dependencies of running queries</td>
+<td>False</td>
+</tr>
+<tr>
+<td>FLOWMACHINE_CACHE_PRUNING_FREQUENCY</td>
+<td>How often to automatically clean up the cache</td>
+<td>86400 (24 hours)</td>
+</tr>
+<tr>
+<td>FLOWMACHINE_CACHE_PRUNING_TIMEOUT</td>
+<td>Number of seconds to wait before halting a cache prune</td>
+<td>600</td>
+</tr>
+<tr>
+<td>FLOWMACHINE_LOG_LEVEL</td>
+<td>Verbosity of logging (critical, error, info, or debug)</td>
+<td>error</td>
+</tr>
+<tr>
+<td>FLOWMACHINE_SERVER_THREADPOOL_SIZE</td>
+<td>Number of threads the server will use to manage running queries</td>
+<td>5*n_cpus</td>
+</tr>
+<tr>
+<td>DB_CONNECTION_POOL_SIZE</td>
+<td>Number of connections keep open to FlowDB - the server can actively run this many queries at once. You may wish to increase this if the FlowDB instance is running on a powerful server with multiple CPUs</td>
+<td>5</td>
+</tr>
+<tr>
+<td>DB_CONNECTION_POOL_OVERFLOW</td>
+<td>Number of connections in addition to <code>DB_CONNECTION_POOL_SIZE</code> to open if needed</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4 id="flowapi">FlowAPI<a class="headerlink" href="#flowapi" title="Permanent link">&para;</a></h4>
+<p>FlowAPI requires additional secrets:</p>
+<table>
+<thead>
+<tr>
+<th>Secret name</th>
+<th>Purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cert-flowkit.pem</td>
+<td>SSL Certificate used to serve FlowAPI over https</td>
+<td>Optional, but <em>strongly</em> recommended. If you are using a self-signed certificate, you will need to make the file available to FlowClient users.</td>
+</tr>
+<tr>
+<td>key-flowkit.pem</td>
+<td>Private key for the SSL Certificate</td>
+<td>Optional, but <em>strongly</em> recommended. This part of the certificate does <em>not</em> need to be made available to FlowClient users.</td>
+</tr>
+<tr>
+<td>PUBLIC_JWT_SIGNING_KEY</td>
+<td>Public key to verify api tokens</td>
+<td>The public key corresponding to the <code>PRIVATE_JWT_SIGNING_KEY</code> used by FlowAuth</td>
+</tr>
+<tr>
+<td>FLOWAPI_IDENTIFIER</td>
+<td>Secret used in combination with secret key for decoding JWTs</td>
+<td>Should be unique per FlowAPI server; this will also be the <em>name</em> of the server in the FlowAuth user interface</td>
+</tr>
+</tbody>
+</table>
+<p>FlowAPI also makes use of the <code>FLOWAPI_FLOWDB_USER</code> and <code>FLOWAPI_FLOWDB_PASSWORD</code> secrets provided to FlowDB.</p>
+<h5 id="adding-the-new-server-to-flowauth">Adding the new server to FlowAuth<a class="headerlink" href="#adding-the-new-server-to-flowauth" title="Permanent link">&para;</a></h5>
+<p>Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from <code>https://&lt;flowapi_host&gt;:&lt;flowapi_port&gt;/api/0/spec/openapi.json</code>. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.</p>
+<p>After uploading the specification, you can configure the maximum lifetime and final expiry date of tokens issued by that server. You should then create some new roles; we recommend that you create a role for analysis staff that includes at least the <code>get_results</code>, <code>get_available_dates</code> and <code>run_query</code> scopes, along with the appropriate geographic levels. If you are unsure, tick all boxes.</p>
+<h5 id="sample-stack-files_2">Sample stack files<a class="headerlink" href="#sample-stack-files_2" title="Permanent link">&para;</a></h5>
+<h6 id="flowmachine_1">FlowMachine<a class="headerlink" href="#flowmachine_1" title="Permanent link">&para;</a></h6>
+<p>A sample stack file suitable for use with the FlowDB and FlowETL stacks can be found <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowmachine.yml">here</a>. This adds an additional two services: FlowMachine, and a redis instance used to coordinate the running state of queries. If you are supporting additional users with FlowMachine as a library, they should also use this redis instance. This stack file requires one additional environment variable: <code>REDIS_HOST_PORT</code>, the localhost port where Redis will be accessible.</p>
+<h6 id="flowapi_1">FlowAPI<a class="headerlink" href="#flowapi_1" title="Permanent link">&para;</a></h6>
+<p>The sample stack file for FlowAPI can be found <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowapi.yml">here</a>, and requires one additional environment variable: <code>FLOWAPI_HOST_PORT</code>, the local port to make the API accessible on. </p>
+<h5 id="secrets-quickstart">Secrets Quickstart<a class="headerlink" href="#secrets-quickstart" title="Permanent link">&para;</a></h5>
+<p>A full example deployment script which brings up all components is available <a href="https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/secrets_quickstart.sh">here</a>.</p>
+<p>This will bring up a single node swarm, create random 16 character passwords for the database users, generate a fresh RSA key pair which links FlowAuth and FlowAPI, generate a certificate valid for the <code>flowkit.api</code> domain (and point that to <code>localhost</code> using <code>/etc/hosts</code>), pull all necessary containers, and bring up FlowAuth and FlowAPI.</p>
+<p>For convenience, you can also do <code>pipenv run secrets_quickstart</code> from the <code>secrets_quickstart</code> directory.</p>
+<p>Note that if you wish to deploy a branch other than <code>master</code>, you should set the <code>CONTAINER_TAG</code> environment variable before running, to ensure that Docker pulls the correct tags.</p>
+<p>You can then provide the certificate to <code>flowclient</code>, and finally connect via https:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">flowclient</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>(This generates a certificate valid for the <code>flow.api</code> domain as well, which you can use by adding a corresponding entry to your <code>/etc/hosts</code> file.)</p>
+<h4 id="demonstrating-successful-deployment">Demonstrating successful deployment<a class="headerlink" href="#demonstrating-successful-deployment" title="Permanent link">&para;</a></h4>
+<p>Once FlowKit installation is complete, you can verify that the system has been successfully set up by visiting <code>http&lt;s&gt;://&lt;flowapi_url&gt;:&lt;flowapi_port&gt;/api/0/spec/redoc</code>. Once all the services have come up, you will be able to view the interactive API specification.
+We also recommend running the provided <a href="../../analyst/worked_examples/">worked examples</a> against the deployed FlowKit to check that everything is working correctly.</p>
+<h2 id="additional-support">Additional support<a class="headerlink" href="#additional-support" title="Permanent link">&para;</a></h2>
+<p>If you require more assistance to get up and running, please reach out to us by <a href="mailto:flowkit@flowminder.org">email</a> and we will try to assist.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Flowminder" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/Flowminder" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "content.tabs.link", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>
