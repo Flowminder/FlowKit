@@ -92,6 +92,7 @@ async def app(monkeypatch, tmpdir, dummy_db_pool, json_log):
     monkeypatch.setenv("FLOWDB_HOST", "localhost")
     monkeypatch.setenv("FLOWDB_PORT", "5432")
     monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
+    monkeypatch.setenv("FLOWAPI_RESPONSE_TIMEOUT", "86400")
     current_app = create_app()
     await current_app.startup()
     return TestApp(
