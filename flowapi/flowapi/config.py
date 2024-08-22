@@ -59,6 +59,7 @@ def get_config():
         flowdb_host = environ["FLOWDB_HOST"]
         flowdb_port = environ["FLOWDB_PORT"]
         flowapi_server_id = environ["FLOWAPI_IDENTIFIER"]
+        quart_response_timeout = environ["FLOWAPI_RESPONSE_TIMEOUT"]
     except KeyError as e:
         raise UndefinedConfigOption(
             f"Undefined configuration option: '{e.args[0]}'. Please set docker secret or environment variable."
@@ -73,4 +74,5 @@ def get_config():
         FLOWDB_DSN=f"postgresql://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",
         JWT_DECODE_AUDIENCE=flowapi_server_id,
         JWT_IDENTITY_CLAIM="sub",
+        RESPONSE_TIMEOUT=quart_response_timeout,
     )

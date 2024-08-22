@@ -138,6 +138,7 @@ services:
       - PUBLIC_JWT_SIGNING_KEY=${PUBLIC_JWT_SIGNING_KEY:?Must set PUBLIC_JWT_SIGNING_KEY env var}
       - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
       - FLOWAPI_IDENTIFIER=${FLOWAPI_IDENTIFIER:?Must set FLOWAPI_IDENTIFIER env var}
+      - FLOWAPI_RESPONSE_TIMEOUT=86400
     tty: true
     stdin_open: true
     restart: always
