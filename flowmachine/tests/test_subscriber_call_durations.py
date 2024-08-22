@@ -5,7 +5,7 @@
 import pytest
 
 from flowmachine.features.subscriber.subscriber_call_durations import *
-from flowmachine.utils import Statistic
+from flowmachine.core.statistic_types import Statistic
 
 
 @pytest.mark.parametrize(

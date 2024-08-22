@@ -6,7 +6,7 @@
 
 from .metaclasses import SubscriberFeature
 from flowmachine.features.subscriber.contact_balance import ContactBalance
-from flowmachine.utils import Statistic
+from ...core.statistic_types import Statistic
 
 
 class PerContactEventStats(SubscriberFeature):

@@ -62,7 +62,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
     --------
 
     >>> TotalActivePeriods('2016-01-01', 10, 3).get_dataframe()
-        subscriber     total_periods
+        subscriber     value
         subscriberA       10
         subscriberB       3
         subscriberC       7
@@ -156,14 +156,13 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "value", "inactive_periods"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         sql = """
             SELECT
                 ul.subscriber,
-                count(*) AS value,
-                {total_periods} - count(*) AS inactive_periods
+                count(*) AS value
             FROM
                 ({unique_subscribers_table}) AS ul
             GROUP BY
