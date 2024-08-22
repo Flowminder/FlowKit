@@ -74,5 +74,5 @@ def get_config():
         FLOWDB_DSN=f"postgresql://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",
         JWT_DECODE_AUDIENCE=flowapi_server_id,
         JWT_IDENTITY_CLAIM="sub",
-        RESPONSE_TIMEOUT=quart_response_timeout,
+        RESPONSE_TIMEOUT=int(quart_response_timeout),
     )
