@@ -38,6 +38,8 @@ def logging_config():
     mpatch = MonkeyPatch()
     mpatch.setenv("FLOWMACHINE_LOG_LEVEL", "debug")
     mpatch.setenv("FLOWAPI_LOG_LEVEL", "debug")
+    # Putting this here for now - it should be moved into its own fixture if we carry this on
+    mpatch.setenv("FLOWAPI_RESPONSE_TIMEOUT", "86400")
     yield
     mpatch.undo()
 
