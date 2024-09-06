@@ -9,20 +9,21 @@ Calculates the number of events at a location
 during a specified time period.
 """
 import datetime
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple
+from typing import Union as UnionType
 
 from flowmachine.core.query import Query
 from flowmachine.core.join_to_location import location_joined_query
 from flowmachine.core.mixins.geodata_mixin import GeoDataMixin
 from flowmachine.core.spatial_unit import AnySpatialUnit, make_spatial_unit
+from flowmachine.core.union import Union
 from flowmachine.features.utilities.events_tables_union import EventsTablesUnion
 from flowmachine.features.utilities.direction_enum import Direction
-from flowmachine.utils import make_where, standardise_date
+from flowmachine.utils import make_where, standardise_date, time_period_add
 import pandas as pd
-from functools import reduce
 
 
-class _TotalLocationEvents(GeoDataMixin, Query):
+class DayTotalLocationEvents(GeoDataMixin, Query):
     """
     Calculates the total number of events on an hourly basis
     per location (such as a tower or admin region),
@@ -30,10 +31,8 @@ class _TotalLocationEvents(GeoDataMixin, Query):
 
     Parameters
     ----------
-    start : str
+    day : str
         ISO format date string to at which to start the analysis
-    stop : str
-        As above for the end of the analysis
     table : str, default 'all'
         Specifies a table of cdr data on which to base the analysis. Table must
         exist in events schema. If 'all' then we use all tables specified in
@@ -52,19 +51,18 @@ class _TotalLocationEvents(GeoDataMixin, Query):
 
     def __init__(
         self,
-        start: str,
-        stop: str,
+        day: str,
         *,
-        table: Union[None, List[str]] = None,
+        table: UnionType[None, List[str]] = None,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         interval: str = "hour",
-        direction: Union[str, Direction] = Direction.BOTH,
+        direction: UnionType[str, Direction] = Direction.BOTH,
         hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.start = standardise_date(start)
-        self.stop = standardise_date(stop)
+        self.start = standardise_date(day)
+        self.stop = time_period_add(self.start, 1)
         self.table = table
         self.spatial_unit = spatial_unit
         self.interval = interval
@@ -140,42 +138,42 @@ class _TotalLocationEvents(GeoDataMixin, Query):
 
 class TotalLocationEvents(GeoDataMixin, Query):
     """
-        Calculates the total number of events on an hourly basis
-        per location (such as a tower or admin region),
-        and per interaction type.
+    Calculates the total number of events on an hourly basis
+    per location (such as a tower or admin region),
+    and per interaction type.
 
-        Parameters
-        ----------
-        start : str
-            ISO format date string to at which to start the analysis
-        stop : str
-            As above for the end of the analysis
-        table : str, default 'all'
-            Specifies a table of cdr data on which to base the analysis. Table must
-            exist in events schema. If 'all' then we use all tables specified in
-            flowmachine.yml.
-        spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
-            Spatial unit to which subscriber locations will be mapped. See the
-            docstring of make_spatial_unit for more information.
-        interval : ['hour', 'day', 'min']
-            Records activity on an hourly, daily, or by minute level.
-        direction : {'out', 'in', 'both'} or Direction, default Direction.BOTH
-            Look only at incoming or outgoing events. Can be either
-            'out', 'in' or 'both'.
-        """
+    Parameters
+    ----------
+    start : str
+        ISO format date string to at which to start the analysis
+    stop : str
+        As above for the end of the analysis
+    table : str, default 'all'
+        Specifies a table of cdr data on which to base the analysis. Table must
+        exist in events schema. If 'all' then we use all tables specified in
+        flowmachine.yml.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
+    interval : ['hour', 'day', 'min']
+        Records activity on an hourly, daily, or by minute level.
+    direction : {'out', 'in', 'both'} or Direction, default Direction.BOTH
+        Look only at incoming or outgoing events. Can be either
+        'out', 'in' or 'both'.
+    """
 
-    allowed_intervals = _TotalLocationEvents.allowed_intervals
+    allowed_intervals = DayTotalLocationEvents.allowed_intervals
 
     def __init__(
         self,
         start: str,
         stop: str,
         *,
-        table: Union[None, List[str]] = None,
+        table: UnionType[None, List[str]] = None,
         spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         interval: str = "hour",
-        direction: Union[str, Direction] = Direction.BOTH,
-        hours="all",
+        direction: UnionType[str, Direction] = Direction.BOTH,
+        hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
@@ -183,11 +181,14 @@ class TotalLocationEvents(GeoDataMixin, Query):
         self.stop = standardise_date(stop)
 
         dates = pd.date_range(self.start, self.stop)
+        if len(dates) == 1:  # Special case for single days
+            dates = [dates[0], dates[0]]
 
         self.table = table
         self.spatial_unit = spatial_unit
         self.interval = interval
         self.direction = Direction(direction)
+        self.hours = hours
 
         if self.interval not in self.allowed_intervals:
             raise ValueError(
@@ -202,12 +203,10 @@ class TotalLocationEvents(GeoDataMixin, Query):
         if self.interval == "min":
             self.time_cols.append("min")
 
-        self.unioned = reduce(
-            lambda x, y: x.union(x),
-            (
-                _TotalLocationEvents(
+        self.unioned = Union(
+            *(
+                DayTotalLocationEvents(
                     x,
-                    x + datetime.timedelta(days=1),
                     table=table,
                     spatial_unit=spatial_unit,
                     interval=interval,
@@ -217,7 +216,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
                     subscriber_identifier=subscriber_identifier,
                 )
                 for x in dates[:-1]
-            ),
+            )
         )
         super().__init__()
 
