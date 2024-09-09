@@ -11,6 +11,8 @@
 
 ARG CODE_VERSION=latest
 FROM flowminder/flowdb:${CODE_VERSION}
+# Something causes a a hang if we don't do this: https://github.com/docker-library/postgres/discussions/1183#discussioncomment-10205585
+ENV PAGER=cat
 
 
 #
