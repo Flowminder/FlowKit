@@ -7,7 +7,7 @@ from typing import List
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.core.errors import InvalidSpatialUnitError
-from flowmachine.utils import Statistic
+from flowmachine.core.statistic_types import Statistic
 
 
 class SubscriberStayLengths(SubscriberFeature):

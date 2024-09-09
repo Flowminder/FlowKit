@@ -8,7 +8,7 @@ import datetime
 
 from marshmallow import fields, Schema, validates_schema, ValidationError, post_load
 from marshmallow.validate import Range, Length, OneOf
-from flowmachine.utils import Statistic as ValidStats
+from flowmachine.core.statistic_types import Statistic as ValidStats
 
 
 class Hours(Schema):
