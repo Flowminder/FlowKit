@@ -51,7 +51,7 @@ readme = read("README.md")
 
 # Test requirements
 
-test_requirements = ["pytest", "pytest-cov", "pytest-asyncio", "asynctest"]
+test_requirements = ["pytest", "pytest-cov", "pytest-asyncio"]
 
 setup(
     name="flowmachine",
