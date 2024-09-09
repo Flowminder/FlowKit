@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from enum import Enum
+from enum import StrEnum
 
 
-class Statistic(str, Enum):
+class Statistic(StrEnum):
     """
     Valid statistics for use with postgres.
 
@@ -51,7 +51,7 @@ class Statistic(str, Enum):
             return f"{self}({column_name})"
 
 
-class StringAggregate(str, Enum):
+class StringAggregate(StrEnum):
     COUNT = "count"
     MODE = "mode"
     ARRAY = "array"
