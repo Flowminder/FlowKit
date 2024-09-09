@@ -20,7 +20,7 @@ commands:
 
 defaults:
   - &base_docker
-    - image: cimg/python:3.11
+    - image: cimg/python:3.12
       environment:
         FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
@@ -378,6 +378,7 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "testdata"
       num_days: 7
+      python_version: "3.12"
     working_directory: /home/circleci/project/flowmachine
     steps:
       - checkout:
