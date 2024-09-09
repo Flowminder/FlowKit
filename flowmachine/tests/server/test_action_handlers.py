@@ -189,7 +189,7 @@ async def test_run_query_error_handled(dummy_redis, server_config):
     assert msg.status == ZMQReplyStatus.ERROR
     assert (
         msg.msg
-        == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'type object argument after * must be an iterable, not Mock'"
+        == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'zip() argument after * must be an iterable, not Mock'"
     )
 
 
