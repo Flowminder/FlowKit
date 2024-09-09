@@ -695,7 +695,7 @@ jobs:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
-      python_version: "3.8"
+      python_version: "3.11"
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
@@ -770,6 +770,7 @@ jobs:
       num_mds: 20000
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
+      python_version: "3.11"
     working_directory: /home/circleci/project/docs
     steps:
       - checkout:
