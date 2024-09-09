@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Removed
+- Removed Oracle fdw
 
 ## [1.28.1]
 

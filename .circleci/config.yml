@@ -26,7 +26,6 @@ defaults:
         MPLBACKEND: "agg"
   - &flowdb_env
     FLOWDB_PORT: 9000
-    ORACLE_DB_PORT: 9002
     SYNTHETIC_DATA_DB_PORT: 5432
     FLOWDB_DATA_DIR: /home/circleci/database_data
     FLOWDB_INGESTION_DIR: /home/circleci/project/flowdb/tests/data
@@ -247,7 +246,7 @@ jobs:
           command: |
             cd flowdb/tests
             pipenv run pytest --junit-xml=../test_results/pytest/results.xml \
-            --ignore=test_synthetic_data.py --ignore=test_oracle_fdw.py
+            --ignore=test_synthetic_data.py
       - store_test_results:
           path: flowdb/test_results
       - run:
@@ -264,63 +263,6 @@ jobs:
           paths:
             - .env
 
-  build_flowdb_oracle:
-    machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: ubuntu-2004:2023.10.1
-    environment: *flowdb_env
-    working_directory: /home/circleci/project
-    steps:
-      - checkout:
-          path: /home/circleci/project/
-      - run:
-          name: "Switch to Python v3.11.5"
-          command: |
-            pyenv versions
-            pyenv global 3.11.5
-      - run:
-          name: Install pipenv
-          command: pip install --upgrade pip pipenv
-      - restore_cache:
-          key: flowdb-deps-6-{{ checksum "flowdb/tests/Pipfile.lock"}}
-      - attach_workspace:
-          at: /home/circleci/
-      - run:
-          name: Build oracle_fdw image
-          command: |
-            echo Building oracle_fdw version $FLOWDB_VERSION
-            echo Tagging as flowdb-oracle:$CIRCLE_SHA1
-            DOCKER_BUILDKIT=1 docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-oracle:$CIRCLE_SHA1 -f flowdb_oracle_fdw.Dockerfile .
-      - run:
-          name: Launch flowdb
-          command: |
-            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
-            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-             --detach flowminder/flowdb-oracle:$CIRCLE_SHA1
-            echo "Waiting for flowdb with oracle_fdw to be ready.."
-            docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
-            docker ps -a
-            docker images -a
-      - run:
-          name: Run tests
-          command: |
-            cd flowdb/tests
-            pipenv install --dev --deploy
-            pipenv run pytest --junit-xml=../test_results/pytest/results.xml \
-            test_oracle_fdw.py
-      - store_test_results:
-          path: flowdb/test_results
-      - run:
-          name: FlowDB-oracle Docker logs
-          command: docker logs flowdb_oracle
-          when: on_fail
-      - run:
-          name: Log in to docker cloud
-          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
-      - run:
-          name: Push images to Docker cloud
-          command: |
-            docker push flowminder/flowdb-oracle:${CIRCLE_SHA1}
 
   build_flowdb_testdata:
     docker:
@@ -982,7 +924,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-oracle flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -994,10 +936,6 @@ workflows:
       - build_flowdb:
           <<: *run_always_org_context
       - build_flowdb_testdata:
-          requires:
-            - build_flowdb
-          <<: *run_always_org_context
-      - build_flowdb_oracle:
           requires:
             - build_flowdb
           <<: *run_always_org_context
@@ -1159,7 +1097,6 @@ workflows:
             - build_flowetl_wheel
             - build_flowkit_jwt_generator_wheel
             - run_flowmachine_tests
-            - build_flowdb_oracle
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
