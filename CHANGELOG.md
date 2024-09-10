@@ -9,10 +9,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+
+### Fixed
+
+### Removed
+
+## [1.30.0]
+
+### Changed
 - FlowMachine now requires python >= 3.11
 
 ### Fixed
-- Diretion enum not being recognised [#6787](https://github.com/Flowminder/FlowKit/issues/6787)
+- Direction enum not being recognised [#6787](https://github.com/Flowminder/FlowKit/issues/6787)
 
 ### Removed
 - Removed Oracle fdw
@@ -1159,7 +1167,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.29.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.30.0...master
+[1.30.0]: https://github.com/Flowminder/FlowKit/compare/1.29.0...1.30.0
 [1.29.0]: https://github.com/Flowminder/FlowKit/compare/1.28.1...1.29.0
 [1.28.1]: https://github.com/Flowminder/FlowKit/compare/1.28.0...1.28.1
 [1.28.0]: https://github.com/Flowminder/FlowKit/compare/1.27.0...1.28.0
