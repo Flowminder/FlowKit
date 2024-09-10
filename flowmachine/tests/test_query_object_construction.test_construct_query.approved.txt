@@ -32,7 +32,7 @@
       "sampling": null
     }
   },
-  "a2a6a08ad6d6119fffc4cce762c08109": {
+  "9ddadf16ed7bb751a3e764ec4ccb48c3": {
     "query_kind": "location_event_counts",
     "start_date": "2016-01-01",
     "end_date": "2016-01-02",
@@ -418,7 +418,7 @@
       }
     }
   },
-  "a90f42148e62634e1dfc611fd4a81144": {
+  "920dfdf5568d75921c4173da8bccc6ef": {
     "query_kind": "labelled_spatial_aggregate",
     "locations": {
       "query_kind": "coalesced_location",
@@ -640,7 +640,7 @@
       "stay_length_threshold": 2
     }
   },
-  "7d993133723f53a73dd068a9cf399018": {
+  "c915d87b66df83904634990e2f78da9e": {
     "query_kind": "labelled_flows",
     "from_location": {
       "query_kind": "coalesced_location",

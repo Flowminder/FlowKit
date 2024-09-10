@@ -9,8 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- FlowMachine now requires python >= 3.11
 
 ### Fixed
+- Diretion enum not being recognised [#6787](https://github.com/Flowminder/FlowKit/issues/6787)
 
 ### Removed
 - Removed Oracle fdw

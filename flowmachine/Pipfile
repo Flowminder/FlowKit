@@ -9,7 +9,7 @@ cachetools = "*"
 numpy = "*"
 networkx = "*"
 pandas = "*"
-pglast = "==4.1" # Pin pglast because different versions may produce different query IDs
+pglast = "==6.3" # Pin pglast because different versions may produce different query IDs
 python-dateutil = "*"
 pytz = "*"
 python-louvain = "*"
@@ -38,7 +38,6 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-testmon = "*"
-asynctest = "*"
 cachey = "*"
 approvaltests = "*"
 watchdog = "*"
@@ -46,4 +45,4 @@ ipdb = "*"
 flowmachine = {editable = true, extras = ["test"], path = "."}
 
 [requires]
-python_version = "3.8"
+python_version = "3.12"

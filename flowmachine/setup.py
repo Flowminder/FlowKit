@@ -51,7 +51,7 @@ readme = read("README.md")
 
 # Test requirements
 
-test_requirements = ["pytest", "pytest-cov", "pytest-asyncio", "asynctest"]
+test_requirements = ["pytest", "pytest-cov", "pytest-asyncio"]
 
 setup(
     name="flowmachine",
@@ -77,7 +77,7 @@ setup(
         "numpy",
         "networkx",
         "pandas",
-        "pglast==4.1",  # Pin pglast because different versions may produce different query IDs
+        "pglast==6.3",  # Pin pglast because different versions may produce different query IDs
         "python-dateutil",
         "pytz",
         "python-louvain",
@@ -93,7 +93,7 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,
     extras_require={"test": test_requirements},
-    python_require=">=3.7",
+    python_require=">=3.11",
     include_package_data=True,
     zip_safe=False,
     platforms=["MacOS X", "Linux"],

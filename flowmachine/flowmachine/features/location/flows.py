@@ -11,7 +11,7 @@ aggregated to a spatial unit.
 
 
 """
-from enum import Enum
+from enum import StrEnum
 
 from typing import List
 
@@ -26,7 +26,7 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
-class Direction(str, Enum):
+class Direction(StrEnum):
     OUTFLOW = "from"
     INFLOW = "to"
 

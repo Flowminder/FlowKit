@@ -9,7 +9,7 @@ waiting for a query to finish running, and reporting status to the user.
 """
 
 import logging
-from enum import Enum
+from enum import StrEnum
 
 from finist import Finist
 from typing import Tuple
@@ -21,7 +21,7 @@ from flowmachine.utils import _sleep
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-class QueryState(str, Enum):
+class QueryState(StrEnum):
     """
     Possible states for a query to be in.
     """
@@ -52,7 +52,7 @@ class QueryState(str, Enum):
         return self._description
 
 
-class QueryEvent(str, Enum):
+class QueryEvent(StrEnum):
     """
     Events that trigger a transition to a new state.
     """
