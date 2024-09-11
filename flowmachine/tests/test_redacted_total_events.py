@@ -15,7 +15,7 @@ from flowmachine.features.location.redacted_unique_subscriber_counts import (
 
 def test_all_above_threshold(get_dataframe):
     """
-    TotalLocationEvents() can get activity on a daily level but only above threshold.
+    RedactedTotalEvents() can get activity on a daily level but only above threshold.
     """
     te = RedactedTotalEvents(
         total_events=TotalLocationEvents(
@@ -41,7 +41,7 @@ def test_all_above_threshold(get_dataframe):
 
 def test_all_above_threshold_hour_bucket(get_dataframe):
     """
-    TotalLocationEvents() can get activity on a daily level but only above threshold.
+    RedactedTotalEvents() can get activity on an hourly level but only above threshold.
     """
     te = RedactedTotalEvents(
         total_events=TotalLocationEvents(
@@ -59,7 +59,7 @@ def test_all_above_threshold_hour_bucket(get_dataframe):
 
 def test_all_above_threshold_minute_bucket(get_dataframe):
     """
-    TotalLocationEvents() can get activity on a daily level but only above threshold.
+    RedactedTotalEvents() can get activity on a minute level but only above threshold.
     """
     te = RedactedTotalEvents(
         total_events=TotalLocationEvents(
