@@ -122,7 +122,7 @@ class JoinedSpatialAggregateSchema(BaseSchema):
         if data["metric"].query_kind in continuous_metrics:
             validate = OneOf([f"{stat}" for stat in Statistic])
         elif data["metric"].query_kind in categorical_metrics:
-            validate = OneOf(["distr"])
+            validate = OneOf(["distr", "mode"])
         else:
             raise ValidationError(
                 f"{data['metric'].query_kind} does not have a valid metric type."
