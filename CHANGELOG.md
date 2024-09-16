@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Mode is now available for use with categorical metrics when running joined spatial aggregates via api. [#2021](https://github.com/Flowminder/FlowKit/issues/2021) 
 
 ### Fixed
 
