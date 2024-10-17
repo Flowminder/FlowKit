@@ -115,7 +115,7 @@ class Query(metaclass=ABCMeta):
                 hashes.append(str(item))
             hashes.append(self.__class__.__name__)
             hashes.sort()
-            self._md5 = md5(str(hashes).encode()).hexdigest()
+            self._md5 = f"{md5(str(hashes).encode()).hexdigest()}_{flowmachine.__version__.replace('.', '_')}"
             return self._md5
 
     @abstractmethod
