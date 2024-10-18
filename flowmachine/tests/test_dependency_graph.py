@@ -72,7 +72,9 @@ def test_print_dependency_tree():
     s = StringIO()
     print_dependency_tree(q, stream=s)
     output = s.getvalue()
-    output_with_query_ids_replaced = re.sub(r"\b[0-9a-f]+\b", "xxxxx", output)
+    output_with_query_ids_replaced = re.sub(
+        r"\b[0-9a-f]+_[0-9]+_[0-9_a-z]+\b", "xxxxx", output
+    )
 
     assert expected_output == output_with_query_ids_replaced
 
