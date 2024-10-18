@@ -14,7 +14,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 CREATE SCHEMA IF NOT EXISTS cache;
 CREATE TABLE IF NOT EXISTS cache.cached
                             (
-                                query_id CHARACTER(32) NOT NULL,
+                                query_id CHARACTER VARYING NOT NULL,
                                 version CHARACTER VARYING,
                                 query TEXT,
                                 created TIMESTAMP WITH TIME ZONE,
@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS cache.cached
 CREATE SEQUENCE cache.cache_touches START 1;
 CREATE TABLE IF NOT EXISTS cache.dependencies
                             (
-                                query_id CHARACTER(32) NOT NULL,
-                                depends_on CHARACTER(32) NOT NULL,
+                                query_id CHARACTER VARYING NOT NULL,
+                                depends_on CHARACTER VARYING NOT NULL,
                                 CONSTRAINT dependencies_pkey PRIMARY KEY (depends_on, query_id),
                                 CONSTRAINT cache_dependency_id FOREIGN KEY (depends_on)
                                     REFERENCES cache.cached (query_id) MATCH SIMPLE
