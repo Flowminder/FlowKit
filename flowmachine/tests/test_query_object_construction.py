@@ -454,7 +454,7 @@ def test_construct_query(diff_reporter):
     ]
 
     def get_query_id_for_query_spec(query_spec):
-        return FlowmachineQuerySchema().load(query_spec).query_id
+        return FlowmachineQuerySchema().load(query_spec).query_id.split("_")[0]
 
     query_ids_and_specs_as_json_string = json.dumps(
         {get_query_id_for_query_spec(spec): spec for spec in query_specs_to_test},
