@@ -32,10 +32,11 @@ from flowmachine.core.dependency_graph import (
 )
 
 
-def test_print_dependency_tree():
+def test_print_dependency_tree(monkeypatch):
     """
     Test that the expected dependency tree is printed for a daily location query (with an explicit subset).
     """
+    monkeypatch.setattr("flowmachine.__version__", "TEST_VERSION")
     subscriber_subsetter = make_subscriber_subsetter(
         CustomQuery(
             "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 10",
@@ -50,20 +51,20 @@ def test_print_dependency_tree():
         """\
         <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
           - <Query of type: SubscriberLocations, query_id: 'xxxxx'>
+             - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
+                - <Table: 'geography.admin3', query_id: 'xxxxx'>
              - <Query of type: JoinToLocation, query_id: 'xxxxx'>
                 - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
                    - <Table: 'geography.admin3', query_id: 'xxxxx'>
                 - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
                    - <Query of type: EventTableSubset, query_id: 'xxxxx'>
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
-                      - <Table: 'events.calls', query_id: 'xxxxx'>
-                         - <Table: 'events.calls', query_id: 'xxxxx'>
-                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
-                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.sms', query_id: 'xxxxx'>
                          - <Table: 'events.sms', query_id: 'xxxxx'>
-             - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
-                - <Table: 'geography.admin3', query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
+                      - <Table: 'events.calls', query_id: 'xxxxx'>
+                         - <Table: 'events.calls', query_id: 'xxxxx'>
           - <Query of type: AdminSpatialUnit, query_id: 'xxxxx'>
              - <Table: 'geography.admin3', query_id: 'xxxxx'>
         """

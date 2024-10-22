@@ -18,6 +18,7 @@ from flowmachine.core.context import get_db
 from flowmachine.core.errors.flowmachine_errors import QueryCancelledException
 from flowmachine.core.query import Query
 from flowmachine.core.query_state import QueryState
+from flowmachine.core.query_stub import QStub
 from flowmachine.features import daily_location, ModalLocation, Flows
 
 
@@ -308,7 +309,7 @@ def create_and_store_novel_query_with_dependency():
             return ["value"]
 
         def _make_query(self):
-            return "select 1 as value"
+            return self.nested.get_query()
 
     q = NestTestQuery()
     q_id = q.query_id
@@ -331,6 +332,18 @@ def test_retrieve_novel_query_with_dependency(
     from_cache.deps[0].invalidate_db_cache(cascade=True)
     assert not from_cache.deps[0].is_stored
     assert not from_cache.is_stored
+
+
+def test_retrieve_query_other_version(flowmachine_connect, monkeypatch):
+    """
+    Test that we can get a query object which is a different version. Should give a QStub
+    """
+    with monkeypatch.context() as ctxt:
+        ctxt.setattr("flowmachine.__version__", "OLD_VERSION")
+        ctxt.setattr("flowmachine.core.cache.__version__", "OLD_VERSION")
+        dl = daily_location("2016-01-01").store().result()
+    other_version = get_obj_or_stub(get_db(), dl.query_id)
+    assert isinstance(other_version, QStub)
 
 
 def test_df_not_pickled():

@@ -113,8 +113,9 @@ class Query(metaclass=ABCMeta):
                     pass
 
                 hashes.append(str(item))
-            hashes.append(self.__class__.__name__)
             hashes.sort()
+            hashes.append(self.__class__.__name__)
+            hashes.append(flowmachine.__version__)
             self._md5 = md5(str(hashes).encode()).hexdigest()
             return self._md5
 

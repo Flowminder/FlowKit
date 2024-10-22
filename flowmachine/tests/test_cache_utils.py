@@ -5,6 +5,8 @@
 """
 Tests for cache management utilities.
 """
+import re
+
 from cachey import Scorer
 from unittest.mock import Mock, MagicMock
 
@@ -38,6 +40,7 @@ from flowmachine.core.cache import (
 from flowmachine.core.context import get_db, get_redis, get_executor
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
+from flowmachine import __version__
 
 
 class TestException(Exception):
@@ -384,6 +387,23 @@ def test_get_query_object_by_id(flowmachine_connect):
     retrieved_query = get_query_object_by_id(get_db(), dl.query_id)
     assert dl.query_id == retrieved_query.query_id
     assert dl.get_query() == retrieved_query.get_query()
+
+
+def test_get_query_object_by_id_other_version(flowmachine_connect, monkeypatch):
+    """
+    Test that we raise a value error with differing version.
+    """
+    with monkeypatch.context() as ctxt:
+        ctxt.setattr("flowmachine.__version__", "OLD_VERSION")
+        ctxt.setattr("flowmachine.core.cache.__version__", "OLD_VERSION")
+        dl = daily_location("2016-01-01").store().result()
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"Query id '5525f9a94aeef6c5387287f2e1dfb2a7' belongs to a different flowmachine version (query version OLD_VERSION, our version {__version__})."
+        ),
+    ):
+        get_query_object_by_id(get_db(), dl.query_id)
 
 
 def test_delete_query_by_id(flowmachine_connect):
