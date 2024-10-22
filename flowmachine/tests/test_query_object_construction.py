@@ -73,7 +73,7 @@ def _example_coalesced_location_spec(preferred_dates, fallback_dates, aggregatio
     )
 
 
-def test_construct_query(diff_reporter):
+def test_construct_query(diff_reporter, monkeypatch):
     """
     Test that query objects constructed by construct_query_object() have the expected query ids.
     """
@@ -456,6 +456,7 @@ def test_construct_query(diff_reporter):
     def get_query_id_for_query_spec(query_spec):
         return FlowmachineQuerySchema().load(query_spec).query_id
 
+    monkeypatch.setattr("flowmachine.__version__", "TEST_VERSION")
     query_ids_and_specs_as_json_string = json.dumps(
         {get_query_id_for_query_spec(spec): spec for spec in query_specs_to_test},
         indent=2,
