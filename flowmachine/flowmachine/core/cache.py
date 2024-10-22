@@ -29,6 +29,7 @@ from flowmachine.core.errors.flowmachine_errors import (
 from flowmachine.core.query_state import QueryStateMachine, QueryEvent
 from flowmachine import __version__
 
+
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
@@ -58,20 +59,7 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
         the dependencies it had if not.
 
     """
-    from flowmachine.core.query import Query
-
-    class QStub(Query):
-        def __init__(self, deps, qid):
-            self.deps = deps
-            self._md5 = qid
-            super().__init__()
-
-        def _make_query(self):
-            pass
-
-        @property
-        def column_names(self):
-            pass
+    from .query_stub import QStub
 
     try:
         return get_query_object_by_id(connection, query_id)
@@ -81,6 +69,7 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
         AttributeError,
         pickle.UnpicklingError,
         IndexError,
+        ValueError,
     ) as exc:
         logger.debug("Can't unpickle, creating stub.", query_id=query_id, exception=exc)
         qry = f"SELECT depends_on FROM cache.dependencies WHERE query_id='{query_id}'"
@@ -306,6 +295,8 @@ def write_cache_metadata(
         )
 
         if not in_cache:
+            print(f"Deps for {query.query_id} are {query.dependencies}.")
+            print(f"Stored is {query._get_stored_dependencies(exclude_self=True)}")
             for dep in query._get_stored_dependencies(exclude_self=True):
                 connection.exec_driver_sql(
                     "INSERT INTO cache.dependencies values (%(query_id)s, %(dep_id)s) ON CONFLICT DO NOTHING",
@@ -473,9 +464,13 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         The original query object.
 
     """
-    qry = f"SELECT obj FROM cache.cached WHERE query_id='{query_id}'"
+    qry = f"SELECT obj, version FROM cache.cached WHERE query_id='{query_id}'"
     try:
-        obj = connection.fetch(qry)[0][0]
+        obj, version = connection.fetch(qry)[0]
+        if version != __version__:
+            raise ValueError(
+                f"Query id '{query_id}' belongs to a different flowmachine version (query version {version}, our version {__version__})."
+            )
         return pickle.loads(obj)
     except IndexError:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
