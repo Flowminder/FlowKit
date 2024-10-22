@@ -71,18 +71,19 @@ def test_get_table_is_self():
     assert t.get_table() is t
 
 
-def test_dependencies():
+def test_dependencies(monkeypatch):
     """
     Check that a table without explicit columns has no other queries as a dependency,
     and a table with explicit columns has its parent table as a dependency.
     """
+    monkeypatch.setattr("flowmachine.__version__", "TEST_VERSION")
     t1 = Table("events.calls")
     assert t1.dependencies == set()
 
     t2 = Table("events.calls", columns=["id"])
     assert len(t2.dependencies) == 1
     t2_parent = t2.dependencies.pop()
-    assert "057addedac04dbeb1dcbbb6b524b43f0" == t2_parent.query_id
+    assert t2_parent.query_id == "397c8cee22d63ac718ccce8c20a2eae9"
 
 
 def test_subset():
