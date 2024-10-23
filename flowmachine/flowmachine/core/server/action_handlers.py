@@ -226,7 +226,7 @@ async def action_handler__run_query(
                 },
             )
         except Exception as exc:
-            logger.debug(str(exc), exception=exc, traceback=traceback.format_exc())
+            logger.error(str(exc), exception=exc, traceback=traceback.format_exc())
             return ZMQReply(
                 status="error",
                 msg="Unable to create query object.",
