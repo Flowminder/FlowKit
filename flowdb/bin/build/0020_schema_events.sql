@@ -64,7 +64,7 @@ CREATE SCHEMA IF NOT EXISTS events;
         operator_code NUMERIC,
         country_code NUMERIC
 
-        );
+        ) PARTITION BY RANGE (datetime);
 
     CREATE TABLE IF NOT EXISTS events.forwards(
 
@@ -87,7 +87,7 @@ CREATE SCHEMA IF NOT EXISTS events;
         operator_code NUMERIC,
         country_code NUMERIC
 
-        );
+        ) PARTITION BY RANGE (datetime);
 
     CREATE TABLE IF NOT EXISTS events.sms(
 
@@ -108,7 +108,7 @@ CREATE SCHEMA IF NOT EXISTS events;
         operator_code NUMERIC,
         country_code NUMERIC
 
-        );
+        ) PARTITION BY RANGE (datetime);
 
     CREATE TABLE IF NOT EXISTS events.mds(
 
@@ -131,7 +131,7 @@ CREATE SCHEMA IF NOT EXISTS events;
         operator_code NUMERIC,
         country_code NUMERIC
 
-        );
+        ) PARTITION BY RANGE (datetime);
 
     CREATE TABLE IF NOT EXISTS events.topups(
 
@@ -156,7 +156,7 @@ CREATE SCHEMA IF NOT EXISTS events;
         operator_code NUMERIC,
         country_code NUMERIC
 
-        );
+        ) PARTITION BY RANGE (datetime);
 
     CREATE TABLE IF NOT EXISTS events.location_ids (
         location_id TEXT,

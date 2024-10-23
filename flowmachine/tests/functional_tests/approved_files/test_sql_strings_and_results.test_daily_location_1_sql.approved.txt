@@ -1,63 +1,59 @@
-SELECT final_time.subscriber,
-       pcod
-FROM (SELECT subscriber_locs.subscriber,
-             time,
-             pcod,
-             row_number() OVER (PARTITION BY subscriber_locs.subscriber
-                                ORDER BY time DESC) AS rank
-      FROM (SELECT subscriber,
-                   datetime AS time,
-                   pcod
-            FROM (SELECT l.datetime,
-                         l.location_id,
-                         l.subscriber,
-                         sites.pcod
-                  FROM (SELECT events.calls.datetime,
-                               events.calls.location_id,
-                               events.calls.msisdn AS subscriber
-                        FROM events.calls
-                        WHERE events.calls.datetime >= '2016-01-01 00:00:00'
-                          AND events.calls.datetime < '2016-01-02 00:00:00'
+SELECT DISTINCT ON (subscriber_locs.subscriber) subscriber_locs.subscriber,
+                                                pcod
+FROM (SELECT subscriber,
+             datetime AS time,
+             pcod
+      FROM (SELECT l.datetime,
+                   l.location_id,
+                   l.subscriber,
+                   sites.pcod
+            FROM (SELECT events.calls.datetime,
+                         events.calls.location_id,
+                         events.calls.msisdn AS subscriber
+                  FROM events.calls
+                  WHERE events.calls.datetime >= '2016-01-01 00:00:00'
+                    AND events.calls.datetime < '2016-01-02 00:00:00'
 
-                        UNION ALL
+                  UNION ALL
 
-                        SELECT events.sms.datetime,
-                               events.sms.location_id,
-                               events.sms.msisdn AS subscriber
-                        FROM events.sms
-                        WHERE events.sms.datetime >= '2016-01-01 00:00:00'
-                          AND events.sms.datetime < '2016-01-02 00:00:00') AS l
-                       INNER JOIN (SELECT loc_table.id AS location_id,
-                                          loc_table.date_of_first_service,
-                                          loc_table.date_of_last_service,
-                                          geom_table.admin3pcod AS pcod
-                                   FROM infrastructure.cells AS loc_table
-                                        INNER JOIN (SELECT gid,
-                                                           admin0name,
-                                                           admin0pcod,
-                                                           admin1name,
-                                                           admin1pcod,
-                                                           admin2name,
-                                                           admin2pcod,
-                                                           admin3name,
-                                                           admin3pcod,
-                                                           admin3refn,
-                                                           admin3altn,
-                                                           admin3al_1,
-                                                           date,
-                                                           validon,
-                                                           validto,
-                                                           shape_star,
-                                                           shape_stle,
-                                                           shape_leng,
-                                                           shape_area,
-                                                           geom
-                                                    FROM geography.admin3) AS geom_table ON st_within(CAST(loc_table.geom_point AS geometry),
-                                                                                                      CAST(st_setsrid(geom_table.geom, 4326) AS geometry))) AS sites ON l.location_id = sites.location_id
-                                                                                                                                                                    AND CAST(l.datetime AS date) BETWEEN COALESCE(sites.date_of_first_service,
-                                                                                                                                                                                                                  CAST('-infinity' AS timestamptz))
-                                                                                                                                                                                                     AND COALESCE(sites.date_of_last_service,
-                                                                                                                                                                                                                  CAST('infinity' AS timestamptz))) AS foo
-            WHERE location_id IS NOT NULL
-              AND location_id <> '') AS subscriber_locs) AS final_time
-WHERE rank = 1
+                  SELECT events.sms.datetime,
+                         events.sms.location_id,
+                         events.sms.msisdn AS subscriber
+                  FROM events.sms
+                  WHERE events.sms.datetime >= '2016-01-01 00:00:00'
+                    AND events.sms.datetime < '2016-01-02 00:00:00') AS l
+                 INNER JOIN (SELECT loc_table.id AS location_id,
+                                    loc_table.date_of_first_service,
+                                    loc_table.date_of_last_service,
+                                    geom_table.admin3pcod AS pcod
+                             FROM infrastructure.cells AS loc_table
+                                  INNER JOIN (SELECT gid,
+                                                     admin0name,
+                                                     admin0pcod,
+                                                     admin1name,
+                                                     admin1pcod,
+                                                     admin2name,
+                                                     admin2pcod,
+                                                     admin3name,
+                                                     admin3pcod,
+                                                     admin3refn,
+                                                     admin3altn,
+                                                     admin3al_1,
+                                                     date,
+                                                     validon,
+                                                     validto,
+                                                     shape_star,
+                                                     shape_stle,
+                                                     shape_leng,
+                                                     shape_area,
+                                                     geom
+                                              FROM geography.admin3) AS geom_table ON st_within(CAST(loc_table.geom_point AS geometry),
+                                                                                                CAST(st_setsrid(geom_table.geom, 4326) AS geometry))) AS sites ON l.location_id = sites.location_id
+                                                                                                                                                              AND CAST(l.datetime AS date) BETWEEN COALESCE(sites.date_of_first_service,
+                                                                                                                                                                                                            CAST('-infinity' AS timestamptz))
+                                                                                                                                                                                               AND COALESCE(sites.date_of_last_service,
+                                                                                                                                                                                                            CAST('infinity' AS timestamptz))) AS foo
+      WHERE location_id IS NOT NULL
+        AND location_id <> '') AS subscriber_locs
+ORDER BY subscriber_locs.subscriber,
+         time DESC

@@ -672,7 +672,7 @@ if __name__ == "__main__":
                     attach_sql.append(
                         (
                             f"Attaching events.{sub}_{table}",
-                            f"ALTER TABLE events.{sub}_{table} INHERIT events.{sub};",
+                            f"ALTER TABLE events.{sub} ATTACH PARTITION events.{sub}_{table} FOR VALUES FROM ('{table}') TO ('{(date + datetime.timedelta(days=1)).strftime('%Y%m%d')}');",
                         )
                     )
                     if args.cluster:

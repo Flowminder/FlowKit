@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM apache/airflow:2.8.4-python3.10@sha256:56dbeebae776b82fa2b0a3772fd8c3ca86f4760f3c9c8b652e1dc84aefec3be9
+FROM apache/airflow:2.9.3-python3.10@sha256:1f395499be0fbc834e0a8a634754715a3938b08ca161b11cf9c837e4372aa9d2
 
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES False
@@ -35,7 +35,7 @@ RUN apt-get update && \
     apt purge -y --auto-remove && \
     rm -rf /var/lib/apt/lists/*
 USER airflow
-RUN cd flowetl && pip install --no-deps --no-cache-dir --user .
+RUN cd flowetl && pip install --no-deps --no-cache-dir .
 
 
 WORKDIR ${AIRFLOW_HOME}

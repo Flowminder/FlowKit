@@ -12,11 +12,17 @@ dailylocations objects, although they can be.
 """
 
 
-from flowmachine.utils import parse_datestring, standardise_date
+from flowmachine.utils import (
+    parse_datestring,
+    standardise_date,
+    standardise_date_to_datetime,
+)
 
 from ...core import CustomQuery
 
 import structlog
+
+from ...core.union_with_fixed_values import UnionWithFixedValues
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -53,31 +59,24 @@ class MultiLocation:
                 for daily_location in daily_locations
             )
         )
-        self._all_dls = daily_locations
-        logger.info("ModalLocation using {} DailyLocations".format(len(self._all_dls)))
+        self.unioned = UnionWithFixedValues(
+            queries=daily_locations,
+            fixed_value_column_name="date",
+            fixed_value=[
+                standardise_date_to_datetime(dl.start) for dl in daily_locations
+            ],
+        )
+        logger.info(
+            "ModalLocation using {} DailyLocations".format(len(daily_locations))
+        )
         logger.info(
             "{}/{} DailyLocations are pre-calculated.".format(
-                sum(1 for dl in self._all_dls if dl.is_stored), len(self._all_dls)
+                sum(1 for dl in daily_locations if dl.is_stored), len(daily_locations)
             )
         )
 
         # Importing daily_location inputs
         # from first daily_location object.
-        self.spatial_unit = self._all_dls[0].spatial_unit
-        self.subscriber_identifier = self._all_dls[0].subscriber_identifier
+        self.spatial_unit = daily_locations[0].spatial_unit
+        self.subscriber_identifier = daily_locations[0].subscriber_identifier
         super().__init__()
-
-    def _append_date(self, dl):
-        """
-        Takes a daily location object and returns a query representing that
-        daily location, but with an additional (constant) column with the
-        date to which that daily-loc applies.
-
-        Returns
-        -------
-        CustomQuery
-        """
-
-        date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
-        sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
-        return CustomQuery(sql, self.spatial_unit.location_id_columns + ["date"])

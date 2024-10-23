@@ -33,6 +33,8 @@
 #   deep-clean:
 #       Remove virtual environment and compiled requirements files
 
+SHELL := /bin/bash
+
 VENVDIR ?= .venv
 ACTIVATE := source $(VENVDIR)/bin/activate;
 PIP_COMPILE := pip-compile --strip-extras --generate-hashes --allow-unsafe

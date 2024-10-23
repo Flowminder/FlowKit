@@ -35,7 +35,7 @@ setup(
         "quart-jwt-extended[asymmetric_crypto]",
         "asyncpg",
         "pyyaml ==5.3.1",
-        "jsonschema ==4.22.0",
+        "jsonschema ==4.17.3",
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",

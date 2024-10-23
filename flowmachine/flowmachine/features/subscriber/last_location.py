@@ -111,13 +111,9 @@ class LastLocation(BaseLocation, Query):
         relevant_columns = ",".join(self.spatial_unit.location_id_columns)
 
         sql = """
-        SELECT final_time.subscriber, {rc}
-        FROM
-             (SELECT subscriber_locs.subscriber, time, {rc},
-             row_number() OVER (PARTITION BY subscriber_locs.subscriber ORDER BY time DESC)
-                 AS rank
-             FROM ({subscriber_locs}) AS subscriber_locs) AS final_time
-        WHERE rank = 1
+        SELECT DISTINCT ON (subscriber_locs.subscriber) subscriber_locs.subscriber, {rc}
+        FROM ({subscriber_locs}) AS subscriber_locs
+        ORDER BY subscriber_locs.subscriber, time DESC
         """.format(
             subscriber_locs=self.subscriber_locs.get_query(), rc=relevant_columns
         )

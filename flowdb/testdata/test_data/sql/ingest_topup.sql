@@ -9,71 +9,50 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 BEGIN;
 DELETE FROM events.topups;
-CREATE TABLE IF NOT EXISTS events.topups_20160909 () INHERITS (events.topups);
-CREATE TABLE IF NOT EXISTS events.topups_20160101 (
-    CHECK ( datetime >= '20160101'::TIMESTAMPTZ
-        AND datetime < '20160102'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160909 PARTITION OF events.topups FOR VALUES FROM ('2016-09-09') TO ('2016-09-10');
+CREATE TABLE IF NOT EXISTS events.topups_20160101 PARTITION OF events.topups FOR VALUES FROM ('2016-01-01') TO ('2016-01-02');
 
 COPY events.topups_20160101( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160101.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.topups_20160102 (
-    CHECK ( datetime >= '20160102'::TIMESTAMPTZ
-        AND datetime < '20160103'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160102 PARTITION OF events.topups FOR VALUES FROM ('2016-01-02') TO ('2016-01-03');
 
 COPY events.topups_20160102( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160102.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.topups_20160103 (
-    CHECK ( datetime >= '20160103'::TIMESTAMPTZ
-        AND datetime < '20160104'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160103 PARTITION OF events.topups FOR VALUES FROM ('2016-01-03') TO ('2016-01-04');
 
 COPY events.topups_20160103( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160103.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.topups_20160104 (
-    CHECK ( datetime >= '20160104'::TIMESTAMPTZ
-        AND datetime < '20160105'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160104 PARTITION OF events.topups FOR VALUES FROM ('2016-01-04') TO ('2016-01-05');
 
 COPY events.topups_20160104( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160104.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.topups_20160105 (
-    CHECK ( datetime >= '20160105'::TIMESTAMPTZ
-        AND datetime < '20160106'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160105 PARTITION OF events.topups FOR VALUES FROM ('2016-01-05') TO ('2016-01-06');
 
 COPY events.topups_20160105( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160105.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.topups_20160106 (
-    CHECK ( datetime >= '20160106'::TIMESTAMPTZ
-        AND datetime < '20160107'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160106 PARTITION OF events.topups FOR VALUES FROM ('2016-01-06') TO ('2016-01-07');
 
 COPY events.topups_20160106( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160106.csv'
     WITH DELIMITER ','
     CSV HEADER;
 
-CREATE TABLE IF NOT EXISTS events.topups_20160107 (
-    CHECK ( datetime >= '20160107'::TIMESTAMPTZ
-        AND datetime < '20160108'::TIMESTAMPTZ)
-    ) INHERITS (events.topups);
+CREATE TABLE IF NOT EXISTS events.topups_20160107 PARTITION OF events.topups FOR VALUES FROM ('2016-01-07') TO ('2016-01-08');
 
 COPY events.topups_20160107( id,msisdn,tac,datetime,location_id,recharge_amount,airtime_fee,tax_and_fee,pre_event_balance,post_event_balance )
     FROM '/docker-entrypoint-initdb.d/data/records/topups/topup_20160107.csv'

@@ -23,12 +23,9 @@ def test_tables():
     dates = [dt.date(2017, 1, 1) + dt.timedelta(days=i) for i in range(10)]
     tables = {
         f"events.calls_{d.strftime('%Y%m%d')}": f"""
-            CREATE TABLE IF NOT EXISTS events.calls_{d.strftime('%Y%m%d')} (
-                        CHECK (
-                            datetime >= '{d.strftime('%Y%m%d')}'::timestamptz AND
-                            datetime < '{(d + dt.timedelta(days=1)).strftime('%Y%m%d')}'::timestamptz
-                            )
-                    ) INHERITS (events.calls);
+            CREATE TABLE IF NOT EXISTS events.calls_{d.strftime('%Y%m%d')} 
+            PARTITION OF events.calls FOR VALUES FROM ('{d.strftime('%Y%m%d')}')
+            TO ('{(d + dt.timedelta(days=1)).strftime('%Y%m%d')}');
             """
         for d in dates
     }
@@ -40,9 +37,6 @@ def test_tables():
 def test_native_partitions(cursor, test_tables):
     """Native partitioning only scans filtered tables."""
 
-    excluded_tables = set(test_tables.keys())
-    excluded_tables.remove("events.calls_20170104")
-
     sql = """
         EXPLAIN (ANALYZE, FORMAT JSON)
             SELECT count(*)
@@ -52,10 +46,10 @@ def test_native_partitions(cursor, test_tables):
         """
     cursor.execute(sql)
     result = list(cursor.fetchall())[0]
-    for plan in result["QUERY PLAN"][0]["Plan"]["Plans"][0]["Plans"]:
-        assert not plan["Relation Name"] in [
-            s.replace("events.", "") for s in excluded_tables
-        ]
+    assert len(result["QUERY PLAN"][0]["Plan"]["Plans"]) == 1
+    assert (
+        result["QUERY PLAN"][0]["Plan"]["Plans"][0]["Relation Name"] == "calls_20170104"
+    )
 
 
 @pytest.mark.usefixtures("create_test_tables")

@@ -19,8 +19,8 @@ from ...core import location_joined_query, make_spatial_unit
 from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
-from flowmachine.utils import standardise_date, Statistic
-
+from flowmachine.utils import standardise_date
+from ...core.statistic_types import Statistic
 
 valid_periods = ["second", "minute", "hour", "day", "month", "year"]
 

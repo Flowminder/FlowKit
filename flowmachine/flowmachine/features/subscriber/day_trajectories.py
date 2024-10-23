@@ -16,7 +16,6 @@ from typing import List
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from ..utilities.multilocation import MultiLocation
-from flowmachine.core.union import Union
 
 
 class DayTrajectories(MultiLocation, BaseLocation, Query):
@@ -54,14 +53,13 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
         # This query represents the concatenated locations of the
         # subscribers. Similar to the first step when calculating
         # ModalLocations. See modal_locations.py
-        all_locs = Union(*[self._append_date(dl) for dl in self._all_dls])
 
         sql = f"""
         SELECT 
             all_locs.subscriber, 
             {location_columns_string},
             all_locs.date
-        FROM ({all_locs.get_query()}) AS all_locs
+        FROM ({self.unioned.get_query()}) AS all_locs
         ORDER BY all_locs.subscriber, all_locs.date
         """
 

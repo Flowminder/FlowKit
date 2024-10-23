@@ -13,7 +13,7 @@ from flowmachine.core import Query
 from flowmachine.features.subscriber.interevent_interval import IntereventInterval
 from .metaclasses import SubscriberFeature
 from ..utilities.direction_enum import Direction
-from ...utils import Statistic
+from ...core.statistic_types import Statistic
 
 time_resolutions = dict(
     second=1, minute=60, hour=3600, day=86400, month=2592000, year=31557600

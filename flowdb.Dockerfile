@@ -12,7 +12,7 @@
 #  on the official Debian Stretch (9) image.
 #
 
-FROM postgres:16.0-bullseye@sha256:66b2cc6059e867809a339b24fbab8ae502bb6efec1e5194869cd977561655e5e
+FROM postgres:16.4-bullseye@sha256:aa6e59636e717dd800a26f524aeb5c031a2b4fe42a84f85104fa2fe89874d1ad
 
 
 ARG POSTGIS_MAJOR=3
@@ -82,13 +82,25 @@ RUN apt-get update \
         && mv pldebugger /usr/local/src \
         && make -C /usr/local/src/pldebugger \
         && make -C /usr/local/src/pldebugger install \
-        && apt-get remove -y libssl-dev \
-        libkrb5-dev \
-        build-essential \
-        git \
+        && apt-get remove -y build-essential git \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
+# Parquet foreign tables
+RUN apt-get update -y && apt-get install -y --no-install-recommends git build-essential ca-certificates lsb-release wget \
+        && wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+        && apt-get install -y --no-install-recommends ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+        && rm ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+        && apt-get update -y \
+        && apt-get install -y --no-install-recommends libarrow-dev libparquet-dev libparquet1600 libarrow1600 \
+        && pip3 install pyarrow \
+        && git clone https://github.com/adjust/parquet_fdw.git \
+        && mv parquet_fdw /usr/local/src \
+        && make -C /usr/local/src/parquet_fdw \
+        && make -C /usr/local/src/parquet_fdw install \
+        && apt-get remove -y build-essential git wget libarrow-dev libparquet-dev \
+        && apt purge -y --auto-remove \
+        && rm -rf /var/lib/apt/lists/*
 
 
 #
@@ -139,6 +151,12 @@ ENV FLOWAPI_FLOWDB_USER=flowapi
 # Default location table
 ENV LOCATION_TABLE=infrastructure.cells
 
+# Default logging destination
+ENV FLOWDB_LOG_DEST=jsonlog
+
+# Default autoconfig file
+ENV AUTO_CONFIG_FILE_NAME=postgresql.configurator.conf
+
 #
 #  Copy file spinup build scripts to be execed.
 #
@@ -152,5 +170,7 @@ COPY --chown=postgres ./flowdb/bin/build/* /docker-entrypoint-initdb.d/
 ADD --chown=postgres ./flowdb/data/* /docker-entrypoint-initdb.d/data/csv/
 # Need to make postgres owner
 RUN chown -R postgres /docker-entrypoint-initdb.d
+# Make postgres owner of the autoconf directory
+RUN mkdir /flowdb_autoconf && chown -R postgres /flowdb_autoconf && chmod a+w /flowdb_autoconf
 
 EXPOSE 5432

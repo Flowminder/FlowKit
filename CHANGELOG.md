@@ -9,13 +9,82 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Mode is now available for use with categorical metrics when running joined spatial aggregates via api. [#2021](https://github.com/Flowminder/FlowKit/issues/2021) 
+
+### Fixed
+- Fixed dangling async tasks not being properly cancelled during server shutdown [#6833](https://github.com/Flowminder/FlowKit/issues/6833) 
+
+### Removed
+
+## [1.30.0]
+
+### Changed
+- FlowMachine now requires python >= 3.11
+
+### Fixed
+- Direction enum not being recognised [#6787](https://github.com/Flowminder/FlowKit/issues/6787)
+
+### Removed
+- Removed Oracle fdw
+
+## [1.29.0]
+
+### Added
+- New flowmachine query `CalendarActivity`, which retrives subscribers pattern of active days
+- New flowmachine queries `PerValueAggregate` and `RedactedPerValueAggregate`, which group by the value column of another query and apply an aggregate to subscribers with that grouping.
+- New flowapi queries and flowclient functions for `calendar_activity` and `localised_calendar_activity`, which return counts of subscribers per sequence of active days, and per sequence of active days additionally grouped by the subscribers reference location
+- Added new `StringStatistic` enum, which enumerates valid statistics for use with postgres string types
+
+### Changed
+- `HistogramAggregation` has moved to `flowmachine.features.nonspatial_aggregates`
+- `Statistic` moved to `flowmachine.core.statistic_types`
+- `TotalActivePeriodsSubscriber` no longer returns an extra `inactive_periods` column
+
+## [1.28.1]
+
+### Fixed
+- Fixed 500 error when getting api spec from FlowAPI [#6686](https://github.com/Flowminder/FlowKit/issues/6686)
+
+## [1.28.0]
+
+### Added
+- Added support for Parquet foreign tables using [parquet_fdw](https://github.com/adjust/parquet_fdw)
+
+### Changed
+- FlowKit test and synthetic data now uses parquet foreign tables.
+> [!WARNING]
+> The location of the parquet files in the container is `/parquet_data`, if you are testing with larger amounts of data you may wish to add an additional bind mount for this location.
+- FlowDB now uses [declarative partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE)
+- FlowETL now attached new data as partitions, rather than subtables
+> [!WARNING]
+> This change is not backwards compatible with earlier releases of FlowDB, and you will need to repopulate your deployment. We recommend combining this change with the new parquet support.
+- FlowETL is now built on Airflow 2.9.2
+
+
+
+## [1.27.0]
+
+### Added
+- Added FlowDB table `infrastructure.invalid_cell_info` for recording cell information that could not be included in `infrastructure.cell_info` (including cells with null or duplicate cell IDs). [#6626](https://github.com/Flowminder/FlowKit/issues/6626)
+- The file name of FlowDB's automatically generated at init config file can now be specified by setting the `AUTO_CONFIG_FILE_NAME` environment variable. By default this is `postgresql.configurator.conf`.
+
+### Changed
+- FlowDB now triggers an ANALYZE on newly created cache tables to generate statistics rather than waiting for autovacuum
+- FlowDB now produces JSON formatted logs by default. Set `FLOWDB_LOG_DEST=csvlog` for the old default behaviour.
+- The logging destination of FlowDB can now be configured at init by setting the `FLOWDB_LOG_DEST` environment variable, valid options are `stderr`, `csvlog`, and `jsonlog`.
+- The location inside the container of FlowDB's automatically generated config file has changed to `/flowdb_autoconf/$AUTO_CONFIG_FILE_NAME`.
+
+
+## [1.26.0]
+
+### Changed
 - FlowDB now enables partitionwise aggregation planning by default
 - FlowDB now uses a default fillfactor of 100 for cache table indexes
+- `EXCLUDE` constraint on FlowDB `infrastructure.cell_info` table requires unique `mno_cell_id` across _all_ simultaneously-valid cells per `cells_table_version`, regardless of `to_include`. [#6626](https://github.com/Flowminder/FlowKit/issues/6626)
 
 ### Fixed
 - Queries that have multiple of the same subquery with different parameters no longer cause duplicate scopes in tokens. [#6580](https://github.com/Flowminder/FlowKit/issues/6580)
-
-### Removed
+- FlowETL QA checks `count_imeis`, `count_imsis`, `max_msisdns_per_imei` and `max_msisdns_per_imsi` now only count non-null IMEIs/IMSIs. [#6619](https://github.com/Flowminder/FlowKit/issues/6619)
 
 ## [1.25.0]
 
@@ -1106,7 +1175,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.25.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.30.0...master
+[1.30.0]: https://github.com/Flowminder/FlowKit/compare/1.29.0...1.30.0
+[1.29.0]: https://github.com/Flowminder/FlowKit/compare/1.28.1...1.29.0
+[1.28.1]: https://github.com/Flowminder/FlowKit/compare/1.28.0...1.28.1
+[1.28.0]: https://github.com/Flowminder/FlowKit/compare/1.27.0...1.28.0
+[1.27.0]: https://github.com/Flowminder/FlowKit/compare/1.26.0...1.27.0
+[1.26.0]: https://github.com/Flowminder/FlowKit/compare/1.25.0...1.26.0
 [1.25.0]: https://github.com/Flowminder/FlowKit/compare/1.24.0...1.25.0
 [1.24.0]: https://github.com/Flowminder/FlowKit/compare/1.23.0...1.24.0
 [1.23.0]: https://github.com/Flowminder/FlowKit/compare/1.22.0...1.23.0

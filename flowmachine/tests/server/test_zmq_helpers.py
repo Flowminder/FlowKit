@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from unittest.mock import Mock, patch
-from asynctest import CoroutineMock
+from unittest.mock import Mock, patch, AsyncMock
 
 import rapidjson
 
@@ -122,7 +121,7 @@ async def test_generic_error_catch(server_config):
     Test that calculate_and_send_reply_for_message sends a reply if get_reply_for_message raises an unexpected error
     """
     mock_socket = Mock()
-    mock_socket.send_multipart = CoroutineMock()
+    mock_socket.send_multipart = AsyncMock()
     expected_response = [
         "DUMMY_RETURN_ADDRESS",
         b"",

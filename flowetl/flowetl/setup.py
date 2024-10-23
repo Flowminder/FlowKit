@@ -45,7 +45,7 @@ setup(
             "docker",
             "versioneer",
             "pytest-cov",
-            "black == 24.3.0",
+            "black",
         ]
     },
     python_requires=">=3.6",

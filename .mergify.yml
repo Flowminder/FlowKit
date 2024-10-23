@@ -27,16 +27,3 @@ pull_request_rules:
         name: default
         method: merge
 
-  - name: automatic bump for Dependabot pull requests on master
-    conditions:
-      - author=dependabot[bot]
-      - conflict
-    actions:
-      comment:
-        message: "@dependabot rebase"
-
-  - name: Delete branch after merge
-    actions:
-      delete_head_branch: {}
-    conditions:
-      - merged

@@ -224,11 +224,7 @@ def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_di
         calls_df_twoline.to_csv(fpath, index=False)
 
     ingest_sql = """
-            CREATE TABLE IF NOT EXISTS events.calls_{table} (
-                    CHECK ( datetime >= '{table}'::TIMESTAMPTZ
-                    AND datetime < '{end_date}'::TIMESTAMPTZ)
-                ) INHERITS (events.calls);
-                ALTER TABLE events.calls_{table} NO INHERIT events.calls;
+            CREATE TABLE IF NOT EXISTS events.calls_{table} PARTITION OF events.calls FOR VALUES FROM ('{table}') TO ('{end_date}');
 
                 COPY events.calls_{table}( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration,tac )
                     FROM '{output_root_dir}/data/records/calls/calls_{table}.csv'
@@ -241,8 +237,7 @@ def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_di
             CREATE INDEX ON events.calls_{table} (location_id);
             CREATE INDEX ON events.calls_{table} (datetime);
             CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;
-            ANALYZE events.calls_{table};
-            ALTER TABLE events.calls_{table} INHERIT events.calls;""".format(
+            ANALYZE events.calls_{table};""".format(
         output_root_dir=output_root_dir,
         table=date.strftime("%Y%m%d"),
         end_date=(date + datetime.timedelta(days=1)).strftime("%Y%m%d"),

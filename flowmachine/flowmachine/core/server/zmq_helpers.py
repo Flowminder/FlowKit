@@ -9,13 +9,12 @@
 # are made to either file they should also be reflected in the others.
 #
 
-from enum import Enum
-
+from enum import StrEnum
 
 __all__ = ["ZMQReplyStatus", "ZMQReplyMessage", "ZMQReplyPayload", "ZMQReply"]
 
 
-class ZMQReplyStatus(str, Enum):
+class ZMQReplyStatus(StrEnum):
     """
     Valid status values for a zmq reply.
     """

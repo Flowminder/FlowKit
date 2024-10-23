@@ -30,7 +30,7 @@ from flowmachine.features.location.joined_spatial_aggregate import (
 from flowmachine.features.location.redacted_joined_spatial_aggregate import (
     RedactedJoinedSpatialAggregate,
 )
-from flowmachine.utils import Statistic
+from ...statistic_types import Statistic
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnitKind
 
@@ -122,7 +122,7 @@ class JoinedSpatialAggregateSchema(BaseSchema):
         if data["metric"].query_kind in continuous_metrics:
             validate = OneOf([f"{stat}" for stat in Statistic])
         elif data["metric"].query_kind in categorical_metrics:
-            validate = OneOf(["distr"])
+            validate = OneOf(["distr", "mode"])
         else:
             raise ValidationError(
                 f"{data['metric'].query_kind} does not have a valid metric type."
