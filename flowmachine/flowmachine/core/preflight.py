@@ -54,7 +54,7 @@ def resolve_hooks(cls) -> typing.Dict[str, typing.List[typing.Callable]]:
         except AttributeError:
             pass
         else:
-            for key in hook_config.keys():
+            for key in hook_config:
                 # Use name here so we can get the bound method later, in
                 # case the processor was a descriptor or something.
                 hooks[key].append(attr_name)
