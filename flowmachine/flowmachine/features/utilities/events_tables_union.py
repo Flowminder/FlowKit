@@ -115,7 +115,7 @@ def _parse_tables(tables):
     elif len(tables) == 0:
         raise ValueError("Empty tables list.")
     else:
-        return sorted(tables)
+        return sorted(set(tables))
 
 
 def _make_table_list(
