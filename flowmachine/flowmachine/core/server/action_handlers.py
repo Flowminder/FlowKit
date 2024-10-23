@@ -93,9 +93,7 @@ def _load_query_object(params: dict) -> "BaseExposedQuery":
             f"The original error was: '{orig_error_msg}'"
         )
         raise QueryLoadError(
-            error_msg,
-            params,
-            orig_error_msg=orig_error_msg,
+            error_msg, params, orig_error_msg=orig_error_msg, errors=exc.errors
         )
     except TypeError as exc:
         # We need to catch TypeError here, otherwise they propagate up to
@@ -104,11 +102,6 @@ def _load_query_object(params: dict) -> "BaseExposedQuery":
         error_msg = (
             f"Internal flowmachine server error: could not create query object using query schema. "
             f"The original error was: '{orig_error_msg}'"
-        )
-        raise QueryLoadError(
-            error_msg,
-            params,
-            orig_error_msg=orig_error_msg,
         )
         raise QueryLoadError(
             error_msg,
