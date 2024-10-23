@@ -29,16 +29,9 @@ from flowmachine.core.context import (
     get_redis,
     submit_to_executor,
 )
-from flowmachine.core.errors.flowmachine_errors import (
-    QueryResetFailedException,
-    QueryResetFailedException,
-```
 
-Note: The suggestion shows only the relevant line since that's what was provided in the original code snippet. In the actual file, this would be part of a larger import statement:
-```python
 from flowmachine.core.errors.flowmachine_errors import (
     QueryResetFailedException,
-)
 )
 from flowmachine.core.preflight import Preflight
 from flowmachine.core.query_state import QueryStateMachine
