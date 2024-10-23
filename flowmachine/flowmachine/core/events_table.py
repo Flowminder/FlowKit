@@ -103,7 +103,7 @@ class TopupsTable(EventsTable):
         "imsi",
         "imei",
         "tac",
-        "opera" "tor_code",
+        "operator_code",
         "country_code",
     ]
 
