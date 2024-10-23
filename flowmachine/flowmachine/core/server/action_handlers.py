@@ -85,7 +85,7 @@ async def action_handler__get_query_schemas(
 def _load_query_object(params: dict) -> "BaseExposedQuery":
     try:
         query_obj = FlowmachineQuerySchema().load(params)
-        query_obj.preflight()  # Note that we probably want to remove this call to allow getting qid faster
+        query_obj._flowmachine_query_obj.preflight()  # Note that we probably want to remove this call to allow getting qid faster
     except PreFlightFailedException as exc:
         orig_error_msg = exc.args[0]
         error_msg = (
