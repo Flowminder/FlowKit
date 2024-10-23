@@ -17,7 +17,7 @@ class PreFlightFailedException(Exception):
     ----------
     query_id : str
         Identifier of the query
-    failures : dict
+    errors : dict
         Mapping from query reps to lists of exceptions raised in preflight
     """
 
