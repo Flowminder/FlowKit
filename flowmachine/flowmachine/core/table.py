@@ -39,7 +39,7 @@ class Table(Query):
     Examples
     --------
 
-    >>> t = Table(name="calls", schema="events", olumns=["id", "outgoing", "datetime", "duration"])
+    >>> t = Table(name="calls", schema="events", columns=["id", "outgoing", "datetime", "duration"])
     >>> t.head()
                                 id outgoing                  datetime  duration  \
     0  5wNJA-PdRJ4-jxEdG-yOXpZ     True 2016-01-01 22:38:06+00:00    3393.0
