@@ -45,7 +45,7 @@ def test_table_preflight(args):
         Table(**args).preflight()
 
 
-def public_schema_checked():
+def test_public_schema_checked():
     """Test that where no schema is provided, public schema is checked."""
     t = Table("gambia_admin2", columns=["geom"]).preflight()
 
