@@ -1,7 +1,10 @@
+from abc import ABCMeta
+
 from flowmachine.core.table import Table
 
 
-class FlowDBTable(Table):
+
+class FlowDBTable(Table, metaclass=ABCMeta):
     def __init__(self, *, name, schema, columns):
         if columns is None:
             columns = self.all_columns
@@ -11,3 +14,7 @@ class FlowDBTable(Table):
             raise ValueError(
                 f"Columns {columns} must be a subset of {self.all_columns}"
             )
+
+    @property
+    def all_columns(self):
+        raise NotImplementedError
