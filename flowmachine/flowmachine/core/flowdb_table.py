@@ -1,10 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 from abc import ABCMeta
+from typing import Optional
 
 from flowmachine.core.table import Table
 
 
 class FlowDBTable(Table, metaclass=ABCMeta):
-    def __init__(self, *, name, schema, columns):
+    """
+    Abstract base class for fixed tables that exist in FlowDB.
+
+    Parameters
+    ----------
+    name : str
+    schema : str
+    columns : list of str
+    """
+
+    def __init__(self, *, name: str, schema:str , columns:Optional[list[str]]) -> None:
         if columns is None:
             columns = self.all_columns
         if set(columns).issubset(self.all_columns):
