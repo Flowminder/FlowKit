@@ -3,7 +3,6 @@ from abc import ABCMeta
 from flowmachine.core.table import Table
 
 
-
 class FlowDBTable(Table, metaclass=ABCMeta):
     def __init__(self, *, name, schema, columns):
         if columns is None:
