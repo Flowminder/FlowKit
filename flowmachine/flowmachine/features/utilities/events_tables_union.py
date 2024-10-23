@@ -104,12 +104,12 @@ def _parse_tables(tables):
             "calls",
             "sms",
         )  # This should default to all the tables really, but that would break all the tests
+    if tables == "":
+        raise ValueError("Empty table name.")
     elif isinstance(tables, str):
         return [tables]
-    elif isinstance(tables, str):
-        raise ValueError("Empty table name.")
     elif not isinstance(tables, list) or not all(
-            [isinstance(tbl, str) for tbl in tables]
+        [isinstance(tbl, str) for tbl in tables]
     ):
         raise ValueError("Tables must be a string or list of strings.")
     elif len(tables) == 0:
