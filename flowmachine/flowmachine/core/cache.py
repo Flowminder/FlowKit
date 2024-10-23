@@ -12,7 +12,7 @@ import pickle
 import sqlalchemy.engine
 from contextvars import copy_context
 from concurrent.futures import Executor, TimeoutError
-from functools import partial
+from functools import partial, lru_cache
 from sqlalchemy.exc import ResourceClosedError
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
@@ -487,6 +487,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
+@lru_cache(maxsize=1)
 def _get_protected_classes():
     from flowmachine.core.events_table import events_table_map
     from flowmachine.core.infrastructure_table import infrastructure_table_map
