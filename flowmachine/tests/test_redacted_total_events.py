@@ -49,7 +49,7 @@ def test_all_above_threshold_hour_bucket(get_dataframe):
             "2016-01-02",
             spatial_unit=make_spatial_unit("cell"),
             interval="hour",
-            table=["events.calls"],
+            table=["calls"],
         )
     )
 
@@ -67,7 +67,7 @@ def test_all_above_threshold_minute_bucket(get_dataframe):
             "2016-01-01 13:00",
             spatial_unit=make_spatial_unit("cell"),
             interval="min",
-            table=["events.calls"],
+            table=["calls"],
         )
     )
 
