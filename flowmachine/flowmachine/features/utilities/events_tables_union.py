@@ -1,14 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 
 import structlog
 import warnings
-from typing import List, Optional, Tuple
+from typing import List, Union, Optional, Tuple
 
-from ...core import Query
-from ...core.context import get_db
-from ...core.errors import MissingDateError
+from flowmachine.core import Query
+from flowmachine.core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
 from flowmachine.utils import standardise_date
 
@@ -43,8 +43,8 @@ class EventsTablesUnion(Query):
 
     def __init__(
         self,
-        start,
-        stop,
+        start: Union[str, datetime.date, datetime.datetime],
+        stop: Union[str, datetime.date, datetime.datetime],
         *,
         columns,
         tables=None,
@@ -62,12 +62,16 @@ class EventsTablesUnion(Query):
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.columns = columns
-        self.tables = self._parse_tables(tables)
+        self.tables = _parse_tables(tables)
         if "*" in columns and len(self.tables) != 1:
             raise ValueError(
-                "Must give named tables when combining multiple event type tables."
+                "Must give named columns when combining multiple event type tables."
             )
-        self.date_subsets = self._make_table_list(
+        self.date_subsets = _make_table_list(
+            tables=self.tables,
+            start=self.start,
+            stop=self.stop,
+            columns=columns,
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
@@ -81,48 +85,6 @@ class EventsTablesUnion(Query):
             0
         ].column_names  # Use in preference to self.columns which might be ["*"]
 
-    def _parse_tables(self, tables):
-        if tables is None:
-            return [f"events.{t}" for t in get_db().subscriber_tables]
-        elif isinstance(tables, str) and len(tables) > 0:
-            return [tables]
-        elif isinstance(tables, str):
-            raise ValueError("Empty table name.")
-        elif not isinstance(tables, list) or not all(
-            [isinstance(tbl, str) for tbl in tables]
-        ):
-            raise ValueError("Tables must be a string or list of strings.")
-        elif len(tables) == 0:
-            raise ValueError("Empty tables list.")
-        else:
-            return tables
-
-    def _make_table_list(self, *, hours, subscriber_subset, subscriber_identifier):
-        """
-        Makes a list of EventTableSubset queries.
-        """
-
-        date_subsets = []
-        for table in self.tables:
-            try:
-                sql = EventTableSubset(
-                    start=self.start,
-                    stop=self.stop,
-                    table=table,
-                    columns=self.columns,
-                    hours=hours,
-                    subscriber_subset=subscriber_subset,
-                    subscriber_identifier=subscriber_identifier,
-                )
-                date_subsets.append(sql)
-            except MissingDateError:
-                warnings.warn(
-                    f"No data in {table} for {self.start}–{self.stop}", stacklevel=2
-                )
-        if not date_subsets:
-            raise MissingDateError(self.start, self.stop)
-        return date_subsets
-
     def _make_query(self):
         # Get the list of tables, select the relevant columns and union
         # them all
@@ -134,3 +96,50 @@ class EventsTablesUnion(Query):
     def fully_qualified_table_name(self):
         # EventTableSubset are a simple select from events, and should not be cached
         raise NotImplementedError
+
+
+def _parse_tables(tables):
+    if tables is None:
+        return (
+            "calls",
+            "sms",
+        )  # This should default to all the tables really, but that would break all the tests
+    if tables == "":
+        raise ValueError("Empty table name.")
+    elif isinstance(tables, str):
+        return [tables]
+    elif not isinstance(tables, list) or not all(
+        [isinstance(tbl, str) for tbl in tables]
+    ):
+        raise ValueError("Tables must be a string or list of strings.")
+    elif len(tables) == 0:
+        raise ValueError("Empty tables list.")
+    else:
+        return sorted(set(tables))
+
+
+def _make_table_list(
+    *, tables, start, stop, columns, hours, subscriber_subset, subscriber_identifier
+):
+    """
+    Makes a list of EventTableSubset queries.
+    """
+
+    date_subsets = []
+    for table in tables:
+        try:
+            sql = EventTableSubset(
+                start=start,
+                stop=stop,
+                table=table,
+                columns=columns,
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
+            )
+            date_subsets.append(sql)
+        except MissingDateError:
+            warnings.warn(f"No data in {table} for {start}–{stop}", stacklevel=2)
+    if not date_subsets:
+        raise MissingDateError(start, stop)
+    return date_subsets

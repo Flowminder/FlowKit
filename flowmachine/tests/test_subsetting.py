@@ -177,7 +177,7 @@ def test_subset_subset(get_dataframe):
     sub_vala = "Central Development Region"
     sub_colb = "admin2name"
     sub_valb = "Bagmati"
-    t = Table("geography.admin3")
+    t = Table("geography.admin3", columns=[sub_cola, sub_colb])
     t_df = get_dataframe(t)
 
     sub_q = t.subset(sub_cola, sub_vala).subset(sub_colb, sub_valb)
@@ -199,7 +199,7 @@ def test_subset_subsetnumeric(get_dataframe):
     sub_colb = "shape_area"
     sub_lowb = 0.1
     sub_highb = 0.12
-    t = Table("geography.admin3")
+    t = Table("geography.admin3", columns=[sub_cola, sub_colb])
     t_df = get_dataframe(t)
 
     sub_q1 = t.subset(sub_cola, sub_vala).numeric_subset(sub_colb, sub_lowb, sub_highb)
@@ -227,7 +227,7 @@ def test_subsetnumeric_subsetnumeric(get_dataframe):
     sub_colb = "shape_leng"
     sub_lowb = 1.0
     sub_highb = 2.0
-    t = Table("geography.admin3")
+    t = Table("geography.admin3", columns=[sub_cola, sub_colb])
     t_df = get_dataframe(t)
 
     sub_q = t.numeric_subset(sub_cola, sub_lowa, sub_lowb).numeric_subset(

@@ -9,12 +9,12 @@ database.
 """
 from typing import List, Iterable, Optional
 
-from flowmachine.core.query_state import QueryStateMachine
-from .context import get_db, get_redis
-from .errors import NotConnectedError
-from .query import Query
-from .subset import subset_factory
-from .cache import write_cache_metadata
+from flowmachine.core.query_state import QueryStateMachine, QueryState
+from flowmachine.core.context import get_db, get_redis
+from flowmachine.core.preflight import pre_flight
+from flowmachine.core.query import Query
+from flowmachine.core.subset import subset_factory
+from flowmachine.core.cache import write_cache_metadata
 
 import structlog
 
@@ -39,7 +39,7 @@ class Table(Query):
     Examples
     --------
 
-    >>> t = Table(name="calls", schema="events")
+    >>> t = Table(name="calls", schema="events", columns=["id", "outgoing", "datetime", "duration"])
     >>> t.head()
                                 id outgoing                  datetime  duration  \
     0  5wNJA-PdRJ4-jxEdG-yOXpZ     True 2016-01-01 22:38:06+00:00    3393.0
@@ -63,7 +63,8 @@ class Table(Query):
 
     def __init__(
         self,
-        name: Optional[str] = None,
+        name: str,
+        *,
         schema: Optional[str] = None,
         columns: Optional[Iterable[str]] = None,
     ):
@@ -78,56 +79,61 @@ class Table(Query):
 
         self.name = name
         self.schema = schema
-        self.fqn = "{}.{}".format(schema, name) if schema else name
-        if "." not in self.fqn:
-            raise ValueError("{} is not a valid table.".format(self.fqn))
-        if not self.is_stored:
-            raise ValueError("{} is not a known table.".format(self.fqn))
+        self.fqn = f"{schema}.{name}" if schema else name
 
+        # Record provided columns to ensure that query_id differs with different columns
+        if isinstance(columns, str):  # Wrap strings in a list
+            columns = [columns]
+        self.columns = columns
+        if self.columns is None or len(self.columns) == 0:
+            raise ValueError("No columns requested.")
+        super().__init__()
+
+    @pre_flight
+    def check_exists(self):
+        if not self.is_stored:
+            raise ValueError(f"{self.fqn} is not a known table.")
+
+    @pre_flight
+    def check_columns(self):
         # Get actual columns of this table from the database
         db_columns = list(
             zip(
                 *get_db().fetch(
                     f"""SELECT column_name from INFORMATION_SCHEMA.COLUMNS
-             WHERE table_name = '{self.name}' AND table_schema='{self.schema}'"""
+                     WHERE table_name = '{self.name}' AND table_schema='{self.schema}'"""
                 )
             )
         )[0]
-        if (
-            columns is None or columns == []
-        ):  # No columns specified, setting them from the database
-            columns = db_columns
-        else:
-            self.parent_table = Table(
-                schema=self.schema, name=self.name
-            )  # Point to the full table
-            if isinstance(columns, str):  # Wrap strings in a list
-                columns = [columns]
-            logger.debug(
-                "Checking provided columns against db columns.",
-                provided=columns,
-                db_columns=db_columns,
-            )
-            if not set(columns).issubset(db_columns):
-                raise ValueError(
-                    "{} are not columns of {}".format(
-                        set(columns).difference(db_columns), self.fqn
-                    )
-                )
 
-        # Record provided columns to ensure that query_id differs with different columns
-        self.columns = columns
-        super().__init__()
+        logger.debug(
+            "Checking provided columns against db columns.",
+            provided=self.columns,
+            db_columns=db_columns,
+        )
+        if not set(self.columns).issubset(db_columns):
+            raise ValueError(
+                f"{set(self.columns).difference(db_columns)} are not columns of {self.fqn}"
+            )
+
+    @pre_flight
+    def ff_state_machine(self):
         # Table is immediately in a 'finished executing' state
         q_state_machine = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
         )
         if not q_state_machine.is_completed:
-            q_state_machine.enqueue()
-            q_state_machine.execute()
-            with get_db().engine.begin() as trans:
-                write_cache_metadata(trans, self, compute_time=0)
-            q_state_machine.finish()
+            state, succeeded = q_state_machine.enqueue()
+            state, succeeded = q_state_machine.execute()
+            state, succeeded = q_state_machine.finish()
+            if succeeded:
+                with get_db().engine.begin() as trans:
+                    write_cache_metadata(trans, self, compute_time=0)
+                state, succeeded = q_state_machine.finish()
+            if state != QueryState.COMPLETED:
+                raise RuntimeError(
+                    f"Couldn't fast forward state machine for table {self}. State is: {state}"
+                )
 
     def __format__(self, fmt):
         return f"<Table: '{self.schema}.{self.name}', query_id: '{self.query_id}'>"

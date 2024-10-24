@@ -187,10 +187,10 @@ async def test_run_query_error_handled(dummy_redis, server_config):
         ),
     )
     assert msg.status == ZMQReplyStatus.ERROR
-    assert (
-        msg.msg
-        == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'zip() argument after * must be an iterable, not Mock'"
+    assert msg.msg.rstrip().startswith(
+        "Internal flowmachine server error: could not create query object using query schema. The original error was: 'Pre-flight failed for '7b71413efc91213e798ca3bd53107186'. Errors:"
     )
+    assert len(msg.payload["errors"]) == 3
 
 
 @pytest.mark.parametrize("bad_unit", ["NOT_A_VALID_UNIT", "admin4"])

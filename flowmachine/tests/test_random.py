@@ -11,6 +11,7 @@ samples from the database.
 import pytest
 import pickle
 
+from flowmachine.core.errors.flowmachine_errors import PreFlightFailedException
 from flowmachine.core.mixins import GraphMixin
 from flowmachine.features import daily_location, Flows
 from flowmachine.features.utilities.sets import UniqueSubscribers
@@ -233,9 +234,11 @@ def test_system_rows_fail_with_inheritance():
     """
     Test whether the system row method fails if the subscriber queries for random rows on a parent table.
     """
-    with pytest.raises(ValueError):
-        df = Table(name="events.calls").random_sample(
-            size=8, sampling_method="system_rows"
+    with pytest.raises(PreFlightFailedException):
+        df = (
+            Table(name="events.calls", columns=["msisdn"])
+            .random_sample(size=8, sampling_method="system_rows")
+            .preflight()
         )
 
 
@@ -290,7 +293,7 @@ def test_pickling():
     ss1 = UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
         size=10, sampling_method="system_rows"
     )
-    ss2 = Table("events.calls").random_sample(
+    ss2 = Table("events.calls", columns=["id"]).random_sample(
         size=10, sampling_method="bernoulli", seed=0.73
     )
     for ss in [ss1, ss2]:

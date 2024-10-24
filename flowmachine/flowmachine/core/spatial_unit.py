@@ -13,12 +13,14 @@ from typing import Union, List, Iterable, Optional
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core import Query, Table
+from flowmachine.core.preflight import pre_flight
 from flowmachine.core.context import get_db
 from flowmachine.core.grid import Grid
 
 # TODO: Currently most spatial units require a FlowDB connection at init time.
 # It would be useful to remove this requirement wherever possible, and instead
 # implement a method to check whether the required data can be found in the DB.
+from .infrastructure_table import infrastructure_table_map
 
 
 def _substitute_lat_lon(location_dict):
@@ -278,7 +280,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         *,
         geom_table_column_names: Union[str, Iterable[str]],
         location_id_column_names: Union[str, Iterable[str]],
-        geom_table: Optional[Union[Query, str]] = None,
+        geom_table: Optional[Query] = None,
         mapping_table: Optional[Union[Query, str]] = None,
         geom_column: str = "geom",
         geom_table_join_on: Optional[str] = None,
@@ -306,11 +308,11 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if geom_table is None:
             # Creating a Table object here means that we don't have to handle
             # tables and Query objects differently in _make_query and get_geom_query
-            self.geom_table = Table(name=get_db().location_table)
+            self.geom_table = infrastructure_table_map["cells"]()
         elif isinstance(geom_table, Query):
             self.geom_table = geom_table
         else:
-            self.geom_table = Table(name=geom_table)
+            raise TypeError("geom_table must be a Query or Table object.")
 
         if mapping_table is not None:
             # Creating a Table object here means that we don't have to handle
@@ -318,7 +320,10 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
             if isinstance(mapping_table, Query):
                 self.mapping_table = mapping_table
             else:
-                self.mapping_table = Table(name=mapping_table)
+                self.mapping_table = Table(
+                    name=mapping_table,
+                    columns=[location_table_join_on, geom_table_join_on],
+                )
 
             if location_table_join_on not in self.mapping_table.column_names:
                 raise ValueError(
@@ -656,8 +661,8 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         self,
         *,
         geom_table_column_names: Union[str, Iterable[str]],
-        geom_table: Union[Query, str],
-        mapping_table: Optional[Union[Query, str]] = None,
+        geom_table: Query,
+        mapping_table: Optional[Query] = None,
         geom_column: str = "geom",
         geom_table_join_on: Optional[str] = None,
     ):
@@ -702,14 +707,17 @@ class VersionedCellSpatialUnit(LonLatSpatialUnit):
     """
 
     def __init__(self) -> None:
-        if get_db().location_table != "infrastructure.cells":
-            raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
         super().__init__(
             geom_table_column_names=["version"],
             location_id_column_names=["location_id", "version"],
-            geom_table="infrastructure.cells",
+            geom_table=infrastructure_table_map["cells"](),
         )
+
+    @pre_flight
+    def check_cells_available(self):
+        if get_db().location_table != "infrastructure.cells":
+            raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
     @property
     def canonical_name(self) -> str:
@@ -731,7 +739,7 @@ class VersionedSiteSpatialUnit(LonLatSpatialUnit):
                 "version",
             ],
             location_id_column_names=["site_id", "version"],
-            geom_table="infrastructure.sites",
+            geom_table=infrastructure_table_map["sites"](),
             geom_table_join_on="id",
             location_table_join_on="site_id",
         )
@@ -780,12 +788,15 @@ class AdminSpatialUnit(PolygonSpatialUnit):
             col_name = f"admin{level}pcod AS pcod"
         else:
             col_name = region_id_column_name
-        table = f"geography.admin{level}"
         self.level = level
 
         super().__init__(
             geom_table_column_names=col_name,
-            geom_table=table,
+            geom_table=Table(
+                schema="geography",
+                name=f"admin{level}",
+                columns=[f"admin{level}pcod", f"admin{level}name", "geom"],
+            ),
             mapping_table=mapping_table,
             geom_table_join_on=None if mapping_table is None else f"admin{level}pcod",
         )
@@ -837,7 +848,7 @@ def make_spatial_unit(
     level: Optional[int] = None,
     region_id_column_name: Optional[Union[str, Iterable[str]]] = None,
     size: Union[float, int] = None,
-    geom_table: Optional[Union[Query, str]] = None,
+    geom_table: Optional[Query] = None,
     geom_column: str = "geom",
     mapping_table: Optional[Union[str, Query]] = None,
     geom_table_join_on: Optional[str] = None,

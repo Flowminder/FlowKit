@@ -39,6 +39,7 @@ def test_do_cache_simple(flowmachine_connect):
 
     """
     dl1 = daily_location("2016-01-01")
+    dl1.preflight()
     with get_db().engine.begin() as trans:
         write_cache_metadata(trans, dl1)
     assert cache_table_exists(get_db(), dl1.query_id)
@@ -51,6 +52,7 @@ def test_do_cache_multi(flowmachine_connect):
     """
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1.preflight()
     with get_db().engine.begin() as trans:
         write_cache_metadata(trans, hl1)
 
@@ -65,6 +67,7 @@ def test_do_cache_nested(flowmachine_connect):
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
+    flow.preflight()
     with get_db().engine.begin() as trans:
         write_cache_metadata(trans, flow)
 
@@ -144,7 +147,9 @@ def test_invalidate_cache_multi(flowmachine_connect):
     assert not cache_table_exists(get_db(), dl1.query_id)
     assert not cache_table_exists(get_db(), hl1.query_id)
     has_deps = bool(get_db().fetch("SELECT * FROM cache.dependencies"))
-    assert has_deps  # the remaining dependencies are due to underlying Table objects
+    assert (
+        not has_deps
+    )  # the remaining dependencies are due to underlying Table objects
 
 
 def test_invalidate_cache_midchain(flowmachine_connect):
@@ -308,7 +313,7 @@ def create_and_store_novel_query_with_dependency():
             return ["value"]
 
         def _make_query(self):
-            return "select 1 as value"
+            return self.nested.get_query()
 
     q = NestTestQuery()
     q_id = q.query_id

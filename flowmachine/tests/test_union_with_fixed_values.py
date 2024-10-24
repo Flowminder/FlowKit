@@ -13,19 +13,25 @@ from flowmachine.core.union_with_fixed_values import UnionWithFixedValues
 def test_union_column_names():
     """Test that Union's column_names property is accurate"""
     union = UnionWithFixedValues(
-        [Table("events.calls_20160101"), Table("events.calls_20160102")],
+        [
+            Table("events.calls_20160101", columns=["msisdn"]),
+            Table("events.calls_20160102", columns=["msisdn"]),
+        ],
         ["extra_val", "extra_val"],
         fixed_value_column_name="extra_col",
     )
     assert union.head(0).columns.tolist() == union.column_names
-    assert union.column_names == [*Table("events.calls_20160101").columns, "extra_col"]
+    assert union.column_names == [
+        *Table("events.calls_20160101", columns=["msisdn"]).columns,
+        "extra_col",
+    ]
 
 
 def test_union_all(get_dataframe):
     """
     Test default union behaviour keeps duplicates.
     """
-    q1 = Table(schema="events", name="calls")
+    q1 = Table(schema="events", name="calls", columns=["id"])
     union_all = q1.union(q1)
     union_all_df = get_dataframe(union_all)
     single_id = union_all_df[union_all_df.id == "5wNJA-PdRJ4-jxEdG-yOXpZ"]
@@ -37,7 +43,10 @@ def test_union(get_dataframe):
     Test union adds extra columns.
     """
     union = UnionWithFixedValues(
-        [Table("events.calls_20160101"), Table("events.calls_20160101")],
+        [
+            Table("events.calls_20160101", columns=["msisdn"]),
+            Table("events.calls_20160101", columns=["msisdn"]),
+        ],
         ["extra_val", "extra_val_1"],
         fixed_value_column_name="extra_col",
     )
@@ -51,7 +60,10 @@ def test_union_date_type(get_dataframe):
     Test union casts types correctly for datetimes.
     """
     union = UnionWithFixedValues(
-        [Table("events.calls_20160101"), Table("events.calls_20160101")],
+        [
+            Table("events.calls_20160101", columns=["msisdn"]),
+            Table("events.calls_20160101", columns=["msisdn"]),
+        ],
         [datetime.datetime(2016, 1, 1), datetime.datetime(2016, 1, 2)],
         fixed_value_column_name="extra_col",
     )

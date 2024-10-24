@@ -25,12 +25,8 @@ def test_returns_correct_values(get_dataframe):
     """
     # We expect subscriber '2Dq97XmPqvL6noGk' to have a single event in df1
     # and two events in df2 (due to the larger time interval).
-    ud1 = SubscriberDegree(
-        "2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="events.sms"
-    )
-    ud2 = SubscriberDegree(
-        "2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="events.sms"
-    )
+    ud1 = SubscriberDegree("2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="sms")
+    ud2 = SubscriberDegree("2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="sms")
 
     df1 = get_dataframe(ud1).set_index("subscriber")
     df2 = get_dataframe(ud2).set_index("subscriber")
@@ -49,13 +45,13 @@ def test_returns_correct_in_out_values(get_dataframe):
     ud1 = SubscriberDegree(
         "2016-01-01 12:35:00",
         "2016-01-01 12:40:00",
-        tables="events.sms",
+        tables="sms",
         direction="in",
     )
     ud2 = SubscriberDegree(
         "2016-01-01 12:28:00",
         "2016-01-01 12:40:00",
-        tables="events.sms",
+        tables="sms",
         direction="out",
     )
 

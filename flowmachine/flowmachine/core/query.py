@@ -29,7 +29,11 @@ from flowmachine.core.context import (
     get_redis,
     submit_to_executor,
 )
-from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryResetFailedException,
+)
+from flowmachine.core.preflight import Preflight
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
@@ -55,7 +59,7 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 MAX_POSTGRES_NAME_LENGTH = 63
 
 
-class Query(metaclass=ABCMeta):
+class Query(Preflight, metaclass=ABCMeta):
     """
     The core base class of the flowmachine module. This should handle
     all input and output methods for our sql queries, so that
@@ -366,7 +370,8 @@ class Query(metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
+            q_string = self.get_query()
+            Q = f"SELECT {self.column_names_as_string_list} FROM ({q_string}) h LIMIT {n};"
             con = get_db().engine
             with con.begin() as trans:
                 df = pd.read_sql_query(Q, con=trans)
@@ -382,7 +387,14 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.Table
             The stored version of this Query as a Table object
         """
-        return flowmachine.core.Table(self.fully_qualified_table_name)
+        if self.is_stored:
+            table = flowmachine.core.Table(
+                self.fully_qualified_table_name, columns=self.column_names
+            )
+            table.preflight()
+            return table
+        else:
+            raise ValueError(f"{self} not stored on this connection.")
 
     def union(self, *other: "Query", all: bool = True):
         """
@@ -524,8 +536,9 @@ class Query(metaclass=ABCMeta):
             logger.info("Table already exists")
             return []
 
+        q_string = self._make_query()
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-        (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
+        (SELECT {self.column_names_as_string_list} FROM ({q_string}) _)"""
         queries.append(Q)
         # Make flowmachine user the owner to allow server to cleanup cache tables
         queries.append(f"ALTER TABLE {full_name} OWNER TO flowmachine;")
