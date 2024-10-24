@@ -1,12 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from typing import Optional
 
 from flowmachine.core.flowdb_table import FlowDBTable
 
 
 class InfrastructureTable(FlowDBTable):
-    def __init__(self, *, name, columns):
+    def __init__(self, *, name: str, columns: Optional[list[str]] = None) -> None:
         super().__init__(schema="infrastructure", name=name, columns=columns)
 
 
@@ -26,7 +27,7 @@ class SitesTable(InfrastructureTable):
         "geom_polygon",
     ]
 
-    def __init__(self, *, columns=None):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="sites", columns=columns)
 
 
@@ -56,7 +57,7 @@ class CellsTable(InfrastructureTable):
         "geom_polygon",
     ]
 
-    def __init__(self, *, columns=None):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="cells", columns=columns)
 
 
@@ -117,7 +118,7 @@ class TacsTable(InfrastructureTable):
         "hnd_type",
     ]
 
-    def __init__(self, *, columns=None):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="tacs", columns=columns)
 
 

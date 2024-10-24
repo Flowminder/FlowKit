@@ -19,7 +19,7 @@ class FlowDBTable(Table, metaclass=ABCMeta):
     columns : list of str
     """
 
-    def __init__(self, *, name: str, schema:str , columns:Optional[list[str]]) -> None:
+    def __init__(self, *, name: str, schema: str, columns: Optional[list[str]]) -> None:
         if columns is None:
             columns = self.all_columns
         if set(columns).issubset(self.all_columns):

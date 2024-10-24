@@ -1,12 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from typing import Optional
 
 from flowmachine.core.flowdb_table import FlowDBTable
 
 
 class EventsTable(FlowDBTable):
-    def __init__(self, *, name, columns):
+    def __init__(self, *, name, columns: Optional[list[str]] = None) -> None:
         super().__init__(schema="events", name=name, columns=columns)
 
 
@@ -27,7 +28,7 @@ class CallsTable(EventsTable):
         "country_code",
     ]
 
-    def __init__(self, *, columns=None):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="calls", columns=columns)
 
 
@@ -47,7 +48,7 @@ class ForwardsTable(EventsTable):
         "country_code",
     ]
 
-    def __init__(self, *, columns=None):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="forwards", columns=columns)
 
 
@@ -67,7 +68,7 @@ class SmsTable(EventsTable):
         "country_code",
     ]
 
-    def __init__(self, *, columns):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="sms", columns=columns)
 
 
@@ -88,7 +89,7 @@ class MdsTable(EventsTable):
         "country_code",
     ]
 
-    def __init__(self, *, columns):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="mds", columns=columns)
 
 
@@ -111,7 +112,7 @@ class TopupsTable(EventsTable):
         "country_code",
     ]
 
-    def __init__(self, *, columns):
+    def __init__(self, *, columns: Optional[list[str]] = None) -> None:
         super().__init__(name="topups", columns=columns)
 
 
