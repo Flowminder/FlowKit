@@ -46,8 +46,9 @@ def test_table_preflight(args):
 
 
 def test_public_schema_checked():
-    """Test that where no schema is provided, public schema is checked."""
-    t = Table("gambia_admin2", columns=["geom"]).preflight()
+    """Test that where no schema is provided, user schema is checked."""
+    t = Table("gambia_admin2", columns=["geom"])
+    assert "flowmachine" == t.schema
 
 
 def test_children():
