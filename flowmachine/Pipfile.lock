@@ -18,19 +18,19 @@
     "default": {
         "apispec": {
             "hashes": [
-                "sha256:6460315cb38ac6a2ff42d9e2b8dc0435c37d4428d3abeda96ff97b5dc8eb6b94",
-                "sha256:f5caa47cee75fe03b9c50b5594048b4c052eeca2c212e0dac12dbb6175d9a659"
+                "sha256:7d2f2be3ceb7385eca550e4a2cc1e4d4a640093cc8fe04224301aa395a785b25",
+                "sha256:fa2cf1063bb227ed6f7f66b019f320d7dc0a7cb02acdf166a160e2381f4b2c39"
             ],
-            "markers": "python_version >= '3.8'",
-            "version": "==6.6.1"
+            "markers": "python_version >= '3.9'",
+            "version": "==6.7.0"
         },
         "apispec-oneofschema": {
             "hashes": [
-                "sha256:56a84492d2105340df059d477f28e67f63e38d14e40364229b68d7d512495664",
-                "sha256:8f106bcb394e764d532f1d43c658034e986aaa526a6ec1d20d1d7063aa1f0a86"
+                "sha256:56aeab968abf22b01b3fbcf2d3dc95be09585581f08c62c09bd94f5aa7192fab",
+                "sha256:a88b54c99ffc175f39217b38c5850706a78aadc4cf5cea31fe7c20e25c2491ee"
             ],
             "index": "pypi",
-            "version": "==3.0.0"
+            "version": "==3.0.1"
         },
         "cachetools": {
             "hashes": [
