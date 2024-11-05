@@ -4,21 +4,22 @@
 
 from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import OneOf, Length
-from marshmallow_oneofschema import OneOfSchema
 
-from flowmachine.core.server.query_schemas import BaseExposedQuery
 from flowmachine.core.server.query_schemas.base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
-from flowmachine.core.server.query_schemas.base_schema import BaseSchema
 from flowmachine.core.server.query_schemas.daily_location import DailyLocationSchema
 from flowmachine.core.server.query_schemas.modal_location import ModalLocationSchema
 from flowmachine.features import DayTrajectories
 from flowmachine.features.subscriber.location_visits import LocationVisits
+from .one_of_query import OneOfQuerySchema
 
 
 class LocationVisitsExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "location_visits"
+
     def __init__(self, locations, *, sampling=None):
         self.locations = locations
         self.sampling = sampling
@@ -33,21 +34,32 @@ class LocationVisitsExposed(BaseExposedQueryWithSampling):
         )
 
 
-class VisitableLocation(OneOfSchema):
-    type_field = "query_kind"
-    type_schemas = {
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
-    }
+class VisitableLocation(OneOfQuerySchema):
+    query_schemas = (DailyLocationSchema, ModalLocationSchema)
 
 
 class LocationVisitsSchema(BaseQueryWithSamplingSchema):
-    query_kind = fields.String(validate=OneOf(["location_visits"]))
-    locations = fields.List(fields.Nested(VisitableLocation), validate=Length(min=1))
+    __model__ = LocationVisitsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    locations = fields.List(
+        fields.Nested(VisitableLocation), validate=Length(min=1), required=True
+    )
 
     @validates("locations")
     def validate_locations(self, locations):
-        if len(set(location.aggregation_unit for location in locations)) > 1:
+        # Filtering out locations with no aggregation_unit attribute -
+        # validation errors for these should be raised when validating the
+        # individual location query specs
+        if (
+            len(
+                set(
+                    location.aggregation_unit
+                    for location in locations
+                    if hasattr(location, "aggregation_unit")
+                )
+            )
+            > 1
+        ):
             raise ValidationError("All locations must have the same aggregation unit")
-
-    __model__ = LocationVisitsExposed

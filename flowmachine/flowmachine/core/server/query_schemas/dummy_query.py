@@ -16,6 +16,9 @@ from .base_schema import BaseSchema
 
 
 class DummyQueryExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "dummy_query"
+
     def __init__(self, dummy_param, aggregation_unit, dummy_delay):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -34,9 +37,9 @@ class DummyQuerySchema(AggregationUnitMixin, BaseSchema):
     Dummy query useful for testing.
     """
 
+    __model__ = DummyQueryExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["dummy_query"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     dummy_param = fields.String(required=True)
     dummy_delay = fields.Integer(missing=0, required=False)
-
-    __model__ = DummyQueryExposed

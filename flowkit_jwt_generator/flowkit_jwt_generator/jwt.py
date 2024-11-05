@@ -23,7 +23,6 @@ except ImportError:
 from typing import Iterable, List, Optional, Tuple, Union
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from functools import lru_cache
@@ -35,7 +34,7 @@ def compress_claims(claims):
     out = io.BytesIO()
 
     with gzip.open(out, mode="wt") as fo:
-        json.dump(list(squashed_scopes(claims)), fo)
+        json.dump(claims, fo)
 
     return base64.encodebytes(out.getvalue()).decode()
 
@@ -50,7 +49,7 @@ def decompress_claims(claims):
 
 # Duplicated in FlowAuth (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
-def load_private_key(key_string: str) -> _RSAPrivateKey:
+def load_private_key(key_string: str) -> rsa.RSAPrivateKey:
     """
     Load a private key from a string, which may be base64 encoded.
 
@@ -77,7 +76,7 @@ def load_private_key(key_string: str) -> _RSAPrivateKey:
 
 # Duplicated in FlowAPI (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
-def load_public_key(key_string: str) -> _RSAPublicKey:
+def load_public_key(key_string: str) -> rsa.RSAPublicKey:
     """
     Load a public key from a string, which may be base64 encoded.
 
@@ -210,10 +209,11 @@ def squashed_scopes(scopes: List[str]) -> Iterable[str]:
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
+    flowauth_identifier: Optional[str] = None,
     username: str,
-    private_key: Union[str, _RSAPrivateKey],
+    private_key: Union[str, rsa.RSAPrivateKey],
     lifetime: datetime.timedelta,
-    claims: List[str],
+    roles: dict,
     compress: bool = True,
 ) -> str:
     """
@@ -227,8 +227,8 @@ def generate_token(
         containing a PEM encoded key
     lifetime : datetime.timedelta
         Lifetime from now of the token
-    claims : list
-        List of claims this token will contain
+    roles : dict
+        Dict of claims this token will contain in the form {role_name:[scope_list], ...}
     flowapi_identifier : str, optional
         Optionally provide a string to identify the audience of the token
     compress : bool
@@ -236,7 +236,7 @@ def generate_token(
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims=["run&spatial_aggregate.locations.daily_location.aggregation_unit.admin3"])
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),roles={"read_role":["get_results"]})
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
     Returns
@@ -251,12 +251,14 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=compress_claims(claims) if compress else claims,
-        identity=username,
+        user_claims=compress_claims(roles) if compress else roles,
+        sub=username,
         exp=now + lifetime,
     )
     if flowapi_identifier is not None:
         token_data["aud"] = flowapi_identifier
+    if flowauth_identifier is not None:
+        token_data["iss"] = flowauth_identifier
     return jwt.encode(
         payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
     )

@@ -34,11 +34,13 @@ setup(
         "structlog",
         "quart-jwt-extended[asymmetric_crypto]",
         "asyncpg",
-        "pyyaml >= 5.1",
+        "pyyaml ==5.3.1",
+        "jsonschema ==4.17.3",
         "apispec[yaml]",
         "get-secret-or-env-var",
         "prance[osv]",
-        "werkzeug <= 2.0.3",  # Pinned due to incompatibility with quart-jwt-extended (https://github.com/greenape/quart-jwt-extended/issues/3)"
+        "openapi-schema-validator < 0.3.0",  # Pending https://github.com/Flowminder/FlowKit/issues/6015
+        "werkzeug",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )

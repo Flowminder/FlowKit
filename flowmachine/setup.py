@@ -51,7 +51,7 @@ readme = read("README.md")
 
 # Test requirements
 
-test_requirements = ["pytest", "pytest-cov", "pytest-asyncio", "asynctest"]
+test_requirements = ["pytest", "pytest-cov", "pytest-asyncio"]
 
 setup(
     name="flowmachine",
@@ -69,15 +69,15 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=[
-        "SQLAlchemy<=1.3.23",
+        "SQLAlchemy >= 2.0.0",
         "cachetools",
         "apispec-oneofschema",
-        "marshmallow>=3.0.0",
-        "marshmallow-oneofschema>=2.0.0",
+        "marshmallow>=3.0.0",  # Constrained due to a version conflict in older versions
+        "marshmallow-oneofschema>=2.0.0",  # Constrained due to a version conflict in older versions
         "numpy",
         "networkx",
         "pandas",
-        "pglast",
+        "pglast==6.3",  # Pin pglast because different versions may produce different query IDs
         "python-dateutil",
         "pytz",
         "python-louvain",
@@ -93,15 +93,14 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,
     extras_require={"test": test_requirements},
-    python_require=">=3.7",
+    python_require=">=3.11",
     include_package_data=True,
     zip_safe=False,
     platforms=["MacOS X", "Linux"],
     classifiers=[
         "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Development Status :: 4 - Beta",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.11",
         "Natural Language :: English",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX",

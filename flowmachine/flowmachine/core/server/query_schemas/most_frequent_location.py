@@ -22,6 +22,9 @@ __all__ = ["MostFrequentLocationSchema", "MostFrequentLocationExposed"]
 
 
 class MostFrequentLocationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "most_frequent_location"
+
     def __init__(
         self,
         start_date,
@@ -70,7 +73,7 @@ class MostFrequentLocationSchema(
     AggregationUnitMixin,
     BaseQueryWithSamplingSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["most_frequent_location"]))
-
     __model__ = MostFrequentLocationExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

@@ -8,6 +8,7 @@ import datetime
 
 from marshmallow import fields, Schema, validates_schema, ValidationError, post_load
 from marshmallow.validate import Range, Length, OneOf
+from flowmachine.core.statistic_types import Statistic as ValidStats
 
 
 class Hours(Schema):
@@ -127,7 +128,7 @@ class Statistic(fields.String):
             )
 
         validate = OneOf(
-            ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+            [f"{stat}" for stat in ValidStats]
         )  # see total_network_objects.py
         super().__init__(required=required, validate=validate, **kwargs)
 
@@ -197,3 +198,22 @@ class ISODateTime(fields.DateTime):
     DEFAULT_FORMAT = "iso"
 
     OBJ_TYPE = "datetime"
+
+
+class Direction(fields.String):
+    """
+    A string representing a direction for CDR events (i.e. incoming/outgoing).
+    Allowed values are 'in', 'out' or 'both' (defaults to 'both' if no value is provided).
+    """
+
+    def __init__(self, required=False, validate=None, load_default="both", **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The Direction field provides its own validation and"
+                "thus does not accept the 'validate' argument."
+            )
+
+        validate = OneOf(["in", "out", "both"])
+        super().__init__(
+            required=required, validate=validate, load_default=load_default, **kwargs
+        )

@@ -107,7 +107,6 @@ class SubscriberDegree(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         filters = [self.direction.get_filter_clause()]
 
         if self.exclude_self_calls:

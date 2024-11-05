@@ -191,6 +191,34 @@ def test_count_locatable_location_ids(cdr_type, flowdb_transaction, jinja_env):
 
 
 @pytest.mark.parametrize("cdr_type", ["calls", "sms", "mds", "topups"])
+def test_count_locatable_events(cdr_type, flowdb_transaction, jinja_env):
+    create_sql = f"""CREATE TABLE IF NOT EXISTS events.{cdr_type}_20160101 (LIKE events.{cdr_type});"""
+    insert_sql = f"""INSERT INTO events.{cdr_type}_20160101(datetime, msisdn, location_id) VALUES 
+        ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', '{"B" * 64}'), 
+        ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', '{"B" * 64}'), 
+        ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', '{"C" * 64}'), 
+        ('2016-01-01 00:01:00'::timestamptz, '{"A" * 64}', '{"D" * 64}')"""
+    cells_sql = f"""
+    INSERT INTO
+        infrastructure.cells (id, version, date_of_first_service, date_of_last_service, geom_point)
+    VALUES
+        ('{"B" * 64}', 0, NULL, NULL, 'POINT(0 0)'),
+        ('{"C" * 64}', 0, NULL, '2016-01-02'::date, NULL),
+        ('{"C" * 64}', 1, '2016-01-02'::date, NULL, 'POINT(0 0)')
+    """
+    flowdb_transaction.execute(create_sql)
+    flowdb_transaction.execute(insert_sql)
+    flowdb_transaction.execute(cells_sql)
+    check_sql = jinja_env.get_template("count_locatable_events.sql").render(
+        cdr_type=cdr_type, final_table=f"events.{cdr_type}_20160101", ds="2016-01-01"
+    )
+
+    check_result, *_ = list(flowdb_transaction.execute(check_sql))[0]
+
+    assert check_result == 2
+
+
+@pytest.mark.parametrize("cdr_type", ["calls", "sms", "mds", "topups"])
 def test_count_msisdns(cdr_type, flowdb_transaction, jinja_env):
     create_sql = f"""CREATE TABLE IF NOT EXISTS events.{cdr_type}_20160101 (LIKE events.{cdr_type});"""
     insert_sql = f"""INSERT INTO events.{cdr_type}_20160101(datetime, msisdn, location_id) VALUES 

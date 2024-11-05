@@ -18,6 +18,6 @@ const ServerList = Lister(
   ServerAdminDetails,
   "Servers",
   getServers,
-  deleteServer
+  deleteServer,
 );
 export default withStyles(styles)(ServerList);

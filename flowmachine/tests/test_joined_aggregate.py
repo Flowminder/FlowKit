@@ -23,7 +23,7 @@ def test_joined_aggregate(get_dataframe):
     )
     joined = mfl.join_aggregate(RadiusOfGyration("2016-01-01", "2016-01-04"))
     assert (
-        pytest.approx(203.12391560786)
+        pytest.approx(198.32613522641248)
         == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].value
     )
 

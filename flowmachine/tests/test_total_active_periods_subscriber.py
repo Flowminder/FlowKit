@@ -23,8 +23,6 @@ def test_certain_results(get_dataframe):
     df = get_dataframe(tap).set_index("subscriber")
     assert df.loc[subscriber_with_2].value == 2
     assert df.loc[subscriber_with_3].value == 3
-    assert df.loc[subscriber_with_2].inactive_periods == 1
-    assert df.loc[subscriber_with_3].inactive_periods == 0
 
 
 def test_multiple_day_periods(get_dataframe):
@@ -43,7 +41,6 @@ def test_multiple_day_periods(get_dataframe):
     # For good measure assert that no subscriber has more than the
     # max number of periods
     assert df.value.max() == 3
-    assert df.inactive_periods.max() == 0
 
 
 def test_raises_value_error_bad_unit():
@@ -70,5 +67,3 @@ def test_non_standard_units(get_dataframe):
 
     assert df.loc["VkzMxYjv7mYn53oK"].value == 3
     assert df.loc["DzpZJ2EaVQo2X5vM"].value == 1
-    assert df.loc["VkzMxYjv7mYn53oK"].inactive_periods == 2
-    assert df.loc["DzpZJ2EaVQo2X5vM"].inactive_periods == 4

@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Union
+from inspect import currentframe
 
 from pendulum import Duration
 
@@ -56,22 +57,11 @@ def get_qa_checks(
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
 
-    # The issue is that the file folder is getting added to the search path
-    # here, this will be this file's parent
-    # but later, it will be the dags folder by the look of it
-    # even worse, airflow is actually setting this to the folder containing the file
-    # of the caller of this function, so we want to use that if called from this file
-    # and otherwise explicitly add the qa checks dir?
-    default_path = (
-        dag.folder
-        if dag.fileloc == str(Path(__file__))
-        else Path(__file__).parent / "qa_checks"
-    )
+    default_path = Path(__file__).parent / "qa_checks"  # Contains the default checks
     dag.template_searchpath = [
         *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
-        default_path,  # Contains the default checks
-        settings.DAGS_FOLDER,
+        default_path,
     ]
     jinja_env = dag.get_template_env()
     templates = [
@@ -87,9 +77,11 @@ def get_qa_checks(
     template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
     return [
         QACheckOperator(
-            task_id=tmpl.stem
-            if tmpl.parent.stem == "qa_checks"
-            else f"{tmpl.stem}.{tmpl.parent.stem}",
+            task_id=(
+                tmpl.stem
+                if tmpl.parent.stem == "qa_checks"
+                else f"{tmpl.stem}.{tmpl.parent.stem}"
+            ),
             sql=str(tmpl),
             dag=dag,
         )
@@ -265,6 +257,9 @@ def create_dag(
     )
     from flowetl.operators.extract_from_view_operator import ExtractFromViewOperator
     from flowetl.operators.update_etl_table_operator import UpdateETLTableOperator
+    from flowetl.operators.update_location_ids_table_operator import (
+        UpdateLocationIDsTableOperator,
+    )
     from flowetl.sensors.data_present_sensor import DataPresentSensor
     from flowetl.sensors.file_flux_sensor import FileFluxSensor
     from flowetl.sensors.table_flux_sensor import TableFluxSensor
@@ -294,6 +289,12 @@ def create_dag(
         user_defined_macros=macros,
         params=dict(cdr_type=cdr_type),
     ) as dag:
+        # Airflow assumes that the DAG constructor is called directly in the DAG definition file.
+        # In this case the DAG file is the one calling this function, so we need to set dag.fileloc accordingly.
+        # This is a slightly unpleasant hack, but it's the same hack that Airflow uses in DAG.__init__
+        back = currentframe().f_back
+        dag.fileloc = back.f_code.co_filename if back else ""
+
         if staging_view_sql is not None and source_table is not None:
             create_staging_view = CreateStagingViewOperator(
                 task_id="create_staging_view", sql=staging_view_sql
@@ -367,6 +368,9 @@ def create_dag(
             task_id="analyze_parent", target="{{ parent_table }}", pool="postgres_etl"
         )
         update_records = UpdateETLTableOperator(task_id="update_records")
+        update_location_ids_table = UpdateLocationIDsTableOperator(
+            task_id="update_location_ids_table"
+        )
 
         from_stage = extract
 
@@ -389,6 +393,7 @@ def create_dag(
         )
         attach >> [
             update_records,
+            update_location_ids_table,
             *get_qa_checks(additional_qa_check_paths=additional_qa_check_paths),
         ]
     globals()[dag_id] = dag

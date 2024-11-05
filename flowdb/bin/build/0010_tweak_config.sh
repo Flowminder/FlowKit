@@ -29,7 +29,7 @@ set -e
 # to have it off from the start for the benefit of the testdata containers
 # for increased performance during startup.
 python3 /docker-entrypoint-initdb.d/configurate.py
-echo "include 'postgresql.configurator.conf'" >> /var/lib/postgresql/data/postgresql.conf
+echo "include '/flowdb_autoconf/$AUTO_CONFIG_FILE_NAME'" >> /var/lib/postgresql/data/postgresql.conf
 pg_ctl -D "$PGDATA" \
 			-o "-c listen_addresses=''" \
 			-w restart

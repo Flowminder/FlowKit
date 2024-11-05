@@ -168,7 +168,6 @@ def test_can_be_stored(get_dataframe):
 
 
 def test_subset_subset(get_dataframe):
-
     """
     This test applies two non-numeric subsets one
     after the other .
@@ -217,7 +216,6 @@ def test_subset_subsetnumeric(get_dataframe):
 
 
 def test_subsetnumeric_subsetnumeric(get_dataframe):
-
     """
     This test applies two numeric subsets one
     after the other

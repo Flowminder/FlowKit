@@ -33,7 +33,6 @@ class UniqueValuesFromQueries(Query):
         query_list: Union[Query, List[Query]],
         column_names: Union[str, List[str]],
     ):
-
         if isinstance(query_list, Query):
             self.query_list = [query_list]
         else:
@@ -44,7 +43,6 @@ class UniqueValuesFromQueries(Query):
             self._column_names = column_names
 
         for query in self.query_list:
-
             if any(name not in query.column_names for name in self._column_names):
                 raise MissingColumnsError(query, self._column_names)
 
@@ -55,7 +53,6 @@ class UniqueValuesFromQueries(Query):
         return self._column_names
 
     def _make_query(self):
-
         column_str = ", ".join(self.column_names)
 
         union_stack = "\nUNION ALL\n".join(

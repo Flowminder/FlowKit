@@ -4,9 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
-black = {extras = ["jupyter"],version = "==22.1.0"} # required by papermill
-pytest = "*"
+black = {extras = ["jupyter"],version = "==24.3.0"} # required by papermill
+pytest = "<7.3.0" # https://github.com/taverntesting/tavern/issues/859
 pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowapi = {editable = true,path = "./../flowapi"}
@@ -20,7 +19,7 @@ flowclient = {editable = true, path = "./../flowclient"}
 tavern = {extras = ["pytest"],version = "*"}
 
 [requires]
-python_version = "3.8.5"
+python_version = "3.11"
 
 [scripts]
 run-tests = "bash run_tests.sh"

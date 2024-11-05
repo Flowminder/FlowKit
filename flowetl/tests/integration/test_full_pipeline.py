@@ -23,6 +23,7 @@ def test_file_pipeline(
     6. Table is indexed
     7. Table is clustered
     8. Table is date constrained
+    9. All location IDs today are in events.location_ids table
 
     """
     exit_code, output = run_dag(dag_id="filesystem_dag", exec_date="2016-03-01")
@@ -45,21 +46,6 @@ def test_file_pipeline(
     ).fetchall()
     assert date_present[0][0] > 0
 
-    # Check table is inherited
-
-    exists_query = f"""SELECT EXISTS(SELECT relname 
-        FROM 
-            pg_inherits i 
-        JOIN 
-            pg_class c 
-        ON 
-            c.oid = inhrelid 
-        WHERE 
-            inhparent = 'events.calls'::regclass
-        AND
-            relname = 'calls_20160301')"""
-    assert flowdb_transaction.execute(exists_query).fetchall()[0][0]
-
     # Check table is clustered on the right field
 
     clustered_query = f"""SELECT EXISTS(
@@ -80,36 +66,63 @@ def test_file_pipeline(
     """
     assert flowdb_transaction.execute(clustered_query).fetchall()[0][0]
 
-    # Check table has date constraints
-
-    constraint_query = f"""SELECT 
-        pg_get_constraintdef(c.oid)
-    FROM   
-        pg_constraint c
-    JOIN   
-        pg_namespace n 
-    ON 
-        n.oid = c.connamespace
-    WHERE  
-        contype ='c' 
-    AND 
-        conrelid::regclass = 'events.calls_20160301'::regclass
-    """
-    constraint_string = f"CHECK (((datetime >= '2016-03-01 00:00:00+00'::timestamp with time zone) AND (datetime < '2016-03-02 00:00:00+00'::timestamp with time zone)))"
-    assert (
-        flowdb_transaction.execute(constraint_query).fetchall()[0][0].replace("\n", "")
-        == constraint_string
-    )
-
     # Check ETL meta
 
     etl_meta_query = "SELECT EXISTS(SELECT * FROM etl.etl_records WHERE cdr_date='2016-03-01' AND state='ingested' and cdr_type='calls');"
     assert flowdb_transaction.execute(etl_meta_query).fetchall()[0][0]
 
+    # Check all location IDs today are in events.location_ids table
+
+    location_ids_query = """
+    SELECT NOT EXISTS (
+        SELECT location_id
+        FROM events.calls_20160301
+        LEFT JOIN (
+            SELECT location_id
+            FROM events.location_ids
+            WHERE cdr_type = 'calls'
+            AND '2016-03-01'::date BETWEEN first_active_date AND last_active_date
+        ) active_location_ids
+        USING (location_id)
+        WHERE active_location_ids.location_id IS NULL
+    )
+    """
+    assert flowdb_transaction.execute(location_ids_query).fetchall()[0][0]
+
     # Check qa checks
 
-    qa_check_query = "SELECT count(*) from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
-    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0] == 23
+    qa_check_query = "SELECT type_of_query_or_check from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
+    assert sorted(
+        row[0] for row in flowdb_transaction.execute(qa_check_query).fetchall()
+    ) == sorted(
+        [
+            "count_added_rows",
+            "count_duplicated",
+            "count_duplicates",
+            "count_location_ids",
+            "count_msisdns",
+            "dummy_qa_check",
+            "earliest_timestamp",
+            "latest_timestamp",
+            "count_imeis",
+            "count_imsis",
+            "count_locatable_events",
+            "count_locatable_location_ids",
+            "count_null_imeis",
+            "count_null_imsis",
+            "count_null_location_ids",
+            "max_msisdns_per_imei",
+            "max_msisdns_per_imsi",
+            "count_added_rows_outgoing.calls",
+            "count_null_counterparts.calls",
+            "count_null_durations.calls",
+            "count_onnet_msisdns_incoming.calls",
+            "count_onnet_msisdns_outgoing.calls",
+            "count_onnet_msisdns.calls",
+            "max_duration.calls",
+            "median_duration.calls",
+        ]
+    )
 
 
 def test_file_pipeline_bad_file(
@@ -166,6 +179,9 @@ def test_wait_when_in_flux(growing_test_data_table, run_task):
 
     return_code, result = run_task(
         dag_id="remote_table_dag", task_id="check_not_in_flux", exec_date="2016-06-15"
+    )
+    print(
+        f"Dag: remote_table_dag, task: check_not_in_flux, exec date: 2016-06-15.\n\n{result}\n\n"
     )
     assert "Success criteria met. Exiting." not in str(result)
     assert return_code == 0

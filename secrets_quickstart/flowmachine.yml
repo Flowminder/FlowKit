@@ -6,6 +6,8 @@ version: '3.7'
 secrets:
   REDIS_PASSWORD: # Redis password
     external: true
+  FLOWMACHINE_FLOWDB_USER: # Database user for FlowMachine
+    external: true
 networks:
   flowdb:
   redis:
@@ -29,7 +31,6 @@ services:
             DB_CONNECTION_POOL_SIZE: ${DB_CONNECTION_POOL_SIZE:-5}
             DB_CONNECTION_POOL_OVERFLOW: ${DB_CONNECTION_POOL_OVERFLOW:-1}
         secrets:
-          - FLOWMACHINE_FLOWDB_USER
           - FLOWMACHINE_FLOWDB_PASSWORD
           - REDIS_PASSWORD
         networks:

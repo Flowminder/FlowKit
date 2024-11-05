@@ -22,7 +22,6 @@ class RedactedConsecutiveTripsODMatrix(RedactedLocationMetric, FlowLike, Query):
     """
 
     def __init__(self, *, consecutive_trips_od_matrix: ConsecutiveTripsODMatrix):
-
         self.redaction_target = consecutive_trips_od_matrix
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = consecutive_trips_od_matrix.spatial_unit

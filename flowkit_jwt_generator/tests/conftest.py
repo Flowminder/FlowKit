@@ -13,14 +13,17 @@ pytest_plugins = ["pytester"]
 def dummy_flowapi(monkeypatch):
     """
     Fixture which monkeypatches requests.get to return a dummy flowapi schema and returns
-    the expected decoded user claims dict.
+    the universal role for that dummy flowapi schema
     """
     get_mock = Mock()
     get_mock.return_value.json.return_value = dict(
         components=dict(
             securitySchemes=dict(
                 token={
-                    "x-security-scopes": ["get_result&DUMMY_QUERY_KIND.admin0"],
+                    "x-security-scopes": [
+                        "dummy_scope",
+                        "dummy_admin:dummy_query:dummy_query",
+                    ],
                     "x-audience": "DUMMY",
                 }
             )
@@ -28,4 +31,9 @@ def dummy_flowapi(monkeypatch):
     )
 
     monkeypatch.setattr("requests.get", get_mock)
-    return dict(claims=["get_result&DUMMY_QUERY_KIND.admin0"], aud="DUMMY")
+    return dict(
+        roles=dict(
+            universal_role=["dummy_scope", "dummy_admin:dummy_query:dummy_query"]
+        ),
+        aud="DUMMY",
+    )

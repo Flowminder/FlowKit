@@ -20,6 +20,9 @@ from flowmachine.features.subscriber.filtered_reference_location import (
 
 
 class CoalescedLocationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "coalesced_location"
+
     def __init__(
         self,
         preferred_location,
@@ -53,19 +56,23 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
     query as the fallback location
     """
 
-    query_kind = fields.String(validate=OneOf(["coalesced_location"]))
+    __model__ = CoalescedLocationExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     preferred_location = fields.Nested(MajorityLocationSchema, required=True)
     fallback_location = fields.Nested(MajorityLocationSchema, required=True)
     subscriber_location_weights = fields.Nested(LocationVisitsSchema, required=True)
     weight_threshold = fields.Integer(required=True)
 
-    @validates_schema
+    @validates_schema(skip_on_field_errors=True)
     def validate_aggregation_units(self, data, **kwargs):
         """
         Validate that preferred_location, fallback_location and
         subscriber_location_weights all have the same aggregation unit
         """
         errors = {}
+
         if (
             data["fallback_location"].aggregation_unit
             != data["preferred_location"].aggregation_unit
@@ -73,6 +80,7 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
             errors["fallback_location"] = [
                 "fallback_location must have the same aggregation_unit as preferred_location"
             ]
+
         if (
             data["subscriber_location_weights"].aggregation_unit
             != data["fallback_location"].aggregation_unit
@@ -80,7 +88,6 @@ class CoalescedLocationSchema(BaseQueryWithSamplingSchema):
             errors["subscriber_location_weights"] = [
                 "subscriber_location_weights must have the same aggregation_unit as fallback_location"
             ]
+
         if errors:
             raise ValidationError(errors)
-
-    __model__ = CoalescedLocationExposed

@@ -31,9 +31,7 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
         )
 
     metadata = MetaData()
-    return Table(
-        table_name, metadata, schema=schema, autoload=True, autoload_with=engine
-    )
+    return Table(table_name, metadata, schema=schema, autoload_with=engine)
 
 
 def get_sql_string(sqlalchemy_query):
@@ -90,7 +88,7 @@ def get_query_result_as_dataframe(query, *, engine):
     assert isinstance(query, Selectable)
 
     with engine.connect() as con:
-        result = con.execute(query)
+        result = con.exec_driver_sql(query)
 
     columns = [c.name for c in query.columns]
     df = pd.DataFrame(result.fetchall(), columns=columns)

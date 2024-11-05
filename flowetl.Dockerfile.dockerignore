@@ -15,6 +15,5 @@
 #
 !flowetl/flowetl
 !flowetl/entrypoint.sh
-!flowetl/Pipfile
-!flowetl/Pipfile.lock
+!flowetl/requirements.txt
 !flowetl/init.sh

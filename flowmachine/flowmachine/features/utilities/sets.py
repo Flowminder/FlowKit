@@ -124,7 +124,6 @@ SubsetDates = EventTableSubset  # Backwards compatibility for unpicking queries 
 
 
 class SubscriberLocationSubset(Query):
-
     """
     Query to get a subset of users who have made min_calls
     number of calls within a given region during
@@ -180,7 +179,6 @@ class SubscriberLocationSubset(Query):
         hours: Optional[Tuple[int, int]] = None,
         subscriber_subset=None,
     ):
-
         from ...features import PerLocationSubscriberCallDurations
 
         self.start = standardise_date(start)
@@ -215,7 +213,6 @@ class SubscriberLocationSubset(Query):
         return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
-
         loc_cols = ", ".join(self.spatial_unit.location_id_columns)
 
         sql = f"""

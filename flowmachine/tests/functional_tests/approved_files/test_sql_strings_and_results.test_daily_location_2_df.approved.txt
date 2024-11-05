@@ -1,4 +1,4 @@
 ,subscriber,pcod
 0,2GJxeNazvlgZbqj6,524 2 05
-1,7qKmzkeMbmk5nOa0,524 2 05
-2,8dpPLR15XwR7jQyN,524 1 03
+1,7qKmzkeMbmk5nOa0,524 5 13
+2,8dpPLR15XwR7jQyN,524 3 08

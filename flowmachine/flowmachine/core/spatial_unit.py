@@ -30,9 +30,9 @@ def _substitute_lat_lon(location_dict):
     if "lon" in location_copy and "lat" in location_copy:
         lon = location_copy.pop("lon")
         lat = location_copy.pop("lat")
-        location_copy[
-            "ST_SetSRID(ST_Point(lon, lat), 4326)"
-        ] = f"ST_SetSRID(ST_Point({lon}, {lat}), 4326)"
+        location_copy["ST_SetSRID(ST_Point(lon, lat), 4326)"] = (
+            f"ST_SetSRID(ST_Point({lon}, {lat}), 4326)"
+        )
     return location_copy
 
 
@@ -367,16 +367,15 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
             raise ValueError("No columns specified for join.")
         if hasattr(self, "mapping_table"):
             return f"""
-                    LEFT JOIN
+                    INNER JOIN
                         ({self.mapping_table.get_query()}) AS _ USING ({self._loc_on})
                     LEFT JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
                     USING ({self._geom_on})
                     """
         else:
-
             return f"""
-                    LEFT JOIN
+                    INNER JOIN
                         ({self.geom_table.get_query()}) AS {geom_table_alias}
                     ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
                     """
@@ -513,9 +512,11 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             mapping_table=mapping_table,
             geom_column=geom_column,
             geom_table_join_on=geom_table_join_on,
-            location_table_join_on="id"
-            if mapping_table is not None and location_table_join_on is None
-            else location_table_join_on,
+            location_table_join_on=(
+                "id"
+                if mapping_table is not None and location_table_join_on is None
+                else location_table_join_on
+            ),
         )
 
     def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
@@ -768,7 +769,6 @@ class AdminSpatialUnit(PolygonSpatialUnit):
         region_id_column_name: Optional[str] = None,
         mapping_table: Union[str, Query] = None,
     ) -> None:
-
         # If there is no region_id_column_name passed then we can use the default,
         # which is of the form admin3pcod. If the user has asked for the standard
         # region_id_column_name then we will alias this column as 'pcod', otherwise

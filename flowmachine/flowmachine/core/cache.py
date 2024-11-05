@@ -9,9 +9,11 @@ Functions which deal with inspecting and managing the query cache.
 """
 import asyncio
 import pickle
+import sqlalchemy.engine
 from contextvars import copy_context
 from concurrent.futures import Executor, TimeoutError
 from functools import partial
+from sqlalchemy.exc import ResourceClosedError
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
@@ -88,6 +90,42 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
         )
 
 
+def run_ops_list_and_return_execution_time(
+    query_ddl_ops: List[str], connection: Engine
+) -> float:
+    """
+    Run a list of sql operations which may begin with explain analyze
+    and return the overall execution time of the first op if available.
+
+    Parameters
+    ----------
+    query_ddl_ops : list of str
+        List of SQL commands to execute
+    connection : Engine
+        SQLAlchemy engine to execute with
+
+    Returns
+    -------
+    float
+        The execution time of the query if available or 0
+    """
+    plan_time = 0
+    for ddl_op in query_ddl_ops:
+        try:
+            ddl_op_result = connection.exec_driver_sql(ddl_op)
+        except Exception as e:
+            logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
+            raise e
+        try:
+            plan_time += ddl_op_result.fetchall()[0][0][0]["Execution Time"]
+        except ResourceClosedError:
+            pass  # Nothing to do here
+        except (IndexError, KeyError):
+            pass  # Not an explain result
+    logger.debug("Executed queries.")
+    return plan_time
+
+
 def write_query_to_cache(
     *,
     name: str,
@@ -95,9 +133,9 @@ def write_query_to_cache(
     query: "Query",
     connection: "Connection",
     ddl_ops_func: Callable[[str, str], List[str]],
-    write_func: Callable[[List[str], Engine], float],
     schema: Optional[str] = "cache",
     sleep_duration: Optional[int] = 1,
+    analyze=True,
 ) -> "Query":
     """
     Write a Query object into a postgres table and update the cache metadata about it.
@@ -118,14 +156,12 @@ def write_query_to_cache(
     ddl_ops_func : Callable[[str, str], List[str]]
         Function that will be called to generate a list of SQL statements to run. Should accept name and
         schema as arguments and return a list of SQL strings.
-    write_func : Callable[[List[str], Engine], float]
-        Function which will be called with the result of ddl_ops_func to perform the actual write.
-        Should take a list of SQL strings and an SQLAlchemy Engine as arguments and return the runtime
-        of the query.
     schema : str, default "cache"
         Name of the schema to write to
     sleep_duration : int, default 1
         Number of seconds to wait between polls when monitoring a query being written from elsewhere
+    analyze : bool, default True
+        Set to False to _disable_ running analyze on the newly created table to generate statistics
 
     Returns
     -------
@@ -149,33 +185,50 @@ def write_query_to_cache(
     """
     logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
     q_state_machine = QueryStateMachine(redis, query.query_id, connection.conn_id)
-    current_state, this_thread_is_owner = q_state_machine.execute()
-    if this_thread_is_owner:
-        logger.debug(f"In charge of executing '{query.query_id}'.")
-        try:
-            query_ddl_ops = ddl_ops_func(name, schema)
-        except Exception as exc:
-            q_state_machine.raise_error()
-            logger.error(f"Error generating SQL. Error was {exc}")
-            raise exc
-        logger.debug("Made SQL.")
-        con = connection.engine
-        with con.begin():
+    this_thread_is_owner = False
+    try:
+        current_state, this_thread_is_owner = q_state_machine.execute()
+        if this_thread_is_owner:
+            logger.debug(f"In charge of executing '{query.query_id}'.")
             try:
-                plan_time = write_func(query_ddl_ops, con)
-                logger.debug("Executed queries.")
+                query_ddl_ops = ddl_ops_func(name, schema)
             except Exception as exc:
-                q_state_machine.raise_error()
-                logger.error(f"Error executing SQL. Error was {exc}")
+                logger.error(f"Error generating SQL. Error was {exc}")
                 raise exc
-            if schema == "cache":
+            logger.debug("Made SQL.")
+            con = connection.engine
+            with con.begin() as trans:
                 try:
-                    write_cache_metadata(connection, query, compute_time=plan_time)
+                    plan_time = run_ops_list_and_return_execution_time(
+                        query_ddl_ops, trans
+                    )
+                    logger.debug("Executed queries.")
                 except Exception as exc:
-                    q_state_machine.raise_error()
-                    logger.error(f"Error writing cache metadata. Error was {exc}")
+                    logger.error(f"Error executing SQL. Error was {exc}")
                     raise exc
-        q_state_machine.finish()
+                if analyze:
+                    logger.debug(f"Running analyze for {schema}.{name}.")
+                    trans.exec_driver_sql(f"ANALYZE {schema}.{name};")
+                    logger.debug(f"Ran analyze for {schema}.{name}.")
+                if schema == "cache":
+                    try:
+                        write_cache_metadata(
+                            trans,
+                            query,
+                            compute_time=plan_time,
+                            executed_sql=";\n".join(query_ddl_ops),
+                        )
+                    except Exception as exc:
+                        logger.error(f"Error writing cache metadata. Error was {exc}")
+                        raise exc
+            q_state_machine.finish()
+    except Exception as exc:
+        if this_thread_is_owner:
+            q_state_machine.raise_error()
+        raise exc
+    finally:
+        if this_thread_is_owner and not q_state_machine.is_finished_executing:
+            q_state_machine.cancel()
 
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
     if q_state_machine.is_completed:
@@ -194,7 +247,10 @@ def write_query_to_cache(
 
 
 def write_cache_metadata(
-    connection: "Connection", query: "Query", compute_time: Optional[float] = None
+    connection: sqlalchemy.engine.Transaction,
+    query: "Query",
+    compute_time: Optional[float] = None,
+    executed_sql: str = "",
 ):
     """
     Helper function for store, updates flowmachine metadata table to
@@ -203,25 +259,23 @@ def write_cache_metadata(
 
     Parameters
     ----------
-    connection : Connection
-        Flowmachine connection object to use
+    connection : sqlalchemy.engine.Transaction
+        sqlalchemy Transaction to use
     query : Query
         Query object to write metadata about
     compute_time : float, default None
         Optionally provide the compute time for the query
+    executed_sql : str, default ""
+        Optionally provide the sql executed when this cache record was created.
 
     """
-
-    con = connection.engine
 
     self_storage = b""
 
     try:
-        in_cache = bool(
-            connection.fetch(
-                f"SELECT * FROM cache.cached WHERE query_id='{query.query_id}'"
-            )
-        )
+        in_cache = connection.exec_driver_sql(
+            f"SELECT EXISTS (SELECT 1 FROM cache.cached WHERE query_id='{query.query_id}' LIMIT 1)"
+        ).fetchall()[0][0]
         if not in_cache:
             try:
                 self_storage = pickle.dumps(query)
@@ -229,36 +283,37 @@ def write_cache_metadata(
                 logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
                 pass
 
-        with con.begin():
-            cache_record_insert = """
-            INSERT INTO cache.cached 
-            (query_id, version, query, created, access_count, last_accessed, compute_time, 
-            cache_score_multiplier, class, schema, tablename, obj) 
-            VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
-             ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
-            con.execute(
-                cache_record_insert,
-                (
-                    query.query_id,
-                    __version__,
-                    query._make_query(),
-                    compute_time,
-                    query.__class__.__name__,
-                    *query.fully_qualified_table_name.split("."),
-                    psycopg2.Binary(self_storage),
-                ),
-            )
-            con.execute("SELECT touch_cache(%s);", query.query_id)
+        cache_record_insert = """
+        INSERT INTO cache.cached 
+        (query_id, version, query, created, access_count, last_accessed, compute_time, 
+        cache_score_multiplier, class, schema, tablename, obj) 
+        VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+         ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
+        connection.exec_driver_sql(
+            cache_record_insert,
+            (
+                query.query_id,
+                __version__,
+                executed_sql,
+                compute_time,
+                query.__class__.__name__,
+                *query.fully_qualified_table_name.split("."),
+                psycopg2.Binary(self_storage),
+            ),
+        )
+        connection.exec_driver_sql(
+            "SELECT touch_cache(%(ident)s);", dict(ident=query.query_id)
+        )
 
-            if not in_cache:
-                for dep in query._get_stored_dependencies(exclude_self=True):
-                    con.execute(
-                        "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                        (query.query_id, dep.query_id),
-                    )
-                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
-            else:
-                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
+        if not in_cache:
+            for dep in query._get_stored_dependencies(exclude_self=True):
+                connection.exec_driver_sql(
+                    "INSERT INTO cache.dependencies values (%(query_id)s, %(dep_id)s) ON CONFLICT DO NOTHING",
+                    dict(query_id=query.query_id, dep_id=dep.query_id),
+                )
+            logger.debug(f"{query.fully_qualified_table_name} added to cache.")
+        else:
+            logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 
@@ -279,7 +334,12 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         The new cache score
     """
     try:
-        return float(connection.fetch(f"SELECT touch_cache('{query_id}')")[0][0])
+        with connection.engine.begin() as trans:
+            return float(
+                trans.exec_driver_sql(f"SELECT touch_cache('{query_id}')").fetchall()[
+                    0
+                ][0]
+            )
     except (IndexError, psycopg2.InternalError):
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
@@ -313,20 +373,20 @@ def reset_cache(
     # will also point to that table.
 
     with connection.engine.begin() as trans:
-        qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
-        tables = trans.execute(qry).fetchall()
+        qry = "SELECT tablename FROM cache.cached WHERE schema='cache'"
+        tables = trans.exec_driver_sql(qry).fetchall()
 
     with connection.engine.begin() as trans:
-        trans.execute("SELECT setval('cache.cache_touches', 1)")
+        trans.exec_driver_sql("SELECT setval('cache.cache_touches', 1)")
     for table in tables:
         with connection.engine.begin() as trans:
-            trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
+            trans.exec_driver_sql(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
     if protect_table_objects:
         with connection.engine.begin() as trans:
-            trans.execute(f"DELETE FROM cache.cached WHERE schema='cache'")
+            trans.exec_driver_sql(f"DELETE FROM cache.cached WHERE schema='cache'")
     else:
         with connection.engine.begin() as trans:
-            trans.execute("TRUNCATE cache.cached CASCADE")
+            trans.exec_driver_sql("TRUNCATE cache.cached CASCADE")
     resync_redis_with_cache(connection=connection, redis=redis)
 
 
@@ -691,7 +751,7 @@ def set_cache_half_life(connection: "Connection", cache_half_life: float) -> Non
 
     sql = f"UPDATE cache.cache_config SET value='{float(cache_half_life)}' WHERE key='half_life'"
     with connection.engine.begin() as trans:
-        trans.execute(sql)
+        trans.exec_driver_sql(sql)
 
 
 def get_cache_protected_period(connection: "Connection") -> float:
@@ -725,7 +785,7 @@ def set_cache_protected_period(connection: "Connection", protected_period: int) 
 
     sql = f"UPDATE cache.cache_config SET value='{int(protected_period)}' WHERE key='protected_period'"
     with connection.engine.begin() as trans:
-        trans.execute(sql)
+        trans.exec_driver_sql(sql)
 
 
 def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> None:
@@ -741,7 +801,7 @@ def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> No
     """
     sql = f"UPDATE cache.cache_config SET value='{int(cache_size_limit)}' WHERE key='cache_size'"
     with connection.engine.begin() as trans:
-        trans.execute(sql)
+        trans.exec_driver_sql(sql)
 
 
 def get_compute_time(connection: "Connection", query_id: str) -> float:

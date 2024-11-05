@@ -39,7 +39,7 @@ def test_unknown_action_returns_error(zmq_host, zmq_port):
         "msg": "Invalid action request.",
         "payload": {
             "action": [
-                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geo_sql_for_query_result, get_geography, get_available_dates."
+                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geo_sql_for_query_result, get_geography, get_available_dates, get_aggregation_unit, list_qa_checks, get_qa_checks."
             ]
         },
     }
@@ -59,6 +59,8 @@ def test_get_available_queries(zmq_host, zmq_port):
             "available_queries": [
                 "dummy_query",
                 "flows",
+                "inflows",
+                "outflows",
                 "meaningful_locations_aggregate",
                 "meaningful_locations_between_label_od_matrix",
                 "meaningful_locations_between_dates_od_matrix",
@@ -80,6 +82,8 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "trips_od_matrix",
                 "labelled_spatial_aggregate",
                 "labelled_flows",
+                "calendar_activity",
+                "localised_calendar_activity",
             ]
         },
     }
@@ -246,3 +250,36 @@ def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
     # occur when we reset the cache before the next test
     # (see https://github.com/Flowminder/FlowKit/issues/1245).
     poll_until_done(zmq_port, expected_query_id)
+
+
+def test_get_aggregation_unit(zmq_host, zmq_port):
+    """
+    'get_aggregation_unit' action returns correct aggregation unit
+    """
+    msg = {
+        "action": "get_aggregation_unit",
+        "params": {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "method": "last",
+                        "aggregation_unit": "admin3",
+                    }
+                ],
+            },
+        },
+        "request_id": "DUMMY_ID",
+    }
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
+    expected_reply = {
+        "status": "success",
+        "msg": "",
+        "payload": {
+            "aggregation_unit": "admin3",
+        },
+    }
+    assert expected_reply == reply

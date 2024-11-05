@@ -113,7 +113,8 @@ class MostFrequentLocation(BaseLocation, Query):
         SELECT 
             subscriber_locs.subscriber, 
             {relevant_columns}, 
-            count(*) AS total
+            count(*) AS total,
+            max(time) as dt
         FROM ({subscriber_query}) AS subscriber_locs
         GROUP BY subscriber_locs.subscriber, {relevant_columns}
         """
@@ -125,7 +126,7 @@ class MostFrequentLocation(BaseLocation, Query):
         FROM
              (SELECT times_visited.subscriber, {relevant_columns},
              row_number() OVER (PARTITION BY times_visited.subscriber
-              ORDER BY total DESC) AS rank
+              ORDER BY total DESC, dt DESC) AS rank
              FROM ({times_visited}) AS times_visited) AS ranked
         WHERE rank = 1
         """

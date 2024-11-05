@@ -45,5 +45,4 @@ class SubscriberFeature(Query):
         return JoinedSpatialAggregate(metric=self, locations=locations, method=method)
 
     def __getitem__(self, item):
-
         return self.subset(col="subscriber", subset=item)

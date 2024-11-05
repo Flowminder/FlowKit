@@ -46,7 +46,6 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
     def __init__(
         self, locations: Query, labels: Query, label_columns: List[str] = ("value",)
     ):
-
         for label_column in label_columns:
             if label_column not in labels.column_names:
                 raise ValueError(f"{label_column} not a column of {labels}")
@@ -95,7 +94,6 @@ class LabelledSpatialAggregate(GeoDataMixin, Query):
         return [f"{label_col}_label" for label_col in self.label_columns]
 
     def _make_query(self):
-
         aggregate_cols = ",".join(
             f"agg.{agg_col}" for agg_col in self.spatial_unit.location_id_columns
         )

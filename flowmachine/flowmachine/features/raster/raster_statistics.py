@@ -63,14 +63,11 @@ class RasterStatistics(Query):
         grouping_element=None,
         statistic="sum",
     ):
-
         if isinstance(band, int):
             band = [band]
 
         if statistic not in ["sum"]:
-            raise NotImplementedError(
-                "The statistic %s is not implemented." % statistic
-            )
+            raise NotImplementedError(f"The statistic {statistic} is not implemented.")
 
         if vector is not None and grouping_element is None:
             raise ValueError("Provide `grouping_element` alongside `vector`.")

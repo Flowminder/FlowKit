@@ -3,8 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+from typing import Union
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from ...core.statistic_types import Statistic
+
 valid_characteristics = {
     "width",
     "height",
@@ -14,9 +16,7 @@ valid_characteristics = {
     "display_height",
 }
 
-from ...core import Table
 from .metaclasses import SubscriberFeature
-from .subscriber_tacs import SubscriberHandsets
 
 
 class HandsetStats(SubscriberFeature):
@@ -44,7 +44,7 @@ class HandsetStats(SubscriberFeature):
     ----------
     characteristic: {"width", "height", "depth", "weight", "display_width", "display_height"}
         Numeric handset characteristics present in the TAC table.
-    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
+    statistic : Statistic, default Statistic.SUM
         Defaults to sum, aggregation statistic over the durations.
     subscriber_handsets: flowmachine.features.subscriber_tacs.SubscriberHandsets
         An instance of SubscriberHandsets listing the handsets associated with
@@ -66,14 +66,17 @@ class HandsetStats(SubscriberFeature):
                      ...        ...
     """
 
-    def __init__(self, characteristic, statistic="avg", *, subscriber_handsets):
+    def __init__(
+        self,
+        characteristic,
+        statistic: Union[Statistic, str] = Statistic.SUM,
+        *,
+        subscriber_handsets,
+    ):
         self.characteristic = characteristic.lower()
-        self.statistic = statistic.lower()
-
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                f"{self.statistic} is not a valid statistic. Use one of {valid_stats}"
-            )
+        self.statistic = Statistic(statistic.lower())
+        if self.statistic == "mode":
+            raise ValueError("HandsetStats does not support weighted mode.")
 
         if self.characteristic not in valid_characteristics:
             raise ValueError(
@@ -88,7 +91,6 @@ class HandsetStats(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         if self.statistic in {"count", "max", "min"}:
             sql = f"""
             SELECT subscriber, {self.statistic}({self.characteristic}) AS value
@@ -149,6 +151,7 @@ class HandsetStats(SubscriberFeature):
         WHERE cume_dist = 1
         """
 
+        # Weighted sum, mean, standard deviation and variance
         if self.statistic in {"sum", "avg", "stddev", "variance"}:
             sql = f"""
             SELECT subscriber, {statistic_clause} AS value
@@ -157,20 +160,23 @@ class HandsetStats(SubscriberFeature):
             """
             return sql
 
-        sql = f"""
-        WITH W AS ({weight_extraction_query})
-        SELECT DISTINCT ON (subscriber) A.subscriber, A.value
-        FROM (
-            SELECT
-                subscriber,
-                value,
-                weight,
-                SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
-            FROM W
-        ) A
-        JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
-        ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
-        ORDER BY A.subscriber, A.weight
-        """
-
-        return sql
+        # Weighted median
+        if self.statistic == Statistic.MEDIAN:
+            return f"""
+            WITH W AS ({weight_extraction_query})
+            SELECT DISTINCT ON (subscriber) A.subscriber, A.value
+            FROM (
+                SELECT
+                    subscriber,
+                    value,
+                    weight,
+                    SUM(weight) OVER (PARTITION BY subscriber ORDER BY weight) AS cum_sum
+                FROM W
+            ) A
+            JOIN ( SELECT subscriber, SUM(weight) AS total_weight FROM W GROUP BY subscriber) B
+            ON A.subscriber = B.subscriber AND A.cum_sum >= (B.total_weight / 2)
+            ORDER BY A.subscriber, A.weight
+            """
+        raise NotImplementedError(
+            f"{self.statistic} is not implemented for HandsetStats"
+        )

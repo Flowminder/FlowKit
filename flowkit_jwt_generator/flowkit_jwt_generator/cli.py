@@ -48,6 +48,8 @@ def print_token(username, private_key, lifetime, flowapi_url):
             username=username,
             private_key=load_private_key(private_key),
             lifetime=datetime.timedelta(days=lifetime),
-            claims=get_all_claims_from_flowapi(flowapi_url=flowapi_url),
+            roles=dict(
+                universal_role=get_all_claims_from_flowapi(flowapi_url=flowapi_url)
+            ),
         )
     )

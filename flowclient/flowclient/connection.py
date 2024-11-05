@@ -86,9 +86,7 @@ class Connection:
             JSON Web Token for this API server
         """
         try:
-            self.user = jwt.decode(token, options=dict(verify_signature=False))[
-                "identity"
-            ]
+            self.user = jwt.decode(token, options=dict(verify_signature=False))["sub"]
         except jwt.DecodeError:
             raise FlowclientConnectionError(f"Unable to decode token: '{token}'")
         except KeyError:
@@ -96,7 +94,13 @@ class Connection:
         self.token = token
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
-    def get_url(self, *, route: str, data: Union[None, dict] = None) -> httpx.Response:
+    def get_url(
+        self,
+        *,
+        route: str,
+        data: Union[None, dict] = None,
+        params: Union[None, dict] = None,
+    ) -> httpx.Response:
         """
         Attempt to get something from the API, and return the raw
         response object if an error response wasn't received.
@@ -110,6 +114,9 @@ class Connection:
         data : dict, optional
             JSON data to send in the request body (optional)
 
+        params : dict, optional
+            Data to send as query parameters.
+
         Returns
         -------
         requests.Response
@@ -118,10 +125,7 @@ class Connection:
         logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
         try:
             response = self.session.request(
-                "GET",
-                route,
-                follow_redirects=False,
-                json=data,
+                "GET", route, follow_redirects=False, json=data, params=params
             )
         except RequestError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
@@ -140,6 +144,9 @@ class Connection:
                 error = "Unknown access denied error"
             raise FlowclientConnectionError(error)
         else:
+            print("*****************")
+            print(response.__dict__)
+            print("*****************")
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
@@ -190,6 +197,9 @@ class Connection:
                 error_msg = "Unknown access denied error"
             raise FlowclientConnectionError(error_msg)
         else:
+            print("******************")
+            print(response.__dict__)
+            print("******************")
             try:
                 error_msg = response.json()["msg"]
                 try:

@@ -21,6 +21,9 @@ __all__ = ["ParetoInteractionsSchema", "ParetoInteractionsExposed"]
 
 
 class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "pareto_interactions"
+
     def __init__(
         self,
         *,
@@ -68,7 +71,8 @@ class ParetoInteractionsSchema(
     HoursField,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
-    proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
-
     __model__ = ParetoInteractionsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))

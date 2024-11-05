@@ -15,7 +15,7 @@ from flowmachine.features.location.redacted_unique_subscriber_counts import (
 
 def test_all_above_threshold(get_dataframe):
     """
-    TotalLocationEvents() can get activity on a daily level but only above threshold.
+    RedactedTotalEvents() can get activity on a daily level but only above threshold.
     """
     te = RedactedTotalEvents(
         total_events=TotalLocationEvents(
@@ -35,6 +35,41 @@ def test_all_above_threshold(get_dataframe):
     )
 
     te_df = get_dataframe(te)
-
     assert all(te_df.value > 15)
-    assert set(us.location_id) == set(te_df.location_id)
+    assert set(te_df.location_id) == set(us.location_id)
+
+
+def test_all_above_threshold_hour_bucket(get_dataframe):
+    """
+    RedactedTotalEvents() can get activity on an hourly level but only above threshold.
+    """
+    te = RedactedTotalEvents(
+        total_events=TotalLocationEvents(
+            "2016-01-01",
+            "2016-01-02",
+            spatial_unit=make_spatial_unit("cell"),
+            interval="hour",
+            table=["events.calls"],
+        )
+    )
+
+    te_df = get_dataframe(te)
+    assert all(te_df.value > 15)
+
+
+def test_all_above_threshold_minute_bucket(get_dataframe):
+    """
+    RedactedTotalEvents() can get activity on a minute level but only above threshold.
+    """
+    te = RedactedTotalEvents(
+        total_events=TotalLocationEvents(
+            "2016-01-01 12:00",
+            "2016-01-01 13:00",
+            spatial_unit=make_spatial_unit("cell"),
+            interval="min",
+            table=["events.calls"],
+        )
+    )
+
+    te_df = get_dataframe(te)
+    assert all(te_df.value > 15)

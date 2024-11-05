@@ -1,11 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
 import logging
+import sys
 import uuid
+import pathlib
 from functools import partial
 
 import flask
 import structlog
 from flask import Flask, current_app, request
+from flask_migrate import Migrate
 
 import simplejson
 from flask_login import LoginManager, current_user
@@ -13,6 +19,7 @@ from flask_principal import Principal, RoleNeed, UserNeed, identity_loaded
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 from flowauth.invalid_usage import InvalidUsage
 from flowauth.util import request_context_processor
+from sqlalchemy.exc import IntegrityError
 
 try:
     from uwsgidecorators import lock
@@ -46,6 +53,8 @@ structlog.configure(
 
 def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
@@ -74,6 +83,15 @@ def handle_invalid_usage(error):
     response = flask.jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+
+def handle_unique_error(error):
+    """Returns violations of UNIQUE constraints specifically, otherwise reraise"""
+    _, _, error_message = error.args[0].partition(" ")
+    if "unique constraint" in error_message.lower():
+        return dict(status=400, statusText="Name already exists"), 400
+    else:
+        raise error
 
 
 def before_request():
@@ -121,26 +139,26 @@ def create_app(test_config=None):
     )
     from .admin import blueprint as admin_blueprint
     from .users import blueprint as users_blueprint
-    from .groups import blueprint as groups_blueprint
     from .servers import blueprint as servers_blueprint
     from .token_management import blueprint as token_management_blueprint
     from .login import blueprint as login_blueprint
     from .user_settings import blueprint as user_settings_blueprint
     from .version import blueprint as version_blueprint
+    from .roles import blueprint as roles_blueprint
 
     app = Flask(__name__)
 
     app.config.from_mapping(get_config())
 
     # Connect the logger
-    app.before_first_request(connect_logger)
+    with app.app_context():
+        connect_logger()
 
     if test_config is not None:
         # load the test config if passed in
         app.config.update(test_config)
 
     # Connect the db
-
     db.init_app(app)
 
     # Set up flask-login
@@ -151,6 +169,9 @@ def create_app(test_config=None):
     principals = Principal()
     principals.init_app(app)
 
+    # Register for migrations
+    migrate = Migrate(app, db, directory=pathlib.Path(__file__).parent / "migrations")
+
     # Set up csrf protection
     csrf = CSRFProtect()
     csrf.init_app(app)
@@ -159,43 +180,44 @@ def create_app(test_config=None):
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(admin_blueprint, url_prefix="/admin")
-    app.register_blueprint(groups_blueprint, url_prefix="/admin")
     app.register_blueprint(servers_blueprint, url_prefix="/admin")
     app.register_blueprint(users_blueprint, url_prefix="/admin")
     app.register_blueprint(token_management_blueprint, url_prefix="/tokens")
     app.register_blueprint(user_settings_blueprint, url_prefix="/user")
+    app.register_blueprint(roles_blueprint, url_prefix="/roles")
 
     app.register_blueprint(version_blueprint)
 
     if app.config["DEMO_MODE"]:  # Create demo data
         from flowauth.models import make_demodata
 
-        app.before_first_request(make_demodata)
+        with app.app_context():
+            make_demodata()
     else:
         # Initialise the database
         from flowauth.models import init_db
         from flowauth.models import add_admin
 
-        app.before_first_request(lock(partial(init_db, force=app.config["RESET_DB"])))
-        # Create an admin user
+        with app.app_context():
+            lock(
+                partial(init_db, force=app.config["RESET_DB"])
+            )()  # Create an admin user
 
-        app.before_first_request(
             lock(
                 partial(
                     add_admin,
                     username=app.config["ADMIN_USER"],
                     password=app.config["ADMIN_PASSWORD"],
                 )
-            )
-        )
+            )()
 
-    app.before_first_request(
-        app.config["DB_IS_SET_UP"].wait
-    )  # Cause workers to wait for db to set up
+    with app.app_context():
+        app.config["DB_IS_SET_UP"].wait()  # Cause workers to wait for db to set up
 
     app.after_request(set_xsrf_cookie)
     app.errorhandler(CSRFError)(handle_csrf_error)
     app.errorhandler(InvalidUsage)(handle_invalid_usage)
+    app.errorhandler(IntegrityError)(handle_unique_error)
     app.before_request(before_request)
     login_manager.user_loader(load_user)
     identity_loaded.connect_via(app)(on_identity_loaded)

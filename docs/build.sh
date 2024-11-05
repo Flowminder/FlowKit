@@ -49,4 +49,5 @@ curl http://localhost:9090/api/0/spec/openapi.json -o source/_static/openapi.jso
 echo "Starting build."
 
 # Note: the DOCS_BRANCH variable is used by `mkdocs.yml` to pick up the correct git repositories for building API docs
+pipenv run pip install --no-deps -e ./../flowetl/flowetl
 DOCS_BRANCH=${CIRCLE_BRANCH:="master"} pipenv run mkdocs "${@:-build}"

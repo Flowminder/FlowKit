@@ -96,7 +96,6 @@ class SubscriberLocations(Query):
         ignore_nulls=True,
         subscriber_subset=None,
     ):
-
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.spatial_unit = spatial_unit
@@ -127,7 +126,6 @@ class SubscriberLocations(Query):
         return ["subscriber", "time"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
-
         if self.ignore_nulls:
             where_clause = "WHERE location_id IS NOT NULL AND location_id !=''"
         else:
@@ -182,5 +180,4 @@ class BaseLocation:
         return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
 
     def __getitem__(self, item):
-
         return self.subset(col="subscriber", subset=item)

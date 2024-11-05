@@ -69,14 +69,21 @@ use_jit = "off" if bool_env("NO_USE_JIT") else "on"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)
 )  # Default to higher than pg default
+max_locks = int(os.getenv("MAX_LOCKS_PER_TRANSACTION", 365 * 5 * 4 * (1 + 4)))
 
-config_path = os.getenv(
-    "AUTO_CONFIG_PATH", "/var/lib/postgresql/data/postgresql.configurator.conf"
-)
+
+config_path = f"/flowdb_autoconf/{os.getenv('AUTO_CONFIG_FILE_NAME', 'postgresql.configurator.conf')}"
 
 preload_libraries = ["pg_stat_statements"]
 if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):
     preload_libraries.append("plugin_debugger")
+
+possible_log_destinations = ["stderr", "jsonlog", "csvlog"]
+log_destination = os.getenv("FLOWDB_LOG_DEST", "jsonlog").lower()
+if log_destination not in possible_log_destinations:
+    raise ValueError(
+        f"Invalid log destination. Valid values for FLOWDB_LOG_DEST are {possible_log_destinations}"
+    )
 
 with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
     config_file = fin.read().format(
@@ -89,6 +96,9 @@ with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
         gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         stats_target=stats_target,
         use_jit=use_jit,
+        max_locks=max_locks,
+        log_destination=log_destination,
+        collecter_on="on" if log_destination != "stderr" else "off",
     )
 
 print("Writing config file to", config_path)

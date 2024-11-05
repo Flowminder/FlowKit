@@ -40,7 +40,6 @@ class UniqueLocations(SubscriberFeature):
         self,
         subscriber_locations: SubscriberLocations,
     ):
-
         self.spatial_unit = subscriber_locations.spatial_unit
         self.subscriber_locations = subscriber_locations
         super().__init__()

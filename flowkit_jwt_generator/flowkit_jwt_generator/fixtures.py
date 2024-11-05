@@ -10,7 +10,7 @@ from datetime import timedelta
 from typing import Dict, Union, List, Callable, Optional
 
 import pytest
-from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
+from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 
 from flowkit_jwt_generator import (
@@ -22,7 +22,7 @@ from flowkit_jwt_generator import (
 
 
 @pytest.fixture
-def private_key() -> _RSAPrivateKey:
+def private_key() -> rsa.RSAPrivateKey:
     """
     Fixture which returns a private key loaded from a PRIVATE_JWT_SIGNING_KEY env var.
     """
@@ -30,7 +30,7 @@ def private_key() -> _RSAPrivateKey:
 
 
 @pytest.fixture
-def public_key() -> _RSAPublicKey:
+def public_key() -> rsa.RSAPublicKey:
     """
     Fixture which returns a public key loaded from a PUBLIC_JWT_SIGNING_KEY env var.
     """
@@ -92,13 +92,13 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
             "PRIVATE_JWT_SIGNING_KEY environment variable must be set."
         )
 
-    def token_maker(claims: List[str]) -> str:
+    def token_maker(roles: Dict) -> str:
         return generate_token(
             flowapi_identifier=audience,
             username="test",
             private_key=private_key,
             lifetime=timedelta(seconds=300),
-            claims=claims,
+            roles=roles,
         )
 
     return token_maker
@@ -119,4 +119,6 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
         The token
 
     """
-    return access_token_builder(get_all_claims_from_flowapi(flowapi_url=flowapi_url))
+    return access_token_builder(
+        {"universal_role": get_all_claims_from_flowapi(flowapi_url=flowapi_url)}
+    )

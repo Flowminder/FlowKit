@@ -75,19 +75,17 @@ def multi_labelled_flows():
 
 
 def test_labelled_flow(labelled_flows, get_dataframe):
-
     df = get_dataframe(labelled_flows)
-    assert len(df) == 349
+    assert len(df) == 345
     # We lose some subscribers between locations
     assert df.value.sum() == 490
 
     labelled_outflow = labelled_flows.outflow()
     out_df = get_dataframe(labelled_outflow)
-    assert all(out_df.columns == ["pcod_from", "value_label", "value"])
+    assert all(out_df.columns == ["pcod", "value_label", "value"])
 
 
 def test_multiple_labels(get_dataframe, multi_labelled_flows):
-
     assert multi_labelled_flows.out_label_columns == [
         "value_hnd_type_label",
         "value_brand_label",
@@ -214,7 +212,6 @@ def test_label_redaction(get_dataframe):
 
 
 def test_geojson(labelled_flows):
-
     out = labelled_flows.to_geojson_string()
     dict = loads(out)
     assert all(
@@ -222,7 +219,7 @@ def test_geojson(labelled_flows):
         for test in ["Smart", "Feature"]
     )
     assert (
-        "524 1 01 04" in dict["features"][0]["properties"]["outflows"]["Feature"].keys()
+        "524 2 05 24" in dict["features"][0]["properties"]["outflows"]["Feature"].keys()
     )
     assert all(
         test in dict["features"][0]["properties"]["inflows"].keys()
@@ -231,7 +228,7 @@ def test_geojson(labelled_flows):
     assert (
         "524 3 08 43" in dict["features"][0]["properties"]["inflows"]["Feature"].keys()
     )
-    assert dict["features"][0]["properties"]["inflows"]["Feature"]["524 3 08 43"] == 5
+    assert dict["features"][0]["properties"]["inflows"]["Feature"]["524 3 08 43"] == 3
 
 
 def test_geojson_multi_labels(multi_labelled_flows):
@@ -261,7 +258,7 @@ def test_redacted_multi_labelled_flows(multi_labelled_flows, get_dataframe):
         labelled_flows=multi_labelled_flows, redaction_threshold=1
     )
     df = get_dataframe(redacted_flows)
-    assert len(df) == 19
+    assert len(df) == 25
     assert df.value.max() > 1
 
 

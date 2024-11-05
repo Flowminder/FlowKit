@@ -17,6 +17,9 @@ __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
 
 class TopUpAmountExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "topup_amount"
+
     def __init__(
         self,
         *,
@@ -57,7 +60,8 @@ class TopUpAmountExposed(BaseExposedQueryWithSampling):
 class TopUpAmountSchema(
     StartAndEndField, SubscriberSubsetField, HoursField, BaseQueryWithSamplingSchema
 ):
-    query_kind = fields.String(validate=OneOf(["topup_amount"]))
-    statistic = Statistic()
-
     __model__ = TopUpAmountExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    statistic = Statistic()

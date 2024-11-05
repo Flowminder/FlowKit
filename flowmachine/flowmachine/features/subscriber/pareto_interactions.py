@@ -78,7 +78,6 @@ class ParetoInteractions(SubscriberFeature):
         exclude_self_calls=False,
         subscriber_subset=None,
     ):
-
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
@@ -119,7 +118,6 @@ class ParetoInteractions(SubscriberFeature):
         super().__init__()
 
     def _make_query(self):
-
         target_qur = f"""
         SELECT b.subscriber, ceil(sum(events*{self.proportion})) as target
         FROM ({self.contact_balance.get_query()}) b

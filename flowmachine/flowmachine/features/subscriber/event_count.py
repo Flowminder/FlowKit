@@ -11,8 +11,6 @@ from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
 from flowmachine.utils import make_where, standardise_date
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
-
 
 class EventCount(SubscriberFeature):
     """

@@ -23,7 +23,7 @@ class GroupServerAccessRights extends React.Component {
     this.setState({ enabledRights: value });
     const { fullRights } = this.state;
     parentUpdate(
-      fullRights.filter((r) => value.some((cur) => r.startsWith(cur)))
+      fullRights.filter((r) => value.some((cur) => r.startsWith(cur))),
     );
   };
 
@@ -44,7 +44,7 @@ class GroupServerAccessRights extends React.Component {
       scopeGraph,
       [],
       Object.keys(scopesObj).filter((k) => scopesObj[k]),
-      enabledKeys
+      enabledKeys,
     );
 
     this.setState({

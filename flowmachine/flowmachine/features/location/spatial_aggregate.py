@@ -21,7 +21,6 @@ class SpatialAggregate(GeoDataMixin, Query):
     """
 
     def __init__(self, *, locations):
-
         self.locations = locations
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = locations.spatial_unit
@@ -32,7 +31,6 @@ class SpatialAggregate(GeoDataMixin, Query):
         return self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
-
         aggregate_cols = ",".join(self.spatial_unit.location_id_columns)
 
         sql = f"""

@@ -6,7 +6,6 @@
 
 from flowmachine.features.subscriber.per_subscriber_aggregate import (
     PerSubscriberAggregate,
-    agg_methods,
 )
 from flowmachine.features.subscriber.subscriber_call_durations import (
     PerLocationSubscriberCallDurations,
@@ -14,6 +13,8 @@ from flowmachine.features.subscriber.subscriber_call_durations import (
 from flowmachine.core.dummy_query import DummyQuery
 
 import pytest
+
+from flowmachine.core.statistic_types import Statistic
 
 
 @pytest.fixture()
@@ -28,9 +29,8 @@ class NonSubQuery(DummyQuery):
         return ["value"]
 
 
-@pytest.mark.parametrize("agg_method", agg_methods)
+@pytest.mark.parametrize("agg_method", Statistic)
 def test_aggregates(get_dataframe, agg_method, per_location_query):
-
     psa = PerSubscriberAggregate(
         subscriber_query=per_location_query,
         agg_column="value",

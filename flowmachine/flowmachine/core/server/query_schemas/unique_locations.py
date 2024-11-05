@@ -7,8 +7,6 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import SubscriberLocations
 from flowmachine.features.subscriber.unique_locations import UniqueLocations
-from .custom_fields import EventTypes, ISODateTime
-from .subscriber_subset import SubscriberSubset
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
@@ -25,6 +23,9 @@ __all__ = ["UniqueLocationsSchema", "UniqueLocationsExposed"]
 
 
 class UniqueLocationsExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "unique_locations"
+
     def __init__(
         self,
         start_date,
@@ -75,7 +76,7 @@ class UniqueLocationsSchema(
     AggregationUnitMixin,
     BaseQueryWithSamplingSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unique_locations"]))
-
     __model__ = UniqueLocationsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

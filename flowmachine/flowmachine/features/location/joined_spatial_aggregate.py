@@ -3,11 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import warnings
-from typing import List
+from typing import List, Union
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.utils import parse_datestring
+from flowmachine.core.statistic_types import Statistic
 
 
 class JoinedSpatialAggregate(GeoDataMixin, Query):
@@ -28,7 +29,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     locations : Query
         A query object that represents the locations of subscribers.
         Must have a 'subscriber' column, and a 'spatial_unit' attribute.
-    method : {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}
+    method : Statistic, or "distr"
             Method of aggregation.
 
     Examples
@@ -49,23 +50,18 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    allowed_methods = {
-        "avg",
-        "max",
-        "min",
-        "median",
-        "mode",
-        "stddev",
-        "variance",
-        "distr",
-    }
+    allowed_methods = [*[f"{stat}" for stat in Statistic], "distr"]
 
-    def __init__(self, *, metric, locations, method="avg"):
+    def __init__(
+        self, *, metric, locations, method: Union[Statistic, str] = Statistic.AVG
+    ):
         self.metric = metric
         self.locations = locations
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = locations.spatial_unit
         self.method = method.lower()
+        if self.method != "distr":
+            self.method = Statistic(self.method)
         if self.method not in self.allowed_methods:
             raise ValueError(
                 f"{method} is not recognised method, must be one of {self.allowed_methods}"
@@ -90,7 +86,6 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         super().__init__()
 
     def _make_query(self):
-
         metric_cols = self.metric.column_names
         metric_cols_no_subscriber = [cn for cn in metric_cols if cn != "subscriber"]
         location_cols = self.spatial_unit.location_id_columns
@@ -119,7 +114,6 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         """
 
         if self.method == "distr":
-
             grouped = " UNION ".join(
                 f"""
                 SELECT
@@ -142,16 +136,9 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             grouped = f"WITH joined AS ({joined}) {grouped}"
 
         else:
-
-            if self.method == "mode":
-                av_cols = ", ".join(
-                    f"pg_catalog.mode() WITHIN GROUP(ORDER BY {mc}) AS {mc}"
-                    for mc in metric_cols_no_subscriber
-                )
-            else:
-                av_cols = ", ".join(
-                    f"{self.method}({mc}) AS {mc}" for mc in metric_cols_no_subscriber
-                )
+            av_cols = ", ".join(
+                f"{self.method:{mc}} AS {mc}" for mc in metric_cols_no_subscriber
+            )
 
             # Now do the group by bit
             grouped = f"""

@@ -50,7 +50,6 @@ class NewSubscribers(Query):
         unique_subscribers_bench_mark: UniqueSubscribers,
         unique_subscribers_focal: UniqueSubscribers,
     ):
-
         if (
             unique_subscribers_bench_mark.subscriber_identifier
             == unique_subscribers_focal.subscriber_identifier

@@ -12,7 +12,6 @@ from pandas.testing import assert_frame_equal
 
 
 def test_active_subscribers_one_day(get_dataframe):
-
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         minor_period_length=1,
@@ -38,7 +37,6 @@ def test_active_subscribers_one_day(get_dataframe):
 
 
 def test_active_subscribers_many_days(get_dataframe):
-
     active_subscribers = ActiveSubscribers(
         start_date=date(year=2016, month=1, day=1),
         minor_period_length=1,

@@ -10,6 +10,7 @@ FROM (
             msisdn
         FROM
             {{ final_table }}
+        WHERE imei IS NOT NULL
         GROUP BY
             imei,
             msisdn) _

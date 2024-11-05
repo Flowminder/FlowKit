@@ -27,6 +27,9 @@ __all__ = [
 
 
 class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "visited_most_days"
+
     def __init__(
         self,
         start_date,
@@ -35,8 +38,6 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
         aggregation_unit,
         event_types,
         subscriber_subset=None,
-        subscriber_identifier=None,
-        ignore_nulls=None,
         hours=None,
         sampling=None,
     ):
@@ -45,9 +46,7 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
         self.aggregation_unit = aggregation_unit
         self.hours = hours
         self.event_types = event_types
-        self.subscriber_subset = (subscriber_subset,)
-        self.subscriber_identifier = (subscriber_identifier,)
-        self.ignore_nulls = ignore_nulls
+        self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
     @property
@@ -67,8 +66,6 @@ class VisitedMostDaysExposed(BaseExposedQueryWithSampling):
                 spatial_unit=self.aggregation_unit,
                 table=self.event_types,
                 subscriber_subset=self.subscriber_subset,
-                subscriber_identifier=self.subscriber_identifier,
-                ignore_nulls=self.ignore_nulls,
             )
         )
 
@@ -81,6 +78,7 @@ class VisitedMostDaysSchema(
     AggregationUnitMixin,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["visited_most_days"]))
-
     __model__ = VisitedMostDaysExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

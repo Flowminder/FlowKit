@@ -88,17 +88,16 @@ else
 fi
 
 DOCKER_ENGINE_VERSION=`docker version --format '{{.Server.Version}}'`
-DOCKER_COMPOSE_VERSION=`docker-compose version --short`
-if [[ "$DOCKER_ENGINE_VERSION" < "17.12.0" ]]
+DOCKER_COMPOSE_VERSION=`docker compose version --short`
+if [[ "$DOCKER_ENGINE_VERSION" < "20" ]]
 then
-    echo "Docker version not supported. Please upgrade docker to at least v17.12.0"
+    echo "Docker version not supported. Please upgrade docker to at least v20.10.13"
     exit 1
 fi
 
-if [[ "$DOCKER_COMPOSE_VERSION" < "1.21.0" ]]
+if [[ "$DOCKER_COMPOSE_VERSION" < "2" ]]
 then
-    echo "docker-compose version not supported. Please upgrade docker to at least v1.21.0 (e.g. by running 'pip install --upgrade docker-compose'"
-    echo "or installing a newer version of Docker desktop."
+    echo "docker-compose is no longer supported by Flowkit or Docker- please upgrade to at least Docker 20.10.13."
     exit 1
 fi
 
@@ -118,7 +117,9 @@ curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/doc
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-testdata.yml -o "$DOCKER_WORKDIR/docker-compose-testdata.yml"
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-syntheticdata.yml -o "$DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
 
-DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
+DOCKER_COMPOSE="docker compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
+
+if [ -x "$(command -v ss)" ]; then NW_CHECK_TOOL='ss -tuna'; else NW_CHECK_TOOL='netstat -an'; fi
 
 if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
@@ -127,6 +128,8 @@ then
     $DOCKER_COMPOSE down -v
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/development_environment)"
+    export COUNTRY=${EXAMPLE_COUNTRY:-$COUNTRY}
+    export DISASTER_REGION_PCOD=${EXAMPLE_DISASTER_REGION_PCOD:-$DISASTER_REGION_PCOD}
     echo "Starting containers (this may take a few minutes)"
     RUNNING=`$DOCKER_COMPOSE ps -q flowdb flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
@@ -136,21 +139,21 @@ else
     $DOCKER_COMPOSE pull $DOCKER_SERVICES
     $DOCKER_COMPOSE up -d --renew-anon-volumes $DOCKER_SERVICES
     echo "Waiting for containers to be ready.."
-    docker exec flowdb bash -c 'i=0; until { [ $i -ge 90 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
+    docker exec flowdb bash -c 'i=0; until { [ $i -ge 90 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the following output:" && $DOCKER_COMPOSE logs $DOCKER_SERVICES && exit 1)
     echo "FlowDB ready."
-    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { ((ss -tuna || netstat -an) | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { ($NW_CHECK_TOOL | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the following output:" && $DOCKER_COMPOSE logs $DOCKER_SERVICES && exit 1)
     echo "FlowMachine ready"
-    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAPI_PORT/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAPI,bug including the output of running 'docker logs flowapi'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAPI_PORT/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAPI,bug including the following output:" && $DOCKER_COMPOSE logs $DOCKER_SERVICES && exit 1)
     echo "FlowAPI ready."
-    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAUTH_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAuth failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAuth,bug including the output of running 'docker logs flowauth'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAUTH_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAuth failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAuth,bug including the following output:" && $DOCKER_COMPOSE logs $DOCKER_SERVICES && exit 1)
     echo "FlowAuth ready."
     if [[ "$WORKED_EXAMPLES" = "worked_examples" ]]
     then
-        (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
+        (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the following output:" && $DOCKER_COMPOSE logs $DOCKER_SERVICES && exit 1)
         echo "Worked examples ready."
     fi
     echo "All containers ready!"
-    echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=$FLOWMACHINE_FLOWDB_USER PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
+    echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=flowmachine PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
     echo "Access FlowAPI using FlowClient at http://localhost:$FLOWAPI_PORT"
     echo "View the FlowAPI spec at http://localhost:$FLOWAPI_PORT/api/0/spec/redoc"
     echo "Generate FlowAPI access tokens using FlowAuth with user TEST_USER and password DUMMY_PASSWORD at http://localhost:$FLOWAUTH_PORT"

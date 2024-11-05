@@ -91,7 +91,6 @@ class RadiusOfGyration(SubscriberFeature):
         ignore_nulls=True,
         subscriber_subset=None,
     ):
-
         self.unit = unit.lower()
         if unit not in self.allowed_units:
             raise ValueError(

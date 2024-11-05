@@ -21,10 +21,13 @@ from flowmachine.core.query_state import QueryState, QueryStateMachine
 
 from flowmachine.core.server.action_handlers import (
     action_handler__get_geography,
+    action_handler__get_qa_checks,
     action_handler__get_query_params,
     action_handler__get_sql,
     action_handler__run_query,
+    action_handler__get_aggregation_unit,
     get_action_handler,
+    action_handler__list_qa_checks,
 )
 from flowmachine.core.server.exceptions import FlowmachineServerError
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
@@ -143,8 +146,11 @@ async def test_rerun_query_after_cancelled(server_config, real_connections):
     assert query_obj.is_stored
 
 
+@pytest.mark.parametrize(
+    "handler", [action_handler__run_query, action_handler__get_aggregation_unit]
+)
 @pytest.mark.asyncio
-async def test_run_query_type_error(monkeypatch, server_config):
+async def test_run_query_type_error(handler, monkeypatch, server_config):
     """
     Test that developer errors when creating schemas return the error message.
     """
@@ -156,7 +162,7 @@ async def test_run_query_type_error(monkeypatch, server_config):
     monkeypatch.setattr(
         flowmachine.core.server.action_handlers, "FlowmachineQuerySchema", BrokenSchema
     )
-    msg = await action_handler__run_query(config=server_config, query_kind={})
+    msg = await handler(config=server_config, query_kind={})
     assert msg.status == ZMQReplyStatus.ERROR
     assert (
         msg.msg
@@ -167,7 +173,7 @@ async def test_run_query_type_error(monkeypatch, server_config):
 @pytest.mark.asyncio
 async def test_run_query_error_handled(dummy_redis, server_config):
     """
-    Run query handler should return an error status if query construction failed.
+    Action handler should return an error status if query construction failed.
     """
     # This is going to error, because the db connection is a mock.
     msg = await action_handler__run_query(
@@ -183,7 +189,7 @@ async def test_run_query_error_handled(dummy_redis, server_config):
     assert msg.status == ZMQReplyStatus.ERROR
     assert (
         msg.msg
-        == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'type object argument after * must be an iterable, not Mock'"
+        == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'zip() argument after * must be an iterable, not Mock'"
     )
 
 
@@ -228,3 +234,89 @@ async def test_get_sql_error_states(query_state, dummy_redis, server_config):
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.payload["query_state"] == query_state
     redis_connection.reset(redis_reset)
+
+
+@pytest.mark.parametrize(
+    "params, expected_aggregation_unit",
+    [
+        (
+            dict(
+                query_kind="spatial_aggregate",
+                locations=dict(
+                    query_kind="modal_location",
+                    locations=[
+                        dict(
+                            query_kind="daily_location",
+                            date="2016-01-01",
+                            method="last",
+                            aggregation_unit="admin3",
+                        )
+                    ],
+                ),
+            ),
+            "admin3",
+        ),
+        (
+            dict(
+                query_kind="histogram_aggregate",
+                metric=dict(
+                    query_kind="displacement",
+                    start_date="2016-01-01",
+                    end_date="2016-01-02",
+                    statistic="avg",
+                    reference_location=dict(
+                        query_kind="daily_location",
+                        date="2016-01-01",
+                        method="last",
+                        aggregation_unit="lon-lat",
+                    ),
+                ),
+                bins=dict(n_bins=10),
+            ),
+            None,
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_aggregation_unit(
+    params, expected_aggregation_unit, server_config, real_connections
+):
+    """
+    'get_aggregation_unit' handler returns correct aggregation unit
+    """
+    # Have to use real_connections fixture here because query deserialisation
+    # involves constructing a spatial unit object, which requires talking to
+    # the db.
+    msg = await action_handler__get_aggregation_unit(
+        config=server_config,
+        **params,
+    )
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    assert msg.payload["aggregation_unit"] == expected_aggregation_unit
+
+
+@pytest.mark.asyncio
+async def test_get_qa_checks(server_config, real_connections):
+    # This assumes that flowdb_test_data is being used for this
+    msg = await action_handler__list_qa_checks(config=server_config)
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    assert len(msg.payload["available_qa_checks"]) == 77
+
+
+@pytest.mark.asyncio
+async def test_get_qa_check(server_config, real_connections):
+    msg = await action_handler__get_qa_checks(
+        start_date="2016-01-01",
+        end_date="2016-02-01",
+        cdr_type="calls",
+        check_type="count_duplicated",
+        config=server_config,
+    )
+    assert msg["status"] == ZMQReplyStatus.SUCCESS
+    target = dict(
+        cdr_date="2016-01-01",
+        outcome="0",
+        type_of_query_or_check="count_duplicated",
+    )
+    assert target in msg.payload["qa_checks"]
+    assert len(msg.payload["qa_checks"]) == 7

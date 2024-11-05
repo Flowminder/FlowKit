@@ -7,7 +7,7 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-from typing import List
+from typing import List, Iterable, Optional
 
 from flowmachine.core.query_state import QueryStateMachine
 from .context import get_db, get_redis
@@ -31,7 +31,8 @@ class Table(Query):
     name : str
         Name of the table, may be fully qualified
     schema : str
-        Optional if name is fully qualified
+        Optional if name is fully qualified, defaults to `flowmachine` if not provided
+        and the name is not qualified.
     columns : str
         Optional list of columns
 
@@ -60,7 +61,12 @@ class Table(Query):
 
     """
 
-    def __init__(self, name=None, schema=None, columns=None):
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        schema: Optional[str] = None,
+        columns: Optional[Iterable[str]] = None,
+    ):
         if "." in name:
             extracted_schema, name = name.split(".")
             if schema is not None:
@@ -68,7 +74,7 @@ class Table(Query):
                     raise ValueError("Two schema provided.")
             schema = extracted_schema
         elif schema is None:
-            schema = "public"
+            schema = "flowmachine"
 
         self.name = name
         self.schema = schema
@@ -119,7 +125,8 @@ class Table(Query):
         if not q_state_machine.is_completed:
             q_state_machine.enqueue()
             q_state_machine.execute()
-            write_cache_metadata(get_db(), self, compute_time=0)
+            with get_db().engine.begin() as trans:
+                write_cache_metadata(trans, self, compute_time=0)
             q_state_machine.finish()
 
     def __format__(self, fmt):
@@ -137,11 +144,9 @@ class Table(Query):
         return "SELECT {cols} FROM {fqn}".format(fqn=self.fqn, cols=cols)
 
     def get_query(self):
-        with get_db().engine.begin():
-            get_db().engine.execute(
-                "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
-                    self.query_id
-                )
+        with get_db().engine.begin() as trans:
+            trans.exec_driver_sql(
+                f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{self.query_id}'"
             )
         return self._make_query()
 

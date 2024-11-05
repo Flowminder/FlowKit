@@ -51,10 +51,10 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.locations(
         location_id             BIGSERIAL PRIMARY KEY,
         site_id                 BIGINT REFERENCES infrastructure.sites(site_id),
-        cell_id                 BIGINT REFERENCES infrastructure.cells(cell_id)
+        cell_id                 BIGINT REFERENCES infrastructure.cells(cell_id),
+        position                geometry(POINT, 4326, 2)
         );
 
-    SELECT AddGeometryColumn('interactions', 'locations', 'position', 4326, 'POINT', 2);
 
     CREATE INDEX IF NOT EXISTS interactions_locations_position_index
         ON interactions.locations

@@ -108,7 +108,6 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         return ["subscriber", "msisdn_counterpart", "events", "proportion"]
 
     def _make_query(self):
-
         filters = [self.direction.get_filter_clause()]
         if (self.subscriber_identifier in {"msisdn"}) and (self.exclude_self_calls):
             filters.append("subscriber != msisdn_counterpart")
@@ -182,7 +181,6 @@ class _ContactBalanceSubset(SubscriberFeature):
     """
 
     def __init__(self, contact_balance, include_subscribers=False):
-
         self.contact_balance_query = contact_balance
         self.include_subscribers = include_subscribers
 
@@ -207,7 +205,6 @@ class _ContactBalanceSubset(SubscriberFeature):
         return ["subscriber"]
 
     def _make_query(self):
-
         include_subscriber_clause = ""
         if (
             self.include_subscribers

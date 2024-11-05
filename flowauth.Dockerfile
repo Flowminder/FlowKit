@@ -2,14 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Repinned: https://github.com/eslint/eslint-scope/issues/55
 FROM node:16 as builder
-# Node version pinned until https://github.com/nodejs/docker-node/issues/1379 is closed
 
 COPY flowauth/frontend /
 RUN npm install --production
 RUN PUBLIC_URL=/static npm run-script build
 
-FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
+FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine@sha256:828bcf2dfa556c1a4af6f9b020cf6d7b943604ac728933a61a89c7cbf7c4c382
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
@@ -17,9 +17,9 @@ WORKDIR /${SOURCE_TREE}/flowauth
 COPY ./flowauth/Pipfile* ./
 
 # Install dependencies required for argon crypto & psycopg2
-RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
-    libressl-dev libffi-dev mariadb-connector-c-dev curl && \
-    pip install --no-cache-dir --upgrade pip pipenv && pipenv install --clear --deploy --system && \
+RUN apk update && apk add --no-cache --virtual build-dependencies build-base postgresql-dev gcc python3-dev pkgconfig musl-dev \
+    libressl-dev libffi-dev mariadb-connector-c-dev mariadb-dev curl && \
+    pip install --no-cache-dir --upgrade pip pipenv && pipenv install --verbose --clear --deploy --system && \
     apk del build-dependencies && \
     apk add --no-cache libpq libgcc mariadb-connector-c # Required for psycopg2 & mysqlclient
 ENV STATIC_PATH /app/static

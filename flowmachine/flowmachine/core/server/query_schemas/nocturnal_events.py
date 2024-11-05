@@ -11,6 +11,7 @@ from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
     BaseExposedQueryWithSampling,
 )
+from .custom_fields import Hours
 from .field_mixins import (
     StartAndEndField,
     EventTypesField,
@@ -21,13 +22,15 @@ __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
 
 
 class NocturnalEventsExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "nocturnal_events"
+
     def __init__(
         self,
         *,
         start_date,
         end_date,
-        night_start_hour,
-        night_end_hour,
+        night_hours,
         event_types,
         subscriber_subset=None,
         sampling=None
@@ -36,7 +39,7 @@ class NocturnalEventsExposed(BaseExposedQueryWithSampling):
         # so that marshmallow can serialise the object correctly.
         self.start = start_date
         self.stop = end_date
-        self.hours = (night_start_hour, night_end_hour)
+        self.hours = night_hours
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
@@ -65,10 +68,8 @@ class NocturnalEventsSchema(
     SubscriberSubsetField,
     BaseQueryWithSamplingSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
-    night_start_hour = fields.Integer(
-        validate=Range(0, 23)
-    )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
-    night_end_hour = fields.Integer(validate=Range(0, 23))
-
     __model__ = NocturnalEventsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    night_hours = fields.Nested(Hours, required=True)

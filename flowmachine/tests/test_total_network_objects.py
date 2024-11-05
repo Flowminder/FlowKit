@@ -25,7 +25,7 @@ def test_tno_at_lon_lat(get_dataframe):
         network_object=make_spatial_unit("versioned-cell"),
         spatial_unit=make_spatial_unit("lon-lat"),
     )
-    assert tno.get_dataframe().sum().value == 330
+    assert tno.get_dataframe().value.sum() == 330
 
 
 @pytest.mark.parametrize(
@@ -124,7 +124,7 @@ def test_bad_statistic():
             total_network_objects=TotalNetworkObjects(
                 start="2016-01-01", stop="2016-12-30", table="calls"
             ),
-            statistic="count",
+            statistic="BAD STAT",
         )
 
 

@@ -7,7 +7,9 @@ import pytest
 
 from flowmachine.core import CustomQuery
 from flowmachine.features import RadiusOfGyration
-from flowmachine.features.utilities.histogram_aggregation import HistogramAggregation
+from flowmachine.features.nonspatial_aggregates.histogram_aggregation import (
+    HistogramAggregation,
+)
 
 
 def test_non_default_value_column(get_dataframe):

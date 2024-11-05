@@ -9,6 +9,9 @@ We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/
 !!! warning
     If updating from FlowKit v. 1.16 or earlier, it is **strongly recommended** that you take a backup of the flowetl_db database. Airflow has been bumped to v2 from v1.
 
+!!! warning
+    If updating Flowauth from v 1.17 to 1.18.1 or later, your will need to migrate Flowauth's database. See [migration](#migration)
+
 ### FlowDB and FlowETL only
 
 FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
@@ -21,29 +24,32 @@ FlowDB is distributed as a docker container. To run it, you will need to provide
 | ----------- | -------------- | ----- |
 | FLOWAPI_FLOWDB_USER | Database user used by FlowAPI | Role with _read_ access to tables under the cache and geography schemas | 
 | FLOWAPI_FLOWDB_PASSWORD | Password for the FlowAPI database user | |
-| FLOWMACHINE_FLOWDB_USER | Database user for FlowMachine | Role with _write_ access to tables under the cache schema, and _read_ access to events, infrastructure, cache and geography schemas |
 | FLOWMACHINE_FLOWDB_PASSWORD | Password for flowmachine user | |
 | FLOWDB_POSTGRES_PASSWORD | Postgres superuser password for flowdb | Username `flowdb`, user with super user access to flowdb database |
 
 You may also provide the following environment variables:
 
-| Variable name | Purpose | Default value |
-| ------------- | ------- | ------------- |
-| CACHE_SIZE | Maximum size of the cache schema | 1 tenth of available space in pgdata directory |
-| CACHE_PROTECTED_PERIOD | Amount of time to protect cache tables from being cleaned up | 86400 (24 hours) |
-| CACHE_HALF_LIFE | Speed at which cache tables expire when not used | 1000 |
-| MAX_CPUS | Maximum number of CPUs that may be used for parallelising queries | The greater of 1 or 1 less than all CPUs |
-| SHARED_BUFFERS_SIZE | Size of shared buffers | 16GB |
-| MAX_WORKERS |  Maximum number of CPUs that may be used for parallelising one query | MAX_CPUS/2 |
-| MAX_WORKERS_PER_GATHER |  Maximum number of CPUs that may be used for parallelising part of one query | MAX_CPUS/2 |
-| EFFECTIVE_CACHE_SIZE | Postgres cache size | 25% of total RAM |
-| FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE |
+| Variable name                     | Purpose                                                                                                           | Default value                                  |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| CACHE_SIZE                        | Maximum size of the cache schema                                                                                  | 1 tenth of available space in pgdata directory |
+| CACHE_PROTECTED_PERIOD            | Amount of time to protect cache tables from being cleaned up                                                      | 86400 (24 hours)                               |
+| CACHE_HALF_LIFE                   | Speed at which cache tables expire when not used                                                                  | 1000                                           |
+| MAX_CPUS                          | Maximum number of CPUs that may be used for parallelising queries                                                 | The greater of 1 or 1 less than all CPUs       |
+| SHARED_BUFFERS_SIZE               | Size of shared buffers                                                                                            | 16GB                                           |
+| MAX_WORKERS                       | Maximum number of CPUs that may be used for parallelising one query                                               | MAX_CPUS/2                                     |
+| MAX_WORKERS_PER_GATHER            | Maximum number of CPUs that may be used for parallelising part of one query                                       | MAX_CPUS/2                                     |
+| EFFECTIVE_CACHE_SIZE              | Postgres cache size                                                                                               | 25% of total RAM                               |
+| FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE                                          |
+| MAX_LOCKS_PER_TRANSACTION         | Controls the maximum number of locks one transaction can take, you may wish to reduce this on low-memory servers. | 36500                                          | 
+| FLOWDB_LOG_DEST                   | Controls the logging destination, may be be one of `stderr`, `jsonlog`, `csvlog`.                                  | `jsonlog`                                       |
+| AUTO_CONFIG_FILE_NAME | The path in the container of the automatically generated config file located at /flowdb_autoconf | `postgresql.configurator.conf` |
+
 
 However in most cases, the defaults will be adequate.
 
 ##### Shared memory
 
-You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.
+You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command. In particular it should be more than `SHARED_BUFFERS_SIZE + MAX_LOCKS * (max_connections + max_prepared_transactions) * (sizeof(LOCK) + sizeof(LOCKTAG))`.
 
 ##### Bind Mounts and user permissions
 
@@ -93,14 +99,20 @@ docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_
 
 To run FlowETL, you will need to provide the following secrets:
 
-| Secret name | Secret purpose | Notes |
-| ----------- | -------------- | ----- |
-| FLOWETL_AIRFLOW_ADMIN_USERNAME | Default administrative user logon name for the FlowETL web interface | |
-| FLOWETL_AIRFLOW_ADMIN_PASSWORD | Password for the administrative user | |
-| AIRFLOW__CORE__SQL_ALCHEMY_CONN | Connection string for the backing database | Should take the form `postgres://flowetl:<FLOWETL_POSTGRES_PASSWORD>@flowetl_db:5432/flowetl` |
-| AIRFLOW__CORE__FERNET_KEY | Ferney key used to encrypt (at rest) database credentials | |
-| AIRFLOW_CONN_FLOWDB | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
-| FLOWETL_POSTGRES_PASSWORD | Superuser password for FlowETL's backing database | |
+| Secret name                        | Secret purpose | Notes |
+|------------------------------------| -------------- | ----- |
+| FLOWETL_AIRFLOW_ADMIN_USERNAME     | Default administrative user logon name for the FlowETL web interface | |
+| FLOWETL_AIRFLOW_ADMIN_PASSWORD     | Password for the administrative user | |
+| AIRFLOW_DATABASE__SQL_ALCHEMY_CONN | Connection string for the backing database | Should take the form `postgres://flowetl:<FLOWETL_POSTGRES_PASSWORD>@flowetl_db:5432/flowetl` |
+| AIRFLOW__CORE__FERNET_KEY          | Ferney key used to encrypt (at rest) database credentials | |
+| AIRFLOW_CONN_FLOWDB                | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
+| FLOWETL_POSTGRES_PASSWORD          | Superuser password for FlowETL's backing database | |
+
+We recommend running FlowETL using the celery scheduler, in which case you will also need to provide additional environment variables and secrets as described in the [main airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html). 
+
+!!!note
+    Any environment variable can be provided as a secret with the same name for the FlowETL container.
+
 
 !!!note 
     Generating Fernet keys
@@ -109,6 +121,8 @@ To run FlowETL, you will need to provide the following secrets:
 
 
 See also the [airflow documentation](https://airflow.apache.org/docs/stable/) for other configuration options which you can provide as environment variables.
+
+When deploying to production you are strongly advised to create a bind mount for logs generated by the airflow scheduler, as these can grow very large. This should bind mount `/opt/airflow/logs` inside the container to a directory where the flowetl user has _read-write access_. 
 
 The [ETL](management/etl/etl.md) documentation gives detail on how to use FlowETL to load data into FlowDB.
 
@@ -137,6 +151,8 @@ You can find a sample FlowETL stack file [here](https://github.com/Flowminder/Fl
 | FLOWETL_HOST_USER_ID | uid of the host user for FlowETL |
 | FLOWETL_HOST_GROUP_ID | gid of the host user for FlowETL |
 | FLOWETL_HOST_DAG_DIR | Path on the host to a directory where dag files will be stored |
+| FLOWETL_WORKER_COUNT | The number of workers which will be available to run tasks |
+| FLOWETL_CELERY_PORT | Port which the Celery user interface will be available on |
 
 Once your stack has come up, you will be able to access FlowETL's web user interface which allows you to monitor the progress of ETL tasks. 
 
@@ -197,6 +213,18 @@ You may also set the following environment variables:
 | RESET_FLOWAUTH_DB | Set to true to reset the database | |
 | FLOWAUTH_CACHE_BACKEND | Backend to use for two factor auth last used key cache | Defaults to 'file'. May be set to 'memory' if deploying a single instance on only one CPU, or to 'redis' for larger deployments |
 
+##### Migration
+
+If updating an existing installation of FlowAuth to v1.18.1 or newer, you will need to run the Alembic migration to upgrade Flowauth's backing database without losing your user data, and then re-upload the API specifications for any existing servers in the new 1.18.1+ format. **It is recommended that you take a backup of your flowauth db before migration.**
+
+You can migrate the Flowauth db to 1.18.1+ with the following commands:
+
+``` bash
+docker exec <flowauth-container> sh
+cd /FlowKit-<version>/flowauth/backend
+flask db upgrade
+```
+
 ##### Two-factor authentication
 
 FlowAuth supports optional two-factor authentication for user accounts, using the Google Authenticator app or similar. This can be enabled either by an administrator, or by individual users.
@@ -224,7 +252,7 @@ Once you have FlowAuth, FlowDB, and FlowETL running, you are ready to add FlowMa
 
 ##### FlowMachine
 
-The FlowMachine server requires one additional secret: `REDIS_PASSWORD`, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the `FLOWMACHINE_FLOWDB_USER` and `FLOWMACHINE_FLOWDB_PASSWORD` secrets defined for FlowDB.
+The FlowMachine server requires one additional secret: `REDIS_PASSWORD`, the password for an accompanying redis database. This secret should also be provided to redis. FlowMachine also uses the `FLOWMACHINE_FLOWDB_PASSWORD` secrets defined for FlowDB.
 
 You may also set the following environment variables:
 
@@ -257,7 +285,7 @@ FlowAPI also makes use of the `FLOWAPI_FLOWDB_USER` and `FLOWAPI_FLOWDB_PASSWORD
 
 Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from `https://<flowapi_host>:<flowapi_port>/api/0/spec/openapi.json`. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.
 
-After uploading the specification, you can configure the maximum token lifetime settings, and use the dropdown box to enable or disable access to the available FlowAPI scopes. If you have updated either the FlowAPI or FlowMachine servers, you should upload the newly generated specification to ensure that the correct API actions are available when assigning users and generating tokens. 
+After uploading the specification, you can configure the maximum lifetime and final expiry date of tokens issued by that server. You should then create some new roles; we recommend that you create a role for analysis staff that includes at least the `get_results`, `get_available_dates` and `run_query` scopes, along with the appropriate geographic levels. If you are unsure, tick all boxes.
 
 ##### Sample stack files
 
@@ -288,28 +316,6 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
-
-
-#### AutoFlow production deployment
-
-Analysts with permission to run docker containers may choose to run their own AutoFlow instances. Instructions for doing so can be found in the [AutoFlow documentation](../analyst/autoflow.md#running-autoflow). A sample stack file for deploying AutoFlow along with the rest of the FlowKit stack can be found [here](https://github.com/Flowminder/FlowKit/blob/master/autoflow/docker-stack.yml), which adds an AutoFlow service, and an additionl Postgres database used by AutoFlow to record workflow runs. This makes use of the `cert-flowkit.pem` secret provided to FlowAPI, and also requires two other secrets:
-
-| Secret name | Secret purpose |
-| ----------- | -------------- |
-| AUTOFLOW_DB_PASSWORD | Password for AutoFlow's database |
-| FLOWAPI_TOKEN | API token AutoFlow will use to connect to FlowAPI |
-
-You should also set the following environment variables:
-
-| Variable name | Purpose |
-| ------------- | ------- |
-| AUTOFLOW_INPUTS_DIR | Path on the host to the directory where input files to AutoFlow are stored |
-| AUTOFLOW_OUTPUTS_DIR | Path on the host to a directory where AutoFLow should store output files |
-
-and optionally set the `AUTOFLOW_LOG_LEVEL` environment variable (default 'ERROR').
-
-!!!note
-    AutoFlow input files (Jupyter notebooks and `workflows.yml`) should be in the inputs directory before starting the AutoFlow container. Files added later will not be picked up by AutoFlow.
 
 #### Demonstrating successful deployment
 

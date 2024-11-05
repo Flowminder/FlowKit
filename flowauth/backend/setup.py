@@ -22,12 +22,17 @@ setup(
     description="FlowAuth is a user and token management utility for use with FlowKit.",
     long_description=readme,
     packages=find_packages(),
+    package_data={
+        "flowauth": ["migrations/*", "migrations/**/*"],
+    },
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.7",
     install_requires=[
-        "flask",
+        "flask<=2.2.5",
         "flask-sqlalchemy",
+        "flask-migrate",
+        "alembic",
         "sqlalchemy <1.4.28",
         "flask-login",
         "argon2_cffi",

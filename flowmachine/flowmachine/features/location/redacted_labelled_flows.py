@@ -12,7 +12,6 @@ from flowmachine.features.location.redacted_labelled_aggregate import (
 
 
 class RedactedLabelledFlows(FlowLike, RedactedLabelledAggregate):
-
     """
     Query that drops any flows that, when disaggregated by label, reveal a number of subscribers
     less than redaction_threshold
@@ -25,7 +24,6 @@ class RedactedLabelledFlows(FlowLike, RedactedLabelledAggregate):
     """
 
     def __init__(self, *, labelled_flows: LabelledFlows, redaction_threshold: int = 15):
-
         if not hasattr(labelled_flows, "spatial_unit"):
             raise ValueError("labelled_flows must have a spatial unit")
 

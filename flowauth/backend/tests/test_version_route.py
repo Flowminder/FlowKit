@@ -5,9 +5,8 @@
 import flowauth
 
 
-def test_version(client):
+def test_version(client, app):
     """Test the correct version is returned."""
-
     response = client.get("/version")
     assert response.status_code == 200  # Should get an OK
 

@@ -83,7 +83,6 @@ class LabelEventScore(Query):
         },
         required: Union[str, None] = None,
     ):
-
         self.scores = scores
         if not isinstance(scores, Query):
             raise TypeError(
@@ -132,7 +131,6 @@ class LabelEventScore(Query):
         return bounds_dict
 
     def _make_query(self):
-
         scores_cols = self.scores.column_names
         scores = f"({self.scores.get_query()}) AS scores"
 

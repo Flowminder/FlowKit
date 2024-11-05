@@ -11,6 +11,7 @@ from flowmachine.features.location.redacted_unmoving_counts import (
 from flowmachine.features.location.unmoving_counts import UnmovingCounts
 from flowmachine.features.subscriber.unmoving import Unmoving
 from . import BaseExposedQuery
+from .aggregation_unit import AggregationUnitKind
 from .base_schema import BaseSchema
 from .unique_locations import UniqueLocationsSchema
 
@@ -18,10 +19,17 @@ __all__ = ["UnmovingCountsSchema", "UnmovingCountsExposed"]
 
 
 class UnmovingCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "unmoving_counts"
+
     def __init__(self, locations):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
+
+    @property
+    def aggregation_unit(self):
+        return self.locations.aggregation_unit
 
     @property
     def _flowmachine_query_obj(self):
@@ -40,8 +48,9 @@ class UnmovingCountsExposed(BaseExposedQuery):
 
 
 class UnmovingCountsSchema(BaseSchema):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unmoving_counts"]))
-    locations = fields.Nested(UniqueLocationsSchema)
-
     __model__ = UnmovingCountsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    aggregation_unit = AggregationUnitKind(dump_only=True)
+    locations = fields.Nested(UniqueLocationsSchema, required=True)

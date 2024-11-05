@@ -1,14 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import datetime
 import logging
 import re
 
 import httpx
 import pandas as pd
 import time
-from typing import Tuple, Union, List, Optional
+from typing import Tuple, Union, List, Optional, Dict
 from tqdm.auto import tqdm
 
 from flowclient.connection import Connection
@@ -499,6 +499,209 @@ def get_available_dates(
         return result
     else:
         return {k: v for k, v in result.items() if k in event_types}
+
+
+def get_available_qa_checks(
+    *, connection: Connection, event_types: Union[None, List[str]] = None
+) -> List[Dict[str, str]]:
+    """
+    Get available QA checks for some or all event types.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_types : list of str, optional
+        The event types for which to return available checks (for example: ["calls", "sms"]).
+        If None, return available checks for all available event types.
+
+    Returns
+    -------
+    list of dict
+        Available checks in the format {"cdr_type": <event_type>, "type_of_query_or_check":<check_type>}
+
+    """
+    logger.info(f"Getting {connection.url}/api/{connection.api_version}/qa/")
+    response = connection.get_url(route=f"qa/")
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get qa checks. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.json()
+    logger.info(f"Got {connection.url}/api/{connection.api_version}/qa/")
+    if event_types is None:
+        return result
+    else:
+        return [check for check in result if check["cdr_type"] in event_types]
+
+
+def get_available_qa_checks_df(
+    *, connection: Connection, event_types: Union[None, List[str]] = None
+) -> pd.DataFrame:
+    """
+    Get available QA checks for some or all event types as a dataframe.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_types : list of str, optional
+        The event types for which to return available checks (for example: ["calls", "sms"]).
+        If None, return available checks for all available event types.
+
+    Returns
+    -------
+    pd.DataFrame
+        Available checks as a dataframe
+
+    """
+    return pd.DataFrame(
+        get_available_qa_checks(connection=connection, event_types=event_types)
+    )
+
+
+def get_qa_check_outcome(
+    *,
+    connection: Connection,
+    event_type: str,
+    check_type: str,
+    event_date: Union[datetime.date, str],
+) -> str:
+    """
+    Get the outcome of a single QA check on a specified date and event type.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_type : str
+        The event type for which to return the outcome.
+    check_type : str
+        The type of check to get the outcome for.
+    event_date : datetime.date or str
+        The event date to get the QA outcome for.
+
+    Returns
+    -------
+    str
+        The result of the check as a string value
+
+    """
+    logger.info(
+        f"Getting {connection.url}/api/{connection.api_version}/qa/{event_type}/{check_type}//{event_date}"
+    )
+    response = connection.get_url(route=f"qa/{event_type}/{check_type}/{event_date}")
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get qa check outcome. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.text
+    logger.info(
+        f"Got {connection.url}/api/{connection.api_version}/qa/{event_type}/{check_type}//{event_date}"
+    )
+    return result
+
+
+def get_qa_check_outcomes(
+    *,
+    connection: Connection,
+    event_type: str,
+    check_type: str,
+    start_date: Union[datetime.date, str],
+    end_date: Union[datetime.date, str],
+) -> List[Dict[str, str]]:
+    """
+    Get the outcome of a single QA check on one event type over a time range.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_type : str
+        The event type for which to return the outcome.
+    check_type : str
+        The type of check to get the outcome for.
+    start_date, end_date : datetime.date or str
+        The event date to get QA outcomes between (end date inclusive).
+
+    Returns
+    -------
+    list of dict
+        QA check outputs in the format {"cdr_date": <event_date>, "type_of_query_or_check":<check_type>, "outcome": <outcome_of_check>}
+
+    """
+    logger.info(
+        f"Getting {connection.url}/api/{connection.api_version}/qa/{event_type}/{check_type}/",
+        params=dict(start_date=start_date, end_date=end_date),
+    )
+    response = connection.get_url(
+        route=f"qa/{event_type}/{check_type}",
+        params=dict(start_date=start_date, end_date=end_date),
+    )
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get qa check outcome. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.json()
+    logger.info(
+        f"Got {connection.url}/api/{connection.api_version}/qa/{event_type}/{check_type}/",
+        params=dict(start_date=start_date, end_date=end_date),
+    )
+    return result
+
+
+def get_qa_check_outcomes_df(
+    *,
+    connection: Connection,
+    event_type: str,
+    check_type: str,
+    start_date: Union[datetime.date, str],
+    end_date: Union[datetime.date, str],
+) -> List[Dict[str, str]]:
+    """
+    Get the outcome of a single QA check on one event type over a time rangeas a dataframe
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_type : str
+        The event type for which to return the outcome.
+    check_type : str
+        The type of check to get the outcome for.
+    start_date, end_date : datetime.date or str
+        The event date to get QA outcomes between (end date inclusive).
+
+    Returns
+    -------
+    pd.DataFrame
+        QA check outputs with columns cdr_date, type_of_query_or_check, and outcome
+
+    """
+    return pd.DataFrame(
+        get_qa_check_outcomes(
+            connection=connection,
+            event_type=event_type,
+            check_type=check_type,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    )
 
 
 def run_query(*, connection: Connection, query_spec: dict) -> str:

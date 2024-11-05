@@ -37,7 +37,6 @@ class IterativeMedianFilter(Query):
         partition_column: str = "subscriber",
         order_column: str = "datetime",
     ):
-
         self.query_to_filter = query_to_filter
         self.filter_window_size = valid_median_window(
             "filter_window_size", filter_window_size

@@ -26,7 +26,7 @@ class RightsCascade extends React.Component {
                   .map(
                     (item) =>
                       item.value +
-                      (item.hasOwnProperty("children") ? " (All)" : "")
+                      (item.hasOwnProperty("children") ? " (All)" : ""),
                   )
                   .join(", ")}
               </span>

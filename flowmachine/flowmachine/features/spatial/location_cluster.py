@@ -167,7 +167,6 @@ class LocationCluster(GeoDataMixin, Query):
         aggregate=False,
         return_no_cluster=True,
     ):
-
         self.method = method
         self.date = date
         self.aggregate = aggregate
@@ -389,7 +388,6 @@ class LocationCluster(GeoDataMixin, Query):
         return sql
 
     def _make_query(self):
-
         if self.point_collection in ("sites", "cells"):
             points_stable_statement = (
                 "(" + self.versioned_infrastructure.get_query() + ")"

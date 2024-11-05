@@ -145,6 +145,9 @@ class MissingHourAndMinutesTimestamp:
         """
         return true()
 
+    def __repr__(self):
+        return "MissingHourAndMinutesTimestamp"
+
 
 class HourAndMinutesTimestamp(str):
     """

@@ -68,9 +68,9 @@ def location_event_counts_spec(
         "mapping_table": mapping_table,
         "geom_table": geom_table,
         "geom_table_join_column": geom_table_join_column,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -725,6 +725,34 @@ def flows_spec(
     }
 
 
+def inflows_spec(
+    *,
+    from_location: Dict[str, Union[str, Dict[str, str]]],
+    to_location: Dict[str, Union[str, Dict[str, str]]],
+    join_type: str = "inner",
+) -> dict:
+    return {
+        "query_kind": "inflows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "join_type": join_type,
+    }
+
+
+def outflows_spec(
+    *,
+    from_location: Dict[str, Union[str, Dict[str, str]]],
+    to_location: Dict[str, Union[str, Dict[str, str]]],
+    join_type: str = "inner",
+) -> dict:
+    return {
+        "query_kind": "outflows",
+        "from_location": from_location,
+        "to_location": to_location,
+        "join_type": join_type,
+    }
+
+
 @merge_args(flows_spec)
 def flows(*, connection: Connection, **kwargs) -> APIQuery:
     """
@@ -748,6 +776,57 @@ def flows(*, connection: Connection, **kwargs) -> APIQuery:
 
     """
     return connection.make_api_query(parameters=flows_spec(**kwargs))
+
+
+@merge_args(inflows_spec)
+def inflows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Given a set of from- and to- locations, returns a count of every user that travelled *to* each *destination* location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Inflows query
+
+    """
+    return connection.make_api_query(parameters=inflows_spec(**kwargs))
+
+
+@merge_args(outflows_spec)
+def outflows(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Given a set of from- and to- locations, returns a count of every user that travelled *from* each *origin* location.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    from_location: dict
+        Query which maps individuals to single location for the "origin" period of interest.
+    to_location: dict
+        Query which maps individuals to single location for the "destination" period of interest.
+    join_type: str default "inner"
+        Join type to use to build the flows
+
+    Returns
+    -------
+    APIQuery
+        Outflows query
+
+    """
+
+    return connection.make_api_query(parameters=outflows_spec(**kwargs))
 
 
 def labelled_flows_spec(
@@ -863,9 +942,9 @@ def unique_subscriber_counts_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -954,9 +1033,9 @@ def location_introversion_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -1047,9 +1126,9 @@ def total_network_objects_spec(
         "geom_table_join_column": geom_table_join_column,
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
-        "hours": None
-        if hours is None
-        else dict(start_hour=hours[0], end_hour=hours[1]),
+        "hours": (
+            None if hours is None else dict(start_hour=hours[0], end_hour=hours[1])
+        ),
     }
 
 
@@ -1668,3 +1747,190 @@ def histogram_aggregate(*, connection: Connection, **kwargs) -> APIQuery:
         Histogram aggregate query
     """
     return connection.make_api_query(parameters=histogram_aggregate_spec(**kwargs))
+
+
+def localised_calendar_activity_spec(
+    *,
+    start_date: str,
+    total_periods: int,
+    period_unit: str = "days",
+    period_length: int = 1,
+    event_types: Optional[List[str]] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
+    locations: Optional[Dict[str, Union[str, Dict[str, str]]]] = None,
+) -> dict:
+    """
+    Return query spec for total active periods.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    total_periods : int
+        Total number of periods to break your time span into
+    period_length : int, default 1
+        Total number of days per period.
+    period_unit : {'days', 'hours', 'minutes'} default 'days'
+        Split this time frame into hours or days etc.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    hours : tuple of int
+        Hours of the day to include
+    locations : dict
+        Optionally provide modal or daily location query to use to localise the metric
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return dict(
+        query_kind="localised_calendar_activity",
+        total_periods=total_periods,
+        period_length=period_length,
+        period_unit=period_unit,
+        start_date=start_date,
+        event_types=event_types,
+        subscriber_subset=subscriber_subset,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
+        reference_location=locations,
+    )
+
+
+@merge_args(location_event_counts_spec)
+def localised_calendar_activity(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Return an aggregation of calendar activity patterns grouped spatially.
+    This query returns an array of datetimes per spatial unit, and a count of the number of subscribers who
+    had an activity pattern which matched that sequence of datetimes with a reference location matching
+    that spatial unit.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    count_interval : {"day", "hour", "minute"}
+        Can be one of "day", "hour" or "minute".
+    direction : {"in", "out", "both"}, default "both"
+        Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    hours : tuple of int
+        Hours of the day to include
+    locations : dict
+        Modal or daily location query to use to localise the metric
+
+    Returns
+    -------
+    APIQuery
+        Calendar activity query
+    """
+    return connection.make_api_query(
+        parameters=localised_calendar_activity_spec(**kwargs)
+    )
+
+
+def calendar_activity_spec(
+    *,
+    start_date: str,
+    total_periods: int,
+    period_unit: str = "days",
+    period_length: int = 1,
+    event_types: Optional[List[str]] = None,
+    subscriber_subset: Optional[Union[dict, str]] = None,
+    hours: Optional[Tuple[int, int]] = None,
+) -> dict:
+    """
+    Return query spec for total active periods.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    total_periods : int
+        Total number of periods to break your time span into
+    period_length : int, default 1
+        Total number of days per period.
+    period_unit : {'days', 'hours', 'minutes'} default 'days'
+        Split this time frame into hours or days etc.
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    hours : tuple of int
+        Hours of the day to include
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return dict(
+        query_kind="calendar_activity",
+        total_periods=total_periods,
+        period_length=period_length,
+        period_unit=period_unit,
+        start_date=start_date,
+        event_types=event_types,
+        subscriber_subset=subscriber_subset,
+        hours=None if hours is None else dict(start_hour=hours[0], end_hour=hours[1]),
+    )
+
+
+@merge_args(location_event_counts_spec)
+def calendar_activity(*, connection: Connection, **kwargs) -> APIQuery:
+    """
+    Return an aggregation of calendar activity patterns, optionally grouped spatially.
+    This query returns an array of datetimes, and a count of the number of subscribers who
+    had an activity pattern which matched that sequence of datetimes.
+
+    Parameters
+    ----------
+    connection : Connection
+        FlowKit API connection
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    count_interval : {"day", "hour", "minute"}
+        Can be one of "day", "hour" or "minute".
+    direction : {"in", "out", "both"}, default "both"
+        Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
+    event_types : list of {"calls", "sms", "mds", "topups"}, optional
+        Optionally, include only a subset of event types (for example: ["calls", "sms"]).
+        If None, include all event types in the query.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    hours : tuple of int
+        Hours of the day to include
+
+    Returns
+    -------
+    APIQuery
+        Calendar activity query
+    """
+    return connection.make_api_query(parameters=calendar_activity_spec(**kwargs))

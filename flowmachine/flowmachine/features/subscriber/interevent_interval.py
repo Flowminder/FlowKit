@@ -15,8 +15,7 @@ from flowmachine.features.utilities import EventsTablesUnion
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 from flowmachine.features.utilities.direction_enum import Direction
 from flowmachine.utils import make_where, standardise_date
-
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+from flowmachine.core.statistic_types import Statistic
 
 
 class IntereventInterval(SubscriberFeature):
@@ -46,8 +45,8 @@ class IntereventInterval(SubscriberFeature):
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
         subscriber tables
-    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
-        Defaults to sum, aggregation statistic over the durations.
+    statistic :  Statistic, default Statistic.AVG
+        Defaults to avg, aggregation statistic over the durations.
 
     Examples
     --------
@@ -75,7 +74,7 @@ class IntereventInterval(SubscriberFeature):
         self,
         start: str,
         stop: str,
-        statistic: str = "avg",
+        statistic: Statistic = Statistic.AVG,
         *,
         hours: Union[str, Tuple[int, int]] = "all",
         tables: Union[str, List[str]] = "all",
@@ -83,7 +82,6 @@ class IntereventInterval(SubscriberFeature):
         subscriber_subset: Optional[Query] = None,
         direction: Union[str, Direction] = Direction.OUT,
     ):
-
         self.start = standardise_date(start)
         self.stop = standardise_date(stop)
         self.hours = hours
@@ -97,13 +95,7 @@ class IntereventInterval(SubscriberFeature):
             *self.direction.required_columns,
         ]
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
-            raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
-            )
+        self.statistic = Statistic(statistic.lower())
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -121,16 +113,15 @@ class IntereventInterval(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
         where_clause = make_where(self.direction.get_filter_clause())
 
         # Postgres does not support the following three operations with intervals
         if self.statistic in {"median", "stddev", "variance"}:
             statistic_clause = (
-                f"MAKE_INTERVAL(secs => {self.statistic}(EXTRACT(EPOCH FROM delta)))"
+                f"MAKE_INTERVAL(secs => {self.statistic:EXTRACT(EPOCH FROM delta)})"
             )
         else:
-            statistic_clause = f"{self.statistic}(delta)"
+            statistic_clause = f"{self.statistic:delta}"
 
         sql = f"""
         SELECT

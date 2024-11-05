@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import UniqueSubscriberCounts
@@ -25,6 +25,9 @@ from .base_schema import BaseSchema
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "unique_subscriber_counts"
+
     def __init__(
         self,
         *,
@@ -73,7 +76,7 @@ class UniqueSubscriberCountsSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
-
     __model__ = UniqueSubscriberCountsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

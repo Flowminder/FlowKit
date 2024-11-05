@@ -20,6 +20,9 @@ __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
 
 
 class UniqueLocationCountsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "unique_location_counts"
+
     def __init__(
         self,
         *,
@@ -66,6 +69,7 @@ class UniqueLocationCountsSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    query_kind = fields.String(validate=OneOf(["unique_location_counts"]))
-
     __model__ = UniqueLocationCountsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)

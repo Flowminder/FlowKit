@@ -103,7 +103,6 @@ def test_confirm_errors(
     # Log in first
     response, csrf_cookie = auth.login(username, password)
     with client:
-
         response = client.post(
             "/user/confirm_two_factor", headers={"X-CSRF-Token": csrf_cookie}, json=data
         )
@@ -171,7 +170,6 @@ def test_backup_code_confirm_errors(
     # Log in first
     response, csrf_cookie = auth.login(username, password)
     with client:
-
         response = client.post(
             "/user/generate_two_factor_backups",
             headers={"X-CSRF-Token": csrf_cookie},

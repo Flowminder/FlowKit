@@ -64,15 +64,15 @@ def subscriber_list():
 @pytest.fixture
 def subscriber_list_table(subscriber_list, flowmachine_connect):
     engine = get_db().engine
-    with engine.begin():
+    with engine.begin() as trans:
         sql = """CREATE TABLE subscriber_list (subscriber TEXT)"""
-        engine.execute(sql)
+        trans.exec_driver_sql(sql)
 
         formatted_subscribers = ",".join("('{}')".format(u) for u in subscriber_list)
         sql = """INSERT INTO subscriber_list (subscriber) VALUES {}""".format(
             formatted_subscribers
         )
-        engine.execute(sql)
+        trans.exec_driver_sql(sql)
     subs_table = Table("subscriber_list")
     yield subs_table
     subs_table.invalidate_db_cache(drop=True)

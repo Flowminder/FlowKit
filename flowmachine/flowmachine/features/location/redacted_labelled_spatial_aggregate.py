@@ -30,7 +30,6 @@ class RedactedLabelledSpatialAggregate(GeoDataMixin, RedactedLabelledAggregate):
         labelled_spatial_aggregate: LabelledSpatialAggregate,
         redaction_threshold: int = 15
     ):
-
         if not hasattr(labelled_spatial_aggregate, "spatial_unit"):
             raise ValueError("labelled_spatial_aggregate must have a spatial unit")
 

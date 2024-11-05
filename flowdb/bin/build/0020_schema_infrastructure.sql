@@ -43,27 +43,13 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
+        geom_point geometry(POINT, 4326, 2),
+        geom_polygon geometry(MULTIPOLYGON, 4326, 2),
 
         UNIQUE (id, version)
 
         );
-    
-    /*
 
-        Here we use PostGIS' AddGeometryColumn
-        for creating the geometry columns `geom_point`
-        and `geom_polygon` on the infrasturcture.*
-        columns. That function has advantages because
-        it registers the SRID of columns with PostGIS
-        metadata and creates a typmod geometry column
-        for checking the SRID and the column specific
-        geometry type (e.g `POINT`, `MULTIPOLYGON`).
-        The same operations is repeated in the 
-        infrastructure.sites column.
-
-    */
-    SELECT AddGeometryColumn('infrastructure', 'sites', 'geom_point', 4326, 'POINT', 2);
-    SELECT AddGeometryColumn('infrastructure', 'sites', 'geom_polygon', 4326, 'MULTIPOLYGON', 2);
 
     CREATE INDEX IF NOT EXISTS infrastructure_sites_geom_point_index
         ON infrastructure.sites
@@ -101,11 +87,10 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
+        geom_point geometry(POINT, 4326, 2),
+        geom_polygon geometry(MULTIPOLYGON, 4326, 2),
         UNIQUE (id, version)
         );
-
-    SELECT AddGeometryColumn('infrastructure', 'cells', 'geom_point', 4326, 'POINT', 2);
-    SELECT AddGeometryColumn('infrastructure', 'cells', 'geom_polygon', 4326, 'MULTIPOLYGON', 2);
 
     CREATE INDEX IF NOT EXISTS infrastructure_cells_geom_point_index
         ON infrastructure.cells
@@ -175,3 +160,73 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
         hnd_type TEXT
 
         );
+
+    -- Table to record each time the cell info is updated
+    CREATE TABLE IF NOT EXISTS infrastructure.cells_table_versions (
+        id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        ingested_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        source_filename TEXT,
+        file_hash TEXT,
+        file_date DATE
+    );
+
+    -- Table to keep records of all cells (including those excluded due to data quality issues, and old versions of cells that have moved/changed).
+    -- Keeping all cell info in this table allows us to reconstruct the cells table as it was at a previous point in time, if necessary.
+    CREATE TABLE IF NOT EXISTS infrastructure.cell_info(
+        id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        cells_table_version INTEGER NOT NULL REFERENCES infrastructure.cells_table_versions (id),
+        mno_cell_id TEXT NOT NULL, -- 'id' in infrastructure.cells
+        dates_of_service TSTZRANGE NOT NULL, -- [date_of_first_service,date_of_last_service) in infrastructure.cells
+        to_include BOOLEAN NOT NULL, -- Flag to indicate whether or not cell should be used in analysis
+        longitude DOUBLE PRECISION, -- x component of 'geom_point' in infrastructure.cells
+        latitude DOUBLE PRECISION, -- y component of 'geom_point' in infrastructure.cells
+        geom_point geometry(Point, 4326) GENERATED ALWAYS AS ( ST_SetSRID(ST_Point(longitude, latitude), 4326) ) STORED,
+        technology TEXT, -- 'type' in infrastructure.cells
+        cell_name TEXT, -- 'name' in infrastructure.cells
+        mno_site_id TEXT, -- 'site_id' in infrastructure.cells
+        msc TEXT,
+        bsc_rnc TEXT,
+        antenna_type TEXT,
+        status TEXT,
+        lac TEXT,
+        height NUMERIC,
+        azimuth NUMERIC,
+        transmitter TEXT,
+        max_range NUMERIC,
+        min_range NUMERIC,
+        electrical_tilt NUMERIC,
+        mechanical_downtilt NUMERIC,
+        included_in_latest_file BOOLEAN NOT NULL, -- True if cell was included in latest cell info file; false if it was copied over from previous cells table and not in latest file
+        additional_metadata JSONB, -- JSON field to catch any fields provided in cell info files that don't fit into the infrastructure.cells table structure
+        notes TEXT, -- Free text field for adding notes related to this cell (e.g. reason for exclusion)
+        EXCLUDE USING GIST (cells_table_version WITH =, mno_cell_id WITH =, dates_of_service WITH &&) -- ensure cell ID is unique across simultaneously-valid cells (so a CDR event can never map to multiple cells)
+            -- Note: this exclude constraint requires btree_gist extension (https://dba.stackexchange.com/questions/37351/postgresql-exclude-using-error-data-type-integer-has-no-default-operator-class)
+    );
+
+    -- Table to keep records of invalid cell information that cannot be included in infrastructure.cell_info (including duplicate cells, and cells with null mno_cell_id).
+    -- This informaion will not be used in CDR analysis, but is useful to keep track of all cell information that has been received.
+    CREATE TABLE IF NOT EXISTS infrastructure.invalid_cell_info(
+        id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        cells_table_version INTEGER NOT NULL REFERENCES infrastructure.cells_table_versions (id),
+        mno_cell_id TEXT,
+        dates_of_service TSTZRANGE,
+        longitude DOUBLE PRECISION,
+        latitude DOUBLE PRECISION,
+        technology TEXT,
+        cell_name TEXT,
+        mno_site_id TEXT,
+        msc TEXT,
+        bsc_rnc TEXT,
+        antenna_type TEXT,
+        status TEXT,
+        lac TEXT,
+        height NUMERIC,
+        azimuth NUMERIC,
+        transmitter TEXT,
+        max_range NUMERIC,
+        min_range NUMERIC,
+        electrical_tilt NUMERIC,
+        mechanical_downtilt NUMERIC,
+        additional_metadata JSONB,
+        notes TEXT
+    );

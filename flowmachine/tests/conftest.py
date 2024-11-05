@@ -163,7 +163,6 @@ def flowmachine_connect():
 
 @pytest.fixture
 def flowmachine_admin_connect():
-
     yield
     reset_cache(get_db(), get_redis(), protect_table_objects=False)
     get_db().engine.dispose()  # Close the connection
@@ -251,7 +250,7 @@ def test_events_table(flowmachine_connect):
         flowdb_password=os.getenv("POSTGRES_PASSWORD"),
     ):
         con = get_db().engine
-        con.execute(
+        con.exec_driver_sql(
             """
             DROP TABLE IF EXISTS events.test;
             CREATE TABLE events.test (
@@ -268,7 +267,7 @@ def test_events_table(flowmachine_connect):
         flowdb_user=os.getenv("POSTGRES_USER"),
         flowdb_password=os.getenv("POSTGRES_PASSWORD"),
     ):
-        con.execute("""DROP TABLE events.test""")
+        con.exec_driver_sql("""DROP TABLE events.test""")
 
 
 class DummyRedis:

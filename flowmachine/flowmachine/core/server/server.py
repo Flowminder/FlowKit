@@ -214,11 +214,7 @@ def shutdown(socket: "zmq.asyncio.Socket") -> None:
     logger.debug("Caught SIGTERM. Shutting down.")
     socket.close()
     logger.debug("Closed ZMQ socket,")
-    tasks = [
-        task
-        for task in asyncio.Task.all_tasks()
-        if task is not asyncio.tasks.Task.current_task()
-    ]
+    tasks = [task for task in asyncio.all_tasks() if task is not asyncio.current_task()]
     list(map(lambda task: task.cancel(), tasks))
     logger.debug("Cancelled all remaining tasks.")
 

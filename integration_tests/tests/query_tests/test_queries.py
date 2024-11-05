@@ -10,6 +10,23 @@ import pytest
 
 queries = [
     partial(
+        flowclient.calendar_activity,
+        start_date="2016-01-01",
+        total_periods=1,
+        event_types=["calls", "sms"],
+    ),
+    partial(
+        flowclient.localised_calendar_activity,
+        start_date="2016-01-01",
+        total_periods=1,
+        event_types=["calls", "sms"],
+        locations=flowclient.daily_location_spec(
+            date="2016-01-01",
+            aggregation_unit="admin3",
+            method="last",
+        ),
+    ),
+    partial(
         flowclient.joined_spatial_aggregate,
         locations=flowclient.daily_location_spec(
             date="2016-01-01",
@@ -776,7 +793,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=True,
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -792,7 +811,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=False,
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -827,7 +848,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -843,7 +866,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -876,7 +901,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -892,7 +919,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -932,7 +961,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=True,
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -948,7 +979,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=False,
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -981,7 +1014,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=True,
             ),
             fallback_location=flowclient.majority_location_spec(
                 subscriber_location_weights=flowclient.location_visits_spec(
@@ -997,7 +1032,9 @@ queries = [
                             method="last",
                         ),
                     ],
-                )
+                ),
+                minimum_total_weight=2,
+                include_unlocatable=False,
             ),
             subscriber_location_weights=flowclient.location_visits_spec(
                 locations=[
@@ -1032,7 +1069,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -1048,7 +1087,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -1081,7 +1122,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=True,
                     ),
                     fallback_location=flowclient.majority_location_spec(
                         subscriber_location_weights=flowclient.location_visits_spec(
@@ -1097,7 +1140,9 @@ queries = [
                                     method="last",
                                 ),
                             ],
-                        )
+                        ),
+                        minimum_total_weight=2,
+                        include_unlocatable=False,
                     ),
                     subscriber_location_weights=flowclient.location_visits_spec(
                         locations=[
@@ -1120,6 +1165,84 @@ queries = [
         ),
         join_type="full outer",
     ),
+    partial(
+        flowclient.inflows,
+        from_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-02",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                ]
+            ),
+        ),
+        to_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-04",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-05",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                ],
+            )
+        ),
+    ),
+    partial(
+        flowclient.outflows,
+        from_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-02",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                ]
+            ),
+        ),
+        to_location=flowclient.majority_location_spec(
+            subscriber_location_weights=flowclient.location_visits_spec(
+                locations=[
+                    flowclient.daily_location_spec(
+                        date="2016-01-04",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                    flowclient.daily_location_spec(
+                        date="2016-01-05",
+                        aggregation_unit="admin3",
+                        method="last",
+                        subscriber_subset=None,
+                    ),
+                ],
+            )
+        ),
+    ),
 ]
 
 
@@ -1137,45 +1260,6 @@ async def test_run_query(connection, query, universal_access_token, flowapi_url)
     Test that queries can be run, and return a QueryResult object.
     """
     con = connection(url=flowapi_url, token=universal_access_token)
-
-    if query.keywords == {
-        "locations": {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "aggregation_unit": "admin3",
-            "method": "last",
-            "event_types": None,
-            "subscriber_subset": None,
-            "mapping_table": None,
-            "geom_table": None,
-            "geom_table_join_column": None,
-            "hours": None,
-        },
-        "metric": {
-            "query_kind": "displacement",
-            "start_date": "2016-01-01",
-            "end_date": "2016-01-02",
-            "statistic": "avg",
-            "reference_location": {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "aggregation_unit": "lon-lat",
-                "method": "last",
-                "event_types": None,
-                "subscriber_subset": None,
-                "mapping_table": None,
-                "geom_table": None,
-                "geom_table_join_column": None,
-                "hours": None,
-            },
-            "event_types": ["calls", "sms"],
-            "subscriber_subset": None,
-            "hours": None,
-        },
-    }:
-        pytest.xfail(
-            "Under new schema rules, cannot presently mix admin levels. See bug #4649"
-        )
 
     try:
         await query(connection=con).get_result()
@@ -1336,7 +1420,9 @@ async def test_get_geography(connection, module, access_token_builder, flowapi_u
     """
     con = connection(
         url=flowapi_url,
-        token=access_token_builder(["get_result&geography.aggregation_unit.admin3"]),
+        token=access_token_builder(
+            {"admin3_role": ["get_result", "admin3:geography:geography"]}
+        ),
     )
     try:
         result_geojson = await module.get_geography(
@@ -1430,7 +1516,9 @@ async def test_get_available_dates(
     """
     con = connection(
         url=flowapi_url,
-        token=access_token_builder(["get_result&available_dates"]),
+        token=access_token_builder(
+            {"date_role": ["get_result", "get_available_dates"]}
+        ),
     )
     try:
         result = await module.get_available_dates(

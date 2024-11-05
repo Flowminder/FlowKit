@@ -39,7 +39,7 @@ def session_mock(dummy_api_url):
 
 @pytest.fixture
 def token():
-    return jwt.encode({"identity": "bar"}, "secret")
+    return jwt.encode({"sub": "bar"}, "secret")
 
 
 @pytest.fixture

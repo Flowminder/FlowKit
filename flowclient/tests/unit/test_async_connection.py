@@ -12,7 +12,6 @@ from flowclient import ASyncConnection
 
 @pytest.mark.asyncio
 async def test_get_url(session_mock, dummy_route, async_flowclient_connection):
-
     session_mock.get(dummy_route).respond(200, content="DUMMY_RETURN")
     assert (
         b"DUMMY_RETURN"

@@ -19,10 +19,11 @@ from .aggregation_unit import AggregationUnitMixin
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 
-from .subscriber_subset import SubscriberSubset
-
 
 class TotalNetworkObjectsExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "total_network_objects"
+
     def __init__(
         self,
         *,
@@ -72,8 +73,8 @@ class TotalNetworkObjectsSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["total_network_objects"]))
-    total_by = TotalBy(required=False, missing="day")
-
     __model__ = TotalNetworkObjectsExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    total_by = TotalBy(required=False, missing="day")

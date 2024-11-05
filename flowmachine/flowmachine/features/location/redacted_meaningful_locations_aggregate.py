@@ -4,6 +4,7 @@
 
 
 from flowmachine.core import Query
+from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.location.meaningful_locations_aggregate import (
     MeaningfulLocationsAggregate,
 )
@@ -12,7 +13,7 @@ from flowmachine.features.location.redacted_location_metric import (
 )
 
 
-class RedactedMeaningfulLocationsAggregate(RedactedLocationMetric, Query):
+class RedactedMeaningfulLocationsAggregate(RedactedLocationMetric, GeoDataMixin, Query):
     """
     Aggregates an individual-level meaningful location to a spatial unit by assigning
     subscribers with clusters in that unit to it. For subscribers with more than one cluster,
@@ -25,7 +26,6 @@ class RedactedMeaningfulLocationsAggregate(RedactedLocationMetric, Query):
     """
 
     def __init__(self, *, meaningful_locations_aggregate: MeaningfulLocationsAggregate):
-
         self.redaction_target = meaningful_locations_aggregate
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = meaningful_locations_aggregate.spatial_unit

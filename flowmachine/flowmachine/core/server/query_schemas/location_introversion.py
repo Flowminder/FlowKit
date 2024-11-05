@@ -9,6 +9,7 @@ from flowmachine.features import LocationIntroversion
 from flowmachine.features.location.redacted_location_introversion import (
     RedactedLocationIntroversion,
 )
+from .custom_fields import Direction
 from .field_mixins import (
     HoursField,
     StartAndEndField,
@@ -24,6 +25,9 @@ from .base_schema import BaseSchema
 
 
 class LocationIntroversionExposed(BaseExposedQuery):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "location_introversion"
+
     def __init__(
         self,
         *,
@@ -75,10 +79,8 @@ class LocationIntroversionSchema(
     AggregationUnitMixin,
     BaseSchema,
 ):
-    # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["location_introversion"]))
-    direction = fields.String(
-        required=False, validate=OneOf(["in", "out", "both"]), default="both"
-    )  # TODO: use a globally defined enum for this
-
     __model__ = LocationIntroversionExposed
+
+    # query_kind parameter is required here for claims validation
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
+    direction = Direction()

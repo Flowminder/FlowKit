@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM python:3.8-alpine
+FROM python:3.8-alpine@sha256:3bd7ea88cb637e09d6c7de24c5394657163a85c2be82bfebe0305cf07f8de1ea
 
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
@@ -14,7 +14,7 @@ RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-b
     pip install --no-cache-dir pipenv==2021.5.29 Cython && pipenv install --clear --deploy && \
     apk del build-dependencies
 COPY . /${SOURCE_TREE}/
-RUN pipenv run python setup.py install
+RUN pipenv run pip install --no-deps --no-cache-dir .
 ENV QUART_ENV=production
 ENV FLOWAPI_PORT=9090
 EXPOSE 80

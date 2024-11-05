@@ -31,7 +31,6 @@ class TruncatedAndOffsetDailyLocation(Query):
         return self.dl_obj.column_names
 
     def _make_query(self):
-
         sql = """
         SELECT * FROM
             ( SELECT * FROM ({dl}) AS dl LIMIT {size} OFFSET {offset} ) l

@@ -48,7 +48,12 @@ def test_union_raises_with_mismatched_columns():
 
 def test_union_raises_with_not_enough_queries():
     """
-    Test that unioning less than two queries raises an error.
+    Test that unioning empty list raises an error.
     """
     with pytest.raises(ValueError):
-        Union(Table(schema="events", name="calls"))
+        Union(*[])
+
+
+def test_union_warns_on_single():
+    with pytest.warns(UserWarning, match="Single queries are not deduped by Union."):
+        Union(Table(schema="events", name="calls", columns=["msisdn"]), all=False)

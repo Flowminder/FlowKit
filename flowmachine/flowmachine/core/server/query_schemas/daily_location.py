@@ -6,8 +6,7 @@ from marshmallow import fields
 from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
-from .custom_fields import EventTypes, ISODateTime, Hours
-from .subscriber_subset import SubscriberSubset
+from .custom_fields import ISODateTime
 from .aggregation_unit import AggregationUnitMixin
 from .base_query_with_sampling import (
     BaseQueryWithSamplingSchema,
@@ -19,6 +18,9 @@ __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
 
 class DailyLocationExposed(BaseExposedQueryWithSampling):
+    # query_kind class attribute is required for nesting and serialisation
+    query_kind = "daily_location"
+
     def __init__(
         self,
         date,
@@ -66,9 +68,9 @@ class DailyLocationSchema(
     AggregationUnitMixin,
     BaseQueryWithSamplingSchema,
 ):
+    __model__ = DailyLocationExposed
+
     # query_kind parameter is required here for claims validation
-    query_kind = fields.String(validate=OneOf(["daily_location"]))
+    query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     date = ISODateTime(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
-
-    __model__ = DailyLocationExposed

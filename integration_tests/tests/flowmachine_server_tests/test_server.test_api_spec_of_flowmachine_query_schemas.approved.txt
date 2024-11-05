@@ -1,6 +1,17 @@
 {
   "ActiveAtReferenceLocationCounts": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "active_at_reference_location_counts"
@@ -14,6 +25,11 @@
         "$ref": "#/components/schemas/UniqueLocations"
       }
     },
+    "required": [
+      "query_kind",
+      "reference_locations",
+      "unique_locations"
+    ],
     "type": "object"
   },
   "AggregateNetworkObjects": {
@@ -30,6 +46,17 @@
         ],
         "type": "string"
       },
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "query_kind": {
         "enum": [
           "aggregate_network_objects"
@@ -39,11 +66,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -53,6 +82,8 @@
       }
     },
     "required": [
+      "aggregate_by",
+      "query_kind",
       "statistic",
       "total_network_objects"
     ],
@@ -105,6 +136,78 @@
     ],
     "type": "object"
   },
+  "CalendarActivity": {
+    "properties": {
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "period_length": {
+        "default": 1,
+        "type": "integer"
+      },
+      "period_unit": {
+        "default": "days",
+        "enum": [
+          "days",
+          "hours",
+          "minutes"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "calendar_activity"
+        ],
+        "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
+      "total_periods": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "query_kind",
+      "start_date",
+      "total_periods"
+    ],
+    "type": "object"
+  },
   "CoalescedLocation": {
     "properties": {
       "fallback_location": {
@@ -137,6 +240,7 @@
     "required": [
       "fallback_location",
       "preferred_location",
+      "query_kind",
       "subscriber_location_weights",
       "weight_threshold"
     ],
@@ -212,6 +316,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -256,6 +361,7 @@
       "aggregation_unit",
       "end_date",
       "metric",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -341,7 +447,8 @@
     "required": [
       "aggregation_unit",
       "date",
-      "method"
+      "method",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -399,11 +506,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -415,6 +524,8 @@
     },
     "required": [
       "end_date",
+      "query_kind",
+      "reference_location",
       "start_date",
       "statistic"
     ],
@@ -460,13 +571,15 @@
     },
     "required": [
       "aggregation_unit",
-      "dummy_param"
+      "dummy_param",
+      "query_kind"
     ],
     "type": "object"
   },
   "EventCount": {
     "properties": {
       "direction": {
+        "default": "both",
         "enum": [
           "both",
           "in",
@@ -527,6 +640,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -536,20 +650,24 @@
       "mapping": {
         "active_at_reference_location_counts": "#/components/schemas/ActiveAtReferenceLocationCounts",
         "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
+        "calendar_activity": "#/components/schemas/CalendarActivity",
         "consecutive_trips_od_matrix": "#/components/schemas/ConsecutiveTripsODMatrix",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
         "histogram_aggregate": "#/components/schemas/HistogramAggregate",
+        "inflows": "#/components/schemas/Inflows",
         "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
         "labelled_flows": "#/components/schemas/LabelledFlows",
         "labelled_spatial_aggregate": "#/components/schemas/LabelledSpatialAggregate",
+        "localised_calendar_activity": "#/components/schemas/LocalisedCalendarActivity",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
+        "outflows": "#/components/schemas/Outflows",
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "trips_od_matrix": "#/components/schemas/TripsODMatrix",
@@ -566,6 +684,9 @@
       },
       {
         "$ref": "#/components/schemas/AggregateNetworkObjects"
+      },
+      {
+        "$ref": "#/components/schemas/CalendarActivity"
       },
       {
         "$ref": "#/components/schemas/ConsecutiveTripsODMatrix"
@@ -586,6 +707,9 @@
         "$ref": "#/components/schemas/HistogramAggregate"
       },
       {
+        "$ref": "#/components/schemas/Inflows"
+      },
+      {
         "$ref": "#/components/schemas/JoinedSpatialAggregate"
       },
       {
@@ -593,6 +717,9 @@
       },
       {
         "$ref": "#/components/schemas/LabelledSpatialAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/LocalisedCalendarActivity"
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
@@ -608,6 +735,9 @@
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/Outflows"
       },
       {
         "$ref": "#/components/schemas/SpatialAggregate"
@@ -634,6 +764,17 @@
   },
   "Flows": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "from_location": {
         "$ref": "#/components/schemas/InputToFlows"
       },
@@ -661,6 +802,7 @@
     },
     "required": [
       "from_location",
+      "query_kind",
       "to_location"
     ],
     "type": "object"
@@ -697,7 +839,8 @@
       }
     },
     "required": [
-      "aggregation_unit"
+      "aggregation_unit",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -772,7 +915,10 @@
       }
     },
     "required": [
+      "characteristic",
       "end_date",
+      "method",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -796,7 +942,9 @@
       }
     },
     "required": [
-      "metric"
+      "bins",
+      "metric",
+      "query_kind"
     ],
     "type": "object"
   },
@@ -879,6 +1027,51 @@
     "required": [
       "end_hour",
       "start_hour"
+    ],
+    "type": "object"
+  },
+  "Inflows": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
+      "from_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "inflows"
+        ],
+        "type": "string"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      }
+    },
+    "required": [
+      "from_location",
+      "query_kind",
+      "to_location"
     ],
     "type": "object"
   },
@@ -987,18 +1180,31 @@
   },
   "JoinedSpatialAggregate": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "locations": {
         "$ref": "#/components/schemas/ReferenceLocation"
       },
       "method": {
         "enum": [
           "avg",
+          "count",
           "distr",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -1015,12 +1221,25 @@
     },
     "required": [
       "locations",
-      "metric"
+      "method",
+      "metric",
+      "query_kind"
     ],
     "type": "object"
   },
   "LabelledFlows": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "from_location": {
         "$ref": "#/components/schemas/CoalescedLocation"
       },
@@ -1052,12 +1271,24 @@
     "required": [
       "from_location",
       "labels",
+      "query_kind",
       "to_location"
     ],
     "type": "object"
   },
   "LabelledSpatialAggregate": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "labels": {
         "$ref": "#/components/schemas/MobilityClassification"
       },
@@ -1073,7 +1304,94 @@
     },
     "required": [
       "labels",
-      "locations"
+      "locations",
+      "query_kind"
+    ],
+    "type": "object"
+  },
+  "LocalisedCalendarActivity": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
+      "event_types": {
+        "default": null,
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "hours": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hours"
+          }
+        ],
+        "default": null,
+        "nullable": true
+      },
+      "period_length": {
+        "default": 1,
+        "type": "integer"
+      },
+      "period_unit": {
+        "default": "days",
+        "enum": [
+          "days",
+          "hours",
+          "minutes"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "localised_calendar_activity"
+        ],
+        "type": "string"
+      },
+      "reference_location": {
+        "$ref": "#/components/schemas/ReferenceLocation"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
+      "start_date": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "nullable": true,
+        "type": "string"
+      },
+      "total_periods": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "query_kind",
+      "start_date",
+      "total_periods"
     ],
     "type": "object"
   },
@@ -1090,6 +1408,7 @@
         "type": "string"
       },
       "direction": {
+        "default": "both",
         "enum": [
           "both",
           "in",
@@ -1162,9 +1481,9 @@
     },
     "required": [
       "aggregation_unit",
-      "direction",
       "end_date",
       "interval",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1182,6 +1501,7 @@
         "type": "string"
       },
       "direction": {
+        "default": "both",
         "enum": [
           "both",
           "in",
@@ -1247,6 +1567,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1275,6 +1596,10 @@
         "nullable": true
       }
     },
+    "required": [
+      "locations",
+      "query_kind"
+    ],
     "type": "object"
   },
   "MajorityLocation": {
@@ -1282,6 +1607,10 @@
       "include_unlocatable": {
         "default": false,
         "type": "boolean"
+      },
+      "minimum_total_weight": {
+        "default": 0.0,
+        "type": "number"
       },
       "query_kind": {
         "enum": [
@@ -1302,6 +1631,7 @@
       }
     },
     "required": [
+      "query_kind",
       "subscriber_location_weights"
     ],
     "type": "object"
@@ -1373,9 +1703,11 @@
         "type": "string"
       },
       "tower_cluster_call_threshold": {
+        "default": 0,
         "type": "integer"
       },
       "tower_cluster_radius": {
+        "default": 1.0,
         "type": "number"
       },
       "tower_day_of_week_scores": {
@@ -1402,6 +1734,7 @@
       "end_date",
       "label",
       "labels",
+      "query_kind",
       "start_date",
       "tower_day_of_week_scores",
       "tower_hour_of_day_scores"
@@ -1483,9 +1816,11 @@
         "type": "string"
       },
       "tower_cluster_call_threshold": {
+        "default": 0,
         "type": "integer"
       },
       "tower_cluster_radius": {
+        "default": 1.0,
         "type": "number"
       },
       "tower_day_of_week_scores": {
@@ -1512,6 +1847,8 @@
       "end_date_a",
       "end_date_b",
       "label",
+      "labels",
+      "query_kind",
       "start_date_a",
       "start_date_b",
       "tower_day_of_week_scores",
@@ -1589,9 +1926,11 @@
         "type": "string"
       },
       "tower_cluster_call_threshold": {
+        "default": 0,
         "type": "integer"
       },
       "tower_cluster_radius": {
+        "default": 1.0,
         "type": "number"
       },
       "tower_day_of_week_scores": {
@@ -1618,6 +1957,8 @@
       "end_date",
       "label_a",
       "label_b",
+      "labels",
+      "query_kind",
       "start_date",
       "tower_day_of_week_scores",
       "tower_hour_of_day_scores"
@@ -1652,6 +1993,8 @@
       }
     },
     "required": [
+      "locations",
+      "query_kind",
       "stay_length_threshold"
     ],
     "type": "object"
@@ -1680,6 +2023,10 @@
         "nullable": true
       }
     },
+    "required": [
+      "locations",
+      "query_kind"
+    ],
     "type": "object"
   },
   "MostFrequentLocation": {
@@ -1760,6 +2107,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1785,15 +2133,8 @@
         "nullable": true,
         "type": "array"
       },
-      "night_end_hour": {
-        "maximum": 23,
-        "minimum": 0,
-        "type": "integer"
-      },
-      "night_start_hour": {
-        "maximum": 23,
-        "minimum": 0,
-        "type": "integer"
+      "night_hours": {
+        "$ref": "#/components/schemas/Hours"
       },
       "query_kind": {
         "enum": [
@@ -1820,7 +2161,54 @@
     },
     "required": [
       "end_date",
+      "night_hours",
+      "query_kind",
       "start_date"
+    ],
+    "type": "object"
+  },
+  "Outflows": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
+      "from_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      },
+      "join_type": {
+        "default": "inner",
+        "enum": [
+          "full outer",
+          "inner",
+          "left",
+          "left outer",
+          "right",
+          "right outer"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "outflows"
+        ],
+        "type": "string"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      }
+    },
+    "required": [
+      "from_location",
+      "query_kind",
+      "to_location"
     ],
     "type": "object"
   },
@@ -1885,6 +2273,7 @@
     "required": [
       "end_date",
       "proportion",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -1944,6 +2333,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2038,6 +2428,17 @@
   },
   "SpatialAggregate": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "locations": {
         "$ref": "#/components/schemas/ReferenceLocation"
       },
@@ -2049,13 +2450,15 @@
       }
     },
     "required": [
-      "locations"
+      "locations",
+      "query_kind"
     ],
     "type": "object"
   },
   "SubscriberDegree": {
     "properties": {
       "direction": {
+        "default": "both",
         "enum": [
           "both",
           "in",
@@ -2116,6 +2519,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2188,11 +2592,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -2204,6 +2610,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date",
       "statistic"
     ],
@@ -2245,11 +2652,13 @@
       "statistic": {
         "enum": [
           "avg",
+          "count",
           "max",
           "median",
           "min",
           "mode",
           "stddev",
+          "sum",
           "variance"
         ],
         "type": "string"
@@ -2261,6 +2670,7 @@
     },
     "required": [
       "end_date",
+      "query_kind",
       "start_date",
       "statistic"
     ],
@@ -2324,6 +2734,7 @@
       }
     },
     "required": [
+      "query_kind",
       "start_date",
       "total_periods"
     ],
@@ -2411,6 +2822,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2485,6 +2897,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2559,6 +2972,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2641,6 +3055,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2715,6 +3130,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"
@@ -2723,6 +3139,17 @@
     "properties": {
       "active_at_reference_location_counts": {
         "$ref": "#/components/schemas/ActiveAtReferenceLocationCounts"
+      },
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
       },
       "query_kind": {
         "enum": [
@@ -2734,10 +3161,26 @@
         "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     },
+    "required": [
+      "active_at_reference_location_counts",
+      "query_kind",
+      "unique_subscriber_counts"
+    ],
     "type": "object"
   },
   "UnmovingAtReferenceLocationCounts": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "locations": {
         "$ref": "#/components/schemas/UniqueLocations"
       },
@@ -2751,10 +3194,26 @@
         "$ref": "#/components/schemas/ReferenceLocation"
       }
     },
+    "required": [
+      "locations",
+      "query_kind",
+      "reference_locations"
+    ],
     "type": "object"
   },
   "UnmovingCounts": {
     "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3",
+          "lon-lat"
+        ],
+        "readOnly": true,
+        "type": "string"
+      },
       "locations": {
         "$ref": "#/components/schemas/UniqueLocations"
       },
@@ -2765,6 +3224,10 @@
         "type": "string"
       }
     },
+    "required": [
+      "locations",
+      "query_kind"
+    ],
     "type": "object"
   },
   "VisitableLocation": {
@@ -2862,6 +3325,7 @@
     "required": [
       "aggregation_unit",
       "end_date",
+      "query_kind",
       "start_date"
     ],
     "type": "object"

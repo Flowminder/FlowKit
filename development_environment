@@ -117,11 +117,12 @@ P_RELOCATE=0.1
 INTERACTIONS_MULTIPLIER=5
 DISASTER_START=2016-02-11
 DISASTER_END=2016-03-01
-DISASTER_REGION_PCOD="524 4 12"
+DISASTER_REGION_PCOD="NPL.1.1_1"
 SUBSCRIBERS_SEED=12345
 CALLS_SEED=22222
 CELLS_SEED=99999
 OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
+SKIP_TEST_QA_CHECK=False
 
 # Integration tests
 
@@ -129,6 +130,7 @@ FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 
 # FlowETL
 SQL_ALCHEMY_CONN=postgresql://flowetl:flowetl@flowetl_db:5432/flowetl
+AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://flowetl:flowetl@flowetl_db:5432/flowetl
 FLOWETL_FERNET_KEY=ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=
 FLOWETL_PORT=8080
 FLOWETL_POSTGRES_PASSWORD=flowetl
@@ -138,6 +140,10 @@ FLOWETL_POSTGRES_PORT=9001
 FLOWETL_AIRFLOW_ADMIN_USERNAME=admin
 FLOWETL_AIRFLOW_ADMIN_PASSWORD=password
 FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT=4
+FLOWETL_CELERY_PORT=25555
+FLOWETL_WORKER_COUNT=1
+FLOWETL_REDIS_PASSWORD=flowetl
+FLOWETL_WEBSERVER_PASSWORD=admin
 
 HOST_DAGS_DIR=./flowetl/mounts/dags
 
@@ -148,25 +154,3 @@ PUBLIC_JWT_SIGNING_KEY=LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUNJakFOQmdrcWhra
 
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
-
-## AutoFlow settings
-# Directory containing AutoFlow input files
-AUTOFLOW_INPUTS_DIR=./autoflow/examples/inputs
-# Directory to store AutoFlow output files
-AUTOFLOW_OUTPUTS_DIR=./autoflow/examples/outputs
-# Error and debugging log level
-AUTOFLOW_LOG_LEVEL=DEBUG
-# Path to prefect config file
-PREFECT__USER_CONFIG_PATH=./autoflow/config/config.toml
-# Path to asciidoc template
-PREFECT__ASCIIDOC_TEMPLATE_PATH=./autoflow/config/asciidoc_extended.tpl
-# FlowAPI URL
-FLOWAPI_URL=http://localhost:9090
-# URI of database for storing workflow run metadata
-AUTOFLOW_DB_URI=sqlite:////tmp/test.db
-# Password for AutoFlow database
-#AUTOFLOW_DB_PASSWORD
-# FlowAPI token
-#FLOWAPI_TOKEN
-# Path to SSL certificate for FlowAPI
-#SSL_CERTIFICATE_FILE

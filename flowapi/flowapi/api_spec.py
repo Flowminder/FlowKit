@@ -13,11 +13,13 @@ blueprint = Blueprint("spec", __name__)
 
 async def get_spec(socket: Socket, request_id: str) -> APISpec:
     """
-    Construct open api spec by interrogating FlowMachine.
+    Construct open api spec by interrogating FlowMachine. Always returns the default specs of
+    'run', 'get_results' and 'get_available_dates'
 
     Parameters
     ----------
     socket : Socket
+        ZeroMQ socket used to deliver messages to Flowmachine instance
     request_id : str
         Unique id of the request
 
@@ -32,16 +34,6 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     #  Get the reply.
     reply = await socket.recv_json()
     flowmachine_query_schemas = reply["payload"]["query_schemas"]
-    # Need to mark query_kind as a required field
-    # this is a workaround because the marshmallow-oneOf plugin strips
-    # the query_kind off, which means it can't be required from the marshmallow
-    # side without raising an error
-    for schema, schema_dict in flowmachine_query_schemas.items():
-        try:
-            if "query_kind" in schema_dict["properties"]:
-                schema_dict["required"].append("query_kind")
-        except KeyError:
-            pass  # Doesn't have any properties
     spec = APISpec(
         title="FlowAPI",
         version=__version__,
@@ -54,11 +46,11 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     )
     spec.components.schemas.update(flowmachine_query_schemas)
     scopes = [
-        scope.format(aggregation_unit=agg_unit)
-        for scope in schema_to_scopes(spec.to_dict())
-        for agg_unit in flowmachine_query_schemas["DummyQuery"]["properties"][
-            "aggregation_unit"
-        ]["enum"]
+        *schema_to_scopes(spec.to_dict()),
+        "run",
+        "get_available_dates",
+        "get_result",
+        "get_qa_checks",
     ]
     spec.components.security_scheme(
         "token",
@@ -80,7 +72,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
                 for method, op in operations.items():
                     op["operationId"] = f"{rule.endpoint}.{method}"
                 spec.path(
-                    path=rule.rule,
+                    path=rule.rule.replace("<", "{").replace(">", "}"),
                     operations=operations,
                 )
         except Exception as e:

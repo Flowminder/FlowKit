@@ -11,30 +11,26 @@
 
 ARG CODE_VERSION=latest
 FROM flowminder/flowdb:${CODE_VERSION}
+# Something causes a a hang if we don't do this: https://github.com/docker-library/postgres/discussions/1183#discussioncomment-10205585
+ENV PAGER=cat
 
 
 #
-#   Install Python 3.9 (needed to run the data generation scripts)
+#   Install pyenv to avoid being pinned to debian python
 #
 
-RUN echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list \
-        && apt-get -y update \
-        && apt-get -y install python3.9 python3.9-distutils python3-psutil \
-        && pip3 install --no-cache-dir pipenv \
-        && pip3 install --upgrade pip \
-        && apt-get clean --yes \
-        && apt-get autoclean --yes \
-        && apt-get autoremove --yes \
-        && rm -rf /var/cache/debconf/*-old \
-        && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install git -y --no-install-recommends && \
+    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get purge -y --auto-remove
 
 #
 # Install python dependencies
 #
-COPY --chown=postgres flowdb/testdata/test_data/Pipfile* /tmp/
-RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three \
-    && rm /tmp/Pipfile*
-
+COPY --chown=postgres flowdb/testdata/test_data/Pipfile* /docker-entrypoint-initdb.d/
+USER postgres
+RUN cd /docker-entrypoint-initdb.d/ && pipenv install --clear --deploy
+USER root
 #
 #   Add test data to the ingestion directory. 
 #
@@ -46,7 +42,8 @@ COPY --chown=postgres flowdb/testdata/bin/* /docker-entrypoint-initdb.d/
 ADD --chown=postgres flowdb/testdata/test_data/sql/* /docker-entrypoint-initdb.d/sql/testdata/
 ADD --chown=postgres flowdb/testdata/test_data/py/* /docker-entrypoint-initdb.d/py/testdata/
 ADD --chown=postgres flowdb/testdata/test_data/data/ /docker-entrypoint-initdb.d/data/
-COPY  --chown=postgres flowdb/testdata/test_data/data/*.csv /docker-entrypoint-initdb.d/data/csv/
+COPY --chown=postgres flowdb/testdata/test_data/data/*.csv /docker-entrypoint-initdb.d/data/csv/
+COPY --chown=postgres flowetl/flowetl/flowetl/qa_checks/qa_checks /docker-entrypoint-initdb.d/qa_checks
 # Need to make postgres owner of any subdirectories
 RUN chown -R postgres /docker-entrypoint-initdb.d
 # Explicitly set number of days of dfs data to match test data

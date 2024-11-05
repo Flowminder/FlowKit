@@ -42,7 +42,7 @@ fi
 #
 
 if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "python" ]; then
-  python3 /opt/synthetic_data/generate_synthetic_data.py \
+  pipenv run python /opt/synthetic_data/generate_synthetic_data.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
@@ -53,10 +53,10 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_
       --output-root-dir ${OUTPUT_ROOT_DIR}
 elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "sql" ]; then
   COUNTRY=${COUNTRY:-"NPL"}
-  wget --retry-connrefused -t=5 "https://data.biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_${COUNTRY}_shp.zip" -O /docker-entrypoint-initdb.d/data/geo.zip
+  wget --retry-connrefused -t=5 "https://geodata.ucdavis.edu/gadm/gadm3.6/shp/gadm36_${COUNTRY}_shp.zip" -O /docker-entrypoint-initdb.d/data/geo.zip
   unzip /docker-entrypoint-initdb.d/data/geo.zip -d /docker-entrypoint-initdb.d/data/geo
   echo $(ls /docker-entrypoint-initdb.d/data/)
-  python3 /opt/synthetic_data/generate_synthetic_data_sql.py \
+  pipenv run python /opt/synthetic_data/generate_synthetic_data_sql.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
@@ -68,11 +68,16 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC
       --out-of-area-probability ${P_OUT_OF_AREA:-0.05}\
       --relocation-probability ${P_RELOCATE:-0.05}\
       --interactions-multiplier ${INTERACTIONS_MULTIPLIER:-5}\
-      --disaster-zone ${DISASTER_REGION_PCOD:-"NPL.1.1_1"} \
+      --disaster-zone \"${DISASTER_REGION_PCOD:-"NPL.1.1_1"}\" \
       --disaster-start-date ${DISASTER_START:-"2015-01-01"} \
       --disaster-end-date ${DISASTER_END:-"2015-01-01"} \
       --country ${COUNTRY} || (cat cat /var/lib/postgresql/data/pg_log/postgres-* && exit 1)
 else
     echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
     exit 1
+fi
+if [ "${SKIP_TEST_QA_CHECK}" != "true" ]; then
+   cd /docker-entrypoint-initdb.d
+   echo "Running QA checks on test data"
+   pipenv run python run_qa_checks.py qa_checks
 fi

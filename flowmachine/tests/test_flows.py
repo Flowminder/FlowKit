@@ -9,20 +9,20 @@ import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location
-from flowmachine.features.location.flows import *
+from flowmachine.features.location.flows import Flows
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
 
 
-@pytest.mark.parametrize("query", [InFlow, OutFlow])
+@pytest.mark.parametrize("query", ["outflow", "inflow"])
 def test_column_names_inout(query, exemplar_spatial_unit_param):
     """Test that column_names property matches head(0) for InFlow & OutFlow"""
     flow = Flows(
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
         daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param),
     )
-    query_instance = query(flow)
+    query_instance = getattr(flow, query)()
     assert query_instance.head(0).columns.tolist() == query_instance.column_names
 
 

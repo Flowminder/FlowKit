@@ -52,32 +52,43 @@ async def test_get_query(
         {"key": "value2"},
     ]
     token = access_token_builder(
-        [
-            "get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION",
-            "get_result&geography.aggregation_unit.DUMMY_AGGREGATION",
-        ]
+        {
+            "test_role": [
+                "get_result",
+                "DUMMY_AGGREGATION_UNIT:modal_location:modal_location",
+                "DUMMY_AGGREGATION_UNIT:geography:geography",
+            ]
+        }
     )
 
-    reply_1 = {
-        "status": "success",
-        "payload": {
-            "query_id": "5ffe4a96dbe33a117ae9550178b81836",
-            "query_params": {
-                "aggregation_unit": "DUMMY_AGGREGATION",
-                "query_kind": "modal_location",
+    dummy_zmq_server.side_effect = (
+        {
+            "status": "success",
+            "payload": {
+                "query_id": "5ffe4a96dbe33a117ae9550178b81836",
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+                    "query_kind": "modal_location",
+                },
             },
         },
-    }
-
-    reply_2 = {
-        "status": "success",
-        "payload": {
-            "query_state": "completed",
-            "sql": "SELECT 1;",
-            "aggregation_unit": "DUMMY_AGGREGATION",
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {
+                "query_id": "DUMMY_QUERY_ID",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+            },
         },
-    }
-    dummy_zmq_server.side_effect = (reply_1, reply_2)
+        {
+            "status": "success",
+            "payload": {
+                "query_state": "completed",
+                "sql": "SELECT 1;",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
+            },
+        },
+    )
     response = await app.client.get(
         f"/api/0/get/DUMMY_QUERY_ID{filetype}",
         headers={"Authorization": f"Bearer {token}"},
@@ -120,7 +131,12 @@ async def test_get_json_status_code(
     """
 
     token = access_token_builder(
-        ["get_result&modal_location.aggregation_unit.DUMMY_AGGREGATION"]
+        {
+            "test_role": [
+                "get_result",
+                "DUMMY_AGGREGATION_UNIT:modal_location:modal_location",
+            ]
+        }
     )
 
     # The replies below are in response to the following messages:
@@ -133,9 +149,16 @@ async def test_get_json_status_code(
             payload={
                 "query_id": "DUMMY_QUERY_ID",
                 "query_params": {
-                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
                     "query_kind": "modal_location",
                 },
+            },
+        ),
+        ZMQReply(
+            status="success",
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "aggregation_unit": "DUMMY_AGGREGATION_UNIT",
             },
         ),
         ZMQReply(
