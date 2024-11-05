@@ -11,9 +11,18 @@ class QStub(Query):
 
     This class serves as a lightweight placeholder for cached queries,
     particularly when handling queries from different versions.
+
+    Parameters
+    ----------
+    deps : list[Query]
+        The dependencies of the original query
+    qid : str
+        The query ID hash of the original query
+    flowmachine_version : str
+        The flowmachine version used to create this cache record
     """
 
-    def __init__(self, deps: list["Query"], qid: str) -> None:
+    def __init__(self, deps: list["Query"], qid: str, flowmachine_version: str) -> None:
         """
         Parameters
         ----------
@@ -24,6 +33,7 @@ class QStub(Query):
         """
         self.deps = deps
         self._md5 = qid
+        self.flowmachine_version = flowmachine_version
         super().__init__()
 
     def _make_query(self) -> str:
