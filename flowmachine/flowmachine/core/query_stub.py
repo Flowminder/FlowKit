@@ -6,11 +6,25 @@ from flowmachine.core.query import Query
 
 
 class QStub(Query):
-    def __init__(self, deps, qid):
+    """
+    A stub representation of a Query object used for version-aware caching.
+    
+    This class serves as a lightweight placeholder for cached queries,
+    particularly when handling queries from different versions.
+    """
+    
+    def __init__(self, deps: list["Query"], qid: str) -> None:
+        """
+        Parameters
+        ----------
+        deps : list[Query]
+            The dependencies of the original query
+        qid : str
+            The query ID hash of the original query
+        """
         self.deps = deps
         self._md5 = qid
         super().__init__()
-
     def _make_query(self):
         pass
 
