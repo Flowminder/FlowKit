@@ -9,7 +9,12 @@ from datetime import datetime, timezone
 import numpy as np
 
 from flowmachine.features import SubscriberLocations
-from flowmachine.core import JoinToLocation, location_joined_query, make_spatial_unit
+from flowmachine.core import (
+    JoinToLocation,
+    location_joined_query,
+    make_spatial_unit,
+    Table,
+)
 from flowmachine.core.errors import InvalidSpatialUnitError
 
 
@@ -124,7 +129,7 @@ def test_join_with_polygon(get_dataframe, get_length):
         spatial_unit=make_spatial_unit(
             "polygon",
             region_id_column_name="admin3pcod",
-            geom_table="geography.admin3",
+            geom_table=Table("geography.admin3", columns=["admin3pcod", "geom"]),
             geom_column="geom",
         ),
     )

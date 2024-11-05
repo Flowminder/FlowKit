@@ -46,7 +46,7 @@ def test_can_force_rewrite(flowmachine_connect, get_length):
     sql = """DELETE FROM tests.test_rewrite"""
     with get_db().engine.begin() as conn:
         conn.exec_driver_sql(sql)
-    assert 0 == get_length(Table("tests.test_rewrite"))
+    assert 0 == get_length(Table("tests.test_rewrite", columns=query.column_names))
     query.invalidate_db_cache(name="test_rewrite", schema="tests")
     query.to_sql(name="test_rewrite", schema="tests").result()
-    assert 1 < get_length(Table("tests.test_rewrite"))
+    assert 1 < get_length(Table("tests.test_rewrite", columns=query.column_names))

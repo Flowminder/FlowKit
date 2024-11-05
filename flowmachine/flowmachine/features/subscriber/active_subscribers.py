@@ -80,7 +80,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
                 total_major_periods=4,
                 minor_period_threshold=1,
                 major_period_threshold=3,
-                tables=["events.calls"],
+                tables=["calls"],
             )
 
     Returns subscribers that were active in at least two ten minute intervals within half an hour,
@@ -94,7 +94,7 @@ class ActiveSubscribers(ExposedDatetimeMixin, Query):
                 minor_period_threshold=2,
                 major_period_threshold=3,
                 period_unit="minutes",
-                tables=["events.calls"],
+                tables=["calls"],
             )
 
 

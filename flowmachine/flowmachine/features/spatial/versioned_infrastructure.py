@@ -14,6 +14,7 @@ from typing import List
 from datetime import datetime
 
 from flowmachine.core import Table
+from ...core.infrastructure_table import infrastructure_table_map
 from ...core.query import Query
 
 
@@ -62,7 +63,7 @@ class VersionedInfrastructure(Query):
         if date == None:
             date = datetime.now().strftime("%Y-%m-%d")
 
-        self.table = Table(schema="infrastructure", name=table)
+        self.table = infrastructure_table_map[table]()
         self.date = date
 
         super().__init__()

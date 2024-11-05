@@ -4,6 +4,7 @@
 
 from flowmachine.core import CustomQuery
 from flowmachine.core.errors import InvalidSpatialUnitError
+from flowmachine.core.infrastructure_table import SitesTable
 from flowmachine.core.spatial_unit import *
 import pytest
 
@@ -47,7 +48,7 @@ def test_get_geom_query_column_names(
             {
                 "spatial_unit_type": "polygon",
                 "region_id_column_name": "id",
-                "geom_table": "infrastructure.sites",
+                "geom_table": SitesTable(),
                 "geom_column": "geom_point",
             },
             ["id"],
@@ -56,7 +57,7 @@ def test_get_geom_query_column_names(
             {
                 "spatial_unit_type": "polygon",
                 "region_id_column_name": ["id"],
-                "geom_table": "infrastructure.sites",
+                "geom_table": SitesTable(),
                 "geom_column": "geom_point",
             },
             ["id"],
@@ -97,7 +98,7 @@ def test_polygon_spatial_unit_column_list():
     passed_cols = ["id"]
     psu = PolygonSpatialUnit(
         geom_table_column_names=passed_cols,
-        geom_table="infrastructure.sites",
+        geom_table=SitesTable(),
         geom_column="geom_point",
     )
     loc_cols = psu.location_id_columns
@@ -127,7 +128,9 @@ def test_missing_location_columns_raises_error():
             {
                 "spatial_unit_type": "polygon",
                 "region_id_column_name": "id",
-                "geom_table": "infrastructure.sites",
+                "geom_table": Table(
+                    "infrastructure.sites", columns=["id", "geom_point"]
+                ),
                 "geom_column": "geom_point",
             },
             "polygon",
@@ -158,12 +161,12 @@ def test_canonical_names(make_spatial_unit_args, expected_name):
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "admin3pcod",
-            "geom_table": "geography.admin3",
+            "geom_table": Table("geography.admin3", columns=["admin3pcod", "geom"]),
         },
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "id",
-            "geom_table": "infrastructure.sites",
+            "geom_table": Table("infrastructure.sites", columns=["id", "geom_point"]),
             "geom_column": "geom_point",
         },
     ],

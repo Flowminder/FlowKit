@@ -56,7 +56,7 @@ def test_scoring(flowmachine_connect):
     dl_time = get_compute_time(get_db(), dl.query_id)
     dl_size = get_size_of_table(get_db(), dl.table_name, "cache")
     initial_score = get_score(get_db(), dl.query_id)
-    cachey_scorer = Scorer(halflife=1000.0)
+    cachey_scorer = Scorer(halflife=get_cache_half_life(get_db()))
     cache_score = cachey_scorer.touch("dl", dl_time / dl_size)
     assert cache_score == pytest.approx(initial_score)
 
@@ -78,6 +78,7 @@ def test_touch_cache_record_for_query(flowmachine_connect):
     Touching a cache record for a query should update access count, last accessed, & counter.
     """
     table = daily_location("2016-01-01").store().result()
+    initial_touches = get_db().fetch("SELECT nextval('cache.cache_touches');")[0][0]
 
     assert (
         1
@@ -96,7 +97,10 @@ def test_touch_cache_record_for_query(flowmachine_connect):
         )[0][0]
     )
     # Two cache touches should have been recorded
-    assert 4 == get_db().fetch("SELECT nextval('cache.cache_touches');")[0][0]
+    assert (
+        initial_touches + 2
+        == get_db().fetch("SELECT nextval('cache.cache_touches');")[0][0]
+    )
     assert (
         accessed_at
         < get_db().fetch(
@@ -109,7 +113,8 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     """
     Touching a cache record for a table should update access count and last accessed but not touch score, or counter.
     """
-    table = Table("events.calls_20160101")
+    table = Table("events.calls_20160101", columns=["id"])
+    table.preflight()
     with get_db().engine.begin() as conn:
         conn.exec_driver_sql(
             f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%(ident)s",
@@ -525,6 +530,7 @@ def test_cache_reset_protects_tables(flowmachine_connect):
     """
     # Regression test for https://github.com/Flowminder/FlowKit/issues/832
     dl_query = daily_location(date="2016-01-03", method="last")
+    dl_query.preflight()
     reset_cache(get_db(), get_redis())
     for dep in dl_query._get_stored_dependencies():
         assert dep.query_id in [x.query_id for x in Query.get_stored()]

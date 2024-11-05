@@ -14,6 +14,7 @@
 # action handler and also gracefully handles any potential errors.
 #
 import asyncio
+import structlog
 from contextvars import copy_context
 from functools import partial
 import json
@@ -41,6 +42,10 @@ __all__ = ["perform_action"]
 from ..connection import MissingCheckError
 
 from ..dependency_graph import query_progress
+from ..errors.flowmachine_errors import PreFlightFailedException
+import traceback
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 async def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
@@ -80,6 +85,16 @@ async def action_handler__get_query_schemas(
 def _load_query_object(params: dict) -> "BaseExposedQuery":
     try:
         query_obj = FlowmachineQuerySchema().load(params)
+        query_obj._flowmachine_query_obj.preflight()  # Note that we probably want to remove this call to allow getting qid faster
+    except PreFlightFailedException as exc:
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
+        )
+        raise QueryLoadError(
+            error_msg, params, orig_error_msg=orig_error_msg, errors=exc.errors
+        )
     except TypeError as exc:
         # We need to catch TypeError here, otherwise they propagate up to
         # perform_action() and result in a very misleading error message.
@@ -198,11 +213,24 @@ async def action_handler__run_query(
                     ),
                 ),
             )
-        except Exception as e:
+        except PreFlightFailedException as exc:
+            orig_error_msg = exc.args[0]
+            error_msg = f"Preflight failed for {exc.query_id}."
+            return ZMQReply(
+                status="error",
+                msg=error_msg,
+                payload={
+                    "params": action_params,
+                    "orig_error_msg": orig_error_msg,
+                    "errors": exc.errors,
+                },
+            )
+        except Exception as exc:
+            logger.error(str(exc), exception=exc, traceback=traceback.format_exc())
             return ZMQReply(
                 status="error",
                 msg="Unable to create query object.",
-                payload={"exception": str(e)},
+                payload={"exception": str(exc)},
             )
 
         # Register the query as "known" (so that we can later look up the query kind

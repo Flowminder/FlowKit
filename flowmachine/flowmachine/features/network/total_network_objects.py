@@ -10,7 +10,7 @@ at the network level.
 
 
 """
-
+import datetime
 from typing import List, Optional, Tuple, Union
 
 from ...core.context import get_db
@@ -66,8 +66,8 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     def __init__(
         self,
-        start=None,
-        stop=None,
+        start: Union[str, datetime.date, datetime.datetime],
+        stop: Union[str, datetime.date, datetime.datetime],
         *,
         table="all",
         total_by="day",
@@ -77,18 +77,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.start = standardise_date(
-            get_db().min_date(table=table) if start is None else start
-        )
-        self.stop = standardise_date(
-            get_db().max_date(table=table) if stop is None else stop
-        )
+        self.start = standardise_date(start)
+        self.stop = standardise_date(stop)
 
         self.table = table
         if isinstance(self.table, str):
             self.table = self.table.lower()
-            if self.table != "all" and not self.table.startswith("events"):
-                self.table = "events.{}".format(self.table)
 
         network_object.verify_criterion("is_network_object")
         self.network_object = network_object

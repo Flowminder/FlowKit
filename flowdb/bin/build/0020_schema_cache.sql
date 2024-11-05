@@ -49,3 +49,6 @@ CREATE TABLE cache.cache_config (key text, value text);
 INSERT INTO cache.cache_config (key, value) VALUES ('half_life', NULL);
 INSERT INTO cache.cache_config (key, value) VALUES ('cache_size', NULL);
 INSERT INTO cache.cache_config (key, value) VALUES ('cache_protected_period', NULL);
+
+CREATE TABLE cache.zero_cache (object_class text);
+INSERT INTO cache.zero_cache (object_class) VALUES ('Table'), ('GeoTable'), ('CallsTable'), ('SmsTable'), ('MdsTable'), ('TopupsTable'), ('ForwardsTable'), ('TacsTable'), ('CellsTable'), ('SitesTable');

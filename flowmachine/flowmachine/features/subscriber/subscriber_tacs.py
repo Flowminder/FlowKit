@@ -17,6 +17,7 @@ from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core import Table
 from flowmachine.utils import standardise_date
+from ...core.infrastructure_table import TacsTable
 
 valid_characteristics = {
     "brand",
@@ -312,7 +313,7 @@ class SubscriberHandsets(SubscriberFeature):
             subscriber_identifier=subscriber_identifier,
             subscriber_subset=subscriber_subset,
         )
-        self.tacs = Table("infrastructure.tacs")
+        self.tacs = TacsTable()
         self.joined = self.subscriber_tacs.join(self.tacs, "tac", "id", how="left")
         super().__init__()
 
@@ -393,8 +394,7 @@ class SubscriberHandset(SubscriberFeature):
             method=method,
             subscriber_subset=subscriber_subset,
         )
-        self.method = method
-        self.tacs = Table("infrastructure.tacs")
+        self.tacs = TacsTable()
         self.joined = self.subscriber_tac.join(self.tacs, "tac", "id", how="left")
         super().__init__()
 

@@ -81,11 +81,11 @@ def test_is_stored():
 
     class storable_query(Query):
         def _make_query(self):
-            return """SELECT 1"""
+            return """SELECT 1 as col"""
 
         @property
         def column_names(self) -> List[str]:
-            return ["1"]
+            return ["col"]
 
     sq = storable_query()
     sq.invalidate_db_cache()
