@@ -342,8 +342,11 @@ def test_retrieve_query_other_version(flowmachine_connect, monkeypatch):
         ctxt.setattr("flowmachine.__version__", "OLD_VERSION")
         ctxt.setattr("flowmachine.core.cache.__version__", "OLD_VERSION")
         dl = daily_location("2016-01-01").store().result()
-    other_version = get_obj_or_stub(get_db(), dl.query_id)
+    query_id = dl.query_id
+    del Query._QueryPool[query_id]
+    other_version = get_obj_or_stub(get_db(), query_id)
     assert isinstance(other_version, QStub)
+    assert other_version.flowmachine_version == "OLD_VERSION"
 
 
 def test_df_not_pickled():

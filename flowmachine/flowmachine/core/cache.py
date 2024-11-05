@@ -76,6 +76,9 @@ def get_obj_or_stub(connection: "Connection", query_id: str):
         return QStub(
             deps=[get_obj_or_stub(connection, res[0]) for res in connection.fetch(qry)],
             qid=query_id,
+            flowmachine_version=connection.fetch(
+                f"SELECT version FROM cache.cached WHERE query_id='{query_id}'"
+            )[0][0],
         )
 
 
