@@ -8,11 +8,11 @@ from flowmachine.core.query import Query
 class QStub(Query):
     """
     A stub representation of a Query object used for version-aware caching.
-    
+
     This class serves as a lightweight placeholder for cached queries,
     particularly when handling queries from different versions.
     """
-    
+
     def __init__(self, deps: list["Query"], qid: str) -> None:
         """
         Parameters
@@ -25,9 +25,26 @@ class QStub(Query):
         self.deps = deps
         self._md5 = qid
         super().__init__()
-    def _make_query(self):
-        pass
+
+    def _make_query(self) -> str:
+        """
+        Not implemented for stub queries.
+
+        Raises
+        ------
+        NotImplementedError
+            Always, as stub queries cannot generate SQL.
+        """
+        raise NotImplementedError("Stub queries cannot generate SQL")
 
     @property
-    def column_names(self):
-        pass
+    def column_names(self) -> list[str]:
+        """
+        Not implemented for stub queries.
+
+        Raises
+        ------
+        NotImplementedError
+            Always, as stub queries cannot generate SQL.
+        """
+        raise NotImplementedError("Stub queries cannot provide column names.")

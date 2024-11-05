@@ -295,10 +295,12 @@ def write_cache_metadata(
         )
 
         if not in_cache:
-            logger.debug("Writing dependencies",
-                        query_id=query.query_id,
-                        dependencies=query.dependencies,
-                        stored_dependencies=query._get_stored_dependencies(exclude_self=True))
+            logger.debug(
+                "Writing dependencies",
+                query_id=query.query_id,
+                dependencies=query.dependencies,
+                stored_dependencies=query._get_stored_dependencies(exclude_self=True),
+            )
             for dep in query._get_stored_dependencies(exclude_self=True):
                 connection.exec_driver_sql(
                     "INSERT INTO cache.dependencies values (%(query_id)s, %(dep_id)s) ON CONFLICT DO NOTHING",
