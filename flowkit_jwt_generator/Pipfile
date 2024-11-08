@@ -13,7 +13,7 @@ simplejson = "*"
 
 [dev-packages]
 versioneer = "*"
-pytest-cov = "*"
+"pytest-cov" = "<6.0.0" # Pinned because we're stuck on 3.8
 flowkit-jwt-generator = {editable = true,path = ".", extras=["pytest", "cli"]}
 black = {extras = ["jupyter"],version = "==24.8.0"}
 

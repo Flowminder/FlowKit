@@ -658,12 +658,10 @@
         },
         "flowclient": {
             "editable": true,
-            "markers": "python_version >= '3.6'",
             "path": "./../flowclient"
         },
         "flowkit-jwt-generator": {
             "editable": true,
-            "markers": "python_version >= '3.6'",
             "path": "./../flowkit_jwt_generator"
         },
         "flowmachine": {

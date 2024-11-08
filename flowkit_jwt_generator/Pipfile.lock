@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b99b7dbfefbedfda1da82b774df163e6fb884f926bc847a1308ba362bb61376b"
+            "sha256": "7ca5fcba110b0939ed483a20bb06d241c79c9a4d00e3d4f30b2fcce566639007"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -860,7 +860,6 @@
                 "cli",
                 "pytest"
             ],
-            "markers": "python_version >= '3.6'",
             "path": "."
         },
         "idna": {

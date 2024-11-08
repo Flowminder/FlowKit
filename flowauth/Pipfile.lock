@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "339c83418ce38411af3cb5314ddfe0bad352117f2b8c2328aac4159475af1df4"
+            "sha256": "86038ff04c21eb83f1ea02c04c86fb497045bb28b40cc1e6acbfecb965835041"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1242,7 +1242,6 @@
             "extras": [
                 "pytest"
             ],
-            "markers": "python_version >= '3.6'",
             "path": "./../flowkit_jwt_generator"
         },
         "get-secret-or-env-var": {

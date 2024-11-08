@@ -23,7 +23,7 @@ werkzeug = "*"
 [dev-packages]
 pytest = "*"
 pytest-asyncio = "*"
-"pytest-cov" = "*"
+"pytest-cov" = "<6.0.0" # Pinned because we're stuck on 3.8
 asynctest = "*"
 black = {extras = ["jupyter"],version = "==24.8.0"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator", extras=["pytest"]}

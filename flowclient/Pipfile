@@ -13,7 +13,7 @@ tqdm = "*"
 [dev-packages]
 pytest = "*"
 pytest-asyncio = "*"
-pytest-cov = "*"
+"pytest-cov" = "<6.0.0" # Pinned because we're stuck on 3.8
 asynctest = "*"
 versioneer = "*"
 black = {extras = ["jupyter"],version = "==24.3.0"}
