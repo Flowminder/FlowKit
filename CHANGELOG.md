@@ -8,14 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+### Changed 
+
+### Fixed
+
+### Removed
+
+## [1.31.0]
+
 ### Changed
 - Mode is now available for use with categorical metrics when running joined spatial aggregates via api. [#2021](https://github.com/Flowminder/FlowKit/issues/2021) 
 - Flowmachine now includes the version number in query ids which means cache entries are per-version. [#4489](https://github.com/Flowminder/FlowKit/issues/4489) 
 
 ### Fixed
-- Fixed dangling async tasks not being properly cancelled during server shutdown [#6833](https://github.com/Flowminder/FlowKit/issues/6833) 
-
-### Removed
+- Fixed dangling async tasks not being properly cancelled during server shutdown [#6833](https://github.com/Flowminder/FlowKit/issues/6833)
 
 ## [1.30.0]
 
@@ -1170,7 +1176,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.30.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.31.0...master
+[1.31.0]: https://github.com/Flowminder/FlowKit/compare/1.30.0...1.31.0
 [1.30.0]: https://github.com/Flowminder/FlowKit/compare/1.29.0...1.30.0
 [1.29.0]: https://github.com/Flowminder/FlowKit/compare/1.28.1...1.29.0
 [1.28.1]: https://github.com/Flowminder/FlowKit/compare/1.28.0...1.28.1
