@@ -891,20 +891,20 @@
         },
         "approval-utilities": {
             "hashes": [
-                "sha256:619c596194c80ee41b36d44e8426cbf999f7afaf871b45502512888cf077322e",
-                "sha256:6e7a651e5fbf905e55907e51cb02b9ae9367e4bc2cf530aedbfc5e02a13020a3"
+                "sha256:404bba9262808c4163dc210e25d403fa3d67f873edc9438a08d9764c786256d3",
+                "sha256:522a413459de35830e9e37bdd9ec8d77bbf9bb813d26e59f595415f725f190e4"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==14.2.0"
+            "version": "==14.3.0"
         },
         "approvaltests": {
             "hashes": [
-                "sha256:be30109746b42fe5089d6d31404d01f6a0e7e4e0e7858d9aa5dde4148003adf1",
-                "sha256:c98af65c4710539f1b90332ee9fd8f627d5b5d9ecf249fdade145223bd7e9082"
+                "sha256:75442bf03018735542fc139c39a467bff71e4c13a2db1a40d8b9a3fa376b171b",
+                "sha256:c9983e24c2ebb35904b6d220bfe119016137c539c03ae95c702e49e02d9204bd"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==14.2.0"
+            "version": "==14.3.0"
         },
         "asttokens": {
             "hashes": [
