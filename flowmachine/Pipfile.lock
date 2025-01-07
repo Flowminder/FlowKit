@@ -137,12 +137,12 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:20c0f8c613f68bcb45b2a0d3282e2f172575560170bf220d67aafb42717910e4",
-                "sha256:d586c8685ebdb80bf754e1f96e3f305aaf30951f1fc69175b977453633467e76"
+                "sha256:378572f727e52123d00de1bdd9b7ea7bed18bbfedc7f9bfbcddaf78925a8d602",
+                "sha256:459922b7a1fd3d29d5082ddcadfcea0efd98985030e71d3ef0dd8f44f406e41d"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==3.23.3"
+            "version": "==3.24.0"
         },
         "marshmallow-oneofschema": {
             "hashes": [
