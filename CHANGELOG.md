@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed 
+- Modified FlowETL `count_duplicates` and `count_duplicated` QA check queries to improve performance, without changing the results. [#6935](https://github.com/Flowminder/FlowKit/issues/6935)
 
 ### Fixed
 
