@@ -2,14 +2,20 @@ SELECT count(*) FROM
   (SELECT count(*) as n_dupes
     FROM {{ final_table }}
     GROUP BY
+        msisdn,
+        datetime,
+        imsi,
+        imei,
+        tac,
+        location_id,
     {% if cdr_type == 'calls' %}
+        msisdn_counterpart,
         outgoing,
         duration,
-        msisdn_counterpart,
         network,
     {% elif cdr_type == 'sms' %}
-        outgoing,
         msisdn_counterpart,
+        outgoing,
         network,
     {% elif cdr_type == 'mds' %}
         duration,
@@ -24,12 +30,6 @@ SELECT count(*) FROM
         pre_event_balance,
         post_event_balance,
     {% endif %}
-        datetime,
-        msisdn,
-        location_id,
-        imsi,
-        imei,
-        tac,
         operator_code,
         country_code
     HAVING count(*) > 1) tableWithCount
