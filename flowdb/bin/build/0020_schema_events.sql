@@ -76,7 +76,7 @@ CREATE SCHEMA IF NOT EXISTS events;
         network TEXT,
 
         msisdn TEXT COLLATE "C" NOT NULL,
-        msisdn_counterpar COLLATE "C" TEXT,
+        msisdn_counterpart TEXT COLLATE "C",
 
         location_id TEXT,
 
