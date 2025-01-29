@@ -52,13 +52,13 @@ CREATE SCHEMA IF NOT EXISTS events;
 
         network TEXT,
 
-        msisdn TEXT NOT NULL,
-        msisdn_counterpart TEXT,
+        msisdn TEXT COLLATE "C" NOT NULL,
+        msisdn_counterpart TEXT COLLATE "C",
 
         location_id TEXT,
 
-        imsi TEXT,
-        imei TEXT,
+        imsi TEXT COLLATE "C",
+        imei TEXT COLLATE "C",
         tac NUMERIC(8),
 
         operator_code NUMERIC,
@@ -75,13 +75,13 @@ CREATE SCHEMA IF NOT EXISTS events;
         datetime TIMESTAMPTZ NOT NULL,
         network TEXT,
 
-        msisdn TEXT NOT NULL,
-        msisdn_counterpart TEXT,
+        msisdn TEXT COLLATE "C" NOT NULL,
+        msisdn_counterpar COLLATE "C" TEXT,
 
         location_id TEXT,
 
-        imsi TEXT,
-        imei TEXT,
+        imsi TEXT COLLATE "C",
+        imei TEXT COLLATE "C",
         tac NUMERIC(8),
 
         operator_code NUMERIC,
@@ -97,12 +97,12 @@ CREATE SCHEMA IF NOT EXISTS events;
         datetime TIMESTAMPTZ NOT NULL,
         network TEXT,
 
-        msisdn TEXT NOT NULL,
-        msisdn_counterpart TEXT,
+        msisdn TEXT COLLATE "C" NOT NULL,
+        msisdn_counterpart TEXT COLLATE "C",
 
         location_id TEXT,
-        imsi TEXT,
-        imei TEXT,
+        imsi TEXT COLLATE "C",
+        imei TEXT COLLATE "C",
         tac NUMERIC(8),
 
         operator_code NUMERIC,
@@ -121,11 +121,11 @@ CREATE SCHEMA IF NOT EXISTS events;
         volume_upload NUMERIC,
         volume_download NUMERIC,
 
-        msisdn TEXT NOT NULL,
+        msisdn TEXT COLLATE "C" NOT NULL,
 
         location_id TEXT,
-        imsi TEXT,
-        imei TEXT,
+        imsi TEXT COLLATE "C",
+        imei TEXT COLLATE "C",
         tac NUMERIC(8),
 
         operator_code NUMERIC,
@@ -146,11 +146,11 @@ CREATE SCHEMA IF NOT EXISTS events;
         pre_event_balance NUMERIC,
         post_event_balance NUMERIC,
 
-        msisdn TEXT NOT NULL,
+        msisdn TEXT COLLATE "C" NOT NULL,
 
         location_id TEXT,
-        imsi TEXT,
-        imei TEXT,
+        imsi TEXT COLLATE "C",
+        imei TEXT COLLATE "C",
         tac NUMERIC(8),
 
         operator_code NUMERIC,
