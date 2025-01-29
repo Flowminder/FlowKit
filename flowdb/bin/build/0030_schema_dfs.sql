@@ -51,7 +51,7 @@ CREATE SCHEMA IF NOT EXISTS dfs;
     CREATE TABLE IF NOT EXISTS dfs.subscribers(
 
         id     BIGSERIAL PRIMARY KEY,
-        msisdn TEXT
+        msisdn TEXT COLLATE "C"
 
         );
 
