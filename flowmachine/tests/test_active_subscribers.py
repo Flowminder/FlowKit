@@ -26,9 +26,9 @@ def test_active_subscribers_one_day(get_dataframe):
     target = df.from_records(
         [
             ["038OVABN11Ak4W5P"],
-            ["0gmvwzMAYbz5We1E"],
             ["0MQ4RYeKn7lryxGa"],
             ["0Ze1l70j0LNgyY4w"],
+            ["0gmvwzMAYbz5We1E"],
             ["1d29oEA95KEzAKlW"],
         ],
         columns=["subscriber"],
@@ -52,9 +52,9 @@ def test_active_subscribers_many_days(get_dataframe):
         [
             ["038OVABN11Ak4W5P"],
             ["09NrjaNNvDanD8pk"],
-            ["0ayZGYEQrqYlKw6g"],
             ["0DB8zw67E9mZAPK2"],
             ["0Gl95NRLjW2aw8pW"],
+            ["0MQ4RYeKn7lryxGa"],
         ],
         columns=["subscriber"],
     )
