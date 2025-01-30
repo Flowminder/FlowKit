@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed 
 - Modified FlowETL `count_duplicates` and `count_duplicated` QA check queries to improve performance, without changing the results. [#6935](https://github.com/Flowminder/FlowKit/issues/6935)
+- Columns `msisdn`, `msisdn_counterpart`, `imsi` and `imei` in the FlowDB events/interactions tables now use `"C"` collation. This change requires reindexing affected columns. [#6941](https://github.com/Flowminder/FlowKit/issues/6941)
 
 ### Fixed
 

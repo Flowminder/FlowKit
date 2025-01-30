@@ -556,6 +556,10 @@ if __name__ == "__main__":
                 ALTER TABLE events.calls_{table} ADD CONSTRAINT calls_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
                 ALTER TABLE events.calls_{table} ALTER msisdn SET NOT NULL;
                 ALTER TABLE events.calls_{table} ALTER datetime SET NOT NULL;
+                ALTER TABLE events.calls_{table} ALTER msisdn TYPE TEXT COLLATE "C";
+                ALTER TABLE events.calls_{table} ALTER msisdn_counterpart TYPE TEXT COLLATE "C";
+                ALTER TABLE events.calls_{table} ALTER imsi TYPE TEXT COLLATE "C";
+                ALTER TABLE events.calls_{table} ALTER imei TYPE TEXT COLLATE "C";
                 """,
                     )
                 )
@@ -608,7 +612,11 @@ if __name__ == "__main__":
                 ALTER TABLE events.sms_{table} ADD CONSTRAINT sms_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
                 ALTER TABLE events.sms_{table} ALTER msisdn SET NOT NULL;
                 ALTER TABLE events.sms_{table} ALTER datetime SET NOT NULL;
-                """,
+                ALTER TABLE events.sms_{table} ALTER msisdn TYPE TEXT COLLATE "C";
+                ALTER TABLE events.sms_{table} ALTER msisdn_counterpart TYPE TEXT COLLATE "C";
+                ALTER TABLE events.sms_{table} ALTER imsi TYPE TEXT COLLATE "C";
+                ALTER TABLE events.sms_{table} ALTER imei TYPE TEXT COLLATE "C";
+               """,
                     )
                 )
 
@@ -645,6 +653,9 @@ if __name__ == "__main__":
                 ALTER TABLE events.mds_{table} ADD CONSTRAINT mds_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
                 ALTER TABLE events.mds_{table} ALTER msisdn SET NOT NULL;
                 ALTER TABLE events.mds_{table} ALTER datetime SET NOT NULL;
+                ALTER TABLE events.mds_{table} ALTER msisdn TYPE TEXT COLLATE "C";
+                ALTER TABLE events.mds_{table} ALTER imsi TYPE TEXT COLLATE "C";
+                ALTER TABLE events.mds_{table} ALTER imei TYPE TEXT COLLATE "C";
                 """,
                     )
                 )

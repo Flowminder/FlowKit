@@ -36,9 +36,9 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.subscriber(
 
         subscriber_id           BIGSERIAL PRIMARY KEY,
-        msisdn                  TEXT,
-        imei                    TEXT,
-        imsi                    TEXT,
+        msisdn                  TEXT COLLATE "C",
+        imei                    TEXT COLLATE "C",
+        imsi                    TEXT COLLATE "C",
         tac                     BIGINT REFERENCES infrastructure.tacs(id),
         UNIQUE (msisdn, imei, imsi, tac)
         );
@@ -76,8 +76,8 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         date_dim_id                 BIGINT NOT NULL REFERENCES public.d_date(date_dim_id),
         called_subscriber_id        BIGINT REFERENCES interactions.subscriber(subscriber_id),
         called_party_location_id    BIGINT REFERENCES interactions.locations(location_id),
-        calling_party_msisdn        TEXT,
-        called_party_msisdn         TEXT,
+        calling_party_msisdn        TEXT COLLATE "C",
+        called_party_msisdn         TEXT COLLATE "C",
         duration                    NUMERIC,
         PRIMARY KEY (event_id, date_dim_id),
         FOREIGN KEY (event_id, date_dim_id) REFERENCES interactions.event_supertable (event_id, date_dim_id)
@@ -88,8 +88,8 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         date_dim_id                 BIGINT NOT NULL REFERENCES public.d_date(date_dim_id),
         called_subscriber_id        BIGINT REFERENCES interactions.subscriber(subscriber_id),
         called_party_location_id    BIGINT REFERENCES interactions.locations(location_id),
-        calling_party_msisdn        TEXT,
-        called_party_msisdn         TEXT,
+        calling_party_msisdn        TEXT COLLATE "C",
+        called_party_msisdn         TEXT COLLATE "C",
         PRIMARY KEY (event_id, date_dim_id),
         FOREIGN KEY (event_id, date_dim_id) REFERENCES interactions.event_supertable (event_id, date_dim_id)
     ) PARTITION BY RANGE (date_dim_id);

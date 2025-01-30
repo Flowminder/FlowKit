@@ -45,8 +45,8 @@ def test_majority_location(get_dataframe, location_visits):
             ["3XKdxqvyNxO2vLD1", "524 4 12 62"],
             ["81B6q0K8k325XWmn", "524 1 03 13"],
             ["8dXPM6JXj05qwjW0", "524 4 12 62"],
-            ["bKZLwjrMQG7z468y", "524 4 12 62"],
-            ["g9D5KEK9BQzOa8z0", "524 4 11 57"],
+            ["KmdyQlgVyQjDWvJN", "524 3 08 44"],
+            ["Ma0Xv1XJxE2JV7r8", "524 3 09 49"],
         ],
         columns=["subscriber", "pcod"],
     )
