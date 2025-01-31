@@ -8,13 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-### Changed 
-- Modified FlowETL `count_duplicates` and `count_duplicated` QA check queries to improve performance, without changing the results. [#6935](https://github.com/Flowminder/FlowKit/issues/6935)
-- Columns `msisdn`, `msisdn_counterpart`, `imsi` and `imei` in the FlowDB events/interactions tables now use `"C"` collation. This change requires reindexing affected columns. [#6941](https://github.com/Flowminder/FlowKit/issues/6941)
+### Changed
 
 ### Fixed
 
 ### Removed
+
+## [1.32.0]
+
+### Changed 
+- Modified FlowETL `count_duplicates` and `count_duplicated` QA check queries to improve performance, without changing the results. [#6935](https://github.com/Flowminder/FlowKit/issues/6935)
+- Columns `msisdn`, `msisdn_counterpart`, `imsi` and `imei` in the FlowDB events/interactions tables now use `"C"` collation. This change requires reindexing affected columns. [#6941](https://github.com/Flowminder/FlowKit/issues/6941)
 
 ## [1.31.0]
 
@@ -1178,7 +1182,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.31.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.32.0...master
+[1.32.0]: https://github.com/Flowminder/FlowKit/compare/1.31.0...1.32.0
 [1.31.0]: https://github.com/Flowminder/FlowKit/compare/1.30.0...1.31.0
 [1.30.0]: https://github.com/Flowminder/FlowKit/compare/1.29.0...1.30.0
 [1.29.0]: https://github.com/Flowminder/FlowKit/compare/1.28.1...1.29.0
