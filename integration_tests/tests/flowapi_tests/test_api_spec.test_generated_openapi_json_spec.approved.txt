@@ -1682,6 +1682,7 @@
           },
           "labels": {
             "additionalProperties": {
+              "additionalProperties": {},
               "type": "object"
             },
             "type": "object"
@@ -1791,6 +1792,7 @@
           },
           "labels": {
             "additionalProperties": {
+              "additionalProperties": {},
               "type": "object"
             },
             "type": "object"
@@ -1905,6 +1907,7 @@
           },
           "labels": {
             "additionalProperties": {
+              "additionalProperties": {},
               "type": "object"
             },
             "type": "object"

@@ -36,7 +36,7 @@ setup(
         "asyncpg",
         "pyyaml ==5.3.1",
         "jsonschema ==4.17.3",
-        "apispec[yaml]",
+        "apispec[yaml] < 6.7.1",  # Constrained to < 6.7.1 due to https://github.com/Flowminder/FlowKit/issues/6015#issuecomment-2627056217
         "get-secret-or-env-var",
         "prance[osv]",
         "openapi-schema-validator < 0.3.0",  # Pending https://github.com/Flowminder/FlowKit/issues/6015
