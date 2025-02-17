@@ -30,6 +30,7 @@ from flowmachine.core.context import (
     submit_to_executor,
 )
 from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+from flowmachine.core.query_manager import get_manager
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
@@ -580,12 +581,27 @@ class Query(metaclass=ABCMeta):
                 unstored_dependencies_graph(self)
             )  # Need to ensure we're behind our deps in the queue
 
+        ddl_ops_func = self._make_sql
+
+        logger.debug("Attempting to queue query", query_id=self.query_id)
         current_state, changed_to_queue = QueryStateMachine(
             get_redis(), self.query_id, get_db().conn_id
         ).enqueue()
-        logger.debug(
-            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
-        )
+        if changed_to_queue:
+            logger.debug("Queued", query_id=self.query_id)
+        else:
+            logger.debug(
+                "Not queued", query_id=self.query_id, query_state=current_state
+            )
+            try:
+                logger.debug(
+                    "Managed elsewhere.",
+                    manager=get_manager(self.query_id, get_db().conn_id, get_redis()),
+                )
+            except AttributeError:
+                pass  # Not being managed
+
+        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = submit_to_executor(
             write_query_to_cache,
             name=name,

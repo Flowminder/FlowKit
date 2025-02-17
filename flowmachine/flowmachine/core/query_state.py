@@ -16,6 +16,7 @@ from typing import Tuple
 
 from redis import StrictRedis
 
+from flowmachine.core.query_manager import set_managing, unset_managing
 from flowmachine.utils import _sleep
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -103,7 +104,9 @@ class QueryStateMachine:
 
     def __init__(self, redis_client: StrictRedis, query_id: str, db_id: str):
         self.query_id = query_id
+        self.db_id = db_id
         must_populate = redis_client.get(f"finist:{db_id}:{query_id}-state") is None
+        self.redis_client = redis_client
         self.state_machine = Finist(
             redis_client, f"{db_id}:{query_id}-state", QueryState.KNOWN
         )
@@ -270,7 +273,10 @@ class QueryStateMachine:
             triggered the query to be cancelled with this call
 
         """
-        return self.trigger_event(QueryEvent.CANCEL)
+        state, changed = self.trigger_event(QueryEvent.CANCEL)
+        if changed:
+            unset_managing(self.query_id, self.db_id, self.redis_client)
+        return state, changed
 
     def enqueue(self):
         """
@@ -283,7 +289,10 @@ class QueryStateMachine:
             triggered the query to be queued with this call
 
         """
-        return self.trigger_event(QueryEvent.QUEUE)
+        state, changed = self.trigger_event(QueryEvent.QUEUE)
+        if changed:
+            set_managing(self.query_id, self.db_id, self.redis_client)
+        return state, changed
 
     def raise_error(self):
         """
@@ -296,7 +305,10 @@ class QueryStateMachine:
             marked the query as erroring with this call
 
         """
-        return self.trigger_event(QueryEvent.ERROR)
+        state, changed = self.trigger_event(QueryEvent.ERROR)
+        if changed:
+            unset_managing(self.query_id, self.db_id, self.redis_client)
+        return state, changed
 
     def execute(self):
         """
@@ -322,7 +334,10 @@ class QueryStateMachine:
             marked the query as finished with this call
 
         """
-        return self.trigger_event(QueryEvent.FINISH)
+        state, changed = self.trigger_event(QueryEvent.FINISH)
+        if changed:
+            unset_managing(self.query_id, self.db_id, self.redis_client)
+        return state, changed
 
     def reset(self):
         """

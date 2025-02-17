@@ -9,6 +9,8 @@ managing queries.
 
 from contextvars import ContextVar, copy_context
 from concurrent.futures import Executor, Future
+
+import uuid
 from contextlib import contextmanager
 from typing import Callable, NamedTuple
 
@@ -34,9 +36,13 @@ try:
     action_request
 except NameError:
     action_request = ContextVar("action_request")
+try:
+    interpreter_id
+except NameError:
+    interpreter_id = ContextVar("interpreter_id", default=str(uuid.uuid4()))
 
-_jupyter_context = (
-    dict()
+_jupyter_context = dict(
+    interpreter_id=interpreter_id.get()
 )  # Required as a workaround for https://github.com/ipython/ipython/issues/11565
 
 _is_notebook = False
@@ -129,6 +135,17 @@ def get_executor() -> Executor:
         raise NotConnectedError
 
 
+def get_interpreter_id() -> str:
+    global _jupyter_context
+    try:
+        if _is_notebook:
+            return interpreter_id.get(_jupyter_context["interpreter_id"])
+        else:
+            return interpreter_id.get()
+    except (LookupError, KeyError):
+        raise RuntimeError("No interpreter id.")
+
+
 def submit_to_executor(func: Callable, *args, **kwargs) -> Future:
     """
     Submit a callable to the current context's executor pool and
@@ -178,6 +195,9 @@ def bind_context(
         db.set(connection)
         executor.set(executor_pool)
         redis_connection.set(redis_conn)
+    from flowmachine.core.init import _register_exit_handlers
+
+    _register_exit_handlers(redis_conn)
 
 
 @contextmanager
@@ -207,6 +227,9 @@ def context(connection: Connection, executor_pool: Executor, redis_conn: StrictR
     db_token = db.set(connection)
     redis_token = redis_connection.set(redis_conn)
     executor_token = executor.set(executor_pool)
+    from flowmachine.core.init import _register_exit_handlers
+
+    _register_exit_handlers(redis_conn)
     try:
         yield
     finally:

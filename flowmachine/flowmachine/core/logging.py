@@ -6,7 +6,7 @@ import logging
 import rapidjson
 import structlog
 import sys
-from flowmachine.core.context import get_action_request
+from flowmachine.core.context import get_action_request, get_interpreter_id
 
 __all__ = ["init_logging", "set_log_level"]
 
@@ -25,6 +25,10 @@ def action_request_processor(_, __, event_dict):
         )
     except LookupError:
         pass
+    event_dict = dict(
+        **event_dict,
+        interpreter_id=get_interpreter_id(),
+    )
     return event_dict
 
 

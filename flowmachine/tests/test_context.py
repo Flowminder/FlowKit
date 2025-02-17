@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import importlib
 
 import pytest
-from flowmachine.core.errors import NotConnectedError
+from flowmachine.core.context import get_interpreter_id, get_executor
 
 
 @pytest.fixture(autouse=True)
@@ -26,6 +26,13 @@ def reload_context(monkeypatch):
 @pytest.fixture
 def flowmachine_connect():  # Override the autoused fixture from the parent
     pass
+
+
+def test_consistent_interpreter_id():
+    import flowmachine
+
+    flowmachine.connect()
+    assert get_executor().submit(get_interpreter_id).result() == get_interpreter_id()
 
 
 def test_context_manager():
@@ -81,7 +88,7 @@ def test_notebook_detection_without_ipython_shell(monkeypatch):
     importlib.reload(flowmachine.core.context)
 
     assert not flowmachine.core.context._is_notebook
-    assert len(flowmachine.core.context._jupyter_context) == 0
+    assert len(flowmachine.core.context._jupyter_context) == 1
 
 
 def test_notebook_workaround(monkeypatch):
