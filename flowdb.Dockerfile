@@ -12,7 +12,7 @@
 #  on the official Debian Stretch (9) image.
 #
 
-FROM postgres:16.4-bullseye@sha256:aa6e59636e717dd800a26f524aeb5c031a2b4fe42a84f85104fa2fe89874d1ad
+FROM postgres:17.4-bullseye@sha256:4db14a820126a0759e9b2372180dcf3e6d3762de0ad6e33d000afa091f6b5627
 
 
 ARG POSTGIS_MAJOR=3
