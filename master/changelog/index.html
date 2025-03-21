@@ -2178,6 +2178,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../flowmachine/flowmachine/core/server/cache_cleanup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cache_cleanup
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../flowmachine/flowmachine/core/server/exceptions/" class="md-nav__link">
         
   
@@ -2210,10 +2232,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_23_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3_23_6" >
         
           
-          <label class="md-nav__link" for="__nav_4_3_1_3_23_5" id="__nav_4_3_1_3_23_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3_1_3_23_6" id="__nav_4_3_1_3_23_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2225,8 +2247,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_4_3_1_3_23_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_3_1_3_23_5">
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_4_3_1_3_23_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3_23_6">
             <span class="md-nav__icon md-icon"></span>
             Query schemas
           </label>
@@ -13821,6 +13843,13 @@
 <h2 id="unreleased"><a href="https://github.com/Flowminder/FlowKit/compare/1.32.0...master">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Flowmachine's cache cleanup service is now a separate docker container from the main server. <a href="https://github.com/Flowminder/FlowKit/issues/5911">#5911</a><blockquote>
+<p>[!WARNING]
+You will need to update your FlowKit deployment to include an additional flowmachine container which sets the command to <code>"cache-cleanup"</code>.</p>
+</blockquote>
+</li>
+</ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1320"><a href="https://github.com/Flowminder/FlowKit/compare/1.31.0...1.32.0">1.32.0</a><a class="headerlink" href="#1320" title="Permanent link">&para;</a></h2>
