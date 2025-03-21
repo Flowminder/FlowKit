@@ -36,11 +36,11 @@ def wrapped_sql_operator(*, class_name: str, sql: str) -> Type:
 
     """
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
-    from airflow.providers.postgres.operators.postgres import PostgresOperator
+    from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 
     return type(
         class_name,
-        (TableNameMacrosMixin, WrappingSQLMixin, PostgresOperator),
+        (TableNameMacrosMixin, WrappingSQLMixin, SQLExecuteQueryOperator),
         dict(
             wrapper_sql=sql,
         ),
