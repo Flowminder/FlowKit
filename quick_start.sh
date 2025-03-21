@@ -131,11 +131,11 @@ else
     export COUNTRY=${EXAMPLE_COUNTRY:-$COUNTRY}
     export DISASTER_REGION_PCOD=${EXAMPLE_DISASTER_REGION_PCOD:-$DISASTER_REGION_PCOD}
     echo "Starting containers (this may take a few minutes)"
-    RUNNING=`$DOCKER_COMPOSE ps -q flowdb flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
+    RUNNING=`$DOCKER_COMPOSE ps -q flowdb flowapi flowmachine flowmachine_cache_cleanup flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
         confirm "Existing containers are running and will be replaced. Are you sure?" || exit 1
     fi
-    DOCKER_SERVICES="flowdb flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES"
+    DOCKER_SERVICES="flowdb flowapi flowmachine flowauth flowmachine_query_locker flowmachine_cache_cleanup $WORKED_EXAMPLES"
     $DOCKER_COMPOSE pull $DOCKER_SERVICES
     $DOCKER_COMPOSE up -d --renew-anon-volumes $DOCKER_SERVICES
     echo "Waiting for containers to be ready.."

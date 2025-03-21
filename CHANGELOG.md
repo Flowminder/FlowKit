@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Flowmachine's cache cleanup service is now a separate docker container from the main server. [#5911](https://github.com/Flowminder/FlowKit/issues/5911)
+> [!WARNING]
+> You will need to update your FlowKit deployment to include an additional flowmachine container which sets the command to `"cache-cleanup"`.
 
 ### Fixed
 

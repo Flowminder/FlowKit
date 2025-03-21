@@ -7,6 +7,9 @@ FROM python:3.12-bullseye@sha256:8a0a0b029be52d01c57e91037658a47fc46e37abd299454
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+ENV TINI_VERSION="v0.19.0"
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
 WORKDIR /${SOURCE_TREE}/flowmachine
 COPY ./flowmachine/Pipfile* ./
 RUN apt-get update && \
@@ -21,8 +24,9 @@ RUN apt-get update && \
         pipenv run pip install --no-deps --no-cache-dir . && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
-        rm -rf /var/lib/apt/lists/*
-CMD ["pipenv", "run", "flowmachine"]
+        rm -rf /var/lib/apt/lists/* 
+ENTRYPOINT ["/tini", "--", "pipenv", "run"]
+CMD ["flowmachine"]
 # FlowDB has a default role named flowmachine for use with the flowmachine server
 # when starting the container with a different user, that user must be in the flowmachine
 # role

@@ -37,6 +37,29 @@ services:
           - flowdb
           - redis
           - zero
+    flowmachine_cache_cleanup:
+      container_name: flowmachine_cache_cleanup
+      image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
+      depends_on:
+        - flowmachine_query_locker
+      command:
+        - "cache-cleanup"
+      environment:
+        - FLOWMACHINE_PORT=5555
+        - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:?Must set FLOWMACHINE_LOG_LEVEL env var}
+        - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
+        - FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=${FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING:?Must set FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING env var}
+        - FLOWDB_PORT=5432
+        - FLOWDB_HOST=flowdb
+        - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+        - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+        - REDIS_HOST=flowmachine_query_locker
+        - REDIS_PORT=6379
+        - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+      restart: always
+      networks:
+        - db
+        - redis
     flowmachine_query_locker:
         image: bitnami/redis:latest
         environment:

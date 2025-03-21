@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
-from concurrent.futures import Executor
 from json import JSONDecodeError
 import traceback
 
@@ -20,9 +19,7 @@ from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 import flowmachine
-from flowmachine.core import Query, Connection
-from flowmachine.core.cache import watch_and_shrink_cache
-from flowmachine.core.context import get_db, get_executor, action_request_context
+from flowmachine.core.context import action_request_context
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -232,14 +229,6 @@ async def recv(*, config: "FlowmachineServerConfig") -> NoReturn:
     main_loop = asyncio.get_event_loop()
     main_loop.add_signal_handler(signal.SIGTERM, partial(shutdown, socket=socket))
 
-    main_loop.create_task(
-        watch_and_shrink_cache(
-            flowdb_connection=get_db(),
-            pool=get_executor(),
-            sleep_time=config.cache_pruning_frequency,
-            timeout=config.cache_pruning_timeout,
-        )
-    )
     try:
         while True:
             await receive_next_zmq_message_and_send_back_reply(
