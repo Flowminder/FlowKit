@@ -4,7 +4,7 @@
 
 
 def test_fixed_sql():
-    from airflow.providers.postgres.operators.postgres import PostgresOperator
+    from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
     from airflow.sensors.sql import SqlSensor
     from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
     from flowetl.mixins.fixed_sql_mixin import fixed_sql_operator
@@ -12,7 +12,7 @@ def test_fixed_sql():
     new_type = fixed_sql_operator(class_name="DUMMY_TYPE", sql="FIXED_SQL")
     new_instance = new_type(task_id="DUMMY")
     assert new_type.fixed_sql == "FIXED_SQL"
-    assert isinstance(new_instance, PostgresOperator)
+    assert isinstance(new_instance, SQLExecuteQueryOperator)
     assert isinstance(new_instance, TableNameMacrosMixin)
     assert type(new_instance).__name__ == "DUMMY_TYPE"
     new_instance.prepare_template()

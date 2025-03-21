@@ -4,7 +4,7 @@
 
 
 def test_fixed_sql_with_params():
-    from airflow.providers.postgres.operators.postgres import PostgresOperator
+    from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
     from airflow.sensors.sql import SqlSensor
 
     from flowetl.mixins.fixed_sql_with_params_mixin import (
@@ -18,7 +18,7 @@ def test_fixed_sql_with_params():
     new_instance = new_type(task_id="DUMMY", DUMMY_PARAM="DUMMY_PARAM_VALUE")
     assert new_type.fixed_sql == "FIXED_SQL"
     assert new_type.named_params == ["DUMMY_PARAM"]
-    assert isinstance(new_instance, PostgresOperator)
+    assert isinstance(new_instance, SQLExecuteQueryOperator)
     assert isinstance(new_instance, TableNameMacrosMixin)
     assert type(new_instance).__name__ == "DUMMY_TYPE"
     assert {k: v.value for k, v in new_instance.params.items()} == dict(
