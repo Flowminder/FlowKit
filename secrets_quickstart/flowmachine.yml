@@ -37,8 +37,8 @@ services:
           - flowdb
           - redis
           - zero
-    flowmachine-cache-cleanup:
-      container_name: flowmachine-cache-cleanup
+    flowmachine_cache_cleanup:
+      container_name: flowmachine_cache_cleanup
       image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
       depends_on:
         - flowmachine_query_locker
