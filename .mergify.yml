@@ -1,32 +1,18 @@
-queue_rules:
-  - name: duplicated default from Automatic merge for approved PRs labelled as ready
-    queue_conditions:
-      - base=master
-      - "#approved-reviews-by>=1"
-      - label=ready-to-merge
-      - status-success=run_build_pipeline
-    merge_conditions:
-      - status-success=run_build_pipeline
-      - base=master
-    merge_method: merge
-  - name: duplicated default from automatic merge for Dependabot pull requests on
-      master
-    queue_conditions:
-      - author=dependabot[bot]
-      - status-success=run_build_pipeline
-      - base=master
-    merge_conditions:
-      - status-success=run_build_pipeline
-      - base=master
-    merge_method: merge
-  - name: default
-    conditions:
-      - status-success=run_build_pipeline
-      - base=master
-
 pull_request_rules:
-  - name: Automatic merge for approved PRs labelled as ready + automatic merge for
-      Dependabot pull requests on master
-    conditions: []
+  - name: Automatic merge for approved PRs labelled as ready
+    conditions:
+        - "#approved-reviews-by>=1"
+        - label=ready-to-merge
+        - status-success=run_build_pipeline
+        - base=master
     actions:
-      queue:
+        merge:
+            method: rebase
+  - name: Automatic merge for Dependabot pull requests
+    conditions:
+        - author=dependabot[bot]
+        - status-success=run_build_pipeline
+        - base=master
+    actions:
+        merge:
+            method: rebase
