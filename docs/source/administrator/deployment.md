@@ -118,7 +118,7 @@ We recommend running FlowETL using the celery scheduler, in which case you will 
     Generating Fernet keys
     
     A convenient way to generate Fernet keys is to use the python [cryptography](https://cryptography.io/) package. After installing, you can generate a new key by running `python -c "from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())"`.
-
+=
 
 See also the [airflow documentation](https://airflow.apache.org/docs/stable/) for other configuration options which you can provide as environment variables.
 
