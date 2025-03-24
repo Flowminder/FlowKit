@@ -18,6 +18,6 @@ with DAG(
     flowdb_test_op = SQLExecuteQueryOperator(
         task_id="flowdb_connect_test_op",
         sql="SELECT * FROM geography.geo_kinds",
-        postgres_conn_id="flowdb",
+        conn_id="flowdb",
     )
     flowdb_test_op >> flowetl_test_op
