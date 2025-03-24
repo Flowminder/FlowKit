@@ -271,7 +271,6 @@ def create_dag(
         "owner": "airflow",
         "retries": retries,
         "retry_delay": retry_delay,
-        "postgres_conn_id": "flowdb",
         "conn_id": "flowdb",
         "start_date": start_date,
         "end_date": end_date,
