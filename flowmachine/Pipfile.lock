@@ -1453,12 +1453,12 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:143ef3ea6fb1e1bffb4c74b114051de653ffb7737a3f7ab1670e657ca6ae8c44",
-                "sha256:ec7b479e3e5656bf4f58c652c120494df1820f4f28f522fb7ca09e213c2aab52"
+                "sha256:2df07257ec2f84a6b346b8d83100bcf8fa501c6e01ab75cd3799b0bb253b3d2a",
+                "sha256:a47e13a5e05e02f3b8e1e7a0f9db372199fe8c3763532fe7a1e0379e4e135f16"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.11'",
-            "version": "==9.0.2"
+            "version": "==9.1.0"
         },
         "ipython-pygments-lexers": {
             "hashes": [
