@@ -8,11 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-## Changed
+### Changed
 
-## Fixed
+### Fixed
+- FlowDB `cache_score` function no longer throws a divide-by-zero error for empty cache tables. [#7027](https://github.com/Flowminder/FlowKit/issues/7027)
 
-## Removed
+### Removed
 
 ## [1.33.0]
 
