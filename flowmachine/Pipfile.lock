@@ -128,12 +128,12 @@
         },
         "marshmallow-oneofschema": {
             "hashes": [
-                "sha256:68b4a57d0281a04ac25d4eb7a4c5865a57090a0a8fd30fd6362c8e833ac6a6d9",
-                "sha256:ff4cb2a488785ee8edd521a765682c2c80c78b9dc48894124531bdfa1ec9303b"
+                "sha256:19c87e6124ef05e2831e5c631168c909a50a8fe399921b9841b75fef3785be8c",
+                "sha256:c06c8d9f14d51ffff152d66d85bd5f27d55cff10752a3b1f8c1f948bf5f597a0"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "==3.1.1"
+            "markers": "python_version >= '3.9'",
+            "version": "==3.2.0"
         },
         "networkx": {
             "hashes": [
