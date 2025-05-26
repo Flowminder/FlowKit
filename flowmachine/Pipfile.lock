@@ -34,12 +34,12 @@
         },
         "cachetools": {
             "hashes": [
-                "sha256:1a661caa9175d26759571b2e19580f9d6393969e5dfca11fdb1f947a23e640d4",
-                "sha256:d26a22bcc62eb95c3beabd9f1ee5e820d3d2704fe2967cbe350e20c8ffcd3f0a"
+                "sha256:82e73ba88f7b30228b5507dce1a1f878498fc669d972aef2dde4f3a3c24f103e",
+                "sha256:f225782b84438f828328fc2ad74346522f27e5b1440f4e9fd18b20ebfd1aa2cf"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.7'",
-            "version": "==5.5.2"
+            "markers": "python_version >= '3.9'",
+            "version": "==6.0.0"
         },
         "finist": {
             "hashes": [
