@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 > You will need to update your FlowKit deployment to include an additional flowmachine container which sets the command to `"cache-cleanup"`.
 
 ### Fixed
+- FlowDB `cache_score` function no longer throws a divide-by-zero error for empty cache tables. [#7027](https://github.com/Flowminder/FlowKit/issues/7027)
 
 ### Removed
 
