@@ -8,14 +8,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+## Changed
+
+## Fixed
+
+## Removed
+
+## [1.33.0]
+
 ### Changed
 - Flowmachine's cache cleanup service is now a separate docker container from the main server. [#5911](https://github.com/Flowminder/FlowKit/issues/5911)
 > [!WARNING]
 > You will need to update your FlowKit deployment to include an additional flowmachine container which sets the command to `"cache-cleanup"`.
 
-### Fixed
-
 ### Removed
+- FlowETL has been updated to Airflow 2.10.5, `airflow.providers.postgres.operators.postgres.PostgresOperator` is deprecated in favour of `airflow.providers.common.sql.operators.sql.SQLExecuteQueryOperator`.
 
 ## [1.32.0]
 
@@ -1185,7 +1192,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.32.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.33.0...master
+[1.33.0]: https://github.com/Flowminder/FlowKit/compare/1.32.0...1.33.0
 [1.32.0]: https://github.com/Flowminder/FlowKit/compare/1.31.0...1.32.0
 [1.31.0]: https://github.com/Flowminder/FlowKit/compare/1.30.0...1.31.0
 [1.30.0]: https://github.com/Flowminder/FlowKit/compare/1.29.0...1.30.0
