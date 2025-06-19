@@ -1,0 +1,1 @@
+SELECT count(*) FROM {{ staging_table }} WHERE cell_long = -1 OR cell_long ISNULL
