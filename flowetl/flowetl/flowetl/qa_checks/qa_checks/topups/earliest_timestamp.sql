@@ -1,0 +1,1 @@
+../cdr/earliest_timestamp.sql
