@@ -50,7 +50,6 @@ def get_qa_checks(
     """
     from flowetl.operators.qa_check_operator import QACheckOperator
     from airflow.models.dag import DagContext
-    from airflow import settings
 
     if dag is None:
         dag = DagContext.get_current_dag()

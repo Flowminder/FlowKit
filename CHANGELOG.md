@@ -7,9 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Added three cell info qa checks to flowetl, which check for malformed/missing coordinates.
+- Added new cell info qa checks to flowetl:
+    - Missing latitude
+    - Missing longitude
+    - Missing latitude _or_ longitude [#5868](https://github.com/Flowminder/FlowKit/issues/5868)
+    - Number of new cell ids
+    - Number of duplicate ids
+- Added a new general qa check which counts the number of rows in the staging table. [#5869](https://github.com/Flowminder/FlowKit/issues/5869)
 
 ### Changed
+- The task ids for generic CDR checks have changed, and will now contain the CDR type they are associated with. For example, 'count_imeis' will now be identified as '<cdr_type>.count_imeis',
 
 ### Fixed
 
