@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from collections import defaultdict
 
 import warnings
 
@@ -23,10 +24,99 @@ class FluxSensorType(Enum):
     NOCHECK: str = "no_check"
 
 
+class ETLStage(str, Enum):
+    """
+    Valid etl stages - conditions which table checks run against.
+    """
+
+    EXTRACT: str = "extract"
+    STAGING: str = "staging"
+    FINAL: str = "final"
+
+
+def find_minimal_distinguishing_suffix(paths):
+    """Find the minimal suffix needed to distinguish between paths."""
+    if len(paths) == 1:
+        return [(paths[0].name, 1)]  # Return (suffix, depth) tuple
+
+    # Convert paths to lists of parts for easier manipulation (excluding root '/')
+    path_parts = [list(reversed(path.parts[1:])) for path in paths]  # Skip the root '/'
+    min_parts = min(len(parts) for parts in path_parts)
+
+    distinguishing_suffixes = []
+
+    for i, path in enumerate(paths):
+        parts = path_parts[i]
+
+        # Start with just the filename
+        for depth in range(1, min_parts + 1):
+            suffix_parts = parts[:depth]
+            candidate_suffix = "/".join(reversed(suffix_parts))
+
+            # Check if this suffix is unique among all paths
+            is_unique = True
+            for j, other_path in enumerate(paths):
+                if i != j:
+                    other_parts = path_parts[j]
+                    if len(other_parts) >= depth:
+                        other_suffix = "/".join(reversed(other_parts[:depth]))
+                        if candidate_suffix == other_suffix:
+                            is_unique = False
+                            break
+
+            if is_unique:
+                distinguishing_suffixes.append((candidate_suffix, depth))
+                break
+        else:
+            # If we can't find a unique suffix, use relative path from root
+            full_suffix = "/".join(reversed(parts))
+            distinguishing_suffixes.append((full_suffix, len(parts)))
+
+    return distinguishing_suffixes
+
+
+def disambiguate_paths(paths: list[Path]) -> dict[Path, list[str]]:
+    # Group paths by filename
+    grouped_paths = defaultdict(list)
+    for pth in paths:
+        grouped_paths[pth.name].append(pth)
+
+    disambiguated = defaultdict(list)
+
+    for name, path_list in grouped_paths.items():
+        if len(path_list) == 1:
+            # No ambiguity, just use the filename
+            path = path_list[0]
+            disambiguated[path.parent].append(name)
+        else:
+            # Multiple files with same name, find minimal distinguishing suffixes
+            suffix_data = find_minimal_distinguishing_suffix(path_list)
+
+            # Group by the common ancestor directory
+            suffix_groups = defaultdict(list)
+            for path, (suffix, depth) in zip(path_list, suffix_data):
+                # Find the appropriate parent directory for grouping
+                if depth == 1:
+                    # Just filename, group by direct parent
+                    suffix_groups[path.parent].append(suffix)
+                else:
+                    # Multi-level suffix, find the ancestor at the right level
+                    ancestor = path
+                    for _ in range(depth):
+                        ancestor = ancestor.parent
+                    suffix_groups[ancestor].append(suffix)
+
+            for parent, suffixes in suffix_groups.items():
+                disambiguated[parent].extend(suffixes)
+
+    return dict(disambiguated)
+
+
 def get_qa_checks(
     *,
     dag: Optional["DAG"] = None,
     additional_qa_check_paths: Optional[List[str]] = None,
+    stage: Optional[ETLStage] = ETLStage.FINAL,
 ) -> List["QACheckOperator"]:
     """
     Create from .sql files a list of QACheckOperators which are applicable for this dag.
@@ -42,7 +132,10 @@ def get_qa_checks(
     dag : DAG
         The DAG to add operators to. May be None, if called within a DAG context manager.
     additional_qa_check_paths : list of str
-        Additional fully qualified paths to search for qa checks
+        Additional fully qualified paths to search for qa checks.
+    stage : ETLStage, default ETLSTage.FINAL
+        The stage of etl that this check should run at, defaults to running against the final
+        transformed table.
 
     Returns
     -------
@@ -56,36 +149,68 @@ def get_qa_checks(
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
 
-    default_path = Path(__file__).parent / "qa_checks"  # Contains the default checks
-    dag.template_searchpath = [
-        *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
-        *(dag.template_searchpath if dag.template_searchpath is not None else []),
-        default_path,
+    stage = ETLStage(stage)
+
+    search_paths = [
+        Path(__file__).parent / "qa_checks" / stage.value,
+    ]  # Contains the default checks for all types for this stage
+    if dag.fileloc is not None:  # In some cases the dag is ephemeral with no file
+        search_paths = [
+            *search_paths,
+            Path(dag.fileloc).parent / "qa_checks" / stage.value,
+        ]
+    if dag.template_searchpath is not None:
+        search_paths = [
+            *search_paths,
+            *(Path(pth) / "qa_checks" / stage.value for pth in dag.template_searchpath),
+        ]
+    else:
+        dag.template_searchpath = []
+    if "cdr_type" in dag.params:  # Any type specific checks under the defaults
+        search_paths = [
+            *search_paths,
+            *(pth / dag.params["cdr_type"] for pth in search_paths),
+        ]
+
+    # Any specifically added paths, which we will assume are flat
+    search_paths = [
+        *search_paths,
+        *(
+            Path(pth)
+            for pth in (
+                additional_qa_check_paths
+                if additional_qa_check_paths is not None
+                else []
+            )
+        ),
     ]
-    jinja_env = dag.get_template_env()
-    templates = [
-        Path(tmpl)
-        for tmpl in jinja_env.list_templates(
-            filter_func=lambda tmpl: "qa_checks" in tmpl and tmpl.endswith(".sql")
-        )
-    ]
-    valid_stems = (
-        "qa_checks",
-        *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
-    )
-    template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
-    return [
-        QACheckOperator(
-            task_id=(
-                tmpl.stem
-                if tmpl.parent.stem == "qa_checks"
-                else f"{tmpl.stem}.{tmpl.parent.stem}"
-            ),
-            sql=str(tmpl),
-            dag=dag,
-        )
-        for tmpl in sorted(template_paths)
-    ]
+
+    templates = []
+    for pth in set(search_paths):
+        sql_files = pth.glob("*.sql")
+        templates = [*templates, *sql_files]
+
+    ops = []
+    disambiguated_paths = disambiguate_paths(templates)
+    dag.template_searchpath = [*dag.template_searchpath, *disambiguated_paths.keys()]
+    for pathgroup in sorted(disambiguated_paths.values()):
+        for tmpl in pathgroup:
+            tmpl = Path(tmpl)
+            print(f"Parsing template {tmpl}")
+            task_id = (
+                f"{tmpl.stem}.{dag.params['cdr_type']}.{stage}"
+                if "cdr_type" in dag.params
+                else f"{tmpl.stem}.{stage}"
+            )
+            print(f"Task id is {task_id}")
+            ops.append(
+                QACheckOperator(
+                    task_id=task_id,
+                    sql=str(tmpl),
+                    dag=dag,
+                )
+            )
+    return ops
 
 
 def choose_flux_sensor(
@@ -158,6 +283,8 @@ def create_dag(
     escape: str = '"',
     encoding: Optional[str] = None,
     additional_qa_check_paths: Optional[List[str]] = None,
+    additional_staging_qa_check_paths: Optional[List[str]] = None,
+    additional_extract_qa_check_paths: Optional[List[str]] = None,
     **kwargs,
 ) -> "DAG":
     """
@@ -231,8 +358,8 @@ def create_dag(
         When loading from files, you may specify the escape character
     encoding : str or None
         Optionally specify file encoding when loading from files.
-    additional_qa_check_paths : list of str
-        Additional fully qualified paths to search for qa checks
+    additional_qa_check_paths, additional_staging_qa_check_paths, additional_extract_qa_check_paths : list of str
+        Additional fully qualified paths to search for qa checks.
 
     Returns
     -------
@@ -242,6 +369,8 @@ def create_dag(
 
     from airflow import DAG
     from airflow.operators.latest_only import LatestOnlyOperator
+    from airflow.operators.empty import EmptyOperator
+    from airflow.utils.task_group import TaskGroup
     from flowetl.operators.add_constraints_operator import AddConstraintsOperator
     from flowetl.operators.analyze_operator import AnalyzeOperator
     from flowetl.operators.attach_operator import AttachOperator
@@ -329,6 +458,14 @@ def create_dag(
 
         create_staging_view >> check_not_empty
 
+        with TaskGroup(
+            group_id="staging_qa_checks", prefix_group_id=False
+        ) as staging_qa_checks_group:
+            staging_checks = get_qa_checks(
+                additional_qa_check_paths=additional_staging_qa_check_paths,
+                stage=ETLStage.STAGING,
+            )
+
         if flux_sensor_type == FluxSensorType.FILE:
             check_not_in_flux = FileFluxSensor(
                 task_id="check_not_in_flux",
@@ -338,7 +475,12 @@ def create_dag(
                 flux_check_interval=flux_check_wait_interval,
                 timeout=flux_check_timeout,
             )
-            check_not_empty >> check_not_in_flux >> extract
+            check_not_empty >> check_not_in_flux
+
+            if len(staging_checks) > 0:
+                (check_not_in_flux >> staging_qa_checks_group >> extract)
+            else:
+                check_not_in_flux >> extract
         elif flux_sensor_type == FluxSensorType.TABLE:
             check_not_in_flux = TableFluxSensor(
                 task_id="check_not_in_flux",
@@ -347,9 +489,16 @@ def create_dag(
                 flux_check_interval=flux_check_wait_interval,
                 timeout=flux_check_timeout,
             )
-            check_not_empty >> check_not_in_flux >> extract
+            check_not_empty >> check_not_in_flux
+            if len(staging_checks) > 0:
+                (check_not_in_flux >> staging_qa_checks_group >> extract)
+            else:
+                check_not_in_flux >> extract
         else:
-            check_not_empty >> extract
+            if len(staging_checks) > 0:
+                (check_not_empty >> staging_qa_checks_group >> extract)
+            else:
+                check_not_empty >> extract
 
         add_constraints = AddConstraintsOperator(
             task_id="add_constraints", pool="postgres_etl"
@@ -372,27 +521,54 @@ def create_dag(
 
         from_stage = extract
 
+        with TaskGroup(
+            group_id="extract_qa_checks", prefix_group_id=False
+        ) as extract_qa_checks_group:
+            extract_checks = get_qa_checks(
+                additional_qa_check_paths=additional_extract_qa_check_paths,
+                stage=ETLStage.EXTRACT,
+            )
+
         if cluster_field is not None:
             cluster = ClusterOperator(
                 task_id="cluster", cluster_field=cluster_field, pool="postgres_etl"
             )
             extract >> cluster
             from_stage = cluster
-        (
-            from_stage
-            >> [
-                add_constraints,
-                add_indexes,
-            ]
-            >> analyze
-            >> attach
-            >> latest_only
-            >> analyze_parent
-        )
-        attach >> [
-            update_records,
-            update_location_ids_table,
-            *get_qa_checks(additional_qa_check_paths=additional_qa_check_paths),
-        ]
+        if len(extract_checks) > 0:
+            (
+                from_stage
+                >> extract_qa_checks_group
+                >> [
+                    add_constraints,
+                    add_indexes,
+                ]
+                >> analyze
+                >> attach
+                >> latest_only
+                >> analyze_parent
+            )
+        else:
+            (
+                from_stage
+                >> [
+                    add_constraints,
+                    add_indexes,
+                ]
+                >> analyze
+                >> attach
+                >> latest_only
+                >> analyze_parent
+            )
+
+        with TaskGroup(
+            group_id="final_qa_checks", prefix_group_id=False
+        ) as final_qa_checks_group:
+            final_checks = (
+                get_qa_checks(additional_qa_check_paths=additional_qa_check_paths),
+            )
+
+        attach >> [update_records, update_location_ids_table]
+        attach >> final_qa_checks_group
     globals()[dag_id] = dag
     return dag

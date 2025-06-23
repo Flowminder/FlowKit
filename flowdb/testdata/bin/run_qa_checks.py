@@ -107,11 +107,7 @@ if __name__ == "__main__":
 
     templates = (
         QaTemplate(
-            display_name=(
-                ".".join((Path(t).stem, Path(t).parent.stem))
-                if Path(t).parent != Path(".")
-                else Path(t).stem
-            ),
+            display_name=Path(t).stem,
             template=env.get_template(t),
             event_type=Path(t).parent.stem if Path(t).parent != Path(".") else "any",
         )
