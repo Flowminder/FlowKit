@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-qa_checks = {
+staging_qa_checks = {
     f.stem: str(Path("qa_checks") / f.name)
     for f in sorted(
         (
@@ -16,18 +16,55 @@ qa_checks = {
             / "flowetl"
             / "qa_checks"
             / "qa_checks"
+            / "staging"
+        ).glob("*.sql")
+    )
+}
+
+extract_qa_checks = {
+    f.stem: str(Path("qa_checks") / f.name)
+    for f in sorted(
+        (
+            Path(__file__).parent.parent.parent
+            / "flowetl"
+            / "flowetl"
+            / "qa_checks"
+            / "qa_checks"
+            / "extract"
+        ).glob("*.sql")
+    )
+}
+
+final_qa_checks = {
+    f.stem: str(Path("qa_checks") / f.name)
+    for f in sorted(
+        (
+            Path(__file__).parent.parent.parent
+            / "flowetl"
+            / "flowetl"
+            / "qa_checks"
+            / "qa_checks"
+            / "final"
         ).glob("*.sql")
     )
 }
 
 
-def test_default_qa_checks_found():
+@pytest.mark.parametrize(
+    "qa_stage,expected",
+    [
+        ("final", final_qa_checks),
+        ("extract", extract_qa_checks),
+        ("staging", staging_qa_checks),
+    ],
+)
+def test_default_qa_checks_found(qa_stage, expected):
     from airflow import DAG
     from flowetl.util import get_qa_checks
 
     dag = DAG("DUMMY_DAG", start_date=datetime.now())
-    check_operators = get_qa_checks(dag=dag)
-    assert {op.task_id: op.sql for op in check_operators} == qa_checks
+    check_operators = get_qa_checks(dag=dag, stage=qa_stage)
+    assert {op.task_id: op.sql for op in check_operators} == expected
 
 
 def test_name_suffix_added(tmpdir):
@@ -57,7 +94,7 @@ def test_additional_checks_collected(tmpdir):
         dag=DAG("DUMMY_DAG", start_date=datetime.now(), template_searchpath=str(tmpdir))
     )
 
-    assert len(check_operators) > len(qa_checks)
+    assert len(check_operators) > len(final_qa_checks)
 
 
 def test_additional_checks_collected_from_dag_folder():
@@ -72,7 +109,7 @@ def test_additional_checks_collected_from_dag_folder():
     dag.fileloc = dag_folder / "DUMMY_DAG.py"
     check_operators = get_qa_checks(dag=dag)
 
-    assert len(check_operators) > len(qa_checks)
+    assert len(check_operators) > len(final_qa_checks)
 
 
 def test_additional_checks_collected_in_subdirs(tmpdir):
@@ -85,7 +122,7 @@ def test_additional_checks_collected_in_subdirs(tmpdir):
         dag=DAG("DUMMY_DAG", start_date=datetime.now(), template_searchpath=str(tmpdir))
     )
 
-    assert len(check_operators) == len(qa_checks)
+    assert len(check_operators) == len(final_qa_checks)
 
     check_operators = get_qa_checks(
         dag=DAG(
@@ -96,7 +133,7 @@ def test_additional_checks_collected_in_subdirs(tmpdir):
         ),
     )
 
-    assert len(check_operators) > len(qa_checks)
+    assert len(check_operators) > len(final_qa_checks)
 
 
 def test_additional_checks_collected_if_specified(tmpdir):
@@ -113,7 +150,7 @@ def test_additional_checks_collected_if_specified(tmpdir):
         additional_qa_check_paths=[str(tmpdir)],
     )
 
-    assert len(check_operators) > len(qa_checks)
+    assert len(check_operators) > len(final_qa_checks)
 
 
 def test_module_path_added_to_dag_template_locations():
@@ -123,7 +160,11 @@ def test_module_path_added_to_dag_template_locations():
     dag = DAG("DUMMY_DAG", start_date=datetime.now())
     get_qa_checks(dag=dag)
     assert (
-        Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
+        Path(__file__).parent.parent.parent
+        / "flowetl"
+        / "flowetl"
+        / "qa_checks"
+        / "final"
         in dag.template_searchpath
     )
 
@@ -135,7 +176,11 @@ def test_uses_context_dag():
     with DAG("DUMMY_DAG", start_date=datetime.now()) as dag:
         get_qa_checks()
     assert (
-        Path(__file__).parent.parent.parent / "flowetl" / "flowetl" / "qa_checks"
+        Path(__file__).parent.parent.parent
+        / "flowetl"
+        / "flowetl"
+        / "qa_checks"
+        / "final"
         in dag.template_searchpath
     )
 

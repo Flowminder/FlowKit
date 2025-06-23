@@ -23,10 +23,21 @@ class FluxSensorType(Enum):
     NOCHECK: str = "no_check"
 
 
+class ETLStage(str, Enum):
+    """
+    Valid etl stages - conditions which table checks run against.
+    """
+
+    EXTRACT: str = "extract"
+    STAGING: str = "staging"
+    FINAL: str = "final"
+
+
 def get_qa_checks(
     *,
     dag: Optional["DAG"] = None,
     additional_qa_check_paths: Optional[List[str]] = None,
+    stage: Optional[ETLStage] = ETLStage.FINAL,
 ) -> List["QACheckOperator"]:
     """
     Create from .sql files a list of QACheckOperators which are applicable for this dag.
@@ -42,7 +53,10 @@ def get_qa_checks(
     dag : DAG
         The DAG to add operators to. May be None, if called within a DAG context manager.
     additional_qa_check_paths : list of str
-        Additional fully qualified paths to search for qa checks
+        Additional fully qualified paths to search for qa checks.
+    stage : ETLStage, default ETLSTage.FINAL
+        The stage of etl that this check should run at, defaults to running against the final
+        transformed table.
 
     Returns
     -------
@@ -56,9 +70,20 @@ def get_qa_checks(
     if dag is None:
         raise TypeError("Must set dag argument or be in a dag context manager.")
 
-    default_path = Path(__file__).parent / "qa_checks"  # Contains the default checks
+    stage = ETLStage(stage)
+
+    default_path = (
+        Path(__file__).parent / "qa_checks" / stage.value
+    )  # Contains the default checks
     dag.template_searchpath = [
-        *(additional_qa_check_paths if additional_qa_check_paths is not None else []),
+        *(
+            Path(pth) / stage.value
+            for pth in (
+                additional_qa_check_paths
+                if additional_qa_check_paths is not None
+                else []
+            )
+        ),
         *(dag.template_searchpath if dag.template_searchpath is not None else []),
         default_path,
     ]
@@ -158,6 +183,8 @@ def create_dag(
     escape: str = '"',
     encoding: Optional[str] = None,
     additional_qa_check_paths: Optional[List[str]] = None,
+    additional_staging_qa_check_paths: Optional[List[str]] = None,
+    additional_extract_qa_check_paths: Optional[List[str]] = None,
     **kwargs,
 ) -> "DAG":
     """
@@ -231,8 +258,8 @@ def create_dag(
         When loading from files, you may specify the escape character
     encoding : str or None
         Optionally specify file encoding when loading from files.
-    additional_qa_check_paths : list of str
-        Additional fully qualified paths to search for qa checks
+    additional_qa_check_paths, additional_staging_qa_check_paths, additional_extract_qa_check_paths : list of str
+        Additional fully qualified paths to search for qa checks.
 
     Returns
     -------
@@ -242,6 +269,7 @@ def create_dag(
 
     from airflow import DAG
     from airflow.operators.latest_only import LatestOnlyOperator
+    from airflow.operators.empty import EmptyOperator
     from flowetl.operators.add_constraints_operator import AddConstraintsOperator
     from flowetl.operators.analyze_operator import AnalyzeOperator
     from flowetl.operators.attach_operator import AttachOperator
@@ -338,7 +366,17 @@ def create_dag(
                 flux_check_interval=flux_check_wait_interval,
                 timeout=flux_check_timeout,
             )
-            check_not_empty >> check_not_in_flux >> extract
+            (
+                check_not_empty
+                >> check_not_in_flux
+                >> [
+                    *get_qa_checks(
+                        additional_qa_check_paths=additional_qa_check_paths,
+                        stage="staging",
+                    )
+                ]
+                >> extract
+            )
         elif flux_sensor_type == FluxSensorType.TABLE:
             check_not_in_flux = TableFluxSensor(
                 task_id="check_not_in_flux",
@@ -347,7 +385,17 @@ def create_dag(
                 flux_check_interval=flux_check_wait_interval,
                 timeout=flux_check_timeout,
             )
-            check_not_empty >> check_not_in_flux >> extract
+            (
+                check_not_empty
+                >> check_not_in_flux
+                >> [
+                    *get_qa_checks(
+                        additional_qa_check_paths=additional_qa_check_paths,
+                        stage="staging",
+                    )
+                ]
+                >> extract
+            )
         else:
             check_not_empty >> extract
 
@@ -380,6 +428,12 @@ def create_dag(
             from_stage = cluster
         (
             from_stage
+            >> [
+                *get_qa_checks(
+                    additional_qa_check_paths=additional_qa_check_paths, stage="extract"
+                )
+            ]
+            >> EmptyOperator(task_id="gather")
             >> [
                 add_constraints,
                 add_indexes,
