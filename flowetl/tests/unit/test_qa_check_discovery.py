@@ -141,7 +141,7 @@ def test_additional_checks_collected_if_specified(tmpdir):
     from flowetl.util import get_qa_checks
 
     Path(tmpdir / "qa_checks").mkdir(parents=True)
-    Path(tmpdir / "qa_checks" / "DUMMY_CHECK.sql").touch()
+    Path(tmpdir / "qa_checks" / "final" / "DUMMY_CHECK.sql").touch()
     check_operators = get_qa_checks(
         dag=DAG(
             "DUMMY_DAG",
