@@ -94,6 +94,7 @@ def get_qa_checks(
             filter_func=lambda tmpl: "qa_checks" in tmpl and tmpl.endswith(".sql")
         )
     ]
+    print(templates)
     valid_stems = (
         "qa_checks",
         *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
