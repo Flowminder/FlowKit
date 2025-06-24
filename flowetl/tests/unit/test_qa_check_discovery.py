@@ -140,7 +140,7 @@ def test_additional_checks_collected_if_specified(tmpdir):
     from airflow import DAG
     from flowetl.util import get_qa_checks
 
-    Path(tmpdir / "qa_checks").mkdir(parents=True)
+    Path(tmpdir / "qa_checks" / "final").mkdir(parents=True)
     Path(tmpdir / "qa_checks" / "final" / "DUMMY_CHECK.sql").touch()
     check_operators = get_qa_checks(
         dag=DAG(
