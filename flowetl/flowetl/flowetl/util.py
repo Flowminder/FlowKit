@@ -76,7 +76,7 @@ def get_qa_checks(
         Path(__file__).parent / "qa_checks" / stage.value
     )  # Contains the default checks
     print(default_path)
-    print(list(default_path.walk()))
+    print(list(default_path.glob("*.sql")))
     dag.template_searchpath = [
         *(
             Path(pth) / stage.value
