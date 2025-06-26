@@ -108,12 +108,11 @@ def get_qa_checks(
 
     templates = []
     for pth in set(search_paths):
-        print(f"Search path {pth}")
         sql_files = pth.glob("*.sql")
-        print(list(pth.glob("*.sql")))
         templates = [*templates, *sql_files]
 
     ops = []
+    dag.template_searchpath = [*dag.template_searchpath, "/"]
     for tmpl in sorted(templates):
         dag.template_searchpath.append(
             tmpl
