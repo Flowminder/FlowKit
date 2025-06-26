@@ -72,48 +72,67 @@ def get_qa_checks(
 
     stage = ETLStage(stage)
 
-    default_path = (
-        Path(__file__).parent / "qa_checks" / stage.value
-    )  # Contains the default checks
-    print(default_path)
-    print(list(default_path.glob("*.sql")))
-    dag.template_searchpath = [
+    search_paths = [
+        Path(__file__).parent / "qa_checks" / stage.value,
+    ]  # Contains the default checks for all types for this stage
+    if dag.fileloc is not None:  # In some cases the dag is ephemeral with no file
+        search_paths = [
+            *search_paths,
+            Path(dag.fileloc).parent / "qa_checks" / stage.value,
+        ]
+    if dag.template_searchpath is not None:
+        search_paths = [
+            *search_paths,
+            *(Path(pth) / "qa_checks" / stage.value for pth in dag.template_searchpath),
+        ]
+    else:
+        dag.template_searchpath = []
+    if "cdr_type" in dag.params:  # Any type specific checks under the defaults
+        search_paths = [
+            *search_paths,
+            *(pth / dag.params["cdr_type"] for pth in search_paths),
+        ]
+
+    # Any specifically added paths, which we will assume are flat
+    search_paths = [
+        *search_paths,
         *(
-            Path(pth) / stage.value
+            Path(pth)
             for pth in (
                 additional_qa_check_paths
                 if additional_qa_check_paths is not None
                 else []
             )
         ),
-        *(dag.template_searchpath if dag.template_searchpath is not None else []),
-        default_path,
     ]
-    jinja_env = dag.get_template_env()
-    templates = [
-        Path(tmpl)
-        for tmpl in jinja_env.list_templates(
-            filter_func=lambda tmpl: "qa_checks" in tmpl and tmpl.endswith(".sql")
+
+    templates = []
+    for pth in set(search_paths):
+        print(f"Search path {pth}")
+        sql_files = pth.glob("*.sql")
+        print(list(pth.glob("*.sql")))
+        templates = [*templates, *sql_files]
+
+    ops = []
+    for tmpl in sorted(templates):
+        dag.template_searchpath.append(
+            tmpl
+        )  # Add the templates into the searchpath for the dag
+        print(f"Parsing template {tmpl}")
+        task_id = (
+            f"{tmpl.stem}.{dag.params['cdr_type']}.{stage}"
+            if "cdr_type" in dag.params
+            else f"{tmpl.stem}.{stage}"
         )
-    ]
-    print(templates)
-    valid_stems = (
-        "qa_checks",
-        *((dag.params["cdr_type"],) if "cdr_type" in dag.params else ()),
-    )
-    template_paths = [tmpl for tmpl in templates if tmpl.parent.stem in valid_stems]
-    return [
-        QACheckOperator(
-            task_id=(
-                tmpl.stem
-                if tmpl.parent.stem == "qa_checks"
-                else f"{tmpl.stem}.{tmpl.parent.stem}"
-            ),
-            sql=str(tmpl),
-            dag=dag,
+        print(f"Task id is {task_id}")
+        ops.append(
+            QACheckOperator(
+                task_id=task_id,
+                sql=str(tmpl),
+                dag=dag,
+            )
         )
-        for tmpl in sorted(template_paths)
-    ]
+    return ops
 
 
 def choose_flux_sensor(
