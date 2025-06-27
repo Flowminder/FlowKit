@@ -106,6 +106,7 @@ def test_file_pipeline(
             "latest_timestamp",
             "count_imeis",
             "count_imsis",
+            "gather",
             "count_locatable_events",
             "count_locatable_location_ids",
             "count_null_imeis",

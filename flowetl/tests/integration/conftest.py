@@ -540,11 +540,11 @@ def flowdb_session(flowdb_connection_engine):
 
 
 @pytest.fixture
-def jinja_env():
+def jinja_env_final_qa():
     import flowetl.qa_checks
 
     loader = jinja2.FileSystemLoader(
-        searchpath=str(Path(list(flowetl.qa_checks.__path__)[0]) / "qa_checks")
+        searchpath=str(Path(list(flowetl.qa_checks.__path__)[0]) / "final")
     )
     yield jinja2.Environment(loader=loader)
 
