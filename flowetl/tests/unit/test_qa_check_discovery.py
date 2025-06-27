@@ -3,9 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PosixPath
 
 import pytest
+
+from flowetl.flowetl.util import disambiguate_paths
 
 staging_qa_checks = {
     cdr_type: {
@@ -194,3 +196,35 @@ def test_error_on_no_dag():
         TypeError, match="Must set dag argument or be in a dag context manager."
     ):
         get_qa_checks()
+
+
+@pytest.mark.parametrize(
+    "paths, expected",
+    [
+        (
+            [
+                Path("/A/B/C/1.txt"),
+                Path("/A/B/C/2.txt"),
+                Path("/A/B/D/1.txt"),
+                Path("/D/B/C/1.txt"),
+                Path("/D/1.txt"),
+                Path("/A/B/C/3.txt"),
+            ],
+            {
+                PosixPath("/"): [
+                    "A/B/C/1.txt",
+                    "A/B/D/1.txt",
+                    "D/B/C/1.txt",
+                    "D/1.txt",
+                ],
+                PosixPath("/A/B/C"): ["2.txt", "3.txt"],
+            },
+        ),
+        (
+            [Path("/A/B/C/1.txt"), Path("/A/B/C/2.txt")],
+            {PosixPath("/A/B/C"): ["1.txt", "2.txt"]},
+        ),
+    ],
+)
+def test_path_disambiguation(paths, expected):
+    assert disambiguate_paths(paths) == expected
