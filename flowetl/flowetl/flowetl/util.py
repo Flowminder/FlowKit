@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from collections import defaultdict
 
 import warnings
 
@@ -31,6 +32,84 @@ class ETLStage(str, Enum):
     EXTRACT: str = "extract"
     STAGING: str = "staging"
     FINAL: str = "final"
+
+
+def find_minimal_distinguishing_suffix(paths):
+    """Find the minimal suffix needed to distinguish between paths."""
+    if len(paths) == 1:
+        return [(paths[0].name, 1)]  # Return (suffix, depth) tuple
+
+    # Convert paths to lists of parts for easier manipulation (excluding root '/')
+    path_parts = [list(reversed(path.parts[1:])) for path in paths]  # Skip the root '/'
+    min_parts = min(len(parts) for parts in path_parts)
+
+    distinguishing_suffixes = []
+
+    for i, path in enumerate(paths):
+        parts = path_parts[i]
+
+        # Start with just the filename
+        for depth in range(1, min_parts + 1):
+            suffix_parts = parts[:depth]
+            candidate_suffix = "/".join(reversed(suffix_parts))
+
+            # Check if this suffix is unique among all paths
+            is_unique = True
+            for j, other_path in enumerate(paths):
+                if i != j:
+                    other_parts = path_parts[j]
+                    if len(other_parts) >= depth:
+                        other_suffix = "/".join(reversed(other_parts[:depth]))
+                        if candidate_suffix == other_suffix:
+                            is_unique = False
+                            break
+
+            if is_unique:
+                distinguishing_suffixes.append((candidate_suffix, depth))
+                break
+        else:
+            # If we can't find a unique suffix, use relative path from root
+            full_suffix = "/".join(reversed(parts))
+            distinguishing_suffixes.append((full_suffix, len(parts)))
+
+    return distinguishing_suffixes
+
+
+def disambiguate_paths(paths: list[Path]) -> dict[Path, list[str]]:
+    # Group paths by filename
+    grouped_paths = defaultdict(list)
+    for pth in paths:
+        grouped_paths[pth.name].append(pth)
+
+    disambiguated = defaultdict(list)
+
+    for name, path_list in grouped_paths.items():
+        if len(path_list) == 1:
+            # No ambiguity, just use the filename
+            path = path_list[0]
+            disambiguated[path.parent].append(name)
+        else:
+            # Multiple files with same name, find minimal distinguishing suffixes
+            suffix_data = find_minimal_distinguishing_suffix(path_list)
+
+            # Group by the common ancestor directory
+            suffix_groups = defaultdict(list)
+            for path, (suffix, depth) in zip(path_list, suffix_data):
+                # Find the appropriate parent directory for grouping
+                if depth == 1:
+                    # Just filename, group by direct parent
+                    suffix_groups[path.parent].append(suffix)
+                else:
+                    # Multi-level suffix, find the ancestor at the right level
+                    ancestor = path
+                    for _ in range(depth):
+                        ancestor = ancestor.parent
+                    suffix_groups[ancestor].append(suffix)
+
+            for parent, suffixes in suffix_groups.items():
+                disambiguated[parent].extend(suffixes)
+
+    return dict(disambiguated)
 
 
 def get_qa_checks(
@@ -112,25 +191,25 @@ def get_qa_checks(
         templates = [*templates, *sql_files]
 
     ops = []
-    dag.template_searchpath = [*dag.template_searchpath, "/"]
-    for tmpl in sorted(templates):
-        dag.template_searchpath.append(
-            tmpl
-        )  # Add the templates into the searchpath for the dag
-        print(f"Parsing template {tmpl}")
-        task_id = (
-            f"{tmpl.stem}.{dag.params['cdr_type']}.{stage}"
-            if "cdr_type" in dag.params
-            else f"{tmpl.stem}.{stage}"
-        )
-        print(f"Task id is {task_id}")
-        ops.append(
-            QACheckOperator(
-                task_id=task_id,
-                sql=str(tmpl),
-                dag=dag,
+    disambiguated_paths = disambiguate_paths(templates)
+    dag.template_searchpath = [*dag.template_searchpath, *disambiguated_paths.keys()]
+    for pathgroup in sorted(disambiguated_paths.values()):
+        for tmpl in pathgroup:
+            tmpl = Path(tmpl)
+            print(f"Parsing template {tmpl}")
+            task_id = (
+                f"{tmpl.stem}.{dag.params['cdr_type']}.{stage}"
+                if "cdr_type" in dag.params
+                else f"{tmpl.stem}.{stage}"
             )
-        )
+            print(f"Task id is {task_id}")
+            ops.append(
+                QACheckOperator(
+                    task_id=task_id,
+                    sql=str(tmpl),
+                    dag=dag,
+                )
+            )
     return ops
 
 

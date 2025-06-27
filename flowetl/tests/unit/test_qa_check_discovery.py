@@ -9,7 +9,7 @@ import pytest
 
 staging_qa_checks = {
     cdr_type: {
-        f"{f.stem}.staging": str(f)
+        f"{f.stem}.staging": str(f.name)
         for f in sorted(
             (
                 Path(__file__).parent.parent.parent
@@ -24,7 +24,7 @@ staging_qa_checks = {
 }
 
 extract_qa_checks = {
-    f.stem: str(f)
+    f.stem: str(f.name)
     for f in sorted(
         (
             Path(__file__).parent.parent.parent
@@ -38,7 +38,7 @@ extract_qa_checks = {
 
 final_qa_checks = {
     cdr_type: {
-        f"{f.stem}.final": str(f)
+        f"{f.stem}.final": str(f.name)
         for f in sorted(
             (
                 Path(__file__).parent.parent.parent
@@ -167,7 +167,6 @@ def test_module_path_added_to_dag_template_locations():
         / "flowetl"
         / "qa_checks"
         / "final"
-        / "count_added_rows.sql"
         in dag.template_searchpath
     )
 
@@ -184,7 +183,6 @@ def test_uses_context_dag():
         / "flowetl"
         / "qa_checks"
         / "final"
-        / "count_added_rows.sql"
         in dag.template_searchpath
     )
 
