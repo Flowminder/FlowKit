@@ -7,8 +7,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added new cell info qa checks to flowetl:
+    - Missing latitude
+    - Missing longitude
+    - Missing latitude _or_ longitude [#5868](https://github.com/Flowminder/FlowKit/issues/5868)
+    - Number of new cell ids
+    - Number of duplicate ids
+- Added a new general qa check which counts the number of rows in the staging table. [#5869](https://github.com/Flowminder/FlowKit/issues/5869)
+- Added two additional optional arguments to flowetl's `create_dag` function: `additional_staging_qa_check_paths`, and `additional_extract_qa_check_paths` which allow for specifying extra qa checks which should be run against the `staging_table` and `extract_table`.
 
 ### Changed
+- The task ids for generic CDR checks have changed, and will now contain the CDR type they are associated with, and the stage they run under. For example, 'count_imeis' will now be identified as `count_imeis.<cdr_type>.<stage>`,
+- The value of the `type_of_query_or_check` field in flowdb has changed, and will no longer include the cdr type as a suffix.
+- QA checks provided alongside dag files must now be organised into the correct subfolder for the ETL stage they apply to (typically, `final`).
 
 ### Fixed
 
