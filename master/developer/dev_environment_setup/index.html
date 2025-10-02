@@ -8591,7 +8591,7 @@ CONTAINER ID        IMAGE                               COMMAND                 
 e57c8eeb7d38        flowminder/flowmachine:latest       &quot;/bin/sh -c &#39;pipenv …&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:5555-&gt;5555/tcp             flowmachine
 3d54ce0c4484        flowminder/flowapi:latest           &quot;/bin/sh -c &#39;pipenv …&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:9090-&gt;9090/tcp             flowapi
 89e9575c8d42        flowminder/flowauth:latest          &quot;/entrypoint.sh /sta…&quot;   5 minutes ago       Up 5 minutes        443/tcp, 0.0.0.0:8080-&gt;80/tcp      flowauth
-384355e94ae6        bitnami/redis                       &quot;/entrypoint.sh /run…&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:6379-&gt;6379/tcp             flowmachine_query_locker
+384355e94ae6        bitnamilegacy/redis                       &quot;/entrypoint.sh /run…&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:6379-&gt;6379/tcp             flowmachine_query_locker
 </code></pre></div></p>
 <p><strong>Note:</strong> <em>Currently there is a glitch which means that <code>flowmachine</code> may not start up correctly if <code>flowdb_testdata</code>
 is still in the start-up phase while the <code>flowmachine</code> container is already up and running. This will be fixed soon but for the
