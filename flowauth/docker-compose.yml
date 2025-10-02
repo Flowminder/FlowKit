@@ -61,7 +61,7 @@ services:
       - flowauth_database
 
   flowauth_redis:
-    image: bitnami/redis
+    image: bitnamilegacy/redis
     secrets:
       - FLOWAUTH_REDIS_PASSWORD
     environment:

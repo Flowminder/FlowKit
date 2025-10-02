@@ -106,7 +106,7 @@ services:
           - flowetl_db
 
   flowetl_redis:
-    image: bitnami/redis:latest
+    image: bitnamilegacy/redis:latest
     secrets:
       - FLOWETL_REDIS_PASSWORD
     environment:
