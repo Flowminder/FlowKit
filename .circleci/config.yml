@@ -159,7 +159,7 @@ executors:
           EFFECTIVE_CACHE_SIZE: "1GB"
           STATS_TARGET: 100
           FLOWDB_LOG_DEST: stderr
-      - image: bitnami/redis:latest
+      - image: bitnamilegacy/redis:latest
         environment:
           REDIS_PASSWORD: "fm_redis"
 

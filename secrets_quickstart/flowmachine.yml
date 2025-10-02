@@ -59,7 +59,7 @@ services:
         - flowdb
         - redis
     flowmachine_query_locker:
-        image: bitnami/redis:latest
+        image: bitnamilegacy/redis:latest
         environment:
           REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
         ports:

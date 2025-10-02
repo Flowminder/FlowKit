@@ -186,7 +186,7 @@ services:
 
   flowmachine_query_locker:
     container_name: flowmachine_query_locker
-    image: bitnami/redis
+    image: bitnamilegacy/redis
     ports:
       - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
     environment:
@@ -229,7 +229,7 @@ services:
 
   flowetl_redis:
     container_name: flowetl_redis
-    image: bitnami/redis:latest
+    image: bitnamilegacy/redis:latest
     environment:
       - REDIS_PASSWORD=${FLOWETL_REDIS_PASSWORD:?Must set FLOWETL_REDIS_PASSWORD env var}
     expose:
