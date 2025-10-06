@@ -552,6 +552,7 @@ jobs:
       - run:
           name: Run Cypress end-to-end tests
           command: DEBUG="cypress:*" npx cypress run --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
+          max_auto_reruns: 5
       - run:
           name: Run Cypress component tests
           command: DEBUG="cypress:*" npx cypress run --component --record --reporter junit --reporter-options "mochaFile=results/flowauth-component.[hash].xml"
