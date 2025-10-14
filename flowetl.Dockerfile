@@ -48,6 +48,7 @@ ENTRYPOINT ["/usr/bin/dumb-init", "--", "/flowetl_entry.sh"]
 EXPOSE 80
 EXPOSE 8080
 ENV FLOWETL_PORT=8080
+ENV AIRFLOW__WEBSERVER__CONFIG_FILE=/${SOURCE_TREE}/flowetl/webserver_config.py
 
 CMD ["webserver"]
 

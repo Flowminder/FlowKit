@@ -17,3 +17,4 @@
 !flowetl/entrypoint.sh
 !flowetl/requirements.txt
 !flowetl/init.sh
+!flowetl/webserver_config.py
