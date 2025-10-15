@@ -704,10 +704,10 @@ jobs:
       - attach_workspace:
           at: /home/circleci
       - restore_cache:
-          key: integration-test-deps-8-{{ checksum "Pipfile.lock" }}
+          key: integration-test-deps-9-{{ checksum "Pipfile.lock" }}
       - run: pipenv install --deploy --dev
       - save_cache:
-          key: integration-test-deps-8-{{ checksum "Pipfile.lock" }}
+          key: integration-test-deps-9-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run: *wait_for_flowdb
