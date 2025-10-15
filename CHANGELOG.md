@@ -7,13 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Added Google auth to flowetl.
 
 ### Changed
 
 ### Fixed
 
 ### Removed
+
+## [1.34.0]
+
+### Added
+- Added Google auth to flowetl.
 
 ## [1.33.1]
 
@@ -1198,7 +1202,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 -   Added Python 3.6 support for FlowClient
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.33.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/1.34.0...master
+[1.34.0]: https://github.com/Flowminder/FlowKit/compare/1.33.1...1.34.0
 [1.33.1]: https://github.com/Flowminder/FlowKit/compare/1.33.0...1.33.1
 [1.33.0]: https://github.com/Flowminder/FlowKit/compare/1.32.0...1.33.0
 [1.32.0]: https://github.com/Flowminder/FlowKit/compare/1.31.0...1.32.0
