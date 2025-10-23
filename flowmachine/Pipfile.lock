@@ -689,12 +689,12 @@
         },
         "redis": {
             "hashes": [
-                "sha256:b01bc7282b8444e28ec36b261df5375183bb47a07eb9c603f284e89cbc5ef010",
-                "sha256:f0544fa9604264e9464cdf4814e7d4830f74b165d52f2a330a760a88dd248b7f"
+                "sha256:1e66c8355b3443af78367c4937484cd875fdf9f5f14e1fed14aa95869e64f6d1",
+                "sha256:6546ada54354248a53a47342d36abe6172bb156f23d24f018fda2e3c06b9c97a"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==6.4.0"
+            "version": "==7.0.0"
         },
         "setuptools": {
             "hashes": [
