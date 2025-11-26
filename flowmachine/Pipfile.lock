@@ -136,12 +136,12 @@
         },
         "networkx": {
             "hashes": [
-                "sha256:0030d386a9a06dee3565298b4a734b68589749a544acbb6c412dc9e2489ec6ec",
-                "sha256:d4c6f9cf81f52d69230866796b82afbccdec3db7ae4fbd1b65ea750feed50037"
+                "sha256:285276002ad1f7f7da0f7b42f004bcba70d381e936559166363707fdad3d72ad",
+                "sha256:cdb395b105806062473d3be36458d8f1459a4e4b98e236a66c3a48996e07684f"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.11'",
-            "version": "==3.5"
+            "version": "==3.6"
         },
         "numpy": {
             "hashes": [
