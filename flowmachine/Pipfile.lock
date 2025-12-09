@@ -118,12 +118,12 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:3350409f20a70a7e4e11a27661187b77cdcaeb20abca41c1454fe33636bea09c",
-                "sha256:e6d8affb6cb61d39d26402096dc0aee12d5a26d490a121f118d2e81dc0719dc6"
+                "sha256:550aa14b619072f0a8d8184911b3f1021c5c32587fb27318ddf81ce0d0029c9d",
+                "sha256:9038db4cceb849ce2b8676ccf3d8e5b5e634ac499e291397efa260aa796c385a"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.9'",
-            "version": "==3.26.1"
+            "markers": "python_version >= '3.10'",
+            "version": "==4.1.1"
         },
         "marshmallow-oneofschema": {
             "hashes": [
