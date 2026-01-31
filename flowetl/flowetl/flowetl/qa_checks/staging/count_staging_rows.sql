@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM {{ staging_table }}
