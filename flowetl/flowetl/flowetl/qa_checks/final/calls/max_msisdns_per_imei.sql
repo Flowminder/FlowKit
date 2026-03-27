@@ -1,0 +1,1 @@
+../cdr/max_msisdns_per_imei.sql

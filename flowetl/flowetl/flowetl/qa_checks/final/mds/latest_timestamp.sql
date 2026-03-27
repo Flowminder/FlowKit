@@ -1,0 +1,1 @@
+../cdr/latest_timestamp.sql

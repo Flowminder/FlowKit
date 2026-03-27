@@ -1,0 +1,1 @@
+SELECT count(*) FROM {{ staging_table }} WHERE cell_lat = -1 OR cell_lat ISNULL

@@ -1,0 +1,1 @@
+../cdr/count_locatable_location_ids.sql
