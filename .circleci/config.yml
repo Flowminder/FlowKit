@@ -327,20 +327,27 @@ jobs:
     working_directory: /home/circleci/project
     steps:
       - checkout
+      # Cache key includes the pinned pipenv version so a pipenv bump
+      # invalidates the cached virtualenv, forcing a fresh install. Without
+      # this, dependabot could float lock content forever without ever
+      # exercising `pipenv install --deploy` because the cache key (which
+      # only checksums Pipfile.lock) wouldn't change.
       - restore_cache:
-          key: flowmachine-deps-12-{{ checksum "flowmachine/Pipfile.lock" }}
-      # Use the same pipenv as build_flowmachine's Dockerfile so both jobs hash
-      # the Pipfile identically; the cimg image's bundled pipenv hashes Pipfile
-      # differently and the resulting hash mismatch breaks `--deploy`.
+          key: flowmachine-deps-pipenv2026.6.1-{{ checksum "flowmachine/Pipfile.lock" }}
+      # Pin pipenv to match the version in flowmachine.Dockerfile. Different
+      # pipenv versions hash the same Pipfile to different `_meta.hash`
+      # values; if these two contexts disagree, no single Pipfile.lock can
+      # satisfy both jobs and master ends up deadlocked. Keep both pins in
+      # sync with whoever regenerates flowmachine/Pipfile.lock.
       - run:
           name: Install pipenv
-          command: pip install --upgrade pip pipenv
+          command: pip install --upgrade pip "pipenv==2026.6.1"
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
       - run: cd flowmachine && pipenv install --dev --deploy
       - run: cd flowmachine && sudo apt-get update && sudo apt-get install -y libgraphviz-dev graphviz && pipenv run pip install pygraphviz
       - save_cache:
-          key: flowmachine-deps-12-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-pipenv2026.6.1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
 
