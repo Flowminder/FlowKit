@@ -403,6 +403,18 @@ export async function createToken(name, server_id, roles) {
   return await getResponse("/tokens/tokens/" + server_id, dat);
 }
 
+export async function renewToken(token_id, lifetime_minutes) {
+  const body = {};
+  if (lifetime_minutes != null && lifetime_minutes !== "") {
+    body.lifetime_minutes = parseInt(lifetime_minutes, 10);
+  }
+  var dat = {
+    method: "POST",
+    body: JSON.stringify(body),
+  };
+  return await getResponse("/tokens/tokens/" + token_id + "/renew", dat);
+}
+
 export async function login(username, password) {
   var dat = {
     method: "POST",

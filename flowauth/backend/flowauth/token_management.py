@@ -163,3 +163,105 @@ def add_token(server_id):
     db.session.commit()
 
     return jsonify({"token": token_string})
+
+
+@blueprint.route("/tokens/<int:token_id>/renew", methods=["POST"])
+@login_required
+def renew_token(token_id):
+    """
+    Renew an existing token: mint a fresh JWT with the same name and the same
+    roles as the original, owned by the current user, with a fresh expiry.
+
+    The existing TokenHistory row is left untouched — its JWT remains valid
+    until its own ``exp`` claim passes, giving consumers a natural overlap
+    window to switch over without downtime. A new TokenHistory row is created
+    for the renewed token.
+
+    Parameters
+    ----------
+    token_id: int
+        ID of the existing TokenHistory row to renew.
+
+    Notes
+    -----
+    Optionally accepts ``{"lifetime_minutes": <int>}`` to request a token
+    shorter than the maximum permitted by the server and original roles.
+    When omitted, the new token is issued at the maximum permitted lifetime.
+
+    Responds with ``{"token": <token_string>, "id": <new_token_id>}``.
+    """
+    original = TokenHistory.query.filter(TokenHistory.id == token_id).first_or_404()
+
+    if original.user_id != current_user.id:
+        raise Unauthorized("You can only renew your own tokens.")
+
+    if not original.roles:
+        raise InvalidUsage(
+            "This token has no roles recorded against it and cannot be "
+            "renewed; mint a new token instead.",
+            payload={"bad_field": "token_id"},
+        )
+
+    server = original.server
+
+    user_role_ids = {role.id for role in current_user.roles}
+    missing = [role.name for role in original.roles if role.id not in user_role_ids]
+    if missing:
+        raise Unauthorized(
+            "Cannot renew: the following roles are no longer assigned to you: "
+            + ", ".join(sorted(missing))
+        )
+
+    roles = list(original.roles)
+    max_token_expiry = min(
+        server.next_expiry(), min(role.next_expiry() for role in roles)
+    )
+
+    if max_token_expiry < datetime.datetime.now():
+        raise Unauthorized(
+            f"Token for {current_user.username} cannot be renewed: maximum "
+            "permitted expiry has already passed."
+        )
+
+    json = request.get_json(silent=True) or {}
+    requested_lifetime = json.get("lifetime_minutes")
+    if requested_lifetime is None:
+        token_expiry = max_token_expiry
+    else:
+        if not isinstance(requested_lifetime, int) or requested_lifetime <= 0:
+            raise InvalidUsage(
+                "lifetime_minutes must be a positive integer",
+                payload={"bad_field": "lifetime_minutes"},
+            )
+        requested_expiry = datetime.datetime.now() + datetime.timedelta(
+            minutes=requested_lifetime
+        )
+        if requested_expiry > max_token_expiry:
+            raise InvalidUsage(
+                "Requested lifetime exceeds the maximum permitted by the "
+                "server and original roles",
+                payload={"bad_field": "lifetime_minutes"},
+            )
+        token_expiry = requested_expiry
+
+    token_string = generate_token(
+        flowapi_identifier=server.name,
+        username=current_user.username,
+        private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
+        lifetime=token_expiry - datetime.datetime.now(),
+        roles={role.name: sorted(ss.name for ss in role.scopes) for role in roles},
+    )
+
+    history_entry = TokenHistory(
+        name=original.name,
+        user_id=current_user.id,
+        server_id=server.id,
+        expiry=token_expiry,
+        token=token_string,
+        roles=roles,
+    )
+
+    db.session.add(history_entry)
+    db.session.commit()
+
+    return jsonify({"token": token_string, "id": history_entry.id})

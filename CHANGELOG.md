@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - FlowAuth: roles assigned to a token at mint time are now recorded in a `tokens_with_roles` association table and exposed on the user's token list (`GET /tokens/tokens/<server_id>`), so users and admins can see which permissions an existing token carries without decoding the JWT. [#7273](https://github.com/Flowminder/FlowKit/issues/7273)
+- FlowAuth: new `POST /tokens/tokens/<token_id>/renew` endpoint mints a fresh JWT reusing the original token's name and roles. The original `TokenHistory` row is left intact so its JWT remains valid until its own `exp` claim passes, giving consumers a natural overlap window. The token list UI gains a "Renew" button on each active token. [#7275](https://github.com/Flowminder/FlowKit/issues/7275)
 
 ### Changed
 
