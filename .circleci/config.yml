@@ -329,6 +329,15 @@ jobs:
       - checkout
       - restore_cache:
           key: flowmachine-deps-12-{{ checksum "flowmachine/Pipfile.lock" }}
+      # Pin pipenv to match flowmachine.Dockerfile. Different pipenv versions
+      # hash the same Pipfile to different `_meta.hash` values; without this
+      # pin, the cimg image's bundled pipenv and the Dockerfile's
+      # `pip install pipenv` end up disagreeing, and no single Pipfile.lock
+      # can satisfy both jobs. 2024.4.1 is the version that hashes the
+      # current Pipfile to the value stored in Pipfile.lock.
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pip "pipenv==2024.4.1"
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
       - run: cd flowmachine && pipenv install --dev --deploy

@@ -8,13 +8,22 @@ ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 ENV TINI_VERSION="v0.19.0"
+# Pin pipenv: different pipenv versions hash the same Pipfile differently.
+# 2024.4.1 is the version that hashes flowmachine/Pipfile to the value
+# stored in the current Pipfile.lock; using a newer pipenv produces a
+# different hash and breaks `--deploy`. Keep this in sync with
+# .circleci/config.yml's install_flowmachine_deps job.
+#
+# Note: do NOT name this ARG `PIPENV_VERSION` — pipenv treats that as its
+# `--version` boolean flag and fails on any non-boolean value.
+ARG PIPENV_PIN=2024.4.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 WORKDIR /${SOURCE_TREE}/flowmachine
 COPY ./flowmachine/Pipfile* ./
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
-        pip install --no-cache-dir pipenv && pipenv install --clear --deploy && \
+        pip install --no-cache-dir "pipenv==${PIPENV_PIN}" && pipenv install --clear --deploy && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
