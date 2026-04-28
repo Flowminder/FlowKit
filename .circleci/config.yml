@@ -329,6 +329,12 @@ jobs:
       - checkout
       - restore_cache:
           key: flowmachine-deps-12-{{ checksum "flowmachine/Pipfile.lock" }}
+      # Use the same pipenv as build_flowmachine's Dockerfile so both jobs hash
+      # the Pipfile identically; the cimg image's bundled pipenv hashes Pipfile
+      # differently and the resulting hash mismatch breaks `--deploy`.
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
       - run: cd flowmachine && pipenv install --dev --deploy
