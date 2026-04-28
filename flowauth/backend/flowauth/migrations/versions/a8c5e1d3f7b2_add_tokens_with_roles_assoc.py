@@ -25,6 +25,10 @@ logger = structlog.get_logger("flowauth.migration")
 
 
 def upgrade():
+    """Create the ``tokens_with_roles`` association table linking
+    ``token_history`` rows to the ``role`` rows that were granted at mint
+    time. The table is the source of truth for the roles displayed on the
+    user's token list and reused by the renewal endpoint."""
     logger.info(
         "Running upgrade.",
         migration_script=__file__,
@@ -50,6 +54,9 @@ def upgrade():
 
 
 def downgrade():
+    """Drop the ``tokens_with_roles`` association table. After downgrade,
+    historical role assignments for previously-minted tokens are no longer
+    available for display or for renewal."""
     logger.info(
         "Running downgrade.",
         migration_script=__file__,
