@@ -18,7 +18,7 @@ class ActionRequest(Schema):
 
     action = fields.String(required=True, validate=OneOf(ACTION_HANDLERS.keys()))
     request_id = fields.String(required=True)
-    params = fields.Dict(required=False, missing={})
+    params = fields.Dict(required=False, load_default={})
 
     @post_load
     def make_action(self, data, **kwargs):

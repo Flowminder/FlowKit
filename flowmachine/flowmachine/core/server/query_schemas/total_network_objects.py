@@ -77,4 +77,4 @@ class TotalNetworkObjectsSchema(
 
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
-    total_by = TotalBy(required=False, missing="day")
+    total_by = TotalBy(required=False, load_default="day")

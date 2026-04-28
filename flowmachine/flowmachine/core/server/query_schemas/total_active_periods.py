@@ -74,10 +74,10 @@ class TotalActivePeriodsSchema(
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     start_date = ISODateTime(required=True)
     total_periods = fields.Integer(required=True)
-    period_length = fields.Integer(missing=1, required=False, default=1)
+    period_length = fields.Integer(load_default=1, required=False, dump_default=1)
     period_unit = fields.String(
         validate=OneOf(TotalActivePeriodsSubscriber.allowed_units),
-        missing="days",
+        load_default="days",
         required=False,
-        default="days",
+        dump_default="days",
     )

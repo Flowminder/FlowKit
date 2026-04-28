@@ -13,7 +13,7 @@ from flowmachine.core.server.query_schemas.subscriber_subset import SubscriberSu
 
 
 class HoursField:
-    hours = fields.Nested(Hours, missing=None, allow_none=True)
+    hours = fields.Nested(Hours, load_default=None, allow_none=True)
 
 
 class StartAndEndField:

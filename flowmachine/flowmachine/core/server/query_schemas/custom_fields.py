@@ -60,7 +60,12 @@ class EventTypes(fields.List):
     """
 
     def __init__(
-        self, required=False, validate=None, allow_none=True, missing=None, **kwargs
+        self,
+        required=False,
+        validate=None,
+        allow_none=True,
+        load_default=None,
+        **kwargs,
     ):
         if validate is not None:
             raise ValueError(
@@ -73,7 +78,7 @@ class EventTypes(fields.List):
             required=required,
             validate=Length(min=1),
             allow_none=allow_none,
-            missing=missing,
+            load_default=load_default,
             **kwargs,
         )
 

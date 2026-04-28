@@ -67,7 +67,7 @@ class FlowsSchema(BaseSchema):
     aggregation_unit = AggregationUnitKind(dump_only=True)
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
-    join_type = fields.String(validate=OneOf(Join.join_kinds), missing="inner")
+    join_type = fields.String(validate=OneOf(Join.join_kinds), load_default="inner")
 
     @validates_schema(skip_on_field_errors=True)
     def validate_aggregation_units(self, data, **kwargs):

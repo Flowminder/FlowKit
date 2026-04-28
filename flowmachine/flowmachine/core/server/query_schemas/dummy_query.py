@@ -42,4 +42,4 @@ class DummyQuerySchema(AggregationUnitMixin, BaseSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf([__model__.query_kind]), required=True)
     dummy_param = fields.String(required=True)
-    dummy_delay = fields.Integer(missing=0, required=False)
+    dummy_delay = fields.Integer(load_default=0, required=False)

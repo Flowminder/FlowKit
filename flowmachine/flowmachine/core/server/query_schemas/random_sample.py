@@ -15,7 +15,7 @@ class BaseRandomSampleSchema(Schema):
         validate=Range(0.0, 1.0, min_inclusive=False, max_inclusive=False),
         allow_none=True,
     )
-    estimate_count = fields.Boolean(missing=True)
+    estimate_count = fields.Boolean(load_default=True)
 
     @validates_schema
     def validate_size_or_fraction(self, data, **kwargs):
