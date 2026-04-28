@@ -35,6 +35,14 @@ users_with_roles = db.Table(
     db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
 )
 
+tokens_with_roles = db.Table(
+    "tokens_with_roles",
+    db.Column(
+        "token_id", db.Integer, db.ForeignKey("token_history.id"), primary_key=True
+    ),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
+)
+
 
 class User(db.Model):
     """
@@ -497,6 +505,11 @@ class TokenHistory(db.Model):
     user = db.relationship("User", back_populates="tokens", lazy=True)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="tokens", lazy=True)
+    roles = db.relationship(
+        "Role",
+        secondary=tokens_with_roles,
+        lazy="subquery",
+    )
 
     @hybrid_property
     def token(self) -> str:

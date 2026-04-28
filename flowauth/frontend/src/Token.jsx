@@ -45,15 +45,26 @@ class Token extends React.Component {
     element.click();
   };
   render() {
-    const { name, expiry, token, classes } = this.props;
+    const { name, expiry, token, classes, roles } = this.props;
     const { isOpen, copySuccess } = this.state;
     const isExpired = Date.parse(expiry) < Date.parse(new Date());
+    const roleSummary =
+      roles && roles.length > 0 ? roles.map((r) => r.name).join(", ") : null;
     return (
       <React.Fragment>
         <Grid item xs={3}>
           <Typography component="p" className={isExpired ? "expired" : ""}>
             {name}{" "}
           </Typography>
+          {roleSummary && (
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              className={isExpired ? "expired" : ""}
+            >
+              Roles: {roleSummary}
+            </Typography>
+          )}
         </Grid>
         <Grid item xs={3}>
           <Typography component="p" className={isExpired ? "expired" : ""}>

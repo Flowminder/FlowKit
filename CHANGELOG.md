@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowAuth: roles assigned to a token at mint time are now recorded in a `tokens_with_roles` association table and exposed on the user's token list (`GET /tokens/tokens/<server_id>`), so users and admins can see which permissions an existing token carries without decoding the JWT. [#7273](https://github.com/Flowminder/FlowKit/issues/7273)
 
 ### Changed
 

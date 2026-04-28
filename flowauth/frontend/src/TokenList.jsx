@@ -104,6 +104,7 @@ class TokenList extends React.Component {
               name={object.name}
               expiry={object.expires}
               token={object.token}
+              roles={object.roles}
               classes={classes}
               editAction={editAction}
             />
@@ -132,6 +133,7 @@ class TokenList extends React.Component {
                 name={object.name}
                 expiry={object.expires}
                 token={object.token}
+                roles={object.roles}
                 classes={classes}
                 editAction={editAction}
               />
