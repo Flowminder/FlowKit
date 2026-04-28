@@ -111,8 +111,10 @@ class User(db.Model):
     def latest_token_expiry(self, server: "Server") -> datetime.datetime:
         """
         Get the latest datetime a token can be valid until on a server.
-        Returns the soonest of either the server's expiry date or the
-        current time + the servers maximum lifetime.
+        Returns the soonest of either the absolute expiry cap (server or
+        any of the user's roles, whichever is sooner) or the current time
+        plus the maximum permitted lifetime. When neither the server nor
+        any role sets an absolute cap, returns ``now + longest_life``.
 
         Parameters
         ----------
@@ -128,40 +130,68 @@ class User(db.Model):
         life = limits["longest_life"]
         end = limits["latest_end"]
         hypothetical_max = datetime.datetime.now() + datetime.timedelta(minutes=life)
+        if end is None:
+            return hypothetical_max
         return min(end, hypothetical_max)
 
     def token_limits(
         self, server: "Server"
-    ) -> Dict[str, Union[datetime.datetime, int]]:
+    ) -> Dict[str, Union[datetime.datetime, int, None]]:
         """
         Get the maximum lifetime and latest expiry date a token can be
         created for on this user on a server.
 
+        ``latest_end`` is ``None`` when neither the server nor any of
+        the user's roles on this server impose an absolute expiry cap.
+        Otherwise it is the soonest of the role cap (most permissive
+        across the user's roles, treating ``NULL`` as no cap) and the
+        server cap.
+
         Returns
         -------
         dict
-            Dict {"latest_end": datetime, "longest_life":int}
+            Dict {"latest_end": datetime | None, "longest_life": int}
         """
 
-        latest = db.session.execute(
-            db.select(Role.latest_token_expiry)
-            .where(Role.server_id == server.id)
-            .join(User.roles)
-            .order_by(Role.latest_token_expiry.desc())
-        ).scalar()
+        role_expiries = (
+            db.session.execute(
+                db.select(Role.latest_token_expiry)
+                .where(Role.server_id == server.id)
+                .join(User.roles)
+                .where(User.id == self.id)
+            )
+            .scalars()
+            .all()
+        )
 
         longest = db.session.execute(
             db.select(Role.longest_token_life_minutes)
             .where(Role.server_id == server.id)
             .join(User.roles)
+            .where(User.id == self.id)
             .order_by(Role.longest_token_life_minutes.desc())
         ).scalar()
 
-        if not latest or not longest:
-            raise Unauthorized(f"No roles for {self.username} on {Server.name}")
+        if not role_expiries or longest is None:
+            raise Unauthorized(f"No roles for {self.username} on {server.name}")
+
+        if any(expiry is None for expiry in role_expiries):
+            roles_latest = None
+        else:
+            roles_latest = max(role_expiries)
+
+        server_latest = server.latest_token_expiry
+        if roles_latest is None and server_latest is None:
+            latest_end = None
+        elif roles_latest is None:
+            latest_end = server_latest
+        elif server_latest is None:
+            latest_end = roles_latest
+        else:
+            latest_end = min(server_latest, roles_latest)
 
         return {
-            "latest_end": min(server.latest_token_expiry, latest),
+            "latest_end": latest_end,
             "longest_life": min(server.longest_token_life_minutes, longest),
         }
 
@@ -388,7 +418,7 @@ class Server(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(75), unique=True, nullable=False)
-    latest_token_expiry = db.Column(db.DateTime, nullable=False)
+    latest_token_expiry = db.Column(db.DateTime, nullable=True)
     longest_token_life_minutes = db.Column(db.Integer, nullable=False)
 
     roles = db.relationship(
@@ -404,11 +434,12 @@ class Server(db.Model):
     )
 
     def next_expiry(self) -> datetime.datetime:
-        return min(
-            self.latest_token_expiry,
-            datetime.datetime.now()
-            + datetime.timedelta(minutes=self.longest_token_life_minutes),
+        relative_max = datetime.datetime.now() + datetime.timedelta(
+            minutes=self.longest_token_life_minutes
         )
+        if self.latest_token_expiry is None:
+            return relative_max
+        return min(self.latest_token_expiry, relative_max)
 
     def __repr__(self) -> str:
         return f"<Server {self.name}>"
@@ -424,7 +455,7 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(75), nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"))
-    latest_token_expiry = db.Column(db.DateTime, nullable=False)
+    latest_token_expiry = db.Column(db.DateTime, nullable=True)
     longest_token_life_minutes = db.Column(db.Integer, nullable=False)
 
     scopes = db.relationship(
@@ -435,11 +466,12 @@ class Role(db.Model):
     )
 
     def next_expiry(self) -> datetime.datetime:
-        return min(
-            self.latest_token_expiry,
-            datetime.datetime.now()
-            + datetime.timedelta(minutes=self.longest_token_life_minutes),
+        relative_max = datetime.datetime.now() + datetime.timedelta(
+            minutes=self.longest_token_life_minutes
         )
+        if self.latest_token_expiry is None:
+            return relative_max
+        return min(self.latest_token_expiry, relative_max)
 
     def allowed_claims(self) -> List[str]:
         """
@@ -468,8 +500,10 @@ class Role(db.Model):
             "id": self.id,
             "name": self.name,
             "scopes": sorted([scope.id for scope in self.scopes]),
-            "latest_token_expiry": self.latest_token_expiry.strftime(
-                "%Y-%m-%dT%H:%M:%S.%fZ"
+            "latest_token_expiry": (
+                self.latest_token_expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                if self.latest_token_expiry is not None
+                else None
             ),
             "longest_token_life_minutes": self.longest_token_life_minutes,
             "server": self.server_id,

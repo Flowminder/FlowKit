@@ -53,8 +53,11 @@ def get_role(role_id):
 @admin_permission.require(http_exception=401)
 def add_role():
     json = request.get_json()
-    json["latest_token_expiry"] = datetime.datetime.strptime(
-        json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    raw_latest = json.get("latest_token_expiry")
+    json["latest_token_expiry"] = (
+        datetime.datetime.strptime(raw_latest, "%Y-%m-%dT%H:%M:%S.%fZ")
+        if raw_latest
+        else None
     )
     server = Server.query.filter(Server.id == json["server_id"]).first_or_404()
     role_scopes = Scope.query.filter(Scope.id.in_(json["scopes"])).all()
@@ -65,7 +68,11 @@ def add_role():
     except KeyError:
         role_users = []
 
-    if json["latest_token_expiry"] > server.latest_token_expiry:
+    if (
+        json["latest_token_expiry"] is not None
+        and server.latest_token_expiry is not None
+        and json["latest_token_expiry"] > server.latest_token_expiry
+    ):
         raise InvalidUsage("Role cannot exist past latest token in server")
     if int(json["longest_token_life_minutes"]) > server.longest_token_life_minutes:
         raise InvalidUsage("Role cannot have a maximum lifetime greater than server")
@@ -109,8 +116,16 @@ def edit_role(role_id):
             for scope in value:
                 _validate_scope_server(scope, server)
         elif key == "latest_token_expiry":
-            value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
-            if value > server.latest_token_expiry:
+            value = (
+                datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+                if value
+                else None
+            )
+            if (
+                value is not None
+                and server.latest_token_expiry is not None
+                and value > server.latest_token_expiry
+            ):
                 raise InvalidUsage("Role cannot exist past latest token in server")
         elif key == "longest_token_life_minutes":
             value = int(value)

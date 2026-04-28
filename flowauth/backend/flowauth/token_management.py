@@ -102,8 +102,11 @@ def add_token(server_id):
 
     Notes
     -----
-    Expects json with "name", and "roles" keys, where "name" is a string,
-    and roles is a list of role names.
+    Expects json with "name" and "roles" keys, where "name" is a string and
+    "roles" is a list of role names. Optionally accepts "lifetime_minutes"
+    (positive integer) to request a token shorter than the maximum permitted
+    by the server and selected roles. When omitted, the token is issued at
+    the maximum permitted lifetime.
 
     Responds with a json object {"token":<token_string>, "id":<token_id>}.
 
@@ -132,15 +135,30 @@ def add_token(server_id):
                 f"Role '{requested_role['name']}' is not permitted for the current user"
             )
         roles.append(Role.query.filter(Role.name == requested_role["name"]).first())
-    token_expiry = min(server.next_expiry(), min(rr.next_expiry() for rr in roles))
-    # The role expiry date doesn't beat the server expiry date
-    # The role longest lifetime doesn't beat the server longest lifetime
-    # If you request token with a role with a expiry past the server final expiry, then issue the token with the server's final expiry
-    # feature todo: flag this to the user
-    # This isn't about the user, so get these values from the server
+    max_token_expiry = min(server.next_expiry(), min(rr.next_expiry() for rr in roles))
 
-    if token_expiry < datetime.datetime.now():
+    if max_token_expiry < datetime.datetime.now():
         raise Unauthorized(f"Token for {current_user.username} expired")
+
+    requested_lifetime = json.get("lifetime_minutes")
+    if requested_lifetime is None:
+        token_expiry = max_token_expiry
+    else:
+        if not isinstance(requested_lifetime, int) or requested_lifetime <= 0:
+            raise InvalidUsage(
+                "lifetime_minutes must be a positive integer",
+                payload={"bad_field": "lifetime_minutes"},
+            )
+        requested_expiry = datetime.datetime.now() + datetime.timedelta(
+            minutes=requested_lifetime
+        )
+        if requested_expiry > max_token_expiry:
+            raise InvalidUsage(
+                "Requested lifetime exceeds the maximum permitted by the "
+                "selected server and roles",
+                payload={"bad_field": "lifetime_minutes"},
+            )
+        token_expiry = requested_expiry
 
     token_string = generate_token(
         flowapi_identifier=server.name,

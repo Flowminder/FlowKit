@@ -46,6 +46,7 @@ function TokenBuilder(props) {
   const [roles, setRoleState] = useState([]);
   const [activeRoles, setActiveRoles] = useState([]);
   const [checked, setChecked] = useState([]);
+  const [lifetimeMinutes, setLifetimeMinutes] = useState("");
   const [tokenErrorOpen, setTokenErrorOpen] = useState(false);
   const [tokenError, setTokenError] = useState("");
   const [tokenWarningOpen, setTokenWarningOpen] = useState(false);
@@ -101,7 +102,7 @@ function TokenBuilder(props) {
   };
 
   const requestToken = () => {
-    createToken(name, activeServer, activeRoles).then(
+    createToken(name, activeServer, activeRoles, lifetimeMinutes).then(
       (token) => {
         console.log("Token got");
         console.log(token);
@@ -151,6 +152,11 @@ function TokenBuilder(props) {
     setName(event.target.value);
   };
 
+  //Handles the requested lifetime being changed
+  const handleLifetimeChange = (event) => {
+    setLifetimeMinutes(event.target.value);
+  };
+
   return (
     <Fragment>
       <Dialog open={tokenErrorOpen} onClose={closeTokenError}>
@@ -179,6 +185,18 @@ function TokenBuilder(props) {
             margin="normal"
             error={!nameIsValid}
             helperText={nameHelperText}
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            id="lifetime_minutes"
+            label="Lifetime (minutes)"
+            type="number"
+            inputProps={{ min: 1 }}
+            value={lifetimeMinutes}
+            onChange={handleLifetimeChange}
+            margin="normal"
+            helperText="Optional. Leave empty to issue at the maximum permitted by the selected roles."
           />
         </Grid>
         <Grid container xs={8}>
