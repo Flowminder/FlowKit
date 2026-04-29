@@ -106,7 +106,7 @@ class Token extends React.Component {
           <Button variant="outlined" color="primary" onClick={this.toggleOpen}>
             View
           </Button>
-          {onRenew && !isExpired && (
+          {onRenew && (
             <Button
               variant="outlined"
               color="primary"

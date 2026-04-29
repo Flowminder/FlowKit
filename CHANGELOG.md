@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - FlowAuth: `User.token_limits` now correctly filters by the current user when computing role-derived caps. Previously the join did not constrain by user id, so the function returned the most-permissive role on the server across *all* users. [#7274](https://github.com/Flowminder/FlowKit/issues/7274)
+- FlowAuth: the "Renew" button is now also shown on expired tokens. The renewal endpoint already accepted expired tokens (only the server/role caps are checked), but the button was hidden on the Expired tokens list and on rows whose `expiry` had passed.
 
 ### Removed
 
