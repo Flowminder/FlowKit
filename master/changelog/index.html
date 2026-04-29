@@ -14007,9 +14007,16 @@
 <ul>
 <li>FlowAuth: roles assigned to a token at mint time are now recorded in a <code>tokens_with_roles</code> association table and exposed on the user's token list (<code>GET /tokens/tokens/&lt;server_id&gt;</code>), so users and admins can see which permissions an existing token carries without decoding the JWT. <a href="https://github.com/Flowminder/FlowKit/issues/7273">#7273</a></li>
 <li>FlowAuth: new <code>POST /tokens/tokens/&lt;token_id&gt;/renew</code> endpoint mints a fresh JWT reusing the original token's name and roles. The original <code>TokenHistory</code> row is left intact so its JWT remains valid until its own <code>exp</code> claim passes, giving consumers a natural overlap window. The token list UI gains a "Renew" button on each active token. <a href="https://github.com/Flowminder/FlowKit/issues/7275">#7275</a></li>
+<li>FlowAuth: token mint endpoint accepts an optional <code>lifetime_minutes</code> so users can request a token shorter than the maximum permitted by the selected server and roles. <a href="https://github.com/Flowminder/FlowKit/issues/7274">#7274</a></li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>FlowAuth: <code>Server.latest_token_expiry</code> and <code>Role.latest_token_expiry</code> are now nullable. A <code>NULL</code> value means the row imposes no absolute expiry cap on tokens; only <code>longest_token_life_minutes</code> then bounds the lifetime. Existing rows keep their non-null values, so behaviour is unchanged until an operator nulls the column out. This removes the silent-cap footgun that required an admin to bump expiry datetimes ahead of every long-lived-token renewal. <a href="https://github.com/Flowminder/FlowKit/issues/7274">#7274</a></li>
+</ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>FlowAuth: <code>User.token_limits</code> now correctly filters by the current user when computing role-derived caps. Previously the join did not constrain by user id, so the function returned the most-permissive role on the server across <em>all</em> users. <a href="https://github.com/Flowminder/FlowKit/issues/7274">#7274</a></li>
+</ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1340"><a href="https://github.com/Flowminder/FlowKit/compare/1.33.1...1.34.0">1.34.0</a><a class="headerlink" href="#1340" title="Permanent link">&para;</a></h2>
 <h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
