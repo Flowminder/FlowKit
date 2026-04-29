@@ -9,10 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - FlowAuth: roles assigned to a token at mint time are now recorded in a `tokens_with_roles` association table and exposed on the user's token list (`GET /tokens/tokens/<server_id>`), so users and admins can see which permissions an existing token carries without decoding the JWT. [#7273](https://github.com/Flowminder/FlowKit/issues/7273)
 - FlowAuth: new `POST /tokens/tokens/<token_id>/renew` endpoint mints a fresh JWT reusing the original token's name and roles. The original `TokenHistory` row is left intact so its JWT remains valid until its own `exp` claim passes, giving consumers a natural overlap window. The token list UI gains a "Renew" button on each active token. [#7275](https://github.com/Flowminder/FlowKit/issues/7275)
+- FlowAuth: token mint endpoint accepts an optional `lifetime_minutes` so users can request a token shorter than the maximum permitted by the selected server and roles. [#7274](https://github.com/Flowminder/FlowKit/issues/7274)
 
 ### Changed
+- FlowAuth: `Server.latest_token_expiry` and `Role.latest_token_expiry` are now nullable. A `NULL` value means the row imposes no absolute expiry cap on tokens; only `longest_token_life_minutes` then bounds the lifetime. Existing rows keep their non-null values, so behaviour is unchanged until an operator nulls the column out. This removes the silent-cap footgun that required an admin to bump expiry datetimes ahead of every long-lived-token renewal. [#7274](https://github.com/Flowminder/FlowKit/issues/7274)
 
 ### Fixed
+- FlowAuth: `User.token_limits` now correctly filters by the current user when computing role-derived caps. Previously the join did not constrain by user id, so the function returned the most-permissive role on the server across *all* users. [#7274](https://github.com/Flowminder/FlowKit/issues/7274)
 
 ### Removed
 

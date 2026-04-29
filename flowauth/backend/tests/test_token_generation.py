@@ -239,6 +239,101 @@ def test_token_renewal_rejects_when_role_revoked(
         assert "runner" in renew.get_json()["message"]
 
 
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_honours_requested_lifetime(
+    client, auth, app, test_user_with_roles, public_key
+):
+    """A user-supplied lifetime_minutes shorter than the cap is honoured."""
+    with app.app_context():
+        uid, uname, upass = test_user_with_roles
+        response, csrf_cookie = auth.login(uname, upass)
+
+        token_req = {
+            "name": "DUMMY_TOKEN",
+            "roles": [{"name": "reader"}],
+            "lifetime_minutes": 2,
+        }
+        response = client.post(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
+        )
+        assert response.status_code == 200
+
+        decoded = jwt.decode(
+            jwt=response.get_json()["token"].encode(),
+            key=public_key,
+            algorithms=["RS256"],
+            audience="DUMMY_SERVER_A",
+        )
+        expected_expiry = datetime.datetime(
+            year=2020, month=12, day=31
+        ) + datetime.timedelta(minutes=2)
+        assert approx(expected_expiry.timestamp()) == decoded["exp"]
+
+
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_rejects_lifetime_above_cap(client, auth, app, test_user_with_roles):
+    """A lifetime longer than the role/server cap is rejected."""
+    with app.app_context():
+        uid, uname, upass = test_user_with_roles
+        response, csrf_cookie = auth.login(uname, upass)
+
+        # Cap is 5 minutes (set in test_roles fixture); ask for 10.
+        token_req = {
+            "name": "DUMMY_TOKEN",
+            "roles": [{"name": "reader"}],
+            "lifetime_minutes": 10,
+        }
+        response = client.post(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
+        )
+        assert response.status_code == 400
+        assert response.get_json()["bad_field"] == "lifetime_minutes"
+
+
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_mint_with_no_absolute_caps(
+    client, auth, app, test_user_with_roles, public_key, test_servers, test_roles
+):
+    """When server and roles have NULL latest_token_expiry, mint succeeds and
+    the token's expiry is bounded only by longest_token_life_minutes."""
+    from flowauth.models import db, Server, Role
+
+    with app.app_context():
+        server_a = db.session.get(Server, 1)
+        server_a.latest_token_expiry = None
+        for role in db.session.execute(
+            db.select(Role).where(Role.server_id == 1)
+        ).scalars():
+            role.latest_token_expiry = None
+        db.session.commit()
+
+        uid, uname, upass = test_user_with_roles
+        response, csrf_cookie = auth.login(uname, upass)
+
+        token_req = {
+            "name": "DUMMY_TOKEN",
+            "roles": [{"name": "reader"}],
+        }
+        response = client.post(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
+        )
+        assert response.status_code == 200
+        decoded = jwt.decode(
+            jwt=response.get_json()["token"].encode(),
+            key=public_key,
+            algorithms=["RS256"],
+            audience="DUMMY_SERVER_A",
+        )
+        # longest_token_life_minutes is 24 * 60 * 2 = 2880
+        expected_expiry = datetime.datetime(
+            year=2020, month=12, day=31
+        ) + datetime.timedelta(minutes=24 * 60 * 2)
+        assert approx(expected_expiry.timestamp()) == decoded["exp"]
+
+
 def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, public_key):
     with app.app_context():
         with freeze_time("2020-12-31") as frozentime:

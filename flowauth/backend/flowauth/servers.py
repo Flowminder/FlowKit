@@ -44,8 +44,10 @@ def get_server(server_id):
             "id": server.id,
             "name": server.name,
             "longest_token_life_minutes": server.longest_token_life_minutes,
-            "latest_token_expiry": server.latest_token_expiry.strftime(
-                "%Y-%m-%dT%H:%M:%S.%fZ"
+            "latest_token_expiry": (
+                server.latest_token_expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                if server.latest_token_expiry is not None
+                else None
             ),
         }
     )
@@ -69,8 +71,10 @@ def get_roles(server_id):
                 "id": role.id,
                 "name": role.name,
                 "scopes": [scope.name for scope in role.scopes],
-                "latest_token_expiry": role.latest_token_expiry.strftime(
-                    "%Y-%m-%dT%H:%M:%S.%fZ"
+                "latest_token_expiry": (
+                    role.latest_token_expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                    if role.latest_token_expiry is not None
+                    else None
                 ),
                 "longest_token_life_minutes": role.longest_token_life_minutes,
             }
@@ -177,12 +181,20 @@ def add_server():
 
     Notes
     -----
-    Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ>, "secret_key":<key>,
-    "longest_token_life_minutes":<int>, "name":<server_name>, "scopes":[<list of scope strings>], "role":[<list of role IDs>]}
+    Expects json of the form {"latest_token_expiry":<%Y-%m-%dT%H:%M:%S.%fZ> or null,
+    "secret_key":<key>, "longest_token_life_minutes":<int>, "name":<server_name>,
+    "scopes":[<list of scope strings>], "role":[<list of role IDs>]}.
+
+    ``latest_token_expiry`` may be ``null`` (or omitted) to indicate no
+    absolute expiry cap; in that case ``longest_token_life_minutes`` is the
+    sole ceiling on token lifetime.
     """
     json = request.get_json()
-    json["latest_token_expiry"] = datetime.datetime.strptime(
-        json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    raw_latest = json.get("latest_token_expiry")
+    json["latest_token_expiry"] = (
+        datetime.datetime.strptime(raw_latest, "%Y-%m-%dT%H:%M:%S.%fZ")
+        if raw_latest
+        else None
     )
     if "name" not in json:
         raise InvalidUsage("Must provide server name", payload={"bad_field": "name"})
@@ -238,9 +250,13 @@ def edit_server(server_id):
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
     json = request.get_json()
-    json["latest_token_expiry"] = datetime.datetime.strptime(
-        json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
+    if "latest_token_expiry" in json:
+        raw_latest = json["latest_token_expiry"]
+        json["latest_token_expiry"] = (
+            datetime.datetime.strptime(raw_latest, "%Y-%m-%dT%H:%M:%S.%fZ")
+            if raw_latest
+            else None
+        )
     for key, val in json.items():
         if key == "roles":
             server.roles = Role.query.filter(Role.id.in_(val)).all()

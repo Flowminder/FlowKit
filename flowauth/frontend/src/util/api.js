@@ -395,10 +395,14 @@ export async function editRoleScopes(role_id, new_scopes) {
   return await getResponse("/roles/" + role_id, dat);
 }
 
-export async function createToken(name, server_id, roles) {
+export async function createToken(name, server_id, roles, lifetime_minutes) {
+  const body = { name: name, roles: roles };
+  if (lifetime_minutes != null && lifetime_minutes !== "") {
+    body.lifetime_minutes = parseInt(lifetime_minutes, 10);
+  }
   var dat = {
     method: "POST",
-    body: JSON.stringify({ name: name, roles: roles }),
+    body: JSON.stringify(body),
   };
   return await getResponse("/tokens/tokens/" + server_id, dat);
 }
