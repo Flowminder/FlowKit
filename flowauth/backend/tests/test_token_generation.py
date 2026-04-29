@@ -122,6 +122,123 @@ def test_token_list_includes_assigned_roles(
             assert isinstance(role["id"], int)
 
 
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_renewal_creates_new_row_with_same_name_and_roles(
+    client, auth, app, test_user_with_roles, public_key
+):
+    """Renewing a token mints a fresh JWT with the same name and roles, and
+    leaves the original TokenHistory row alone."""
+    with app.app_context():
+        uid, uname, upass = test_user_with_roles
+        response, csrf_cookie = auth.login(uname, upass)
+
+        mint = client.post(
+            "/tokens/tokens/1",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={
+                "name": "DUMMY_TOKEN",
+                "roles": [{"name": "runner"}, {"name": "reader"}],
+            },
+        )
+        assert mint.status_code == 200
+        original_token_string = mint.get_json()["token"]
+
+        listed = client.get(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}
+        ).get_json()
+        original_id = listed[0]["id"]
+
+        renew = client.post(
+            f"/tokens/tokens/{original_id}/renew",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={},
+        )
+        assert renew.status_code == 200
+        renewed = renew.get_json()
+        assert "token" in renewed
+        assert renewed["token"] != original_token_string
+        assert renewed["id"] != original_id
+
+        listed_after = client.get(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}
+        ).get_json()
+        assert len(listed_after) == 2
+        for entry in listed_after:
+            assert entry["name"] == "DUMMY_TOKEN"
+            assert sorted(r["name"] for r in entry["roles"]) == ["reader", "runner"]
+
+
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_renewal_rejects_other_users_tokens(
+    client, auth, app, test_user_with_roles, test_admin
+):
+    """A user cannot renew a token they don't own."""
+    with app.app_context():
+        uid, uname, upass = test_user_with_roles
+        _, csrf_cookie = auth.login(uname, upass)
+        client.post(
+            "/tokens/tokens/1",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={"name": "DUMMY_TOKEN", "roles": [{"name": "reader"}]},
+        )
+        other_id = client.get(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}
+        ).get_json()[0]["id"]
+
+        auth.logout()
+        admin_id, admin_name, admin_pw = test_admin
+        _, admin_csrf = auth.login(admin_name, admin_pw)
+        renew = client.post(
+            f"/tokens/tokens/{other_id}/renew",
+            headers={"X-CSRF-Token": admin_csrf},
+            json={},
+        )
+        assert renew.status_code == 401
+
+
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_renewal_rejects_when_role_revoked(
+    client, auth, app, test_user_with_roles
+):
+    """If a role has been removed from the user since the token was minted,
+    renewal must fail rather than silently issuing a token they can no longer
+    legitimately request."""
+    with app.app_context():
+        uid, uname, upass = test_user_with_roles
+        _, csrf_cookie = auth.login(uname, upass)
+        client.post(
+            "/tokens/tokens/1",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={
+                "name": "DUMMY_TOKEN",
+                "roles": [{"name": "runner"}, {"name": "reader"}],
+            },
+        )
+        token_id = client.get(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}
+        ).get_json()[0]["id"]
+
+        from flowauth.models import db, User, Role
+
+        user = db.session.execute(db.select(User).where(User.id == uid)).scalar()
+        runner = db.session.execute(
+            db.select(Role).where(Role.name == "runner")
+        ).scalar()
+        user.roles.remove(runner)
+        db.session.commit()
+
+        renew = client.post(
+            f"/tokens/tokens/{token_id}/renew",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={},
+        )
+        assert renew.status_code == 401
+        assert "runner" in renew.get_json()["message"]
+
+
 def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, public_key):
     with app.app_context():
         with freeze_time("2020-12-31") as frozentime:

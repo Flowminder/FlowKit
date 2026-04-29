@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import Token from "./Token";
-import { getMyTokensForServer, getServer } from "./util/api";
+import { getMyTokensForServer, getServer, renewToken } from "./util/api";
 
 const styles = (theme) => ({
   root: {
@@ -40,6 +40,11 @@ class TokenList extends React.Component {
       .then((server) => this.setState({ serverName: server.name }))
       .catch((err) => console.error(err));
   };
+  handleRenew = async (tokenId) => {
+    await renewToken(tokenId);
+    this.updateTokenList();
+  };
+
   componentDidMount() {
     this.updateTokenList();
     this.getServerName();
@@ -101,12 +106,14 @@ class TokenList extends React.Component {
           <Grid item xs={5} />
           {activeTokens.map((object) => (
             <Token
+              id={object.id}
               name={object.name}
               expiry={object.expires}
               token={object.token}
               roles={object.roles}
               classes={classes}
               editAction={editAction}
+              onRenew={this.handleRenew}
             />
           ))}
         </React.Fragment>
@@ -130,6 +137,7 @@ class TokenList extends React.Component {
             <Grid item xs={12} />
             {expiredTokens.map((object) => (
               <Token
+                id={object.id}
                 name={object.name}
                 expiry={object.expires}
                 token={object.token}
