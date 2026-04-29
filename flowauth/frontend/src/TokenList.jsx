@@ -144,6 +144,7 @@ class TokenList extends React.Component {
                 roles={object.roles}
                 classes={classes}
                 editAction={editAction}
+                onRenew={this.handleRenew}
               />
             ))}
             <Grid item xs={12} />
