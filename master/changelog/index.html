@@ -14006,6 +14006,7 @@
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>FlowAuth: roles assigned to a token at mint time are now recorded in a <code>tokens_with_roles</code> association table and exposed on the user's token list (<code>GET /tokens/tokens/&lt;server_id&gt;</code>), so users and admins can see which permissions an existing token carries without decoding the JWT. <a href="https://github.com/Flowminder/FlowKit/issues/7273">#7273</a></li>
+<li>FlowAuth: new <code>POST /tokens/tokens/&lt;token_id&gt;/renew</code> endpoint mints a fresh JWT reusing the original token's name and roles. The original <code>TokenHistory</code> row is left intact so its JWT remains valid until its own <code>exp</code> claim passes, giving consumers a natural overlap window. The token list UI gains a "Renew" button on each active token. <a href="https://github.com/Flowminder/FlowKit/issues/7275">#7275</a></li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
