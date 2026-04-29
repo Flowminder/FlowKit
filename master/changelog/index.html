@@ -14004,6 +14004,9 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/Flowminder/FlowKit/compare/1.34.0...master">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>FlowAuth: roles assigned to a token at mint time are now recorded in a <code>tokens_with_roles</code> association table and exposed on the user's token list (<code>GET /tokens/tokens/&lt;server_id&gt;</code>), so users and admins can see which permissions an existing token carries without decoding the JWT. <a href="https://github.com/Flowminder/FlowKit/issues/7273">#7273</a></li>
+</ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
