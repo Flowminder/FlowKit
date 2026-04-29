@@ -80,6 +80,7 @@ def list_my_tokens(server):
                 "expires": token.expiry,
                 "server_name": token.server.name,
                 "username": token.user.username,
+                "roles": [{"id": role.id, "name": role.name} for role in token.roles],
             }
             for token in TokenHistory.query.filter(
                 TokenHistory.user == current_user, TokenHistory.server == server
@@ -155,6 +156,7 @@ def add_token(server_id):
         server_id=server.id,
         expiry=token_expiry,
         token=token_string,
+        roles=roles,
     )
 
     db.session.add(history_entry)

@@ -89,6 +89,39 @@ def test_token_generation(
         assert approx(expiry.timestamp()) == decoded_token["exp"]
 
 
+@pytest.mark.usefixtures("test_data_with_access_rights")
+@freeze_time(datetime.datetime(year=2020, month=12, day=31))
+def test_token_list_includes_assigned_roles(
+    client, auth, app, test_user_with_roles, test_servers
+):
+    """The token list endpoint exposes the roles that were assigned at mint time."""
+    with app.app_context():
+        uid, uname, upass = test_user_with_roles
+        response, csrf_cookie = auth.login(uname, upass)
+        assert response.status_code == 200
+
+        token_req = {
+            "name": "DUMMY_TOKEN",
+            "roles": [{"name": "runner"}, {"name": "reader"}],
+        }
+        mint_response = client.post(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_req
+        )
+        assert mint_response.status_code == 200
+
+        list_response = client.get(
+            "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}
+        )
+        assert list_response.status_code == 200
+        tokens = list_response.get_json()
+        assert len(tokens) == 1
+        assert tokens[0]["name"] == "DUMMY_TOKEN"
+        role_names = sorted(role["name"] for role in tokens[0]["roles"])
+        assert role_names == ["reader", "runner"]
+        for role in tokens[0]["roles"]:
+            assert isinstance(role["id"], int)
+
+
 def test_token_rejected_for_expiry(client, auth, app, test_user_with_roles, public_key):
     with app.app_context():
         with freeze_time("2020-12-31") as frozentime:
