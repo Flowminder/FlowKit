@@ -14017,6 +14017,7 @@
 <ul>
 <li>FlowAuth: <code>User.token_limits</code> now correctly filters by the current user when computing role-derived caps. Previously the join did not constrain by user id, so the function returned the most-permissive role on the server across <em>all</em> users. <a href="https://github.com/Flowminder/FlowKit/issues/7274">#7274</a></li>
 <li>FlowAuth: the "Renew" button is now also shown on expired tokens. The renewal endpoint already accepted expired tokens (only the server/role caps are checked), but the button was hidden on the Expired tokens list and on rows whose <code>expiry</code> had passed.</li>
+<li>FlowAuth: hide the "Renew" button on tokens minted before the <code>tokens_with_roles</code> association was introduced. Those rows have no roles recorded, so the renewal endpoint refuses them with <code>InvalidUsage</code>; previously the button was visible and clicking it returned an error. Old tokens must be re-minted from scratch.</li>
 </ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <h2 id="1340"><a href="https://github.com/Flowminder/FlowKit/compare/1.33.1...1.34.0">1.34.0</a><a class="headerlink" href="#1340" title="Permanent link">&para;</a></h2>
