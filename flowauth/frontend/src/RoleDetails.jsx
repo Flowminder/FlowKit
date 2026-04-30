@@ -253,6 +253,8 @@ function RoleDetails(props) {
               label="Expiry date"
               value={expiryDate}
               onChange={setExpiryDate}
+              clearable={true}
+              helperText="Leave empty to remove the absolute expiry cap"
             />
           </MuiPickersUtilsProvider>
         </Grid>

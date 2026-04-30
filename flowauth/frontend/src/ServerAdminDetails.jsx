@@ -102,14 +102,12 @@ class ServerAdminDetails extends React.Component {
       max_life &&
       maxlife_helper_text === ""
     ) {
+      const isoExpiry = latest_expiry
+        ? new Date(latest_expiry).toISOString()
+        : null;
       const server = this.editMode()
-        ? editServer(
-            item_id,
-            name,
-            new Date(latest_expiry).toISOString(),
-            max_life,
-          )
-        : createServer(name, new Date(latest_expiry).toISOString(), max_life);
+        ? editServer(item_id, name, isoExpiry, max_life)
+        : createServer(name, isoExpiry, max_life);
       try {
         await editServerScopes((await server).id, rightsObjs);
         onClick();
@@ -265,6 +263,8 @@ class ServerAdminDetails extends React.Component {
               onChange={this.handleDateChange}
               disablePast={true}
               margin="normal"
+              clearable={true}
+              helperText="Leave empty to remove the absolute expiry cap"
             />
           </MuiPickersUtilsProvider>
         </Grid>
