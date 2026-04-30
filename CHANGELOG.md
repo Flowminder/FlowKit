@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth: the "Renew" button is now also shown on expired tokens. The renewal endpoint already accepted expired tokens (only the server/role caps are checked), but the button was hidden on the Expired tokens list and on rows whose `expiry` had passed.
 - FlowAuth: hide the "Renew" button on tokens minted before the `tokens_with_roles` association was introduced. Those rows have no roles recorded, so the renewal endpoint refuses them with `InvalidUsage`; previously the button was visible and clicking it returned an error. Old tokens must be re-minted from scratch.
 - FlowAuth: enable SQLAlchemy `pool_pre_ping` so dead connections in the pool are detected and replaced before each query instead of surfacing as `MySQLdb.OperationalError (2013, 'Lost connection to MySQL server during query')`. This eliminates the ~5-minute window of 500s after every container restart while the stale pool drains.
+- FlowAuth: the *Latest expiry* date pickers on the Server and Role admin forms now have a Clear button, and submit `null` rather than an Invalid Date / 1970 epoch string when empty. Without this the backend's nullable `latest_token_expiry` was unreachable from the UI — operators could see the "no cap" semantics in the API but had no way to actually clear an existing cap.
 
 ### Removed
 
