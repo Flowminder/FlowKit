@@ -102,7 +102,7 @@ def get_config():
             ADMIN_USER=environ["FLOWAUTH_ADMIN_USERNAME"],
             ADMIN_PASSWORD=environ["FLOWAUTH_ADMIN_PASSWORD"],
             SQLALCHEMY_DATABASE_URI=db_uri,
-            SQLALCHEMY_ENGINE_OPTIONS=dict(pool_recycle=3600),
+            SQLALCHEMY_ENGINE_OPTIONS=dict(pool_recycle=3600, pool_pre_ping=True),
             SECRET_KEY=environ["SECRET_KEY"],
             SESSION_PROTECTION="strong",
             SQLALCHEMY_TRACK_MODIFICATIONS=False,
